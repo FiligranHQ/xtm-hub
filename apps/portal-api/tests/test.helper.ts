@@ -55,9 +55,18 @@ const mockUpload = {
   promise: Promise.resolve(mockFileUpload),
 };
 
+export const mockPlatformConfig: PlatformConfiguration = {
+  registerer_id: contextRegistererUserSecondOrga.user.id,
+  platform_id: 'test-platform',
+  platform_title: 'Test Platform',
+  platform_url: 'https://test.com',
+  platform_contract: PlatformContract.Ee,
+  platform_version: '1.0.0',
+  token: 'test-token',
+};
 export const TestHelper = {
   document: {
-    create: async ({
+    createWholeDocument: async ({
       name = 'myCsvFeed',
       description = 'description',
       short_description = 'short_description',
@@ -102,6 +111,16 @@ export const TestHelper = {
 
       return document!;
     },
+    create: async (data?: DocumentMutator): Promise<Document> => {
+      const [document] = await db<Document>('Document')
+        .insert({
+          id: uuidv4() as DocumentId,
+          ...data,
+        })
+        .returning('*');
+      expect(document).toBeDefined();
+      return document;
+    },
     load: async (documentId: DocumentId): Promise<Document | undefined> => {
       return db<Document>('Document')
         .where('id', '=', documentId)
@@ -137,26 +156,20 @@ export const TestHelper = {
       expect(serviceDefinition).toBeDefined();
       return serviceDefinition;
     },
+    delete: async (field: ServiceDefinitionMutator) => {
+      await db<ServiceDefinition>('ServiceDefinition').where(field).del();
+    },
   },
   serviceConfiguration: {
     create: async (
       data?: Partial<ServiceConfiguration>
     ): Promise<ServiceConfiguration> => {
-      const config: PlatformConfiguration = {
-        registerer_id: contextRegistererUserSecondOrga.user.id,
-        platform_id: 'test-platform',
-        platform_title: 'Test Platform',
-        platform_url: 'https://test.com',
-        platform_contract: PlatformContract.Ee,
-        platform_version: '1.0.0',
-        token: 'test-token',
-      };
       const [serviceConfiguration] = await db<ServiceConfiguration>(
         'Service_Configuration'
       )
         .insert({
           service_instance_id: uuidv4() as ServiceInstanceId,
-          config: JSON.stringify(config),
+          config: JSON.stringify(mockPlatformConfig),
           status: ServiceConfigurationStatus.Active,
           ...data,
         })
@@ -191,16 +204,13 @@ export const TestHelper = {
     },
   },
   subscription: {
-    create: async (
-      data?: Partial<Subscription>
-    ): Promise<Subscription | undefined> => {
+    create: async (data?: Partial<Subscription>): Promise<Subscription> => {
       const [subscription] = await db<Subscription>('Subscription')
         .insert({
           id: uuidv4() as SubscriptionId,
           ...data,
         })
         .returning('*');
-      expect(subscription).toBeDefined();
       return subscription;
     },
     delete: async (field: SubscriptionMutator) => {

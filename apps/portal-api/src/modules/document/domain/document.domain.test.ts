@@ -47,7 +47,7 @@ describe('Document domain', () => {
   describe('deactivateDocuments', () => {
     let createdDocument: Document;
     beforeEach(async () => {
-      createdDocument = await TestHelper.document.create({});
+      createdDocument = await TestHelper.document.createWholeDocument({});
     });
 
     it('should do nothing when the document ids is an empty array', async () => {
@@ -76,7 +76,7 @@ describe('Document domain', () => {
       await db<Document>('Document')
         .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
         .delete();
-      csvFeed = await TestHelper.document.create({});
+      csvFeed = await TestHelper.document.createWholeDocument({});
     });
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
@@ -534,7 +534,7 @@ describe('Document domain', () => {
 
   describe('loadUploaderOrganization', () => {
     it('should return the organization which uploaded document', async () => {
-      const inserted = await TestHelper.document.create({});
+      const inserted = await TestHelper.document.createWholeDocument({});
 
       const uploaderOrganization =
         await DocumentDomain.loadUploaderOrganization(inserted.id);

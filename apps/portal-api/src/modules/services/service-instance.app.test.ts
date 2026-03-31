@@ -2,34 +2,43 @@ import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../knexfile';
 import {
-  contextBypassUser,
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { mockPlatformConfig, TestHelper } from '../../../tests/test.helper';
+import {
+  contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
-  SERVICES,
+  TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
-  PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  ServiceInstanceJoinType,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
+import ServiceDefinition, {
+  ServiceDefinitionId,
+} from '../../model/kanel/public/ServiceDefinition';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { UserId } from '../../model/kanel/public/User';
 import * as pub from '../../pub';
 import * as securityGuardModule from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import * as documentHelper from '../document/document.helper';
 import { PlatformConfiguration } from '../registration/registration.domain';
+import { subscriptionApp } from '../subcription/subscription.app';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../user_service/user_service.domain';
@@ -45,10 +54,11 @@ describe('Service Instance app', () => {
     let loadUserServiceBySpy: MockInstance;
     let loadServiceInstanceBySpy: MockInstance;
     let grantServiceAccessSpy: MockInstance;
+    let subscribeOrganizationToServiceSpy: MockInstance;
 
     const mockServiceInstanceId = uuidv4() as ServiceInstanceId;
     const mockSubscriptionId = uuidv4() as SubscriptionId;
-    const mockUserId = contextBypassUser.user.id;
+    const mockUserId = contextSimpleUserSecondOrga.user.id;
 
     const mockSubscription = {
       id: mockSubscriptionId,
@@ -89,6 +99,10 @@ describe('Service Instance app', () => {
         serviceInstanceDomain,
         'grantServiceAccess'
       );
+      subscribeOrganizationToServiceSpy = vi.spyOn(
+        subscriptionApp,
+        'subscribeOrganizationToService'
+      );
     });
 
     afterEach(() => {
@@ -96,32 +110,37 @@ describe('Service Instance app', () => {
     });
 
     it('should load service instance when user already has access', async () => {
+      // Given
       loadSubscriptionBySpy.mockResolvedValueOnce(mockSubscription);
       loadUserServiceBySpy.mockResolvedValueOnce([mockUserService]);
       loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
 
-      const result = await ServiceInstanceApp.loadServiceInstance(
-        contextBypassUser.user,
+      // When
+      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
+      // Then
       expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
         service_instance_id: mockServiceInstanceId,
-        organization_id: contextBypassUser.user.selected_organization_id,
+        organization_id:
+          contextSimpleUserSecondOrga.user.selected_organization_id,
       });
       expect(loadUserServiceBySpy).toHaveBeenCalledWith({
         subscription_id: mockSubscriptionId,
         user_id: mockUserId,
       });
-      expect(grantServiceAccessSpy).not.toHaveBeenCalled();
       expect(loadServiceInstanceBySpy).toHaveBeenCalledWith(
         'id',
         mockServiceInstanceId
       );
-      expect(result).toEqual(mockServiceInstance);
+      expect(grantServiceAccessSpy).not.toHaveBeenCalled();
+      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
     });
 
     it('should auto-join user when subscription has AUTO_JOIN mode and user has no access', async () => {
+      // Given
       const autoJoinSubscription = {
         ...mockSubscription,
         joining: 'AUTO_JOIN',
@@ -131,22 +150,63 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
       grantServiceAccessSpy.mockResolvedValue(undefined);
 
-      const result = await ServiceInstanceApp.loadServiceInstance(
-        contextBypassUser.user,
+      // When
+      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
+      // Then
+      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
         mockSubscriptionId
       );
-      expect(result).toEqual(mockServiceInstance);
+    });
+
+    it('should auto-join organization and user when service has JOIN_AUTO and user has no access', async () => {
+      // Given
+      loadSubscriptionBySpy.mockResolvedValue(null);
+      loadUserServiceBySpy.mockResolvedValue([]);
+      loadServiceInstanceBySpy.mockResolvedValue({
+        ...mockServiceInstance,
+        join_type: ServiceInstanceJoinType.JoinAuto,
+      });
+      subscribeOrganizationToServiceSpy.mockResolvedValue({
+        ...mockSubscription,
+        joining: 'AUTO_JOIN',
+      });
+      grantServiceAccessSpy.mockResolvedValue(undefined);
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2024-01-01'));
+
+      // When
+      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+        contextSimpleUserSecondOrga.user,
+        mockServiceInstanceId
+      );
+
+      // Then
+      expect(subscribeOrganizationToServiceSpy).toHaveBeenCalledWith({
+        organizationId:
+          contextSimpleUserSecondOrga.user.selected_organization_id,
+        serviceInstanceId: mockServiceInstanceId,
+        startDate: new Date('2024-01-01'),
+        endDate: null,
+        capabilityIds: [],
+      });
+      expect(grantServiceAccessSpy).toHaveBeenCalledWith(
+        [GenericServiceCapabilityIds.AccessId],
+        [mockUserId],
+        mockSubscriptionId
+      );
     });
 
     it('should use subscription from user organization, not from another organization', async () => {
+      // Given
       const userOrganizationId =
-        contextBypassUser.user.selected_organization_id;
+        contextSimpleUserSecondOrga.user.selected_organization_id;
       const otherOrganizationId = uuidv4() as OrganizationId;
 
       const userOrgSubscriptionId = uuidv4() as SubscriptionId;
@@ -183,24 +243,31 @@ describe('Service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
       grantServiceAccessSpy.mockResolvedValue(undefined);
 
-      await ServiceInstanceApp.loadServiceInstance(
-        contextBypassUser.user,
+      // When
+      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
+      // Then
       expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
         service_instance_id: mockServiceInstanceId,
         organization_id: userOrganizationId,
       });
 
+      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
         userOrgSubscriptionId
       );
+      expect(loadServiceInstanceBySpy).toHaveBeenCalledBefore(
+        loadSubscriptionBySpy
+      );
     });
 
     it('should not auto-join user when subscription has INVITE_ONLY mode', async () => {
+      // Given
       const inviteOnlySubscription = {
         ...mockSubscription,
         joining: 'INVITE_ONLY',
@@ -209,16 +276,19 @@ describe('Service Instance app', () => {
       loadUserServiceBySpy.mockResolvedValue([]);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
-      const result = await ServiceInstanceApp.loadServiceInstance(
-        contextBypassUser.user,
+      // When
+      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
+      // Then
+      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
-      expect(result).toEqual(mockServiceInstance);
     });
 
     it('should handle multiple user services', async () => {
+      // Given
       const multipleUserServices = [
         mockUserService,
         {
@@ -231,30 +301,38 @@ describe('Service Instance app', () => {
       loadUserServiceBySpy.mockResolvedValue(multipleUserServices);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
-      const result = await ServiceInstanceApp.loadServiceInstance(
-        contextBypassUser.user,
+      // When
+      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
+      // Then
+      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
-      expect(result).toEqual(mockServiceInstance);
     });
 
     it('should propagate errors from loadSubscriptionBy', async () => {
+      // Given
       const error = new Error('Error');
       loadSubscriptionBySpy.mockRejectedValue(error);
 
+      // When
       await expect(
-        ServiceInstanceApp.loadServiceInstance(
-          contextBypassUser.user,
+        ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+          contextRegistererUserSecondOrga.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Error');
 
+      // Then
       expect(loadUserServiceBySpy).not.toHaveBeenCalled();
+      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
+      expect(grantServiceAccessSpy).not.toHaveBeenCalled();
     });
 
     it('should propagate errors from grantServiceAccess', async () => {
+      // Given
       const autoJoinSubscription = {
         ...mockSubscription,
         joining: 'AUTO_JOIN',
@@ -264,53 +342,19 @@ describe('Service Instance app', () => {
       loadUserServiceBySpy.mockResolvedValue([]);
       grantServiceAccessSpy.mockRejectedValue(error);
 
+      // When
       await expect(
-        ServiceInstanceApp.loadServiceInstance(
-          contextBypassUser.user,
+        ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+          contextSimpleUserSecondOrga.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Other error');
-    });
-
-    it('should handle different context users', async () => {
-      const differentUserId = uuidv4() as UserId;
-      const differentContext = {
-        ...contextBypassUser,
-        user: {
-          ...contextBypassUser.user,
-          id: differentUserId,
-        },
-      };
-      requestContext.set(differentContext);
-      loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
-      loadUserServiceBySpy.mockResolvedValue([]);
-      loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
-
-      await ServiceInstanceApp.loadServiceInstance(
-        differentContext.user,
-        mockServiceInstanceId
-      );
-
-      expect(loadUserServiceBySpy).toHaveBeenCalledWith({
-        subscription_id: mockSubscriptionId,
-        user_id: differentUserId,
-      });
     });
   });
 
   describe('updatePlatformServiceMetadata', () => {
     let dispatchSpy: MockInstance;
     let uploadNewFileSpy: MockInstance;
-
-    const mockPlatformConfig: PlatformConfiguration = {
-      registerer_id: contextBypassUser.user.id,
-      platform_id: 'test-platform',
-      platform_title: 'Test Platform',
-      platform_url: 'https://test.com',
-      platform_contract: PlatformContract.Ee,
-      platform_version: '1.0.0',
-      token: 'test-token',
-    };
 
     const mockFileUpload: FileUpload = {
       filename: 'illustration.png',
@@ -323,72 +367,73 @@ describe('Service Instance app', () => {
       file: mockFileUpload,
       promise: Promise.resolve(mockFileUpload),
     };
+    let serviceDefinition: ServiceDefinition;
+    let serviceInstance: ServiceInstance;
 
-    const createPlatformServiceData = async () => {
-      const serviceDefId = uuidv4() as ServiceDefinitionId;
-      const serviceInstanceId = uuidv4() as ServiceInstanceId;
-      const subscriptionId = uuidv4() as SubscriptionId;
-      await db('ServiceDefinition').insert({
-        id: serviceDefId,
-        name: 'OpenCTI',
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-      });
-      await serviceInstanceDomain.insertServiceInstance({
-        id: serviceInstanceId,
-        name: 'Test Platform',
-        service_definition_id: serviceDefId,
-      });
-      await db('Subscription').insert({
-        id: subscriptionId,
-        organization_id: contextBypassUser.user.selected_organization_id,
-        service_instance_id: serviceInstanceId,
-      });
-      await db('Service_Configuration').insert({
-        service_instance_id: serviceInstanceId,
-        config: mockPlatformConfig,
-      });
-      return { serviceDefId, serviceInstanceId, subscriptionId };
-    };
-
-    beforeEach(() => {
+    beforeEach(async () => {
       dispatchSpy = vi.spyOn(pub, 'dispatch').mockResolvedValue(undefined);
       uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
+      vi.spyOn(
+        securityGuardModule.securityGuard,
+        'assertUserIsAllowedOnOrganization'
+      ).mockResolvedValue(undefined);
+      serviceDefinition = await TestHelper.serviceDefinition.create({
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+      });
+      serviceInstance = await TestHelper.serviceInstance.create({
+        service_definition_id: serviceDefinition.id as ServiceDefinitionId,
+      });
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstance.id,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstance.id,
+      });
     });
 
-    afterEach(() => {
+    afterEach(async () => {
       vi.restoreAllMocks();
+      await TestHelper.serviceConfiguration.delete({});
+      await TestHelper.subscription.delete({});
+      await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
+      await TestHelper.serviceDefinition.delete({ id: serviceDefinition.id });
     });
 
     it('should update name, sync config title, dispatch, and return RegisteredPlatform', async () => {
-      const { serviceInstanceId } = await createPlatformServiceData();
+      // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
         name: 'Updated Platform Name',
       };
 
+      // When
       const result = await ServiceInstanceApp.updatePlatformServiceMetadata(
-        contextBypassUser.user,
-        serviceInstanceId,
+        contextRegistererUserSecondOrga.user,
+        serviceInstance.id,
         input,
         null
       );
 
-      expect(result.id).toBe(serviceInstanceId);
-      expect(result.title).toBe('Updated Platform Name');
-      expect(result.platform_id).toBe(mockPlatformConfig.platform_id);
-      expect(result.url).toBe(mockPlatformConfig.platform_url);
+      // Then
+      expect(result).toMatchObject({
+        id: serviceInstance.id,
+        title: 'Updated Platform Name',
+        url: 'https://test.com',
+      });
+
       expect(dispatchSpy).toHaveBeenCalledWith(
         'ServiceInstance',
         'edit',
         expect.objectContaining({
-          id: serviceInstanceId,
+          id: serviceInstance.id,
           name: 'Updated Platform Name',
         })
       );
     });
 
     it('should upload illustration and include global document ID in response', async () => {
-      const { serviceInstanceId } = await createPlatformServiceData();
+      // Given
       const illustrationId = uuidv4();
       uploadNewFileSpy.mockResolvedValue({
         id: illustrationId,
@@ -396,20 +441,22 @@ describe('Service Instance app', () => {
         mime_type: 'image/png',
       });
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
         name: 'Updated Platform Name',
       };
 
+      // When
       const result = await ServiceInstanceApp.updatePlatformServiceMetadata(
-        contextBypassUser.user,
-        serviceInstanceId,
+        contextRegistererUserSecondOrga.user,
+        serviceInstance.id,
         input,
         mockUpload
       );
 
+      // Then
       expect(uploadNewFileSpy).toHaveBeenCalledWith(
         mockUpload,
-        serviceInstanceId
+        serviceInstance.id
       );
       expect(result.illustration_document_id).toBe(
         toGlobalId('Document', illustrationId)
@@ -417,49 +464,55 @@ describe('Service Instance app', () => {
     });
 
     it('should not update service instance or config when no fields to update', async () => {
-      const { serviceInstanceId } = await createPlatformServiceData();
+      // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
       };
 
+      // When
       await ServiceInstanceApp.updatePlatformServiceMetadata(
-        contextBypassUser.user,
-        serviceInstanceId,
+        contextRegistererUserSecondOrga.user,
+        serviceInstance.id,
         input,
         null
       );
 
+      // Then
       const unchangedInstance =
         await serviceInstanceDomain.loadServiceInstanceBy(
           'id',
-          serviceInstanceId
+          serviceInstance.id
         );
-      expect(unchangedInstance.name).toBe('Test Platform');
+      expect(unchangedInstance.name).toBe('Default name serviceInstance');
     });
 
     it('should return null illustration_document_id when service instance has none', async () => {
-      const { serviceInstanceId } = await createPlatformServiceData();
+      // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
         name: 'Updated Name',
       };
 
+      // When
       const result = await ServiceInstanceApp.updatePlatformServiceMetadata(
-        contextBypassUser.user,
-        serviceInstanceId,
+        contextRegistererUserSecondOrga.user,
+        serviceInstance.id,
         input,
         null
       );
 
+      // Then
       expect(result.illustration_document_id).toBeNull();
     });
 
     it('should throw SERVICE_INSTANCE_NOT_FOUND when service instance does not exist', async () => {
+      // Given
       const nonExistentId = uuidv4() as ServiceInstanceId;
 
+      // When / Then
       await expect(
         ServiceInstanceApp.updatePlatformServiceMetadata(
-          contextBypassUser.user,
+          contextRegistererUserSecondOrga.user,
           nonExistentId,
           {
             serviceInstanceId: toGlobalId('ServiceInstance', nonExistentId),
@@ -474,6 +527,8 @@ describe('Service Instance app', () => {
       // Cannot reproduce with real DB: loadPlatformServiceInstance filters by
       // ServiceDefinition.identifier, so a result is only returned when a
       // matching ServiceDefinition exists in the join.
+
+      // Given
       const mockId = uuidv4() as ServiceInstanceId;
       vi.spyOn(
         serviceInstanceDomain,
@@ -484,9 +539,10 @@ describe('Service Instance app', () => {
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(undefined);
 
+      // When / Then
       await expect(
         ServiceInstanceApp.updatePlatformServiceMetadata(
-          contextBypassUser.user,
+          contextRegistererUserSecondOrga.user,
           mockId,
           {
             serviceInstanceId: toGlobalId('ServiceInstance', mockId),
@@ -498,6 +554,7 @@ describe('Service Instance app', () => {
     });
 
     it('should throw when user cannot modify platform service', async () => {
+      // Given
       const mockId = uuidv4() as ServiceInstanceId;
       vi.spyOn(
         serviceInstanceDomain,
@@ -511,7 +568,12 @@ describe('Service Instance app', () => {
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         name: 'Mock Platform',
       });
+      vi.spyOn(
+        securityGuardModule.securityGuard,
+        'assertUserIsAllowedOnOrganization'
+      ).mockRejectedValue(undefined);
 
+      // When / Then
       await expect(
         ServiceInstanceApp.updatePlatformServiceMetadata(
           contextSimpleUserSecondOrga.user,
@@ -526,22 +588,24 @@ describe('Service Instance app', () => {
     });
 
     it('should throw when upload fails and not update service instance', async () => {
-      const { serviceInstanceId } = await createPlatformServiceData();
+      // Given
       uploadNewFileSpy.mockRejectedValue(new Error('Upload failed'));
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstanceId),
+        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
         name: 'Updated Name',
       };
 
+      // When
       await expect(
         ServiceInstanceApp.updatePlatformServiceMetadata(
-          contextBypassUser.user,
-          serviceInstanceId,
+          contextRegistererUserSecondOrga.user,
+          serviceInstance.id,
           input,
           mockUpload
         )
       ).rejects.toThrow('Upload failed');
 
+      // Then
       expect(dispatchSpy).not.toHaveBeenCalled();
     });
 
@@ -549,6 +613,8 @@ describe('Service Instance app', () => {
       // Cannot reproduce with real DB: simulates a race condition where the
       // configuration is deleted between the update transaction and the
       // response-building query.
+
+      // Given
       const mockId = uuidv4() as ServiceInstanceId;
       const mockServiceConfiguration = {
         service_instance_id: mockId,
@@ -595,9 +661,10 @@ describe('Service Instance app', () => {
         'updatePlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue(mockServiceConfiguration);
 
+      // When / Then
       await expect(
         ServiceInstanceApp.updatePlatformServiceMetadata(
-          contextBypassUser.user,
+          contextRegistererUserSecondOrga.user,
           mockId,
           {
             serviceInstanceId: toGlobalId('ServiceInstance', mockId),
@@ -611,12 +678,14 @@ describe('Service Instance app', () => {
 
   describe('loadLinkServiceInstancesByTags', () => {
     it('should load service instances links with tags', async () => {
+      // When
       const serviceInstances =
         await ServiceInstanceApp.loadLinkServiceInstancesByTags([
           ServiceInstanceTag.OpenCti,
           ServiceInstanceTag.Trial,
         ]);
 
+      // Then
       expect(serviceInstances.length).toBe(3);
       expect(
         serviceInstances.find(({ name }) => name === 'Filigran Blog')
@@ -633,120 +702,145 @@ describe('Service Instance app', () => {
   });
 
   describe('loadSeoServiceInstance', () => {
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({
+        slug: 'test-seo-slug-with-docs',
+      });
+      await TestHelper.serviceInstance.delete({
+        slug: 'test-seo-slug-no-docs',
+      });
+    });
     it('should return the service instance with global document IDs', async () => {
+      // Given
       const slug = 'test-seo-slug-with-docs';
       const logoId = uuidv4() as DocumentId;
       const illustrationId = uuidv4();
 
       // logo_document_id has a FK to Document, so insert the document first
-      await db('Document').insert({ id: logoId, type: 'logo' });
-      await serviceInstanceDomain.insertServiceInstance({
-        id: uuidv4() as ServiceInstanceId,
+      await TestHelper.document.create({ id: logoId, type: 'logo' });
+
+      await TestHelper.serviceInstance.create({
         name: 'Test SEO Service',
         slug,
         logo_document_id: logoId,
-        illustration_document_id: illustrationId,
         tags: [ServiceInstanceTag.OpenCti],
-        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
+        illustration_document_id: illustrationId,
       });
 
+      // When
       const result = await ServiceInstanceApp.loadSeoServiceInstance(slug);
 
-      expect(result.name).toBe('Test SEO Service');
-      expect(result.logo_document_id).toBe(toGlobalId('Document', logoId));
-      expect(result.illustration_document_id).toBe(
-        toGlobalId('Document', illustrationId)
-      );
-      expect(result.tags).toEqual([ServiceInstanceTag.OpenCti]);
+      // Then
+      expect(result).toMatchObject({
+        name: 'Test SEO Service',
+        logo_document_id: toGlobalId('Document', logoId),
+        illustration_document_id: toGlobalId('Document', illustrationId),
+        tags: [ServiceInstanceTag.OpenCti],
+      });
     });
 
     it('should throw NotFoundError when the slug does not match any service', async () => {
+      // When / Then
       await expect(
         ServiceInstanceApp.loadSeoServiceInstance('non-existent-slug')
       ).rejects.toThrow(ErrorCode.ServiceNotFound);
     });
 
     it('should handle null document IDs without converting them', async () => {
+      // Given
       const slug = 'test-seo-slug-no-docs';
-      await serviceInstanceDomain.insertServiceInstance({
-        id: uuidv4() as ServiceInstanceId,
+      await TestHelper.serviceInstance.create({
         name: 'Test SEO Service No Docs',
         slug,
-        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
-
+      // When
       const result = await ServiceInstanceApp.loadSeoServiceInstance(slug);
 
+      // Then
       expect(result.logo_document_id).toBeNull();
       expect(result.illustration_document_id).toBeNull();
     });
   });
 
   describe('loadSeoServiceInstances', () => {
+    const logoId = uuidv4() as DocumentId;
+    const illustrationId = uuidv4();
+    const firstServiceInstancePublicId = uuidv4() as ServiceInstanceId;
+    const secondServiceInstancePublicId = uuidv4() as ServiceInstanceId;
+    const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({
+        id: firstServiceInstancePublicId,
+      });
+      await TestHelper.serviceInstance.delete({
+        id: secondServiceInstancePublicId,
+      });
+      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
+      await TestHelper.document.delete({ id: logoId });
+    });
     it('should return public service instances with document IDs converted to global IDs', async () => {
-      const logoId = uuidv4() as DocumentId;
-      const illustrationId = uuidv4();
-      const instanceId = uuidv4() as ServiceInstanceId;
-
-      // logo_document_id has a FK to Document, so insert the document first
-      await db('Document').insert({ id: logoId, type: 'logo' });
-      await serviceInstanceDomain.insertServiceInstance({
-        id: instanceId,
+      // Given
+      await TestHelper.document.create({ id: logoId, type: 'logo' });
+      await TestHelper.serviceInstance.create({
+        id: firstServiceInstancePublicId,
         name: 'Test Public SEO Service',
         public: true,
+        ordering: 100,
         logo_document_id: logoId,
         illustration_document_id: illustrationId,
-        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
 
+      // When
       const results = await ServiceInstanceApp.loadSeoServiceInstances();
-      const result = results.find(({ id }) => id === instanceId);
-
-      expect(result).toBeDefined();
-      expect(result!.logo_document_id).toBe(toGlobalId('Document', logoId));
-      expect(result!.illustration_document_id).toBe(
-        toGlobalId('Document', illustrationId)
+      const result = results.find(
+        ({ id }) => id === firstServiceInstancePublicId
       );
+
+      // Then
+      expect(result).toMatchObject({
+        logo_document_id: toGlobalId('Document', logoId),
+        illustration_document_id: toGlobalId('Document', illustrationId),
+      });
     });
 
     it('should not include non-public service instances', async () => {
-      const instanceId = uuidv4() as ServiceInstanceId;
-      await serviceInstanceDomain.insertServiceInstance({
-        id: instanceId,
-        name: 'Non-Public Service',
+      // Given
+      await TestHelper.serviceInstance.create({
+        id: privateServiceInstanceId,
+        name: 'Non-public service',
         public: false,
-        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
       });
 
+      // When
       const results = await ServiceInstanceApp.loadSeoServiceInstances();
 
-      expect(results.find(({ id }) => id === instanceId)).toBeUndefined();
+      // Then
+      expect(
+        results.find(({ id }) => id === privateServiceInstanceId)
+      ).toBeUndefined();
     });
 
     it('should return instances ordered by ordering field ascending', async () => {
-      const firstId = uuidv4() as ServiceInstanceId;
-      const secondId = uuidv4() as ServiceInstanceId;
-
-      // Insert in reverse order to confirm sorting is applied
-      await serviceInstanceDomain.insertServiceInstance({
-        id: secondId,
-        name: 'SEO Ordering B',
+      // Given
+      await TestHelper.serviceInstance.create({
+        id: secondServiceInstancePublicId,
+        name: 'Test Public SEO Service',
         public: true,
         ordering: 200,
-        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
-      });
-      await serviceInstanceDomain.insertServiceInstance({
-        id: firstId,
-        name: 'SEO Ordering A',
-        public: true,
-        ordering: 100,
-        service_definition_id: SERVICES.DEFINITIONS.VAULT.ID,
+        logo_document_id: logoId,
+        illustration_document_id: illustrationId,
       });
 
+      // When
       const results = await ServiceInstanceApp.loadSeoServiceInstances();
-      const firstIndex = results.findIndex(({ id }) => id === firstId);
-      const secondIndex = results.findIndex(({ id }) => id === secondId);
+      const firstIndex = results.findIndex(
+        ({ id }) => id === firstServiceInstancePublicId
+      );
+      const secondIndex = results.findIndex(
+        ({ id }) => id === secondServiceInstancePublicId
+      );
 
+      // Then
       expect(firstIndex).toBeGreaterThanOrEqual(0);
       expect(secondIndex).toBeGreaterThanOrEqual(0);
       expect(firstIndex).toBeLessThan(secondIndex);
@@ -792,6 +886,8 @@ describe('Service Instance app', () => {
         'updateServiceInstance'
       );
       dispatchSpy = vi.spyOn(pub, 'dispatch');
+      updateServiceInstanceSpy.mockResolvedValue(mockUpdatedServiceInstance);
+      dispatchSpy.mockResolvedValue(undefined);
     });
 
     afterEach(() => {
@@ -799,16 +895,17 @@ describe('Service Instance app', () => {
     });
 
     it('should upload a logo, update the service instance, and dispatch an edit event', async () => {
+      // Given
       uploadNewFileSpy.mockResolvedValue(mockUploadedDocument);
-      updateServiceInstanceSpy.mockResolvedValue(mockUpdatedServiceInstance);
-      dispatchSpy.mockResolvedValue(undefined);
 
-      const result = await ServiceInstanceApp.addServicePicture(
+      // When
+      await ServiceInstanceApp.addServicePicture(
         mockServiceInstanceId,
         mockUpload,
         true
       );
 
+      // Then
       expect(uploadNewFileSpy).toHaveBeenCalledWith(
         mockUpload,
         mockServiceInstanceId
@@ -822,29 +919,40 @@ describe('Service Instance app', () => {
         'edit',
         mockUpdatedServiceInstance
       );
-      expect(result).toEqual(mockUpdatedServiceInstance);
     });
 
     it('should update illustration_document_id when isLogo is false', async () => {
+      // Given
       uploadNewFileSpy.mockResolvedValue(mockUploadedDocument);
-      updateServiceInstanceSpy.mockResolvedValue(mockUpdatedServiceInstance);
-      dispatchSpy.mockResolvedValue(undefined);
 
+      // When
       await ServiceInstanceApp.addServicePicture(
         mockServiceInstanceId,
         mockUpload,
         false
       );
 
+      // Then
       expect(updateServiceInstanceSpy).toHaveBeenCalledWith(
         mockServiceInstanceId,
         { illustration_document_id: mockDocumentId }
       );
+      expect(uploadNewFileSpy).toHaveBeenCalledWith(
+        mockUpload,
+        mockServiceInstanceId
+      );
+      expect(dispatchSpy).toHaveBeenCalledWith(
+        'ServiceInstance',
+        'edit',
+        mockUpdatedServiceInstance
+      );
     });
 
     it('should throw a mapped GraphQL error when upload fails', async () => {
+      // Given
       uploadNewFileSpy.mockRejectedValue(new Error('Upload failed'));
 
+      // When
       await expect(
         ServiceInstanceApp.addServicePicture(
           mockServiceInstanceId,
@@ -853,84 +961,43 @@ describe('Service Instance app', () => {
         )
       ).rejects.toThrow();
 
+      // Then
       expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
       expect(dispatchSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('withServiceInstanceGlobalIDs', () => {
-    it('should convert both logo and illustration document IDs to global IDs', () => {
-      const logoId = uuidv4();
-      const illustrationId = uuidv4();
-      const service = {
-        logo_document_id: logoId,
-        illustration_document_id: illustrationId,
-      };
+    it.each`
+      logoId      | illustrationId
+      ${uuidv4()} | ${uuidv4()}
+      ${uuidv4()} | ${null}
+      ${null}     | ${uuidv4()}
+      ${null}     | ${null}
+    `(
+      'should return convert logoId if $logoId and illustrationId if $illustrationId',
+      ({ logoId, illustrationId }) => {
+        const service = {
+          logo_document_id: logoId,
+          illustration_document_id: illustrationId,
+          name: 'Test Service',
+          slug: 'test-service',
+        };
 
-      const result = withServiceInstanceGlobalIDs(service);
+        // When
+        const result = withServiceInstanceGlobalIDs(service);
 
-      expect(result.logo_document_id).toBe(toGlobalId('Document', logoId));
-      expect(result.illustration_document_id).toBe(
-        toGlobalId('Document', illustrationId)
-      );
-    });
-
-    it('should convert only logo_document_id when illustration_document_id is null', () => {
-      const logoId = uuidv4();
-      const service = {
-        logo_document_id: logoId,
-        illustration_document_id: null,
-      };
-
-      const result = withServiceInstanceGlobalIDs(service);
-
-      expect(result.logo_document_id).toBe(toGlobalId('Document', logoId));
-      expect(result.illustration_document_id).toBeNull();
-    });
-
-    it('should convert only illustration_document_id when logo_document_id is null', () => {
-      const illustrationId = uuidv4();
-      const service = {
-        logo_document_id: null,
-        illustration_document_id: illustrationId,
-      };
-
-      const result = withServiceInstanceGlobalIDs(service);
-
-      expect(result.logo_document_id).toBeNull();
-      expect(result.illustration_document_id).toBe(
-        toGlobalId('Document', illustrationId)
-      );
-    });
-
-    it('should return unchanged object when both IDs are null', () => {
-      const service = {
-        logo_document_id: null,
-        illustration_document_id: null,
-      };
-
-      const result = withServiceInstanceGlobalIDs(service);
-
-      expect(result.logo_document_id).toBeNull();
-      expect(result.illustration_document_id).toBeNull();
-    });
-
-    it('should preserve additional properties on the input object', () => {
-      const logoId = uuidv4();
-      const service = {
-        id: uuidv4(),
-        name: 'Test Service',
-        slug: 'test-service',
-        logo_document_id: logoId,
-        illustration_document_id: null,
-      };
-
-      const result = withServiceInstanceGlobalIDs(service);
-
-      expect(result.id).toBe(service.id);
-      expect(result.name).toBe(service.name);
-      expect(result.slug).toBe(service.slug);
-      expect(result.logo_document_id).toBe(toGlobalId('Document', logoId));
-    });
+        // Then
+        expect(result).toMatchObject({
+          logo_document_id: logoId ? toGlobalId('Document', logoId) : null,
+          illustration_document_id: illustrationId
+            ? toGlobalId('Document', illustrationId)
+            : null,
+          // And preserve original fields
+          name: service.name,
+          slug: service.slug,
+        });
+      }
+    );
   });
 });
