@@ -58,4 +58,11 @@ export default class UserPage {
     await this.page.getByRole('button', { name: 'Disable' }).click();
     await this.page.getByRole('button', { name: 'Disable' }).click();
   }
+
+  async assertCurrentPage() {
+    await this.page.waitForURL('/app/manage/user');
+    await expect(
+      this.page.getByRole('heading', { name: 'Users list' })
+    ).toBeVisible();
+  }
 }
