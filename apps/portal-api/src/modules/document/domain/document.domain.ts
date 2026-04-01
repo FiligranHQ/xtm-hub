@@ -1,29 +1,29 @@
 import { Knex } from 'knex';
-import { db, dbRaw, paginate } from '../../../../../knexfile';
+import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
   DocumentConnection,
   DocumentMetadataKeyCode,
   Organization,
   QueryDocumentsArgs,
   UpdateDocumentInput,
-} from '../../../../__generated__/resolvers-types';
+} from '../../../__generated__/resolvers-types';
 import {
   DocumentId,
   default as DocumentModel,
-} from '../../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
-import User, { UserId } from '../../../../model/kanel/public/User';
-import { formatRawObject } from '../../../../utils/queryRaw.util';
-import { extractId, omit } from '../../../../utils/utils';
+} from '../../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import User, { UserId } from '../../../model/kanel/public/User';
+import { formatRawObject } from '../../../utils/queryRaw.util';
+import { extractId, omit } from '../../../utils/utils';
 import { Document } from '../document.helper';
 
-import { requestContext } from '../../../../context/request.context';
-import { OrganizationId } from '../../../../model/kanel/public/Organization';
+import { requestContext } from '../../../context/request.context';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
-} from '../../../../security/restriction/document';
-import { MinioFile } from '../../../../thirdparty/minio/types';
+} from '../../../security/restriction/document';
+import { MinioFile } from '../../../thirdparty/minio/types';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,

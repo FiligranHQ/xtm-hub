@@ -9,8 +9,8 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestHelper } from '../../../../tests/test.helper';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { TestHelper } from '../../../tests/test.helper';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentImageType,
   DocumentMetadataKeyCode,
@@ -19,20 +19,20 @@ import {
   IntegrationType,
   QueryPublicDocumentsArgs,
   ServiceDefinitionIdentifier,
-} from '../../../__generated__/resolvers-types';
-import Document from '../../../model/kanel/public/Document';
-import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { MinIOClient } from '../../../thirdparty/minio/client';
-import { ErrorCode } from '../../../utils/error/error.code';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+} from '../../__generated__/resolvers-types';
+import Document from '../../model/kanel/public/Document';
+import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { MinIOClient } from '../../thirdparty/minio/client';
+import { ErrorCode } from '../../utils/error/error.code';
+import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
   TelemetrySource,
-} from '../../telemetry/telemetry.const';
-import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
-import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+} from '../telemetry/telemetry.const';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
 import { deleteDocuments } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from './document.model';

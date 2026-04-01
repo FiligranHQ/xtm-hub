@@ -1,9 +1,9 @@
 import {
   DocumentImageType,
   DocumentMetadataKeyCode,
-} from '../../../__generated__/resolvers-types';
-import Document from '../../../model/kanel/public/Document';
-import { MetadataArray } from '../../../utils/metadata';
+} from '../../__generated__/resolvers-types';
+import Document from '../../model/kanel/public/Document';
+import { MetadataArray } from '../../utils/metadata';
 
 export type DocumentImage = Document & {
   image_type: DocumentImageType;

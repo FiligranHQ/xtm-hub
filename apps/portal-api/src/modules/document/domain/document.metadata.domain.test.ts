@@ -1,12 +1,12 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../../knexfile';
-import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
+import { db } from '../../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
   IntegrationType,
-} from '../../../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../../../model/kanel/public/Document';
+} from '../../../__generated__/resolvers-types';
+import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import {

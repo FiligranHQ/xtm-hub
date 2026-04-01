@@ -1,12 +1,12 @@
 import {
   IntegrationType,
   Resolvers,
-} from '../../../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../../../model/kanel/public/ServiceInstance';
-import { logApp } from '../../../../../utils/app-logger.util';
-import { subscriptionApp } from '../../../../subcription/subscription.app';
-import { useCaseDomain } from '../../../../use-case/use-case.domain';
-import { getServiceInstance } from '../../../service-instance.domain';
+} from '../../../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../../../utils/app-logger.util';
+import { getServiceInstance } from '../../../services/service-instance.domain';
+import { subscriptionApp } from '../../../subcription/subscription.app';
+import { useCaseDomain } from '../../../use-case/use-case.domain';
 import { DocumentChildrenDomain } from '../../domain/document.children.domain';
 import { DocumentDomain } from '../../domain/document.domain';
 import { Integration } from './integrations.model';
