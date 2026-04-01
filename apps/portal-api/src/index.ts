@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { unwrapResolverError } from '@apollo/server/errors';
+import { ApolloServerPluginLandingPageDisabled } from '@apollo/server/plugin/disabled';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { expressMiddleware } from '@as-integrations/express5';
@@ -67,7 +68,7 @@ const sessionMiddleware = expressSession({
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    secure: portalConfig.environment !== 'development',
     maxAge: SESSION_MAX_AGE,
   },
 });
@@ -214,13 +215,19 @@ const server = new ApolloServer<PortalContext>({
   },
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
-    ApolloServerPluginLandingPageLocalDefault({
-      includeCookies: true,
-      variables: {},
-    }),
+    ...(process.env.NODE_ENV !== 'production'
+      ? [
+          ApolloServerPluginLandingPageLocalDefault({
+            includeCookies: true,
+            variables: {},
+          }),
+        ]
+      : [ApolloServerPluginLandingPageDisabled()]),
+
     errorLoggingPlugin(),
     operationMetricsPlugin,
   ],
+  introspection: process.env.NODE_ENV !== 'production', // Disable introspection in production env
 });
 
 // Note you must call `start()` on the `ApolloServer`

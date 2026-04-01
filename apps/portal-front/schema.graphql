@@ -130,7 +130,6 @@ type Mutation {
   deleteUserService(input: UserServiceDeleteInput!): UserService
   adminAddUser(input: AdminAddUserInput!): User
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
-  mergeTest(from: ID!, target: ID!): ID!
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   changeSelectedOrganization(organization_id: ID!): User
@@ -857,6 +856,36 @@ type Connector implements Node & Document & Integration {
 }
 
 type TaxiiFeed implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: String!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  demo_url: String
+}
+
+type RssFeed implements Node & Document & Integration {
   id: ID!
   type: String!
   uploader: User

@@ -52,12 +52,12 @@ export const ServiceListIntegrationDropdown: React.FC<Props> = ({
           }>
           {t(`Service.OpenctiIntegrations.Type.third_party_integration`)}
         </DropdownMenuItem>
-
-        <DropdownMenuItem disabled>
-          {t(`Service.OpenctiIntegrations.Type.json_feed`)}
+        <DropdownMenuItem
+          onClick={() => onIntegrationTypeSelect(IntegrationTypeEnum.RSS_FEED)}>
+          {t(`Service.OpenctiIntegrations.Type.rss_feed`)}
         </DropdownMenuItem>
         <DropdownMenuItem disabled>
-          {t(`Service.OpenctiIntegrations.Type.rss_feed`)}
+          {t(`Service.OpenctiIntegrations.Type.json_feed`)}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

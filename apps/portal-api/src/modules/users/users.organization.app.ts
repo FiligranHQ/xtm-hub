@@ -11,6 +11,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import { dispatch } from '../../pub';
 import { isUserAdminPlatform } from '../../security/access';
+import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
@@ -103,6 +104,9 @@ export const UsersOrganizationApp = {
     organization_id: OrganizationId
   ): Promise<UserLoadUserBy> => {
     const { user, portalContext } = requestContext.require();
+
+    await securityGuard.assertUserIsInOrganization(user, organization_id);
+
     const updatedUser = await updateUser(user.id, {
       selected_organization_id: organization_id,
     });

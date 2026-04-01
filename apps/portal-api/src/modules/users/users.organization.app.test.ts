@@ -1,11 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
-import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
+import {
+  contextAdminSecondOrga,
+  contextSimpleUserSecondOrga,
+  TEST_ORGANIZATIONS,
+} from '../../../tests/tests.const';
 import portalConfig from '../../config';
+import { requestContext } from '../../context/request.context';
 import User, { UserId } from '../../model/kanel/public/User';
 import UserOrganizationPending from '../../model/kanel/public/UserOrganizationPending';
+import { PortalContext } from '../../model/portal-context';
 import * as MailService from '../../server/mail-service';
+import { ErrorCode } from '../../utils/error/error.code';
 import { loadUserOrganization } from '../common/user-organization.domain';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { UsersOrganizationApp } from './users.organization.app';
@@ -299,6 +306,40 @@ describe('UsersOrganizationApp', () => {
       });
 
       expect(userShouldBeAdded.length).toEqual(1);
+    });
+  });
+  describe('changeSelectedOrganization', () => {
+    it('should allow user to switch to an organization they belong to', async () => {
+      const testContext = {
+        ...contextAdminSecondOrga,
+        req: { session: { user: null, save: vi.fn() } },
+      } as unknown as PortalContext;
+
+      requestContext.set({
+        user: testContext.user,
+        portalContext: testContext,
+      });
+
+      const updatedUser = await UsersOrganizationApp.changeSelectedOrganization(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
+
+      expect(updatedUser.selected_organization_id).toEqual(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
+    });
+
+    it('should reject switching to an organization the user does not belong to', async () => {
+      requestContext.set({
+        user: contextSimpleUserSecondOrga.user,
+        portalContext: contextSimpleUserSecondOrga,
+      });
+
+      await expect(
+        UsersOrganizationApp.changeSelectedOrganization(
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        )
+      ).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
   });
 });

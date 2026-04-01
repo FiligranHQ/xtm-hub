@@ -65,6 +65,34 @@ export default class IntegrationPage {
     await expect(this.page).toHaveScreenshot();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
+  async fillRssFeed({
+    name,
+    shortDescription,
+    description,
+  }: {
+    name: string;
+    shortDescription: string;
+    description: string;
+  }) {
+    await this.page
+      .getByRole('button', { name: 'Add new Integration' })
+      .click();
+    await this.page.getByRole('menuitem', { name: 'RSS Feeds' }).click();
+    await this.page.getByRole('textbox', { name: 'Name *' }).fill(name);
+    await this.page
+      .getByRole('textbox', { name: 'Short Description *' })
+      .fill(shortDescription);
+    await this.page
+      .getByRole('textbox', { name: 'This is a paragraph to' })
+      .fill(description);
+
+    await this.page.getByLabel('Type').click();
+    await this.page.getByLabel('Native').click();
+    await this.uploadJsonDocument(TEST_JSON_FILE.path);
+    await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await expect(this.page).toHaveScreenshot();
+    await this.page.getByRole('button', { name: 'Validate' }).click();
+  }
 
   async fillStream({
     name,

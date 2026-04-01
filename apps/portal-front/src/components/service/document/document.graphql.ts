@@ -148,6 +148,14 @@ export const documentItem = graphql`
       demo_url
     }
 
+    ... on RssFeed {
+      integration_type
+      integration_subtype
+      feed_url
+      datasheet_url
+      demo_url
+    }
+
     ... on Stream {
       integration_type
       integration_subtype

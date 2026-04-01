@@ -801,7 +801,6 @@ export type Mutation = {
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
-  mergeTest: Scalars['ID']['output'];
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse;
   registerPlatform: RegistrationResponse;
@@ -1027,12 +1026,6 @@ export type MutationIncrementShareNumberDocumentArgs = {
 export type MutationLoginArgs = {
   email: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type MutationMergeTestArgs = {
-  from: Scalars['ID']['input'];
-  target: Scalars['ID']['input'];
 };
 
 
@@ -1703,6 +1696,37 @@ export type RolePortal = Node & {
   name: Scalars['String']['output'];
 };
 
+export type RssFeed = Document & Integration & Node & {
+  __typename?: 'RssFeed';
+  active: Scalars['Boolean']['output'];
+  children_documents?: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url?: Maybe<Scalars['String']['output']>;
+  demo_url?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  download_number?: Maybe<Scalars['Int']['output']>;
+  feed_url?: Maybe<Scalars['String']['output']>;
+  file_name?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_subtype: IntegrationSubType;
+  integration_type: IntegrationType;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  remover_id?: Maybe<Scalars['ID']['output']>;
+  service_instance?: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['String']['output'];
+  share_number?: Maybe<Scalars['Int']['output']>;
+  short_description?: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription?: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
+  uploader?: Maybe<User>;
+  uploader_organization?: Maybe<Organization>;
+  use_cases?: Maybe<Array<UseCase>>;
+};
+
 export type SendTelemetryMutation = {
   __typename?: 'SendTelemetryMutation';
   oneClickDeploy?: Maybe<TelemetryResponse>;
@@ -2366,9 +2390,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
+  Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2488,6 +2512,7 @@ export type ResolversTypes = ResolversObject<{
   ReorderDeploymentRequestInQueueDirection: ReorderDeploymentRequestInQueueDirection;
   ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
   RolePortal: ResolverTypeWrapper<RolePortal>;
+  RssFeed: ResolverTypeWrapper<RssFeed>;
   SendTelemetryMutation: ResolverTypeWrapper<SendTelemetryMutation>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
@@ -2642,6 +2667,7 @@ export type ResolversParentTypes = ResolversObject<{
   RegistrationResponse: RegistrationResponse;
   ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
   RolePortal: RolePortal;
+  RssFeed: RssFeed;
   SendTelemetryMutation: SendTelemetryMutation;
   SeoServiceInstance: SeoServiceInstance;
   ServiceCapability: ServiceCapability;
@@ -2931,7 +2957,7 @@ export type DeploymentRequestEdgeResolvers<ContextType = PortalContext, ParentTy
 }>;
 
 export type DocumentResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Document'] = ResolversParentTypes['Document']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'IntegrationHack' | 'OpenAEVScenario' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'IntegrationHack' | 'OpenAEVScenario' | 'RssFeed' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -3007,7 +3033,7 @@ export type GenericServiceCapabilityResolvers<ContextType = PortalContext, Paren
 }>;
 
 export type IntegrationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'IntegrationHack' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'IntegrationHack' | 'RssFeed' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -3131,7 +3157,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  mergeTest?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationMergeTestArgs, 'from' | 'target'>>;
   refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;
   refreshUserPlatformToken?: Resolver<ResolversTypes['RefreshUserPlatformTokenResponse'], ParentType, ContextType>;
   registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
@@ -3154,7 +3179,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -3355,6 +3380,37 @@ export type RegistrationResponseResolvers<ContextType = PortalContext, ParentTyp
 export type RolePortalResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RolePortal'] = ResolversParentTypes['RolePortal']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RssFeedResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RssFeed'] = ResolversParentTypes['RssFeed']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
+  minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
+  use_cases?: Resolver<Maybe<Array<ResolversTypes['UseCase']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3796,6 +3852,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   RegisteredPlatform?: RegisteredPlatformResolvers<ContextType>;
   RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
+  RssFeed?: RssFeedResolvers<ContextType>;
   SendTelemetryMutation?: SendTelemetryMutationResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
