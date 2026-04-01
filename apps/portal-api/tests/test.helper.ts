@@ -12,9 +12,9 @@ import Document, {
 } from '../src/model/kanel/public/Document';
 import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
 import { UserId } from '../src/model/kanel/public/User';
-import { DocumentApp } from '../src/modules/services/document/document.app';
-import { Upload } from '../src/modules/services/document/document.uploads.helper';
-import { INTEGRATION_SERVICE_INSTANCE_ID } from '../src/modules/services/document/opencti/integrations/integrations.model';
+import { DocumentApp } from '../src/modules/document/document.app';
+import { Upload } from '../src/modules/document/document.uploads.helper';
+import { INTEGRATION_SERVICE_INSTANCE_ID } from '../src/modules/document/opencti/integrations/integrations.model';
 import { TEST_ORGANIZATIONS } from './tests.const';
 
 const mockFileUpload: FileUpload = {

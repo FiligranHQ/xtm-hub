@@ -11,17 +11,14 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { isValidEmail } from '../../utils/verify-email.util';
 import {
+  getDocumentName,
+  normalizeDocumentName,
+} from '../document/document.helper';
+import { Upload, waitForUploads } from '../document/document.uploads.helper';
+import {
   loadOrganizationBy,
   loadUserByOrganization,
 } from '../organizations/organizations.domain';
-import {
-  getDocumentName,
-  normalizeDocumentName,
-} from '../services/document/document.helper';
-import {
-  Upload,
-  waitForUploads,
-} from '../services/document/document.uploads.helper';
 import { updateSubscriptionBy } from '../subcription/subscription.domain';
 import {
   insertNewUserTransfer,

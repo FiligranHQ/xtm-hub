@@ -9,11 +9,11 @@ import {
 import { logApp } from '../../utils/app-logger.util';
 import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
 import { isValidVersion } from '../../utils/versioning';
-import { Upload } from '../services/document/document.uploads.helper';
+import { Upload } from '../document/document.uploads.helper';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../services/document/opencti/integrations/integrations.model';
+} from '../document/opencti/integrations/integrations.model';
 import { ManifestInformation } from './ingest-manifest.model';
 
 export interface ManifestExtractionResult {
