@@ -10,8 +10,9 @@ import {
 } from 'vitest';
 import {
   contextSimpleUserSecondOrga,
+  DEPLOYMENT,
   requestContextAdminSecondOrga,
-  requestContextAdminUser,
+  requestContextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
@@ -61,13 +62,8 @@ import {
 
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../knexfile';
-import { CompetitorTier } from '../../__generated__/resolvers-types';
-import portalConfig from '../../config';
-import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
-import Organization from '../../model/kanel/public/Organization';
 import { PortalContext } from '../../model/portal-context';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import {
@@ -116,14 +112,19 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        source: DeploymentRequestSource.OpenctiDemo,
       });
 
-      // Then
+      // Check data from DB
       const dbDeploymentRequest =
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
         });
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        'id',
+        dbDeploymentRequest!.service_instance_id
+      );
+
+      // Then
       expect(dbDeploymentRequest).toMatchObject({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
@@ -143,13 +144,6 @@ describe('Deployment app', () => {
         use_case: DeploymentRequestUseCase.ThreatHunting,
         source: DeploymentRequestSource.OpenctiDemo,
       });
-
-      expect(dbDeploymentRequest).toBeDefined();
-
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        'id',
-        dbDeploymentRequest!.service_instance_id
-      );
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
@@ -169,14 +163,20 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        source: DeploymentRequestSource.Xtmhub,
       });
 
-      // Then
+      // Check data from DB
       const dbDeploymentRequest =
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
         });
+
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
+        'id',
+        dbDeploymentRequest!.service_instance_id
+      );
+
+      // Then
       expect(dbDeploymentRequest).toMatchObject({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
@@ -196,11 +196,6 @@ describe('Deployment app', () => {
         use_case: DeploymentRequestUseCase.ThreatHunting,
         source: DeploymentRequestSource.Xtmhub,
       });
-
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        'id',
-        dbDeploymentRequest!.service_instance_id
-      );
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
@@ -210,16 +205,14 @@ describe('Deployment app', () => {
       vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
         isPlaceAvailable: true,
       });
-      const personalSpaceOrganization = await db<Organization>('Organization')
-        .select('*')
-        .where('name', '=', TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL)
-        .first();
+      const personalSpaceOrganization = await TestHelper.organization.load({
+        name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
+      });
 
-      expect(personalSpaceOrganization).toBeDefined();
       requestContext.set({
-        ...requestContextAdminUser,
+        ...requestContextSimpleUserSecondOrga,
         user: {
-          ...requestContextAdminUser.user,
+          ...requestContextSimpleUserSecondOrga.user,
           selected_organization_id: personalSpaceOrganization!.id,
         },
       });
@@ -233,7 +226,6 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        source: DeploymentRequestSource.Xtmhub,
       });
 
       // Then
@@ -251,7 +243,6 @@ describe('Deployment app', () => {
         platform_identifier: 'unknown' as PlatformIdentifier,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        source: DeploymentRequestSource.Xtmhub,
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
@@ -259,16 +250,12 @@ describe('Deployment app', () => {
   });
   describe('domains blacklist', () => {
     afterEach(async () => {
-      await db('Competitor').delete();
+      await TestHelper.competitor.delete({});
     });
 
     it('should throw error when organization domain is blacklisted', async () => {
-      await CompetitorDomain.insertCompetitor({
-        id: uuidv4() as CompetitorId,
-        name: 'Filigran',
-        tier: CompetitorTier.Tier1,
-        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
-      });
+      // Given
+      await TestHelper.competitor.create();
 
       const call = DeploymentApp.createDeploymentRequest({
         activity_sector:
@@ -278,18 +265,17 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        source: DeploymentRequestSource.Xtmhub,
       });
 
+      // Then
       await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
     });
 
     it('should allow deployment when organization domain is not blacklisted', async () => {
-      await CompetitorDomain.insertCompetitor({
-        id: uuidv4() as CompetitorId,
-        name: 'Blocked',
-        tier: CompetitorTier.Tier1,
-        domain: 'blocked.com',
+      // Given
+      await TestHelper.competitor.create({
+        name: 'NotBlocked',
+        domain: 'not-blocked.com',
       });
 
       const deployment = await DeploymentApp.createDeploymentRequest({
@@ -300,10 +286,9 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        source: DeploymentRequestSource.Xtmhub,
       });
 
-      expect(deployment).toBeDefined();
+      // Then
       expect(deployment.id).toBeDefined();
     });
 
@@ -316,10 +301,9 @@ describe('Deployment app', () => {
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
-        source: DeploymentRequestSource.Xtmhub,
       });
 
-      expect(deployment).toBeDefined();
+      // Then
       expect(deployment.id).toBeDefined();
     });
 
@@ -345,7 +329,6 @@ describe('Deployment app', () => {
             platform_identifier: product,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
-            source,
           });
 
           expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
@@ -383,7 +366,6 @@ describe('Deployment app', () => {
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.UsEast,
           type: DeploymentRequestDeploymentType.Trial,
-          source: DeploymentRequestSource.Xtmhub,
         });
 
         expect(deployment).toBeDefined();
@@ -401,7 +383,6 @@ describe('Deployment app', () => {
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
-            source: DeploymentRequestSource.Xtmhub,
           });
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -444,7 +425,6 @@ describe('Deployment app', () => {
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
-            source: DeploymentRequestSource.Xtmhub,
           });
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -497,7 +477,6 @@ describe('Deployment app', () => {
             platform_identifier: PlatformIdentifier.Opencti,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
-            source: DeploymentRequestSource.Xtmhub,
           });
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -532,16 +511,7 @@ describe('Deployment app', () => {
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
-          await DeploymentApp.createDeploymentRequest({
-            activity_sector:
-              DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: DeploymentRequestJobTitle.CLevel,
-            use_case: DeploymentRequestUseCase.ThreatHunting,
-            platform_identifier: PlatformIdentifier.Opencti,
-            region: DeploymentRequestPlatformRegion.UsEast,
-            type: DeploymentRequestDeploymentType.Trial,
-            source: DeploymentRequestSource.Xtmhub,
-          });
+          await DeploymentApp.createDeploymentRequest({DEPLOYMENT });
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 

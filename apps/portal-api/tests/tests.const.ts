@@ -1,4 +1,12 @@
-import { PortalCapability } from '../src/__generated__/resolvers-types';
+import {
+  DeploymentRequestActivitySector,
+  DeploymentRequestDeploymentType,
+  DeploymentRequestJobTitle,
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestUseCase,
+  PlatformIdentifier,
+  PortalCapability,
+} from '../src/__generated__/resolvers-types';
 import CapabilityPortal, {
   CapabilityPortalId,
 } from '../src/model/kanel/public/CapabilityPortal';
@@ -124,6 +132,15 @@ export const CAPABILITY_READ_TRIALS: CapabilityPortal = {
 export const CAPABILITY_MODIFY_TRIALS: CapabilityPortal = {
   id: '9faa68f2-a274-403b-b07f-3c8502239df5' as CapabilityPortalId,
   name: PortalCapability.ModifyTrials,
+};
+
+export const DEPLOYMENT = {
+  activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
+  job_title: DeploymentRequestJobTitle.CLevel,
+  use_case: DeploymentRequestUseCase.ThreatHunting,
+  platform_identifier: PlatformIdentifier.Opencti,
+  region: DeploymentRequestPlatformRegion.UsEast,
+  type: DeploymentRequestDeploymentType.Trial,
 };
 
 export const contextBypassUser: PortalContext = {

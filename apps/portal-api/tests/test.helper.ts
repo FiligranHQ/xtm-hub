@@ -4,16 +4,24 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '../knexfile';
 import {
   DocumentMetadataKeyCode,
+  CompetitorTier,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
   PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../src/__generated__/resolvers-types';
+import Competitor, {
+  CompetitorId,
+  CompetitorMutator,
+} from '../src/model/kanel/public/Competitor';
 import Document, {
   DocumentId,
   DocumentMutator,
 } from '../src/model/kanel/public/Document';
+import Organization, {
+  OrganizationMutator,
+} from '../src/model/kanel/public/Organization';
 import ServiceCapability, {
   ServiceCapabilityId,
   ServiceCapabilityMutator,
@@ -257,6 +265,32 @@ export const TestHelper = {
     },
     delete: async (field: UserServiceMutator) => {
       await db<UserService>('User_Service').where(field).del();
+    },
+  },
+  organization: {
+    load: async (
+      field: OrganizationMutator
+    ): Promise<Organization | undefined> => {
+      return db<Organization>('Organization').where(field).select('*').first();
+    },
+  },
+  competitor: {
+    create: async (
+      data?: CompetitorMutator
+    ): Promise<Competitor | undefined> => {
+      const [competitor] = await db<Competitor>('Competitor')
+        .insert({
+          id: uuidv4() as CompetitorId,
+          name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+          tier: CompetitorTier.Tier1,
+          domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+          ...data,
+        })
+        .returning('*');
+      return competitor;
+    },
+    delete: async (field: CompetitorMutator) => {
+      await db<Competitor>('Competitor').where(field).del();
     },
   },
 };
