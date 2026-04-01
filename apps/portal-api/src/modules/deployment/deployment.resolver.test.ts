@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
-import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { db } from '../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
@@ -11,16 +11,16 @@ import {
   DeploymentRequestSource,
   DeploymentRequestUseCase,
   PlatformIdentifier,
-} from '../../../__generated__/resolvers-types';
-import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
-import { ErrorCode } from '../../../utils/error/error.code';
-import { deleteSubscription } from '../../subcription/subscription.helper';
-import { deleteServiceInstanceBy } from '../service-instance.domain';
-import { DeploymentsApp } from './deployments.app';
-import { DeploymentRequestDomain } from './deployments.domain';
-import resolver from './deployments.resolver';
+} from '../../__generated__/resolvers-types';
+import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
+import { ErrorCode } from '../../utils/error/error.code';
+import { deleteServiceInstanceBy } from '../services/service-instance.domain';
+import { deleteSubscription } from '../subcription/subscription.helper';
+import { DeploymentApp } from './deployment.app';
+import { DeploymentRequestDomain } from './deployment.domain';
+import resolver from './deployment.resolver';
 
-describe('Deployment app', () => {
+describe('Deployment resolver', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
     await deleteServiceInstanceBy({});
@@ -60,7 +60,7 @@ describe('Deployment app', () => {
 
   describe('updateDeploymentRequest', () => {
     it('should return the updated deployment request', async () => {
-      const initialDeployment = await DeploymentsApp.createDeploymentRequest({
+      const initialDeployment = await DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
@@ -141,7 +141,7 @@ describe('Deployment app', () => {
       });
     });
     it('should return an error when status transition is not allowed', async () => {
-      const initialDeployment = await DeploymentsApp.createDeploymentRequest({
+      const initialDeployment = await DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CybersecurityEngineer,

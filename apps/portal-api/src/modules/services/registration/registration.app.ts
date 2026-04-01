@@ -43,6 +43,7 @@ import { formatName } from '../../../utils/format';
 import { RequiredPlatformVersions } from '../../../utils/required-platform-version';
 import { doesVersionSatisfy, isValidVersion } from '../../../utils/versioning';
 import { loadUserOrganization } from '../../common/user-organization.domain';
+import { DeploymentRequestDomain } from '../../deployment/deployment.domain';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { loadSubscriptionBy } from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
@@ -53,7 +54,6 @@ import {
 } from '../../users/users.domain';
 import { ServiceContractDomain } from '../contract/service-configuration.domain';
 import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import {
   loadServiceDefinitionByServiceInstance,
   updateServiceInstance,

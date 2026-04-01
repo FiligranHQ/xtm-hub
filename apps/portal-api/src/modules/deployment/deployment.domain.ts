@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { db, dbRaw, paginate } from '../../../../knexfile';
+import { db, dbRaw, paginate } from '../../../knexfile';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -7,21 +7,21 @@ import {
   DeploymentRequestPlatformState,
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
-} from '../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../context/database.context';
+} from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
 import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
   DeploymentRequestMutator,
-} from '../../../model/kanel/public/DeploymentRequest';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { auth0Client } from '../../../thirdparty/auth0/client';
-import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+} from '../../model/kanel/public/DeploymentRequest';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { auth0Client } from '../../thirdparty/auth0/client';
+import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
 import {
   ServiceGroupDomain,
   ServiceGroupName,
-} from '../group/service-group.domain';
+} from './group/service-group.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (

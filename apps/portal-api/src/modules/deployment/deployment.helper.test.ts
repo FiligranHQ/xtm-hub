@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
-import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
@@ -8,22 +8,22 @@ import {
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   PlatformIdentifier,
-} from '../../../__generated__/resolvers-types';
+} from '../../__generated__/resolvers-types';
 import DeploymentRequestModel, {
   DeploymentRequestId,
-} from '../../../model/kanel/public/DeploymentRequest';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
-import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
-import { DeploymentRequestDomain } from './deployments.domain';
+} from '../../model/kanel/public/DeploymentRequest';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../model/kanel/public/User';
+import { AlreadyExistsErrorCode } from '../../utils/error/error.code';
+import { DeploymentRequestDomain } from './deployment.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
   hasDeploymentTelemetryDataChanged,
   isHubStatusTransitionValid,
   isPlatformStateTransitionValid,
-} from './deployments.helper';
+} from './deployment.helper';
 
 const buildDeploymentRequest = (
   overrides: Partial<DeploymentRequestModel> = {}

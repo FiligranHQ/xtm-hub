@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
-import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { db } from '../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
   DeploymentRequestDeploymentType,
@@ -12,18 +12,18 @@ import {
   DeploymentRequestPlatformState,
   OrderingMode,
   PlatformIdentifier,
-} from '../../../__generated__/resolvers-types';
+} from '../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
-} from '../../../model/kanel/public/DeploymentRequest';
-import { UserId } from '../../../model/kanel/public/User';
-import { deleteSubscription } from '../../subcription/subscription.helper';
-import { deleteServiceInstanceBy } from '../service-instance.domain';
-import { DeploymentRequestDomain } from './deployments.domain';
+} from '../../model/kanel/public/DeploymentRequest';
+import { UserId } from '../../model/kanel/public/User';
+import { deleteServiceInstanceBy } from '../services/service-instance.domain';
+import { deleteSubscription } from '../subcription/subscription.helper';
+import { DeploymentRequestDomain } from './deployment.domain';
 import {
   assertDeploymentRequestProperties,
   insertDeploymentRequest,
-} from './deployments.test.utils';
+} from './deployment.test.utils';
 
 describe('DeploymentRequestDomain', () => {
   beforeEach(async () => {
