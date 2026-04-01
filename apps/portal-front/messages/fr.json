@@ -733,7 +733,7 @@
       "Type": {
         "csv_feed": "Flux CSV",
         "connector": "Connecteurs",
-        "rss_feed": "Flux RSS (bientôt disponible)",
+        "rss_feed": "Flux RSS",
         "json_feed": "Flux JSON (bientôt disponible)",
         "taxii_feed": "Flux TAXII",
         "stream": "Flux OpenCTI",
@@ -753,6 +753,20 @@
       "NonActive": "Brouillon",
       "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
       "UpdateService": "Editer le CSV Feed {name}"
+    },
+    "RssFeed": {
+      "Actions": {
+        "Added": "{name} a été ajouté",
+        "Deleted": "{name} a été supprimé",
+        "Share": "Partager le RSS Feed",
+        "Updated": "{name} a été modifié"
+      },
+      "Active": "Publié",
+      "AddService": "Ajouter un RSS Feed",
+      "DeleteService": "Supprimer le RSS Feed {name}",
+      "NonActive": "Brouillon",
+      "SureDeleteService": "Etes-vous sûr de vouloir supprimer le RSS Feed {name} ?",
+      "UpdateService": "Editer le RSS Feed {name}"
     },
     "TaxiiFeed": {
       "Actions": {

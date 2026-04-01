@@ -8,6 +8,18 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   redirects: async () => {
     return [
+      // Redirect browser navigation only; keep GraphQL API requests untouched.
+      ...(process.env.NODE_ENV === 'production'
+        ? [
+            {
+              source: '/graphql-api',
+              has: [{ type: 'header', key: 'accept', value: '.*text/html.*' }],
+              destination: '/',
+              permanent: true,
+            },
+          ]
+        : []),
+
       {
         source: '/app/service/free-trial',
         destination: '/app/service/opencti-free-trial',

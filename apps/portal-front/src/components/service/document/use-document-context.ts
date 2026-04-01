@@ -11,6 +11,7 @@ import {
 } from '@/components/service/document/document.graphql';
 import { ConnectorForm } from '@/components/service/integrations/forms/connector-form';
 import { CsvFeedForm } from '@/components/service/integrations/forms/csv-feed-form';
+import { RssFeedForm } from '@/components/service/integrations/forms/rss-feed-form';
 import { StreamForm } from '@/components/service/integrations/forms/stream-form';
 import { TaxiiFeedForm } from '@/components/service/integrations/forms/taxii-feed-form';
 import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/third-party-integration-form';
@@ -217,6 +218,7 @@ export function useDocumentContext({
         > = {
           [IntegrationTypeEnum.CSV_FEED]: CsvFeedForm,
           [IntegrationTypeEnum.TAXII_FEED]: TaxiiFeedForm,
+          [IntegrationTypeEnum.RSS_FEED]: RssFeedForm,
           [IntegrationTypeEnum.STREAM]: StreamForm,
           [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
             ThirdPartyIntegrationForm,
@@ -240,6 +242,7 @@ export function useDocumentContext({
           {
             [IntegrationTypeEnum.CSV_FEED]: 'Service.CsvFeed',
             [IntegrationTypeEnum.TAXII_FEED]: 'Service.TaxiiFeed',
+            [IntegrationTypeEnum.RSS_FEED]: 'Service.RssFeed',
             [IntegrationTypeEnum.STREAM]: 'Service.Stream',
             [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
               'Service.ThirdPartyIntegration',

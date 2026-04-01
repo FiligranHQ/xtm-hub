@@ -712,7 +712,7 @@
       "Type": {
         "csv_feed": "CSV Feeds",
         "connector": "Connectors",
-        "rss_feed": "RSS Feeds (coming soon)",
+        "rss_feed": "RSS Feeds",
         "json_feed": "JSON Feeds (coming soon)",
         "taxii_feed": "TAXII Feeds",
         "stream": "OpenCTI Streams",
@@ -732,6 +732,20 @@
       "NonActive": "Draft",
       "SureDeleteService": "Are you sure you want to delete the CSV Feed {name}?",
       "UpdateService": "Update the CSV Feed {name}"
+    },
+    "RssFeed": {
+      "Actions": {
+        "Added": "The RSS {name} has been added successfully",
+        "Deleted": "The RSS {name} has been deleted successfully",
+        "Share": "Share RSS Feed",
+        "Updated": "The RSS {name} has been modified successfully"
+      },
+      "Active": "Published",
+      "AddService": "Add new RSS Feed",
+      "DeleteService": "Delete the RSS Feed {name}",
+      "NonActive": "Draft",
+      "SureDeleteService": "Are you sure you want to delete the RSS Feed {name}?",
+      "UpdateService": "Update the RSS Feed {name}"
     },
     "TaxiiFeed": {
       "Actions": {
@@ -800,7 +814,7 @@
       "AddService": "Add new dashboard",
       "DeleteService": "Delete the custom dashboard {name}",
       "NonActive": "Draft",
-      "SureDeleteService": "Are you sure you want to delete the {name} dashboard?",
+      "SureDeleteService": "Are you sure you want to delete the dashboard {name}?",
       "UpdateService": "Update dashboard"
     },
     "OpenAEVScenario": {

@@ -21,6 +21,7 @@ import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 type DocumentType =
   | 'CSV Feed'
   | 'TAXII Feed'
+  | 'RSS Feed'
   | 'Stream'
   | 'Third Party Integration'
   | 'Custom Dashboard'
@@ -35,6 +36,7 @@ const integrationTypeMappedByDocumentType: Record<
   Scenario: null,
   'CSV Feed': IntegrationTypeEnum.CSV_FEED,
   'TAXII Feed': IntegrationTypeEnum.TAXII_FEED,
+  'RSS Feed': IntegrationTypeEnum.RSS_FEED,
   Stream: IntegrationTypeEnum.STREAM,
   'Third Party Integration': IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
   Connector: IntegrationTypeEnum.CONNECTOR,
