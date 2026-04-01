@@ -5,7 +5,7 @@ const useDecodedQuery = () => {
   const decodedQuery: Record<string, string | null> = {};
 
   searchParams.forEach((value, key) => {
-    decodedQuery[key] = decodeURIComponent(value || '');
+    decodedQuery[key] = value;
   });
 
   return decodedQuery;

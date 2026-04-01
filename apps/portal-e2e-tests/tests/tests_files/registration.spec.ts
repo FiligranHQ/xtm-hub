@@ -6,7 +6,7 @@ import { waitForReactIdle } from '../model/common';
 
 const OPENAEV_PLATFORM_URL: PlatformDetails = {
   url: 'http://localhost:3000',
-  title: 'Open%20AEV%20Instance',
+  title: 'Open AEV Instance',
   id: '916121bf-d246-4a43-8522-24be19537b91',
   contract: 'EE',
   version: '1.0.0',
@@ -14,7 +14,7 @@ const OPENAEV_PLATFORM_URL: PlatformDetails = {
 
 const OPENCTI_PLATFORM_URL: PlatformDetails = {
   url: 'http://localhost:3000',
-  title: 'Open%20CTI%20Instance',
+  title: 'Open CTI Instance',
   id: '916121bf-d246-4a43-8522-24be19537b91',
   contract: 'EE',
 };
