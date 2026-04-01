@@ -48,6 +48,7 @@ export const OptionsList: React.FC<OptionsListProps> = ({
           return (
             <CommandItem
               key={option.value}
+              value={`parent:${option.value}`}
               onSelect={() => toggleParent(option.value)}
               style={{ pointerEvents: 'auto', opacity: 1 }}
               className="cursor-pointer">
@@ -65,6 +66,7 @@ export const OptionsList: React.FC<OptionsListProps> = ({
         return (
           <CommandItem
             key={`${option.parentValue}-${option.value}`}
+            value={`child:${option.parentValue}:${option.value}`}
             onSelect={() => toggleChild(option.value, option.parentValue)}
             style={{ pointerEvents: 'auto', opacity: 1 }}
             className="cursor-pointer pl-6">

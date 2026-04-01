@@ -30,6 +30,10 @@ export type TaxiiFeed = Integration & {
   feed_url: string;
   integration_subtype: string;
 };
+export type RssFeed = Integration & {
+  feed_url: string;
+  integration_subtype: string;
+};
 export type Stream = Integration & {
   feed_url: string;
   integration_subtype: string;
@@ -58,6 +62,10 @@ export type CsvFeedMetadata = MetadataArray<
 
 export type TaxiiFeedMetadata = MetadataArray<
   keyof Omit<TaxiiFeed, keyof Document>
+>;
+
+export type RssFeedMetadata = MetadataArray<
+  keyof Omit<RssFeed, keyof Document>
 >;
 
 export type StreamFeedMetadata = MetadataArray<
@@ -90,6 +98,17 @@ export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
 ];
 export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
   INTEGRATION_TAXII_FEED_METADATA.map(({ key }) => key);
+
+export const INTEGRATION_RSS_FEED_METADATA: RssFeedMetadata = [
+  { key: DocumentMetadataKeyCode.FeedUrl },
+  { key: DocumentMetadataKeyCode.IntegrationType },
+  { key: DocumentMetadataKeyCode.IntegrationSubtype },
+  { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
+];
+
+export const INTEGRATION_RSS_FEED_METADATA_KEYS =
+  INTEGRATION_RSS_FEED_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
@@ -135,6 +154,7 @@ export const INTEGRATION_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
   new Set([
     ...INTEGRATION_CSV_FEED_METADATA_KEYS,
     ...INTEGRATION_TAXII_FEED_METADATA_KEYS,
+    ...INTEGRATION_RSS_FEED_METADATA_KEYS,
     ...INTEGRATION_CONNECTOR_METADATA_KEYS,
     ...INTEGRATION_STREAM_METADATA_KEYS,
     ...INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS,
