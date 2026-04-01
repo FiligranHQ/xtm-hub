@@ -197,6 +197,40 @@ type TaxiiFeed implements Node & Document & Integration {
   datasheet_url: String
   demo_url: String
 }
+type RssFeed implements Node & Document & Integration {
+  # Node
+  id: ID!
+
+  # Document
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String @auth
+  minio_name: String! @auth
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String @auth
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: String! @auth
+  service_instance: ServiceInstance @auth
+  subscription: SubscriptionModel @auth
+  children_documents: [ShareableResource!]
+
+  # Integration
+  remover_id: ID @auth
+  feed_url: String
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  demo_url: String
+}
 
 type Stream implements Node & Document & Integration {
   # Node

@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { unwrapResolverError } from '@apollo/server/errors';
+import { ApolloServerPluginLandingPageDisabled } from '@apollo/server/plugin/disabled';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { expressMiddleware } from '@as-integrations/express5';
@@ -221,7 +222,7 @@ const server = new ApolloServer<PortalContext>({
             variables: {},
           }),
         ]
-      : []),
+      : [ApolloServerPluginLandingPageDisabled()]),
 
     errorLoggingPlugin(),
     operationMetricsPlugin,

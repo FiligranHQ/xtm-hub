@@ -1,6 +1,7 @@
 import { isEmpty, isNil } from '@/lib/utils';
 import { fetchOrSubscribe } from '@/relay/environment/fetchFn';
 import { fetchFormData } from '@/relay/environment/fetchFormData';
+import { buildLoginRedirect } from '@/utils/redirect';
 import {
   Environment,
   FetchFunction,
@@ -19,13 +20,14 @@ import {
   hasHydrationResponses,
   RELAY_WINDOW_KEY,
 } from './helpers';
+import { registerClientEnvironment } from './registry';
 
 // A singleton helper that is shared on the client.
 let clientSideRelayEnvironment: RelayModernEnvironment | null = null;
 
 function handleUnauthenticated(e: unknown): Promise<never> {
   if (e instanceof UnauthenticatedError) {
-    window.location.href = `/login?redirect=${btoa(window.location.pathname)}`;
+    window.location.href = buildLoginRedirect(window.location.pathname);
     return new Promise<never>(() => {});
   }
   throw e;
@@ -81,6 +83,7 @@ export function createClientSideRelayEnvironment() {
     // @ts-expect-error https://github.com/facebook/relay/issues/4666
     relayFieldLogger: fieldLogger,
   });
+  registerClientEnvironment(clientSideRelayEnvironment);
   return clientSideRelayEnvironment;
 }
 

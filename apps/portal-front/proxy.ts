@@ -2,7 +2,17 @@ import { manageRequest } from '@/utils/middleware/graphqlRequest.util';
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 
 export async function proxy(request: NextRequest, _: NextFetchEvent) {
-  return (await manageRequest(request)) || NextResponse.next();
+  const proxyResponse = await manageRequest(request);
+  if (proxyResponse) {
+    return proxyResponse;
+  }
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(
+    'x-pathname',
+    request.nextUrl.pathname + request.nextUrl.search
+  );
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {
@@ -15,5 +25,6 @@ export const config = {
     '/document/deploy/:serviceInstanceId/:filename*',
     '/document/images/:documentId*',
     '/user/picture/:userId*',
+    '/app/:path*',
   ],
 };

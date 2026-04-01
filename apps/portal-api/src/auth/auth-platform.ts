@@ -3,6 +3,7 @@ import { requestContext } from '../context/request.context';
 import { UserInfo } from '../model/user';
 import { SYSTEM_USER_CONTEXT } from '../portal.const';
 import { AppLogsCategory, logApp } from '../utils/app-logger.util';
+import { resolveSessionReferer } from '../utils/extract-referer.util';
 import { setCookieError } from '../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
 import { initProviders } from './providers/providers';
@@ -13,9 +14,12 @@ export const initAuthPlatform = async (app) => {
   app.get(`/auth/:provider`, (req, res, next) => {
     try {
       const { provider } = req.params;
-      req.session.referer = req.query.redirect
-        ? atob(req.query.redirect)
-        : req.get('Referrer');
+      const redirect = req.query.redirect;
+      // Referer header is attacker-controlled — not trusted as redirect destination
+      req.session.referer =
+        typeof redirect === 'string'
+          ? resolveSessionReferer(redirect)
+          : undefined;
       requestContext.set(SYSTEM_USER_CONTEXT);
       passport.authenticate(provider, {}, (err) => {
         setCookieError(res, err?.message);
@@ -53,18 +57,18 @@ export const initAuthPlatform = async (app) => {
           )(req, res, next);
         });
 
-        await authenticateUser(req, res, user);
+        const logged = await authenticateUser(req, res, user);
+        res.redirect(logged ? (referer ?? '/app') : '/');
       } catch (err) {
         logApp.error(err, { provider });
-        if (err.message === 'User not provided') {
-          referer = referer + '?error=not-provided';
+        if (err.message === 'User not provided' && referer) {
+          referer = `${referer}${referer.includes('?') ? '&' : '?'}error=not-provided`;
         }
 
         setCookieError(
           res,
           'Invalid authentication, please ask your administrator'
         );
-      } finally {
         res.redirect(referer ?? '/');
       }
     }

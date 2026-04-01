@@ -14,6 +14,7 @@ export enum TelemetryEventServiceType {
   CSV_FEEDS = 'csv-feeds',
   CONNECTORS = 'connectors',
   TAXII_FEEDS = 'taxii-feeds',
+  RSS_FEEDS = 'rss-feeds',
   STREAMS = 'streams',
   THIRD_PARTY_INTEGRATIONS = 'third-party-integrations',
 }
