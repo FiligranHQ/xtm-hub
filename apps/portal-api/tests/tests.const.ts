@@ -227,3 +227,40 @@ export const requestContextSimpleUserSecondOrga = {
   user: contextSimpleUserSecondOrga.user,
   portalContext: contextSimpleUserSecondOrga,
 };
+
+export const contextSimple2: PortalContext = {
+  user: {
+    id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+    email: 'access-subscription@filigran.io',
+    password: null,
+    salt: null,
+    first_name: 'access',
+    last_name: 'subscription',
+    selected_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+    organizations: [
+      {
+        id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+        personal_space: false,
+        domains: [
+          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.SECOND,
+        ],
+      },
+      {
+        id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2
+          .ID as unknown as OrganizationId,
+        name: 'access-subscription@filigran.io',
+        personal_space: true,
+        domains: [],
+      },
+    ],
+    capabilities: [],
+    roles_portal: [],
+  },
+} as PortalContext;
+
+export const requestContextSimple2 = {
+  user: contextSimple2.user,
+  portalContext: contextSimple2,
+};

@@ -5,6 +5,7 @@ import { db } from '../../../knexfile';
 import {
   contextBypassUser,
   contextSimpleUserSecondOrga,
+  requestContextSimple2,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -136,13 +137,7 @@ describe('User profile app', () => {
       await deleteUserTransferRequest({ id: mockTransferRequestData[0]?.id });
     });
     it('Should update subscription', async () => {
-      requestContext.set({
-        user: {
-          ...contextBypassUser.user,
-          id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID as UserId,
-        },
-        portalContext: contextBypassUser,
-      });
+      requestContext.set(requestContextSimple2);
       // Cast to unknown because we take the personal space of these users
       const subsFromBefore = (await db<Subscription>('Subscription')
         .where({
@@ -180,11 +175,6 @@ describe('User profile app', () => {
     });
 
     it('Should reject transfer if caller is not the intended recipient', async () => {
-      requestContext.set({
-        user: contextBypassUser.user,
-        portalContext: contextBypassUser,
-      });
-
       await expect(
         usersProfileApp.transferPersonalSpace(
           mockTransferRequestData[0]?.id as UserTransferRequestId
