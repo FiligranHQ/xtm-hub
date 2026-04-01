@@ -126,8 +126,6 @@ type Mutation {
     @auth(portalCapa: [BYPASS])
 
   # Management
-  mergeTest(from: ID!, target: ID!): ID!
-    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   addUser(input: AddUserInput!): User
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!

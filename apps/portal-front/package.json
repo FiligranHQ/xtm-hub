@@ -29,9 +29,9 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "extract-files": "13.0.0",
-    "graphql": "16.13.1",
+    "graphql": "16.13.2",
     "graphql-sse": "2.6.0",
-    "next": "16.1.7",
+    "next": "16.2.1",
     "next-intl": "4.8.3",
     "next-themes": "0.4.6",
     "postcss": "8.5.8",
@@ -85,7 +85,7 @@
     "vitest": "3.2.4"
   },
   "tsConfig": "apps/portal-front/tsconfig.json",
-  "packageManager": "yarn@4.12.0",
+  "packageManager": "yarn@4.13.0+sha512.5c20ba010c99815433e5c8453112165e673f1c7948d8d2b267f4b5e52097538658388ebc9f9580656d9b75c5cc996f990f611f99304a2197d4c56d21eea370e7",
   "prettier": {
     "printWidth": 80,
     "semi": true,
