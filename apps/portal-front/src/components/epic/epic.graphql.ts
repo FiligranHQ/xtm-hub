@@ -12,6 +12,8 @@ export const epicFragment = graphql`
     active
     epic_type
     document_id
+    created_at
+    updated_at
   }
 `;
 

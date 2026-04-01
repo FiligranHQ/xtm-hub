@@ -49,7 +49,11 @@ export const EpicList = ({
 
   const { draft, now, next, under_consideration, finished } =
     useDraftAndTimelineEpics(filteredEpics);
-  const countsByProduct = useCountEpicsByProduct(epics, userCanUpdate);
+  const countsByProduct = useCountEpicsByProduct(
+    epics,
+    userCanUpdate,
+    showFinished
+  );
 
   const sections = useMemo(
     () => [
