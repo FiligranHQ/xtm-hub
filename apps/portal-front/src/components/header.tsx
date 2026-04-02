@@ -73,7 +73,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
           className="rounded-full"
           icon={
             <>
-              <div className="my-auto size-10">
+              <div className="my-auto size-10 [&_img]:object-cover">
                 <Avatar src={me?.picture || undefined} />
               </div>
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
