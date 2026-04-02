@@ -19,22 +19,22 @@ export const FiligranProductMapping: Record<
 > = {
   [FiligranProductEnum.OPENCTI]: {
     name: 'OpenCTI',
-    logo: <OpenCtiIconIcon className="w-6 h-6" />,
+    logo: <OpenCtiIconIcon className="w-5 h-5" />,
   },
   [FiligranProductEnum.OPENAEV]: {
     name: 'OpenAEV',
-    logo: <OpenAevIconIcon className="w-6 h-6" />,
+    logo: <OpenAevIconIcon className="w-5 h-5" />,
   },
   [FiligranProductEnum.OPENGRC]: {
     name: 'OpenGRC',
-    logo: <OpenGrcIcon className="w-6 h-6" />,
+    logo: <OpenGrcIcon className="w-5 h-5" />,
   },
   [FiligranProductEnum.XTMHUB]: {
     name: 'XTM Hub',
-    logo: <LogoFiligranIcon className="w-6 h-6" />,
+    logo: <LogoFiligranIcon className="w-5 h-5" />,
   },
   [FiligranProductEnum.XTMONE]: {
     name: 'XTM One',
-    logo: <LogoXtmOneIcon className="w-6 h-6" />,
+    logo: <LogoXtmOneIcon className="w-5 h-5" />,
   },
 };

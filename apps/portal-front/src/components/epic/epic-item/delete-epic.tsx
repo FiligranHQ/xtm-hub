@@ -46,11 +46,11 @@ export const DeleteEpic: FunctionComponent<DeleteEpicProps> = ({
     <AlertDialogComponent
       actionButtonText={t('Utils.Delete')}
       variantName={'destructive'}
-      AlertTitle={t('Epic.EpicActions.DeleteEpic', { epicName: epic.epic })}
+      AlertTitle={t('Epic.EpicActions.DeleteEpic', { epicName: epic.title })}
       isOpen={open}
       onOpenChange={setOpen}
       onClickContinue={() => onDeletedEpic(epic.id)}>
-      {t('Epic.EpicActions.SureDeleteEpic', { epicName: epic.epic })}
+      {t('Epic.EpicActions.SureDeleteEpic', { epicName: epic.title })}
     </AlertDialogComponent>
   );
 };
