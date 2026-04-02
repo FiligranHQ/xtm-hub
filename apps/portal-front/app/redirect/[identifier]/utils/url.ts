@@ -6,9 +6,8 @@ export const getLoginRedirectionURL = (
 ) => {
   const baseURL = new URL(`${baseUrlFront}/login`);
   const redirectURL = new URL(request.url);
-  redirectURL.hostname = baseURL.hostname;
-  redirectURL.protocol = baseURL.protocol;
-  redirectURL.port = baseURL.port;
-  baseURL.searchParams.set('redirect', btoa(redirectURL.toString()));
+  // Encode only the relative path — full absolute URLs are rejected by decodeSafeRedirect
+  const relativePath = redirectURL.pathname + redirectURL.search;
+  baseURL.searchParams.set('redirect', btoa(relativePath));
   return baseURL.toString();
 };

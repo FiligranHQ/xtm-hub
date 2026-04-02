@@ -1,4 +1,5 @@
-import { cookies } from 'next/headers';
+import { buildLoginRedirect } from '@/utils/redirect';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { GraphQLResponse, OperationType, VariablesOf } from 'relay-runtime';
 import { ConcreteRequest } from 'relay-runtime/lib/util/RelayConcreteNode';
@@ -20,7 +21,9 @@ export default async function serverPortalApiFetch<
   options: RequestInit = {}
 ): Promise<GraphQLResponse> {
   const c = await cookies();
+  const h = await headers();
   const portalCookie = c.get('cloud-portal');
+  const pathname = h.get('x-pathname');
   const apiUri = getGraphqlApi(true, 'api');
   return networkFetch({
     apiUri,
@@ -30,7 +33,7 @@ export default async function serverPortalApiFetch<
     options,
   }).catch((e: unknown) => {
     if (e instanceof UnauthenticatedError) {
-      redirect('/login');
+      redirect(buildLoginRedirect(pathname));
     }
     throw e;
   });
