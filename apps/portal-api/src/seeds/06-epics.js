@@ -5,7 +5,6 @@ export async function seed(knex) {
     .insert([
       {
         id: 'f3d8c580-3ba9-4fd5-b4e2-2a7a8fbd76c1',
-        epic: 'The Wall of Indicators',
         title: 'Night Watch for Indicators',
         short_description: 'The Ravens of the Wall monitor IOCs 24/7.',
         description:
@@ -18,7 +17,6 @@ export async function seed(knex) {
       },
       {
         id: '0c2af0da-f842-4d05-86cb-5b9f1c95df29',
-        epic: 'Dragonfire Campaign',
         title: 'Khaleesi Stress Tests',
         short_description:
           'OpenAEV launches fire-and-blood scenarios to test resilience.',
@@ -32,7 +30,6 @@ export async function seed(knex) {
       },
       {
         id: '5ca4bd8b-2b11-49cf-af7a-f9246ff4583a',
-        epic: 'Iron Throne',
         title: 'One Hub to Rule Them All',
         short_description:
           'XTM Hub unifies Westeros integrations without house wars.',
@@ -46,7 +43,6 @@ export async function seed(knex) {
       },
       {
         id: '2630e289-5d09-47fd-85d8-56f230177577',
-        epic: 'Valar Morghulis',
         title: 'Faceless Prioritization',
         short_description: 'Every obsolete ticket must die, for OpenCTI.',
         description:

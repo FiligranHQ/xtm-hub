@@ -27,7 +27,6 @@ import { z } from 'zod';
 export const FILIGRAN_PRODUCTS_VALUES = Object.values(FiligranProductEnum);
 export const TIMELINE_VALUES = Object.values(TimelineEnum);
 export const epicFormSchema = z.object({
-  epic: z.string().min(1, 'Required').max(30),
   title: z.string().min(2, 'EpicForm.Error.Title').max(50),
   short_description: z.string().min(1, 'Required').max(200),
   description: z.string().min(1, 'Required'),
@@ -59,7 +58,6 @@ const EpicForm = ({
       }}
       formSchema={epicFormSchema}
       values={{
-        epic: epic?.epic ?? '',
         title: epic?.title ?? '',
         short_description: epic?.short_description ?? '',
         description: epic?.description ?? '',
