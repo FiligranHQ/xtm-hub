@@ -1,3 +1,4 @@
+import { isWithinLastMonths } from '@/utils/date';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
@@ -8,10 +9,7 @@ const isRecentlyFinished = (epic: epic_fragment$data): boolean => {
   const referenceDate = epic.updated_at ?? epic.created_at;
   if (!referenceDate) return false;
 
-  const threeMonthsAgo = new Date();
-  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-
-  return new Date(referenceDate).getTime() > threeMonthsAgo.getTime();
+  return isWithinLastMonths(referenceDate, 3);
 };
 
 export function useDraftAndTimelineEpics(epics: epic_fragment$data[]) {
