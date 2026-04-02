@@ -1434,6 +1434,7 @@ export type QueryEpicsArgs = {
   first: Scalars['Int']['input'];
   orderBy: EpicOrdering;
   orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
 

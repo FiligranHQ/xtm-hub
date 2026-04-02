@@ -76,6 +76,7 @@ type Query {
     after: ID
     orderBy: EpicOrdering!
     orderMode: OrderingMode!
+    searchTerm: String
   ): EpicConnection
 }
 
