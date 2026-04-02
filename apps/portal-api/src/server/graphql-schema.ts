@@ -25,6 +25,7 @@ import usersResolver from '../modules/users/users.resolver';
 import xtmSuiteRoadmapResolver from '../modules/xtm-suite-roadmap/epic.resolver';
 import nodesResolver from '../nodes/nodes.resolver';
 import { authDirectiveTransformer } from '../security/directive-graphql/directive-auth';
+import { idDirectiveTransformer } from '../security/directive-graphql/id-directive.transformer';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
@@ -65,7 +66,8 @@ const createSchema = () => {
     resolvers,
     inheritResolversFromInterfaces: true,
   });
-  return authDirectiveTransformer(graphQLSchema);
+  const schemaWithIdDirective = idDirectiveTransformer(graphQLSchema);
+  return authDirectiveTransformer(schemaWithIdDirective);
 };
 
 export default createSchema;
