@@ -101,8 +101,6 @@ services:
       - ELASTIC_HOST=portal-elasticsearch
       - ELASTIC_PORT=9200
       - BASE_URL_FRONT=http://portal-front:3000
-      - PORTAL_COOKIE_NAME:cloud-portal
-      - PORTAL_COOKIE_SECRET:cloud-portal-cookie-key
 
   portal-postgres:
     container_name: portal-postgres
