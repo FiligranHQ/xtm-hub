@@ -2,6 +2,8 @@ directive @system_token repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 
+directive @id(type: String!) on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
 directive @auth(portalCapa: [PortalCapability] = [], orgaCapa: [OrganizationCapability] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
@@ -102,8 +104,8 @@ type Mutation {
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
   updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
   reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
-  cancelDeploymentRequest(deploymentRequestId: ID!, cancellationReason: String): DeploymentRequest
-  adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
+  cancelDeploymentRequest(deploymentRequestId: DeploymentRequestId!, cancellationReason: String): DeploymentRequest
+  adminCancelDeploymentRequest(deploymentRequestId: DeploymentRequestId): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
   updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
@@ -154,7 +156,9 @@ enum OrganizationOrdering {
   name
 }
 
-type OrganizationId implements Node {
+scalar OrganizationId
+
+type OrganizationRef implements Node {
   id: ID!
 }
 
@@ -254,6 +258,8 @@ type ServiceDefinition implements Node {
   identifier: ServiceDefinitionIdentifier!
   service_capability: [ServiceCapability]
 }
+
+scalar DeploymentRequestId
 
 enum DeploymentRequestPlatformRegion {
   eu_west
@@ -376,8 +382,8 @@ type DeploymentRequest implements Node {
   hub_status: DeploymentRequestHubStatus!
   ordering: Int!
   requester_email: String
-  organization_requester_id: ID!
-  service_instance_id: ID!
+  organization_requester_id: OrganizationId!
+  service_instance_id: ServiceInstanceId!
   organization_name: String
   request_date: Date!
   counts_in_orga_quota: Boolean!
@@ -507,7 +513,7 @@ enum ReorderDeploymentRequestInQueueDirection {
 }
 
 input ReorderDeploymentRequestInQueueInput {
-  id: ID!
+  id: DeploymentRequestId!
   direction: ReorderDeploymentRequestInQueueDirection!
 }
 
@@ -1122,6 +1128,8 @@ input AutoRegisterPlatformInput {
   existing_users_count: Int
 }
 
+scalar ServiceInstanceId
+
 enum ServiceInstanceOrdering {
   name
   description
@@ -1535,7 +1543,7 @@ type MeUserSubscription {
 
 type UserPendingSubscription {
   delete: User
-  invalidate: OrganizationId
+  invalidate: OrganizationRef
 }
 
 enum FiligranProduct {

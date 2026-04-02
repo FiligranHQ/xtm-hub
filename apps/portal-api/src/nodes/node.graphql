@@ -2,7 +2,9 @@ directive @system_token repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 
-directive @id(type: String!) on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+directive @id(
+  type: String!
+) on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @auth(
   portalCapa: [PortalCapability] = []
