@@ -13,6 +13,8 @@ import HeaderComponent from '@/components/header';
 import Menu from '@/components/menu/menu';
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/try-filigran-products-banner';
 import { RelayProvider } from '@/relay/RelayProvider';
+import { APP_PATH } from '@/utils/path/constant';
+import { buildLoginRedirect } from '@/utils/redirect';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
@@ -41,6 +43,9 @@ interface RootLayoutProps {
 
 // Component
 const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
+  const h = await headers();
+  const pathname = h.get('x-pathname') ?? `/${APP_PATH}`;
+
   // @ts-expect-error
   const { data: meData }: { data: meLoaderQuery$data } =
     await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
@@ -50,7 +55,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
 
   const me = meData.me as unknown as meContext_fragment$data;
   if (!me) {
-    redirect(`/`);
+    redirect(buildLoginRedirect(pathname));
   }
 
   return (

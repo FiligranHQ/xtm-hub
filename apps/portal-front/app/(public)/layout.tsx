@@ -41,7 +41,7 @@ export default async function RootLayout({
               href="https://filigran.io"
               target="_blank"
               rel="noopener noreferrer">
-              © 2025 Filigran.
+              © {new Date().getFullYear()} Filigran.
             </Link>{' '}
             All rights reserved
           </span>

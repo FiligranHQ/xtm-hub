@@ -2,6 +2,7 @@
 
 import { LoginFormMutation } from '@/components/login/login.graphql';
 import useDecodedQuery from '@/hooks/useDecodedQuery';
+import { decodeSafeRedirect } from '@/utils/redirect';
 import {
   Button,
   Form,
@@ -48,9 +49,9 @@ const LoginForm = () => {
         });
       },
       onCompleted() {
-        if (redirect) {
-          const decoded = atob(redirect);
-          router.push(decoded);
+        const destination = decodeSafeRedirect(redirect);
+        if (destination) {
+          router.push(destination);
         }
         // If login succeed, refresh the page
         router.refresh();

@@ -1,6 +1,7 @@
 'use client';
 
 import { PortalContext } from '@/components/me/app-portal-context';
+import { EditIcon } from '@filigran/icon';
 import {
   Avatar,
   Button,
@@ -10,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@filigran/ui';
-import { EditIcon } from '@filigran/icon';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useRef, useState } from 'react';
 
@@ -30,8 +30,9 @@ export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if(preview) { // If there is already a preview, we need to revoke the object URL to avoid memory leaks
-        URL.revokeObjectURL(preview);  
+      if (preview) {
+        // If there is already a preview, we need to revoke the object URL to avoid memory leaks
+        URL.revokeObjectURL(preview);
       }
       setSelectedFile(file);
       setPreview(URL.createObjectURL(file));
@@ -40,8 +41,9 @@ export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
 
   const handleSubmit = () => {
     if (selectedFile) {
-      if(preview) { // Revoke the object URL to avoid memory leaks
-        URL.revokeObjectURL(preview);  
+      if (preview) {
+        // Revoke the object URL to avoid memory leaks
+        URL.revokeObjectURL(preview);
       }
       onSubmit([selectedFile]);
       setSelectedFile(null);
@@ -63,7 +65,7 @@ export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
           onChange={handleFileChange}
         />
         <div
-          className="size-24 cursor-pointer"
+          className="size-24 cursor-pointer [&_img]:object-cover"
           onClick={() => inputRef.current?.click()}>
           <Avatar src={preview || me?.picture || undefined} />
         </div>

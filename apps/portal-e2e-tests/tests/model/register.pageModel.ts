@@ -10,7 +10,7 @@ export type PlatformDetails = {
 
 export const OPENCTI_PLATFORM_URL: PlatformDetails = {
   url: 'http://localhost:3000',
-  title: 'Open%20CTI%20Instance',
+  title: 'Open CTI Instance',
   id: '916121bf-d246-4a43-8522-24be19537b91',
   contract: 'EE',
 };
