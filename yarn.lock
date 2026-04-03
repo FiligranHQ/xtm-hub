@@ -8665,7 +8665,7 @@ __metadata:
     eslint-config-prettier: "npm:10.1.8"
     express: "npm:5.2.1"
     express-prom-bundle: "npm:8.0.0"
-    express-rate-limit: "npm:8.3.1"
+    express-rate-limit: "npm:8.3.2"
     express-session: "npm:1.19.0"
     glob: "npm:11.1.0"
     globals: "npm:15.15.0"
@@ -11860,14 +11860,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-rate-limit@npm:8.3.1":
-  version: 8.3.1
-  resolution: "express-rate-limit@npm:8.3.1"
+"express-rate-limit@npm:8.3.2":
+  version: 8.3.2
+  resolution: "express-rate-limit@npm:8.3.2"
   dependencies:
     ip-address: "npm:10.1.0"
   peerDependencies:
     express: ">= 4.11"
-  checksum: 10/dd97bfc48c01a6d4c5433203232b5e7a1e55e21322bde49033e5f8c4339584fe671a94096144a0810f4ea21dcec8aaaf15823109627e609f8ed1bc5912a345cf
+  checksum: 10/71afac0fff29bf03117a89902953e7feafc67402332910cfb601b27da079b98f04ba551a1ef4f0ad5cf2538d9599c2649450af6d3f7505bcc7d24f7eaf765a4e
   languageName: node
   linkType: hard
 
