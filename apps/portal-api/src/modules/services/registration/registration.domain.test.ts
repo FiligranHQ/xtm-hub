@@ -29,10 +29,10 @@ import Subscription, {
 import { PortalContext } from '../../../model/portal-context';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
+import { DeploymentRequestDomain } from '../../deployment/deployment.domain';
 import * as organizationDomain from '../../organizations/organizations.domain';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import { deleteServiceInstanceBy } from '../service-instance.domain';
 import {
   PlatformConfiguration,

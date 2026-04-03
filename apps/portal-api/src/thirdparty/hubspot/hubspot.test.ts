@@ -10,7 +10,7 @@ import {
 import { requestContext } from '../../context/request.context';
 import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
 import { UserLoadUserBy } from '../../model/user';
-import { insertDeploymentRequest } from '../../modules/services/deployments/deployments.test.utils';
+import { insertDeploymentRequest } from '../../modules/deployment/deployment.test.utils';
 import { logApp } from '../../utils/app-logger.util';
 import * as utils from '../../utils/utils';
 import { HUBSPOT_TYPE_TO_QUEUE } from '../pgboss/hubspot.jobs';

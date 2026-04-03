@@ -4,8 +4,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.domain';
 import { ServiceContractDomain } from '../../../modules/services/contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
 import {
   PLATFORM_ID_HEADER,
   PLATFORM_TOKEN_HEADER,

@@ -7,12 +7,12 @@ import {
 import { requestContext } from '../../../context/request.context';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
+import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.domain';
 import {
   loadOrganizationBy,
   organizationDomain,
 } from '../../../modules/organizations/organizations.domain';
 import { ServiceContractDomain } from '../../../modules/services/contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
 import { logApp } from '../../../utils/app-logger.util';
 
