@@ -1,4 +1,3 @@
-import { GraphQLScalarType, Kind } from 'graphql';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
   IntegrationType,
@@ -9,6 +8,7 @@ import { listen } from '../../pub';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
+import { createRelayIdScalar } from '../../utils/scalar.util';
 import { extractId } from '../../utils/utils';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../document/openaev/scenarios/scenarios.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../document/opencti/custom-dashboards/custom-dashboards.model';
@@ -26,33 +26,8 @@ import {
   loadServiceWithSubscriptions,
 } from './service-instance.domain';
 
-const ServiceInstanceIdScalar = new GraphQLScalarType({
-  name: 'ServiceInstanceId',
-  description:
-    'A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string',
-  serialize(value: unknown): string {
-    // Value from DB to client
-    return typeof value === 'string'
-      ? toGlobalId('ServiceInstance', value)
-      : '';
-  },
-  parseValue(value: unknown): ServiceInstanceId {
-    // Value from client (input variable)
-    if (typeof value === 'string') {
-      return extractId<ServiceInstanceId>(value);
-    }
-    throw new Error('ServiceInstanceId must be a string');
-  },
-  parseLiteral(ast): ServiceInstanceId {
-    if (ast.kind === Kind.STRING) {
-      return extractId<ServiceInstanceId>(ast.value);
-    }
-    throw new Error('ServiceInstanceId must be a string');
-  },
-});
-
 const resolvers: Resolvers = {
-  ServiceInstanceId: ServiceInstanceIdScalar,
+  ServiceInstanceId: createRelayIdScalar<ServiceInstanceId>('ServiceInstance'),
   ServiceInstance: {
     __resolveType(service_instance) {
       const integrationMapping = {
