@@ -1,7 +1,9 @@
 import { RegistrationContext } from '@/components/registration/context';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { UnregisterMissingCapability } from '@/components/registration/unregister/missing-capability';
 import testRender from '@/utils/test/test-render';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -34,7 +36,8 @@ const renderMissingCapability = (cancel: () => void = vi.fn()) =>
   testRender(
     <RegistrationContext.Provider
       value={{
-        displayedIdentifier: 'OpenCTI',
+        displayedIdentifier:
+          PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
         capability: OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
       }}>
       <UnregisterMissingCapability
@@ -45,29 +48,17 @@ const renderMissingCapability = (cancel: () => void = vi.fn()) =>
   );
 
 describe('UnregisterMissingCapability', () => {
-  it('renders the capability error title', () => {
+  it('renders the whole component properly', () => {
     renderMissingCapability();
     expect(
       screen.getByText('Unregister.Error.Capability.Title')
     ).toBeInTheDocument();
-  });
-
-  it('renders the capability description', () => {
-    renderMissingCapability();
-    expect(
-      screen.getByText('Unregister.Error.Capability.Description')
-    ).toBeInTheDocument();
-  });
-
-  it('renders the admin list title', () => {
-    renderMissingCapability();
     expect(
       screen.getByText('Unregister.Error.Capability.AdminListTitle')
     ).toBeInTheDocument();
-  });
-
-  it('renders all administrators returned by the query', () => {
-    renderMissingCapability();
+    expect(
+      screen.getByText('Unregister.Error.Capability.Description')
+    ).toBeInTheDocument();
     expect(screen.getByText(/Alice Smith/)).toBeInTheDocument();
     expect(screen.getByText(/alice@example.com/)).toBeInTheDocument();
     expect(screen.getByText(/Bob Jones/)).toBeInTheDocument();

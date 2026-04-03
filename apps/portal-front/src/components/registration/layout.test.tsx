@@ -1,6 +1,8 @@
 import { RegistrationContext } from '@/components/registration/context';
 import { RegistrationLayout } from '@/components/registration/layout';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -13,7 +15,11 @@ const renderLayout = (
   props: { cancel?: () => void; confirm?: () => void } = {}
 ) =>
   testRender(
-    <RegistrationContext.Provider value={{ displayedIdentifier: 'OpenCTI' }}>
+    <RegistrationContext.Provider
+      value={{
+        displayedIdentifier:
+          PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
+      }}>
       <RegistrationLayout {...props}>
         <p>child content</p>
       </RegistrationLayout>

@@ -1,6 +1,8 @@
 import { RegistrationContext } from '@/components/registration/context';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { RegisterOrganizationForm } from '@/components/registration/register/organization-form';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
@@ -92,7 +94,11 @@ const renderForm = (
   confirm: (id: string) => void = vi.fn()
 ) =>
   testRender(
-    <RegistrationContext.Provider value={{ displayedIdentifier: 'OpenCTI' }}>
+    <RegistrationContext.Provider
+      value={{
+        displayedIdentifier:
+          PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
+      }}>
       <RegisterOrganizationForm
         userOrganizationsQueryData={orgs}
         cancel={cancel}
@@ -102,25 +108,17 @@ const renderForm = (
   );
 
 describe('RegisterOrganizationForm', () => {
-  it('renders the form title and description', () => {
+  it('renders the whole component properly', () => {
     renderForm();
+    expect(screen.getByText('Org One')).toBeInTheDocument();
+    expect(screen.getByText('Org Two')).toBeInTheDocument();
+    expect(screen.getAllByRole('radio')).toHaveLength(2);
     expect(
       screen.getByText('Register.OrganizationForm.Title')
     ).toBeInTheDocument();
     expect(
       screen.getByText('Register.OrganizationForm.Description')
     ).toBeInTheDocument();
-  });
-
-  it('renders a radio button for each organization', () => {
-    renderForm();
-    expect(screen.getAllByRole('radio')).toHaveLength(2);
-  });
-
-  it('renders organization names', () => {
-    renderForm();
-    expect(screen.getByText('Org One')).toBeInTheDocument();
-    expect(screen.getByText('Org Two')).toBeInTheDocument();
   });
 
   it('calls cancel when the cancel button is clicked', async () => {

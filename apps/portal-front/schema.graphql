@@ -99,18 +99,18 @@ type Query {
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
-  documentExists(documentName: String, service_instance_id: String): Boolean
-  publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
-  publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
-  publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
-  document(documentId: ID, serviceInstanceId: ID): Document
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!): Organization
+  documentExists(documentName: String, service_instance_id: String): Boolean
+  publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
+  publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
+  publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  document(documentId: ID, serviceInstanceId: ID): Document
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
@@ -149,15 +149,15 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
-  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
-  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
-  incrementShareNumberDocument(documentId: ID): Document!
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
+  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
+  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
+  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
+  incrementShareNumberDocument(documentId: ID): Document!
   addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: String): ServiceInstance
@@ -507,14 +507,137 @@ input OrganizationInput {
   domains: [String!]
 }
 
-type RolePortal implements Node {
+input OpenCTIPlatformRegistrationStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+enum PlatformContract {
+  CE
+  EE
+  trial
+}
+
+type RegisteredPlatform implements Node {
   id: ID!
-  name: String!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  platform_id: String!
+  identifier: ServiceDefinitionIdentifier!
+  version: String
+  illustration_document_id: String
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
+}
+
+input PlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  version: String
+}
+
+enum PlatformIdentifier {
+  opencti
+  openaev
+}
+
+input RegisterPlatformInput {
+  organizationId: ID!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
+}
+
+input CanUnregisterPlatformInput {
+  platformId: String!
+}
+
+type RegistrationResponse {
+  token: String!
+}
+
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
+}
+
+input IsPlatformRegisteredInput {
+  platformId: String!
+}
+
+type IsPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
+type IsPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  platformTitle: String
+  organization: IsPlatformRegisteredOrganization
+}
+
+type CanUnregisterResponse {
+  isPlatformRegistered: Boolean!
+  isAllowed: Boolean
+  isInOrganization: Boolean
+  organizationId: ID
+}
+
+input UnregisterPlatformInput {
+  platformId: String!
+  identifier: PlatformIdentifier!
+}
+
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
+  not_found
+}
+
+input RefreshPlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier
+}
+
+type RefreshPlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshUserPlatformTokenResponse {
+  token: String!
+}
+
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier
+  onlyActive: Boolean
+  onlyTrial: Boolean
+}
+
+input RegisteredPlatformInput {
+  service_instance_id: ID!
+}
+
+input AutoRegisterPlatformInput {
+  platform: PlatformInput!
+  existing_users_count: Int
 }
 
 enum ServiceConfigurationStatus {
   active
   inactive
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
 }
 
 enum ServiceDefinitionIdentifier {
@@ -997,129 +1120,6 @@ type ServiceLink implements Node {
   service_instance_id: ID
   url: String
   name: String
-}
-
-input OpenCTIPlatformRegistrationStatusInput {
-  platformId: String!
-  token: String!
-}
-
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
-enum PlatformContract {
-  CE
-  EE
-  trial
-}
-
-type RegisteredPlatform implements Node {
-  id: ID!
-  url: String!
-  title: String!
-  contract: PlatformContract!
-  platform_id: String!
-  identifier: ServiceDefinitionIdentifier!
-  version: String
-  illustration_document_id: String
-  deployment_request: DeploymentRequest
-  subscription: SubscriptionModel
-}
-
-input PlatformInput {
-  id: ID!
-  url: String!
-  title: String!
-  contract: PlatformContract!
-  version: String
-}
-
-enum PlatformIdentifier {
-  opencti
-  openaev
-}
-
-input RegisterPlatformInput {
-  organizationId: ID!
-  platform: PlatformInput!
-  identifier: PlatformIdentifier!
-}
-
-input CanUnregisterPlatformInput {
-  platformId: String!
-}
-
-type RegistrationResponse {
-  token: String!
-}
-
-enum PlatformRegistrationStatus {
-  registered
-  unregistered
-  never_registered
-}
-
-input IsPlatformRegisteredInput {
-  platformId: String!
-}
-
-type IsPlatformRegisteredOrganization implements Node {
-  id: ID!
-}
-
-type IsPlatformRegisteredResponse {
-  status: PlatformRegistrationStatus!
-  platformTitle: String
-  organization: IsPlatformRegisteredOrganization
-}
-
-type CanUnregisterResponse {
-  isPlatformRegistered: Boolean!
-  isAllowed: Boolean
-  isInOrganization: Boolean
-  organizationId: ID
-}
-
-input UnregisterPlatformInput {
-  platformId: String!
-  identifier: PlatformIdentifier!
-}
-
-enum PlatformRegistrationConnectivityStatus {
-  active
-  inactive
-  not_found
-}
-
-input RefreshPlatformRegistrationConnectivityStatusInput {
-  platformId: String!
-  token: String!
-  platformVersion: String!
-  platformIdentifier: PlatformIdentifier
-}
-
-type RefreshPlatformRegistrationConnectivityStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
-type RefreshUserPlatformTokenResponse {
-  token: String!
-}
-
-input RegisteredPlatformsInput {
-  identifier: PlatformIdentifier
-  onlyActive: Boolean
-  onlyTrial: Boolean
-}
-
-input RegisteredPlatformInput {
-  service_instance_id: ID!
-}
-
-input AutoRegisterPlatformInput {
-  platform: PlatformInput!
-  existing_users_count: Int
 }
 
 enum ServiceInstanceOrdering {

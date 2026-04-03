@@ -1,0 +1,80 @@
+import { v4 as uuidv4 } from 'uuid';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { contextSimple2, INFO } from '../../../../../tests/tests.const';
+import { RegisteredPlatform } from '../../../../__generated__/resolvers-types';
+import DeploymentRequest from '../../../../model/kanel/public/DeploymentRequest';
+import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import { DeploymentRequestDomain } from '../../../deployment/deployment.domain';
+import * as ServiceInstanceDomain from '../../../services/service-instance.domain';
+import registrationResolver from '../../registration.resolver';
+
+vi.mock('../../../deployment/deployment.domain', () => ({
+  DeploymentRequestDomain: {
+    loadDeploymentRequestBy: vi.fn(),
+  },
+}));
+
+describe('RegisteredPlatform type resolvers', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('RegisteredPlatform.subscription', () => {
+    it('should call loadServiceInstanceSubscription with the organization id and instance id from parent', async () => {
+      // Given
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const expectedSubscription = {
+        id: uuidv4(),
+        service_instance_id: serviceInstanceId,
+      };
+      const loadServiceInstanceSubscriptionSpy = vi
+        .spyOn(ServiceInstanceDomain, 'loadServiceInstanceSubscription')
+        .mockResolvedValue(expectedSubscription);
+
+      // When
+      const result = await registrationResolver.RegisteredPlatform!
+        .subscription!(
+        { id: serviceInstanceId } as unknown as RegisteredPlatform,
+        {},
+        contextSimple2,
+        INFO
+      );
+
+      // Then
+      expect(loadServiceInstanceSubscriptionSpy).toHaveBeenCalledWith(
+        contextSimple2.user.selected_organization_id,
+        serviceInstanceId
+      );
+      expect(result).toEqual(expectedSubscription);
+    });
+  });
+
+  describe('RegisteredPlatform.deployment_request', () => {
+    it('should call DeploymentRequestDomain.loadDeploymentRequestBy with the service_instance_id from parent', async () => {
+      // Given
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+      const expectedRequest = {
+        id: uuidv4(),
+        service_instance_id: serviceInstanceId,
+      } as DeploymentRequest;
+      const loadDeploymentRequestBySpy = vi
+        .spyOn(DeploymentRequestDomain, 'loadDeploymentRequestBy')
+        .mockResolvedValue(expectedRequest);
+
+      // When
+      const result = await registrationResolver.RegisteredPlatform!
+        .deployment_request!(
+        { id: serviceInstanceId } as unknown as RegisteredPlatform,
+        {},
+        contextSimple2,
+        INFO
+      );
+
+      // Then
+      expect(loadDeploymentRequestBySpy).toHaveBeenCalledWith({
+        service_instance_id: serviceInstanceId,
+      });
+      expect(result).toEqual(expectedRequest);
+    });
+  });
+});

@@ -1,6 +1,8 @@
 import { RegistrationContext } from '@/components/registration/context';
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { UnregisterConfirm } from '@/components/registration/unregister/confirm';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -17,7 +19,11 @@ const renderConfirm = (
   props: { confirm?: () => void; cancel?: () => void } = {}
 ) =>
   testRender(
-    <RegistrationContext.Provider value={{ displayedIdentifier: 'OpenCTI' }}>
+    <RegistrationContext.Provider
+      value={{
+        displayedIdentifier:
+          PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
+      }}>
       <UnregisterConfirm
         organizationId="org-id"
         confirm={props.confirm ?? vi.fn()}
