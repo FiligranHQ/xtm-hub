@@ -676,10 +676,7 @@ export const DeploymentApp = {
       availableTrials: availableTrials,
       deployed: deploymentRequests.map((deployment) => {
         return {
-          serviceInstanceId: toGlobalId(
-            'ServiceInstance',
-            deployment.service_instance_id
-          ),
+          serviceInstanceId: deployment.service_instance_id,
           platformIdentifier: deployment.platform_identifier,
         };
       }),

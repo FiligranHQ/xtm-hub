@@ -1115,10 +1115,7 @@ describe('Deployment app', () => {
         availableTrials: [],
         deployed: [
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              deploymentRequest!.service_instance_id
-            ),
+            serviceInstanceId: deploymentRequest!.service_instance_id,
             platformIdentifier: deploymentRequest?.platform_identifier,
           },
         ],

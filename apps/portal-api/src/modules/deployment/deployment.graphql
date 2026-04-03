@@ -120,7 +120,7 @@ type DeploymentRequest implements Node {
   ordering: Int!
   requester_email: String
   organization_requester_id: ID!
-  service_instance_id: ID!
+  service_instance_id: ServiceInstanceId!
   organization_name: String
   request_date: Date!
   counts_in_orga_quota: Boolean!
@@ -219,7 +219,7 @@ type DeploymentAvailability {
 }
 
 type DeployedPlatform {
-  serviceInstanceId: ID!
+  serviceInstanceId: ServiceInstanceId!
   platformIdentifier: PlatformIdentifier!
 }
 

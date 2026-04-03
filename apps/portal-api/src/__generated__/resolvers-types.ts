@@ -18,6 +18,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
   JSON: { input: any; output: any; }
+  ServiceInstanceId: { input: any; output: any; }
   Upload: { input: any; output: any; }
 };
 
@@ -284,7 +285,7 @@ export type DefaultDocument = Document & Node & {
 export type DeployedPlatform = {
   __typename?: 'DeployedPlatform';
   platformIdentifier: PlatformIdentifier;
-  serviceInstanceId: Scalars['ID']['output'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['output'];
 };
 
 export type DeploymentAvailability = {
@@ -315,7 +316,7 @@ export type DeploymentRequest = Node & {
   region: DeploymentRequestPlatformRegion;
   request_date: Scalars['Date']['output'];
   requester_email?: Maybe<Scalars['String']['output']>;
-  service_instance_id: Scalars['ID']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
   use_case?: Maybe<DeploymentRequestUseCase>;
@@ -2539,6 +2540,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceInstanceEdge: ResolverTypeWrapper<ServiceInstanceEdge>;
   ServiceInstanceFilter: ServiceInstanceFilter;
   ServiceInstanceFilterKey: ServiceInstanceFilterKey;
+  ServiceInstanceId: ResolverTypeWrapper<Scalars['ServiceInstanceId']['output']>;
   ServiceInstanceJoinType: ServiceInstanceJoinType;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
@@ -2690,6 +2692,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceInstance: ServiceInstance;
   ServiceInstanceEdge: ServiceInstanceEdge;
   ServiceInstanceFilter: ServiceInstanceFilter;
+  ServiceInstanceId: Scalars['ServiceInstanceId']['output'];
   ServiceInstanceSubscription: ServiceInstanceSubscription;
   ServiceLink: ServiceLink;
   Settings: Settings;
@@ -2918,7 +2921,7 @@ export type DefaultDocumentResolvers<ContextType = PortalContext, ParentType ext
 
 export type DeployedPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeployedPlatform'] = ResolversParentTypes['DeployedPlatform']> = ResolversObject<{
   platformIdentifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
-  serviceInstanceId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  serviceInstanceId?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2949,7 +2952,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   region?: Resolver<ResolversTypes['DeploymentRequestPlatformRegion'], ParentType, ContextType>;
   request_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   requester_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
   use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
@@ -3505,6 +3508,10 @@ export type ServiceInstanceEdgeResolvers<ContextType = PortalContext, ParentType
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface ServiceInstanceIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['ServiceInstanceId'], any> {
+  name: 'ServiceInstanceId';
+}
+
 export type ServiceInstanceSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstanceSubscription'] = ResolversParentTypes['ServiceInstanceSubscription']> = ResolversObject<{
   add?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
   delete?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
@@ -3874,6 +3881,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceGroup?: ServiceGroupResolvers<ContextType>;
   ServiceInstance?: ServiceInstanceResolvers<ContextType>;
   ServiceInstanceEdge?: ServiceInstanceEdgeResolvers<ContextType>;
+  ServiceInstanceId?: GraphQLScalarType;
   ServiceInstanceSubscription?: ServiceInstanceSubscriptionResolvers<ContextType>;
   ServiceLink?: ServiceLinkResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;

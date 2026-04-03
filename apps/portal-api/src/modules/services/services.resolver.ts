@@ -1,3 +1,4 @@
+import { GraphQLScalarType, Kind } from 'graphql';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
   IntegrationType,
@@ -25,7 +26,33 @@ import {
   loadServiceWithSubscriptions,
 } from './service-instance.domain';
 
+const ServiceInstanceIdScalar = new GraphQLScalarType({
+  name: 'ServiceInstanceId',
+  description:
+    'A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string',
+  serialize(value: unknown): string {
+    // Value from DB to client
+    return typeof value === 'string'
+      ? toGlobalId('ServiceInstance', value)
+      : '';
+  },
+  parseValue(value: unknown): ServiceInstanceId {
+    // Value from client (input variable)
+    if (typeof value === 'string') {
+      return extractId<ServiceInstanceId>(value);
+    }
+    throw new Error('ServiceInstanceId must be a string');
+  },
+  parseLiteral(ast): ServiceInstanceId {
+    if (ast.kind === Kind.STRING) {
+      return extractId<ServiceInstanceId>(ast.value);
+    }
+    throw new Error('ServiceInstanceId must be a string');
+  },
+});
+
 const resolvers: Resolvers = {
+  ServiceInstanceId: ServiceInstanceIdScalar,
   ServiceInstance: {
     __resolveType(service_instance) {
       const integrationMapping = {

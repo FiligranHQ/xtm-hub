@@ -15,11 +15,6 @@ import { DeploymentRequestDomain } from './deployment.domain';
 
 const resolvers: Resolvers = {
   DeploymentRequest: {
-    service_instance_id: ({ service_instance_id }) => {
-      if (service_instance_id) {
-        return toGlobalId('ServiceInstance', service_instance_id);
-      }
-    },
     organization_requester_id: ({ organization_requester_id }) => {
       if (organization_requester_id) {
         return toGlobalId('Organization', organization_requester_id);

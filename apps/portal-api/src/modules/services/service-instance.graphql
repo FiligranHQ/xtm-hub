@@ -1,3 +1,5 @@
+scalar ServiceInstanceId
+
 enum ServiceInstanceOrdering {
   name
   description
