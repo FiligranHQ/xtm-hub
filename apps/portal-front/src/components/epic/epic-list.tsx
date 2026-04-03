@@ -2,6 +2,7 @@
 import { EpicFilter, EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicFormSheet } from '@/components/epic/epic-form-sheet';
 import { EpicItem } from '@/components/epic/epic-item/epic-item';
+import { FiligranProductMapping } from '@/components/epic/epic-item/timeline-mapping';
 import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
@@ -76,13 +77,15 @@ export const EpicList = ({
   const renderEpicItems = useCallback(
     (epicsList: typeof epics) =>
       epicsList.map((epic) => (
-        <EpicItem
-          key={epic.id}
-          epic={epic}
-          serviceInstanceId={serviceInstance.id}
-          userCanUpdate={userCanUpdate}
-          userCanDelete={userCanDelete}
-        />
+        <div key={epic.title}>
+          <EpicItem
+            key={epic.id}
+            epic={epic}
+            serviceInstanceId={serviceInstance.id}
+            userCanUpdate={userCanUpdate}
+            userCanDelete={userCanDelete}
+          />
+        </div>
       )),
     [serviceInstance.id, userCanUpdate, userCanDelete]
   );
@@ -128,20 +131,40 @@ export const EpicList = ({
         ) {
           return null;
         }
+        const timelineColor =
+          FiligranProductMapping[timeline.title as TimelineEnum]?.color ??
+          'white';
+
         return (
-          <div key={timeline.title}>
-            <div className="relative my-xl">
-              <Separator />
-              <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-s text-muted-foreground">
-                {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
-              </span>
+          <div
+            key={timeline.title}
+            className="flex items-stretch gap-m">
+            <div className="flex flex-col items-center self-stretch mt-xl">
+              <div className="rounded-full w-6 h-6 flex items-center justify-center relative">
+                <div
+                  className={`absolute inset-0 bg-${timelineColor} opacity-30 rounded-full`}
+                />
+                <span
+                  className={`relative z-10 font-semibold txt-mini text-${timelineColor}`}>
+                  {timeline.epics.length}
+                </span>
+              </div>
+              <Separator
+                orientation="vertical"
+                className={`mt-s flex-1 w-px bg-${timelineColor}`}
+              />
             </div>
-            <ul
-              className={
-                'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-l'
-              }>
-              {renderEpicItems(timeline.epics)}
-            </ul>
+            <div className="flex-1 mt-l">
+              <p className={`m-s font-semibold text-${timelineColor}`}>
+                {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
+              </p>
+              <ul
+                className={
+                  'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-l'
+                }>
+                {renderEpicItems(timeline.epics)}
+              </ul>
+            </div>
           </div>
         );
       })}
