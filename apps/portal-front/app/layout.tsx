@@ -1,17 +1,16 @@
 import AppContext from '@/components/app-context';
 import I18nContext from '@/i18n/i18n-context';
+import { getMetadataBase } from '@/utils/metadata';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import * as React from 'react';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
+export const generateMetadata = async (): Promise<Metadata> => {
   return {
     title: 'XTM Hub',
     description: 'XTM Hub application by Filigran',
-    metadataBase: new URL(`https://${h.get('host')}`),
+    metadataBase: await getMetadataBase(),
   };
-}
+};
 
 export default function RootLayout({
   children,

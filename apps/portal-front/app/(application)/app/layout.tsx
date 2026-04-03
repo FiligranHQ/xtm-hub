@@ -13,6 +13,7 @@ import HeaderComponent from '@/components/header';
 import Menu from '@/components/menu/menu';
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/try-filigran-products-banner';
 import { RelayProvider } from '@/relay/RelayProvider';
+import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { buildLoginRedirect } from '@/utils/redirect';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
@@ -27,14 +28,13 @@ import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
+export const generateMetadata = async (): Promise<Metadata> => {
   return {
     title: 'XTM Hub',
     description: 'XTM Hub application by Filigran',
-    metadataBase: new URL(`https://${h.get('host')}`),
+    metadataBase: await getMetadataBase(),
   };
-}
+};
 
 // Component interface
 interface RootLayoutProps {
