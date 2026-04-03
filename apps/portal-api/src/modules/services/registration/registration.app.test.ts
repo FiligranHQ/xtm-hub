@@ -55,6 +55,7 @@ import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../../utils/error/error.code';
+import { DeploymentRequestDomain } from '../../deployment/deployment.domain';
 import * as subscriptionDomain from '../../subcription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
@@ -64,7 +65,6 @@ import {
 } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
 import * as serviceInstanceDomain from '../service-instance.domain';
 import {
   deleteServiceInstanceBy,

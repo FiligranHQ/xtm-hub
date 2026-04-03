@@ -17,10 +17,10 @@ import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { organizationDomain } from '../../organizations/organizations.domain';
+import { ServiceContractDomain } from '../../services/contract/service-configuration.domain';
+import { PlatformConfiguration } from '../../services/registration/registration.domain';
 import { UsersDomain } from '../../users/users.domain';
-import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
-import { PlatformConfiguration } from '../registration/registration.domain';
+import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
 import { ServiceGroupHelper } from './service-group.helper';
 

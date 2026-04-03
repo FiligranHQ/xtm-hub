@@ -3,11 +3,11 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformState,
   PlatformIdentifier,
-} from '../../../__generated__/resolvers-types';
-import DeploymentRequestModel from '../../../model/kanel/public/DeploymentRequest';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { AlreadyExistsErrorCode } from '../../../utils/error/error.code';
-import { DeploymentRequestDomain } from './deployments.domain';
+} from '../../__generated__/resolvers-types';
+import DeploymentRequestModel from '../../model/kanel/public/DeploymentRequest';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { AlreadyExistsErrorCode } from '../../utils/error/error.code';
+import { DeploymentRequestDomain } from './deployment.domain';
 
 type HubStatusTransition = {
   from: DeploymentRequestHubStatus;

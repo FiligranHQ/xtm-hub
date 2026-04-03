@@ -13,7 +13,7 @@ import {
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { BadRequestError } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
+import { DeploymentRequestDomain } from '../../deployment/deployment.domain';
 import { loadServiceInstanceSubscription } from '../service-instance.domain';
 import { registrationApp } from './registration.app';
 

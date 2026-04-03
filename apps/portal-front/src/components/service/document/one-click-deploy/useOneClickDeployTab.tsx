@@ -26,6 +26,7 @@ export const OPENCTI_INTEGRATION_URL_CONFIGS: Partial<
   [IntegrationTypeEnum.TAXII_FEED]: 'deploy-taxii-feed',
   [IntegrationTypeEnum.CSV_FEED]: 'deploy-csv-feed',
   [IntegrationTypeEnum.STREAM]: 'deploy-sync',
+  [IntegrationTypeEnum.RSS_FEED]: 'deploy-rss-feed',
 };
 
 interface Props {

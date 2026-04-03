@@ -19,6 +19,7 @@ import ServiceInstance, {
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
+import { FullyQualifiedDeploymentRequest } from '../../deployment/deployment.domain';
 import { loadOrganizationsByUser } from '../../organizations/organizations.domain';
 import {
   createSubscription,
@@ -26,7 +27,6 @@ import {
   transferSubscriptionToOrganization,
 } from '../../subcription/subscription.domain';
 import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { FullyQualifiedDeploymentRequest } from '../deployments/deployments.domain';
 
 import { serviceInstanceDomain } from '../instances/domain';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
