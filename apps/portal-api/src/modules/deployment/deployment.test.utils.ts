@@ -18,7 +18,7 @@ import DeploymentRequest, {
   DeploymentRequestInitializer,
 } from '../../model/kanel/public/DeploymentRequest';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { serviceInstanceTagMappedByPlatformIdentifier } from '../services/registration/registration.mapping';
+import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
 import { insertServiceInstance } from '../services/service-instance.domain';
 import { insertSubscription } from '../subcription/subscription.helper';
 import { DeploymentRequestDomain } from './deployment.domain';
