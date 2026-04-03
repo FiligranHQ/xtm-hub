@@ -59,7 +59,7 @@ postgres:
     enabled: false
     retentionPolicy: 7d
     serverName: postgresql
-    destinationPath: "s3://postgres"
+    s3BucketName: "postgres"
     endpointURL: "https://s3.amazonaws.com"
     s3Credentials:
       accessKeyId:
