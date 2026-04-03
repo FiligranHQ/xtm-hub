@@ -314,7 +314,7 @@ type DeploymentRequest implements Node {
   hub_status: DeploymentRequestHubStatus!
   ordering: Int!
   requester_email: String
-  organization_requester_id: ID!
+  organization_requester_id: OrganizationId!
   service_instance_id: ServiceInstanceId!
   organization_name: String
   request_date: Date!
@@ -456,7 +456,7 @@ input UpdateDeploymentQuotaCapacityInput {
 }
 
 input TrialDeploymentsInput {
-  organizationId: ID!
+  organizationId: OrganizationId!
   platformIdentifiers: [PlatformIdentifier!]
 }
 
@@ -945,7 +945,12 @@ enum OrganizationOrdering {
   name
 }
 
-type OrganizationId implements Node {
+"""
+A Relay global ID for Organization, extracted to a branded OrganizationId string
+"""
+scalar OrganizationId
+
+type OrganizationRef implements Node {
   id: ID!
 }
 
@@ -1551,7 +1556,7 @@ type MeUserSubscription {
 
 type UserPendingSubscription {
   delete: User
-  invalidate: OrganizationId
+  invalidate: OrganizationRef
 }
 
 enum FiligranProduct {

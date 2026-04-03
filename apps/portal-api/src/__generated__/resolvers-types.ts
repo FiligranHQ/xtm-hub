@@ -1,3 +1,5 @@
+import type { OrganizationId } from '../model/kanel/public/Organization.js';
+import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { PortalContext } from '../model/portal-context.js';
 export type Maybe<T> = T | null | undefined;
@@ -18,7 +20,8 @@ export type Scalars = {
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
   JSON: { input: any; output: any; }
-  ServiceInstanceId: { input: any; output: any; }
+  OrganizationId: { input: OrganizationId; output: OrganizationId; }
+  ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
   Upload: { input: any; output: any; }
 };
 
@@ -309,7 +312,7 @@ export type DeploymentRequest = Node & {
   job_title?: Maybe<DeploymentRequestJobTitle>;
   ordering: Scalars['Int']['output'];
   organization_name?: Maybe<Scalars['String']['output']>;
-  organization_requester_id: Scalars['ID']['output'];
+  organization_requester_id: Scalars['OrganizationId']['output'];
   platform_id?: Maybe<Scalars['String']['output']>;
   platform_identifier: PlatformIdentifier;
   platform_url?: Maybe<Scalars['String']['output']>;
@@ -1226,11 +1229,6 @@ export type OrganizationEdge = {
   node: Organization;
 };
 
-export type OrganizationId = Node & {
-  __typename?: 'OrganizationId';
-  id: Scalars['ID']['output'];
-};
-
 export type OrganizationInput = {
   domains?: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
@@ -1239,6 +1237,11 @@ export type OrganizationInput = {
 export enum OrganizationOrdering {
   Name = 'name'
 }
+
+export type OrganizationRef = Node & {
+  __typename?: 'OrganizationRef';
+  id: Scalars['ID']['output'];
+};
 
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -2108,7 +2111,7 @@ export enum Timeline {
 }
 
 export type TrialDeploymentsInput = {
-  organizationId: Scalars['ID']['input'];
+  organizationId: Scalars['OrganizationId']['input'];
   platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
 };
 
@@ -2253,7 +2256,7 @@ export enum UserOrdering {
 export type UserPendingSubscription = {
   __typename?: 'UserPendingSubscription';
   delete?: Maybe<User>;
-  invalidate?: Maybe<OrganizationId>;
+  invalidate?: Maybe<OrganizationRef>;
 };
 
 export type UserService = Node & {
@@ -2406,7 +2409,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationId ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2500,9 +2503,10 @@ export type ResolversTypes = ResolversObject<{
   OrganizationCapability: OrganizationCapability;
   OrganizationConnection: ResolverTypeWrapper<OrganizationConnection>;
   OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
-  OrganizationId: ResolverTypeWrapper<OrganizationId>;
+  OrganizationId: ResolverTypeWrapper<Scalars['OrganizationId']['output']>;
   OrganizationInput: OrganizationInput;
   OrganizationOrdering: OrganizationOrdering;
+  OrganizationRef: ResolverTypeWrapper<OrganizationRef>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PlatformContract: PlatformContract;
   PlatformDeploymentRequest: ResolverTypeWrapper<PlatformDeploymentRequest>;
@@ -2663,8 +2667,9 @@ export type ResolversParentTypes = ResolversObject<{
   OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
   OrganizationConnection: OrganizationConnection;
   OrganizationEdge: OrganizationEdge;
-  OrganizationId: OrganizationId;
+  OrganizationId: Scalars['OrganizationId']['output'];
   OrganizationInput: OrganizationInput;
+  OrganizationRef: OrganizationRef;
   PageInfo: PageInfo;
   PlatformDeploymentRequest: PlatformDeploymentRequest;
   PlatformDeploymentRequestConnection: PlatformDeploymentRequestConnection;
@@ -2945,7 +2950,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  organization_requester_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organization_requester_id?: Resolver<ResolversTypes['OrganizationId'], ParentType, ContextType>;
   platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
   platform_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3195,7 +3200,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationId' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationRef' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -3259,7 +3264,11 @@ export type OrganizationEdgeResolvers<ContextType = PortalContext, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OrganizationIdResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationId'] = ResolversParentTypes['OrganizationId']> = ResolversObject<{
+export interface OrganizationIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['OrganizationId'], any> {
+  name: 'OrganizationId';
+}
+
+export type OrganizationRefResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationRef'] = ResolversParentTypes['OrganizationRef']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -3771,7 +3780,7 @@ export type UserEdgeResolvers<ContextType = PortalContext, ParentType extends Re
 
 export type UserPendingSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserPendingSubscription'] = ResolversParentTypes['UserPendingSubscription']> = ResolversObject<{
   delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  invalidate?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
+  invalidate?: Resolver<Maybe<ResolversTypes['OrganizationRef']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3860,7 +3869,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
-  OrganizationId?: OrganizationIdResolvers<ContextType>;
+  OrganizationId?: GraphQLScalarType;
+  OrganizationRef?: OrganizationRefResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformDeploymentRequest?: PlatformDeploymentRequestResolvers<ContextType>;
   PlatformDeploymentRequestConnection?: PlatformDeploymentRequestConnectionResolvers<ContextType>;

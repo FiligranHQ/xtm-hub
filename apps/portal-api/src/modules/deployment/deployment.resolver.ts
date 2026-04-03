@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
   DeploymentAvailability,
   DeploymentRequestConnection,
@@ -14,13 +13,6 @@ import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
 
 const resolvers: Resolvers = {
-  DeploymentRequest: {
-    organization_requester_id: ({ organization_requester_id }) => {
-      if (organization_requester_id) {
-        return toGlobalId('Organization', organization_requester_id);
-      }
-    },
-  },
   Query: {
     deploymentRequests: async (_, args: QueryDeploymentRequestsArgs) => {
       try {

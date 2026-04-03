@@ -2,7 +2,9 @@ enum OrganizationOrdering {
   name
 }
 
-type OrganizationId implements Node {
+scalar OrganizationId
+
+type OrganizationRef implements Node {
   id: ID!
 }
 

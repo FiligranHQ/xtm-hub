@@ -119,7 +119,7 @@ type DeploymentRequest implements Node {
   hub_status: DeploymentRequestHubStatus!
   ordering: Int!
   requester_email: String
-  organization_requester_id: ID!
+  organization_requester_id: OrganizationId!
   service_instance_id: ServiceInstanceId!
   organization_name: String
   request_date: Date!
@@ -260,7 +260,7 @@ input UpdateDeploymentQuotaCapacityInput {
 }
 
 input TrialDeploymentsInput {
-  organizationId: ID!
+  organizationId: OrganizationId!
   platformIdentifiers: [PlatformIdentifier!]
 }
 

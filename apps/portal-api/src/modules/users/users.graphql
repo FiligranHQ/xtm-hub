@@ -176,7 +176,7 @@ type MeUserSubscription {
 
 type UserPendingSubscription {
   delete: User
-  invalidate: OrganizationId
+  invalidate: OrganizationRef
 }
 
 type Subscription {
