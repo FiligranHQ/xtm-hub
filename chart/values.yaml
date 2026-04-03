@@ -47,6 +47,7 @@ xtmhub:
 postgres:
   version: "17.2"
   replicas: 2
+  username: xtmhub
   storage:
     size: 10Gi
   resources:
