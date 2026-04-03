@@ -44,7 +44,6 @@ describe('EpicApp', () => {
   describe('createEpic', () => {
     it('should createEpic with correct data and return the created epic', async () => {
       const input = {
-        epic: 'EPI-001',
         title: 'Test Epic',
         short_description: 'Short desc',
         description: 'Long description for the epic',
@@ -55,18 +54,18 @@ describe('EpicApp', () => {
 
       const createdEpic = await EpicApp.createEpic(input, []);
 
-      expect(createdEpic).toBeDefined();
-      expect(createdEpic.id).toBeDefined();
-      expect(createdEpic.epic).toBe('EPI-001');
-      expect(createdEpic.title).toBe('Test Epic');
-      expect(createdEpic.product).toBe(FiligranProduct.Opencti);
-      expect(createdEpic.active).toBe(true);
+      expect(createdEpic).toMatchObject({
+        id: expect.anything(),
+        title: 'Test Epic',
+        product: FiligranProduct.Opencti,
+        active: true,
+      });
 
       // Verify in DB
       const dbEpic = await db<Epic>('Epic').where('id', createdEpic.id).first();
-      expect(dbEpic).toBeDefined();
-      expect(dbEpic?.epic).toBe('EPI-001');
-      expect(dbEpic?.title).toBe('Test Epic');
+      expect(dbEpic).toMatchObject({
+        title: 'Test Epic',
+      });
     });
 
     it('should create an image document when upload is provided', async () => {
@@ -83,7 +82,6 @@ describe('EpicApp', () => {
       ] as never);
 
       const input = {
-        epic: 'EPI-002',
         title: 'Epic with Image',
         short_description: 'Short desc',
         description: 'Long description for the epic',
@@ -101,28 +99,29 @@ describe('EpicApp', () => {
 
       const createdEpic = await EpicApp.createEpic(input, uploads);
 
-      expect(createdEpic).toBeDefined();
-      expect(createdEpic.id).toBeDefined();
-      expect(createdEpic.document_id).toBeDefined();
+      expect(createdEpic).toMatchObject({
+        id: expect.anything(),
+        document_id: expect.anything(),
+      });
 
       // Verify document was created in DB
       const dbDocument = await db<Document>('Document')
         .where('id', createdEpic.document_id)
         .first();
 
-      expect(dbDocument).toBeDefined();
-      expect(dbDocument?.file_name).toBe('epic-image.png');
-      expect(dbDocument?.minio_name).toBe('epic-image.png');
-      expect(dbDocument?.mime_type).toBe('image/png');
-      expect(dbDocument?.type).toBe('image');
-      expect(dbDocument?.description).toBe('Epic illustration');
-      expect(dbDocument?.active).toBe(true);
-      expect(dbDocument?.source_type).toBe('internal');
+      expect(dbDocument).toMatchObject({
+        file_name: 'epic-image.png',
+        minio_name: 'epic-image.png',
+        mime_type: 'image/png',
+        type: 'image',
+        description: 'Epic illustration',
+        active: true,
+        source_type: 'internal',
+      });
     });
 
     it('should create an integration epic when is_integration is true', async () => {
       const input = {
-        epic: 'EPI-008',
         title: 'Integration Epic',
         short_description: 'Short desc',
         description: 'Long description for the integration epic',
@@ -134,8 +133,9 @@ describe('EpicApp', () => {
 
       const createdEpic = await EpicApp.createEpic(input, []);
 
-      expect(createdEpic).toBeDefined();
-      expect(createdEpic.epic_type).toBe(EpicType.Integration);
+      expect(createdEpic).toMatchObject({
+        epic_type: EpicType.Integration,
+      });
 
       // Verify in DB
       const dbEpic = await db<Epic>('Epic').where('id', createdEpic.id).first();
@@ -148,7 +148,6 @@ describe('EpicApp', () => {
       // Create an epic first
       const createdEpic = await EpicApp.createEpic(
         {
-          epic: 'EPI-003',
           title: 'Original Title',
           short_description: 'Original short',
           description: 'Original long',
@@ -171,20 +170,21 @@ describe('EpicApp', () => {
         []
       );
 
-      expect(updatedEpic).toBeDefined();
-      expect(updatedEpic?.title).toBe('Updated Title');
-      expect(updatedEpic?.short_description).toBe('Updated short description');
-      expect(updatedEpic?.active).toBe(true);
-      // Original values should be preserved
-      expect(updatedEpic?.epic).toBe('EPI-003');
-      expect(updatedEpic?.description).toBe('Original long');
+      expect(updatedEpic).toMatchObject({
+        title: 'Updated Title',
+        short_description: 'Updated short description',
+        active: true,
+        description: 'Original long',
+      });
 
       // Verify in DB
       const dbEpic = await db<Epic>('Epic')
         .where('title', 'Updated Title')
         .first();
-      expect(dbEpic?.title).toBe('Updated Title');
-      expect(dbEpic?.active).toBe(true);
+      expect(dbEpic).toMatchObject({
+        title: 'Updated Title',
+        active: true,
+      });
     });
     it('should update the specified epic with uploads and create a document', async () => {
       vi.spyOn(
@@ -201,7 +201,6 @@ describe('EpicApp', () => {
 
       const createdEpic = await EpicApp.createEpic(
         {
-          epic: 'EPI-003-upload',
           title: 'Original Title',
           short_description: 'Original short',
           description: 'Original long',
@@ -232,16 +231,18 @@ describe('EpicApp', () => {
         uploads
       );
 
-      expect(updatedEpic).toBeDefined();
-      expect(updatedEpic?.title).toBe('Updated Title with Image');
-      expect(updatedEpic?.document_id).toBeDefined();
+      expect(updatedEpic).toMatchObject({
+        title: 'Updated Title with Image',
+        document_id: expect.anything(),
+      });
 
       const dbDocument = await db<Document>('Document')
         .where('id', updatedEpic?.document_id)
         .first();
 
-      expect(dbDocument).toBeDefined();
-      expect(dbDocument?.file_name).toBe('epic-image.png');
+      expect(dbDocument).toMatchObject({
+        file_name: 'epic-image.png',
+      });
     });
   });
 
@@ -249,7 +250,6 @@ describe('EpicApp', () => {
     it('should delete the specified epic and return the deleted epic', async () => {
       const createdEpic = await EpicApp.createEpic(
         {
-          epic: 'EPI-005',
           title: 'Epic to Delete',
           short_description: 'Short',
           description: 'Long',
@@ -264,9 +264,9 @@ describe('EpicApp', () => {
       // Delete the epic
       const deletedEpic = await EpicApp.deleteEpic(createdEpic.id as EpicId);
 
-      expect(deletedEpic).toBeDefined();
-      expect(deletedEpic?.id).toBe(createdEpic.id);
-      expect(deletedEpic?.epic).toBe('EPI-005');
+      expect(deletedEpic).toMatchObject({
+        id: createdEpic.id,
+      });
     });
     it('should delete, when integration, the document and the minioFile as well', async () => {
       const mockDeleteFileInMinio = vi
@@ -291,7 +291,6 @@ describe('EpicApp', () => {
         []
       );
       const createdEpic = await EpicDomain.createEpic({
-        epic: 'EPI-005-bis',
         title: 'Epic to Delete',
         short_description: 'Short',
         description: 'Long',
@@ -304,9 +303,9 @@ describe('EpicApp', () => {
       // Delete the epic
       const deletedEpic = await EpicApp.deleteEpic(createdEpic?.id as EpicId);
 
-      expect(deletedEpic).toBeDefined();
-      expect(deletedEpic?.id).toBe(createdEpic?.id);
-      expect(deletedEpic?.epic).toBe('EPI-005-bis');
+      expect(deletedEpic).toMatchObject({
+        id: createdEpic?.id,
+      });
       expect(mockDeleteFileInMinio).toHaveBeenCalledTimes(1);
       const documentFromDB = await DocumentDomain.loadDocumentBy({
         file_name: 'filename',
@@ -320,7 +319,6 @@ describe('EpicApp', () => {
       // Create multiple epics
       await EpicApp.createEpic(
         {
-          epic: 'EPI-006',
           title: 'Epic 1',
           short_description: 'Short 1',
           description: 'Long 1',
@@ -333,7 +331,6 @@ describe('EpicApp', () => {
 
       await EpicApp.createEpic(
         {
-          epic: 'EPI-007',
           title: 'Epic 2',
           short_description: 'Short 2',
           description: 'Long 2',
@@ -346,40 +343,39 @@ describe('EpicApp', () => {
 
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
-        orderBy: EpicOrdering.Epic,
+        orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
       });
 
-      expect(epicsConnection).toBeDefined();
-      expect(epicsConnection.edges.length).toStrictEqual(2);
-      expect(epicsConnection.pageInfo).toBeDefined();
-      expect(epicsConnection.pageInfo.hasNextPage).toBeDefined();
-      expect(epicsConnection.pageInfo.hasPreviousPage).toBeDefined();
-      expect(
-        epicsConnection.edges.some((e) => e.node.epic === 'EPI-006')
-      ).toBeTruthy();
-      expect(
-        epicsConnection.edges.some((e) => e.node.epic === 'EPI-007')
-      ).toBeTruthy();
+      expect(epicsConnection).toMatchObject({
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: true,
+        },
+      });
+      const titles = epicsConnection.edges.map((e) => e.node.title);
+
+      expect(titles).toHaveLength(2);
+      expect(titles).toEqual(expect.arrayContaining(['Epic 1', 'Epic 2']));
     });
 
     it('should return empty connection when no epics exist', async () => {
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
-        orderBy: EpicOrdering.Epic,
+        orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
       });
 
-      expect(epicsConnection).toBeDefined();
-      expect(epicsConnection.edges.length).toStrictEqual(0);
-      expect(epicsConnection.pageInfo).toBeDefined();
+      expect(epicsConnection).toMatchObject({
+        pageInfo: expect.anything(),
+      });
+      expect(epicsConnection.edges).toHaveLength(0);
     });
 
     it('should return epics ordered in descending order when orderMode is Desc', async () => {
       // Create multiple epics
       await EpicApp.createEpic(
         {
-          epic: 'EPI-010',
           title: 'Epic A',
           short_description: 'Short A',
           description: 'Long A',
@@ -392,7 +388,6 @@ describe('EpicApp', () => {
 
       await EpicApp.createEpic(
         {
-          epic: 'EPI-011',
           title: 'Epic B',
           short_description: 'Short B',
           description: 'Long B',
@@ -405,20 +400,18 @@ describe('EpicApp', () => {
 
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
-        orderBy: EpicOrdering.Epic,
+        orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Desc,
       });
 
-      expect(epicsConnection).toBeDefined();
-      expect(epicsConnection.edges.length).toStrictEqual(2);
-      expect(epicsConnection.edges[0]?.node.epic).toBe('EPI-011');
-      expect(epicsConnection.edges[1]?.node.epic).toBe('EPI-010');
+      expect(epicsConnection.edges).toHaveLength(2);
+      expect(epicsConnection.edges[0]?.node.title).toBe('Epic B');
+      expect(epicsConnection.edges[1]?.node.title).toBe('Epic A');
     });
 
     it('should return only epics matching searchTerm on title', async () => {
       await EpicApp.createEpic(
         {
-          epic: 'EPI-020',
           title: 'Dashboard feature',
           short_description: 'Short',
           description: 'Long',
@@ -430,7 +423,6 @@ describe('EpicApp', () => {
 
       await EpicApp.createEpic(
         {
-          epic: 'EPI-021',
           title: 'Connector improvement',
           short_description: 'Short',
           description: 'Long',
@@ -442,19 +434,18 @@ describe('EpicApp', () => {
 
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
-        orderBy: EpicOrdering.Epic,
+        orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
         searchTerm: 'Dashboard',
       });
 
-      expect(epicsConnection.edges.length).toStrictEqual(1);
-      expect(epicsConnection.edges[0].node.epic).toBe('EPI-020');
+      expect(epicsConnection.edges).toHaveLength(1);
+      expect(epicsConnection.edges[0]?.node.title).toBe('Dashboard feature');
     });
 
     it('should return epics matching searchTerm on epic code', async () => {
       await EpicApp.createEpic(
         {
-          epic: 'DASH-001',
           title: 'Some title',
           short_description: 'Short',
           description: 'Long',
@@ -466,7 +457,6 @@ describe('EpicApp', () => {
 
       await EpicApp.createEpic(
         {
-          epic: 'CONN-001',
           title: 'Other title',
           short_description: 'Short',
           description: 'Long',
@@ -478,19 +468,18 @@ describe('EpicApp', () => {
 
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
-        orderBy: EpicOrdering.Epic,
+        orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
-        searchTerm: 'DASH',
+        searchTerm: 'Othe',
       });
 
-      expect(epicsConnection.edges.length).toStrictEqual(1);
-      expect(epicsConnection.edges[0].node.epic).toBe('DASH-001');
+      expect(epicsConnection.edges).toHaveLength(1);
+      expect(epicsConnection.edges[0]?.node.title).toBe('Other title');
     });
 
     it('should return epics matching searchTerm on description', async () => {
       await EpicApp.createEpic(
         {
-          epic: 'EPI-030',
           title: 'Title A',
           short_description: 'Short A',
           description: 'Improve the threat intelligence module',
@@ -502,7 +491,6 @@ describe('EpicApp', () => {
 
       await EpicApp.createEpic(
         {
-          epic: 'EPI-031',
           title: 'Title B',
           short_description: 'Short B',
           description: 'Fix pagination bugs',
@@ -514,19 +502,18 @@ describe('EpicApp', () => {
 
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
-        orderBy: EpicOrdering.Epic,
+        orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
         searchTerm: 'threat intelligence',
       });
 
-      expect(epicsConnection.edges.length).toStrictEqual(1);
-      expect(epicsConnection.edges[0].node.epic).toBe('EPI-030');
+      expect(epicsConnection.edges).toHaveLength(1);
+      expect(epicsConnection.edges[0]?.node.title).toBe('Title A');
     });
 
     it('should return empty results when searchTerm matches nothing', async () => {
       await EpicApp.createEpic(
         {
-          epic: 'EPI-040',
           title: 'Some epic',
           short_description: 'Short',
           description: 'Long',
@@ -538,12 +525,12 @@ describe('EpicApp', () => {
 
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
-        orderBy: EpicOrdering.Epic,
+        orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
         searchTerm: 'nonexistent',
       });
 
-      expect(epicsConnection.edges.length).toStrictEqual(0);
+      expect(epicsConnection.edges).toHaveLength(0);
     });
   });
 });

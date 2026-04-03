@@ -8,7 +8,6 @@ const TEST_IMAGE_FILE = {
 export default class XTMSuiteRoadmapPage {
   constructor(private page: Page) {}
   async addEpic({
-    epic,
     title,
     short_description,
     description,
@@ -17,7 +16,6 @@ export default class XTMSuiteRoadmapPage {
     integration = false,
     draft = true,
   }: {
-    epic: string;
     title: string;
     short_description: string;
     description: string;
@@ -27,7 +25,6 @@ export default class XTMSuiteRoadmapPage {
     draft?: boolean;
   }) {
     await this.page.getByRole('button', { name: 'Create' }).click();
-    await this.page.getByRole('textbox', { name: 'Epic *' }).fill(epic);
     await this.page.getByRole('textbox', { name: 'Title' }).fill(title);
     await this.page
       .getByRole('textbox', { name: 'Short description' })
@@ -60,7 +57,6 @@ export default class XTMSuiteRoadmapPage {
   }
 
   async updateEpic({
-    epic,
     title,
     short_description,
     description,
@@ -68,7 +64,6 @@ export default class XTMSuiteRoadmapPage {
     timeline,
     draft,
   }: {
-    epic?: string;
     title?: string;
     short_description?: string;
     description?: string;
@@ -80,8 +75,6 @@ export default class XTMSuiteRoadmapPage {
       .getByRole('button', { name: 'Open menu', exact: true })
       .click();
     await this.page.getByRole('menuitem', { name: 'Update' }).click();
-    if (epic)
-      await this.page.getByRole('textbox', { name: 'Epic *' }).fill(epic);
     if (title)
       await this.page.getByRole('textbox', { name: 'Title' }).fill(title);
     if (short_description)

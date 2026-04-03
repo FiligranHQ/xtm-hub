@@ -2,7 +2,7 @@
 import { EpicFilter, EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicFormSheet } from '@/components/epic/epic-form-sheet';
 import { EpicItem } from '@/components/epic/epic-item/epic-item';
-import { FiligranProductMapping } from '@/components/epic/epic-item/timeline-mapping';
+import { FiligranTimelineMapping } from '@/components/epic/epic-item/timeline-mapping';
 import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
@@ -132,7 +132,7 @@ export const EpicList = ({
           return null;
         }
         const timelineColor =
-          FiligranProductMapping[timeline.title as TimelineEnum]?.color ??
+          FiligranTimelineMapping[timeline.title as TimelineEnum]?.color ??
           'white';
 
         return (

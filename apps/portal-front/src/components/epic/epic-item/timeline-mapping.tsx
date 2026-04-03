@@ -4,7 +4,7 @@ export interface FiligranTimelineMetadata {
   color: string;
 }
 
-export const FiligranProductMapping: Record<
+export const FiligranTimelineMapping: Record<
   TimelineEnum,
   FiligranTimelineMetadata
 > = {
