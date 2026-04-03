@@ -5,14 +5,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   contextBypassUser,
   TEST_ORGANIZATIONS,
-} from '../../../../tests/tests.const';
+} from '../../../tests/tests.const';
 import {
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
-} from '../../../__generated__/resolvers-types';
-import { BadRequestErrorCode } from '../../../utils/error/error.code';
+} from '../../__generated__/resolvers-types';
+import { BadRequestErrorCode } from '../../utils/error/error.code';
 import { registrationApp } from './registration.app';
 import registrationResolver from './registration.resolver';
 

@@ -32,8 +32,8 @@ import {
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { registrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
-import { registrationDomain } from '../services/registration/registration.domain';
 import { updateSubscriptionBy } from '../subcription/subscription.domain';
 import { DeploymentRequestDomain } from './deployment.domain';
 
@@ -51,7 +51,7 @@ import { sendMail } from '../../server/mail-service';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { formatName } from '../../utils/format';
 import { extractId, ucfirst } from '../../utils/utils';
-import { ServiceContractDomain } from '../services/contract/service-configuration.domain';
+import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { updateServiceInstance } from '../services/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
@@ -844,7 +844,7 @@ const sendActivePlatformEmail = async (
     });
 
     const serviceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatform(
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(
         deploymentRequest.platform_id
       );
 

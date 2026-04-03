@@ -30,12 +30,12 @@ import { restrictSubscriptionToUserOrganization } from '../../security/restricti
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { formatRawObject } from '../../utils/queryRaw.util';
+import { PlatformConfiguration } from '../registration/registration.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import { loadUserBy } from '../users/users.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
-import { PlatformConfiguration } from './registration/registration.domain';
 
 export const ServiceInstanceDomain = {
   loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription: async (
