@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   DocumentConnection,
   DocumentMetadataKeyCode,
@@ -11,10 +11,10 @@ import {
   IntegrationType,
   LogicalOperator,
   OrderingMode,
-} from '../../../../__generated__/resolvers-types';
-import { upsertConnectors } from '../../../ingest-manifest/ingest-manifest.domain';
-import { ManifestInformation } from '../../../ingest-manifest/ingest-manifest.model';
-import sampleExtractedManifest from '../../../ingest-manifest/test/sample-extracted-manifest.json';
+} from '../../../__generated__/resolvers-types';
+import { upsertConnectors } from '../../ingest-manifest/ingest-manifest.domain';
+import { ManifestInformation } from '../../ingest-manifest/ingest-manifest.model';
+import sampleExtractedManifest from '../../ingest-manifest/test/sample-extracted-manifest.json';
 import {
   Connector,
   INTEGRATION_CONNECTOR_METADATA_KEYS,
@@ -23,10 +23,10 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../opencti/integrations/integrations.model';
 
-import { TestHelper } from '../../../../../tests/test.helper';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
-import Document from '../../../../model/kanel/public/Document';
-import { ADMIN_UUID } from '../../../../portal.const';
+import { TestHelper } from '../../../../tests/test.helper';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import Document from '../../../model/kanel/public/Document';
+import { ADMIN_UUID } from '../../../portal.const';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
 

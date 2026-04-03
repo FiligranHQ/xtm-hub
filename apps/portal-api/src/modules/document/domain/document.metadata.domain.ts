@@ -1,18 +1,18 @@
 import { Knex } from 'knex';
-import { db, dbRaw } from '../../../../../knexfile';
+import { db, dbRaw } from '../../../../knexfile';
 import {
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   Document as DocumentResolverType,
   IntegrationType,
-} from '../../../../__generated__/resolvers-types';
+} from '../../../__generated__/resolvers-types';
 import {
   DocumentId,
   default as DocumentModel,
-} from '../../../../model/kanel/public/Document';
+} from '../../../model/kanel/public/Document';
 import DocumentMetadata, {
   DocumentMetadataKey,
-} from '../../../../model/kanel/public/DocumentMetadata';
+} from '../../../model/kanel/public/DocumentMetadata';
 import { BOOLEAN_METADATA } from '../document.helper';
 import { DocumentData } from './document.domain';
 

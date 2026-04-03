@@ -3,11 +3,11 @@ import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { requestContext } from '../../context/request.context';
 import { SYSTEM_USER_CONTEXT, SYSTEM_USER_UUID } from '../../portal.const';
 import { minioInit } from '../../server/initialize';
-import { DocumentChildrenDomain } from '../services/document/domain/document.children.domain';
+import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
 import {
   Connector,
   INTEGRATION_SERVICE_INSTANCE_ID,
-} from '../services/document/opencti/integrations/integrations.model';
+} from '../document/opencti/integrations/integrations.model';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';

@@ -6,27 +6,24 @@ import {
   requestContextAdminUser,
   SERVICES,
   TEST_ORGANIZATIONS,
-} from '../../../../tests/tests.const';
+} from '../../../tests/tests.const';
 import {
   IntegrationType,
   ServiceDefinitionIdentifier,
-} from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
-import {
-  DocumentId,
-  DocumentMutator,
-} from '../../../model/kanel/public/Document';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { PortalContext } from '../../../model/portal-context';
-import { MinIOClient } from '../../../thirdparty/minio/client';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+} from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
+import { DocumentId, DocumentMutator } from '../../model/kanel/public/Document';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { PortalContext } from '../../model/portal-context';
+import { MinIOClient } from '../../thirdparty/minio/client';
+import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
   TelemetrySource,
-} from '../../telemetry/telemetry.const';
-import { TelemetryEventType } from '../../telemetry/telemetry.types';
+} from '../telemetry/telemetry.const';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,

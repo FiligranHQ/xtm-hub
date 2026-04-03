@@ -1,10 +1,10 @@
 import {
   DocumentMetadataKeyCode,
   IntegrationType,
-} from '../../../../../__generated__/resolvers-types';
-import Document from '../../../../../model/kanel/public/Document';
-import type { ServiceInstanceId } from '../../../../../model/kanel/public/ServiceInstance';
-import { MetadataArray } from '../../../../../utils/metadata';
+} from '../../../../__generated__/resolvers-types';
+import Document from '../../../../model/kanel/public/Document';
+import type { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import { MetadataArray } from '../../../../utils/metadata';
 
 export const INTEGRATION_SERVICE_INSTANCE_ID: ServiceInstanceId =
   '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc' as ServiceInstanceId;
