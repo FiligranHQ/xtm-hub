@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { TelemetrySource } from '../telemetry/telemetry.const';
-import { TelemetryEventType } from '../telemetry/telemetry.types';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetrySource } from '../../telemetry/telemetry.const';
+import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { organizationsApp } from './organizations.app';
 import {
   insertNewOrganization,

@@ -1,8 +1,15 @@
 import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { db } from '../../../../knexfile';
+import {
+  contextBypassUser,
+  contextSimpleUserSecondOrga,
+  requestContextSimple2,
+  SERVICES,
+  TEST_ORGANIZATIONS,
+} from '../../../../tests/tests.const';
 import { requestContext } from '../../../context/request.context';
-import { db } from '../../../knexfile';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import Subscription, {
   SubscriptionId,
@@ -12,13 +19,6 @@ import UserTransferRequest, {
   UserTransferRequestId,
 } from '../../../model/kanel/public/UserTransferRequest';
 import * as mailService from '../../../server/mail-service';
-import {
-  contextBypassUser,
-  contextSimpleUserSecondOrga,
-  requestContextSimple2,
-  SERVICES,
-  TEST_ORGANIZATIONS,
-} from '../../../tests/tests.const';
 import {
   deleteSubscription,
   insertSubscription,
@@ -214,7 +214,8 @@ describe('User profile app', () => {
     });
 
     const mockMinIOClient = async () => {
-      const MinIOClientModule = await import('../../thirdparty/minio/client');
+      const MinIOClientModule =
+        await import('../../../thirdparty/minio/client');
       return {
         insertFile: vi
           .spyOn(MinIOClientModule.MinIOClient, 'insertFile')

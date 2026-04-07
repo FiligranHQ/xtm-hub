@@ -12,6 +12,15 @@ import {
   it,
   vi,
 } from 'vitest';
+import { SubscriptionSpy } from '../../../../tests/test-utils';
+import {
+  contextAdminSecondOrga,
+  contextBypassUser,
+  requestContextAdminSecondOrga,
+  requestContextAdminUser,
+  SERVICES,
+  TEST_ORGANIZATIONS,
+} from '../../../../tests/tests.const';
 import {
   AddUserInput,
   AdminEditUserInput,
@@ -20,21 +29,12 @@ import {
   OrganizationCapability,
   UserOrdering,
 } from '../../../__generated__/resolvers-types';
+import { loginFromProvider } from '../../../auth/auth-user';
 import { requestContext } from '../../../context/request.context';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
-import { SubscriptionSpy } from '../../../tests/test-utils';
-import {
-  contextAdminSecondOrga,
-  contextBypassUser,
-  requestContextAdminSecondOrga,
-  requestContextAdminUser,
-  SERVICES,
-  TEST_ORGANIZATIONS,
-} from '../../../tests/tests.const';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
-import { loginFromProvider } from '../../auth/auth-user';
 import * as UserOrganizationDomain from '../../common/user-organization.domain';
 import {
   deleteSubscription,
