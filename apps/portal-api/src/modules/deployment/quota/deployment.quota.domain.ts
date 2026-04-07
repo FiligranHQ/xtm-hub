@@ -9,12 +9,12 @@ import DeploymentRequestQuota, {
 } from '../../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../../utils/error/error.code';
 
-export const DeploymentsQuotasDomain = {
+export const DeploymentQuotaDomain = {
   reservePlace: async (
     platformIdentifier: PlatformIdentifier,
     region: DeploymentRequestPlatformRegion
   ): Promise<{ isPlaceAvailable: boolean }> => {
-    return DeploymentsQuotasDomain.withLockedQuotaTransaction(
+    return DeploymentQuotaDomain.withLockedQuotaTransaction(
       { platformIdentifier, region },
       async (quota) => {
         if (quota.availability <= 0) {
@@ -37,7 +37,7 @@ export const DeploymentsQuotasDomain = {
     platformIdentifier: PlatformIdentifier,
     region: DeploymentRequestPlatformRegion
   ): Promise<void> => {
-    await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+    await DeploymentQuotaDomain.withLockedQuotaTransaction(
       { platformIdentifier, region },
       async (quota) => {
         await db<DeploymentRequestQuota>('DeploymentRequestQuota')
@@ -56,7 +56,7 @@ export const DeploymentsQuotasDomain = {
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ newAvailability: number }> => {
-    return DeploymentsQuotasDomain.withLockedQuotaTransaction(
+    return DeploymentQuotaDomain.withLockedQuotaTransaction(
       { platformIdentifier, region },
       async (quota) => {
         const difference = newCapacity - quota.capacity;

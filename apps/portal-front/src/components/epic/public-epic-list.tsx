@@ -1,16 +1,15 @@
-import { EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicList } from '@/components/epic/epic-list';
 import {
   EpicListQuery,
   epicsListFragment,
 } from '@/components/epic/epic.graphql';
+import { useEpicFilter } from '@/hooks/useEpicFilter';
 import { EpicListContext } from '@/hooks/useEpicListContext';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { epicsList_epics$key } from '@generated/epicsList_epics.graphql';
 import { epicsQuery } from '@generated/epicsQuery.graphql';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import React, { useState } from 'react';
+import React from 'react';
 import {
   PreloadedQuery,
   usePreloadedQuery,
@@ -30,11 +29,7 @@ const PublicEpicList: React.FC<Props> = ({ queryRef, serviceInstance }) => {
     epicsList_epics$key
   >(epicsListFragment, queryData);
 
-  const [selectedProduct, setSelectedProduct] = useState<EpicFilterType>('all');
-
-  const filterByProduct = (product: FiligranProductEnum) => {
-    setSelectedProduct(product);
-  };
+  const { selectedProduct, setSelectedProduct } = useEpicFilter();
 
   const epics = data.epics!.edges.map(
     (edge) => edge.node as epic_fragment$data
@@ -46,7 +41,7 @@ const PublicEpicList: React.FC<Props> = ({ queryRef, serviceInstance }) => {
 
   const connectionID = data.epics!.__id;
   return (
-    <EpicListContext.Provider value={{ connectionID, filterByProduct }}>
+    <EpicListContext.Provider value={{ connectionID }}>
       <EpicList
         epics={epics}
         serviceInstance={serviceInstance}

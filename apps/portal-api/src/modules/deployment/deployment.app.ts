@@ -18,57 +18,57 @@ import {
   Success,
   TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
-} from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
+} from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import DeploymentRequestModel, {
   DeploymentRequestId,
   DeploymentRequestMutator,
-} from '../../../model/kanel/public/DeploymentRequest';
-import { logApp } from '../../../utils/app-logger.util';
+} from '../../model/kanel/public/DeploymentRequest';
+import { logApp } from '../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
-} from '../../../utils/error/error.code';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import { updateSubscriptionBy } from '../../subcription/subscription.domain';
-import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
+} from '../../utils/error/error.code';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { registrationDomain } from '../registration/registration.domain';
-import { DeploymentRequestDomain } from './deployments.domain';
+import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
+import { updateSubscriptionBy } from '../subcription/subscription.domain';
+import { DeploymentRequestDomain } from './deployment.domain';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import portalConfig from '../../../config';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { UserId } from '../../../model/kanel/public/User';
+import portalConfig from '../../config';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { UserId } from '../../model/kanel/public/User';
 import {
   SYSTEM_USER_UUID,
   XTM_HUB_DEV_TEAM_EMAIL,
   XTM_HUB_SUPPORT_EMAIL,
-} from '../../../portal.const';
-import { securityGuard } from '../../../security/guard';
-import { sendMail } from '../../../server/mail-service';
-import { auth0Client } from '../../../thirdparty/auth0/client';
-import { formatName } from '../../../utils/format';
-import { extractId, ucfirst } from '../../../utils/utils';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+} from '../../portal.const';
+import { securityGuard } from '../../security/guard';
+import { sendMail } from '../../server/mail-service';
+import { auth0Client } from '../../thirdparty/auth0/client';
+import { formatName } from '../../utils/format';
+import { extractId, ucfirst } from '../../utils/utils';
+import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
+import { updateServiceInstance } from '../services/service-instance.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
-} from '../../telemetry/telemetry.helper';
-import { loadUser } from '../../users/users.domain';
-import { CompetitorApp } from '../competitor/competitor.app';
-import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { updateServiceInstance } from '../service-instance.domain';
+} from '../telemetry/telemetry.helper';
+import { loadUser } from '../users/users.domain';
+import { CompetitorApp } from './competitor/competitor.app';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
   hasDeploymentTelemetryDataChanged,
   isPlatformStateTransitionValid,
-} from './deployments.helper';
-import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
+} from './deployment.helper';
+import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
-export const DeploymentsApp = {
+export const DeploymentApp = {
   createDeploymentRequest: async (
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
@@ -104,14 +104,14 @@ export const DeploymentsApp = {
 
     try {
       const createdDeploymentRequest =
-        await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+        await DeploymentQuotaDomain.withLockedQuotaTransaction(
           {
             platformIdentifier: input.platform_identifier,
             region: input.region,
           },
           async () => {
             const { isPlaceAvailable } =
-              await DeploymentsQuotasDomain.reservePlace(
+              await DeploymentQuotaDomain.reservePlace(
                 input.platform_identifier,
                 input.region
               );
@@ -316,7 +316,7 @@ export const DeploymentsApp = {
   loadAvailableDeploymentRequests: async (
     platformIdentifier: PlatformIdentifier
   ): Promise<DeploymentAvailability[]> => {
-    const quotas = await DeploymentsQuotasDomain.loadQuotas({
+    const quotas = await DeploymentQuotaDomain.loadQuotas({
       platform_identifier: platformIdentifier,
     });
 
@@ -374,11 +374,11 @@ export const DeploymentsApp = {
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
     const { user } = requestContext.require();
-    await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+    await DeploymentQuotaDomain.withLockedQuotaTransaction(
       { platformIdentifier, region },
       async () => {
         const { newAvailability } =
-          await DeploymentsQuotasDomain.updateQuotaCapacity({
+          await DeploymentQuotaDomain.updateQuotaCapacity({
             platformIdentifier,
             region,
             newCapacity,
@@ -397,7 +397,7 @@ export const DeploymentsApp = {
             }
 
             void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
-            await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
+            await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
           }
         } else if (newAvailability > 0) {
           for (let i = 0; i < newAvailability; i++) {
@@ -411,7 +411,7 @@ export const DeploymentsApp = {
             }
 
             void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
-            await DeploymentsQuotasDomain.reservePlace(
+            await DeploymentQuotaDomain.reservePlace(
               platformIdentifier,
               region
             );
@@ -461,7 +461,7 @@ export const DeploymentsApp = {
         ? DeploymentRequestPlatformState.Unprovisioned
         : DeploymentRequestPlatformState.Removed;
 
-    await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+    await DeploymentQuotaDomain.withLockedQuotaTransaction(
       {
         platformIdentifier: deploymentRequest.platform_identifier,
         region: deploymentRequest.region,
@@ -483,7 +483,7 @@ export const DeploymentsApp = {
             creation_status: ServiceInstanceCreationStatus.Disabled,
           });
         }
-        await DeploymentsApp.releaseDeploymentRequestPlace(
+        await DeploymentApp.releaseDeploymentRequestPlace(
           previousHubStatus,
           deploymentRequest.platform_identifier,
           deploymentRequest.region
@@ -541,7 +541,7 @@ export const DeploymentsApp = {
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
 
       try {
-        await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+        await DeploymentQuotaDomain.withLockedQuotaTransaction(
           {
             platformIdentifier: trial.platform_identifier,
             region: trial.region,
@@ -556,7 +556,7 @@ export const DeploymentsApp = {
                 }
               );
 
-            await DeploymentsApp.releaseDeploymentRequestPlace(
+            await DeploymentApp.releaseDeploymentRequestPlace(
               previousHubStatus,
               trial.platform_identifier,
               trial.region
@@ -637,7 +637,7 @@ export const DeploymentsApp = {
       return;
     }
 
-    await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
+    await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
     const { user } = requestContext.require();
@@ -769,7 +769,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
   input: UpdateDeploymentRequestInput;
   newStatus: DeploymentRequestHubStatus;
 }) => {
-  await DeploymentsQuotasDomain.withLockedQuotaTransaction(
+  await DeploymentQuotaDomain.withLockedQuotaTransaction(
     {
       platformIdentifier: deploymentRequest.platform_identifier,
       region: deploymentRequest.region,
@@ -844,7 +844,7 @@ const sendActivePlatformEmail = async (
     });
 
     const serviceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatform(
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(
         deploymentRequest.platform_id
       );
 

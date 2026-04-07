@@ -2,7 +2,7 @@ import {
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
   ServiceInstanceTag,
-} from '../../../__generated__/resolvers-types';
+} from '../../__generated__/resolvers-types';
 
 export const serviceDefinitionIdentifierMappedByPlatformIdentifier: Record<
   PlatformIdentifier,

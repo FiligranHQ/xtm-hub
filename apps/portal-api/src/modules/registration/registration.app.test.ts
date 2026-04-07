@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { db } from '../../../../knexfile';
+import { db } from '../../../knexfile';
 import {
   contextBypassUser,
   requestContextAdminSecondOrga,
@@ -17,7 +17,7 @@ import {
   requestContextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
-} from '../../../../tests/tests.const';
+} from '../../../tests/tests.const';
 import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
@@ -34,44 +34,44 @@ import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
-} from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
+} from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import DeploymentRequest, {
   DeploymentRequestId,
-} from '../../../model/kanel/public/DeploymentRequest';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+} from '../../model/kanel/public/DeploymentRequest';
+import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
-} from '../../../model/kanel/public/ServiceInstance';
+} from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
-} from '../../../model/kanel/public/Subscription';
+} from '../../model/kanel/public/Subscription';
 
-import { UserLoadUserBy } from '../../../model/user';
-import * as authHelper from '../../../security/auth.helper';
+import { UserLoadUserBy } from '../../model/user';
+import * as authHelper from '../../security/auth.helper';
 import {
   BadRequestErrorCode,
   ErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
-} from '../../../utils/error/error.code';
-import * as subscriptionDomain from '../../subcription/subscription.domain';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+} from '../../utils/error/error.code';
+import { DeploymentRequestDomain } from '../deployment/deployment.domain';
+import * as serviceInstanceDomain from '../services/service-instance.domain';
+import {
+  deleteServiceInstanceBy,
+  loadServiceInstanceBy,
+} from '../services/service-instance.domain';
+import * as subscriptionDomain from '../subcription/subscription.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
   TelemetrySource,
   TelemetryTargetProduct,
-} from '../../telemetry/telemetry.const';
-import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
-import * as serviceInstanceDomain from '../service-instance.domain';
-import {
-  deleteServiceInstanceBy,
-  loadServiceInstanceBy,
-} from '../service-instance.domain';
+} from '../telemetry/telemetry.const';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { registrationApp } from './registration.app';
 import { registrationDomain } from './registration.domain';
+import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 describe('Registration app', () => {
   afterAll(async () => {
@@ -465,7 +465,9 @@ describe('Registration app', () => {
       });
 
       const serviceConfiguration =
-        await ServiceContractDomain.loadConfigurationByPlatform(platformId);
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          platformId
+        );
 
       expect(serviceConfiguration).toBeDefined();
       expect(serviceConfiguration?.status).toBe(
@@ -500,7 +502,7 @@ describe('Registration app', () => {
         'isUserAllowedOnOrganization'
       );
       loadConfigurationByPlatformSpy = vi.spyOn(
-        ServiceContractDomain,
+        ServiceConfigurationDomain,
         'loadConfigurationByPlatform'
       );
       loadSubscriptionBySpy = vi.spyOn(
@@ -802,7 +804,7 @@ describe('Registration app', () => {
     });
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceContractDomain.deleteConfigurationBy({});
+      await ServiceConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
@@ -854,7 +856,7 @@ describe('Registration app', () => {
         deploymentRequest.service_instance_id
       );
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatform(
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       expect(serviceInstance.creation_status).toBe(
@@ -893,11 +895,11 @@ describe('Registration app', () => {
       );
 
       const oldConfiguration =
-        await ServiceContractDomain.loadConfigurationByPlatform(
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       const newConfiguration =
-        await ServiceContractDomain.loadConfigurationByPlatform(
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
           newPlatformConfiguration.id
         );
       expect(oldConfiguration).toBeUndefined();

@@ -388,6 +388,68 @@ cd apps/portal-api
 yarn migrate:make <migration_name>    # creates JS file in src/migrations/
 ```
 
+## Testing Patterns
+
+Both apps use **Vitest**. Test files sit next to the source file they cover (`*.test.ts` / `*.test.tsx`).
+
+### Prefer parametric tests with `it.each`
+
+When multiple cases share the same assertion logic, always use the template-literal form of `it.each` instead of duplicating `it()` blocks. This keeps tests compact and the failure output readable.
+
+```typescript
+it.each`
+  input        | expected
+  ${'foo'}     | ${'FOO'}
+  ${'bar'}     | ${'BAR'}
+  ${''}        | ${''}
+`('should uppercase "$input" to "$expected"', ({ input, expected }) => {
+  expect(toUpper(input)).toBe(expected);
+});
+```
+
+Rules:
+- First row = column headers (used in the test name via `$columnName` interpolation)
+- Each subsequent row = one test case
+- Include a `description` column when the input/expected values alone are not self-explanatory (see example below)
+
+```typescript
+it.each`
+  reason                       | expected                 | description
+  ${'Other: my reason'}        | ${'Other: my reason'}    | ${'standard free text'}
+  ${'Other:   extra spaces  '} | ${'Other: extra spaces'} | ${'whitespace trimmed'}
+  ${'Other:'}                  | ${'Other'}               | ${'empty after colon'}
+`(
+  'should format "$reason" as "$expected" ($description)',
+  ({ reason, expected }) => {
+    expect(formatReason(reason)).toBe(expected);
+  }
+);
+```
+
+### Extracting pure utility functions for testability
+
+Avoid testing complex component internals directly. Prefer extracting logic into a **pure utility function** in a `*.utils.ts` file alongside the component, then unit-test the utility in isolation. The component simply calls the utility.
+
+```
+trials-tab.tsx           ← calls formatCancellationReason()
+trials-tab.utils.ts      ← pure function, no React/Relay deps
+trials-tab.utils.test.ts ← fast, isolated unit tests
+```
+
+### Frontend test conventions
+
+- Use `testRender` from `@/utils/test/test-render` to render components (wraps providers).
+- Mock `next-intl` with `useTranslations: () => (key: string) => key` so tests assert on i18n keys.
+- Mock `react-relay` mutations with `useMutation: () => [vi.fn(), {}]`.
+- Mock heavy UI components (e.g. `DataTable`) with simple `<div>` stubs when not under test.
+- Use `createMockEnvironment()` from `relay-test-utils` for Relay queries.
+
+### Backend test conventions
+
+- Integration tests hit a real `test_database` PostgreSQL instance (set when `VITEST_MODE=true`).
+- Use `describe` blocks to group by function/method, nest a second level for scenario groups.
+- Prefer `expect.any(Date)` / `expect.objectContaining()` for dynamic values.
+
 ## Pitfalls
 
 - **Yarn version mismatch**: Always `corepack enable` first

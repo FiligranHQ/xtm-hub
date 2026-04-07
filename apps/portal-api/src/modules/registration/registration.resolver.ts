@@ -2,19 +2,19 @@ import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import {
   AutoRegisterPlatformInput,
   Resolvers,
-} from '../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { PortalContext } from '../../../model/portal-context';
+} from '../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { PortalContext } from '../../model/portal-context';
 import {
   BadRequestErrorCode,
   ErrorCode,
   UnknownErrorCode,
-} from '../../../utils/error/error.code';
-import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { BadRequestError } from '../../../utils/error/error.util';
-import { extractId } from '../../../utils/utils';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
-import { loadServiceInstanceSubscription } from '../service-instance.domain';
+} from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { BadRequestError } from '../../utils/error/error.util';
+import { extractId } from '../../utils/utils';
+import { DeploymentRequestDomain } from '../deployment/deployment.domain';
+import { loadServiceInstanceSubscription } from '../services/service-instance.domain';
 import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {

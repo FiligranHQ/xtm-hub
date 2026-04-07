@@ -28,8 +28,8 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import { ADMIN_UUID } from '../../portal.const';
 import * as mailService from '../../server/mail-service';
+import { PlatformConfiguration } from '../registration/registration.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
-import { PlatformConfiguration } from './registration/registration.domain';
 import {
   getUserJoined,
   grantServiceAccess,

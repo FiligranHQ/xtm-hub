@@ -6,15 +6,15 @@ import {
 } from '../../../__generated__/resolvers-types';
 import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
+import { DeploymentQuotaDomain } from './deployment.quota.domain';
 
-describe('DeploymentsQuotasDomain', () => {
+describe('DeploymentQuotaDomain', () => {
   const platformIdentifier = PlatformIdentifier.Opencti;
   const region = DeploymentRequestPlatformRegion.UsEast;
 
   describe('reservePlace', () => {
     it('should throw when quota is not found', async () => {
-      const call = DeploymentsQuotasDomain.reservePlace(
+      const call = DeploymentQuotaDomain.reservePlace(
         'test' as PlatformIdentifier,
         DeploymentRequestPlatformRegion.EuWest
       );
@@ -29,7 +29,7 @@ describe('DeploymentsQuotasDomain', () => {
         .update({ availability: 0 })
         .where({ region, platform_identifier: platformIdentifier });
 
-      const result = await DeploymentsQuotasDomain.reservePlace(
+      const result = await DeploymentQuotaDomain.reservePlace(
         platformIdentifier,
         region
       );
@@ -42,7 +42,7 @@ describe('DeploymentsQuotasDomain', () => {
         .update({ availability: -1 })
         .where({ region, platform_identifier: platformIdentifier });
 
-      const result = await DeploymentsQuotasDomain.reservePlace(
+      const result = await DeploymentQuotaDomain.reservePlace(
         platformIdentifier,
         region
       );
@@ -54,7 +54,7 @@ describe('DeploymentsQuotasDomain', () => {
         .update({ availability: 1 })
         .where({ region, platform_identifier: platformIdentifier });
 
-      const result = await DeploymentsQuotasDomain.reservePlace(
+      const result = await DeploymentQuotaDomain.reservePlace(
         platformIdentifier,
         region
       );
@@ -66,7 +66,7 @@ describe('DeploymentsQuotasDomain', () => {
         .update({ availability: 1 })
         .where({ region, platform_identifier: platformIdentifier });
 
-      await DeploymentsQuotasDomain.reservePlace(platformIdentifier, region);
+      await DeploymentQuotaDomain.reservePlace(platformIdentifier, region);
 
       const updatedRequestQuota = await db<DeploymentRequestQuota>(
         'DeploymentRequestQuota'
@@ -82,7 +82,7 @@ describe('DeploymentsQuotasDomain', () => {
 
   describe('freePlace', () => {
     it('should throw when quota is not found', async () => {
-      const call = DeploymentsQuotasDomain.freePlace(
+      const call = DeploymentQuotaDomain.freePlace(
         'test' as PlatformIdentifier,
         DeploymentRequestPlatformRegion.EuWest
       );
@@ -97,7 +97,7 @@ describe('DeploymentsQuotasDomain', () => {
         .update({ availability: 0 })
         .where({ region, platform_identifier: platformIdentifier });
 
-      await DeploymentsQuotasDomain.freePlace(platformIdentifier, region);
+      await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
 
       const updatedRequestQuota = await db<DeploymentRequestQuota>(
         'DeploymentRequestQuota'
@@ -113,7 +113,7 @@ describe('DeploymentsQuotasDomain', () => {
 
   describe('updateQuotaCapacity', () => {
     it('should throw when quota is not found', async () => {
-      const call = DeploymentsQuotasDomain.updateQuotaCapacity({
+      const call = DeploymentQuotaDomain.updateQuotaCapacity({
         platformIdentifier: 'test' as PlatformIdentifier,
         region,
         newCapacity: 1,
@@ -140,7 +140,7 @@ describe('DeploymentsQuotasDomain', () => {
           .update({ capacity: oldCapacity, availability: oldAvailability })
           .where({ region, platform_identifier: platformIdentifier });
 
-        const result = await DeploymentsQuotasDomain.updateQuotaCapacity({
+        const result = await DeploymentQuotaDomain.updateQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: newCapacity,
