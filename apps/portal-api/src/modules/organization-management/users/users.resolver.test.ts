@@ -31,7 +31,7 @@ import {
   OrganizationCapability,
   UserOrdering,
 } from '../../../__generated__/resolvers-types';
-import { loginFromProvider } from '../../../auth/auth-user';
+import { loginFromProvider } from '../../security-management/authentication/auth-user';
 import { requestContext } from '../../../context/request.context';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';

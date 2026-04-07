@@ -5,7 +5,7 @@ import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { assertUserCanManageService } from '../../../security/guard';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
 import { insertCapabilities } from '../user-service-capability/user-service-capability.helper';
-import { UserServiceDomain } from '../user_service.domain';
+import { UserServiceDomain } from '../../user_service/user_service.domain';
 import { willManageAccessBeConserved } from './service_capability.helper';
 
 export const serviceCapabilityApp = {

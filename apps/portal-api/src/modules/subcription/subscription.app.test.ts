@@ -11,7 +11,7 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { ErrorCode } from '../../utils/error/error.code';
 import { SubscriptionStatus } from '../subscription.const';
-import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';
+import { loadSubscriptionCapabilities } from '../security-management/service-capability/subscription-capability.domain';
 import { subscriptionApp } from './subscription.app';
 import { createSubscription } from './subscription.domain';
 

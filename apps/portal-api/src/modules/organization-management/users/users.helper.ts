@@ -32,7 +32,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { hashPassword } from '../../../utils/hash-password.util';
 import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
-import { createUserOrganizationCapability } from '../../common/user-organization-capability.domain';
+import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import {
   loadUserOrganization,
   updateUserOrgCapabilities,

@@ -2,7 +2,7 @@ import { MutationLoginArgs } from '../../../__generated__/resolvers-types';
 import portalConfig from '../../../config';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
-import { validatePassword } from '../../../security/utils/user';
+import { validatePassword } from '../../../security/util/user';
 import { loadUserBy, updateUserAtLogin } from './user-domain/users.domain';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {

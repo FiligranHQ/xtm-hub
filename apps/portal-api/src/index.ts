@@ -18,7 +18,7 @@ import { createServer } from 'http';
 import fs from 'node:fs';
 import { v4 as uuidv4 } from 'uuid';
 import { dbMigration } from '../knexfile';
-import { initAuthPlatform } from './auth/auth-platform';
+import { initAuthPlatform } from './modules/security-management/authentication/auth-platform';
 import portalConfig from './config';
 import { requestContext } from './context/request.context';
 import { initCronJobs, stopCronJobs } from './crons';

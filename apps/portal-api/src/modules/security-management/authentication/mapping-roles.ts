@@ -2,7 +2,7 @@ import config from 'config';
 import {
   parseKeyValueArrayToObject,
   parseKeyValueArrayToObjectReverse,
-} from '../utils/utils';
+} from '../../../utils/utils';
 
 export const extractRole = (roles: string[] = []): string[] => {
   const roleMapping = getRoleMapping();

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
-import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
-import { OrganizationCapability } from '../../__generated__/resolvers-types';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { loadUserOrganizationCapabilities } from './user-organization-capability.domain';
 
 describe('UserOrganizationCapabilityDomain', () => {

@@ -24,7 +24,7 @@ import { SubscriptionStatus } from '../subscription.const';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
-} from './service-capability/generic_service_capability.const';
+} from '../security-management/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from './user_service.domain';
 
 // ---------------------------------------------------------------------------

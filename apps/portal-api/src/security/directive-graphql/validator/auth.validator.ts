@@ -1,5 +1,5 @@
 import { UserLoadUserBy } from '../../../model/user';
-import { userHasBypassCapability } from '../../auth.helper';
+import { userHasBypassCapability } from '../../../modules/security-management/capability/auth.helper';
 import { RoleType } from '../directive.model';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';

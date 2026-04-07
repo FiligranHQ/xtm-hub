@@ -30,7 +30,7 @@ import {
   buildSubscribeEvent,
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
-import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
+import { addCapabilitiesToSubscription } from '../security-management/service-capability/subscription-capability.domain';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import {
   createSubscription,

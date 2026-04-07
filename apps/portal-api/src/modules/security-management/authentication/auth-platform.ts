@@ -1,12 +1,12 @@
 import bodyParser from 'body-parser';
-import { requestContext } from '../context/request.context';
-import { UserInfo } from '../model/user';
-import { SYSTEM_USER_CONTEXT } from '../portal.const';
-import { AppLogsCategory, logApp } from '../utils/app-logger.util';
-import { resolveSessionReferer } from '../utils/extract-referer.util';
-import { setCookieError } from '../utils/set-cookies.util';
+import { requestContext } from '../../../context/request.context';
+import { UserInfo } from '../../../model/user';
+import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
+import { AppLogsCategory, logApp } from '../../../utils/app-logger.util';
+import { resolveSessionReferer } from '../../../utils/extract-referer.util';
+import { setCookieError } from '../../../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
-import { initProviders } from './providers/providers';
+import { initProviders } from './provider/providers';
 
 export const initAuthPlatform = async (app) => {
   logApp.debug('initAuthPlatform');

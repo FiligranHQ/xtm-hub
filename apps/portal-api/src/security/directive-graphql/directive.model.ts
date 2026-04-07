@@ -1,5 +1,5 @@
 import { UserLoadUserBy } from '../../model/user';
-import { ServiceCapabilityArgs } from './validators/service-capability.validator';
+import { ServiceCapabilityArgs } from './validator/service-capability.validator';
 
 export type AuthFn = (user: UserLoadUserBy) => boolean;
 

@@ -18,7 +18,7 @@ import { extractId, isEmpty } from '../../utils/utils';
 import {
   createUserOrganizationCapability,
   updateUserOrganizationCapability,
-} from './user-organization-capability.domain';
+} from '../security-management/user-organization-capability/user-organization-capability.domain';
 
 export const insertNewUserOrganization = (
   field: UserOrganizationInitializer | UserOrganizationInitializer[]

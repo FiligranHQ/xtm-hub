@@ -10,7 +10,7 @@ import { UserLoadUserBy } from '../../model/user';
 import {
   extractPlatformToken,
   validateActivePlatformToken,
-} from '../../security/directive-graphql/validators/platform-token-validator';
+} from '../../security/directive-graphql/validator/platform-token-validator';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
