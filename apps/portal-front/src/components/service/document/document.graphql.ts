@@ -140,6 +140,7 @@ export const documentItem = graphql`
       integration_type
       feed_url
       datasheet_url
+      blogpost_url
       demo_url
     }
 
@@ -148,6 +149,7 @@ export const documentItem = graphql`
       integration_subtype
       feed_url
       datasheet_url
+      blogpost_url
       demo_url
     }
 
@@ -156,6 +158,7 @@ export const documentItem = graphql`
       integration_subtype
       feed_url
       datasheet_url
+      blogpost_url
       demo_url
     }
 
@@ -164,6 +167,7 @@ export const documentItem = graphql`
       integration_subtype
       feed_url
       datasheet_url
+      blogpost_url
       demo_url
     }
 
@@ -174,6 +178,7 @@ export const documentItem = graphql`
       vendor_url
       github_url
       datasheet_url
+      blogpost_url
       demo_url
     }
 
@@ -188,6 +193,7 @@ export const documentItem = graphql`
       manager_supported
       playbook_supported
       datasheet_url
+      blogpost_url
       demo_url
       minimum_deployable_version
     }

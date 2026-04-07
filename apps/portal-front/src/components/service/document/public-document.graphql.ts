@@ -38,6 +38,7 @@ export const publicDocumentItem = graphql`
     ... on Integration {
       integration_type
       datasheet_url
+      blogpost_url
       demo_url
     }
 
@@ -60,6 +61,7 @@ export const publicDocumentItem = graphql`
       integration_subtype
       feed_url
       datasheet_url
+      blogpost_url
       demo_url
     }
 
