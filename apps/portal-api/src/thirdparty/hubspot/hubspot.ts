@@ -10,7 +10,7 @@ import {
   DeploymentRequestDomain,
   FullyQualifiedDeploymentRequest,
 } from '../../modules/deployment/deployment.domain';
-import { loadUserBy } from '../../modules/users/users.domain';
+import { loadUserBy } from '../../modules/organization-management/users/users.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';
 import {

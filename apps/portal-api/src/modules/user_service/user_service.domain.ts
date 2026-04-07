@@ -30,17 +30,17 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { loadUserOrganization } from '../common/user-organization.domain';
+import { loadUserBy } from '../organization-management/users/users.domain';
+import {
+  getOrCreateUser,
+  insertUserIntoOrganization,
+} from '../organization-management/users/users.helper';
 import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
 import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
 } from '../services/service-instance.domain';
 import { loadSubscriptionBy } from '../subcription/subscription.helper';
-import { loadUserBy } from '../users/users.domain';
-import {
-  getOrCreateUser,
-  insertUserIntoOrganization,
-} from '../users/users.helper';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,

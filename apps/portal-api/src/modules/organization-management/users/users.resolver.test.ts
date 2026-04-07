@@ -12,6 +12,18 @@ import {
   it,
   vi,
 } from 'vitest';
+import {
+  AddUserInput,
+  AdminEditUserInput,
+  OrderingMode,
+  Organization,
+  OrganizationCapability,
+  UserOrdering,
+} from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
+import { UserId } from '../../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../../model/user';
 import { SubscriptionSpy } from '../../../tests/test-utils';
 import {
   contextAdminSecondOrga,
@@ -21,25 +33,13 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import {
-  AddUserInput,
-  AdminEditUserInput,
-  OrderingMode,
-  Organization,
-  OrganizationCapability,
-  UserOrdering,
-} from '../../__generated__/resolvers-types';
+import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { loginFromProvider } from '../../auth/auth-user';
-import { requestContext } from '../../context/request.context';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { UserId } from '../../model/kanel/public/User';
-import { UserLoadUserBy } from '../../model/user';
-import { auth0ClientMock } from '../../thirdparty/auth0/mock';
-import * as UserOrganizationDomain from '../common/user-organization.domain';
+import * as UserOrganizationDomain from '../../common/user-organization.domain';
 import {
   deleteSubscription,
   insertSubscription,
-} from '../subcription/subscription.helper';
+} from '../../subcription/subscription.helper';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { deleteUserById, loadUser, loadUserBy } from './users.domain';
 import { removeUser } from './users.helper';

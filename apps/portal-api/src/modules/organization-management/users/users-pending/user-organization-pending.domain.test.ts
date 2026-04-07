@@ -1,16 +1,16 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
+import { db } from '../../../../../knexfile';
+import { FilterKey } from '../../../../__generated__/resolvers-types';
+import { requestContext } from '../../../../context/request.context';
+import User from '../../../../model/kanel/public/User';
+import UserOrganizationPending from '../../../../model/kanel/public/UserOrganizationPending';
 import {
   TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
   requestContextSimpleUserSecondOrga,
 } from '../../../../tests/tests.const';
-import { FilterKey } from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
-import User from '../../../model/kanel/public/User';
-import UserOrganizationPending from '../../../model/kanel/public/UserOrganizationPending';
-import { ErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode } from '../../../../utils/error/error.code';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
 import { insertUser, linkUsersToOrganization } from '../users.test.utils';

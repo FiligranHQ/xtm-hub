@@ -11,7 +11,7 @@ import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.
 import {
   loadOrganizationBy,
   organizationDomain,
-} from '../../../modules/organizations/organizations.domain';
+} from '../../../modules/organization-management/organizations/organizations.domain';
 import { ServiceConfigurationDomain } from '../../../modules/registration/service-configuration/service-configuration.domain';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
 import { logApp } from '../../../utils/app-logger.util';

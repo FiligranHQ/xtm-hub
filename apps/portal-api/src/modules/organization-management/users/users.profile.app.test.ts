@@ -1,7 +1,17 @@
 import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { requestContext } from '../../../context/request.context';
 import { db } from '../../../knexfile';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import Subscription, {
+  SubscriptionId,
+} from '../../../model/kanel/public/Subscription';
+import { UserId } from '../../../model/kanel/public/User';
+import UserTransferRequest, {
+  UserTransferRequestId,
+} from '../../../model/kanel/public/UserTransferRequest';
+import * as mailService from '../../../server/mail-service';
 import {
   contextBypassUser,
   contextSimpleUserSecondOrga,
@@ -9,20 +19,10 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import { requestContext } from '../../context/request.context';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import Subscription, {
-  SubscriptionId,
-} from '../../model/kanel/public/Subscription';
-import { UserId } from '../../model/kanel/public/User';
-import UserTransferRequest, {
-  UserTransferRequestId,
-} from '../../model/kanel/public/UserTransferRequest';
-import * as mailService from '../../server/mail-service';
 import {
   deleteSubscription,
   insertSubscription,
-} from '../subcription/subscription.helper';
+} from '../../subcription/subscription.helper';
 import * as UserTransferRequestDomain from './user_transferRequest/user_transferRequest.domain';
 import {
   deleteUserTransferRequest,

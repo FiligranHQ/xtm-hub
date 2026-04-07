@@ -1,19 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import portalConfig from '../../../config';
+import { requestContext } from '../../../context/request.context';
 import { db } from '../../../knexfile';
+import User, { UserId } from '../../../model/kanel/public/User';
+import UserOrganizationPending from '../../../model/kanel/public/UserOrganizationPending';
+import { PortalContext } from '../../../model/portal-context';
+import * as MailService from '../../../server/mail-service';
 import {
   contextAdminSecondOrga,
   contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import portalConfig from '../../config';
-import { requestContext } from '../../context/request.context';
-import User, { UserId } from '../../model/kanel/public/User';
-import UserOrganizationPending from '../../model/kanel/public/UserOrganizationPending';
-import { PortalContext } from '../../model/portal-context';
-import * as MailService from '../../server/mail-service';
-import { ErrorCode } from '../../utils/error/error.code';
-import { loadUserOrganization } from '../common/user-organization.domain';
+import { ErrorCode } from '../../../utils/error/error.code';
+import { loadUserOrganization } from '../../common/user-organization.domain';
 import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import { UsersOrganizationApp } from './users.organization.app';
 import { insertUser } from './users.test.utils';

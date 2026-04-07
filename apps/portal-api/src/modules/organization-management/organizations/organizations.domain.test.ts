@@ -1,21 +1,21 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { db } from '../../../knexfile';
+import { db } from '../../../../knexfile';
+import {
+  ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
+} from '../../../__generated__/resolvers-types';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import Subscription, {
+  SubscriptionId,
+} from '../../../model/kanel/public/Subscription';
+import { UserId } from '../../../model/kanel/public/User';
 import {
   contextBypassUser,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import {
-  ServiceInstanceCreationStatus,
-  ServiceInstanceJoinType,
-} from '../../__generated__/resolvers-types';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-} from '../../model/kanel/public/Subscription';
-import { UserId } from '../../model/kanel/public/User';
 import {
   loadOrganizationsByUser,
   loadUserByOrganization,

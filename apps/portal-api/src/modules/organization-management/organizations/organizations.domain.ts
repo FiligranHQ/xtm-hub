@@ -1,17 +1,17 @@
-import { db, paginate } from '../../../knexfile';
+import { db, paginate } from '../../../../knexfile';
 import {
   Filter,
   FilterKey,
   OrganizationConnection,
   QueryOrganizationsArgs,
-} from '../../__generated__/resolvers-types';
+} from '../../../__generated__/resolvers-types';
 import Organization, {
   OrganizationId,
   OrganizationInitializer,
   OrganizationMutator,
-} from '../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import User, { UserId } from '../../model/kanel/public/User';
+} from '../../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import User, { UserId } from '../../../model/kanel/public/User';
 
 export const organizationDomain = {
   loadOrganizationByLikeName: (name: string) => {

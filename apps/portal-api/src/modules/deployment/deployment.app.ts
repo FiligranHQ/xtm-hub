@@ -31,7 +31,7 @@ import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
 import { updateSubscriptionBy } from '../subcription/subscription.domain';
@@ -51,6 +51,7 @@ import { sendMail } from '../../server/mail-service';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { formatName } from '../../utils/format';
 import { extractId, ucfirst } from '../../utils/utils';
+import { loadUser } from '../organization-management/users/users.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { updateServiceInstance } from '../services/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -58,7 +59,6 @@ import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../telemetry/telemetry.helper';
-import { loadUser } from '../users/users.domain';
 import { CompetitorApp } from './competitor/competitor.app';
 import {
   assertFreeTrialsLimit,

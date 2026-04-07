@@ -7,9 +7,9 @@ import {
 import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { ErrorCode } from '../../utils/error/error.code';
+import { loadUserBy } from '../organization-management/users/users.domain';
 import { SubscriptionDomain } from '../subcription/subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
-import { loadUserBy } from '../users/users.domain';
 import { UserServiceDomain } from './user_service.domain';
 
 export const UserServiceApp = {

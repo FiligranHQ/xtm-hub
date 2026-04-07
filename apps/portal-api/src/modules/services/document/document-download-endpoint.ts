@@ -14,13 +14,13 @@ import {
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { NotFoundError } from '../../../utils/error/error.util';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
+import { loadOrganizationBy } from '../../organization-management/organizations/organizations.domain';
+import { loadUserBy } from '../../organization-management/users/users.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   buildDownloadEvent,
   shouldSendEventForService,
 } from '../../telemetry/telemetry.helper';
-import { loadUserBy } from '../../users/users.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
 import { DocumentDomain } from './domain/document.domain';
 

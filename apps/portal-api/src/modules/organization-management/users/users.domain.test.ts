@@ -1,20 +1,20 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  OrderingMode,
+  UserOrdering,
+} from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
+import { UserId } from '../../../model/kanel/public/User';
+import { ROLE_ADMIN } from '../../../portal.const';
+import {
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
   requestContextAdminUser,
   requestContextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import {
-  OrderingMode,
-  UserOrdering,
-} from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
-import { UserId } from '../../model/kanel/public/User';
-import { ROLE_ADMIN } from '../../portal.const';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { TelemetrySource } from '../telemetry/telemetry.const';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetrySource } from '../../telemetry/telemetry.const';
 import {
   loadUserBy,
   loadUserConnection,

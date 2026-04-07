@@ -1,14 +1,14 @@
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { FilterKey } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
+import User from '../../../model/kanel/public/User';
 import {
   TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
 } from '../../../tests/tests.const';
-import { FilterKey } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
-import User from '../../model/kanel/public/User';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { loadOrganizationBy } from '../organizations/organizations.domain';
 import { usersAdminApp } from './users.admin.app';
 import * as UsersHelper from './users.helper';
