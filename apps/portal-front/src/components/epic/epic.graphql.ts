@@ -25,6 +25,7 @@ export const epicsListFragment = graphql`
       after: $cursor
       orderBy: $orderBy
       orderMode: $orderMode
+      searchTerm: $searchTerm
     ) {
       __id
       edges {
@@ -43,6 +44,7 @@ export const EpicListQuery = graphql`
     $cursor: ID
     $orderBy: EpicOrdering!
     $orderMode: OrderingMode!
+    $searchTerm: String
   ) {
     ...epicsList_epics
   }

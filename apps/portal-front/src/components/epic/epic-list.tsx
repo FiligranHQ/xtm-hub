@@ -8,6 +8,7 @@ import {
 } from '@/components/epic/epic-list-utils';
 import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/capability.helper';
 import useServiceCapability from '@/hooks/useServiceCapability';
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
@@ -15,6 +16,8 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
+import { useDebounceCallback } from 'usehooks-ts';
+import { SearchInput } from '../ui/search-input';
 
 interface EpicListProps {
   epics: epic_fragment$data[];
@@ -23,6 +26,7 @@ interface EpicListProps {
     | seoServiceInstanceFragment$data;
   selectedProduct: EpicFilterType;
   onFilterChange: (filter: EpicFilterType) => void;
+  onSearch: (searchTerm: string) => void;
 }
 
 export const EpicList = ({
@@ -30,6 +34,7 @@ export const EpicList = ({
   serviceInstance,
   selectedProduct,
   onFilterChange,
+  onSearch,
 }: EpicListProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
@@ -82,10 +87,24 @@ export const EpicList = ({
     [serviceInstance.id, userCanUpdate, userCanDelete]
   );
 
+  const handleInputChange = (inputValue: string) => {
+    onSearch(inputValue);
+  };
+
+  const debounceHandleInput = useDebounceCallback(
+    (e) => handleInputChange(e.target.value),
+    DEBOUNCE_TIME
+  );
+
   return (
     <>
+      <h1>{t('Epic.XTMRoadmap')}</h1>
       <div className="flex flex-row items-center gap-4">
-        <h1>{t('Epic.XTMRoadmap')}</h1>
+        <SearchInput
+          containerClass="w-full sm:w-1/3"
+          placeholder={t('Epic.Search')}
+          onChange={debounceHandleInput}
+        />
         <div className="flex flex-row ml-auto items-center">
           <EpicFilter
             selectedFilter={selectedProduct}

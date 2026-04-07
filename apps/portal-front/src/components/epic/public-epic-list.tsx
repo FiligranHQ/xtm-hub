@@ -24,16 +24,20 @@ interface Props {
 const PublicEpicList: React.FC<Props> = ({ queryRef, serviceInstance }) => {
   const queryData = usePreloadedQuery<epicsQuery>(EpicListQuery, queryRef);
 
-  const [data] = useRefetchableFragment<epicsQuery, epicsList_epics$key>(
-    epicsListFragment,
-    queryData
-  );
+  const [data, refetch] = useRefetchableFragment<
+    epicsQuery,
+    epicsList_epics$key
+  >(epicsListFragment, queryData);
 
   const { selectedProduct, setSelectedProduct } = useEpicFilter();
 
   const epics = data.epics!.edges.map(
     (edge) => edge.node as epic_fragment$data
   );
+
+  const handleSearch = (searchTerm: string) => {
+    refetch({ searchTerm: searchTerm || undefined });
+  };
 
   const connectionID = data.epics!.__id;
   return (
@@ -43,6 +47,7 @@ const PublicEpicList: React.FC<Props> = ({ queryRef, serviceInstance }) => {
         serviceInstance={serviceInstance}
         selectedProduct={selectedProduct}
         onFilterChange={setSelectedProduct}
+        onSearch={handleSearch}
       />
     </EpicListContext.Provider>
   );
