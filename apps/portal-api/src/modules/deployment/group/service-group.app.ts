@@ -17,8 +17,8 @@ import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { organizationDomain } from '../../organizations/organizations.domain';
-import { ServiceContractDomain } from '../../services/contract/service-configuration.domain';
-import { PlatformConfiguration } from '../../services/registration/registration.domain';
+import { PlatformConfiguration } from '../../registration/registration.domain';
+import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
 import { UsersDomain } from '../../users/users.domain';
 import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
@@ -91,7 +91,7 @@ export const ServiceGroupApp = {
           });
         if (deploymentRequest?.platform_id) {
           const serviceConfiguration =
-            await ServiceContractDomain.loadConfigurationByPlatform(
+            await ServiceConfigurationDomain.loadConfigurationByPlatform(
               deploymentRequest.platform_id
             );
           if (

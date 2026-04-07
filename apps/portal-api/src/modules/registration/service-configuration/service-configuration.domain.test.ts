@@ -8,14 +8,14 @@ import {
 } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
-import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
-import { ServiceContractDomain } from './service-configuration.domain';
+import { ServiceDefinitionDomain } from '../../services/definition/service-definition.domain';
+import { ServiceConfigurationDomain } from './service-configuration.domain';
 
-describe('Service Contract Domain', () => {
+describe('ServiceConfigurationDomain', () => {
   describe('isServiceConfigurationValid', () => {
     const context = contextBypassUser;
     it('should throw an error when service contract is not found', async () => {
-      const call = ServiceContractDomain.isServiceConfigurationValid(
+      const call = ServiceConfigurationDomain.isServiceConfigurationValid(
         uuidv4() as ServiceDefinitionId,
         {}
       );
@@ -38,10 +38,11 @@ describe('Service Contract Domain', () => {
         platform_contract: 'EE',
       };
 
-      const result = await ServiceContractDomain.isServiceConfigurationValid(
-        serviceDefinition!.id,
-        configuration
-      );
+      const result =
+        await ServiceConfigurationDomain.isServiceConfigurationValid(
+          serviceDefinition!.id,
+          configuration
+        );
 
       expect(result).toBeTruthy();
     });
@@ -52,10 +53,11 @@ describe('Service Contract Domain', () => {
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
         });
 
-      const result = await ServiceContractDomain.isServiceConfigurationValid(
-        serviceDefinition!.id,
-        {}
-      );
+      const result =
+        await ServiceConfigurationDomain.isServiceConfigurationValid(
+          serviceDefinition!.id,
+          {}
+        );
 
       expect(result).toBeFalsy();
     });
@@ -82,7 +84,7 @@ describe('Service Contract Domain', () => {
 
     it('should return configuration when platform and token is found in its config', async () => {
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+        await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
           platformId,
           token,
         });
@@ -99,7 +101,7 @@ describe('Service Contract Domain', () => {
 
     it('should return undefined when platform is found but token does not match', async () => {
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+        await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
           platformId,
           token: uuidv4(),
         });
@@ -109,7 +111,7 @@ describe('Service Contract Domain', () => {
 
     it('should return undefined when token is found but platform does not match', async () => {
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+        await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
           platformId: uuidv4(),
           token,
         });
@@ -119,7 +121,7 @@ describe('Service Contract Domain', () => {
 
     it('should return undefined when token and platform does not exist', async () => {
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatformAndToken({
+        await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
           platformId: uuidv4(),
           token: uuidv4(),
         });
@@ -149,7 +151,9 @@ describe('Service Contract Domain', () => {
 
     it('should return configuration when platform is found in its config', async () => {
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatform(platformId);
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          platformId
+        );
 
       expect(configuration).toMatchObject({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -163,7 +167,7 @@ describe('Service Contract Domain', () => {
 
     it('should return configuration when platform is found and active, and filter is active', async () => {
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatform(
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           ServiceConfigurationStatus.Active
         );
@@ -180,7 +184,7 @@ describe('Service Contract Domain', () => {
 
     it('should return undefined when configuration is active and inactive filter is used', async () => {
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatform(
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           ServiceConfigurationStatus.Inactive
         );
@@ -190,7 +194,7 @@ describe('Service Contract Domain', () => {
 
     it('should return undefined when platform is not found', async () => {
       const configuration =
-        await ServiceContractDomain.loadConfigurationByPlatform(uuidv4());
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(uuidv4());
 
       expect(configuration).toBeUndefined();
     });

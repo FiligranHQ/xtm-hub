@@ -4,7 +4,7 @@ import ServiceDefinition, {
   ServiceDefinitionMutator,
 } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from '../registration/registration.mapping';
+import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from '../../registration/registration.mapping';
 
 export const ServiceDefinitionDomain = {
   loadServiceDefinitionBy(

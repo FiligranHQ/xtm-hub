@@ -20,50 +20,50 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
   UnregisterPlatformInput,
-} from '../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../context/database.context';
-import { requestContext } from '../../../context/request.context';
-import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
+} from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
+import { requestContext } from '../../context/request.context';
+import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
 import Organization, {
   OrganizationId,
-} from '../../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
-import { isUserAllowedOnOrganization } from '../../../security/auth.helper';
-import { securityGuard } from '../../../security/guard';
-import { sendMail } from '../../../server/mail-service';
-import { logApp } from '../../../utils/app-logger.util';
+} from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../model/kanel/public/User';
+import { isUserAllowedOnOrganization } from '../../security/auth.helper';
+import { securityGuard } from '../../security/guard';
+import { sendMail } from '../../server/mail-service';
+import { logApp } from '../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
-} from '../../../utils/error/error.code';
-import { formatName } from '../../../utils/format';
-import { RequiredPlatformVersions } from '../../../utils/required-platform-version';
-import { doesVersionSatisfy, isValidVersion } from '../../../utils/versioning';
-import { loadUserOrganization } from '../../common/user-organization.domain';
-import { DeploymentRequestDomain } from '../../deployment/deployment.domain';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import { buildRegisterEvent } from '../../telemetry/telemetry.helper';
-import {
-  loadUsersByCapabilitiesInOrganization,
-  updateUser,
-} from '../../users/users.domain';
-import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
+} from '../../utils/error/error.code';
+import { formatName } from '../../utils/format';
+import { RequiredPlatformVersions } from '../../utils/required-platform-version';
+import { doesVersionSatisfy, isValidVersion } from '../../utils/versioning';
+import { loadUserOrganization } from '../common/user-organization.domain';
+import { DeploymentRequestDomain } from '../deployment/deployment.domain';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
 import {
   loadServiceDefinitionByServiceInstance,
   updateServiceInstance,
-} from '../service-instance.domain';
+} from '../services/service-instance.domain';
+import { loadSubscriptionBy } from '../subcription/subscription.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { buildRegisterEvent } from '../telemetry/telemetry.helper';
+import {
+  loadUsersByCapabilitiesInOrganization,
+  updateUser,
+} from '../users/users.domain';
 import {
   DomainRegisteredPlatform,
   PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from './registration.mapping';
+import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
@@ -71,7 +71,7 @@ export const registrationApp = {
   ): Promise<Organization | null> => {
     const { user } = requestContext.require();
     const serviceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatform(platformId);
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId);
     if (!serviceConfiguration) {
       return null;
     }
@@ -124,7 +124,9 @@ export const registrationApp = {
     input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const serviceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatformAndToken(input);
+      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
+        input
+      );
     return {
       status:
         serviceConfiguration?.status === ServiceConfigurationStatus.Active
@@ -141,7 +143,9 @@ export const registrationApp = {
     }
 
     const serviceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatformAndToken(input);
+      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
+        input
+      );
     if (!serviceConfiguration) {
       if (!input.platformIdentifier) {
         return { status: PlatformRegistrationConnectivityStatus.Inactive };
@@ -167,7 +171,7 @@ export const registrationApp = {
     const shouldUpdatePlatformVersion =
       serviceConfiguration.config['version'] !== input.platformVersion;
     if (shouldUpdatePlatformVersion) {
-      await ServiceContractDomain.updateConfiguration(
+      await ServiceConfigurationDomain.updateConfiguration(
         serviceConfiguration.service_instance_id,
         {
           config: {
@@ -212,7 +216,7 @@ export const registrationApp = {
     }
 
     const isConfigurationValid =
-      await ServiceContractDomain.isServiceConfigurationValid(
+      await ServiceConfigurationDomain.isServiceConfigurationValid(
         serviceDefinition.id,
         configuration
       );
@@ -221,7 +225,7 @@ export const registrationApp = {
     }
 
     const serviceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatform(platform.id);
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(platform.id);
 
     await withTransaction(async () => {
       if (serviceConfiguration) {
@@ -287,7 +291,7 @@ export const registrationApp = {
     identifier,
   }: UnregisterPlatformInput) => {
     const activeServiceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatform(
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(
         platformId,
         ServiceConfigurationStatus.Active
       );
@@ -323,7 +327,7 @@ export const registrationApp = {
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
 
-    await ServiceContractDomain.updateConfiguration(
+    await ServiceConfigurationDomain.updateConfiguration(
       activeServiceConfiguration.service_instance_id,
       { status: ServiceConfigurationStatus.Inactive }
     );
@@ -354,7 +358,9 @@ export const registrationApp = {
     input: IsPlatformRegisteredInput
   ): Promise<IsPlatformRegisteredResponse> => {
     const serviceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatform(input.platformId);
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        input.platformId
+      );
     if (!serviceConfiguration) {
       return { status: PlatformRegistrationStatus.NeverRegistered };
     }
@@ -387,7 +393,7 @@ export const registrationApp = {
     isInOrganization: boolean;
   }> => {
     const serviceConfiguration =
-      await ServiceContractDomain.loadConfigurationByPlatform(
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(
         platformId,
         ServiceConfigurationStatus.Active
       );
@@ -456,7 +462,7 @@ export const registrationApp = {
 
     await withTransaction(async () => {
       await Promise.all([
-        ServiceContractDomain.upsertConfiguration(
+        ServiceConfigurationDomain.upsertConfiguration(
           deploymentRequest.service_instance_id,
           configuration
         ),
