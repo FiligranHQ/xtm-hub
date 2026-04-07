@@ -1,10 +1,10 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
-import { expect, vi } from 'vitest';
 import { v4 as uuidv4 } from 'uuid';
+import { expect, vi } from 'vitest';
 import { db } from '../knexfile';
 import {
-  DocumentMetadataKeyCode,
   CompetitorTier,
+  DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
   PlatformContract,
@@ -127,6 +127,7 @@ export const TestHelper = {
       const [document] = await db<Document>('Document')
         .insert({
           id: uuidv4() as DocumentId,
+          type: 'image',
           ...data,
         })
         .returning('*');
@@ -211,6 +212,14 @@ export const TestHelper = {
         .where(field)
         .del();
     },
+    load: async (
+      field: ServiceConfigurationMutator
+    ): Promise<ServiceConfiguration | undefined> => {
+      return db<ServiceConfiguration>('Service_Configuration')
+        .where(field)
+        .select('*')
+        .first();
+    },
   },
   serviceInstance: {
     create: async (
@@ -231,6 +240,14 @@ export const TestHelper = {
     delete: async (field: ServiceInstanceMutator) => {
       await db<ServiceInstance>('ServiceInstance').where(field).del();
     },
+    load: async (
+      field: ServiceInstanceMutator
+    ): Promise<ServiceInstance | undefined> => {
+      return db<ServiceInstance>('ServiceInstance')
+        .where(field)
+        .select('*')
+        .first();
+    },
   },
   subscription: {
     create: async (data?: Partial<Subscription>): Promise<Subscription> => {
@@ -244,6 +261,11 @@ export const TestHelper = {
     },
     delete: async (field: SubscriptionMutator) => {
       await db<Subscription>('Subscription').where(field).del();
+    },
+    load: async (
+      field: SubscriptionMutator
+    ): Promise<Subscription[] | undefined> => {
+      return db<Subscription[]>('Subscription').where(field).select('*');
     },
   },
   user_Service: {

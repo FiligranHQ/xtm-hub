@@ -3,6 +3,7 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestJobTitle,
   DeploymentRequestPlatformRegion,
+  DeploymentRequestSource,
   DeploymentRequestUseCase,
   PlatformIdentifier,
   PortalCapability,
@@ -65,6 +66,8 @@ export const TEST_ORGANIZATIONS = {
         LAST_NAME: 'Time',
         PERSONAL_SPACE_ID:
           '154006e2-f24b-42da-b39c-e0fb17bead00' as OrganizationId,
+        COUNTRY: 'FRANCE',
+        PICTURE: '',
       },
       REGISTERER: {
         ID: 'b2d22bec-182c-47b3-bf4e-ba8e0d3e6a40' as UserId,
@@ -141,6 +144,7 @@ export const DEPLOYMENT = {
   platform_identifier: PlatformIdentifier.Opencti,
   region: DeploymentRequestPlatformRegion.UsEast,
   type: DeploymentRequestDeploymentType.Trial,
+  source: DeploymentRequestSource.Xtmhub,
 };
 
 export const contextBypassUser: PortalContext = {

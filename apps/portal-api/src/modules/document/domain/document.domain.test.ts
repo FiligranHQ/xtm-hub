@@ -717,7 +717,7 @@ describe('Document domain', () => {
     beforeEach(async () => {
       await db<Document>('Document').delete();
       await db('Document_Metadata').delete();
-      doc1 = await TestHelper.document.create({});
+      doc1 = await TestHelper.document.create();
       doc2 = await TestHelper.document.create({ slug: 'doc2-slug' });
       doc3 = await TestHelper.document.create({ slug: 'doc3-slug' });
       await db('Document_Metadata').insert([

@@ -16,6 +16,7 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
+  CompetitorTier,
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
@@ -62,6 +63,10 @@ import {
 
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
+import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/test.helper';
+import portalConfig from '../../config';
+import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
 import { PortalContext } from '../../model/portal-context';
@@ -104,15 +109,8 @@ describe('Deployment app', () => {
       });
 
       // When
-      const deployment = await DeploymentApp.createDeploymentRequest({
-        activity_sector:
-          DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: DeploymentRequestJobTitle.CLevel,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const deployment =
+        await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
       // Check data from DB
       const dbDeploymentRequest =
@@ -142,7 +140,7 @@ describe('Deployment app', () => {
         ordering: expect.any(Number),
         type: DeploymentRequestDeploymentType.Trial,
         use_case: DeploymentRequestUseCase.ThreatHunting,
-        source: DeploymentRequestSource.OpenctiDemo,
+        source: DeploymentRequestSource.Xtmhub,
       });
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
@@ -155,15 +153,8 @@ describe('Deployment app', () => {
       });
 
       // When
-      const deployment = await DeploymentApp.createDeploymentRequest({
-        activity_sector:
-          DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: DeploymentRequestJobTitle.CLevel,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const deployment =
+        await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
       // Check data from DB
       const dbDeploymentRequest =
@@ -218,15 +209,7 @@ describe('Deployment app', () => {
       });
 
       // When
-      const call = DeploymentApp.createDeploymentRequest({
-        activity_sector:
-          DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: DeploymentRequestJobTitle.CLevel,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const call = DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
       // Then
       await expect(call).rejects.toThrow(
@@ -236,13 +219,8 @@ describe('Deployment app', () => {
 
     it('should throw when service definition is not found', async () => {
       const call = DeploymentApp.createDeploymentRequest({
-        activity_sector:
-          DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: DeploymentRequestJobTitle.CLevel,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
-        platform_identifier: 'unknown' as PlatformIdentifier,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
+        ...DEPLOYMENT,
+        platform_identifier: 'unknown-platform' as PlatformIdentifier,
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
@@ -257,15 +235,7 @@ describe('Deployment app', () => {
       // Given
       await TestHelper.competitor.create();
 
-      const call = DeploymentApp.createDeploymentRequest({
-        activity_sector:
-          DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: DeploymentRequestJobTitle.CLevel,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const call = DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
       // Then
       await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
@@ -278,30 +248,16 @@ describe('Deployment app', () => {
         domain: 'not-blocked.com',
       });
 
-      const deployment = await DeploymentApp.createDeploymentRequest({
-        activity_sector:
-          DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: DeploymentRequestJobTitle.CLevel,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const deployment =
+        await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
       // Then
       expect(deployment.id).toBeDefined();
     });
 
     it('should allow deployment when no competitors exist', async () => {
-      const deployment = await DeploymentApp.createDeploymentRequest({
-        activity_sector:
-          DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: DeploymentRequestJobTitle.CLevel,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const deployment =
+        await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
       // Then
       expect(deployment.id).toBeDefined();
@@ -329,6 +285,7 @@ describe('Deployment app', () => {
             platform_identifier: product,
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
+            source,
           });
 
           expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
@@ -358,15 +315,8 @@ describe('Deployment app', () => {
         vi.setSystemTime(date);
         telemetrySpy.mockRejectedValue(new Error('UNKNOWN'));
 
-        const deployment = await DeploymentApp.createDeploymentRequest({
-          activity_sector:
-            DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          job_title: DeploymentRequestJobTitle.CLevel,
-          use_case: DeploymentRequestUseCase.ThreatHunting,
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          type: DeploymentRequestDeploymentType.Trial,
-        });
+        const deployment =
+          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
         expect(deployment).toBeDefined();
       });
@@ -375,15 +325,7 @@ describe('Deployment app', () => {
     describe('mail', () => {
       describe('development environment', () => {
         it('should send a mail if status is pending to dev team', async () => {
-          await DeploymentApp.createDeploymentRequest({
-            activity_sector:
-              DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: DeploymentRequestJobTitle.CLevel,
-            use_case: DeploymentRequestUseCase.ThreatHunting,
-            platform_identifier: PlatformIdentifier.Opencti,
-            region: DeploymentRequestPlatformRegion.UsEast,
-            type: DeploymentRequestDeploymentType.Trial,
-          });
+          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
@@ -417,15 +359,7 @@ describe('Deployment app', () => {
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
-          await DeploymentApp.createDeploymentRequest({
-            activity_sector:
-              DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: DeploymentRequestJobTitle.CLevel,
-            use_case: DeploymentRequestUseCase.ThreatHunting,
-            platform_identifier: PlatformIdentifier.Opencti,
-            region: DeploymentRequestPlatformRegion.UsEast,
-            type: DeploymentRequestDeploymentType.Trial,
-          });
+          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
@@ -469,15 +403,7 @@ describe('Deployment app', () => {
         });
 
         it('should send a mail if status is pending to dev team', async () => {
-          await DeploymentApp.createDeploymentRequest({
-            activity_sector:
-              DeploymentRequestActivitySector.ComputerNetworkSecurity,
-            job_title: DeploymentRequestJobTitle.CLevel,
-            use_case: DeploymentRequestUseCase.ThreatHunting,
-            platform_identifier: PlatformIdentifier.Opencti,
-            region: DeploymentRequestPlatformRegion.UsEast,
-            type: DeploymentRequestDeploymentType.Trial,
-          });
+          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
@@ -511,7 +437,7 @@ describe('Deployment app', () => {
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
-          await DeploymentApp.createDeploymentRequest({DEPLOYMENT });
+          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
