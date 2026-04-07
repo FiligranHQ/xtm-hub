@@ -9,12 +9,14 @@ interface EpicPageProps {
   epics: epic_fragment$data[];
   serviceInstance: serviceInstance_fragment$data;
   connectionID: string;
+  onSearch: (searchTerm: string) => void;
 }
 
 export const EpicPage = ({
   epics,
   serviceInstance,
   connectionID,
+  onSearch,
 }: EpicPageProps) => {
   const { selectedProduct, setSelectedProduct } = useEpicFilter();
 
@@ -25,6 +27,7 @@ export const EpicPage = ({
         serviceInstance={serviceInstance}
         selectedProduct={selectedProduct}
         onFilterChange={setSelectedProduct}
+        onSearch={onSearch}
       />
     </EpicListContext.Provider>
   );
