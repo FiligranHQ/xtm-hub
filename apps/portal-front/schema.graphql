@@ -1550,6 +1550,7 @@ enum Timeline {
   now
   next
   under_consideration
+  finished
 }
 
 enum EpicType {

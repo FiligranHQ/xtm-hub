@@ -2089,6 +2089,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
 };
 
 export enum Timeline {
+  Finished = 'finished',
   Next = 'next',
   Now = 'now',
   UnderConsideration = 'under_consideration'

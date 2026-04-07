@@ -38,6 +38,7 @@ export const EpicList = ({
 }: EpicListProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
+  const [showFinished, setShowFinished] = useState(false);
   const userCanUpdate = useServiceCapability(
     ServiceCapabilityName.Upsert,
     serviceInstance as serviceInstance_fragment$data
@@ -51,9 +52,13 @@ export const EpicList = ({
       ? epics
       : epics.filter((epic) => epic.product === selectedProduct);
 
-  const { draft, now, next, under_consideration } =
+  const { draft, now, next, under_consideration, finished } =
     useDraftAndTimelineEpics(filteredEpics);
-  const countsByProduct = useCountEpicsByProduct(epics, userCanUpdate);
+  const countsByProduct = useCountEpicsByProduct(
+    epics,
+    userCanUpdate,
+    showFinished
+  );
 
   const sections = useMemo(
     () => [
@@ -61,8 +66,11 @@ export const EpicList = ({
       { title: TimelineEnum.NOW, epics: now },
       { title: TimelineEnum.NEXT, epics: next },
       { title: TimelineEnum.UNDER_CONSIDERATION, epics: under_consideration },
+      ...(showFinished
+        ? [{ title: TimelineEnum.FINISHED, epics: finished }]
+        : []),
     ],
-    [draft, now, next, under_consideration]
+    [draft, now, next, under_consideration, finished, showFinished]
   );
 
   const renderEpicItems = useCallback(
@@ -102,6 +110,8 @@ export const EpicList = ({
             selectedFilter={selectedProduct}
             onSelectedFilterChange={onFilterChange}
             countsByProduct={countsByProduct}
+            showFinished={showFinished}
+            onShowFinishedChange={setShowFinished}
           />
           {userCanUpdate && (
             <EpicFormSheet
