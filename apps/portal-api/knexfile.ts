@@ -152,10 +152,7 @@ export interface QueryOpts {
   normalizeSearchTerm?: boolean;
 }
 
-export const dbRaw = (
-  statement: string,
-  binding?: Knex.RawBinding | Knex.RawBinding[]
-) => database.raw(statement, binding);
+export const dbRaw: Knex.RawBuilder = database.raw.bind(database);
 
 export const dbTx = () => database.transaction();
 
