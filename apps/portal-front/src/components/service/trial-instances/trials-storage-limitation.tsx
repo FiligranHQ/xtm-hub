@@ -1,16 +1,13 @@
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import Link from 'next/link';
-import React from 'react';
 
 interface Props {
   platformIdentifier: PlatformIdentifierEnum;
 }
 
-const SAAS_FEATURES_URL = 'https://filigran.io/offerings/software-as-a-service/';
-
 const SaaSFeaturesLink = () => (
   <Link
-    href={SAAS_FEATURES_URL}
+    href="https://filigran.io/offerings/software-as-a-service/"
     target="_blank"
     rel="noopener noreferrer"
     className="underline">
