@@ -1,16 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../../knexfile';
-import { SERVICES } from '../../../../../tests/tests.const';
+import { db } from '../../../../knexfile';
+import { SERVICES } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
   DocumentSourceType,
-} from '../../../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../../../model/kanel/public/Document';
-import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
-import { ADMIN_UUID } from '../../../../portal.const';
-import { MinIOClient } from '../../../../thirdparty/minio/client';
+} from '../../../__generated__/resolvers-types';
+import Document, { DocumentId } from '../../../model/kanel/public/Document';
+import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { ADMIN_UUID } from '../../../portal.const';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from '../document.model';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { Upload } from '../document.uploads.helper';

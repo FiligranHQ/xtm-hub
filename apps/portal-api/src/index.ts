@@ -24,8 +24,8 @@ import { requestContext } from './context/request.context';
 import { initCronJobs, stopCronJobs } from './crons';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
-import { documentDownloadEndpoint } from './modules/services/document/document-download-endpoint';
-import { documentVisualizeEndpoint } from './modules/services/document/visualize-document-endpoint';
+import { documentDownloadEndpoint } from './modules/document/document-download-endpoint';
+import { documentVisualizeEndpoint } from './modules/document/visualize-document-endpoint';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import {
   operationMetricsPlugin,

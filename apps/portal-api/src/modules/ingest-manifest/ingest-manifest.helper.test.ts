@@ -5,7 +5,7 @@ import {
   IntegrationSubType,
   IntegrationType,
 } from '../../__generated__/resolvers-types';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../services/document/opencti/integrations/integrations.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../document/opencti/integrations/integrations.model';
 import {
   extractManifestInformation,
   ManifestExtractionResult,
