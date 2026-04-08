@@ -7787,6 +7787,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:24.12.2":
+  version: 24.12.2
+  resolution: "@types/node@npm:24.12.2"
+  dependencies:
+    undici-types: "npm:~7.16.0"
+  checksum: 10/99b9f15e67a4b3c39b39ad83ee0febad7f0b4709c004863104d7acfa4146dd7e58c12a08a9a7ff2be8c2eefd0063bf991fade0879d7c4a370a0ee7fd4c799e8a
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:>=13.7.0, @types/node@npm:^24.0.3":
   version: 24.10.1
   resolution: "@types/node@npm:24.10.1"
@@ -20705,7 +20714,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "xtm-hub@workspace:."
   dependencies:
-    "@types/node": "npm:24.12.0"
+    "@types/node": "npm:24.12.2"
     eslint: "npm:^9.30.1"
     eslint-config-next: "npm:^15.3.5"
     eslint-config-prettier: "npm:^10.1.5"
