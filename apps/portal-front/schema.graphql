@@ -95,16 +95,16 @@ type Query {
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
   serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  updateOpenCTIManifest(tag: String): Success!
-  organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
-  userOrganizations: [Organization!]!
   documentExists(documentName: String, service_instance_id: String): Boolean
   publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
   publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
   publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ID): Document
+  updateOpenCTIManifest(tag: String): Success!
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
+  userOrganizations: [Organization!]!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
@@ -130,7 +130,7 @@ type Query {
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
-  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!): EpicConnection
+  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
   node(id: ID!): Node
 }
 
@@ -145,14 +145,14 @@ type Mutation {
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
-  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
-  addOrganization(input: OrganizationInput!): Organization
-  editOrganization(id: ID!, input: OrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
   updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
   deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
+  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  addOrganization(input: OrganizationInput!): Organization
+  editOrganization(id: ID!, input: OrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
@@ -475,68 +475,6 @@ input UpdateServiceGroupsInput {
   groups: [UpdateServiceGroupsInputGroup!]!
 }
 
-enum OrganizationOrdering {
-  name
-}
-
-type OrganizationId implements Node {
-  id: ID!
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-  domains: [String!]
-  personal_space: Boolean!
-  capabilityUser: [Capability]
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input OrganizationInput {
-  name: String!
-  domains: [String!]
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-enum ServiceConfigurationStatus {
-  active
-  inactive
-}
-
-enum ServiceDefinitionIdentifier {
-  vault
-  link
-  opencti_custom_dashboards
-  opencti_integrations
-  openaev_scenarios
-  opencti_registration
-  openaev_registration
-  xtm_suite_roadmap
-}
-
-type ServiceDefinition implements Node {
-  id: ID!
-  name: String!
-  description: String
-  public: Boolean
-  identifier: ServiceDefinitionIdentifier!
-  service_capability: [ServiceCapability]
-}
-
 enum DocumentSourceType {
   external
   internal
@@ -746,6 +684,17 @@ enum IntegrationSubType {
   ORCHESTRATION
   DETECTION
   CASE_MANAGEMENT
+  THREAT_ACTORS
+  MALWARE
+  CYBER_INDUSTRY
+  PERIODIC_BRIEFING
+  SECURITY_RESEARCHER
+  VENDORS
+  FEDERAL_ORGANIZATION
+  JOURNALISTS
+  NOT_FOR_PROFIT_ORGANIZATION
+  SOCIAL_MEDIA
+  DARKWEB
 }
 
 interface Integration implements Node & Document {
@@ -992,11 +941,36 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   demo_url: String
 }
 
-type ServiceLink implements Node {
+enum OrganizationOrdering {
+  name
+}
+
+type OrganizationId implements Node {
   id: ID!
-  service_instance_id: ID
-  url: String
-  name: String
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+  domains: [String!]
+  personal_space: Boolean!
+  capabilityUser: [Capability]
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input OrganizationInput {
+  name: String!
+  domains: [String!]
 }
 
 input OpenCTIPlatformRegistrationStatusInput {
@@ -1120,6 +1094,43 @@ input RegisteredPlatformInput {
 input AutoRegisterPlatformInput {
   platform: PlatformInput!
   existing_users_count: Int
+}
+
+enum ServiceConfigurationStatus {
+  active
+  inactive
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+enum ServiceDefinitionIdentifier {
+  vault
+  link
+  opencti_custom_dashboards
+  opencti_integrations
+  openaev_scenarios
+  opencti_registration
+  openaev_registration
+  xtm_suite_roadmap
+}
+
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  identifier: ServiceDefinitionIdentifier!
+  service_capability: [ServiceCapability]
+}
+
+type ServiceLink implements Node {
+  id: ID!
+  service_instance_id: ID
+  url: String
+  name: String
 }
 
 enum ServiceInstanceOrdering {
@@ -1550,6 +1561,7 @@ enum Timeline {
   now
   next
   under_consideration
+  finished
 }
 
 enum EpicType {

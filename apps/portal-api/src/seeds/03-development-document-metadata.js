@@ -55,7 +55,7 @@ export async function seed(knex) {
       {
         document_id: 'e9efb7a0-2308-4776-9076-489c5caf9b4c',
         key: 'integration_subtype',
-        value: 'NATIVE',
+        value: 'MALWARE',
       },
       {
         document_id: 'e9efb7a0-2308-4776-9076-489c5caf9b4c',
