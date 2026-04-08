@@ -1,17 +1,18 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { TestHelper } from '../../../tests/test.helper';
 import {
-  contextBypassUser,
+  contextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
+import { requestContext } from '../../context/request.context';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
   TelemetrySource,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { deleteSubscription } from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
 describe('Subscription mutation resolver', () => {
@@ -26,10 +27,11 @@ describe('Subscription mutation resolver', () => {
             SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
           ),
         },
-        contextBypassUser
+        contextSimpleUserSecondOrga
       );
-      expect(response).toBeTruthy();
-      expect(response?.name).toEqual(SERVICES.INSTANCES.OPENAEV_SCENARIOS.NAME);
+      expect(response).toMatchObject({
+        name: SERVICES.INSTANCES.OPENAEV_SCENARIOS.NAME,
+      });
     });
     it('should send a telemetry event for subscription integrations service', async () => {
       vi.useFakeTimers();
@@ -39,7 +41,9 @@ describe('Subscription mutation resolver', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
+      requestContext.set(contextSimpleUserSecondOrga);
       // @ts-ignore
+
       await subscriptionResolver.Mutation.addSubscription(
         undefined,
         {
@@ -48,16 +52,16 @@ describe('Subscription mutation resolver', () => {
             SERVICES.INSTANCES.INTEGRATIONS.ID
           ),
         },
-        contextBypassUser
+        contextSimpleUserSecondOrga
       );
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.SUBSCRIBE,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        organization_name: 'Filigran',
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
         organization_type: 'Professional',
         source: TelemetrySource.XTMHUB,
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       });
     });
@@ -73,22 +77,14 @@ describe('Subscription mutation resolver', () => {
             SERVICES.INSTANCES.VAULT.ID
           ),
         },
-        contextBypassUser
+        contextSimpleUserSecondOrga
       );
       expect(telemetrySpy).not.toHaveBeenCalled();
     });
 
     afterEach(async () => {
       vi.useRealTimers();
-      await deleteSubscription({
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-      });
-      await deleteSubscription({
-        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
-      });
-      await deleteSubscription({
-        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-      });
+      await TestHelper.subscription.delete({});
     });
   });
 });

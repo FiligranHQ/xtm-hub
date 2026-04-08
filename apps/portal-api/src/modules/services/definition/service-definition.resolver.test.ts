@@ -1,9 +1,10 @@
 import { GraphQLResolveInfo } from 'graphql';
-import { toGlobalId } from 'graphql-relay/node/node.js';
+import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextBypassUser } from '../../../../tests/tests.const';
+
+import { TestHelper } from '../../../../tests/test.helper';
+import { contextSimpleUserSecondOrga } from '../../../../tests/tests.const';
 import { ServiceDefinition } from '../../../__generated__/resolvers-types';
-import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import * as ServiceCapabilityDomain from './service-capability/service-capability.domain';
 import serviceDefinitionResolver from './service-definition.resolver';
@@ -16,53 +17,36 @@ describe('ServiceDefinition resolver fields', () => {
   });
   describe('service_capability field resolver', () => {
     it('should load service capabilities for a given service definition', async () => {
-      const mockServiceDefinitionId =
-        'test-service-def-id' as ServiceDefinitionId;
-      const mockServiceCapabilities = [
-        {
-          id: toGlobalId('Service_Capability', '1') as ServiceCapabilityId,
-          name: 'Capability 1',
-          description: null,
-          service_definition_id: null,
-        },
-        {
-          id: toGlobalId('Service_Capability', '2') as ServiceCapabilityId,
-          name: 'Capability 2',
-          description: null,
-          service_definition_id: null,
-        },
-      ];
-
-      const mockLoadServiceCapabilitiesBy = vi
-        .spyOn(ServiceCapabilityDomain, 'loadServiceCapabilitiesBy')
-        .mockResolvedValueOnce(mockServiceCapabilities);
+      // Given
+      const serviceDefinition = await TestHelper.serviceDefinition.create();
+      await TestHelper.serviceCapability.create({
+        service_definition_id: serviceDefinition.id,
+      });
+      await TestHelper.serviceCapability.create();
       const resolver =
         serviceDefinitionResolver.ServiceDefinition?.service_capability;
       if (!resolver) {
         throw new Error('service_capability resolver is not defined');
       }
-
+      // When
       const response = await resolver(
-        { id: mockServiceDefinitionId } as unknown as ServiceDefinition,
+        { id: serviceDefinition.id } as unknown as ServiceDefinition,
         {},
-        contextBypassUser,
+        contextSimpleUserSecondOrga,
         {} as GraphQLResolveInfo
       );
 
-      expect(mockLoadServiceCapabilitiesBy).toHaveBeenCalledWith({
-        service_definition_id: mockServiceDefinitionId,
+      // Then
+
+      expect(response).toHaveLength(1);
+      expect(response?.[0]).toMatchObject({
+        service_definition_id: serviceDefinition.id,
+        name: 'RANDOM SERVICE CAPABILITY',
+        description: 'This is a short description',
       });
-      expect(response).toEqual(mockServiceCapabilities);
     });
 
     it('should handle empty service capabilities', async () => {
-      const mockServiceDefinitionId =
-        'test-service-def-id' as ServiceDefinitionId;
-
-      const mockLoadServiceCapabilitiesBy = vi
-        .spyOn(ServiceCapabilityDomain, 'loadServiceCapabilitiesBy')
-        .mockResolvedValueOnce([]);
-
       const resolver =
         serviceDefinitionResolver.ServiceDefinition?.service_capability;
       if (!resolver) {
@@ -70,14 +54,13 @@ describe('ServiceDefinition resolver fields', () => {
       }
 
       const response = await resolver(
-        { id: mockServiceDefinitionId } as unknown as ServiceDefinition,
+        { id: uuidv4() } as unknown as ServiceDefinition,
         {},
-        contextBypassUser,
+        contextSimpleUserSecondOrga,
         {} as GraphQLResolveInfo
       );
 
       expect(response).toEqual([]);
-      expect(mockLoadServiceCapabilitiesBy).toHaveBeenCalledOnce();
     });
 
     it('should handle errors from loadServiceCapabilitiesBy', async () => {
@@ -100,7 +83,7 @@ describe('ServiceDefinition resolver fields', () => {
         resolver(
           { id: mockServiceDefinitionId } as unknown as ServiceDefinition,
           {},
-          contextBypassUser,
+          contextSimpleUserSecondOrga,
           {} as GraphQLResolveInfo
         )
       ).rejects.toThrow('Failed to load capabilities');

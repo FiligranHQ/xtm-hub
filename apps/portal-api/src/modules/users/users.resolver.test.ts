@@ -16,8 +16,10 @@ import { SubscriptionSpy } from '../../../tests/test-utils';
 import {
   contextAdminSecondOrga,
   contextBypassUser,
+  contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
   requestContextAdminUser,
+  requestContextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -241,6 +243,7 @@ describe('User query resolver', () => {
 
 describe('User mutation resolver', () => {
   it('should be login', async () => {
+    // When
     // @ts-ignore
     const response = await usersResolver.Mutation.login(
       undefined,
@@ -256,6 +259,7 @@ describe('User mutation resolver', () => {
         },
       }
     );
+    // Then
     expect(response).toBeTruthy();
   });
 
@@ -264,6 +268,7 @@ describe('User mutation resolver', () => {
       vi.restoreAllMocks();
     });
     it('should not create an existing user', async () => {
+      // Given
       try {
         // @ts-ignore
         await usersResolver.Mutation.adminAddUser(
@@ -284,6 +289,7 @@ describe('User mutation resolver', () => {
       }
     });
     it('should not partially create a user if an error occurs', async () => {
+      // Given
       const testEmail = 'testRollback@company.com';
       try {
         vi.spyOn(
@@ -293,6 +299,7 @@ describe('User mutation resolver', () => {
           throw new Error('Test error');
         });
         const testEmail = 'testRollback@company.com';
+        // When
         // @ts-ignore
         await usersResolver.Mutation.adminAddUser(
           undefined,
@@ -305,6 +312,7 @@ describe('User mutation resolver', () => {
           contextBypassUser
         );
       } catch (error) {
+        // Then
         // Should throw an error and catch it.
         // As we do not use a running server we need to catch the error
         // otherwise it would be send in the graphql response as an error.
@@ -315,6 +323,7 @@ describe('User mutation resolver', () => {
     });
 
     it('should should send a add event in sse', async () => {
+      // Given
       const filigranSpy = new SubscriptionSpy();
       const secondOrgaSpy = new SubscriptionSpy();
       // @ts-ignore
@@ -343,6 +352,8 @@ describe('User mutation resolver', () => {
       );
 
       const email = 'sseEventAddUser@filigran.io';
+      // When
+
       // @ts-ignore
       await usersResolver.Mutation.adminAddUser(
         undefined,
@@ -364,6 +375,7 @@ describe('User mutation resolver', () => {
         contextBypassUser
       );
 
+      // Then
       const events = await filigranSpy.waitForEvents(1);
 
       expect(events).toHaveLength(1);
@@ -402,7 +414,7 @@ describe('User mutation resolver', () => {
         );
       });
       it('should have only one organization Personal space', async () => {
-        expect(organizations.length).toEqual(1);
+        expect(organizations).toHaveLength(1);
       });
 
       it('should User.Id is equal to Organization.Id', async () => {
@@ -524,7 +536,7 @@ describe('User mutation resolver', () => {
         organizations = await usersResolver.User.organizations(
           user,
           undefined,
-          contextBypassUser,
+          contextAdminSecondOrga,
           undefined
         );
 
@@ -766,9 +778,9 @@ describe('User mutation resolver', () => {
       );
 
       const testContext = {
-        ...contextBypassUser,
+        ...contextAdminSecondOrga,
         user: {
-          ...contextBypassUser.user,
+          ...contextAdminSecondOrga.user,
           selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
@@ -811,9 +823,9 @@ describe('User mutation resolver', () => {
     });
     it('should accept a pending user to the organization', async () => {
       const testContext = {
-        ...contextBypassUser,
+        ...contextAdminSecondOrga,
         user: {
-          ...contextBypassUser.user,
+          ...contextAdminSecondOrga.user,
           selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
@@ -857,15 +869,16 @@ describe('User mutation resolver', () => {
     });
   });
   describe('editMeUser', () => {
-    let adminUser: UserLoadUserBy;
+    let simpleUserSecondOrga: UserLoadUserBy;
     let auth0Spy: MockInstance;
     beforeAll(async () => {
-      adminUser = await loadUserBy({
-        email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+      simpleUserSecondOrga = await loadUserBy({
+        email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
       });
-      if (!adminUser) {
-        throw new Error('admin user not found');
+      if (!simpleUserSecondOrga) {
+        throw new Error('simple user second orga not found');
       }
+      requestContext.set(requestContextSimpleUserSecondOrga);
 
       auth0Spy = vi.spyOn(auth0ClientMock, 'updateUser');
     });
@@ -888,30 +901,31 @@ describe('User mutation resolver', () => {
             picture: newPicture,
           },
         },
-        contextBypassUser
+        contextSimpleUserSecondOrga
       );
 
       // assert response
-      expect(response).toBeTruthy();
-
-      expect(response.first_name).toEqual(newFirstName);
-      expect(response.last_name).toEqual(newLastName);
-      expect(response.country).toEqual(newCountry);
-      expect(response.picture).toEqual(newPicture);
+      expect(response).toMatchObject({
+        first_name: newFirstName,
+        last_name: newLastName,
+        country: newCountry,
+        picture: newPicture,
+      });
 
       // assert database
       const [dbUser] = await loadUser({
-        email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+        email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
       });
-      expect(dbUser).toBeDefined();
-      expect(dbUser?.first_name).toEqual(newFirstName);
-      expect(dbUser?.last_name).toEqual(newLastName);
-      expect(dbUser?.country).toEqual(newCountry);
-      expect(dbUser?.picture).toEqual(newPicture);
+      expect(dbUser).toMatchObject({
+        first_name: newFirstName,
+        last_name: newLastName,
+        country: newCountry,
+        picture: newPicture,
+      });
 
       // assert auth0 call
       expect(auth0Spy).toBeCalledWith({
-        email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+        email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
         first_name: newFirstName,
         last_name: newLastName,
         country: newCountry,
@@ -920,19 +934,18 @@ describe('User mutation resolver', () => {
     });
 
     afterAll(async () => {
-      requestContext.set(requestContextAdminUser);
       // @ts-expect-error editMeUser is not considered as callable
       await usersResolver.Mutation.editMeUser(
         undefined,
         {
           input: {
-            first_name: adminUser.first_name,
-            last_name: adminUser.last_name,
-            country: adminUser.country,
-            picture: adminUser.picture,
+            first_name: simpleUserSecondOrga.first_name,
+            last_name: simpleUserSecondOrga.last_name,
+            country: simpleUserSecondOrga.country,
+            picture: simpleUserSecondOrga.picture,
           },
         },
-        contextBypassUser
+        contextSimpleUserSecondOrga
       );
 
       auth0Spy.mockReset();
@@ -946,6 +959,7 @@ describe('User mutation resolver', () => {
     });
 
     it('should call auth0 to reset password', async () => {
+      // When
       // @ts-expect-error resetPassword is not considered as callable
       const response = await usersResolver.Mutation.resetPassword(
         undefined,
@@ -953,6 +967,7 @@ describe('User mutation resolver', () => {
         contextBypassUser
       );
 
+      // Then
       expect(response).toBeTruthy();
       expect(response.success).toBeTruthy();
       expect(auth0Spy).toBeCalledWith(
@@ -967,10 +982,11 @@ describe('User mutation resolver', () => {
 
   describe('removePendingUserFromOrganization', () => {
     it('should remove a pending user from organization', async () => {
+      // Given
       const testContext = {
-        ...contextBypassUser,
+        ...contextAdminSecondOrga,
         user: {
-          ...contextBypassUser.user,
+          ...contextAdminSecondOrga.user,
           selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         },
       };
@@ -992,6 +1008,7 @@ describe('User mutation resolver', () => {
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
+      // When
       await usersResolver.Mutation.removePendingUserFromOrganization(
         undefined,
         {
@@ -1007,7 +1024,8 @@ describe('User mutation resolver', () => {
           user_id: pendingUser.id,
         });
 
-      expect(usersPendingOrg.length).toBe(0);
+      // Then
+      expect(usersPendingOrg).toHaveLength(0);
       await removeUser({ email: pendingUser.email });
     });
 
@@ -1104,7 +1122,7 @@ describe('User mutation resolver', () => {
           user_id: pendingUser.id,
         });
 
-      expect(usersPendingOrg.length).toBe(0);
+      expect(usersPendingOrg).toHaveLength(0);
       await removeUser({ email: pendingUser.email });
     });
 

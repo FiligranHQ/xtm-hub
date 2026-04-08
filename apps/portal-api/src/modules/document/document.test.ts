@@ -2,8 +2,8 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import {
-  contextBypassUser,
-  requestContextAdminUser,
+  contextSimpleUserSecondOrga,
+  requestContextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -209,7 +209,7 @@ describe('Documents loading', () => {
           SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
         ),
       },
-      contextBypassUser as PortalContext
+      contextSimpleUserSecondOrga as PortalContext
     );
     expect(response?.totalCount).toStrictEqual('2');
     expect(response?.edges[0].node.file_name).toStrictEqual('filename');
@@ -229,7 +229,7 @@ describe('Documents loading', () => {
           SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
         ),
       },
-      contextBypassUser
+      contextSimpleUserSecondOrga
     );
     expect(response?.totalCount).toStrictEqual('2');
     expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
@@ -250,7 +250,7 @@ describe('Documents loading', () => {
           SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
         ),
       },
-      contextBypassUser
+      contextSimpleUserSecondOrga
     );
     expect(response?.totalCount).toStrictEqual('1');
     expect(response?.edges[0].node.file_name).toStrictEqual('xfilename');
@@ -261,9 +261,9 @@ describe('increment shared counter', () => {
   const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
   beforeAll(async () => {
     const testContext = {
-      user: requestContextAdminUser.user,
+      user: requestContextSimpleUserSecondOrga.user,
       portalContext: {
-        ...contextBypassUser,
+        ...contextSimpleUserSecondOrga,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
       },
     };
@@ -309,16 +309,16 @@ describe('increment shared counter', () => {
       {
         documentId: toGlobalId('DocumentId', documentId),
       },
-      contextBypassUser
+      contextSimpleUserSecondOrga
     );
     expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
       '@timestamp': '2025-02-03T13:12:15.000Z',
       event_type: TelemetryEventType.SHARE,
-      organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      organization_name: 'Filigran',
+      organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
       organization_type: 'Professional',
       source: TelemetrySource.XTMHUB,
-      user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       service: TelemetryEventService.INTEGRATIONS_LIBRARY,
       service_type: TelemetryEventServiceType.CSV_FEEDS,
       resource_id: documentId,

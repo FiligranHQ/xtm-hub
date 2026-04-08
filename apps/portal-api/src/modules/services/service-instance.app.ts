@@ -42,7 +42,7 @@ import {
 } from './service-instance.domain';
 
 export const ServiceInstanceApp = {
-  loadServiceInstance: async (
+  loadServiceInstanceAndGrantAccess: async (
     user: UserLoadUserBy,
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
