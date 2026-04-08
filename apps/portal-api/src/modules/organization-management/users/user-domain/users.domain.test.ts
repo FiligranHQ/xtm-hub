@@ -20,7 +20,7 @@ import {
   loadUserConnection,
   updateUser,
   updateUserAtLogin,
-} from '../users.domain';
+} from '../user-domain/users.domain';
 
 //Issue with test
 describe('Users domain', () => {

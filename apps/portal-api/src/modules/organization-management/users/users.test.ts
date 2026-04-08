@@ -14,8 +14,11 @@ import {
   deleteOrganizationBy,
   loadOrganizationBy,
 } from '../organizations/organizations.domain';
+import {
+  loadUserBy,
+  loadUserCapabilitiesByOrganization,
+} from './user-domain/users.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
-import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,
   preventAdministratorRemovalOfAllOrganizations,

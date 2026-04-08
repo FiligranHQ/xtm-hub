@@ -19,13 +19,13 @@ import UserTransferRequest, {
 } from '../../../../model/kanel/public/UserTransferRequest';
 import * as mailService from '../../../../server/mail-service';
 import { deleteSubscription } from '../../../subcription/subscription.helper';
+import { updateUser } from '../user-domain/users.domain';
+import { usersProfileApp } from '../user-profile/users.profile.app';
 import * as UserTransferRequestDomain from '../user-transferRequest/user_transferRequest.domain';
 import {
   deleteUserTransferRequest,
   insertNewUserTransfer,
 } from '../user-transferRequest/user_transferRequest.domain';
-import { updateUser } from '../users.domain';
-import { usersProfileApp } from '../users.profile.app';
 
 describe('User profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [
