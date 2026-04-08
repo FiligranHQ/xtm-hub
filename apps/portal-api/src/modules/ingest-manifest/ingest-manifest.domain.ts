@@ -4,13 +4,13 @@ import {
 } from '../../__generated__/resolvers-types';
 import { logApp } from '../../utils/app-logger.util';
 import { omit } from '../../utils/utils';
-import { DocumentApp } from '../services/document/document.app';
-import { DocumentDomain } from '../services/document/domain/document.domain';
+import { DocumentApp } from '../document/document.app';
+import { DocumentDomain } from '../document/domain/document.domain';
 import {
   Connector,
   INTEGRATION_CONNECTOR_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../services/document/opencti/integrations/integrations.model';
+} from '../document/opencti/integrations/integrations.model';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildCreateEvent } from '../telemetry/telemetry.helper';
 import { base64ToUpload } from './ingest-manifest.helper';

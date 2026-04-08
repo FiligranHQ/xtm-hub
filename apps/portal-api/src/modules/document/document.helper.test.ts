@@ -9,20 +9,20 @@ import {
   it,
   vi,
 } from 'vitest';
-import { db } from '../../../../knexfile';
-import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { db } from '../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
   IntegrationSubType,
   IntegrationType,
   ServiceDefinitionIdentifier,
-} from '../../../__generated__/resolvers-types';
-import { default as DocumentModel } from '../../../model/kanel/public/Document';
-import { MinIOClient } from '../../../thirdparty/minio/client';
-import { MinioFile } from '../../../thirdparty/minio/types';
-import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import { TelemetryEventType } from '../../telemetry/telemetry.types';
+} from '../../__generated__/resolvers-types';
+import { default as DocumentModel } from '../../model/kanel/public/Document';
+import { MinIOClient } from '../../thirdparty/minio/client';
+import { MinioFile } from '../../thirdparty/minio/types';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
 import {
   type Document,

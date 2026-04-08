@@ -15,11 +15,8 @@ import { isValidEmail } from '../../../utils/verify-email.util';
 import {
   getDocumentName,
   normalizeDocumentName,
-} from '../../services/document/document.helper';
-import {
-  Upload,
-  waitForUploads,
-} from '../../services/document/document.uploads.helper';
+} from '../../document/document.helper';
+import { Upload, waitForUploads } from '../../document/document.uploads.helper';
 import { updateSubscriptionBy } from '../../subcription/subscription.domain';
 import {
   loadOrganizationBy,

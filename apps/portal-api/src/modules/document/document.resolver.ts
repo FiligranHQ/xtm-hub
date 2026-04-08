@@ -4,25 +4,25 @@ import {
   Resolvers,
   ShareableResource,
   SubscriptionModel,
-} from '../../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
-import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { AlreadyExistsError } from '../../../utils/error/error.util';
-import { extractId } from '../../../utils/utils';
-import { loadOrganizationBy } from '../../organization-management/organizations/organizations.domain';
-import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import {
-  buildShareEvent,
-  shouldSendEventForService,
-} from '../../telemetry/telemetry.helper';
+} from '../../__generated__/resolvers-types';
+import Document, { DocumentId } from '../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { AlreadyExistsError } from '../../utils/error/error.util';
+import { extractId } from '../../utils/utils';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
 import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
-} from '../service-instance.domain';
+} from '../services/service-instance.domain';
+import { loadSubscriptionBy } from '../subcription/subscription.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import {
+  buildShareEvent,
+  shouldSendEventForService,
+} from '../telemetry/telemetry.helper';
 import { DocumentApp } from './document.app';
 import {
   checkDocumentExists,

@@ -1,11 +1,10 @@
 import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../knexfile';
+import { TestHelper } from '../../../../tests/test.helper';
 import {
-  contextBypassUser,
   contextSimpleUserSecondOrga,
-  requestContextSimple2,
+  requestContextAdminSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
@@ -19,10 +18,7 @@ import UserTransferRequest, {
   UserTransferRequestId,
 } from '../../../model/kanel/public/UserTransferRequest';
 import * as mailService from '../../../server/mail-service';
-import {
-  deleteSubscription,
-  insertSubscription,
-} from '../../subcription/subscription.helper';
+import { deleteSubscription } from '../../subcription/subscription.helper';
 import * as UserTransferRequestDomain from './user_transferRequest/user_transferRequest.domain';
 import {
   deleteUserTransferRequest,
@@ -35,8 +31,10 @@ describe('User profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [
     {
       id: uuidv4() as unknown as UserTransferRequestId,
-      from_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId,
-      to_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID as UserId,
+      from_user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
+        .ID as UserId,
+      to_user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
+        .ID as UserId,
     },
   ];
 
@@ -50,7 +48,7 @@ describe('User profile app', () => {
     });
     it('should update one field and return user', async () => {
       const userReturned = await usersProfileApp.editMeUser(
-        contextBypassUser.user,
+        contextSimpleUserSecondOrga.user,
         {
           first_name: 'anotherFirstName',
         }
@@ -59,12 +57,14 @@ describe('User profile app', () => {
     });
     it('should update multiple fields and return user', async () => {
       const userReturned = await usersProfileApp.editMeUser(
-        contextBypassUser.user,
+        contextSimpleUserSecondOrga.user,
         {
           last_name: 'anotherLastName',
         }
       );
-      expect(userReturned.last_name).toStrictEqual('anotherLastName');
+      expect(userReturned).toMatchObject({
+        last_name: 'anotherLastName',
+      });
     });
   });
 
@@ -75,7 +75,7 @@ describe('User profile app', () => {
     it('Should send error if email is not valid format', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
-          contextBypassUser.user,
+          contextSimpleUserSecondOrga.user,
           'emailNotValid'
         )
       ).rejects.toThrow('INVALID_EMAIL');
@@ -83,7 +83,7 @@ describe('User profile app', () => {
     it('Should not send error if email does not already exist (for vilain users)', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
-          contextBypassUser.user,
+          contextSimpleUserSecondOrga.user,
           'emailNotExists@filigran.io'
         )
       ).resolves.toBeUndefined();
@@ -96,7 +96,7 @@ describe('User profile app', () => {
         'insertNewUserTransfer'
       ).mockResolvedValue(mockTransferRequestData);
       await usersProfileApp.requestTransferPersonalSpace(
-        contextBypassUser.user,
+        contextSimpleUserSecondOrga.user,
         'user15@test.fr'
       );
       expect(mockSendMail).toHaveBeenCalledOnce();
@@ -106,9 +106,9 @@ describe('User profile app', () => {
         params: {
           recipientName: 'test hello',
           recipientId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-          previousUserId: contextBypassUser.user.id,
-          previousUserEmail: contextBypassUser.user.email,
-          previousUserName: `${contextBypassUser.user.first_name} ${contextBypassUser.user.last_name}`,
+          previousUserId: contextSimpleUserSecondOrga.user.id,
+          previousUserEmail: contextSimpleUserSecondOrga.user.email,
+          previousUserName: `${contextSimpleUserSecondOrga.user.first_name} ${contextSimpleUserSecondOrga.user.last_name}`,
           transferRequestId: `${mockTransferRequestData[0]?.id}`,
         },
       });
@@ -116,13 +116,13 @@ describe('User profile app', () => {
   });
 
   describe('transferPersonalSpace', () => {
-    const newSubscription = {
-      id: uuidv4(),
-      organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-      service_instance_id: SERVICES.INSTANCES.VAULT.ID,
-    };
+    let newSubscription: Subscription;
     beforeEach(async () => {
-      await insertSubscription(newSubscription);
+      newSubscription = await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
+          .ID as unknown as OrganizationId,
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+      });
       await insertNewUserTransfer({
         id: mockTransferRequestData[0]?.id,
         from_user_id: mockTransferRequestData[0]?.from_user_id as UserId,
@@ -137,41 +137,32 @@ describe('User profile app', () => {
       await deleteUserTransferRequest({ id: mockTransferRequestData[0]?.id });
     });
     it('Should update subscription', async () => {
-      requestContext.set(requestContextSimple2);
-      // Cast to unknown because we take the personal space of these users
-      const subsFromBefore = (await db<Subscription>('Subscription')
-        .where({
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS
-            .ID as unknown as OrganizationId,
-        })
-        .select('*')) as unknown as Subscription[];
-      const subsToBefore = (await db<Subscription>('Subscription')
-        .where({
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2
-            .ID as unknown as OrganizationId,
-        })
-        .select('*')) as unknown as Subscription[];
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const subsFromBefore = await TestHelper.subscription.load({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
+          .ID as unknown as OrganizationId,
+      });
+      const subsToBefore = await TestHelper.subscription.load({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
+          .ID as unknown as OrganizationId,
+      });
       await usersProfileApp.transferPersonalSpace(
         mockTransferRequestData[0]?.id as UserTransferRequestId
       );
-      const subsFromAfter = (await db<Subscription>('Subscription')
-        .where({
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS
-            .ID as unknown as OrganizationId,
-        })
-        .select('*')) as unknown as Subscription[];
-      const subsToAfter: Subscription[] = (await db<Subscription>(
-        'Subscription'
-      )
-        .where({
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2
-            .ID as unknown as OrganizationId,
-        })
-        .select('*')) as unknown as Subscription[];
-      expect(subsFromBefore.length).toStrictEqual(1);
-      expect(subsToBefore.length).toStrictEqual(0);
-      expect(subsFromAfter.length).toStrictEqual(0);
-      expect(subsToAfter.length).toStrictEqual(1);
+      const subsFromAfter = await TestHelper.subscription.load({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
+          .ID as unknown as OrganizationId,
+      });
+      const subsToAfter = await TestHelper.subscription.load({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
+          .ID as unknown as OrganizationId,
+      });
+
+      expect(subsFromBefore).toHaveLength(1);
+      expect(subsToBefore).toHaveLength(0);
+      expect(subsFromAfter).toHaveLength(0);
+      expect(subsToAfter).toHaveLength(1);
     });
 
     it('Should reject transfer if caller is not the intended recipient', async () => {

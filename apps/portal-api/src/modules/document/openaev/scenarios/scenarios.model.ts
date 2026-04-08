@@ -1,6 +1,6 @@
-import { DocumentMetadataKeyCode } from '../../../../../__generated__/resolvers-types';
-import Document from '../../../../../model/kanel/public/Document';
-import { MetadataArray } from '../../../../../utils/metadata';
+import { DocumentMetadataKeyCode } from '../../../../__generated__/resolvers-types';
+import Document from '../../../../model/kanel/public/Document';
+import { MetadataArray } from '../../../../utils/metadata';
 
 export const OPENAEV_SCENARIO_DOCUMENT_TYPE = 'openaev_scenario';
 
