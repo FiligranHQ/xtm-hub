@@ -1,6 +1,6 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { MinIOClient } from '../../../thirdparty/minio/client';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { MinIOClient } from '../../thirdparty/minio/client';
 
 export interface Upload {
   file: FileUpload;

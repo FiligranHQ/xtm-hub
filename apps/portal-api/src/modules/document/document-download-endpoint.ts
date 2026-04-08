@@ -3,25 +3,25 @@ import { Request } from 'express';
 import rateLimit from 'express-rate-limit';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
-import { requestContext } from '../../../context/request.context';
-import { DocumentId } from '../../../model/kanel/public/Document';
-import { PortalContext } from '../../../model/portal-context';
-import { UserLoadUserBy } from '../../../model/user';
+import { requestContext } from '../../context/request.context';
+import { DocumentId } from '../../model/kanel/public/Document';
+import { PortalContext } from '../../model/portal-context';
+import { UserLoadUserBy } from '../../model/user';
 import {
   extractPlatformToken,
   validateActivePlatformToken,
-} from '../../../security/directive-graphql/validators/platform-token-validator';
-import { MinIOClient } from '../../../thirdparty/minio/client';
-import { logApp } from '../../../utils/app-logger.util';
-import { NotFoundError } from '../../../utils/error/error.util';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+} from '../../security/directive-graphql/validators/platform-token-validator';
+import { MinIOClient } from '../../thirdparty/minio/client';
+import { logApp } from '../../utils/app-logger.util';
+import { NotFoundError } from '../../utils/error/error.util';
+import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildDownloadEvent,
   shouldSendEventForService,
-} from '../../telemetry/telemetry.helper';
-import { loadUserBy } from '../../users/users.domain';
-import { loadServiceDefinitionByServiceInstance } from '../service-instance.domain';
+} from '../telemetry/telemetry.helper';
+import { loadUserBy } from '../users/users.domain';
 import { DocumentDomain } from './domain/document.domain';
 
 const documentDownloadRateLimiter = rateLimit({

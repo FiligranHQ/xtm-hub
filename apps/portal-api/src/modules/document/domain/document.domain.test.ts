@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   DocumentConnection,
   DocumentMetadataKeyCode,
@@ -11,10 +11,10 @@ import {
   IntegrationType,
   LogicalOperator,
   OrderingMode,
-} from '../../../../__generated__/resolvers-types';
-import { upsertConnectors } from '../../../ingest-manifest/ingest-manifest.domain';
-import { ManifestInformation } from '../../../ingest-manifest/ingest-manifest.model';
-import sampleExtractedManifest from '../../../ingest-manifest/test/sample-extracted-manifest.json';
+} from '../../../__generated__/resolvers-types';
+import { upsertConnectors } from '../../ingest-manifest/ingest-manifest.domain';
+import { ManifestInformation } from '../../ingest-manifest/ingest-manifest.model';
+import sampleExtractedManifest from '../../ingest-manifest/test/sample-extracted-manifest.json';
 import {
   Connector,
   INTEGRATION_CONNECTOR_METADATA_KEYS,
@@ -23,10 +23,10 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../opencti/integrations/integrations.model';
 
-import { TestHelper } from '../../../../../tests/test.helper';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
-import Document from '../../../../model/kanel/public/Document';
-import { ADMIN_UUID } from '../../../../portal.const';
+import { TestHelper } from '../../../../tests/test.helper';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import Document from '../../../model/kanel/public/Document';
+import { ADMIN_UUID } from '../../../portal.const';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
 
@@ -47,7 +47,7 @@ describe('Document domain', () => {
   describe('deactivateDocuments', () => {
     let createdDocument: Document;
     beforeEach(async () => {
-      createdDocument = await TestHelper.document.create({});
+      createdDocument = await TestHelper.document.createWholeDocument({});
     });
 
     it('should do nothing when the document ids is an empty array', async () => {
@@ -76,7 +76,7 @@ describe('Document domain', () => {
       await db<Document>('Document')
         .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
         .delete();
-      csvFeed = await TestHelper.document.create({});
+      csvFeed = await TestHelper.document.createWholeDocument({});
     });
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
@@ -534,7 +534,7 @@ describe('Document domain', () => {
 
   describe('loadUploaderOrganization', () => {
     it('should return the organization which uploaded document', async () => {
-      const inserted = await TestHelper.document.create({});
+      const inserted = await TestHelper.document.createWholeDocument({});
 
       const uploaderOrganization =
         await DocumentDomain.loadUploaderOrganization(inserted.id);
@@ -717,7 +717,7 @@ describe('Document domain', () => {
     beforeEach(async () => {
       await db<Document>('Document').delete();
       await db('Document_Metadata').delete();
-      doc1 = await TestHelper.document.create({});
+      doc1 = await TestHelper.document.create();
       doc2 = await TestHelper.document.create({ slug: 'doc2-slug' });
       doc3 = await TestHelper.document.create({ slug: 'doc3-slug' });
       await db('Document_Metadata').insert([

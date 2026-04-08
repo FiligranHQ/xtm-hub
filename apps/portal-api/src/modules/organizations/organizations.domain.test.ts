@@ -1,20 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/test.helper';
 import {
-  contextBypassUser,
-  SERVICES,
+  contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
-import {
-  ServiceInstanceCreationStatus,
-  ServiceInstanceJoinType,
-} from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-} from '../../model/kanel/public/Subscription';
+import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import {
   loadOrganizationsByUser,
@@ -26,17 +18,17 @@ describe('OrganizationsDomain', () => {
   describe('loadOrganizationsByUser', () => {
     it('should return the user organizations when user exists', async () => {
       const organizations = await loadOrganizationsByUser(
-        contextBypassUser.user.id
+        contextSimpleUserSecondOrga.user.id
       );
 
-      expect(organizations.length).toBe(2);
+      expect(organizations).toHaveLength(2);
     });
 
     it('should return the user organizations when user exists', async () => {
       const userId = uuidv4() as UserId;
       const organizations = await loadOrganizationsByUser(userId);
 
-      expect(organizations.length).toBe(0);
+      expect(organizations).toHaveLength(0);
     });
   });
 
@@ -46,7 +38,7 @@ describe('OrganizationsDomain', () => {
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
-      expect(users.length).toBe(2);
+      expect(users).toHaveLength(3);
     });
 
     it('should return empty user list of organization when user is not in organization', async () => {
@@ -58,43 +50,32 @@ describe('OrganizationsDomain', () => {
   });
 
   describe('loadOrganizationSubscribedToServiceInstance', () => {
-    const serviceInstanceId = uuidv4() as ServiceInstanceId;
+    let serviceInstance: ServiceInstance;
     beforeAll(async () => {
-      await db('ServiceInstance').insert([
-        {
-          id: serviceInstanceId,
-          name: 'Service instance',
-          description: '',
-          creation_status: ServiceInstanceCreationStatus.Ready,
-          public: false,
-          join_type: ServiceInstanceJoinType.JoinAuto,
-          tags: [],
-          service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-        },
-      ]);
+      serviceInstance = await TestHelper.serviceInstance.create();
     });
+
     it('should return null when organization is not subscribed to service instance', async () => {
       const result =
         await organizationDomain.loadOrganizationSubscribedToServiceInstance(
-          serviceInstanceId
+          serviceInstance.id
         );
 
       expect(result).toBeFalsy();
     });
 
     it('should return organization when it is subscribed to service instance', async () => {
-      await db<Subscription>('Subscription').insert({
-        id: uuidv4() as SubscriptionId,
-        service_instance_id: serviceInstanceId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstance.id,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
       const result =
         await organizationDomain.loadOrganizationSubscribedToServiceInstance(
-          serviceInstanceId
+          serviceInstance.id
         );
 
-      expect(result?.id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
+      expect(result?.id).toBe(TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID);
     });
   });
 });
