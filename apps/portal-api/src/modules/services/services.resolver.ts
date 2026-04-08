@@ -94,7 +94,7 @@ const resolvers: Resolvers = {
       return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);
     },
     serviceInstanceById: async (_, { service_instance_id }, context) => {
-      return ServiceInstanceApp.loadServiceInstance(
+      return ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
         context.user,
         extractId<ServiceInstanceId>(service_instance_id)
       );

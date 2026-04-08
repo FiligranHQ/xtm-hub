@@ -243,7 +243,7 @@ export const loadServiceInstanceSubscriptions = async (
       ),
     ]);
 };
-export const loadServiceInstanceSubscription = async (
+export const loadSubscriptionByServiceInstanceAndOrganization = async (
   selectedOrganizationId: OrganizationId,
   id: ServiceInstanceId
 ) => {
