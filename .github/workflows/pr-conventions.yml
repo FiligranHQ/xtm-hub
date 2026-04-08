@@ -8,7 +8,7 @@ jobs:
   check-pr-title-convention:
     name: Check that PR title follows convention
     runs-on: ubuntu-latest
-    if: github.actor != 'renovate[bot]'
+    if: github.event.pull_request.user.login != 'renovate[bot]'
     permissions:
       contents: read
     steps:
