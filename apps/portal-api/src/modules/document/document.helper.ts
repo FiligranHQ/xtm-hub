@@ -1,26 +1,26 @@
-import { db } from '../../../../knexfile';
+import { db } from '../../../knexfile';
 import {
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
   ServiceDefinitionIdentifier,
-} from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
+} from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import {
   DocumentId,
   default as DocumentModel,
   DocumentMutator,
-} from '../../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { MinIOClient } from '../../../thirdparty/minio/client';
-import { MinioFile } from '../../../thirdparty/minio/types';
-import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
-import { OptionalMetadata } from '../../../utils/metadata';
-import { WithUseCases } from '../../../utils/types';
-import { isValidUrl } from '../../../utils/utils';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import { TelemetryEventType } from '../../telemetry/telemetry.types';
+} from '../../model/kanel/public/Document';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { MinIOClient } from '../../thirdparty/minio/client';
+import { MinioFile } from '../../thirdparty/minio/types';
+import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { OptionalMetadata } from '../../utils/metadata';
+import { WithUseCases } from '../../utils/types';
+import { isValidUrl } from '../../utils/utils';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { Upload } from './document.uploads.helper';

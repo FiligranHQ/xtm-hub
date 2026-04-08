@@ -1,20 +1,20 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   DocumentImageType,
   DocumentMetadataKeyCode,
   DocumentSourceType,
-} from '../../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../../context/database.context';
+} from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import {
   DocumentId,
   default as DocumentModel,
-} from '../../../../model/kanel/public/Document';
-import DocumentChildren from '../../../../model/kanel/public/DocumentChildren';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
-import { restrictDocumentToUserOrganization } from '../../../../security/restriction/document';
-import { MinIOClient } from '../../../../thirdparty/minio/client';
-import { MinioFile } from '../../../../thirdparty/minio/types';
+} from '../../../model/kanel/public/Document';
+import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { restrictDocumentToUserOrganization } from '../../../security/restriction/document';
+import { MinIOClient } from '../../../thirdparty/minio/client';
+import { MinioFile } from '../../../thirdparty/minio/types';
 import { DocumentApp } from '../document.app';
 import { Document } from '../document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from '../document.model';

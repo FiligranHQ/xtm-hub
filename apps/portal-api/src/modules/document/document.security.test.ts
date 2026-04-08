@@ -3,16 +3,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ServiceDefinitionIdentifier,
   ServiceRestriction,
-} from '../../../__generated__/resolvers-types';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
-import { UserLoadUserBy } from '../../../model/user';
-import * as access from '../../../security/access';
-import { ErrorCode } from '../../../utils/error/error.code';
-import * as capabilityHelper from '../../user_service/user-service-capability/user-service-capability.helper';
-import * as serviceInstanceDomain from '../service-instance.domain';
+} from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../model/user';
+import * as access from '../../security/access';
+import { ErrorCode } from '../../utils/error/error.code';
+import * as serviceInstanceDomain from '../services/service-instance.domain';
+import * as capabilityHelper from '../user_service/user-service-capability/user-service-capability.helper';
 import { isUserRestrictedToActiveDocument } from './document.security';
 
 const organizationId = uuidv4() as OrganizationId;

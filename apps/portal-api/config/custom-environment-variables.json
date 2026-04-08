@@ -51,6 +51,10 @@
   "hubspot_webhook_url": "HUBSPOT_WEBHOOK_URL",
   "system_token_hash": "SYSTEM_TOKEN_HASH",
   "system_token_salt": "SYSTEM_TOKEN_SALT",
+  "session": {
+    "name": "PORTAL_COOKIE_NAME",
+    "secret": "PORTAL_COOKIE_SECRET"
+  },
   "session_store": {
     "type": "SESSION_STORE_TYPE"
   }

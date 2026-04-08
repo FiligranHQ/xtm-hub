@@ -17,6 +17,8 @@ xtmhub:
       MINIO_USE_SSL: "false"
       MINIO_PORT: 80
       MINIO_ENDPOINT: minio
+      PORTAL_COOKIE_NAME: ""
+      PORTAL_COOKIE_SECRET: ""
     resources:
       requests:
         cpu: "64m"

@@ -6,27 +6,27 @@ import {
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   QueryDocumentsArgs,
   QueryPublicDocumentsArgs,
-} from '../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../context/database.context';
-import { requestContext } from '../../../context/request.context';
+} from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
+import { requestContext } from '../../context/request.context';
 import Document, {
   DocumentId,
   default as DocumentModel,
-} from '../../../model/kanel/public/Document';
-import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UseCaseId } from '../../../model/kanel/public/UseCase';
-import { UserId } from '../../../model/kanel/public/User';
-import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
-import { extractId } from '../../../utils/utils';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import { buildCreateEvent } from '../../telemetry/telemetry.helper';
-import { objectUseCaseDomain } from '../../use-case/object-use-case/object-use-case.domain';
-import { useCaseApp } from '../../use-case/use-case.app';
-import { ServiceDefinitionDomain } from '../definition/service-definition.domain';
+} from '../../model/kanel/public/Document';
+import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { UseCaseId } from '../../model/kanel/public/UseCase';
+import { UserId } from '../../model/kanel/public/User';
+import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
+import { extractId } from '../../utils/utils';
+import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { buildCreateEvent } from '../telemetry/telemetry.helper';
+import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
+import { useCaseApp } from '../use-case/use-case.app';
 import {
   ALL_METADATA_KEYS,
   BOOLEAN_METADATA,

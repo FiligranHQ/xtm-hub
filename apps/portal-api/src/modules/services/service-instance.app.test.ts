@@ -28,11 +28,11 @@ import { UserId } from '../../model/kanel/public/User';
 import * as pub from '../../pub';
 import * as securityGuardModule from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
+import * as documentHelper from '../document/document.helper';
 import { PlatformConfiguration } from '../registration/registration.domain';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../user_service/user_service.domain';
-import * as documentHelper from './document/document.helper';
 import {
   ServiceInstanceApp,
   withServiceInstanceGlobalIDs,

@@ -13,8 +13,8 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   getDocumentName,
   normalizeDocumentName,
-} from '../../modules/services/document/document.helper';
-import { Upload } from '../../modules/services/document/document.uploads.helper';
+} from '../../modules/document/document.helper';
+import { Upload } from '../../modules/document/document.uploads.helper';
 import { logApp } from '../../utils/app-logger.util';
 import { MinioFile, UploadedFile } from './types';
 
