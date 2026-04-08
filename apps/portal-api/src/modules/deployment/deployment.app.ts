@@ -39,7 +39,6 @@ import { DeploymentRequestDomain } from './deployment.domain';
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import portalConfig from '../../config';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import {
   SYSTEM_USER_UUID,
@@ -50,7 +49,7 @@ import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { formatName } from '../../utils/format';
-import { extractId, ucfirst } from '../../utils/utils';
+import { ucfirst } from '../../utils/utils';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { updateServiceInstance } from '../services/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -641,12 +640,10 @@ export const DeploymentApp = {
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
     const { user } = requestContext.require();
-    const organizationId = extractId<OrganizationId>(input.organizationId);
-
-    await securityGuard.assertUserIsInOrganization(user, organizationId);
+    await securityGuard.assertUserIsInOrganization(user, input.organizationId);
 
     const organization = await loadOrganizationBy({
-      id: organizationId,
+      id: input.organizationId,
     });
     if (organization.personal_space) {
       return {
@@ -676,10 +673,7 @@ export const DeploymentApp = {
       availableTrials: availableTrials,
       deployed: deploymentRequests.map((deployment) => {
         return {
-          serviceInstanceId: toGlobalId(
-            'ServiceInstance',
-            deployment.service_instance_id
-          ),
+          serviceInstanceId: deployment.service_instance_id,
           platformIdentifier: deployment.platform_identifier,
         };
       }),

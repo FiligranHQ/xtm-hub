@@ -1024,10 +1024,7 @@ describe('Deployment app', () => {
   describe('loadTrialDeployments', () => {
     it('should return all available when no DeploymentRequest and no PlatformIdentifier specified', async () => {
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
-        organizationId: toGlobalId(
-          'OrganizationId',
-          TEST_ORGANIZATIONS.FILIGRAN.ID
-        ),
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
       expect(trialDeployments).toEqual({
@@ -1042,10 +1039,7 @@ describe('Deployment app', () => {
     });
     it('should return only requested platform identifier specified as available when no DeploymentRequest exist', async () => {
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
-        organizationId: toGlobalId(
-          'OrganizationId',
-          TEST_ORGANIZATIONS.FILIGRAN.ID
-        ),
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1065,10 +1059,7 @@ describe('Deployment app', () => {
       });
 
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
-        organizationId: toGlobalId(
-          'OrganizationId',
-          TEST_ORGANIZATIONS.FILIGRAN.ID
-        ),
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1086,10 +1077,7 @@ describe('Deployment app', () => {
       });
 
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
-        organizationId: toGlobalId(
-          'OrganizationId',
-          TEST_ORGANIZATIONS.FILIGRAN.ID
-        ),
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1104,10 +1092,7 @@ describe('Deployment app', () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
-        organizationId: toGlobalId(
-          'OrganizationId',
-          TEST_ORGANIZATIONS.FILIGRAN.ID
-        ),
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1115,10 +1100,7 @@ describe('Deployment app', () => {
         availableTrials: [],
         deployed: [
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              deploymentRequest!.service_instance_id
-            ),
+            serviceInstanceId: deploymentRequest!.service_instance_id,
             platformIdentifier: deploymentRequest?.platform_identifier,
           },
         ],
@@ -1130,10 +1112,7 @@ describe('Deployment app', () => {
 
       requestContext.set(requestContextAdminSecondOrga);
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
-        organizationId: toGlobalId(
-          'OrganizationId',
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-        ),
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1163,10 +1142,8 @@ describe('Deployment app', () => {
       });
 
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
-        organizationId: toGlobalId(
-          'OrganizationId',
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID
-        ),
+        organizationId:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
@@ -1181,10 +1158,7 @@ describe('Deployment app', () => {
 
       requestContext.set(requestContextAdminSecondOrga);
       const call = DeploymentApp.loadTrialDeployments({
-        organizationId: toGlobalId(
-          'OrganizationId',
-          TEST_ORGANIZATIONS.FILIGRAN.ID
-        ),
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 

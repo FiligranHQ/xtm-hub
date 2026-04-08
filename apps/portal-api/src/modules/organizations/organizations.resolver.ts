@@ -3,6 +3,7 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { StillReferencedError } from '../../utils/error/error.util';
+import { createRelayIdScalar } from '../../utils/scalar.util';
 import { organizationsApp } from './organizations.app';
 import {
   loadOrganizationBy,
@@ -11,6 +12,7 @@ import {
 } from './organizations.domain';
 
 const resolvers: Resolvers = {
+  OrganizationId: createRelayIdScalar<OrganizationId>('Organization'),
   Query: {
     organization: async (_, { id }) =>
       loadOrganizationBy({ id: id as OrganizationId }),
