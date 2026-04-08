@@ -4,12 +4,17 @@ import '@filigran/ui/theme.css';
 import '../../styles/embed.css';
 import '../../styles/globals.css';
 
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
+import serverPortalApiFetch, {
+  serverMutateGraphQL,
+} from '@/relay/serverPortalApiFetch';
 
 import { ContentLayout } from '@/components/content-layout';
 import { ErrorPage } from '@/components/ui/error-page';
 import { RelayProvider } from '@/relay/RelayProvider';
 import { Card } from '@filigran/ui/servers';
+import errorFrontendLogMutationNode, {
+  errorFrontendLogMutation,
+} from '@generated/errorFrontendLogMutation.graphql';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
@@ -73,7 +78,13 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
       redirect(`/`);
     }
 
-    console.error('RootLayout Error:', error);
+    await serverMutateGraphQL<errorFrontendLogMutation>(
+      errorFrontendLogMutationNode,
+      {
+        message: 'EmbedLayout: unexpected render error',
+        componentStack: 'app/(embed)/layout.tsx',
+      }
+    );
     return (
       <div className="flex flex-col w-full h-screen">
         <ErrorPage>
