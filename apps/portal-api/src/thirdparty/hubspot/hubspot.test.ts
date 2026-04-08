@@ -1,7 +1,15 @@
 import { MockInstance } from '@vitest/spy';
 import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { db } from '../../../knexfile';
 import {
   contextAdminSecondOrga,
@@ -17,8 +25,24 @@ import { HUBSPOT_TYPE_TO_QUEUE } from '../pgboss/hubspot.jobs';
 import { PgBossProducer } from '../pgboss/producer';
 import { hubspotHook, hubspotReachOutSalesHook } from './hubspot';
 
+vi.mock('config', async (importOriginal) => {
+  const mod = await importOriginal<{ default: typeof config }>();
+  return {
+    default: {
+      get: vi.fn(mod.default.get.bind(mod.default)),
+      has: mod.default.has.bind(mod.default),
+    },
+  };
+});
+
 describe('Hubspot', () => {
-  const originalConfigGet = config.get;
+  let realConfigGet: typeof config.get;
+
+  beforeAll(() => {
+    realConfigGet = vi
+      .mocked(config.get)
+      .getMockImplementation() as typeof config.get;
+  });
   let fetchSpy: MockInstance;
   let logSpy: MockInstance;
 
@@ -32,9 +56,9 @@ describe('Hubspot', () => {
       fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue({} as Response);
       logSpy = vi.spyOn(logApp, 'error');
       vi.spyOn(utils, 'isValidUrl').mockReturnValue(true);
-      vi.spyOn(config, 'get').mockImplementation((key: string) => {
+      vi.mocked(config.get).mockImplementation((key: string) => {
         if (key === 'hubspot_use_queue_processing') return false;
-        return originalConfigGet.call(config, key);
+        return realConfigGet(key);
       });
     });
 
@@ -210,9 +234,9 @@ describe('Hubspot', () => {
       pgBossSendSpy = vi
         .spyOn(PgBossProducer, 'send')
         .mockResolvedValue('job-id');
-      vi.spyOn(config, 'get').mockImplementation((key: string) => {
+      vi.mocked(config.get).mockImplementation((key: string) => {
         if (key === 'hubspot_use_queue_processing') return true;
-        return originalConfigGet.call(config, key);
+        return realConfigGet(key);
       });
     });
 
