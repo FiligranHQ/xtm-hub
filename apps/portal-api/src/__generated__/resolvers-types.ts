@@ -702,14 +702,25 @@ export type IntegrationHack = Document & Integration & Node & {
 
 export enum IntegrationSubType {
   CaseManagement = 'CASE_MANAGEMENT',
+  CyberIndustry = 'CYBER_INDUSTRY',
+  Darkweb = 'DARKWEB',
   Detection = 'DETECTION',
   ExternalImport = 'EXTERNAL_IMPORT',
+  FederalOrganization = 'FEDERAL_ORGANIZATION',
   InternalEnrichment = 'INTERNAL_ENRICHMENT',
   InternalExportFile = 'INTERNAL_EXPORT_FILE',
   InternalImportFile = 'INTERNAL_IMPORT_FILE',
+  Journalists = 'JOURNALISTS',
+  Malware = 'MALWARE',
   Native = 'NATIVE',
+  NotForProfitOrganization = 'NOT_FOR_PROFIT_ORGANIZATION',
   Orchestration = 'ORCHESTRATION',
-  Stream = 'STREAM'
+  PeriodicBriefing = 'PERIODIC_BRIEFING',
+  SecurityResearcher = 'SECURITY_RESEARCHER',
+  SocialMedia = 'SOCIAL_MEDIA',
+  Stream = 'STREAM',
+  ThreatActors = 'THREAT_ACTORS',
+  Vendors = 'VENDORS'
 }
 
 export enum IntegrationType {
