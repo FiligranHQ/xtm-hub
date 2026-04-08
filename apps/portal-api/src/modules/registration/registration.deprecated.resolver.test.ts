@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { MockInstance } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextBypassUser,
+  contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
@@ -19,7 +19,7 @@ import registrationResolver from './registration.resolver';
 const PLATFORM_TOKEN = uuidv4();
 
 const contextWithPlatformToken = {
-  ...contextBypassUser,
+  ...contextSimpleUserSecondOrga,
   req: { header: (_name: string) => PLATFORM_TOKEN } as never,
 };
 
@@ -44,7 +44,7 @@ describe('Registration query resolver', () => {
         await registrationResolver.Query.openCTIPlatformRegistrationStatus(
           {},
           { input: { platformId: uuidv4(), token: uuidv4() } },
-          contextBypassUser,
+          contextSimpleUserSecondOrga,
           {} as GraphQLResolveInfo
         );
 
@@ -77,7 +77,7 @@ describe('Registration query resolver', () => {
         await registrationResolver.Query.openCTIPlatformRegistrationStatus(
           {},
           { input: { platformId, token } },
-          contextBypassUser,
+          contextSimpleUserSecondOrga,
           {} as GraphQLResolveInfo
         );
 

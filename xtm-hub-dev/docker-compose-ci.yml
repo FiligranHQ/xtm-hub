@@ -58,6 +58,8 @@ services:
       - MINIO_ACCESS_KEY=portal
       - MINIO_SECRET_KEY=changeme
       - MINIO_USE_SSL=false
+      - PORTAL_COOKIE_NAME=cloud-portal
+      - PORTAL_COOKIE_SECRET=XR4MFizbXn09doSZ
     volumes:
       - "./coverage:/app/apps/portal-api/coverage"
   portal-api:
@@ -101,6 +103,8 @@ services:
       - ELASTIC_HOST=portal-elasticsearch
       - ELASTIC_PORT=9200
       - BASE_URL_FRONT=http://portal-front:3000
+      - PORTAL_COOKIE_NAME=cloud-portal
+      - PORTAL_COOKIE_SECRET=XR4MFizbXn09doSZ
 
   portal-postgres:
     container_name: portal-postgres
