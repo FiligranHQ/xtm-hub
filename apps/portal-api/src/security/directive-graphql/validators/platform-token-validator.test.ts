@@ -4,8 +4,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
-import { ServiceContractDomain } from '../../../modules/services/contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../../../modules/services/deployments/deployments.domain';
+import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.domain';
+import { ServiceConfigurationDomain } from '../../../modules/registration/service-configuration/service-configuration.domain';
 import {
   PLATFORM_ID_HEADER,
   PLATFORM_TOKEN_HEADER,
@@ -40,7 +40,7 @@ describe('Platform Token Validation', () => {
       const platformId = uuidv4();
       const platformToken = uuidv4();
       vi.spyOn(
-        ServiceContractDomain,
+        ServiceConfigurationDomain,
         'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue(undefined);
 
@@ -59,7 +59,7 @@ describe('Platform Token Validation', () => {
       const platformId = uuidv4();
       const platformToken = uuidv4();
       vi.spyOn(
-        ServiceContractDomain,
+        ServiceConfigurationDomain,
         'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue({
         config: { platform_id: platformId },
@@ -81,7 +81,7 @@ describe('Platform Token Validation', () => {
       const platformId = uuidv4();
       const platformToken = uuidv4();
       vi.spyOn(
-        ServiceContractDomain,
+        ServiceConfigurationDomain,
         'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue({
         config: { platform_id: platformId },

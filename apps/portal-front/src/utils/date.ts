@@ -52,3 +52,12 @@ export const formatDate = (
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 };
+
+export const isWithinLastMonths = (
+  date: Date | string,
+  months: number
+): boolean => {
+  const threshold = new Date();
+  threshold.setMonth(threshold.getMonth() - months);
+  return new Date(date) > threshold;
+};

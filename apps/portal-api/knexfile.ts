@@ -211,6 +211,8 @@ const searchAttributes = [
   'first_name',
   'last_name',
   'country',
+  'title',
+  'epic',
 ];
 
 type JoinFn = (qb: Knex.QueryBuilder, type: DatabaseType) => void;

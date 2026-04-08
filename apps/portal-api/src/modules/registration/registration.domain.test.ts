@@ -1,12 +1,12 @@
 import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../knexfile';
+import { db } from '../../../knexfile';
 import {
   contextBypassUser,
   SERVICES,
   TEST_ORGANIZATIONS,
-} from '../../../../tests/tests.const';
+} from '../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -16,28 +16,28 @@ import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
-} from '../../../__generated__/resolvers-types';
-import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+} from '../../__generated__/resolvers-types';
+import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
-} from '../../../model/kanel/public/ServiceInstance';
+} from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
-} from '../../../model/kanel/public/Subscription';
-import { PortalContext } from '../../../model/portal-context';
-import { securityGuard } from '../../../security/guard';
-import { ErrorCode } from '../../../utils/error/error.code';
-import * as organizationDomain from '../../organizations/organizations.domain';
-import * as subscriptionDomain from '../../subcription/subscription.domain';
-import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
-import { deleteServiceInstanceBy } from '../service-instance.domain';
+} from '../../model/kanel/public/Subscription';
+import { PortalContext } from '../../model/portal-context';
+import { securityGuard } from '../../security/guard';
+import { ErrorCode } from '../../utils/error/error.code';
+import { DeploymentRequestDomain } from '../deployment/deployment.domain';
+import * as organizationDomain from '../organizations/organizations.domain';
+import { deleteServiceInstanceBy } from '../services/service-instance.domain';
+import * as subscriptionDomain from '../subcription/subscription.domain';
 import {
   PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
+import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 describe('Registration domain', () => {
   let platformId: string;
@@ -184,7 +184,7 @@ describe('Registration domain', () => {
       );
 
       updateConfigurationSpy = vi.spyOn(
-        ServiceContractDomain,
+        ServiceConfigurationDomain,
         'updateConfiguration'
       );
     });
@@ -360,7 +360,7 @@ describe('Registration domain', () => {
     });
     afterEach(async () => {
       await db('DeploymentRequest').delete();
-      await ServiceContractDomain.deleteConfigurationBy({});
+      await ServiceConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
 
@@ -419,7 +419,7 @@ describe('Registration domain', () => {
     });
     afterEach(async () => {
       await db('DeploymentRequest').delete();
-      await ServiceContractDomain.deleteConfigurationBy({});
+      await ServiceConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
     it('should return all registered platform without platformIdentifier in input ', async () => {
@@ -450,7 +450,7 @@ describe('Registration domain', () => {
       ).toBe(true);
     });
     it('should not return inactive platforms ', async () => {
-      await ServiceContractDomain.updateConfiguration(
+      await ServiceConfigurationDomain.updateConfiguration(
         openCTIServiceInstanceId,
         {
           status: ServiceConfigurationStatus.Inactive,

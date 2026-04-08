@@ -9,7 +9,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import {
   serviceInstanceNameMappedByPlatformIdentifier,
   serviceInstanceTagMappedByPlatformIdentifier,
-} from '../registration/registration.mapping';
+} from '../../registration/registration.mapping';
 
 export const serviceInstanceDomain = {
   createPlatformServiceInstance: async (

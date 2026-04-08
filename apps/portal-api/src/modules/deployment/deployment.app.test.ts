@@ -13,7 +13,7 @@ import {
   requestContextAdminSecondOrga,
   requestContextAdminUser,
   TEST_ORGANIZATIONS,
-} from '../../../../tests/tests.const';
+} from '../../../tests/tests.const';
 import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
@@ -27,61 +27,61 @@ import {
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
-} from '../../../__generated__/resolvers-types';
+} from '../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
-} from '../../../model/kanel/public/DeploymentRequest';
+} from '../../model/kanel/public/DeploymentRequest';
 import ServiceInstance, {
   ServiceInstanceId,
-} from '../../../model/kanel/public/ServiceInstance';
+} from '../../model/kanel/public/ServiceInstance';
 import {
   SYSTEM_USER_UUID,
   XTM_HUB_DEV_TEAM_EMAIL,
   XTM_HUB_SUPPORT_EMAIL,
-} from '../../../portal.const';
-import * as mailService from '../../../server/mail-service';
+} from '../../portal.const';
+import * as mailService from '../../server/mail-service';
 import {
   BadRequestErrorCode,
   ErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
-} from '../../../utils/error/error.code';
-import { loadSubscriptionBy } from '../../subcription/subscription.domain';
-import { deleteSubscription } from '../../subcription/subscription.helper';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+} from '../../utils/error/error.code';
+import { loadSubscriptionBy } from '../subcription/subscription.domain';
+import { deleteSubscription } from '../subcription/subscription.helper';
+import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
   TelemetrySource,
-} from '../../telemetry/telemetry.const';
-import { TelemetryEventType } from '../../telemetry/telemetry.types';
+} from '../telemetry/telemetry.const';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
 import {
   ServiceGroupDomain,
   ServiceGroupName,
-} from '../group/service-group.domain';
+} from './group/service-group.domain';
 
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../../knexfile';
-import { CompetitorTier } from '../../../__generated__/resolvers-types';
-import portalConfig from '../../../config';
-import { requestContext } from '../../../context/request.context';
-import { CompetitorId } from '../../../model/kanel/public/Competitor';
-import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
-import Organization from '../../../model/kanel/public/Organization';
-import { PortalContext } from '../../../model/portal-context';
-import { CompetitorDomain } from '../competitor/competitor.domain';
-import { ServiceContractDomain } from '../contract/service-configuration.domain';
+import { db } from '../../../knexfile';
+import { CompetitorTier } from '../../__generated__/resolvers-types';
+import portalConfig from '../../config';
+import { requestContext } from '../../context/request.context';
+import { CompetitorId } from '../../model/kanel/public/Competitor';
+import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
+import Organization from '../../model/kanel/public/Organization';
+import { PortalContext } from '../../model/portal-context';
+import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
-} from '../service-instance.domain';
-import { DeploymentsApp } from './deployments.app';
-import { DeploymentRequestDomain } from './deployments.domain';
-import { DeploymentsQuotasDomain } from './deployments.quotas.domain';
+} from '../services/service-instance.domain';
+import { CompetitorDomain } from './competitor/competitor.domain';
+import { DeploymentApp } from './deployment.app';
+import { DeploymentRequestDomain } from './deployment.domain';
 import {
   assertDeploymentRequestProperties,
   insertDeploymentRequest,
-} from './deployments.test.utils';
+} from './deployment.test.utils';
+import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
 describe('Deployment app', () => {
   const telemetrySpy = vi
@@ -103,12 +103,12 @@ describe('Deployment app', () => {
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
       // Given
-      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+      vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
         isPlaceAvailable: true,
       });
 
       // When
-      const deployment = await DeploymentsApp.createDeploymentRequest({
+      const deployment = await DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CLevel,
@@ -156,12 +156,12 @@ describe('Deployment app', () => {
     });
     it('should create a deployment request with queued status when there is no space available', async () => {
       // Given
-      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+      vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
         isPlaceAvailable: false,
       });
 
       // When
-      const deployment = await DeploymentsApp.createDeploymentRequest({
+      const deployment = await DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CLevel,
@@ -207,7 +207,7 @@ describe('Deployment app', () => {
     });
     it('should throw when deployment is requested on a personal space', async () => {
       // Given
-      vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+      vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
         isPlaceAvailable: true,
       });
       const personalSpaceOrganization = await db<Organization>('Organization')
@@ -225,7 +225,7 @@ describe('Deployment app', () => {
       });
 
       // When
-      const call = DeploymentsApp.createDeploymentRequest({
+      const call = DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CLevel,
@@ -243,7 +243,7 @@ describe('Deployment app', () => {
     });
 
     it('should throw when service definition is not found', async () => {
-      const call = DeploymentsApp.createDeploymentRequest({
+      const call = DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CLevel,
@@ -270,7 +270,7 @@ describe('Deployment app', () => {
         domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
-      const call = DeploymentsApp.createDeploymentRequest({
+      const call = DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CLevel,
@@ -292,7 +292,7 @@ describe('Deployment app', () => {
         domain: 'blocked.com',
       });
 
-      const deployment = await DeploymentsApp.createDeploymentRequest({
+      const deployment = await DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CLevel,
@@ -308,7 +308,7 @@ describe('Deployment app', () => {
     });
 
     it('should allow deployment when no competitors exist', async () => {
-      const deployment = await DeploymentsApp.createDeploymentRequest({
+      const deployment = await DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CLevel,
@@ -337,7 +337,7 @@ describe('Deployment app', () => {
           const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
           vi.setSystemTime(date);
 
-          const deployment = await DeploymentsApp.createDeploymentRequest({
+          const deployment = await DeploymentApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
@@ -375,7 +375,7 @@ describe('Deployment app', () => {
         vi.setSystemTime(date);
         telemetrySpy.mockRejectedValue(new Error('UNKNOWN'));
 
-        const deployment = await DeploymentsApp.createDeploymentRequest({
+        const deployment = await DeploymentApp.createDeploymentRequest({
           activity_sector:
             DeploymentRequestActivitySector.ComputerNetworkSecurity,
           job_title: DeploymentRequestJobTitle.CLevel,
@@ -393,7 +393,7 @@ describe('Deployment app', () => {
     describe('mail', () => {
       describe('development environment', () => {
         it('should send a mail if status is pending to dev team', async () => {
-          await DeploymentsApp.createDeploymentRequest({
+          await DeploymentApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
@@ -433,10 +433,10 @@ describe('Deployment app', () => {
         });
 
         it('should send a mail if there is no space available', async () => {
-          vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+          vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
-          await DeploymentsApp.createDeploymentRequest({
+          await DeploymentApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
@@ -489,7 +489,7 @@ describe('Deployment app', () => {
         });
 
         it('should send a mail if status is pending to dev team', async () => {
-          await DeploymentsApp.createDeploymentRequest({
+          await DeploymentApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
@@ -529,10 +529,10 @@ describe('Deployment app', () => {
         });
 
         it('should send a mail if there is no space available', async () => {
-          vi.spyOn(DeploymentsQuotasDomain, 'reservePlace').mockResolvedValue({
+          vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
-          await DeploymentsApp.createDeploymentRequest({
+          await DeploymentApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
@@ -577,7 +577,7 @@ describe('Deployment app', () => {
     it('should return created deployment requests', async () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
-      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+      const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -607,7 +607,7 @@ describe('Deployment app', () => {
         status: 'active',
       });
 
-      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+      const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -636,7 +636,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+      const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -658,7 +658,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+      const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
         filters: [
           {
@@ -718,7 +718,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Unprovisioned,
       });
 
-      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+      const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
@@ -748,7 +748,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      const deployments = await DeploymentsApp.loadPlatformDeploymentRequests({
+      const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
         filters: [
           {
@@ -781,7 +781,7 @@ describe('Deployment app', () => {
     });
 
     it('should update a deployment request', async () => {
-      const deployment = await DeploymentsApp.updateDeploymentRequest({
+      const deployment = await DeploymentApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
         actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
@@ -843,7 +843,7 @@ describe('Deployment app', () => {
     });
 
     it('with Active status for OpenCTI, it should create OpenCTI ServiceGroups (Admin, Analyst, Reader) with admin user', async () => {
-      const deployment = await DeploymentsApp.updateDeploymentRequest({
+      const deployment = await DeploymentApp.updateDeploymentRequest({
         id: initialDeployment?.id as string,
         actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
@@ -900,7 +900,7 @@ describe('Deployment app', () => {
         actual_state: DeploymentRequestPlatformState.Provisioning,
       })) as DeploymentRequest;
 
-      const deployment = await DeploymentsApp.updateDeploymentRequest({
+      const deployment = await DeploymentApp.updateDeploymentRequest({
         id: openaevDeployment.id as string,
         actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
@@ -948,7 +948,7 @@ describe('Deployment app', () => {
       expect(userObserverGroup.length).toBe(0);
     });
     it('should throw if deployment request does not exist', async () => {
-      const call = DeploymentsApp.updateDeploymentRequest({
+      const call = DeploymentApp.updateDeploymentRequest({
         id: uuidv4(),
         actual_state: DeploymentRequestPlatformState.Active,
       });
@@ -975,7 +975,7 @@ describe('Deployment app', () => {
     ])(
       'should throw if status active and $description',
       async ({ start_date, end_date }) => {
-        const call = DeploymentsApp.updateDeploymentRequest({
+        const call = DeploymentApp.updateDeploymentRequest({
           id: initialDeployment.id,
           actual_state: DeploymentRequestPlatformState.Active,
           start_date,
@@ -996,7 +996,7 @@ describe('Deployment app', () => {
         const start_date = new Date(2025, 1, 3);
         const end_date = new Date(2025, 2, 3);
 
-        await DeploymentsApp.updateDeploymentRequest({
+        await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
           actual_state: DeploymentRequestPlatformState.Active,
           start_date,
@@ -1023,14 +1023,14 @@ describe('Deployment app', () => {
       });
 
       it('should not send a telemetry event when data did not change', async () => {
-        await DeploymentsApp.updateDeploymentRequest({
+        await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
         telemetrySpy.mockClear();
 
-        await DeploymentsApp.updateDeploymentRequest({
+        await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
@@ -1047,7 +1047,7 @@ describe('Deployment app', () => {
         const start_date = new Date(2025, 1, 3);
         const end_date = new Date(2025, 2, 3);
 
-        const deployment = await DeploymentsApp.updateDeploymentRequest({
+        const deployment = await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
           actual_state: DeploymentRequestPlatformState.Active,
           start_date,
@@ -1060,7 +1060,7 @@ describe('Deployment app', () => {
     });
     describe('mail', () => {
       it('should send a mail in case deployment request is in provisioning (only first time)', async () => {
-        await DeploymentsApp.updateDeploymentRequest({
+        await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
@@ -1075,7 +1075,7 @@ describe('Deployment app', () => {
 
         mockSendMail.mockClear();
 
-        await DeploymentsApp.updateDeploymentRequest({
+        await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
@@ -1085,14 +1085,14 @@ describe('Deployment app', () => {
 
       it('should send a mail in case deployment request is in active (only first time)', async () => {
         vi.spyOn(
-          ServiceContractDomain,
+          ServiceConfigurationDomain,
           'loadConfigurationByPlatform'
         ).mockResolvedValue({
           service_instance_id: uuidv4() as ServiceInstanceId,
           config: { platform_url: 'http://example.com' },
           status: DeploymentRequestPlatformState.Active,
         });
-        await DeploymentsApp.updateDeploymentRequest({
+        await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
           start_date: new Date(2025, 12, 1),
           end_date: new Date(2026, 1, 1),
@@ -1115,7 +1115,7 @@ describe('Deployment app', () => {
 
         mockSendMail.mockClear();
 
-        await DeploymentsApp.updateDeploymentRequest({
+        await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as string,
           start_date: new Date(2025, 12, 1),
           end_date: new Date(2026, 1, 1),
@@ -1127,7 +1127,7 @@ describe('Deployment app', () => {
   });
   describe('loadTrialDeployments', () => {
     it('should return all available when no DeploymentRequest and no PlatformIdentifier specified', async () => {
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+      const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: toGlobalId(
           'OrganizationId',
           TEST_ORGANIZATIONS.FILIGRAN.ID
@@ -1145,7 +1145,7 @@ describe('Deployment app', () => {
       expect(trialDeployments.availableTrials).toHaveLength(2);
     });
     it('should return only requested platform identifier specified as available when no DeploymentRequest exist', async () => {
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+      const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: toGlobalId(
           'OrganizationId',
           TEST_ORGANIZATIONS.FILIGRAN.ID
@@ -1168,7 +1168,7 @@ describe('Deployment app', () => {
         domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+      const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: toGlobalId(
           'OrganizationId',
           TEST_ORGANIZATIONS.FILIGRAN.ID
@@ -1189,7 +1189,7 @@ describe('Deployment app', () => {
         counts_in_orga_quota: false,
       });
 
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+      const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: toGlobalId(
           'OrganizationId',
           TEST_ORGANIZATIONS.FILIGRAN.ID
@@ -1207,7 +1207,7 @@ describe('Deployment app', () => {
     it('should not return identifier as available when DeploymentRequest exist', async () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+      const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: toGlobalId(
           'OrganizationId',
           TEST_ORGANIZATIONS.FILIGRAN.ID
@@ -1233,7 +1233,7 @@ describe('Deployment app', () => {
       await insertDeploymentRequest({});
 
       requestContext.set(requestContextAdminSecondOrga);
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+      const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: toGlobalId(
           'OrganizationId',
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
@@ -1266,7 +1266,7 @@ describe('Deployment app', () => {
         portalContext: contextUserWithPersonalOrga,
       });
 
-      const trialDeployments = await DeploymentsApp.loadTrialDeployments({
+      const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: toGlobalId(
           'OrganizationId',
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID
@@ -1284,7 +1284,7 @@ describe('Deployment app', () => {
       await insertDeploymentRequest({});
 
       requestContext.set(requestContextAdminSecondOrga);
-      const call = DeploymentsApp.loadTrialDeployments({
+      const call = DeploymentApp.loadTrialDeployments({
         organizationId: toGlobalId(
           'OrganizationId',
           TEST_ORGANIZATIONS.FILIGRAN.ID
@@ -1302,7 +1302,7 @@ describe('Deployment app', () => {
         'loadDeploymentRequestBy'
       ).mockResolvedValue(undefined);
 
-      const call = DeploymentsApp.reorderDeploymentRequestInQueue({
+      const call = DeploymentApp.reorderDeploymentRequestInQueue({
         id: uuidv4() as DeploymentRequestId,
         direction: ReorderDeploymentRequestInQueueDirection.Top,
       });
@@ -1322,7 +1322,7 @@ describe('Deployment app', () => {
         'loadDeploymentRequestBy'
       ).mockResolvedValue(deploymentRequest);
 
-      const call = DeploymentsApp.reorderDeploymentRequestInQueue({
+      const call = DeploymentApp.reorderDeploymentRequestInQueue({
         id: deploymentRequest!.id,
         direction: ReorderDeploymentRequestInQueueDirection.Top,
       });
@@ -1348,7 +1348,7 @@ describe('Deployment app', () => {
         .spyOn(DeploymentRequestDomain, 'reorderDeploymentRequestToTop')
         .mockResolvedValue();
 
-      const result = await DeploymentsApp.reorderDeploymentRequestInQueue({
+      const result = await DeploymentApp.reorderDeploymentRequestInQueue({
         id: uuidv4() as DeploymentRequestId,
         direction: ReorderDeploymentRequestInQueueDirection.Top,
       });
@@ -1375,7 +1375,7 @@ describe('Deployment app', () => {
         .spyOn(DeploymentRequestDomain, 'reorderDeploymentRequestUp')
         .mockResolvedValue();
 
-      const result = await DeploymentsApp.reorderDeploymentRequestInQueue({
+      const result = await DeploymentApp.reorderDeploymentRequestInQueue({
         id: uuidv4() as DeploymentRequestId,
         direction: ReorderDeploymentRequestInQueueDirection.Up,
       });
@@ -1390,7 +1390,7 @@ describe('Deployment app', () => {
     let freePlaceSpy: MockInstance;
     beforeEach(() => {
       freePlaceSpy = vi
-        .spyOn(DeploymentsQuotasDomain, 'freePlace')
+        .spyOn(DeploymentQuotaDomain, 'freePlace')
         .mockResolvedValue();
     });
     it.each`
@@ -1417,7 +1417,7 @@ describe('Deployment app', () => {
           actual_state,
         })) as DeploymentRequest;
         const cancellationReason = isAdmin ? undefined : 'my reason';
-        const deployment = await DeploymentsApp.cancelDeploymentRequest(
+        const deployment = await DeploymentApp.cancelDeploymentRequest(
           initialDeployment.id,
           isAdmin,
           cancellationReason
@@ -1459,7 +1459,7 @@ describe('Deployment app', () => {
       }
     );
     it('should throw if deployment request does not exist', async () => {
-      const call = DeploymentsApp.cancelDeploymentRequest(
+      const call = DeploymentApp.cancelDeploymentRequest(
         uuidv4() as DeploymentRequestId,
         false
       );
@@ -1474,7 +1474,7 @@ describe('Deployment app', () => {
       )) as DeploymentRequest;
 
       requestContext.set(requestContextAdminSecondOrga);
-      const call = DeploymentsApp.cancelDeploymentRequest(deployment.id, false);
+      const call = DeploymentApp.cancelDeploymentRequest(deployment.id, false);
       await expect(call).rejects.toThrow(
         ForbiddenErrorCode.UserIsNotInOrganization
       );
@@ -1486,7 +1486,7 @@ describe('Deployment app', () => {
       )) as DeploymentRequest;
 
       requestContext.set(requestContextAdminSecondOrga);
-      const response = await DeploymentsApp.cancelDeploymentRequest(
+      const response = await DeploymentApp.cancelDeploymentRequest(
         deployment.id,
         true
       );
@@ -1501,7 +1501,7 @@ describe('Deployment app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
 
-      await DeploymentsApp.cancelDeploymentRequest(
+      await DeploymentApp.cancelDeploymentRequest(
         deployment.id,
         false,
         'CancellationReason'
@@ -1531,7 +1531,7 @@ describe('Deployment app', () => {
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       })) as DeploymentRequest;
 
-      await DeploymentsApp.cancelDeploymentRequest(deployment.id, true);
+      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
 
       expect(mockSendMail).toHaveBeenCalledWith({
         to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
@@ -1622,7 +1622,7 @@ describe('Deployment app', () => {
           4
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 4,
@@ -1659,7 +1659,7 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Queued
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 2,
@@ -1693,7 +1693,7 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Queued
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 2,
@@ -1729,7 +1729,7 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Queued
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 2,
@@ -1777,7 +1777,7 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 0,
@@ -1799,7 +1799,7 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 1,
@@ -1834,7 +1834,7 @@ describe('Deployment app', () => {
           5
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 0,
@@ -1875,7 +1875,7 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Queued
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 1,
@@ -1905,7 +1905,7 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 2,
@@ -1928,7 +1928,7 @@ describe('Deployment app', () => {
         const { id: pendingRequestId } = await insertRequest(
           DeploymentRequestHubStatus.Pending
         );
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 3,
@@ -1958,7 +1958,7 @@ describe('Deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
 
-        await DeploymentsApp.updateDeploymentQuotaCapacity({
+        await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 0,
@@ -2005,7 +2005,7 @@ describe('Deployment app', () => {
     let freePlaceSpy: MockInstance;
     beforeEach(() => {
       freePlaceSpy = vi
-        .spyOn(DeploymentsQuotasDomain, 'freePlace')
+        .spyOn(DeploymentQuotaDomain, 'freePlace')
         .mockResolvedValue();
     });
 
@@ -2027,7 +2027,7 @@ describe('Deployment app', () => {
         end_date: new Date(Date.UTC(2025, 1, 5)),
       });
 
-      await DeploymentsApp.expireTrials();
+      await DeploymentApp.expireTrials();
 
       const expiredDeploymentRequest =
         await DeploymentRequestDomain.loadDeploymentRequestBy({
@@ -2071,7 +2071,7 @@ describe('Deployment app', () => {
           end_date: expiredDate,
         });
 
-        await DeploymentsApp.expireTrials();
+        await DeploymentApp.expireTrials();
 
         const expiredDeploymentRequest =
           await DeploymentRequestDomain.loadDeploymentRequestBy({
@@ -2098,7 +2098,7 @@ describe('Deployment app', () => {
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       });
 
-      await DeploymentsApp.expireTrials();
+      await DeploymentApp.expireTrials();
 
       expect(mockSendMail).toHaveBeenCalledWith({
         to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
@@ -2127,7 +2127,7 @@ describe('Deployment app', () => {
         organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
-      await DeploymentsApp.expireTrials();
+      await DeploymentApp.expireTrials();
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -2151,7 +2151,7 @@ describe('Deployment app', () => {
     let freePlaceSpy: MockInstance;
     beforeEach(() => {
       freePlaceSpy = vi
-        .spyOn(DeploymentsQuotasDomain, 'freePlace')
+        .spyOn(DeploymentQuotaDomain, 'freePlace')
         .mockResolvedValue();
     });
 
@@ -2169,7 +2169,7 @@ describe('Deployment app', () => {
             hub_status,
           });
 
-          await DeploymentsApp.releaseDeploymentRequestPlace(
+          await DeploymentApp.releaseDeploymentRequestPlace(
             deploymentRequest!.hub_status,
             deploymentRequest!.platform_identifier,
             deploymentRequest!.region
@@ -2192,7 +2192,7 @@ describe('Deployment app', () => {
         .spyOn(DeploymentRequestDomain, 'setFirstQueuedRequestAsPending')
         .mockResolvedValue(queuedDeploymentRequest);
 
-      await DeploymentsApp.releaseDeploymentRequestPlace(
+      await DeploymentApp.releaseDeploymentRequestPlace(
         deploymentRequestToRelease!.hub_status,
         deploymentRequestToRelease!.platform_identifier,
         deploymentRequestToRelease!.region
@@ -2215,7 +2215,7 @@ describe('Deployment app', () => {
         hub_status: DeploymentRequestHubStatus.Active,
       });
 
-      await DeploymentsApp.releaseDeploymentRequestPlace(
+      await DeploymentApp.releaseDeploymentRequestPlace(
         deploymentRequest!.hub_status,
         deploymentRequest!.platform_identifier,
         deploymentRequest!.region
@@ -2238,7 +2238,7 @@ describe('Deployment app', () => {
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
-        await DeploymentsApp.releaseDeploymentRequestPlace(
+        await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
           deploymentRequest!.platform_identifier,
           deploymentRequest!.region
@@ -2271,7 +2271,7 @@ describe('Deployment app', () => {
           hub_status: DeploymentRequestHubStatus.Active,
         });
 
-        await DeploymentsApp.releaseDeploymentRequestPlace(
+        await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
           deploymentRequest!.platform_identifier,
           deploymentRequest!.region

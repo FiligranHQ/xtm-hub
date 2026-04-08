@@ -1,6 +1,6 @@
 import cron, { ScheduledTask } from 'node-cron';
 import { requestContext } from './context/request.context';
-import { DeploymentsApp } from './modules/services/deployments/deployments.app';
+import { DeploymentApp } from './modules/deployment/deployment.app';
 import { UsersOrganizationApp } from './modules/users/users.organization.app';
 import { EpicApp } from './modules/xtm-suite-roadmap/epic.app';
 import { SYSTEM_USER_CONTEXT } from './portal.const';
@@ -12,7 +12,7 @@ const expireTrials = async (): Promise<void> => {
   logApp.info('Running expireTrials job');
   requestContext.set(SYSTEM_USER_CONTEXT);
   try {
-    await DeploymentsApp.expireTrials();
+    await DeploymentApp.expireTrials();
   } catch (error) {
     logApp.error('ExpireTrials job failed:', { error });
   }

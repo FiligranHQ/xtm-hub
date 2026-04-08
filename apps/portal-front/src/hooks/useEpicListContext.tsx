@@ -1,8 +1,6 @@
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { createContext, useContext } from 'react';
 export interface EpicListConnectionContextType {
   connectionID: string;
-  filterByProduct: (product: FiligranProductEnum) => void;
 }
 export const useEpicListContext = (): EpicListConnectionContextType => {
   const context = useContext(EpicListContext);

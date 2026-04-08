@@ -9,7 +9,7 @@ import { UserId } from '../../model/kanel/public/User';
 import {
   DeploymentRequestDomain,
   FullyQualifiedDeploymentRequest,
-} from '../../modules/services/deployments/deployments.domain';
+} from '../../modules/deployment/deployment.domain';
 import { loadUserBy } from '../../modules/users/users.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';

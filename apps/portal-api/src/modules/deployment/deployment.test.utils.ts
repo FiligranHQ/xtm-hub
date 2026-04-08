@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
@@ -12,16 +12,16 @@ import {
   PlatformIdentifier,
   ServiceInstanceCreationStatus,
   ServiceInstanceJoinType,
-} from '../../../__generated__/resolvers-types';
+} from '../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
   DeploymentRequestInitializer,
-} from '../../../model/kanel/public/DeploymentRequest';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { insertSubscription } from '../../subcription/subscription.helper';
+} from '../../model/kanel/public/DeploymentRequest';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
-import { insertServiceInstance } from '../service-instance.domain';
-import { DeploymentRequestDomain } from './deployments.domain';
+import { insertServiceInstance } from '../services/service-instance.domain';
+import { insertSubscription } from '../subcription/subscription.helper';
+import { DeploymentRequestDomain } from './deployment.domain';
 
 export async function insertDeploymentRequest(
   deploymentRequest: Partial<DeploymentRequestInitializer>

@@ -5,13 +5,13 @@ import {
   QueryDeploymentRequestsArgs,
   QueryDeploymentRequestsListArgs,
   Resolvers,
-} from '../../../__generated__/resolvers-types';
-import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
-import { UnknownErrorCode } from '../../../utils/error/error.code';
-import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { extractId } from '../../../utils/utils';
-import { DeploymentsApp } from './deployments.app';
-import { DeploymentRequestDomain } from './deployments.domain';
+} from '../../__generated__/resolvers-types';
+import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
+import { UnknownErrorCode } from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { extractId } from '../../utils/utils';
+import { DeploymentApp } from './deployment.app';
+import { DeploymentRequestDomain } from './deployment.domain';
 
 const resolvers: Resolvers = {
   DeploymentRequest: {
@@ -29,7 +29,7 @@ const resolvers: Resolvers = {
   Query: {
     deploymentRequests: async (_, args: QueryDeploymentRequestsArgs) => {
       try {
-        return await DeploymentsApp.loadPlatformDeploymentRequests(args);
+        return await DeploymentApp.loadPlatformDeploymentRequests(args);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -42,7 +42,7 @@ const resolvers: Resolvers = {
       { platformIdentifier }
     ): Promise<DeploymentAvailability[]> => {
       try {
-        return await DeploymentsApp.loadAvailableDeploymentRequests(
+        return await DeploymentApp.loadAvailableDeploymentRequests(
           platformIdentifier
         );
       } catch (error) {
@@ -69,7 +69,7 @@ const resolvers: Resolvers = {
     },
     trialDeployments: async (_, { input }) => {
       try {
-        return await DeploymentsApp.loadTrialDeployments(input);
+        return await DeploymentApp.loadTrialDeployments(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -82,7 +82,7 @@ const resolvers: Resolvers = {
   Mutation: {
     createDeploymentRequest: async (_, { input }) => {
       try {
-        return await DeploymentsApp.createDeploymentRequest(input);
+        return await DeploymentApp.createDeploymentRequest(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -92,7 +92,7 @@ const resolvers: Resolvers = {
     },
     updateDeploymentRequest: async (_, { input }) => {
       try {
-        return await DeploymentsApp.updateDeploymentRequest(input);
+        return await DeploymentApp.updateDeploymentRequest(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -105,7 +105,7 @@ const resolvers: Resolvers = {
       { deploymentRequestId, cancellationReason }
     ) => {
       try {
-        return await DeploymentsApp.cancelDeploymentRequest(
+        return await DeploymentApp.cancelDeploymentRequest(
           extractId<DeploymentRequestId>(deploymentRequestId),
           false,
           cancellationReason
@@ -119,7 +119,7 @@ const resolvers: Resolvers = {
     },
     adminCancelDeploymentRequest: async (_, { deploymentRequestId }) => {
       try {
-        return await DeploymentsApp.cancelDeploymentRequest(
+        return await DeploymentApp.cancelDeploymentRequest(
           extractId<DeploymentRequestId>(deploymentRequestId),
           true
         );
@@ -133,7 +133,7 @@ const resolvers: Resolvers = {
 
     reorderDeploymentRequestInQueue: async (_, { input }) => {
       try {
-        return await DeploymentsApp.reorderDeploymentRequestInQueue({
+        return await DeploymentApp.reorderDeploymentRequestInQueue({
           ...input,
           id: extractId<DeploymentRequestId>(input.id),
         });
@@ -144,7 +144,7 @@ const resolvers: Resolvers = {
 
     updateDeploymentQuotaCapacity: async (_, { input }) => {
       try {
-        return await DeploymentsApp.updateDeploymentQuotaCapacity(input);
+        return await DeploymentApp.updateDeploymentQuotaCapacity(input);
       } catch (error) {
         throw mapToGraphQLError(error);
       }

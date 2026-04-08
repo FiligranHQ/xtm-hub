@@ -45,148 +45,6 @@ type Success {
   success: Boolean!
 }
 
-type Query {
-  updateOpenCTIManifest(tag: String): Success!
-  organization(id: ID!): Organization
-  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
-  userOrganizations: [Organization!]!
-  competitors(first: Int!, after: ID, orderBy: CompetitorOrdering!, orderMode: OrderingMode!): CompetitorConnection!
-  deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
-  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
-  deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
-  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
-  documentExists(documentName: String, service_instance_id: String): Boolean
-  publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
-  publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
-  publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
-  document(documentId: ID, serviceInstanceId: ID): Document
-  serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
-  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
-  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
-  registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
-  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
-  platformAssociatedOrganization(platformId: String!): Organization
-  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
-  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
-  serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
-  serviceInstanceById(service_instance_id: ID): ServiceInstance
-  serviceInstanceByIdWithSubscriptions(service_instance_id: ID, searchTerm: String): ServiceInstance
-  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
-  seoServiceInstances: [SeoServiceInstance!]!
-  seoServiceInstance(slug: String!): SeoServiceInstance!
-  settings: Settings!
-  subscriptionById(subscription_id: ID): SubscriptionModel
-  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
-  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
-  me: User
-  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  userHasOrganizationWithSubscription: Boolean!
-  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!): EpicConnection
-  node(id: ID!): Node
-}
-
-type Mutation {
-  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
-  addOrganization(input: OrganizationInput!): Organization
-  editOrganization(id: ID!, input: OrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
-  createCompetitor(input: CreateCompetitorInput!): Competitor!
-  updateCompetitor(input: UpdateCompetitorInput!): Competitor!
-  deleteCompetitor(id: ID!): Competitor!
-  createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
-  updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
-  reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
-  cancelDeploymentRequest(deploymentRequestId: ID!, cancellationReason: String): DeploymentRequest
-  adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
-  updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
-  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
-  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
-  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
-  incrementShareNumberDocument(documentId: ID): Document!
-  updateServiceGroups(input: UpdateServiceGroupsInput!): Success
-  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
-  unregisterPlatform(input: UnregisterPlatformInput): Success!
-  refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
-  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
-  autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
-  addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
-  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
-  addSubscription(service_instance_id: String): ServiceInstance
-  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
-  deleteSubscription(subscription_id: ID!): ServiceInstance
-  sendTelemetryEvent: SendTelemetryMutation
-  addUseCase(input: AddUseCaseInput!): UseCase!
-  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
-  deleteUseCase(id: ID!): UseCase!
-  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
-  addUserService(input: UserServiceAddInput!): [UserService]
-  addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
-  deleteUserService(input: UserServiceDeleteInput!): UserService
-  adminAddUser(input: AdminAddUserInput!): User
-  adminEditUser(id: ID!, input: AdminEditUserInput!): User!
-  addUser(input: AddUserInput!): User
-  editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
-  changeSelectedOrganization(organization_id: ID!): User
-  bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
-  bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
-  removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
-  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
-  editMeUser(input: EditMeUserInput!): User!
-  uploadUserPicture(document: Upload!): User!
-  resetPassword: Success!
-  requestTransferPersonalSpace(new_email: String): Success!
-  transferPersonalSpace(requestId: ID!): Success!
-  login(email: String!, password: String): User
-  logout: ID!
-  contactUs(message: String, platformId: ID, platformIdentifier: PlatformIdentifier): Success!
-  createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
-  updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
-  deleteEpic(id: ID!): Epic!
-}
-
-enum OrganizationOrdering {
-  name
-}
-
-type OrganizationId implements Node {
-  id: ID!
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-  domains: [String!]
-  personal_space: Boolean!
-  capabilityUser: [Capability]
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input OrganizationInput {
-  name: String!
-  domains: [String!]
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
 enum CompetitorOrdering {
   name
   tier
@@ -230,29 +88,109 @@ input UpdateCompetitorInput {
   domain: String
 }
 
-enum ServiceConfigurationStatus {
-  active
-  inactive
+type Query {
+  competitors(first: Int!, after: ID, orderBy: CompetitorOrdering!, orderMode: OrderingMode!): CompetitorConnection!
+  deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
+  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
+  deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
+  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
+  serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
+  updateOpenCTIManifest(tag: String): Success!
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
+  userOrganizations: [Organization!]!
+  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
+  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
+  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
+  registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
+  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
+  platformAssociatedOrganization(platformId: String!): Organization
+  documentExists(documentName: String, service_instance_id: String): Boolean
+  publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
+  publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
+  publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
+  document(documentId: ID, serviceInstanceId: ID): Document
+  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
+  serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
+  serviceInstanceById(service_instance_id: ID): ServiceInstance
+  serviceInstanceByIdWithSubscriptions(service_instance_id: ID, searchTerm: String): ServiceInstance
+  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
+  seoServiceInstances: [SeoServiceInstance!]!
+  seoServiceInstance(slug: String!): SeoServiceInstance!
+  settings: Settings!
+  subscriptionById(subscription_id: ID): SubscriptionModel
+  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
+  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
+  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
+  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
+  me: User
+  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  userHasOrganizationWithSubscription: Boolean!
+  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
+  node(id: ID!): Node
 }
 
-enum ServiceDefinitionIdentifier {
-  vault
-  link
-  opencti_custom_dashboards
-  opencti_integrations
-  openaev_scenarios
-  opencti_registration
-  openaev_registration
-  xtm_suite_roadmap
-}
-
-type ServiceDefinition implements Node {
-  id: ID!
-  name: String!
-  description: String
-  public: Boolean
-  identifier: ServiceDefinitionIdentifier!
-  service_capability: [ServiceCapability]
+type Mutation {
+  createCompetitor(input: CreateCompetitorInput!): Competitor!
+  updateCompetitor(input: UpdateCompetitorInput!): Competitor!
+  deleteCompetitor(id: ID!): Competitor!
+  createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
+  updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
+  reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
+  cancelDeploymentRequest(deploymentRequestId: ID!, cancellationReason: String): DeploymentRequest
+  adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
+  updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
+  updateServiceGroups(input: UpdateServiceGroupsInput!): Success
+  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  addOrganization(input: OrganizationInput!): Organization
+  editOrganization(id: ID!, input: OrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
+  unregisterPlatform(input: UnregisterPlatformInput): Success!
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
+  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
+  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
+  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
+  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
+  incrementShareNumberDocument(documentId: ID): Document!
+  addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
+  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
+  addSubscription(service_instance_id: String): ServiceInstance
+  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
+  deleteSubscription(subscription_id: ID!): ServiceInstance
+  sendTelemetryEvent: SendTelemetryMutation
+  addUseCase(input: AddUseCaseInput!): UseCase!
+  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
+  deleteUseCase(id: ID!): UseCase!
+  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
+  addUserService(input: UserServiceAddInput!): [UserService]
+  addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
+  deleteUserService(input: UserServiceDeleteInput!): UserService
+  adminAddUser(input: AdminAddUserInput!): User
+  adminEditUser(id: ID!, input: AdminEditUserInput!): User!
+  addUser(input: AddUserInput!): User
+  editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
+  changeSelectedOrganization(organization_id: ID!): User
+  bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
+  bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
+  removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  editMeUser(input: EditMeUserInput!): User!
+  uploadUserPicture(document: Upload!): User!
+  resetPassword: Success!
+  requestTransferPersonalSpace(new_email: String): Success!
+  transferPersonalSpace(requestId: ID!): Success!
+  login(email: String!, password: String): User
+  logout: ID!
+  contactUs(message: String, platformId: ID, platformIdentifier: PlatformIdentifier): Success!
+  createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
+  updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
+  deleteEpic(id: ID!): Epic!
 }
 
 enum DeploymentRequestPlatformRegion {
@@ -520,6 +458,206 @@ input UpdateDeploymentQuotaCapacityInput {
 input TrialDeploymentsInput {
   organizationId: ID!
   platformIdentifiers: [PlatformIdentifier!]
+}
+
+type ServiceGroup implements Node {
+  id: ID!
+  name: String!
+  users: [User!]
+}
+
+input UpdateServiceGroupsInputGroup {
+  id: ID!
+  userIds: [ID!]!
+}
+
+input UpdateServiceGroupsInput {
+  groups: [UpdateServiceGroupsInputGroup!]!
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+type OrganizationId implements Node {
+  id: ID!
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+  domains: [String!]
+  personal_space: Boolean!
+  capabilityUser: [Capability]
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input OrganizationInput {
+  name: String!
+  domains: [String!]
+}
+
+input OpenCTIPlatformRegistrationStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+enum PlatformContract {
+  CE
+  EE
+  trial
+}
+
+type RegisteredPlatform implements Node {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  platform_id: String!
+  identifier: ServiceDefinitionIdentifier!
+  version: String
+  illustration_document_id: String
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
+}
+
+input PlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  version: String
+}
+
+enum PlatformIdentifier {
+  opencti
+  openaev
+}
+
+input RegisterPlatformInput {
+  organizationId: ID!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
+}
+
+input CanUnregisterPlatformInput {
+  platformId: String!
+}
+
+type RegistrationResponse {
+  token: String!
+}
+
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
+}
+
+input IsPlatformRegisteredInput {
+  platformId: String!
+}
+
+type IsPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
+type IsPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  platformTitle: String
+  organization: IsPlatformRegisteredOrganization
+}
+
+type CanUnregisterResponse {
+  isPlatformRegistered: Boolean!
+  isAllowed: Boolean
+  isInOrganization: Boolean
+  organizationId: ID
+}
+
+input UnregisterPlatformInput {
+  platformId: String!
+  identifier: PlatformIdentifier!
+}
+
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
+  not_found
+}
+
+input RefreshPlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier
+}
+
+type RefreshPlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshUserPlatformTokenResponse {
+  token: String!
+}
+
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier
+  onlyActive: Boolean
+  onlyTrial: Boolean
+}
+
+input RegisteredPlatformInput {
+  service_instance_id: ID!
+}
+
+input AutoRegisterPlatformInput {
+  platform: PlatformInput!
+  existing_users_count: Int
+}
+
+enum ServiceConfigurationStatus {
+  active
+  inactive
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+enum ServiceDefinitionIdentifier {
+  vault
+  link
+  opencti_custom_dashboards
+  opencti_integrations
+  openaev_scenarios
+  opencti_registration
+  openaev_registration
+  xtm_suite_roadmap
+}
+
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  identifier: ServiceDefinitionIdentifier!
+  service_capability: [ServiceCapability]
 }
 
 enum DocumentSourceType {
@@ -977,149 +1115,11 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   demo_url: String
 }
 
-type ServiceGroup implements Node {
-  id: ID!
-  name: String!
-  users: [User!]
-}
-
-input UpdateServiceGroupsInputGroup {
-  id: ID!
-  userIds: [ID!]!
-}
-
-input UpdateServiceGroupsInput {
-  groups: [UpdateServiceGroupsInputGroup!]!
-}
-
 type ServiceLink implements Node {
   id: ID!
   service_instance_id: ID
   url: String
   name: String
-}
-
-input OpenCTIPlatformRegistrationStatusInput {
-  platformId: String!
-  token: String!
-}
-
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
-enum PlatformContract {
-  CE
-  EE
-  trial
-}
-
-type RegisteredPlatform implements Node {
-  id: ID!
-  url: String!
-  title: String!
-  contract: PlatformContract!
-  platform_id: String!
-  identifier: ServiceDefinitionIdentifier!
-  version: String
-  illustration_document_id: String
-  deployment_request: DeploymentRequest
-  subscription: SubscriptionModel
-}
-
-input PlatformInput {
-  id: ID!
-  url: String!
-  title: String!
-  contract: PlatformContract!
-  version: String
-}
-
-enum PlatformIdentifier {
-  opencti
-  openaev
-}
-
-input RegisterPlatformInput {
-  organizationId: ID!
-  platform: PlatformInput!
-  identifier: PlatformIdentifier!
-}
-
-input CanUnregisterPlatformInput {
-  platformId: String!
-}
-
-type RegistrationResponse {
-  token: String!
-}
-
-enum PlatformRegistrationStatus {
-  registered
-  unregistered
-  never_registered
-}
-
-input IsPlatformRegisteredInput {
-  platformId: String!
-}
-
-type IsPlatformRegisteredOrganization implements Node {
-  id: ID!
-}
-
-type IsPlatformRegisteredResponse {
-  status: PlatformRegistrationStatus!
-  platformTitle: String
-  organization: IsPlatformRegisteredOrganization
-}
-
-type CanUnregisterResponse {
-  isPlatformRegistered: Boolean!
-  isAllowed: Boolean
-  isInOrganization: Boolean
-  organizationId: ID
-}
-
-input UnregisterPlatformInput {
-  platformId: String!
-  identifier: PlatformIdentifier!
-}
-
-enum PlatformRegistrationConnectivityStatus {
-  active
-  inactive
-  not_found
-}
-
-input RefreshPlatformRegistrationConnectivityStatusInput {
-  platformId: String!
-  token: String!
-  platformVersion: String!
-  platformIdentifier: PlatformIdentifier
-}
-
-type RefreshPlatformRegistrationConnectivityStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
-type RefreshUserPlatformTokenResponse {
-  token: String!
-}
-
-input RegisteredPlatformsInput {
-  identifier: PlatformIdentifier
-  onlyActive: Boolean
-  onlyTrial: Boolean
-}
-
-input RegisteredPlatformInput {
-  service_instance_id: ID!
-}
-
-input AutoRegisterPlatformInput {
-  platform: PlatformInput!
-  existing_users_count: Int
 }
 
 enum ServiceInstanceOrdering {
@@ -1550,6 +1550,7 @@ enum Timeline {
   now
   next
   under_consideration
+  finished
 }
 
 enum EpicType {

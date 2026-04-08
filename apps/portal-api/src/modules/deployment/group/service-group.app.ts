@@ -17,10 +17,10 @@ import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { organizationDomain } from '../../organizations/organizations.domain';
+import { PlatformConfiguration } from '../../registration/registration.domain';
+import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
 import { UsersDomain } from '../../users/users.domain';
-import { ServiceContractDomain } from '../contract/service-configuration.domain';
-import { DeploymentRequestDomain } from '../deployments/deployments.domain';
-import { PlatformConfiguration } from '../registration/registration.domain';
+import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
 import { ServiceGroupHelper } from './service-group.helper';
 
@@ -91,7 +91,7 @@ export const ServiceGroupApp = {
           });
         if (deploymentRequest?.platform_id) {
           const serviceConfiguration =
-            await ServiceContractDomain.loadConfigurationByPlatform(
+            await ServiceConfigurationDomain.loadConfigurationByPlatform(
               deploymentRequest.platform_id
             );
           if (
