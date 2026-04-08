@@ -3,7 +3,7 @@ import { UserInfo } from '../model/user';
 import {
   loadUserBy,
   updateUserAtLogin,
-} from '../modules/organization-management/users/users.domain';
+} from '../modules/organization-management/users/user-domain/users.domain';
 import { getOrCreateUser } from '../modules/organization-management/users/users.helper';
 import { removeAllUserRolePortal } from '../modules/role-portal/role-portal.domain';
 import { PLATFORM_ORGANIZATION_UUID } from '../portal.const';

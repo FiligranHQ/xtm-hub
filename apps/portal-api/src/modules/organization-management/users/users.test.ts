@@ -14,7 +14,7 @@ import {
   deleteOrganizationBy,
   loadOrganizationBy,
 } from '../organizations/organizations.domain';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
+import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
 import {
   createNewUserFromInvitation,

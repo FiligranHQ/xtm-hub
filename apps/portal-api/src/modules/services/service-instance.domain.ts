@@ -30,7 +30,7 @@ import { restrictSubscriptionToUserOrganization } from '../../security/restricti
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { formatRawObject } from '../../utils/queryRaw.util';
-import { loadUserBy } from '../organization-management/users/users.domain';
+import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
 import { PlatformConfiguration } from '../registration/registration.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadSubscriptionCapabilities } from '../user_service/service-capability/subscription-capability.domain';

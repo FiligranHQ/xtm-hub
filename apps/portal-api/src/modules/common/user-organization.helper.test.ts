@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
-import { UserOrganizationPendingDomain } from '../organization-management/users/users-pending/user-organization-pending.domain';
+import { UserOrganizationPendingDomain } from '../organization-management/users/user-pending/user-organization-pending.domain';
 import { createNewUserFromInvitation } from '../organization-management/users/users.helper';
 import { createUserOrganizationRelationAndRemovePending } from './user-organization.helper';
 

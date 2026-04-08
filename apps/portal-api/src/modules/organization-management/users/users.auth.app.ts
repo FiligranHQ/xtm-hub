@@ -3,7 +3,7 @@ import portalConfig from '../../../config';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { validatePassword } from '../../../security/utils/user';
-import { loadUserBy, updateUserAtLogin } from './users.domain';
+import { loadUserBy, updateUserAtLogin } from './user-domain/users.domain';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   return validatePassword(user.salt, password, user.password);

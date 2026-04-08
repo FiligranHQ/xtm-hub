@@ -30,7 +30,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { loadUserOrganization } from '../common/user-organization.domain';
-import { loadUserBy } from '../organization-management/users/users.domain';
+import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
 import {
   getOrCreateUser,
   insertUserIntoOrganization,

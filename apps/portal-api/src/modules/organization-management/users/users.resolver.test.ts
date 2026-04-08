@@ -42,7 +42,7 @@ import {
   deleteSubscription,
   insertSubscription,
 } from '../../subcription/subscription.helper';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
+import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { deleteUserById, loadUser, loadUserBy } from './users.domain';
 import { removeUser } from './users.helper';
 import usersResolver from './users.resolver';

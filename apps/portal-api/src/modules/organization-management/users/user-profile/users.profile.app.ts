@@ -1,33 +1,43 @@
 import config from 'config';
-import { EditMeUserInput } from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
-import { UserTransferRequestId } from '../../../model/kanel/public/UserTransferRequest';
-import { UserLoadUserBy } from '../../../model/user';
-import { sendMail } from '../../../server/mail-service';
-import { updateUserSession } from '../../../session-store-manager';
-import { auth0Client } from '../../../thirdparty/auth0/client';
-import { MinIOClient } from '../../../thirdparty/minio/client';
-import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
-import { mapToGraphQLError } from '../../../utils/error/error.mapping';
-import { ForbiddenAccess } from '../../../utils/error/error.util';
-import { isValidEmail } from '../../../utils/verify-email.util';
+import { EditMeUserInput } from '../../../../__generated__/resolvers-types';
+import { requestContext } from '../../../../context/request.context';
+import { UserTransferRequestId } from '../../../../model/kanel/public/UserTransferRequest';
+import { UserLoadUserBy } from '../../../../model/user';
+import { sendMail } from '../../../../server/mail-service';
+import { updateUserSession } from '../../../../session-store-manager';
+import { auth0Client } from '../../../../thirdparty/auth0/client';
+import { MinIOClient } from '../../../../thirdparty/minio/client';
+import { logApp } from '../../../../utils/app-logger.util';
+import {
+  ErrorCode,
+  UnknownErrorCode,
+} from '../../../../utils/error/error.code';
+import { mapToGraphQLError } from '../../../../utils/error/error.mapping';
+import { ForbiddenAccess } from '../../../../utils/error/error.util';
+import { isValidEmail } from '../../../../utils/verify-email.util';
 import {
   getDocumentName,
   normalizeDocumentName,
-} from '../../document/document.helper';
-import { Upload, waitForUploads } from '../../document/document.uploads.helper';
-import { updateSubscriptionBy } from '../../subcription/subscription.domain';
+} from '../../../document/document.helper';
+import {
+  Upload,
+  waitForUploads,
+} from '../../../document/document.uploads.helper';
+import { updateSubscriptionBy } from '../../../subcription/subscription.domain';
 import {
   loadOrganizationBy,
   loadUserByOrganization,
-} from '../organizations/organizations.domain';
+} from '../../organizations/organizations.domain';
+import {
+  loadSimpleUserBy,
+  loadUserDetails,
+  updateUser,
+} from '../user-domain/users.domain';
 import {
   insertNewUserTransfer,
   loadUserTransfer,
-} from './user_transferRequest/user_transferRequest.domain';
-import { loadSimpleUserBy, loadUserDetails, updateUser } from './users.domain';
-import { updateAndDispatchUser } from './users.helper';
+} from '../user-transferRequest/user_transferRequest.domain';
+import { updateAndDispatchUser } from '../users.helper';
 
 const deletePicture = async (pictureMinio: string) => {
   try {

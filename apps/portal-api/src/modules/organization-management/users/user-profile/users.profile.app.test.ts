@@ -1,31 +1,31 @@
 import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestHelper } from '../../../../tests/test.helper';
+import { TestHelper } from '../../../../../tests/test.helper';
 import {
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
-} from '../../../../tests/tests.const';
-import { requestContext } from '../../../context/request.context';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+} from '../../../../../tests/tests.const';
+import { requestContext } from '../../../../context/request.context';
+import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import Subscription, {
   SubscriptionId,
-} from '../../../model/kanel/public/Subscription';
-import { UserId } from '../../../model/kanel/public/User';
+} from '../../../../model/kanel/public/Subscription';
+import { UserId } from '../../../../model/kanel/public/User';
 import UserTransferRequest, {
   UserTransferRequestId,
-} from '../../../model/kanel/public/UserTransferRequest';
-import * as mailService from '../../../server/mail-service';
-import { deleteSubscription } from '../../subcription/subscription.helper';
-import * as UserTransferRequestDomain from './user_transferRequest/user_transferRequest.domain';
+} from '../../../../model/kanel/public/UserTransferRequest';
+import * as mailService from '../../../../server/mail-service';
+import { deleteSubscription } from '../../../subcription/subscription.helper';
+import * as UserTransferRequestDomain from '../user-transferRequest/user_transferRequest.domain';
 import {
   deleteUserTransferRequest,
   insertNewUserTransfer,
-} from './user_transferRequest/user_transferRequest.domain';
-import { updateUser } from './users.domain';
-import { usersProfileApp } from './users.profile.app';
+} from '../user-transferRequest/user_transferRequest.domain';
+import { updateUser } from '../users.domain';
+import { usersProfileApp } from '../users.profile.app';
 
 describe('User profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [
@@ -206,7 +206,7 @@ describe('User profile app', () => {
 
     const mockMinIOClient = async () => {
       const MinIOClientModule =
-        await import('../../../thirdparty/minio/client');
+        await import('../../../../thirdparty/minio/client');
       return {
         insertFile: vi
           .spyOn(MinIOClientModule.MinIOClient, 'insertFile')

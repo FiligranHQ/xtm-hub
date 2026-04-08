@@ -48,7 +48,7 @@ import { loadOrganizationBy } from '../organization-management/organizations/org
 import {
   loadUsersByCapabilitiesInOrganization,
   updateUser,
-} from '../organization-management/users/users.domain';
+} from '../organization-management/users/user-domain/users.domain';
 import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
 import {
   loadServiceDefinitionByServiceInstance,

@@ -17,7 +17,7 @@ import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { organizationDomain } from '../../organization-management/organizations/organizations.domain';
-import { UsersDomain } from '../../organization-management/users/users.domain';
+import { UsersDomain } from '../../organization-management/users/user-domain/users.domain';
 import { PlatformConfiguration } from '../../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
 import { DeploymentRequestDomain } from '../deployment.domain';

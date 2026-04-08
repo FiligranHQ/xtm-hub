@@ -49,12 +49,12 @@ import {
   insertNewOrganization,
 } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
   loadUserDetails,
-} from './users.domain';
+} from './user-domain/users.domain';
+import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 
 export const createUserWithPersonalSpace = async (
   data: Pick<

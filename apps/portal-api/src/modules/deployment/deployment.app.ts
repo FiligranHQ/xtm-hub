@@ -51,7 +51,7 @@ import { sendMail } from '../../server/mail-service';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { formatName } from '../../utils/format';
 import { extractId, ucfirst } from '../../utils/utils';
-import { loadUser } from '../organization-management/users/users.domain';
+import { loadUser } from '../organization-management/users/user-domain/users.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { updateServiceInstance } from '../services/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';

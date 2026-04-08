@@ -29,7 +29,7 @@ import {
   loadOrganizationBy,
   updateOrganizationBy,
 } from '../modules/organization-management/organizations/organizations.domain';
-import { loadUserBy } from '../modules/organization-management/users/users.domain';
+import { loadUserBy } from '../modules/organization-management/users/user-domain/users.domain';
 import {
   ADMIN_UUID,
   PLATFORM_DOMAIN,
