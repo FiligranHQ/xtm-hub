@@ -61,7 +61,6 @@ export const publicDocumentItem = graphql`
       integration_subtype
       feed_url
       datasheet_url
-      blogpost_url
       demo_url
     }
 
