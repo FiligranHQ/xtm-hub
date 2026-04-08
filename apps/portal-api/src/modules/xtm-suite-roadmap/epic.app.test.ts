@@ -14,9 +14,9 @@ import Document, { DocumentId } from '../../model/kanel/public/Document';
 import Epic, { EpicId } from '../../model/kanel/public/Epic';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { MinIOClient } from '../../thirdparty/minio/client';
-import { DocumentApp } from '../services/document/document.app';
-import * as DocumentUploadsHelper from '../services/document/document.uploads.helper';
-import { DocumentDomain } from '../services/document/domain/document.domain';
+import { DocumentApp } from '../document/document.app';
+import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import { DocumentDomain } from '../document/domain/document.domain';
 import * as ServiceInstanceDomain from '../services/service-instance.domain';
 import { EpicApp } from './epic.app';
 import { EpicDomain } from './epic.domain';
@@ -413,6 +413,137 @@ describe('EpicApp', () => {
       expect(epicsConnection.edges.length).toStrictEqual(2);
       expect(epicsConnection.edges[0]?.node.epic).toBe('EPI-011');
       expect(epicsConnection.edges[1]?.node.epic).toBe('EPI-010');
+    });
+
+    it('should return only epics matching searchTerm on title', async () => {
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-020',
+          title: 'Dashboard feature',
+          short_description: 'Short',
+          description: 'Long',
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Now,
+        },
+        []
+      );
+
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-021',
+          title: 'Connector improvement',
+          short_description: 'Short',
+          description: 'Long',
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Now,
+        },
+        []
+      );
+
+      const epicsConnection = await EpicApp.loadEpics({
+        first: 10,
+        orderBy: EpicOrdering.Epic,
+        orderMode: OrderingMode.Asc,
+        searchTerm: 'Dashboard',
+      });
+
+      expect(epicsConnection.edges.length).toStrictEqual(1);
+      expect(epicsConnection.edges[0].node.epic).toBe('EPI-020');
+    });
+
+    it('should return epics matching searchTerm on epic code', async () => {
+      await EpicApp.createEpic(
+        {
+          epic: 'DASH-001',
+          title: 'Some title',
+          short_description: 'Short',
+          description: 'Long',
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Now,
+        },
+        []
+      );
+
+      await EpicApp.createEpic(
+        {
+          epic: 'CONN-001',
+          title: 'Other title',
+          short_description: 'Short',
+          description: 'Long',
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Now,
+        },
+        []
+      );
+
+      const epicsConnection = await EpicApp.loadEpics({
+        first: 10,
+        orderBy: EpicOrdering.Epic,
+        orderMode: OrderingMode.Asc,
+        searchTerm: 'DASH',
+      });
+
+      expect(epicsConnection.edges.length).toStrictEqual(1);
+      expect(epicsConnection.edges[0].node.epic).toBe('DASH-001');
+    });
+
+    it('should return epics matching searchTerm on description', async () => {
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-030',
+          title: 'Title A',
+          short_description: 'Short A',
+          description: 'Improve the threat intelligence module',
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Now,
+        },
+        []
+      );
+
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-031',
+          title: 'Title B',
+          short_description: 'Short B',
+          description: 'Fix pagination bugs',
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Now,
+        },
+        []
+      );
+
+      const epicsConnection = await EpicApp.loadEpics({
+        first: 10,
+        orderBy: EpicOrdering.Epic,
+        orderMode: OrderingMode.Asc,
+        searchTerm: 'threat intelligence',
+      });
+
+      expect(epicsConnection.edges.length).toStrictEqual(1);
+      expect(epicsConnection.edges[0].node.epic).toBe('EPI-030');
+    });
+
+    it('should return empty results when searchTerm matches nothing', async () => {
+      await EpicApp.createEpic(
+        {
+          epic: 'EPI-040',
+          title: 'Some epic',
+          short_description: 'Short',
+          description: 'Long',
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Now,
+        },
+        []
+      );
+
+      const epicsConnection = await EpicApp.loadEpics({
+        first: 10,
+        orderBy: EpicOrdering.Epic,
+        orderMode: OrderingMode.Asc,
+        searchTerm: 'nonexistent',
+      });
+
+      expect(epicsConnection.edges.length).toStrictEqual(0);
     });
   });
 });

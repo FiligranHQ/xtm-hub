@@ -20,15 +20,18 @@ describe('RegisteredPlatform type resolvers', () => {
   });
 
   describe('RegisteredPlatform.subscription', () => {
-    it('should call loadServiceInstanceSubscription with the organization id and instance id from parent', async () => {
+    it('should call loadSubscriptionByServiceInstanceAndOrganization with the organization id and instance id from parent', async () => {
       // Given
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const expectedSubscription = {
         id: uuidv4(),
         service_instance_id: serviceInstanceId,
       };
-      const loadServiceInstanceSubscriptionSpy = vi
-        .spyOn(ServiceInstanceDomain, 'loadServiceInstanceSubscription')
+      const loadSubscriptionByServiceInstanceAndOrganizationSpy = vi
+        .spyOn(
+          ServiceInstanceDomain,
+          'loadSubscriptionByServiceInstanceAndOrganization'
+        )
         .mockResolvedValue(expectedSubscription);
 
       // When
@@ -41,7 +44,9 @@ describe('RegisteredPlatform type resolvers', () => {
       );
 
       // Then
-      expect(loadServiceInstanceSubscriptionSpy).toHaveBeenCalledWith(
+      expect(
+        loadSubscriptionByServiceInstanceAndOrganizationSpy
+      ).toHaveBeenCalledWith(
         contextSimple2.user.selected_organization_id,
         serviceInstanceId
       );

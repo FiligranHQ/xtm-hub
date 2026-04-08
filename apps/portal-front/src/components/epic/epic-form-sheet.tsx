@@ -5,6 +5,7 @@ import {
   UpdateEpicMutation,
 } from '@/components/epic/epic.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing-dialog';
+import { useEpicFilter } from '@/hooks/useEpicFilter';
 import { useEpicListContext } from '@/hooks/useEpicListContext';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { Button, useToast } from '@filigran/ui';
@@ -34,7 +35,8 @@ export const EpicFormSheet = ({
   const [commitEpicMutation] = useMutation(CreateEpicMutation);
   const [updateEpicMutation] = useMutation(UpdateEpicMutation);
   const { toast } = useToast();
-  const { connectionID, filterByProduct } = useEpicListContext();
+  const { connectionID } = useEpicListContext();
+  const { setSelectedProduct } = useEpicFilter();
   const openSheet =
     externalOpen !== undefined ? externalOpen : internalOpenSheet;
   const setOpenSheet =
@@ -54,7 +56,7 @@ export const EpicFormSheet = ({
       uploadables,
       onCompleted: () => {
         setOpenSheet(false);
-        filterByProduct(inputValues.product);
+        setSelectedProduct(inputValues.product);
         toast({
           title: t('Utils.Success'),
           description: t('Utils.Success'),

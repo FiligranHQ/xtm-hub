@@ -130,7 +130,7 @@ type Query {
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   userHasOrganizationWithSubscription: Boolean!
-  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!): EpicConnection
+  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
   node(id: ID!): Node
 }
 
@@ -1550,6 +1550,7 @@ enum Timeline {
   now
   next
   under_consideration
+  finished
 }
 
 enum EpicType {

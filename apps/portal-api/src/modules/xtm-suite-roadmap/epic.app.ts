@@ -14,11 +14,8 @@ import User from '../../model/kanel/public/User';
 import { sendMail } from '../../server/mail-service';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
-import {
-  processUploads,
-  Upload,
-} from '../services/document/document.uploads.helper';
-import { DocumentDomain } from '../services/document/domain/document.domain';
+import { processUploads, Upload } from '../document/document.uploads.helper';
+import { DocumentDomain } from '../document/domain/document.domain';
 import { loadSubscribedServiceInstancesByIdentifier } from '../services/service-instance.domain';
 import { EpicDomain } from './epic.domain';
 
