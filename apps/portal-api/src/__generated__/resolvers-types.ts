@@ -846,7 +846,7 @@ export type MutationAddOrganizationArgs = {
 export type MutationAddServicePictureArgs = {
   document?: InputMaybe<Scalars['Upload']['input']>;
   isLogo?: InputMaybe<Scalars['Boolean']['input']>;
-  serviceInstanceId: Scalars['ID']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1549,13 +1549,13 @@ export type QueryServiceGroupsArgs = {
 
 
 export type QueryServiceInstanceByIdArgs = {
-  service_instance_id?: InputMaybe<Scalars['ID']['input']>;
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
 export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
   searchTerm?: InputMaybe<Scalars['String']['input']>;
-  service_instance_id?: InputMaybe<Scalars['ID']['input']>;
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -1959,7 +1959,7 @@ export type SubscribedServiceInstance = {
   configurations?: Maybe<Array<Maybe<SubscribedServiceInstanceConfiguration>>>;
   is_personal_space: Scalars['Boolean']['output'];
   organization_id: Scalars['ID']['output'];
-  service_instance_id: Scalars['ID']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
 };
 
 export type SubscribedServiceInstanceConfiguration = {
@@ -2175,7 +2175,7 @@ export type UpdateEpicInput = {
 
 export type UpdatePlatformServiceMetadataInput = {
   name?: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId: Scalars['ID']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 export type UpdateServiceGroupsInput = {
@@ -3592,7 +3592,7 @@ export type SubscribedServiceInstanceResolvers<ContextType = PortalContext, Pare
   configurations?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscribedServiceInstanceConfiguration']>>>, ParentType, ContextType>;
   is_personal_space?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

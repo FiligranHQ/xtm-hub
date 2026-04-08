@@ -90,13 +90,13 @@ input AddServiceInput {
 }
 
 input UpdatePlatformServiceMetadataInput {
-  serviceInstanceId: ID!
+  serviceInstanceId: ServiceInstanceId!
   name: String
 }
 
 type Mutation {
   addServicePicture(
-    serviceInstanceId: ID!
+    serviceInstanceId: ServiceInstanceId!
     document: Upload
     isLogo: Boolean
   ): ServiceInstance
@@ -126,9 +126,10 @@ type Query {
   serviceInstanceLinksByTags(
     tags: [ServiceInstanceTag!]!
   ): [SeoServiceInstance!]!
-  serviceInstanceById(service_instance_id: ID): ServiceInstance @auth
+  serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
+    @auth
   serviceInstanceByIdWithSubscriptions(
-    service_instance_id: ID
+    service_instance_id: ServiceInstanceId
     searchTerm: String
   ): ServiceInstance @auth @service_capa(requires: [MANAGE_ACCESS])
   subscribedServiceInstancesByIdentifier(
@@ -148,7 +149,7 @@ type SubscribedServiceInstanceConfiguration {
 }
 
 type SubscribedServiceInstance {
-  service_instance_id: ID!
+  service_instance_id: ServiceInstanceId!
   organization_id: ID!
   is_personal_space: Boolean!
   configurations: [SubscribedServiceInstanceConfiguration]

@@ -9,7 +9,6 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
-import { extractId } from '../../utils/utils';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../document/openaev/scenarios/scenarios.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../document/opencti/custom-dashboards/custom-dashboards.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../document/opencti/integrations/integrations.model';
@@ -98,17 +97,14 @@ const resolvers: Resolvers = {
     serviceInstanceById: async (_, { service_instance_id }, context) => {
       return ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
         context.user,
-        extractId<ServiceInstanceId>(service_instance_id)
+        service_instance_id
       );
     },
     serviceInstanceByIdWithSubscriptions: async (
       _,
       { service_instance_id, searchTerm }
     ) => {
-      return loadServiceWithSubscriptions(
-        extractId(service_instance_id),
-        searchTerm
-      );
+      return loadServiceWithSubscriptions(service_instance_id, searchTerm);
     },
     subscribedServiceInstancesByIdentifier: async (
       _,
@@ -139,7 +135,7 @@ const resolvers: Resolvers = {
     addServicePicture: async (_, input) => {
       try {
         return await ServiceInstanceApp.addServicePicture(
-          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input.serviceInstanceId,
           input.document,
           input.isLogo
         );
@@ -151,7 +147,7 @@ const resolvers: Resolvers = {
       try {
         return await ServiceInstanceApp.updatePlatformServiceMetadata(
           context.user,
-          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input.serviceInstanceId,
           input,
           document
         );
