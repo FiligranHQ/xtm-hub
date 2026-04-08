@@ -1,3 +1,4 @@
+import { GraphQLResolveInfo } from 'graphql';
 import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
@@ -21,6 +22,8 @@ import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
 } from '../src/portal.const';
+
+export const INFO = {} as GraphQLResolveInfo;
 
 export const TEST_ORGANIZATIONS = {
   FILIGRAN: {

@@ -11,6 +11,7 @@ import serverPortalApiFetch, {
 import { ContentLayout } from '@/components/content-layout';
 import { ErrorPage } from '@/components/ui/error-page';
 import { RelayProvider } from '@/relay/RelayProvider';
+import { getMetadataBase } from '@/utils/metadata';
 import { Card } from '@filigran/ui/servers';
 import errorFrontendLogMutationNode, {
   errorFrontendLogMutation,
@@ -21,20 +22,18 @@ import meLoaderQueryNode, {
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
 import PageLoader from './page-loader';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
+export const generateMetadata = async (): Promise<Metadata> => {
   return {
     title: 'XTM Hub',
     description: 'XTM Hub application by Filigran',
-    metadataBase: new URL(`https://${h.get('host')}`),
+    metadataBase: await getMetadataBase(),
   };
-}
+};
 
 // Component interface
 interface RootLayoutProps {
