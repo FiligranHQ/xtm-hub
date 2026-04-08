@@ -255,9 +255,11 @@ describe('Service instance domain', () => {
       );
 
       // Then
-      expect(result?.name).toBe('Only Name Updated');
-      expect(result?.description).toBe('Original Description');
-      expect(result?.public).toBe(true);
+      expect(result).toMatchObject({
+        name: 'Only Name Updated',
+        description: 'Original Description',
+        public: true,
+      });
     });
 
     it('should return undefined when service instance does not exist', async () => {

@@ -760,7 +760,7 @@ export const loadPlatformConfigurationByServiceInstanceId = async (
 
 export const updatePlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string,
-  config: Partial<PlatformConfiguration>
+  config: PlatformConfiguration
 ): Promise<ServiceConfiguration | null> => {
   const qb = db('Service_Configuration')
     .where('service_instance_id', '=', serviceInstanceId)

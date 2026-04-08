@@ -32,7 +32,7 @@ const resolvers: Resolvers = {
   Query: {
     isPlatformRegistered: async (_, { input }) => {
       try {
-        return registrationApp.isPlatformRegistered(input);
+        return await registrationApp.isPlatformRegistered(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,

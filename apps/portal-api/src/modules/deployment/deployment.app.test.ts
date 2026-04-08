@@ -10,9 +10,9 @@ import {
 } from 'vitest';
 import {
   contextSimpleUserSecondOrga,
-  DEPLOYMENT,
   requestContextAdminSecondOrga,
   requestContextSimpleUserSecondOrga,
+  TEST_DEPLOYMENT,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
@@ -110,7 +110,7 @@ describe('Deployment app', () => {
 
       // When
       const deployment =
-        await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+        await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
       // Check data from DB
       const dbDeploymentRequest =
@@ -154,7 +154,7 @@ describe('Deployment app', () => {
 
       // When
       const deployment =
-        await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+        await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
       // Check data from DB
       const dbDeploymentRequest =
@@ -209,7 +209,7 @@ describe('Deployment app', () => {
       });
 
       // When
-      const call = DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+      const call = DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
       // Then
       await expect(call).rejects.toThrow(
@@ -219,7 +219,7 @@ describe('Deployment app', () => {
 
     it('should throw when service definition is not found', async () => {
       const call = DeploymentApp.createDeploymentRequest({
-        ...DEPLOYMENT,
+        ...TEST_DEPLOYMENT,
         platform_identifier: 'unknown-platform' as PlatformIdentifier,
       });
 
@@ -235,7 +235,7 @@ describe('Deployment app', () => {
       // Given
       await TestHelper.competitor.create();
 
-      const call = DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+      const call = DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
       // Then
       await expect(call).rejects.toThrow(ErrorCode.CantRequestFreeTrial);
@@ -249,7 +249,7 @@ describe('Deployment app', () => {
       });
 
       const deployment =
-        await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+        await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
       // Then
       expect(deployment.id).toBeDefined();
@@ -257,7 +257,7 @@ describe('Deployment app', () => {
 
     it('should allow deployment when no competitors exist', async () => {
       const deployment =
-        await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+        await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
       // Then
       expect(deployment.id).toBeDefined();
@@ -316,7 +316,7 @@ describe('Deployment app', () => {
         telemetrySpy.mockRejectedValue(new Error('UNKNOWN'));
 
         const deployment =
-          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+          await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
         expect(deployment).toBeDefined();
       });
@@ -325,7 +325,7 @@ describe('Deployment app', () => {
     describe('mail', () => {
       describe('development environment', () => {
         it('should send a mail if status is pending to dev team', async () => {
-          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+          await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
@@ -359,7 +359,7 @@ describe('Deployment app', () => {
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
-          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+          await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
@@ -403,7 +403,7 @@ describe('Deployment app', () => {
         });
 
         it('should send a mail if status is pending to dev team', async () => {
-          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+          await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
@@ -437,7 +437,7 @@ describe('Deployment app', () => {
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
-          await DeploymentApp.createDeploymentRequest(DEPLOYMENT);
+          await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 

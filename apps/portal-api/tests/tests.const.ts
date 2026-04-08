@@ -137,7 +137,7 @@ export const CAPABILITY_MODIFY_TRIALS: CapabilityPortal = {
   name: PortalCapability.ModifyTrials,
 };
 
-export const DEPLOYMENT = {
+export const TEST_DEPLOYMENT = {
   activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
   job_title: DeploymentRequestJobTitle.CLevel,
   use_case: DeploymentRequestUseCase.ThreatHunting,
