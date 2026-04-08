@@ -1,6 +1,7 @@
 import cron, { ScheduledTask } from 'node-cron';
 import { requestContext } from './context/request.context';
 import { DeploymentApp } from './modules/deployment/deployment.app';
+import { ServiceGroupApp } from './modules/deployment/group/service-group.app';
 import { UsersOrganizationApp } from './modules/users/users.organization.app';
 import { EpicApp } from './modules/xtm-suite-roadmap/epic.app';
 import { SYSTEM_USER_CONTEXT } from './portal.const';
@@ -38,6 +39,16 @@ const sendPublicRoadmapMonthlyReminder = async (): Promise<void> => {
   }
 };
 
+const cleanExpiredTrialGroups = async (): Promise<void> => {
+  logApp.info('Running cleanExpiredTrialGroups job');
+  requestContext.set(SYSTEM_USER_CONTEXT);
+  try {
+    await ServiceGroupApp.removeExpiredGroups();
+  } catch (error) {
+    logApp.error('cleanExpiredTrialGroups job failed:', { error });
+  }
+};
+
 export const initCronJobs = () => {
   logApp.info('Initializing cron jobs');
   scheduledTasks.push(cron.schedule('0 2 * * *', expireTrials));
@@ -45,6 +56,7 @@ export const initCronJobs = () => {
   scheduledTasks.push(
     cron.schedule('0 8 1 * *', sendPublicRoadmapMonthlyReminder)
   );
+  scheduledTasks.push(cron.schedule('0 3 * * *', cleanExpiredTrialGroups));
 };
 
 export const stopCronJobs = () => {

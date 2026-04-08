@@ -1,5 +1,10 @@
 import { db } from '../../../../knexfile';
-import { PlatformIdentifier } from '../../../__generated__/resolvers-types';
+import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  PlatformIdentifier,
+} from '../../../__generated__/resolvers-types';
+import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import ServiceGroup, {
   ServiceGroupId,
   ServiceGroupMutator,
@@ -109,6 +114,52 @@ export const ServiceGroupDomain = {
     }
 
     await db('ServiceGroup_User').del().whereIn('group_id', groupIds);
+  },
+
+  deleteGroups: async (groupIds: ServiceGroupId[]) => {
+    if (!groupIds.length) {
+      return;
+    }
+
+    await db('ServiceGroup').del().whereIn('id', groupIds);
+  },
+
+  loadGroupsForExpiredTrials: async (): Promise<
+    {
+      deploymentRequestId: DeploymentRequestId;
+      groupId: ServiceGroupId;
+      serviceInstanceId: ServiceInstanceId;
+    }[]
+  > => {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    return db<{
+      groupId: ServiceGroupId;
+      deploymentRequestId: DeploymentRequestId;
+      serviceInstanceId: ServiceInstanceId;
+    }>('ServiceGroup')
+      .join(
+        'DeploymentRequest',
+        'DeploymentRequest.service_instance_id',
+        '=',
+        'ServiceGroup.service_instance_id'
+      )
+      .where(
+        'DeploymentRequest.type',
+        '=',
+        DeploymentRequestDeploymentType.Trial
+      )
+      .whereIn('DeploymentRequest.hub_status', [
+        DeploymentRequestHubStatus.Expired,
+        DeploymentRequestHubStatus.Cancelled,
+      ])
+      .where('DeploymentRequest.end_date', '<', sevenDaysAgo)
+      .select(
+        'ServiceGroup.id as groupId',
+        'DeploymentRequest.id as deploymentRequestId',
+        'ServiceGroup.service_instance_id as serviceInstanceId'
+      );
   },
 
   loadServiceInstanceGroupUsers: async (

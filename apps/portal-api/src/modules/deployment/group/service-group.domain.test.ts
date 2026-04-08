@@ -3,6 +3,7 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestHubStatus,
   ServiceInstanceCreationStatus,
   ServiceInstanceJoinType,
 } from '../../../__generated__/resolvers-types';
@@ -11,6 +12,8 @@ import ServiceGroup, {
 } from '../../../model/kanel/public/ServiceGroup';
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { deleteServiceInstanceBy } from '../../services/service-instance.domain';
+import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupDomain } from './service-group.domain';
 
 describe('ServiceGroupDomain', () => {
@@ -148,6 +151,160 @@ describe('ServiceGroupDomain', () => {
             TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
         )
       );
+    });
+  });
+
+  describe('loadGroupsForExpiredTrials', () => {
+    const trackedServiceInstanceIds: ServiceInstanceId[] = [];
+
+    afterEach(async () => {
+      await db('DeploymentRequest')
+        .whereIn('service_instance_id', trackedServiceInstanceIds)
+        .delete();
+      await db('Subscription')
+        .whereIn('service_instance_id', trackedServiceInstanceIds)
+        .delete();
+      for (const id of trackedServiceInstanceIds) {
+        await deleteServiceInstanceBy({ id });
+      }
+      trackedServiceInstanceIds.length = 0;
+    });
+
+    it.each([
+      DeploymentRequestHubStatus.Expired,
+      DeploymentRequestHubStatus.Cancelled,
+    ])(
+      'should return groups for a %s trial expired more than 7 days ago',
+      async (hub_status) => {
+        // Given
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() - 8);
+        const deploymentRequest = await insertDeploymentRequest({
+          hub_status,
+          end_date: endDate,
+        });
+        trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
+
+        const groupId = uuidv4() as ServiceGroupId;
+        await db<ServiceGroup>('ServiceGroup').insert({
+          id: groupId,
+          name: 'Admin',
+          service_instance_id: deploymentRequest.service_instance_id,
+        });
+
+        // When
+        const result = await ServiceGroupDomain.loadGroupsForExpiredTrials();
+
+        // Then
+        expect(result).toMatchObject([
+          {
+            deploymentRequestId: deploymentRequest.id,
+            serviceInstanceId: deploymentRequest.service_instance_id,
+            groupId,
+          },
+        ]);
+      }
+    );
+
+    it('should not return groups for a trial expired less than 7 days ago', async () => {
+      // Given
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - 6);
+      const deploymentRequest = await insertDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Expired,
+        end_date: endDate,
+      });
+      trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
+
+      await db<ServiceGroup>('ServiceGroup').insert({
+        id: uuidv4() as ServiceGroupId,
+        name: 'Admin',
+        service_instance_id: deploymentRequest.service_instance_id,
+      });
+
+      // When
+      const result = await ServiceGroupDomain.loadGroupsForExpiredTrials();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it.each([
+      DeploymentRequestHubStatus.Active,
+      DeploymentRequestHubStatus.Pending,
+    ])(
+      'should not return groups for a trial with hub_status %s',
+      async (hub_status) => {
+        // Given
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() - 8);
+        const deploymentRequest = await insertDeploymentRequest({
+          hub_status,
+          end_date: endDate,
+        });
+        trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
+
+        await db<ServiceGroup>('ServiceGroup').insert({
+          id: uuidv4() as ServiceGroupId,
+          name: 'Admin',
+          service_instance_id: deploymentRequest.service_instance_id,
+        });
+
+        // When
+        const result = await ServiceGroupDomain.loadGroupsForExpiredTrials();
+
+        // Then
+        expect(result).toEqual([]);
+      }
+    );
+
+    it('should return groups from all expired trials when multiple exist', async () => {
+      // Given
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - 8);
+
+      const deploymentRequest1 = await insertDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Expired,
+        end_date: endDate,
+      });
+      trackedServiceInstanceIds.push(deploymentRequest1.service_instance_id);
+
+      const groupId1 = uuidv4() as ServiceGroupId;
+      await db<ServiceGroup>('ServiceGroup').insert({
+        id: groupId1,
+        name: 'Admin',
+        service_instance_id: deploymentRequest1.service_instance_id,
+      });
+
+      const deploymentRequest2 = await insertDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Cancelled,
+        end_date: endDate,
+      });
+      trackedServiceInstanceIds.push(deploymentRequest2.service_instance_id);
+
+      const groupId2 = uuidv4() as ServiceGroupId;
+      await db<ServiceGroup>('ServiceGroup').insert({
+        id: groupId2,
+        name: 'Admin',
+        service_instance_id: deploymentRequest2.service_instance_id,
+      });
+
+      // When
+      const result = await ServiceGroupDomain.loadGroupsForExpiredTrials();
+
+      // Then
+      expect(result).toHaveLength(2);
+      expect(result.map((r) => r.deploymentRequestId)).toEqual(
+        expect.arrayContaining([deploymentRequest1.id, deploymentRequest2.id])
+      );
+    });
+
+    it('should return empty array when no expired trials exist', async () => {
+      // When
+      const result = await ServiceGroupDomain.loadGroupsForExpiredTrials();
+
+      // Then
+      expect(result).toEqual([]);
     });
   });
 });
