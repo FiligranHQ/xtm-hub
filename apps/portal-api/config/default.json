@@ -107,9 +107,5 @@
   "session_store": {
     "type": "postgresql",
     "cleanup_interval_minutes": 60
-  },
-  "session": {
-    "name": "cloud-portal",
-    "secret": "cloud-portal-test-key"
   }
 }
