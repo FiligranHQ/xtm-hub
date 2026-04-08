@@ -8,6 +8,7 @@ import { SheetWithPreventingDialog } from '@/components/ui/sheet-with-preventing
 import { useEpicFilter } from '@/hooks/useEpicFilter';
 import { useEpicListContext } from '@/hooks/useEpicListContext';
 import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
+import { AddIcon } from '@filigran/icon';
 import { Button, useToast } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { useTranslations } from 'next-intl';
@@ -121,7 +122,12 @@ export const EpicFormSheet = ({
       setOpen={setOpenSheet}
       trigger={
         triggerElement || (
-          <Button>{t(epic ? 'Utils.Update' : 'Utils.Create')}</Button>
+          <Button
+            variant="ghost-primary"
+            className="border">
+            <AddIcon className="size-4 mr-s" />
+            {t(epic ? 'Utils.Update' : 'Utils.Create')}
+          </Button>
         )
       }
       title={t(

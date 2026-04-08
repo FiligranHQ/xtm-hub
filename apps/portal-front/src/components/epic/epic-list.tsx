@@ -64,12 +64,12 @@ export const EpicList = ({
   const sections = useMemo(
     () => [
       { title: 'draft', epics: draft },
-      { title: TimelineEnum.NOW, epics: now },
-      { title: TimelineEnum.NEXT, epics: next },
-      { title: TimelineEnum.UNDER_CONSIDERATION, epics: under_consideration },
       ...(showFinished
         ? [{ title: TimelineEnum.FINISHED, epics: finished }]
         : []),
+      { title: TimelineEnum.NOW, epics: now },
+      { title: TimelineEnum.NEXT, epics: next },
+      { title: TimelineEnum.UNDER_CONSIDERATION, epics: under_consideration },
     ],
     [draft, now, next, under_consideration, finished, showFinished]
   );
@@ -101,14 +101,25 @@ export const EpicList = ({
 
   return (
     <>
-      <h1>{t('Epic.XTMRoadmap')}</h1>
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex m-s">
+        <h1>{t('Epic.XTMRoadmap')}</h1>
+        {userCanUpdate && (
+          <div className="ml-auto">
+            <EpicFormSheet
+              open={openSheet}
+              setOpen={setOpenSheet}
+            />
+          </div>
+        )}
+      </div>
+      <div className="flex flex-row items-center">
         <SearchInput
           containerClass="w-full sm:w-1/3"
           placeholder={t('Epic.Search')}
           onChange={debounceHandleInput}
         />
-        <div className="flex flex-row ml-auto items-center">
+
+        <div className="ml-auto">
           <EpicFilter
             selectedFilter={selectedProduct}
             onSelectedFilterChange={onFilterChange}
@@ -116,12 +127,6 @@ export const EpicList = ({
             showFinished={showFinished}
             onShowFinishedChange={setShowFinished}
           />
-          {userCanUpdate && (
-            <EpicFormSheet
-              open={openSheet}
-              setOpen={setOpenSheet}
-            />
-          )}
         </div>
       </div>
       {sections.map((timeline) => {

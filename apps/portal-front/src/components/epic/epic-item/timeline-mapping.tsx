@@ -17,4 +17,7 @@ export const FiligranTimelineMapping: Record<
   [TimelineEnum.UNDER_CONSIDERATION]: {
     color: 'green',
   },
+  [TimelineEnum.FINISHED]: {
+    color: 'white',
+  },
 };

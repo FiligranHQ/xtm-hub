@@ -39,8 +39,8 @@ export const EpicFilter = ({
   );
 
   return (
-    <div className="mr-s">
-      <div className="lg:hidden">
+    <>
+      <div className="lg:hidden m-s">
         <Select
           value={selectedFilter}
           onValueChange={(value) =>
@@ -67,8 +67,7 @@ export const EpicFilter = ({
           </SelectContent>
         </Select>
       </div>
-
-      <div className="hidden lg:flex flex-row gap-xs bg-page-background p-xs rounded-lg w-fit text-primary font-bold">
+      <div className="flex flex-row">
         <div className="flex items-center gap-xs px-xs">
           <Switch
             checked={showFinished}
@@ -78,25 +77,27 @@ export const EpicFilter = ({
             {t('Epic.ShowFinished')}
           </span>
         </div>
-        <Button
-          variant={selectedFilter === 'all' ? 'default' : 'ghost'}
-          onClick={() => onSelectedFilterChange('all')}>
-          {t('Epic.AllProducts')} ({totalCount})
-        </Button>
+        <div className="hidden lg:flex flex-row gap-xs bg-page-background p-xs rounded-lg w-fit text-primary font-bold">
+          <Button
+            variant={selectedFilter === 'all' ? 'default' : 'ghost'}
+            onClick={() => onSelectedFilterChange('all')}>
+            {t('Epic.AllProducts')} ({totalCount})
+          </Button>
 
-        {products.map((product) => {
-          const count = countsByProduct[product] ?? 0;
+          {products.map((product) => {
+            const count = countsByProduct[product] ?? 0;
 
-          return (
-            <Button
-              key={product}
-              variant={selectedFilter === product ? 'default' : 'ghost'}
-              onClick={() => onSelectedFilterChange(product)}>
-              {FiligranProductMapping[product].name} ({count})
-            </Button>
-          );
-        })}
+            return (
+              <Button
+                key={product}
+                variant={selectedFilter === product ? 'default' : 'ghost'}
+                onClick={() => onSelectedFilterChange(product)}>
+                {FiligranProductMapping[product].name} ({count})
+              </Button>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
