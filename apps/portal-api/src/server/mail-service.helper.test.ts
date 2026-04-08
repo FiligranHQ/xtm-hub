@@ -4,6 +4,16 @@ import { PlatformIdentifier } from '../__generated__/resolvers-types';
 import * as producer from '../thirdparty/pgboss/producer';
 import { clearTemplateCache, renderEmail, sendMail } from './mail-service';
 
+vi.mock('config', async (importOriginal) => {
+  const mod = await importOriginal<{ default: typeof config }>();
+  return {
+    default: {
+      get: vi.fn(mod.default.get.bind(mod.default)),
+      has: mod.default.has.bind(mod.default),
+    },
+  };
+});
+
 describe('renderEmail', () => {
   afterEach(() => {
     clearTemplateCache();
@@ -187,7 +197,7 @@ describe('renderEmail', () => {
     });
 
     it('should enqueue a job via PgBossProducer when queue processing is enabled', async () => {
-      vi.spyOn(config, 'get').mockReturnValue(true);
+      vi.mocked(config.get).mockReturnValue(true);
 
       const mockSend = vi
         .spyOn(producer.PgBossProducer, 'send')
@@ -208,7 +218,7 @@ describe('renderEmail', () => {
     });
 
     it('should NOT enqueue a job when queue processing is disabled', async () => {
-      vi.spyOn(config, 'get').mockReturnValue(false);
+      vi.mocked(config.get).mockReturnValue(false);
 
       const mockSend = vi
         .spyOn(producer.PgBossProducer, 'send')

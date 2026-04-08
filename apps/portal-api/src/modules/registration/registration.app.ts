@@ -389,7 +389,7 @@ export const registrationApp = {
     platformId,
   }: CanUnregisterPlatformInput): Promise<{
     isAllowed: boolean;
-    organizationId: OrganizationId;
+    organizationId: OrganizationId | null;
     isInOrganization: boolean;
   }> => {
     const serviceConfiguration =

@@ -13,3 +13,6 @@ generates:
       inputMaybeValue: T | null
       makeResolverTypeCallable: true
       contextType: "../model/portal-context.js#PortalContext"
+      scalars:
+        ServiceInstanceId: "../model/kanel/public/ServiceInstance.js#ServiceInstanceId"
+        OrganizationId: "../model/kanel/public/Organization.js#OrganizationId"

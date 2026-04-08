@@ -119,8 +119,8 @@ type Query {
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
-  serviceInstanceById(service_instance_id: ID): ServiceInstance
-  serviceInstanceByIdWithSubscriptions(service_instance_id: ID, searchTerm: String): ServiceInstance
+  serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
+  serviceInstanceByIdWithSubscriptions(service_instance_id: ServiceInstanceId, searchTerm: String): ServiceInstance
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
@@ -175,7 +175,7 @@ type Mutation {
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
-  addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
+  addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: String): ServiceInstance
   addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
@@ -314,8 +314,8 @@ type DeploymentRequest implements Node {
   hub_status: DeploymentRequestHubStatus!
   ordering: Int!
   requester_email: String
-  organization_requester_id: ID!
-  service_instance_id: ID!
+  organization_requester_id: OrganizationId!
+  service_instance_id: ServiceInstanceId!
   organization_name: String
   request_date: Date!
   counts_in_orga_quota: Boolean!
@@ -415,7 +415,7 @@ type DeploymentAvailability {
 }
 
 type DeployedPlatform {
-  serviceInstanceId: ID!
+  serviceInstanceId: ServiceInstanceId!
   platformIdentifier: PlatformIdentifier!
 }
 
@@ -456,7 +456,7 @@ input UpdateDeploymentQuotaCapacityInput {
 }
 
 input TrialDeploymentsInput {
-  organizationId: ID!
+  organizationId: OrganizationId!
   platformIdentifiers: [PlatformIdentifier!]
 }
 
@@ -684,6 +684,17 @@ enum IntegrationSubType {
   ORCHESTRATION
   DETECTION
   CASE_MANAGEMENT
+  THREAT_ACTORS
+  MALWARE
+  CYBER_INDUSTRY
+  PERIODIC_BRIEFING
+  SECURITY_RESEARCHER
+  VENDORS
+  FEDERAL_ORGANIZATION
+  JOURNALISTS
+  NOT_FOR_PROFIT_ORGANIZATION
+  SOCIAL_MEDIA
+  DARKWEB
 }
 
 interface Integration implements Node & Document {
@@ -934,7 +945,12 @@ enum OrganizationOrdering {
   name
 }
 
-type OrganizationId implements Node {
+"""
+A Relay global ID for Organization, extracted to a branded OrganizationId string
+"""
+scalar OrganizationId
+
+type OrganizationRef implements Node {
   id: ID!
 }
 
@@ -1074,7 +1090,7 @@ type MeUserSubscription {
 
 type UserPendingSubscription {
   delete: User
-  invalidate: OrganizationId
+  invalidate: OrganizationRef
 }
 
 type Subscription {
@@ -1244,6 +1260,11 @@ type ServiceLink implements Node {
   name: String
 }
 
+"""
+A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string
+"""
+scalar ServiceInstanceId
+
 enum ServiceInstanceOrdering {
   name
   description
@@ -1335,7 +1356,7 @@ input AddServiceInput {
 }
 
 input UpdatePlatformServiceMetadataInput {
-  serviceInstanceId: ID!
+  serviceInstanceId: ServiceInstanceId!
   name: String
 }
 
@@ -1349,7 +1370,7 @@ type SubscribedServiceInstanceConfiguration {
 }
 
 type SubscribedServiceInstance {
-  service_instance_id: ID!
+  service_instance_id: ServiceInstanceId!
   organization_id: ID!
   is_personal_space: Boolean!
   configurations: [SubscribedServiceInstanceConfiguration]
