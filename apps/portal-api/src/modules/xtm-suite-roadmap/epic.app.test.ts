@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   EpicOrdering,
@@ -10,8 +10,8 @@ import {
   ServiceDefinitionIdentifier,
   Timeline,
 } from '../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../model/kanel/public/Document';
-import Epic, { EpicId } from '../../model/kanel/public/Epic';
+import { DocumentId } from '../../model/kanel/public/Document';
+import { EpicId } from '../../model/kanel/public/Epic';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { DocumentApp } from '../document/document.app';
@@ -28,6 +28,15 @@ describe('EpicApp', () => {
     fileName: 'epic-image.png',
   };
 
+  const basicInput = {
+    title: 'Test Epic',
+    short_description: 'Short desc',
+    description: 'Long description for the epic',
+    active: true,
+    product: FiligranProduct.Opencti,
+    timeline: Timeline.Now,
+  };
+
   beforeEach(async () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
@@ -36,24 +45,22 @@ describe('EpicApp', () => {
 
   afterEach(async () => {
     // Clean up the Document and Epic tables before each test
-    await db('Epic').delete();
-    await db('Document').delete('*').where('file_name', '=', 'epic-image.png');
+    await TestHelper.epic.delete({});
+    await TestHelper.document.delete({ file_name: 'epic-image.png' });
     vi.restoreAllMocks();
   });
 
   describe('createEpic', () => {
     it('should createEpic with correct data and return the created epic', async () => {
-      const input = {
-        title: 'Test Epic',
-        short_description: 'Short desc',
-        description: 'Long description for the epic',
-        active: true,
-        product: FiligranProduct.Opencti,
-        timeline: Timeline.Now,
-      };
+      // When
+      const createdEpic = await EpicApp.createEpic(basicInput, []);
 
-      const createdEpic = await EpicApp.createEpic(input, []);
+      // Check in DB
+      const dbEpic = await TestHelper.epic.load({
+        id: createdEpic.id,
+      });
 
+      // Then
       expect(createdEpic).toMatchObject({
         id: expect.anything(),
         title: 'Test Epic',
@@ -61,14 +68,13 @@ describe('EpicApp', () => {
         active: true,
       });
 
-      // Verify in DB
-      const dbEpic = await db<Epic>('Epic').where('id', createdEpic.id).first();
       expect(dbEpic).toMatchObject({
         title: 'Test Epic',
       });
     });
 
     it('should create an image document when upload is provided', async () => {
+      // Given
       vi.spyOn(
         ServiceInstanceDomain,
         'loadSubscribedServiceInstancesByIdentifier'
@@ -82,12 +88,8 @@ describe('EpicApp', () => {
       ] as never);
 
       const input = {
+        ...basicInput,
         title: 'Epic with Image',
-        short_description: 'Short desc',
-        description: 'Long description for the epic',
-        active: true,
-        product: FiligranProduct.Opencti,
-        timeline: Timeline.Now,
       };
 
       const uploads = [
@@ -97,18 +99,19 @@ describe('EpicApp', () => {
         },
       ];
 
+      // When
       const createdEpic = await EpicApp.createEpic(input, uploads);
 
+      // Verify document was created in DB
+      const dbDocument = await TestHelper.document.load({
+        id: createdEpic!.document_id as DocumentId,
+      });
+
+      // Then
       expect(createdEpic).toMatchObject({
         id: expect.anything(),
         document_id: expect.anything(),
       });
-
-      // Verify document was created in DB
-      const dbDocument = await db<Document>('Document')
-        .where('id', createdEpic.document_id)
-        .first();
-
       expect(dbDocument).toMatchObject({
         file_name: 'epic-image.png',
         minio_name: 'epic-image.png',
@@ -121,72 +124,63 @@ describe('EpicApp', () => {
     });
 
     it('should create an integration epic when is_integration is true', async () => {
+      // Given
       const input = {
+        ...basicInput,
         title: 'Integration Epic',
-        short_description: 'Short desc',
-        description: 'Long description for the integration epic',
-        active: true,
-        product: FiligranProduct.Opencti,
-        timeline: Timeline.Now,
         is_integration: true,
       };
 
+      // When
       const createdEpic = await EpicApp.createEpic(input, []);
 
+      // Check in DB
+      const dbEpic = await TestHelper.epic.load({ id: createdEpic.id });
+
+      // Then
       expect(createdEpic).toMatchObject({
         epic_type: EpicType.Integration,
       });
 
-      // Verify in DB
-      const dbEpic = await db<Epic>('Epic').where('id', createdEpic.id).first();
       expect(dbEpic?.epic_type).toBe(EpicType.Integration);
     });
   });
 
   describe('updateEpic', () => {
     it('should update the specified epic with the provided data and return the updated epic', async () => {
-      // Create an epic first
-      const createdEpic = await EpicApp.createEpic(
-        {
-          title: 'Original Title',
-          short_description: 'Original short',
-          description: 'Original long',
-          product: FiligranProduct.Openaev,
-          timeline: Timeline.Next,
-        },
-        []
-      );
-
-      // Update it
+      // Given
+      const createdEpic = await EpicApp.createEpic(basicInput, []);
       const updateInput = {
         title: 'Updated Title',
         short_description: 'Updated short description',
         active: true,
       };
 
+      // When
       const updatedEpic = await EpicApp.updateEpic(
         createdEpic.id as EpicId,
         updateInput,
         []
       );
 
+      // Check in DB
+      const dbEpic = await TestHelper.epic.load({ title: 'Updated Title' });
+
+      // Then
       expect(updatedEpic).toMatchObject({
         title: 'Updated Title',
         short_description: 'Updated short description',
         active: true,
-        description: 'Original long',
+        description: 'Long description for the epic',
       });
 
-      // Verify in DB
-      const dbEpic = await db<Epic>('Epic')
-        .where('title', 'Updated Title')
-        .first();
       expect(dbEpic).toMatchObject({
         title: 'Updated Title',
         active: true,
       });
     });
     it('should update the specified epic with uploads and create a document', async () => {
+      // Given
       vi.spyOn(
         ServiceInstanceDomain,
         'loadSubscribedServiceInstancesByIdentifier'
@@ -199,16 +193,7 @@ describe('EpicApp', () => {
         },
       ] as never);
 
-      const createdEpic = await EpicApp.createEpic(
-        {
-          title: 'Original Title',
-          short_description: 'Original short',
-          description: 'Original long',
-          product: FiligranProduct.Openaev,
-          timeline: Timeline.Next,
-        },
-        []
-      );
+      const createdEpic = await EpicApp.createEpic(basicInput, []);
 
       expect(createdEpic.document_id).toBeNull();
 
@@ -225,20 +210,23 @@ describe('EpicApp', () => {
         },
       ];
 
+      // When
       const updatedEpic = await EpicApp.updateEpic(
         createdEpic.id,
         updateInput,
         uploads
       );
 
+      // Check in DB
+      const dbDocument = await TestHelper.document.load({
+        id: updatedEpic?.document_id as DocumentId,
+      });
+
+      // Then
       expect(updatedEpic).toMatchObject({
         title: 'Updated Title with Image',
         document_id: expect.anything(),
       });
-
-      const dbDocument = await db<Document>('Document')
-        .where('id', updatedEpic?.document_id)
-        .first();
 
       expect(dbDocument).toMatchObject({
         file_name: 'epic-image.png',
@@ -248,27 +236,21 @@ describe('EpicApp', () => {
 
   describe('deleteEpic', () => {
     it('should delete the specified epic and return the deleted epic', async () => {
-      const createdEpic = await EpicApp.createEpic(
-        {
-          title: 'Epic to Delete',
-          short_description: 'Short',
-          description: 'Long',
-          product: FiligranProduct.Opencti,
-          timeline: Timeline.Next,
-        },
-        []
-      );
+      // Given
+      const createdEpic = await EpicApp.createEpic(basicInput, []);
 
       expect(createdEpic.id).toBeDefined();
 
-      // Delete the epic
+      // When
       const deletedEpic = await EpicApp.deleteEpic(createdEpic.id as EpicId);
 
+      // Then
       expect(deletedEpic).toMatchObject({
         id: createdEpic.id,
       });
     });
     it('should delete, when integration, the document and the minioFile as well', async () => {
+      // Given
       const mockDeleteFileInMinio = vi
         .spyOn(MinIOClient, 'deleteFile')
         .mockResolvedValueOnce();
@@ -291,62 +273,55 @@ describe('EpicApp', () => {
         []
       );
       const createdEpic = await EpicDomain.createEpic({
-        title: 'Epic to Delete',
-        short_description: 'Short',
-        description: 'Long',
-        product: FiligranProduct.Opencti,
-        timeline: Timeline.Next,
-        epic_type: EpicType.Integration,
+        ...basicInput,
         document_id: document.id,
       });
 
-      // Delete the epic
+      // When
       const deletedEpic = await EpicApp.deleteEpic(createdEpic?.id as EpicId);
 
+      // Check in DB
+      const documentFromDB = await DocumentDomain.loadDocumentBy({
+        file_name: 'filename',
+      });
+
+      // Then
       expect(deletedEpic).toMatchObject({
         id: createdEpic?.id,
       });
       expect(mockDeleteFileInMinio).toHaveBeenCalledTimes(1);
-      const documentFromDB = await DocumentDomain.loadDocumentBy({
-        file_name: 'filename',
-      });
+
       expect(documentFromDB).toStrictEqual([]);
     });
   });
 
   describe('loadEpics', () => {
     it('should return epics with pagination information using first and orderBy parameters', async () => {
-      // Create multiple epics
+      // Given
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Epic 1',
-          short_description: 'Short 1',
-          description: 'Long 1',
-          product: FiligranProduct.Xtmhub,
-          timeline: Timeline.Now,
-          active: true,
         },
         []
       );
 
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Epic 2',
-          short_description: 'Short 2',
-          description: 'Long 2',
-          product: FiligranProduct.Xtmhub,
-          timeline: Timeline.Now,
-          active: true,
         },
         []
       );
 
+      // When
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
         orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
       });
 
+      // Then
       expect(epicsConnection).toMatchObject({
         pageInfo: {
           hasNextPage: false,
@@ -360,12 +335,17 @@ describe('EpicApp', () => {
     });
 
     it('should return empty connection when no epics exist', async () => {
+      // Given
+      // no epic created
+
+      // When
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
         orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
       });
 
+      // Then
       expect(epicsConnection).toMatchObject({
         pageInfo: expect.anything(),
       });
@@ -373,65 +353,55 @@ describe('EpicApp', () => {
     });
 
     it('should return epics ordered in descending order when orderMode is Desc', async () => {
-      // Create multiple epics
+      // Given
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Epic A',
-          short_description: 'Short A',
-          description: 'Long A',
-          product: FiligranProduct.Xtmhub,
-          timeline: Timeline.Now,
-          active: true,
         },
         []
       );
 
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Epic B',
-          short_description: 'Short B',
-          description: 'Long B',
-          product: FiligranProduct.Xtmhub,
-          timeline: Timeline.Now,
-          active: true,
         },
         []
       );
 
+      // When
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
         orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Desc,
       });
 
+      // Then
       expect(epicsConnection.edges).toHaveLength(2);
       expect(epicsConnection.edges[0]?.node.title).toBe('Epic B');
       expect(epicsConnection.edges[1]?.node.title).toBe('Epic A');
     });
 
     it('should return only epics matching searchTerm on title', async () => {
+      // Given
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Dashboard feature',
-          short_description: 'Short',
-          description: 'Long',
-          product: FiligranProduct.Opencti,
-          timeline: Timeline.Now,
         },
         []
       );
 
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Connector improvement',
-          short_description: 'Short',
-          description: 'Long',
-          product: FiligranProduct.Opencti,
-          timeline: Timeline.Now,
         },
         []
       );
 
+      // When
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
         orderBy: EpicOrdering.Title,
@@ -439,90 +409,87 @@ describe('EpicApp', () => {
         searchTerm: 'Dashboard',
       });
 
+      // Then
       expect(epicsConnection.edges).toHaveLength(1);
       expect(epicsConnection.edges[0]?.node.title).toBe('Dashboard feature');
     });
 
-    it('should return epics matching searchTerm on epic code', async () => {
+    it('should return epics matching searchTerm on epic short_description', async () => {
+      // Given
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Some title',
-          short_description: 'Short',
-          description: 'Long',
-          product: FiligranProduct.Opencti,
-          timeline: Timeline.Now,
+          short_description: 'Hello there',
         },
         []
       );
 
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Other title',
-          short_description: 'Short',
-          description: 'Long',
-          product: FiligranProduct.Opencti,
-          timeline: Timeline.Now,
+          short_description: 'Hi team',
         },
         []
       );
 
+      // When
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
         orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
-        searchTerm: 'Othe',
+        searchTerm: 'Hi te',
       });
 
+      // Then
       expect(epicsConnection.edges).toHaveLength(1);
       expect(epicsConnection.edges[0]?.node.title).toBe('Other title');
     });
 
     it('should return epics matching searchTerm on description', async () => {
+      // Given
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Title A',
-          short_description: 'Short A',
-          description: 'Improve the threat intelligence module',
-          product: FiligranProduct.Opencti,
-          timeline: Timeline.Now,
+          description: 'threat intelligence',
         },
         []
       );
 
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Title B',
-          short_description: 'Short B',
-          description: 'Fix pagination bugs',
-          product: FiligranProduct.Opencti,
-          timeline: Timeline.Now,
         },
         []
       );
 
+      // When
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
         orderBy: EpicOrdering.Title,
         orderMode: OrderingMode.Asc,
-        searchTerm: 'threat intelligence',
+        searchTerm: 'threat intellig',
       });
 
+      // Then
       expect(epicsConnection.edges).toHaveLength(1);
       expect(epicsConnection.edges[0]?.node.title).toBe('Title A');
     });
 
     it('should return empty results when searchTerm matches nothing', async () => {
+      // Given
       await EpicApp.createEpic(
         {
+          ...basicInput,
           title: 'Some epic',
-          short_description: 'Short',
-          description: 'Long',
-          product: FiligranProduct.Opencti,
-          timeline: Timeline.Now,
         },
         []
       );
 
+      // When
       const epicsConnection = await EpicApp.loadEpics({
         first: 10,
         orderBy: EpicOrdering.Title,
@@ -530,6 +497,7 @@ describe('EpicApp', () => {
         searchTerm: 'nonexistent',
       });
 
+      // Then
       expect(epicsConnection.edges).toHaveLength(0);
     });
   });
