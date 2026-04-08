@@ -168,7 +168,7 @@
                       trial.<br />
                       <br />
                       {{#if (eq platformIdentifier "OpenAEV")}} For the next 30
-                      days, you’ll have full access to OpenAEV Enterprise
+                      days, you'll have full access to OpenAEV Enterprise
                       Edition, our leading exposure validation platform. Explore
                       all key functionalities to simulate offensive attacks, run
                       realistic tabletop exercises, evaluate your defenses, and
@@ -180,13 +180,33 @@
                       with powerful tools, run investigations, and try our
                       extensive integrations.<br />
                       {{/if}}
+                    </p>
+                    {{#if (eq platformIdentifier "OpenAEV")}}
+                    <p style="margin: 0; margin-bottom: 16px; line-height: 24px">
+                      The trial includes all Enterprise Edition features with a reduced computing power and a limited storage of <strong>16GB</strong>.
+                    </p>
+                    {{else}}
+                    <p style="margin: 0; margin-bottom: 16px; line-height: 24px">
+                      Before you start the trial, we would like to remind you of some of the trial platform limitations.<br />
                       <br />
+                      <strong>The trial environment has two storage limits:</strong>
+                      <ul style="margin: 8px 0; padding-left: 20px;">
+                        <li style="margin-bottom: 4px;">Intelligence data storage: up to 40 GB (this covers all the threat data, objects, and relationships you create or ingest)</li>
+                        <li style="margin-bottom: 4px;">File storage: up to 3 GB (this covers any files or documents you upload)</li>
+                      </ul>
+                      Ingesting large, premium feeds with rich data sets during this trial could impact your storage quickly. <strong>We recommend you bring in only 2-3 days worth of data as part of a premium feed.</strong>
+                    </p>
+                    {{/if}}
+                    <p
+                      style="margin: 0; line-height: 24px; margin-bottom: 24px">
                       <strong>
                         Log in to your free trial:
                         <a href="{{ platformUrl }}">
                           {{ platformUrl }}</a
                         > </strong
                       ><br />
+                      <br />
+                      <em style="font-size: 14px;">Note: This free trial environment does not include SLA. In the event of a cloud provider outage, recovery time is not guaranteed. We recommend not storing critical or irreplaceable data in your trial environment.</em><br />
                       <br />
                       If you'd like a walkthrough or have questions, simply
                       reply to this email or use the 'Contact Us' option in the
