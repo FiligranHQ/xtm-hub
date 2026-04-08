@@ -50,17 +50,29 @@ import {
 import { extractId } from './utils/utils';
 const { json } = pkg;
 // region GraphQL server initialization
-export const PORTAL_COOKIE_NAME = 'cloud-portal';
-export const PORTAL_COOKIE_SECRET = 'cloud-portal-cookie-key';
+
+const portalCookieName = portalConfig.session.name;
+const portalCookieSecret = portalConfig.session.secret;
+if (!portalCookieName || portalCookieName === 'changeMe') {
+  throw new Error(
+    'Invalid session secret configuration: set PORTAL_COOKIE_NAME'
+  );
+}
+if (!portalCookieSecret || portalCookieSecret === 'changeMe') {
+  throw new Error(
+    'Invalid session secret configuration: set PORTAL_COOKIE_SECRET'
+  );
+}
+
 const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
 
 const app = express();
 const SESSION_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
 const sessionMiddleware = expressSession({
-  name: PORTAL_COOKIE_NAME,
+  name: portalCookieName,
   store: getSessionStoreInstance(),
-  secret: PORTAL_COOKIE_SECRET,
+  secret: portalCookieSecret,
   saveUninitialized: false,
   proxy: true,
   rolling: false,

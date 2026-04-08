@@ -1434,6 +1434,7 @@ export type QueryEpicsArgs = {
   first: Scalars['Int']['input'];
   orderBy: EpicOrdering;
   orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2088,6 +2089,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
 };
 
 export enum Timeline {
+  Finished = 'finished',
   Next = 'next',
   Now = 'now',
   UnderConsideration = 'under_consideration'

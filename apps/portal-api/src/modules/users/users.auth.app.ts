@@ -1,5 +1,5 @@
 import { MutationLoginArgs } from '../../__generated__/resolvers-types';
-import { PORTAL_COOKIE_NAME } from '../../index';
+import portalConfig from '../../config';
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy } from '../../model/user';
 import { validatePassword } from '../../security/utils/user';
@@ -27,7 +27,7 @@ export const UsersAuthApp = {
 
   logout: async ({ user, req, res }: PortalContext): Promise<string> => {
     return new Promise((resolve) => {
-      res.clearCookie(PORTAL_COOKIE_NAME);
+      res.clearCookie(portalConfig.session.name);
       req.session.destroy(() => {
         resolve(user ? user.id : 'anonymous');
       });
