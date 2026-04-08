@@ -54,6 +54,50 @@ export const integrationSubTypeMetadata: Record<
     label: 'Case Management, Other',
     color: '#b8180a',
   },
+  THREAT_ACTORS: {
+    label: 'Threat Actors',
+    color: '#b8180a',
+  },
+  MALWARE: {
+    label: 'Malware',
+    color: '#18832f',
+  },
+  CYBER_INDUSTRY: {
+    label: 'Cyber Industry',
+    color: '#1d5fc1',
+  },
+  PERIODIC_BRIEFING: {
+    label: 'Periodic Briefing',
+    color: '#af7bcf',
+  },
+  SECURITY_RESEARCHER: {
+    label: 'Security Reseacher',
+    color: '#5b5b5e',
+  },
+  VENDORS: {
+    label: 'Vendors',
+    color: '#d59ad8',
+  },
+  FEDERAL_ORGANIZATION: {
+    label: 'Federal Organization',
+    color: '#b6b6b6',
+  },
+  JOURNALISTS: {
+    label: 'Journalists',
+    color: '#ddc048',
+  },
+  NOT_FOR_PROFIT_ORGANIZATION: {
+    label: 'Not-for-profit organization',
+    color: '#dc8a1d',
+  },
+  SOCIAL_MEDIA: {
+    label: 'Social Media',
+    color: '#18832f',
+  },
+  DARKWEB: {
+    label: 'Darkweb',
+    color: '#265cea',
+  },
 };
 
 export const SubTypesPerIntegrationType = new Map<
@@ -71,7 +115,22 @@ export const SubTypesPerIntegrationType = new Map<
     ],
   ],
   [IntegrationTypeEnum.TAXII_FEED, [IntegrationSubTypeEnum.NATIVE]],
-  [IntegrationTypeEnum.RSS_FEED, [IntegrationSubTypeEnum.NATIVE]],
+  [
+    IntegrationTypeEnum.RSS_FEED,
+    [
+      IntegrationSubTypeEnum.THREAT_ACTORS,
+      IntegrationSubTypeEnum.MALWARE,
+      IntegrationSubTypeEnum.CYBER_INDUSTRY,
+      IntegrationSubTypeEnum.PERIODIC_BRIEFING,
+      IntegrationSubTypeEnum.SECURITY_RESEARCHER,
+      IntegrationSubTypeEnum.VENDORS,
+      IntegrationSubTypeEnum.FEDERAL_ORGANIZATION,
+      IntegrationSubTypeEnum.JOURNALISTS,
+      IntegrationSubTypeEnum.NOT_FOR_PROFIT_ORGANIZATION,
+      IntegrationSubTypeEnum.SOCIAL_MEDIA,
+      IntegrationSubTypeEnum.DARKWEB,
+    ],
+  ],
   [IntegrationTypeEnum.CSV_FEED, []],
   [IntegrationTypeEnum.STREAM, [IntegrationSubTypeEnum.NATIVE]],
   [
