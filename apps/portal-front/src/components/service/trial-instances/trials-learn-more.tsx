@@ -1,3 +1,4 @@
+import { TrialsStorageLimitation } from '@/components/service/trial-instances/trials-storage-limitation';
 import { cn } from '@/lib/utils';
 import {
   AnalyticsIcon,
@@ -98,6 +99,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: Props) => {
             <P>{t(`${baseTranslationKey}.Blocks.Third.Description`)}</P>
           </article>
         </div>
+        <TrialsStorageLimitation platformIdentifier={platformIdentifier} />
       </section>
     </>
   );
