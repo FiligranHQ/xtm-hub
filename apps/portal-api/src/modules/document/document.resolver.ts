@@ -12,7 +12,7 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
 import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,

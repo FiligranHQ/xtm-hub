@@ -1,3 +1,4 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CreateDeploymentRequestInput,
@@ -19,26 +20,12 @@ import {
   TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
 } from '../../__generated__/resolvers-types';
+import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import DeploymentRequestModel, {
   DeploymentRequestId,
   DeploymentRequestMutator,
 } from '../../model/kanel/public/DeploymentRequest';
-import { logApp } from '../../utils/app-logger.util';
-import {
-  BadRequestErrorCode,
-  ErrorCode,
-  ForbiddenErrorCode,
-  NotFoundErrorCode,
-} from '../../utils/error/error.code';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
-import { registrationDomain } from '../registration/registration.domain';
-import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
-import { updateSubscriptionBy } from '../subcription/subscription.domain';
-import { DeploymentRequestDomain } from './deployment.domain';
-
-import { toGlobalId } from 'graphql-relay/node/node.js';
-import portalConfig from '../../config';
 import { UserId } from '../../model/kanel/public/User';
 import {
   SYSTEM_USER_UUID,
@@ -48,17 +35,29 @@ import {
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { auth0Client } from '../../thirdparty/auth0/client';
+import { logApp } from '../../utils/app-logger.util';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  ForbiddenErrorCode,
+  NotFoundErrorCode,
+} from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
 import { ucfirst } from '../../utils/utils';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import { loadUser } from '../organization-management/users/user-domain/users.domain';
+import { registrationDomain } from '../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
+import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
 import { updateServiceInstance } from '../services/service-instance.domain';
+import { updateSubscriptionBy } from '../subcription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../telemetry/telemetry.helper';
-import { loadUser } from '../users/users.domain';
 import { CompetitorApp } from './competitor/competitor.app';
+import { DeploymentRequestDomain } from './deployment.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,

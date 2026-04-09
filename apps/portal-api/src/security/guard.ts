@@ -9,12 +9,12 @@ import { ServiceInstanceId } from '../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../model/user';
 import { loadUserOrganization } from '../modules/common/user-organization.domain';
 import { loadSubscriptionBy } from '../modules/subcription/subscription.domain';
-import { GenericServiceCapabilityName } from '../modules/user_service/service-capability/generic_service_capability.const';
+import { GenericServiceCapabilityName } from '../modules/security-management/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../modules/user_service/user_service.domain';
 import { ErrorCode } from '../utils/error/error.code';
 import { BadRequestError, ForbiddenAccess } from '../utils/error/error.util';
 import { isUserAdminPlatform, isUserGranted } from './access';
-import { isUserAllowedOnOrganization } from './auth.helper';
+import { isUserAllowedOnOrganization } from '../modules/security-management/capability/auth.helper';
 
 export const securityGuard = {
   assertUserIsInOrganization: async (

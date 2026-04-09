@@ -48,7 +48,7 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 
 import { UserLoadUserBy } from '../../model/user';
-import * as authHelper from '../../security/auth.helper';
+import * as authHelper from '../security-management/capability/auth.helper';
 import {
   BadRequestErrorCode,
   ErrorCode,

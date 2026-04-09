@@ -17,7 +17,7 @@ import {
 } from './user-security-access';
 
 import { ErrorCode } from '../utils/error/error.code';
-import { isUserAllowed } from './auth.helper';
+import { isUserAllowed } from '../modules/security-management/capability/auth.helper';
 
 export type SecuryQueryHandlers = {
   [key in MethodType]: (

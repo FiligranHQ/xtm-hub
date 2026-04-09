@@ -19,7 +19,7 @@ import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
 import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceById,
@@ -30,7 +30,7 @@ import {
   buildSubscribeEvent,
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
-import { addCapabilitiesToSubscription } from '../user_service/service-capability/subscription-capability.domain';
+import { addCapabilitiesToSubscription } from '../security-management/service-capability/subscription-capability.domain';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import {
   createSubscription,

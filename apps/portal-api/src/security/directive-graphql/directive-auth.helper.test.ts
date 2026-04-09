@@ -3,13 +3,14 @@ import {
   CAPABILITY_MODIFY_TRIALS,
   CAPABILITY_READ_TRIALS,
 } from '../../../tests/tests.const';
+
 import {
   OrganizationCapability,
   PortalCapability,
 } from '../../__generated__/resolvers-types';
 import { UserLoadUserBy } from '../../model/user';
 import { CAPABILITY_BYPASS } from '../../portal.const';
-import * as AuthHelper from '../auth.helper';
+import * as AuthHelper from '../../modules/security-management/capability/auth.helper';
 import { authDirectives } from './directive-auth';
 import { RoleType } from './directive.model';
 

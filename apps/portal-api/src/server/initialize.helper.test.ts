@@ -5,7 +5,7 @@ import { TEST_ORGANIZATIONS } from '../../tests/tests.const';
 import { withTransaction } from '../context/database.context';
 import { UserInitializer } from '../model/kanel/public/User';
 import UserOrganization from '../model/kanel/public/UserOrganization';
-import { loadOrganizationBy } from '../modules/organizations/organizations.domain';
+import { loadOrganizationBy } from '../modules/organization-management/organizations/organizations.domain';
 import { CAPABILITY_BYPASS, ROLE_ADMIN, ROLE_USER } from '../portal.const';
 import { DevUser } from '../utils/config-validation.util';
 import {

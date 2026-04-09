@@ -12,7 +12,7 @@ import { UserLoadUserBy } from '../../model/user';
 import * as access from '../../security/access';
 import { ErrorCode } from '../../utils/error/error.code';
 import * as serviceInstanceDomain from '../services/service-instance.domain';
-import * as capabilityHelper from '../user_service/user-service-capability/user-service-capability.helper';
+import * as capabilityHelper from '../security-management/user-service-capability/user-service-capability.helper';
 import { isUserRestrictedToActiveDocument } from './document.security';
 
 const organizationId = uuidv4() as OrganizationId;

@@ -12,7 +12,7 @@ import { createRelayIdScalar } from '../../utils/scalar.util';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../document/openaev/scenarios/scenarios.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../document/opencti/custom-dashboards/custom-dashboards.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../document/opencti/integrations/integrations.model';
-import { loadCapabilities } from '../user_service/user-service-capability/user-service-capability.helper';
+import { loadCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
 import { ServiceInstanceApp } from './service-instance.app';
 import {
   getUserJoined,

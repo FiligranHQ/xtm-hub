@@ -29,7 +29,7 @@ import Organization, {
 } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
-import { isUserAllowedOnOrganization } from '../../security/auth.helper';
+import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { logApp } from '../../utils/app-logger.util';
@@ -44,7 +44,11 @@ import { RequiredPlatformVersions } from '../../utils/required-platform-version'
 import { doesVersionSatisfy, isValidVersion } from '../../utils/versioning';
 import { loadUserOrganization } from '../common/user-organization.domain';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import {
+  loadUsersByCapabilitiesInOrganization,
+  updateUser,
+} from '../organization-management/users/user-domain/users.domain';
 import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
 import {
   loadServiceDefinitionByServiceInstance,
@@ -53,10 +57,6 @@ import {
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../telemetry/telemetry.helper';
-import {
-  loadUsersByCapabilitiesInOrganization,
-  updateUser,
-} from '../users/users.domain';
 import {
   DomainRegisteredPlatform,
   PlatformConfiguration,

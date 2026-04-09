@@ -17,14 +17,14 @@ import UserService, {
 } from '../../model/kanel/public/UserService';
 import UserServiceCapability from '../../model/kanel/public/UserServiceCapability';
 import * as mailService from '../../server/mail-service';
+import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
+import { removeUser } from '../organization-management/users/users.helper';
 import { createSubscription } from '../subcription/subscription.domain';
 import { SubscriptionStatus } from '../subscription.const';
-import { loadUserBy } from '../users/users.domain';
-import { removeUser } from '../users/users.helper';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
-} from './service-capability/generic_service_capability.const';
+} from '../security-management/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from './user_service.domain';
 
 // ---------------------------------------------------------------------------

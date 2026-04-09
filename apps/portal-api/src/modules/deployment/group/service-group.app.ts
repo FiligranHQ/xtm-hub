@@ -10,16 +10,16 @@ import ServiceGroup, {
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
-import { userHasBypassCapability } from '../../../security/auth.helper';
+import { userHasBypassCapability } from '../../security-management/capability/auth.helper';
 import { sendMail } from '../../../server/mail-service';
 import { auth0Client } from '../../../thirdparty/auth0/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
-import { organizationDomain } from '../../organizations/organizations.domain';
+import { organizationDomain } from '../../organization-management/organizations/organizations.domain';
+import { UsersDomain } from '../../organization-management/users/user-domain/users.domain';
 import { PlatformConfiguration } from '../../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
-import { UsersDomain } from '../../users/users.domain';
 import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
 import { ServiceGroupHelper } from './service-group.helper';
@@ -135,6 +135,47 @@ export const ServiceGroupApp = {
     return {
       success: true,
     };
+  },
+  removeExpiredGroups: async (): Promise<void> => {
+    const rows = await ServiceGroupDomain.loadGroupsForExpiredTrials();
+
+    const byServiceInstance = rows.reduce<
+      Map<
+        ServiceInstanceId,
+        { deploymentRequestId: string; groupIds: ServiceGroupId[] }
+      >
+    >((acc, row) => {
+      const entry = acc.get(row.serviceInstanceId) ?? {
+        deploymentRequestId: row.deploymentRequestId,
+        groupIds: [],
+      };
+      entry.groupIds.push(row.groupId);
+      acc.set(row.serviceInstanceId, entry);
+      return acc;
+    }, new Map());
+
+    for (const [
+      serviceInstanceId,
+      { deploymentRequestId, groupIds },
+    ] of byServiceInstance) {
+      logApp.info('Removing users from expired trial groups', {
+        deploymentRequestId,
+        groupCount: groupIds.length,
+      });
+      try {
+        const oldUsers =
+          await ServiceGroupDomain.loadServiceInstanceGroupUsers(
+            serviceInstanceId
+          );
+        await updateAuth0Groups(oldUsers, [], serviceInstanceId);
+        await ServiceGroupDomain.deleteGroups(groupIds);
+      } catch (error) {
+        logApp.error('Failed to clean up expired trial groups', {
+          deploymentRequestId,
+          error,
+        });
+      }
+    }
   },
 };
 

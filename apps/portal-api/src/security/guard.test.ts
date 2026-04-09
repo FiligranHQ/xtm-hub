@@ -8,7 +8,7 @@ import {
 import { OrganizationCapability } from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
 import { ErrorCode } from '../utils/error/error.code';
-import * as authHelper from './auth.helper';
+import * as authHelper from '../modules/security-management/capability/auth.helper';
 import { securityGuard } from './guard';
 
 describe('Security Guard', () => {
