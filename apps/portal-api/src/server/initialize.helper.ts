@@ -28,8 +28,8 @@ import {
   insertNewOrganization,
   loadOrganizationBy,
   updateOrganizationBy,
-} from '../modules/organizations/organizations.domain';
-import { loadUserBy } from '../modules/users/users.domain';
+} from '../modules/organization-management/organizations/organizations.domain';
+import { loadUserBy } from '../modules/organization-management/users/user-domain/users.domain';
 import {
   ADMIN_UUID,
   PLATFORM_DOMAIN,

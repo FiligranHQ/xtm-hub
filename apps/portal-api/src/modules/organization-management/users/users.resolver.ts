@@ -4,22 +4,20 @@ import {
   User,
   UserPendingSubscription,
   UserSubscription,
-} from '../../__generated__/resolvers-types';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { UserId } from '../../model/kanel/public/User';
-import { dispatch, listen } from '../../pub';
-import { hubspotReachOutSalesHook } from '../../thirdparty/hubspot/hubspot';
-import { logApp } from '../../utils/app-logger.util';
+} from '../../../__generated__/resolvers-types';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { UserId } from '../../../model/kanel/public/User';
+import { dispatch, listen } from '../../../pub';
+import { hubspotReachOutSalesHook } from '../../../thirdparty/hubspot/hubspot';
+import { logApp } from '../../../utils/app-logger.util';
 
-import { UserTransferRequestId } from '../../model/kanel/public/UserTransferRequest';
-import { PortalContext } from '../../model/portal-context';
-import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
-import { mapToGraphQLError } from '../../utils/error/error.mapping';
-import { ForbiddenAccess } from '../../utils/error/error.util';
-import { extractId } from '../../utils/utils';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
-import { usersAdminApp } from './users.admin.app';
-import { UsersAuthApp } from './users.auth.app';
+import { UserTransferRequestId } from '../../../model/kanel/public/UserTransferRequest';
+import { PortalContext } from '../../../model/portal-context';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { ForbiddenAccess } from '../../../utils/error/error.util';
+import { extractId } from '../../../utils/utils';
+import { usersAdminApp } from './user-admin/users.admin.app';
 import {
   getCapabilities,
   getOrganizations,
@@ -28,10 +26,12 @@ import {
   loadUsersByCapabilitiesInOrganization,
   resetPassword,
   userHasOrganizationWithSubscription,
-} from './users.domain';
+} from './user-domain/users.domain';
+import { UsersOrganizationApp } from './user-organization/users.organization.app';
+import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
+import { usersProfileApp } from './user-profile/users.profile.app';
+import { UsersAuthApp } from './users.auth.app';
 import { mapUserToGraphqlUser } from './users.helper';
-import { UsersOrganizationApp } from './users.organization.app';
-import { usersProfileApp } from './users.profile.app';
 
 const resolvers: Resolvers = {
   User: {

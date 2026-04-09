@@ -1,9 +1,9 @@
-import { db } from '../../../../knexfile';
+import { db } from '../../../../../knexfile';
 import UserTransferRequest, {
   UserTransferRequestInitializer,
   UserTransferRequestMutator,
-} from '../../../model/kanel/public/UserTransferRequest';
-import { addPrefixToObject } from '../../../utils/typescript';
+} from '../../../../model/kanel/public/UserTransferRequest';
+import { addPrefixToObject } from '../../../../utils/typescript';
 
 export const insertNewUserTransfer = (
   data: UserTransferRequestInitializer

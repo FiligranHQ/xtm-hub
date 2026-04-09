@@ -1,9 +1,9 @@
-import { Resolvers } from '../../__generated__/resolvers-types';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { UnknownErrorCode } from '../../utils/error/error.code';
-import { mapToGraphQLError } from '../../utils/error/error.mapping';
-import { StillReferencedError } from '../../utils/error/error.util';
-import { createRelayIdScalar } from '../../utils/scalar.util';
+import { Resolvers } from '../../../__generated__/resolvers-types';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
+import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { StillReferencedError } from '../../../utils/error/error.util';
+import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { organizationsApp } from './organizations.app';
 import {
   loadOrganizationBy,

@@ -1,4 +1,4 @@
-import { db, dbRaw, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../../../knexfile';
 import {
   Filter,
   FilterKey,
@@ -8,25 +8,28 @@ import {
   Subscription,
   UserConnection,
   User as UserGenerated,
-} from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import User, { UserId, UserMutator } from '../../model/kanel/public/User';
-import UserService from '../../model/kanel/public/UserService';
-import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
-import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../portal.const';
-import { isUserAdminPlatform } from '../../security/access';
-import { checkUserCapabilities } from '../../security/utils/user';
-import { auth0Client } from '../../thirdparty/auth0/client';
-import { hubspotLoginHook } from '../../thirdparty/hubspot/hubspot';
-import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
-import { formatRawAggObject } from '../../utils/queryRaw.util';
-import { addPrefixToObject } from '../../utils/typescript';
-import { isEmpty } from '../../utils/utils';
-import { isAdmin } from '../role-portal/role-portal.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { buildLoginEvent } from '../telemetry/telemetry.helper';
+} from '../../../../__generated__/resolvers-types';
+import { requestContext } from '../../../../context/request.context';
+import { OrganizationId } from '../../../../model/kanel/public/Organization';
+import User, { UserId, UserMutator } from '../../../../model/kanel/public/User';
+import UserService from '../../../../model/kanel/public/UserService';
+import {
+  UserLoadUserBy,
+  UserWithOrganizationsAndRole,
+} from '../../../../model/user';
+import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../../../portal.const';
+import { isUserAdminPlatform } from '../../../../security/access';
+import { checkUserCapabilities } from '../../../../security/utils/user';
+import { auth0Client } from '../../../../thirdparty/auth0/client';
+import { hubspotLoginHook } from '../../../../thirdparty/hubspot/hubspot';
+import { logApp } from '../../../../utils/app-logger.util';
+import { ErrorCode } from '../../../../utils/error/error.code';
+import { formatRawAggObject } from '../../../../utils/queryRaw.util';
+import { addPrefixToObject } from '../../../../utils/typescript';
+import { isEmpty } from '../../../../utils/utils';
+import { isAdmin } from '../../../role-portal/role-portal.domain';
+import { telemetryApp } from '../../../telemetry/telemetry.app';
+import { buildLoginEvent } from '../../../telemetry/telemetry.helper';
 
 export const UsersDomain = {
   loadUsers: async (userIds: UserId[]): Promise<User[]> => {

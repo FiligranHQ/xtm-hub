@@ -2,36 +2,36 @@ import {
   AddUserInput,
   User as GraphqlUser,
   OrganizationCapability,
-} from '../../__generated__/resolvers-types';
-import portalConfig from '../../config';
-import { withTransaction } from '../../context/database.context';
-import { requestContext } from '../../context/request.context';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { UserId } from '../../model/kanel/public/User';
-import { UserLoadUserBy } from '../../model/user';
-import { dispatch } from '../../pub';
-import { isUserAdminPlatform } from '../../security/access';
-import { securityGuard } from '../../security/guard';
-import { sendMail } from '../../server/mail-service';
-import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
-import { ForbiddenAccess } from '../../utils/error/error.util';
-import { formatName } from '../../utils/format';
+} from '../../../../__generated__/resolvers-types';
+import portalConfig from '../../../../config';
+import { withTransaction } from '../../../../context/database.context';
+import { requestContext } from '../../../../context/request.context';
+import { OrganizationId } from '../../../../model/kanel/public/Organization';
+import { UserId } from '../../../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../../../model/user';
+import { dispatch } from '../../../../pub';
+import { isUserAdminPlatform } from '../../../../security/access';
+import { securityGuard } from '../../../../security/guard';
+import { sendMail } from '../../../../server/mail-service';
+import { logApp } from '../../../../utils/app-logger.util';
+import { ErrorCode } from '../../../../utils/error/error.code';
+import { ForbiddenAccess } from '../../../../utils/error/error.util';
+import { formatName } from '../../../../utils/format';
 import {
   createUserOrgCapabilities,
   removeUserFromOrganization,
   removeUserFromPendingList,
-} from '../common/user-organization.domain';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
+} from '../../../common/user-organization.domain';
+import { loadOrganizationBy } from '../../organizations/organizations.domain';
+import { loadOrganizationsFromEmail } from '../../organizations/organizations.helper';
 import {
   loadUser,
   loadUserBy,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
-} from './users.domain';
-import { createUserWithPersonalSpace } from './users.helper';
+} from '../user-domain/users.domain';
+import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
+import { createUserWithPersonalSpace } from '../users.helper';
 
 export const UsersOrganizationApp = {
   addUserToOrganization: async (

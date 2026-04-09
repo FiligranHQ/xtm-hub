@@ -4,15 +4,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
-} from '../../../tests/tests.const';
-import { FilterKey } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
-import User from '../../model/kanel/public/User';
-import { ErrorCode } from '../../utils/error/error.code';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+} from '../../../../../tests/tests.const';
+import { FilterKey } from '../../../../__generated__/resolvers-types';
+import { requestContext } from '../../../../context/request.context';
+import User from '../../../../model/kanel/public/User';
+import { ErrorCode } from '../../../../utils/error/error.code';
+import { loadOrganizationBy } from '../../organizations/organizations.domain';
+import * as UsersHelper from '../users.helper';
+import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
 import { usersAdminApp } from './users.admin.app';
-import * as UsersHelper from './users.helper';
-import { createNewUserWithPendingOrga, removeUser } from './users.helper';
 
 describe('Users admin app', () => {
   describe('bulkAcceptPendingUserInOrganization', () => {

@@ -1,6 +1,6 @@
-import { db } from '../../../knexfile';
-import Organization from '../../model/kanel/public/Organization';
-import { extractDomain } from '../../utils/verify-email.util';
+import { db } from '../../../../knexfile';
+import Organization from '../../../model/kanel/public/Organization';
+import { extractDomain } from '../../../utils/verify-email.util';
 
 export const loadOrganizationsFromEmail = async (
   email: string

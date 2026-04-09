@@ -4,32 +4,32 @@ import {
   EditUserCapabilitiesInput,
   Filter,
   OrganizationCapability,
-} from '../../__generated__/resolvers-types';
-import { withTransaction } from '../../context/database.context';
-import { requestContext } from '../../context/request.context';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { UserId } from '../../model/kanel/public/User';
-import { UserLoadUserBy } from '../../model/user';
-import { dispatch } from '../../pub';
-import { isUserAdminPlatform } from '../../security/access';
-import { securityGuard } from '../../security/guard';
-import { updateUserSession } from '../../session-store-manager';
-import { auth0Client } from '../../thirdparty/auth0/client';
-import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
-import { extractId } from '../../utils/utils';
+} from '../../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../../context/database.context';
+import { requestContext } from '../../../../context/request.context';
+import { OrganizationId } from '../../../../model/kanel/public/Organization';
+import { UserId } from '../../../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../../../model/user';
+import { dispatch } from '../../../../pub';
+import { isUserAdminPlatform } from '../../../../security/access';
+import { securityGuard } from '../../../../security/guard';
+import { updateUserSession } from '../../../../session-store-manager';
+import { auth0Client } from '../../../../thirdparty/auth0/client';
+import { logApp } from '../../../../utils/app-logger.util';
+import { ErrorCode } from '../../../../utils/error/error.code';
+import { extractId } from '../../../../utils/utils';
 import {
   loadUserOrganization,
   updateMultipleUserOrgWithCapabilities,
-} from '../common/user-organization.domain';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
+} from '../../../common/user-organization.domain';
+import { loadOrganizationsFromEmail } from '../../organizations/organizations.helper';
 import {
   loadUser,
   loadUserBy,
   loadUserDetails,
   updateUser,
-} from './users.domain';
+} from '../user-domain/users.domain';
+import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import {
   acceptPendingUserWithCapabilities,
   createUserWithPersonalSpace,
@@ -37,7 +37,7 @@ import {
   preventAdministratorRemovalOfAllOrganizations,
   preventAdministratorRemovalOfOneOrganization,
   updateUserOrgCapabilitiesAndDispatch,
-} from './users.helper';
+} from '../users.helper';
 
 export const usersAdminApp = {
   addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {

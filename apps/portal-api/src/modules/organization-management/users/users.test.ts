@@ -1,21 +1,24 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
-import { OrganizationCapability } from '../../__generated__/resolvers-types';
-import Organization from '../../model/kanel/public/Organization';
-import { UserId } from '../../model/kanel/public/User';
-import { UserLoadUserBy } from '../../model/user';
-import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
-import { createUserOrganizationRelationAndRemovePending } from '../common/user-organization.helper';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { OrganizationCapability } from '../../../__generated__/resolvers-types';
+import Organization from '../../../model/kanel/public/Organization';
+import { UserId } from '../../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../../model/user';
+import { createUserOrganizationCapability } from '../../common/user-organization-capability.domain';
+import { createUserOrganizationRelationAndRemovePending } from '../../common/user-organization.helper';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetrySource } from '../../telemetry/telemetry.const';
+import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
   deleteOrganizationBy,
   loadOrganizationBy,
 } from '../organizations/organizations.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { TelemetrySource } from '../telemetry/telemetry.const';
-import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
-import { loadUserBy, loadUserCapabilitiesByOrganization } from './users.domain';
+import {
+  loadUserBy,
+  loadUserCapabilitiesByOrganization,
+} from './user-domain/users.domain';
+import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import {
   createNewUserFromInvitation,
   preventAdministratorRemovalOfAllOrganizations,

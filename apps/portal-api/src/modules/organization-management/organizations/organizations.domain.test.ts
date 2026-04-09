@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestHelper } from '../../../../tests/test.helper';
 import {
   contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
-} from '../../../tests/tests.const';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import ServiceInstance from '../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../model/kanel/public/User';
+} from '../../../../tests/tests.const';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
 import {
   loadOrganizationsByUser,
   loadUserByOrganization,

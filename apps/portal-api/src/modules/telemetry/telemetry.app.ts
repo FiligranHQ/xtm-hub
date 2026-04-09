@@ -9,7 +9,7 @@ import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
 import {
   loadPlatformConfigurationByServiceInstanceId,
   loadServiceDefinitionByServiceInstance,

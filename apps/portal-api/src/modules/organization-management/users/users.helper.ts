@@ -1,57 +1,60 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   Capability,
   User as GraphqlUser,
   OrganizationCapability,
-} from '../../__generated__/resolvers-types';
-import { withTransaction } from '../../context/database.context';
+} from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import Organization, {
   OrganizationId,
-} from '../../model/kanel/public/Organization';
+} from '../../../model/kanel/public/Organization';
 import {
   SubscriptionId,
   SubscriptionMutator,
-} from '../../model/kanel/public/Subscription';
+} from '../../../model/kanel/public/Subscription';
 import User, {
   UserId,
   UserInitializer,
   UserMutator,
-} from '../../model/kanel/public/User';
-import { UserLoadUserBy, UserWithOrganizationsAndRole } from '../../model/user';
-import { dispatch } from '../../pub';
-import { sendMail } from '../../server/mail-service';
-import { updateUserSession } from '../../session-store-manager';
-import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
-import { hashPassword } from '../../utils/hash-password.util';
-import { isEmpty } from '../../utils/utils';
-import { extractDomain } from '../../utils/verify-email.util';
-import { createUserOrganizationCapability } from '../common/user-organization-capability.domain';
+} from '../../../model/kanel/public/User';
+import {
+  UserLoadUserBy,
+  UserWithOrganizationsAndRole,
+} from '../../../model/user';
+import { dispatch } from '../../../pub';
+import { sendMail } from '../../../server/mail-service';
+import { updateUserSession } from '../../../session-store-manager';
+import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
+import { hashPassword } from '../../../utils/hash-password.util';
+import { isEmpty } from '../../../utils/utils';
+import { extractDomain } from '../../../utils/verify-email.util';
+import { createUserOrganizationCapability } from '../../common/user-organization-capability.domain';
 import {
   loadUserOrganization,
   updateUserOrgCapabilities,
-} from '../common/user-organization.domain';
+} from '../../common/user-organization.domain';
 import {
   createUserOrganizationRelation,
   createUserOrganizationRelationAndRemovePending,
-} from '../common/user-organization.helper';
+} from '../../common/user-organization.helper';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subcription/subscription.helper';
+import { telemetryApp } from '../../telemetry/telemetry.app';
+import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
 import {
   deleteOrganizationBy,
   insertNewOrganization,
 } from '../organizations/organizations.domain';
 import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { buildCreateOrganizationEvent } from '../telemetry/telemetry.helper';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
   loadUserDetails,
-} from './users.domain';
+} from './user-domain/users.domain';
+import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 
 export const createUserWithPersonalSpace = async (
   data: Pick<

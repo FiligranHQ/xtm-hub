@@ -4,25 +4,25 @@ import {
   db,
   dbRaw,
   paginate,
-} from '../../../../knexfile';
+} from '../../../../../knexfile';
 import {
   Filter,
   OrganizationCapability,
   QueryUsersArgs,
   UserConnection,
   User as UserGenerated,
-} from '../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../context/database.context';
-import { requestContext } from '../../../context/request.context';
+} from '../../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../../context/database.context';
+import { requestContext } from '../../../../context/request.context';
 import Organization, {
   OrganizationId,
-} from '../../../model/kanel/public/Organization';
-import User, { UserId } from '../../../model/kanel/public/User';
+} from '../../../../model/kanel/public/Organization';
+import User, { UserId } from '../../../../model/kanel/public/User';
 import UserOrganizationPending, {
   UserOrganizationPendingInitializer,
   UserOrganizationPendingMutator,
-} from '../../../model/kanel/public/UserOrganizationPending';
-import { securityGuard } from '../../../security/guard';
+} from '../../../../model/kanel/public/UserOrganizationPending';
+import { securityGuard } from '../../../../security/guard';
 
 interface OrganizationCleanup {
   organizationId: number;

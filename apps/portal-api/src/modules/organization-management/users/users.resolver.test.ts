@@ -12,7 +12,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { SubscriptionSpy } from '../../../tests/test-utils';
+import { SubscriptionSpy } from '../../../../tests/test-utils';
 import {
   contextAdminSecondOrga,
   contextBypassUser,
@@ -22,7 +22,7 @@ import {
   requestContextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
-} from '../../../tests/tests.const';
+} from '../../../../tests/tests.const';
 import {
   AddUserInput,
   AdminEditUserInput,
@@ -30,20 +30,24 @@ import {
   Organization,
   OrganizationCapability,
   UserOrdering,
-} from '../../__generated__/resolvers-types';
-import { loginFromProvider } from '../../auth/auth-user';
-import { requestContext } from '../../context/request.context';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { UserId } from '../../model/kanel/public/User';
-import { UserLoadUserBy } from '../../model/user';
-import { auth0ClientMock } from '../../thirdparty/auth0/mock';
-import * as UserOrganizationDomain from '../common/user-organization.domain';
+} from '../../../__generated__/resolvers-types';
+import { loginFromProvider } from '../../../auth/auth-user';
+import { requestContext } from '../../../context/request.context';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
+import { UserId } from '../../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../../model/user';
+import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
+import * as UserOrganizationDomain from '../../common/user-organization.domain';
 import {
   deleteSubscription,
   insertSubscription,
-} from '../subcription/subscription.helper';
-import { UserOrganizationPendingDomain } from './users-pending/user-organization-pending.domain';
-import { deleteUserById, loadUser, loadUserBy } from './users.domain';
+} from '../../subcription/subscription.helper';
+import {
+  deleteUserById,
+  loadUser,
+  loadUserBy,
+} from './user-domain/users.domain';
+import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { removeUser } from './users.helper';
 import usersResolver from './users.resolver';
 

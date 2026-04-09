@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { expect } from 'vitest';
-import { db } from '../../../knexfile';
-import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import User, { UserId, UserMutator } from '../../model/kanel/public/User';
-import UserOrganizationPending from '../../model/kanel/public/UserOrganizationPending';
+import { db } from '../../../../knexfile';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import User, { UserId, UserMutator } from '../../../model/kanel/public/User';
+import UserOrganizationPending from '../../../model/kanel/public/UserOrganizationPending';
 
 export const insertUser = async (fields: UserMutator = {}): Promise<User> => {
   const [createdUser] = await db<User>('User')
