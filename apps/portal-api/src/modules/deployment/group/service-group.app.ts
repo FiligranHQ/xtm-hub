@@ -136,6 +136,47 @@ export const ServiceGroupApp = {
       success: true,
     };
   },
+  removeExpiredGroups: async (): Promise<void> => {
+    const rows = await ServiceGroupDomain.loadGroupsForExpiredTrials();
+
+    const byServiceInstance = rows.reduce<
+      Map<
+        ServiceInstanceId,
+        { deploymentRequestId: string; groupIds: ServiceGroupId[] }
+      >
+    >((acc, row) => {
+      const entry = acc.get(row.serviceInstanceId) ?? {
+        deploymentRequestId: row.deploymentRequestId,
+        groupIds: [],
+      };
+      entry.groupIds.push(row.groupId);
+      acc.set(row.serviceInstanceId, entry);
+      return acc;
+    }, new Map());
+
+    for (const [
+      serviceInstanceId,
+      { deploymentRequestId, groupIds },
+    ] of byServiceInstance) {
+      logApp.info('Removing users from expired trial groups', {
+        deploymentRequestId,
+        groupCount: groupIds.length,
+      });
+      try {
+        const oldUsers =
+          await ServiceGroupDomain.loadServiceInstanceGroupUsers(
+            serviceInstanceId
+          );
+        await updateAuth0Groups(oldUsers, [], serviceInstanceId);
+        await ServiceGroupDomain.deleteGroups(groupIds);
+      } catch (error) {
+        logApp.error('Failed to clean up expired trial groups', {
+          deploymentRequestId,
+          error,
+        });
+      }
+    }
+  },
 };
 
 const updateAuth0Groups = async (
