@@ -122,7 +122,7 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
           onSubmit(values as CsvFeedFormValues);
         }}
         onValuesChange={(values, form) => {
-          if (values.name) {
+          if (isCreation && values.name) {
             const generatedSlug = slugify(values.name, {
               lower: true,
               strict: true,

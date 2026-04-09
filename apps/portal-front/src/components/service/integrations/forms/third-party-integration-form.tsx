@@ -158,7 +158,7 @@ export const ThirdPartyIntegrationForm = ({
           onSubmit(values as ThirdPartyIntegrationFormValues);
         }}
         onValuesChange={(values, form) => {
-          if (values.name) {
+          if (isCreation && values.name) {
             const generatedSlug = slugify(values.name, {
               lower: true,
               strict: true,

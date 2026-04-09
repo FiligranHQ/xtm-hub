@@ -164,7 +164,7 @@ export function useDocumentContext({
     onError: (error: Error) => void
   ) => {
     const input = {
-      ...pick(values, documentBaseKeys),
+      ...pick(values, documentBaseKeys),  // ← inclut slug !
       uploader_id: values?.uploader_id ?? '',
     };
 
