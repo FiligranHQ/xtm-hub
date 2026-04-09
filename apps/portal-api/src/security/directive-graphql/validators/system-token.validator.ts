@@ -45,19 +45,15 @@ export const createSystemTokenResolver = (originalResolve) => {
       throw new Error('Valid system token is required for this operation');
     }
 
-    // If token is valid, override context with system user
-    if (hasValidToken) {
-      const enhancedContext: PortalContext = {
-        ...portalContext,
-        user: SYSTEM_USER_CONTEXT.user,
-      };
-      requestContext.update({
-        user: SYSTEM_USER_CONTEXT.user,
-        portalContext: enhancedContext,
-      });
-    }
+    const enhancedContext: PortalContext = {
+      ...portalContext,
+      user: SYSTEM_USER_CONTEXT.user,
+    };
+    requestContext.update({
+      user: SYSTEM_USER_CONTEXT.user,
+      portalContext: enhancedContext,
+    });
 
-    // Execute with original context
-    return originalResolve(source, args, portalContext, info);
+    return originalResolve(source, args, enhancedContext, info);
   };
 };
