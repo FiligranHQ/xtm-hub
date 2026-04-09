@@ -7,6 +7,7 @@ import {
   RequestParameters,
   Variables,
 } from 'relay-runtime';
+import { scrubSensitiveVariables } from './fetchFn.utils';
 
 function prepareUri(uri: string | undefined) {
   if (uri) {
@@ -137,6 +138,6 @@ export function logGraphQLOperation(
       ?.toUpperCase() || 'QUERY';
   // eslint-disable-next-line no-console
   console.log(`[GraphQL ${operationType}] ${operationName} → ${apiUri}`, {
-    variables: variables || {},
+    variables: scrubSensitiveVariables(variables ?? {}),
   });
 }

@@ -3344,10 +3344,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/icon@npm:0.22.4":
-  version: 0.22.4
-  resolution: "@filigran/icon@npm:0.22.4"
-  checksum: 10/9f4c153bad09630b6dc0633a0a30e74416271f012eaed48235a95e4b5d75f30db144b6f33e6dae97ea432863eceb574ce15316f6e51637bd14845c62daa6f0fe
+"@filigran/icon@npm:0.22.6":
+  version: 0.22.6
+  resolution: "@filigran/icon@npm:0.22.6"
+  checksum: 10/d6f17dc06fe4d8d20695aa48b5285913c87872e9849a781c48878da0b649e3fc5a788ba931270713f2920ecfd22c1f62aac7440864a10ab03d2e4f2c5c8cf0d0
   languageName: node
   linkType: hard
 
@@ -9021,7 +9021,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
   dependencies:
-    "@filigran/icon": "npm:0.22.4"
+    "@filigran/icon": "npm:0.22.6"
     "@filigran/ui": "npm:0.46.0"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
@@ -9065,13 +9065,13 @@ __metadata:
     prettier-plugin-tailwindcss: "npm:0.7.2"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
-    react-hook-form: "npm:7.72.0"
+    react-hook-form: "npm:7.72.1"
     react-markdown: "npm:10.1.0"
     react-relay: "npm:20.1.1"
     rehype-sanitize: "npm:6.0.0"
     relay-compiler: "npm:20.1.1"
     relay-test-utils: "npm:20.1.1"
-    slugify: "npm:1.6.8"
+    slugify: "npm:1.6.9"
     tailwind-merge: "npm:3.5.0"
     tailwindcss: "npm:3.4.19"
     tailwindcss-animate: "npm:1.0.7"
@@ -17739,12 +17739,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:7.72.0":
-  version: 7.72.0
-  resolution: "react-hook-form@npm:7.72.0"
+"react-hook-form@npm:7.72.1":
+  version: 7.72.1
+  resolution: "react-hook-form@npm:7.72.1"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18 || ^19
-  checksum: 10/25268c510aa5943adfeb2cffe497f5b4b506974f60b4404b42f1b73eaa6db63a1efdb51f3e5f0fa6c0239cbd0f66a2dddf06ec45141d1894a266e77e2dbefb2d
+  checksum: 10/2d44bc1768ef659a4d94813e94a81d54eae0188a1eaa5355680e9443f40f6a894e18f92622abec3bc7a9da7660bf75ed0cdf5d59f113bc8211793abf51936b58
   languageName: node
   linkType: hard
 
@@ -19062,10 +19062,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slugify@npm:1.6.8":
-  version: 1.6.8
-  resolution: "slugify@npm:1.6.8"
-  checksum: 10/d80c3ce9e57d67ba60f4fc37ac4e2852174eab6402d16daeb6896ced1da838ef650a563a0069266198a866407744334fcd8c02b3470e0a9be348b885cf5db8a7
+"slugify@npm:1.6.9":
+  version: 1.6.9
+  resolution: "slugify@npm:1.6.9"
+  checksum: 10/101599a77585ac3b3fe49662db8666260c8ee1c5090d28a13c6ecabf16b42057e69ea209654797f46b13faee4c53224f48784044bd734a9443b7b88e0357110e
   languageName: node
   linkType: hard
 

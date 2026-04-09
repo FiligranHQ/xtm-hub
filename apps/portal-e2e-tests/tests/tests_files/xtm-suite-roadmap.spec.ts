@@ -18,7 +18,6 @@ test.describe('XTM Suite Roadmap', () => {
     await xtmSuiteRoadmapPage.navigateToService();
     await test.step('Add an epic', async () => {
       await xtmSuiteRoadmapPage.addEpic({
-        epic: 'Epic',
         title: 'Title',
         short_description: 'Short description',
         description: 'This is a test epic',
@@ -26,11 +25,10 @@ test.describe('XTM Suite Roadmap', () => {
       await xtmSuiteRoadmapPage.checkFilters({
         openCTINumbers: 1,
       });
-      await expect(page.getByText(/^Epic$/)).toBeVisible();
+      await expect(page.getByText(/^Title$/)).toBeVisible();
     });
     await test.step('Update an epic', async () => {
       await xtmSuiteRoadmapPage.updateEpic({
-        epic: 'EpicModified',
         title: 'TitleModified',
         description: 'This is a test epicModified',
         draft: false,
@@ -38,7 +36,7 @@ test.describe('XTM Suite Roadmap', () => {
       await xtmSuiteRoadmapPage.checkFilters({
         openCTINumbers: 1,
       });
-      await expect(page.getByText('EpicModified')).toBeVisible();
+      await expect(page.getByText('TitleModified')).toBeVisible();
     });
     await test.step('Delete an epic', async () => {
       await xtmSuiteRoadmapPage.deleteEpic();
@@ -46,7 +44,6 @@ test.describe('XTM Suite Roadmap', () => {
     });
     await test.step('Create an epic integration', async () => {
       await xtmSuiteRoadmapPage.addEpic({
-        epic: 'Epic integration',
         title: 'Title integration',
         short_description: 'Short description for an integration',
         description: 'This is an integration epic',
@@ -58,7 +55,6 @@ test.describe('XTM Suite Roadmap', () => {
     });
     await test.step('Create an epic draft', async () => {
       await xtmSuiteRoadmapPage.addEpic({
-        epic: 'EpicDraft',
         title: 'TitleDraft',
         short_description: 'Short description for a draft',
         description: 'This is a draft epic',
@@ -92,7 +88,6 @@ test.describe('XTM Suite Roadmap', () => {
     await xtmSuiteRoadmapPage.navigateToService();
 
     await addEpic({
-      epic: 'EpicDraft1',
       title: 'TitleDraft1',
       short_description: 'Short description for a draft',
       description: 'This is a draft epic',
@@ -102,7 +97,6 @@ test.describe('XTM Suite Roadmap', () => {
       uploader_id: ADMIN_USER.ID,
     });
     await addEpic({
-      epic: 'Epic2',
       title: 'Title2',
       short_description: 'Short description',
       description: 'This is an epic',
@@ -112,7 +106,6 @@ test.describe('XTM Suite Roadmap', () => {
       uploader_id: ADMIN_USER.ID,
     });
     await addEpic({
-      epic: 'Epic3',
       title: 'Title3',
       short_description: 'Short description for another epic',
       description: 'This is a second epic',
@@ -133,19 +126,19 @@ test.describe('XTM Suite Roadmap', () => {
       });
 
       await expect(
-        page.getByText('EpicDraft1', { exact: true })
+        page.getByText('TitleDraft1', { exact: true })
       ).not.toBeVisible();
-      await expect(page.getByText('Epic2', { exact: true })).toBeVisible();
-      await expect(page.getByText('Epic3', { exact: true })).toBeVisible();
+      await expect(page.getByText('Title2', { exact: true })).toBeVisible();
+      await expect(page.getByText('Title3', { exact: true })).toBeVisible();
     });
     await test.step('It should filter', async () => {
       await page.getByRole('button', { name: 'OpenAEV (1)' }).click();
-      await expect(page.getByText('Epic2', { exact: true })).not.toBeVisible();
-      await expect(page.getByText('Epic3', { exact: true })).toBeVisible();
+      await expect(page.getByText('Title2', { exact: true })).not.toBeVisible();
+      await expect(page.getByText('Title3', { exact: true })).toBeVisible();
     });
 
     await test.step('It should display details', async () => {
-      await page.getByText('Epic3').click();
+      await page.getByText('Title3').click();
       await expect(
         page.getByText('This is a second epic', { exact: true })
       ).toBeVisible();

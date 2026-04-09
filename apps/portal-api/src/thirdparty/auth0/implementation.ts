@@ -1,7 +1,7 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { loadOrganizationBy } from '../../modules/organizations/organizations.domain';
+import { loadOrganizationBy } from '../../modules/organization-management/organizations/organizations.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { buildUserMetadataUpdate } from './auth0.util';
 import {
