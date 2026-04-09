@@ -8,7 +8,7 @@ import Competitor, {
   CompetitorInitializer,
 } from '../../../model/kanel/public/Competitor';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
+import { loadOrganizationBy } from '../../organization-management/organizations/organizations.domain';
 import { CompetitorApp } from './competitor.app';
 import { CompetitorDomain } from './competitor.domain';
 

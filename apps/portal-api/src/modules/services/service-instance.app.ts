@@ -242,10 +242,7 @@ export const ServiceInstanceApp = {
     return results.map((sub) => ({
       ...sub,
       organization_id: toGlobalId('Organization', sub.organization_id),
-      service_instance_id: toGlobalId(
-        'ServiceInstance',
-        sub.service_instance_id
-      ),
+      service_instance_id: sub.service_instance_id,
     }));
   },
 };

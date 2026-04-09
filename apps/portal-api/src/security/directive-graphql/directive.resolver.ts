@@ -1,5 +1,5 @@
 import { PortalContext } from '../../model/portal-context';
-import { getCapabilities } from '../../modules/users/users.domain';
+import { getCapabilities } from '../../modules/organization-management/users/user-domain/users.domain';
 import {
   ForbiddenAccess,
   UnauthenticatedAccess,
