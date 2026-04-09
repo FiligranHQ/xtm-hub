@@ -12,6 +12,7 @@ import {
 import { db } from '../../../../knexfile';
 import {
   requestContextAdminSecondOrga,
+  requestContextAdminUser,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
@@ -181,6 +182,8 @@ describe('ServiceGroupApp', () => {
     });
 
     it('should allow bypass user to update groups in another organization', async () => {
+      requestContext.set(requestContextAdminUser);
+
       await db<Subscription>('Subscription').insert({
         id: uuidv4() as SubscriptionId,
         service_instance_id: serviceInstanceId2,
@@ -215,6 +218,8 @@ describe('ServiceGroupApp', () => {
     });
 
     it('should update groups with new user list and remove old ones', async () => {
+      requestContext.set(requestContextAdminUser);
+
       await db<ServiceGroupUser>('ServiceGroup_User').insert({
         group_id: analystGroupId,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
@@ -326,15 +331,15 @@ describe('ServiceGroupApp', () => {
 
         expect(sendMailSpy).toHaveBeenCalledTimes(2);
         expect(sendMailSpy).toHaveBeenCalledWith({
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
           template: 'free_trial_user_added',
           params: {
             firstName: formatName(
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME
+              TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME
             ),
             platformUrl,
             platformIdentifier: PlatformIdentifier.Opencti,
-            adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
             trialEndDate: expectedTrialEndDate,
           },
         });
@@ -347,7 +352,7 @@ describe('ServiceGroupApp', () => {
             ),
             platformUrl,
             platformIdentifier: PlatformIdentifier.Opencti,
-            adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
             trialEndDate: expectedTrialEndDate,
           },
         });
