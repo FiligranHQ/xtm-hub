@@ -148,7 +148,6 @@ export const createPlatformTokenResolver = (originalResolve) => {
       portalContext: enhancedContext,
     });
 
-    // Execute with original context
-    return originalResolve(source, args, portalContext, info);
+    return originalResolve(source, args, enhancedContext, info);
   };
 };
