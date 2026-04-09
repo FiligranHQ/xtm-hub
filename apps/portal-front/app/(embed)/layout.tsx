@@ -80,7 +80,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
     await serverMutateGraphQL<errorFrontendLogMutation>(
       errorFrontendLogMutationNode,
       {
-        message: 'EmbedLayout: unexpected render error',
+        message: `EmbedLayout: unexpected ${(error as Error).name} error ${(error as Error).message}`,
         componentStack: 'app/(embed)/layout.tsx',
       }
     );
