@@ -16,3 +16,4 @@ generates:
       scalars:
         ServiceInstanceId: "../model/kanel/public/ServiceInstance.js#ServiceInstanceId"
         OrganizationId: "../model/kanel/public/Organization.js#OrganizationId"
+        CompetitorId: "../model/kanel/public/Competitor.js#CompetitorId"

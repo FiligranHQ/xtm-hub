@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay';
 import { afterEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
@@ -69,7 +68,7 @@ describe('CompetitorApp', () => {
       const { id } = await createCompetitor();
 
       const updatedCompetitor = await CompetitorApp.updateCompetitorById({
-        id: toGlobalId('Competitor', id!),
+        id,
         tier: CompetitorTier.Tier2,
         name: 'COMPETITOR',
         domain: 'Other.com',
@@ -92,7 +91,7 @@ describe('CompetitorApp', () => {
 
       await expect(
         CompetitorApp.updateCompetitorById({
-          id: toGlobalId('Competitor', second.id!),
+          id: second.id,
           domain: 'COMPETITOR.COM',
         })
       ).rejects.toThrow(ErrorCode.CompetitorDomainAlreadyExists);

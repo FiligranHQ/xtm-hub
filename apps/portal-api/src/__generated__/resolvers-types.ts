@@ -1,3 +1,4 @@
+import type { CompetitorId } from '../model/kanel/public/Competitor.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
@@ -18,6 +19,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  CompetitorId: { input: CompetitorId; output: CompetitorId; }
   Date: { input: any; output: any; }
   JSON: { input: any; output: any; }
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
@@ -959,7 +961,7 @@ export type MutationCreateEpicArgs = {
 
 
 export type MutationDeleteCompetitorArgs = {
-  id: Scalars['ID']['input'];
+  id: Scalars['CompetitorId']['input'];
 };
 
 
@@ -2127,7 +2129,7 @@ export type UnregisterPlatformInput = {
 
 export type UpdateCompetitorInput = {
   domain?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
+  id: Scalars['CompetitorId']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   tier?: InputMaybe<CompetitorTier>;
 };
@@ -2425,6 +2427,7 @@ export type ResolversTypes = ResolversObject<{
   Competitor: ResolverTypeWrapper<Competitor>;
   CompetitorConnection: ResolverTypeWrapper<CompetitorConnection>;
   CompetitorEdge: ResolverTypeWrapper<CompetitorEdge>;
+  CompetitorId: ResolverTypeWrapper<Scalars['CompetitorId']['output']>;
   CompetitorOrdering: CompetitorOrdering;
   CompetitorTier: CompetitorTier;
   Connector: ResolverTypeWrapper<Connector>;
@@ -2614,6 +2617,7 @@ export type ResolversParentTypes = ResolversObject<{
   Competitor: Competitor;
   CompetitorConnection: CompetitorConnection;
   CompetitorEdge: CompetitorEdge;
+  CompetitorId: Scalars['CompetitorId']['output'];
   Connector: Connector;
   CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
@@ -2797,6 +2801,10 @@ export type CompetitorEdgeResolvers<ContextType = PortalContext, ParentType exte
   node?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export interface CompetitorIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['CompetitorId'], any> {
+  name: 'CompetitorId';
+}
 
 export type ConnectorResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Connector'] = ResolversParentTypes['Connector']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -3833,6 +3841,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Competitor?: CompetitorResolvers<ContextType>;
   CompetitorConnection?: CompetitorConnectionResolvers<ContextType>;
   CompetitorEdge?: CompetitorEdgeResolvers<ContextType>;
+  CompetitorId?: GraphQLScalarType;
   Connector?: ConnectorResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CustomDashboard?: CustomDashboardResolvers<ContextType>;

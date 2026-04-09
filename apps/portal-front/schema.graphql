@@ -45,6 +45,11 @@ type Success {
   success: Boolean!
 }
 
+"""
+A Relay global ID for Competitor, extracted to a branded CompetitorId string
+"""
+scalar CompetitorId
+
 enum CompetitorOrdering {
   name
   tier
@@ -82,7 +87,7 @@ input CreateCompetitorInput {
 }
 
 input UpdateCompetitorInput {
-  id: ID!
+  id: CompetitorId!
   name: String
   tier: CompetitorTier
   domain: String
@@ -137,7 +142,7 @@ type Query {
 type Mutation {
   createCompetitor(input: CreateCompetitorInput!): Competitor!
   updateCompetitor(input: UpdateCompetitorInput!): Competitor!
-  deleteCompetitor(id: ID!): Competitor!
+  deleteCompetitor(id: CompetitorId!): Competitor!
   createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
   updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
   reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
