@@ -37,7 +37,7 @@
     "postcss": "8.5.8",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-hook-form": "7.72.0",
+    "react-hook-form": "7.72.1",
     "react-markdown": "10.1.0",
     "react-relay": "20.1.1",
     "slugify": "1.6.9",
