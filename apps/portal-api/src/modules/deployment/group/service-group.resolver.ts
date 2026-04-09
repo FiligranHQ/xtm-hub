@@ -1,6 +1,5 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { extractId } from '../../../utils/utils';
@@ -13,9 +12,8 @@ const resolvers: Resolvers = {
   Query: {
     serviceGroups: async (_, { serviceInstanceId }) => {
       try {
-        const id = extractId<ServiceInstanceId>(serviceInstanceId);
         return await ServiceGroupApp.loadGroups({
-          serviceInstanceId: id,
+          serviceInstanceId,
         });
       } catch (error) {
         throw mapToGraphQLError(error);

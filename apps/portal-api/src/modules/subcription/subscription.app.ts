@@ -41,10 +41,10 @@ import {
 export const subscriptionApp = {
   loadSubscriptionModel: async (
     user: UserLoadUserBy,
-    service_instance_id: string
+    service_instance_id: ServiceInstanceId
   ): Promise<SubscriptionModel> => {
     const subscription = await loadSubscriptionBy({
-      service_instance_id: service_instance_id as ServiceInstanceId,
+      service_instance_id: service_instance_id,
       organization_id: user.selected_organization_id,
     });
 

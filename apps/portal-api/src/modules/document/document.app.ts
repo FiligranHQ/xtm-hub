@@ -438,7 +438,7 @@ export const DocumentApp = {
   loadDocuments: async (input: QueryDocumentsArgs) => {
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
-        extractId<ServiceInstanceId>(input.serviceInstanceId)
+        input.serviceInstanceId
       );
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
@@ -496,7 +496,7 @@ export const DocumentApp = {
   loadPublicDocuments: async (input: QueryPublicDocumentsArgs) => {
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
-        extractId<ServiceInstanceId>(input.serviceInstanceId)
+        input.serviceInstanceId
       );
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);

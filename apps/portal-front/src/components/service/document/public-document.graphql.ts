@@ -128,7 +128,7 @@ export const PublicDocumentListQuery = graphql`
     $orderMode: OrderingMode!
     $logicalFilters: LogicalFilterInput
     $searchTerm: String
-    $serviceInstanceId: ID!
+    $serviceInstanceId: ServiceInstanceId!
   ) {
     ...publicDocumentList
   }
@@ -143,7 +143,10 @@ export const PublicDocumentsByServiceSlugQuery = graphql`
 `;
 
 export const PublicDocumentBySlugQuery = graphql`
-  query publicDocumentBySlugQuery($serviceInstanceId: ID!, $slug: String!) {
+  query publicDocumentBySlugQuery(
+    $serviceInstanceId: ServiceInstanceId!
+    $slug: String!
+  ) {
     publicDocumentBySlug(serviceInstanceId: $serviceInstanceId, slug: $slug) {
       ...publicDocumentItemFragment
     }

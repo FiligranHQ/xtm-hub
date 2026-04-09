@@ -70,7 +70,7 @@ type DefaultDocument implements Node & Document {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -94,7 +94,7 @@ interface Document implements Node {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -141,7 +141,7 @@ type Mutation {
   createDocument(
     input: CreateDocumentInput!
     metadata: [DocumentMetadata!]!
-    serviceInstanceId: String
+    serviceInstanceId: ServiceInstanceId
     sourceDocument: Upload
     logo: Upload
     images: [Upload!]
@@ -150,7 +150,7 @@ type Mutation {
     documentId: ID!
     input: UpdateDocumentInput!
     metadata: [DocumentMetadata!]!
-    serviceInstanceId: String
+    serviceInstanceId: ServiceInstanceId
     sourceDocument: Upload
     logo: Upload
     images: [Upload!]
@@ -158,16 +158,17 @@ type Mutation {
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
     documentId: ID
-    service_instance_id: String
+    service_instance_id: ServiceInstanceId
     forceDelete: Boolean
   ): Document! @auth @service_capa(requires: [DELETE])
   incrementShareNumberDocument(documentId: ID): Document!
 }
 
 type Query {
-  documentExists(documentName: String, service_instance_id: String): Boolean
-    @auth
-    @service_capa(requires: [UPLOAD])
+  documentExists(
+    documentName: String
+    service_instance_id: ServiceInstanceId
+  ): Boolean @auth @service_capa(requires: [UPLOAD])
   publicDocuments(
     slug: String!
     first: Int!
@@ -176,10 +177,13 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     logicalFilters: LogicalFilterInput
-    serviceInstanceId: ID!
+    serviceInstanceId: ServiceInstanceId!
   ): DocumentConnection!
   publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
-  publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
+  publicDocumentBySlug(
+    serviceInstanceId: ServiceInstanceId!
+    slug: String!
+  ): Document
   documents(
     first: Int!
     after: ID
@@ -187,8 +191,8 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     logicalFilters: LogicalFilterInput
-    serviceInstanceId: String
+    serviceInstanceId: ServiceInstanceId
     parentsOnly: Boolean
   ): DocumentConnection! @auth
-  document(documentId: ID, serviceInstanceId: ID): Document @auth
+  document(documentId: ID, serviceInstanceId: ServiceInstanceId): Document @auth
 }

@@ -1,5 +1,4 @@
 import { Resolvers } from '../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserServiceId } from '../../model/kanel/public/UserService';
@@ -48,7 +47,7 @@ const resolvers: Resolvers = {
         const user = context.user;
         return await UserServiceApp.addYourselfInUserService(
           user.selected_organization_id,
-          extractId<ServiceInstanceId>(input.serviceInstanceId),
+          input.serviceInstanceId,
           input.email,
           []
         );

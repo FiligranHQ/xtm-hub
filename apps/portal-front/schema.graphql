@@ -94,13 +94,13 @@ type Query {
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
-  serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
-  documentExists(documentName: String, service_instance_id: String): Boolean
-  publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ID!): DocumentConnection!
+  serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
+  documentExists(documentName: String, service_instance_id: ServiceInstanceId): Boolean
+  publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId!): DocumentConnection!
   publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
-  publicDocumentBySlug(serviceInstanceId: ID!, slug: String!): Document
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: String, parentsOnly: Boolean): DocumentConnection!
-  document(documentId: ID, serviceInstanceId: ID): Document
+  publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
+  document(documentId: ID, serviceInstanceId: ServiceInstanceId): Document
   updateOpenCTIManifest(tag: String): Success!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -145,9 +145,9 @@ type Mutation {
   adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   updateServiceGroups(input: UpdateServiceGroupsInput!): Success
-  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
-  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: String, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
-  deleteDocument(documentId: ID, service_instance_id: String, forceDelete: Boolean): Document!
+  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
+  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
+  deleteDocument(documentId: ID, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   addOrganization(input: OrganizationInput!): Organization
@@ -175,16 +175,16 @@ type Mutation {
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
+  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
-  addSubscription(service_instance_id: String): ServiceInstance
-  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
+  addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
+  addSubscriptionInService(service_instance_id: ServiceInstanceId, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
   deleteUseCase(id: ID!): UseCase!
-  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
   addUserService(input: UserServiceAddInput!): [UserService]
   addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
@@ -547,7 +547,7 @@ type DefaultDocument implements Node & Document {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -571,7 +571,7 @@ interface Document implements Node {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -632,7 +632,7 @@ type OpenAEVScenario implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -657,7 +657,7 @@ type CustomDashboard implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -715,7 +715,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -743,7 +743,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -771,7 +771,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -800,7 +800,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -837,7 +837,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -867,7 +867,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -897,7 +897,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -927,7 +927,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String!
+  service_instance_id: ServiceInstanceId!
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1215,7 +1215,7 @@ input RegisteredPlatformsInput {
 }
 
 input RegisteredPlatformInput {
-  service_instance_id: ID!
+  service_instance_id: ServiceInstanceId!
 }
 
 input AutoRegisterPlatformInput {
@@ -1231,6 +1231,35 @@ enum ServiceConfigurationStatus {
 type RolePortal implements Node {
   id: ID!
   name: String!
+}
+
+type GenericServiceCapability implements Node {
+  id: ID!
+  name: String
+}
+
+input EditServiceCapabilityInput {
+  user_service_id: String
+  capabilities: [String]!
+}
+
+type UserServiceCapability implements Node {
+  id: ID!
+  user_service_id: ID!
+  generic_service_capability: GenericServiceCapability
+  subscription_capability: SubscriptionCapability
+}
+
+type SubscriptionCapability implements Node {
+  id: ID!
+  service_capability: ServiceCapability
+}
+
+type ServiceCapability implements Node {
+  id: ID!
+  name: String
+  description: String
+  service_definition_id: ID
 }
 
 enum ServiceDefinitionIdentifier {
@@ -1432,7 +1461,7 @@ type TelemetryResponse {
 
 input OneClickDeployInput {
   platform_identifier: PlatformIdentifier!
-  service_instance_id: ID!
+  service_instance_id: ServiceInstanceId!
   resource_id: ID!
   resource_title: String!
   platform_service_instance_id: ID!
@@ -1474,35 +1503,6 @@ input EditUseCaseInput {
   color: String
 }
 
-type GenericServiceCapability implements Node {
-  id: ID!
-  name: String
-}
-
-input EditServiceCapabilityInput {
-  user_service_id: String
-  capabilities: [String]!
-}
-
-type UserServiceCapability implements Node {
-  id: ID!
-  user_service_id: ID!
-  generic_service_capability: GenericServiceCapability
-  subscription_capability: SubscriptionCapability
-}
-
-type SubscriptionCapability implements Node {
-  id: ID!
-  service_capability: ServiceCapability
-}
-
-type ServiceCapability implements Node {
-  id: ID!
-  name: String
-  description: String
-  service_definition_id: ID
-}
-
 enum UserServiceOrdering {
   first_name
   last_name
@@ -1523,7 +1523,7 @@ input UserServiceAddInput {
 
 input UserServiceAddYourselfInput {
   email: [String!]!
-  serviceInstanceId: ID
+  serviceInstanceId: ServiceInstanceId
 }
 
 input UserServiceDeleteInput {

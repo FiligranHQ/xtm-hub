@@ -97,10 +97,7 @@ describe('Document domain', () => {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
             first: 10,
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              INTEGRATION_SERVICE_INSTANCE_ID
-            ),
+            serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
           },
           INTEGRATION_METADATA_KEYS
         );
@@ -138,10 +135,7 @@ describe('Document domain', () => {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
             first: 10,
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              INTEGRATION_SERVICE_INSTANCE_ID
-            ),
+            serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
             logicalFilters: {
               operator: LogicalOperator.And,
               children: [
@@ -171,10 +165,7 @@ describe('Document domain', () => {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
             first: 10,
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              INTEGRATION_SERVICE_INSTANCE_ID
-            ),
+            serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
             logicalFilters: {
               operator: LogicalOperator.And,
               children: [
@@ -204,10 +195,7 @@ describe('Document domain', () => {
             orderBy: DocumentOrdering.CreatedAt,
             orderMode: OrderingMode.Desc,
             first: 10,
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              INTEGRATION_SERVICE_INSTANCE_ID
-            ),
+            serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
             logicalFilters: {
               operator: LogicalOperator.And,
               children: [
@@ -242,10 +230,7 @@ describe('Document domain', () => {
               orderBy: DocumentOrdering.CreatedAt,
               orderMode: OrderingMode.Desc,
               first: 10,
-              serviceInstanceId: toGlobalId(
-                'ServiceInstance',
-                INTEGRATION_SERVICE_INSTANCE_ID
-              ),
+              serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
               logicalFilters: {
                 operator: LogicalOperator.And,
                 children: [
@@ -289,10 +274,7 @@ describe('Document domain', () => {
               orderBy: DocumentOrdering.CreatedAt,
               orderMode: OrderingMode.Desc,
               first: 10,
-              serviceInstanceId: toGlobalId(
-                'ServiceInstance',
-                INTEGRATION_SERVICE_INSTANCE_ID
-              ),
+              serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
               logicalFilters: {
                 operator: LogicalOperator.Or,
                 children: [
@@ -362,10 +344,7 @@ describe('Document domain', () => {
               orderBy: DocumentOrdering.CreatedAt,
               orderMode: OrderingMode.Desc,
               first: 10,
-              serviceInstanceId: toGlobalId(
-                'ServiceInstance',
-                INTEGRATION_SERVICE_INSTANCE_ID
-              ),
+              serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
               logicalFilters: {
                 operator: LogicalOperator.And,
                 children: [
@@ -403,10 +382,7 @@ describe('Document domain', () => {
               orderBy: DocumentOrdering.CreatedAt,
               orderMode: OrderingMode.Desc,
               first: 10,
-              serviceInstanceId: toGlobalId(
-                'ServiceInstance',
-                INTEGRATION_SERVICE_INSTANCE_ID
-              ),
+              serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
               logicalFilters: {
                 operator: LogicalOperator.And,
                 children: [

@@ -146,7 +146,7 @@ export type Connector = Document & Integration & Node & {
   product_version?: Maybe<Scalars['String']['output']>;
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -216,7 +216,7 @@ export type CsvFeed = Document & Integration & Node & {
   name: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -242,7 +242,7 @@ export type CustomDashboard = Document & Node & {
   name: Scalars['String']['output'];
   product_version?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -271,7 +271,7 @@ export type DefaultDocument = Document & Node & {
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug?: Maybe<Scalars['String']['output']>;
@@ -484,7 +484,7 @@ export type Document = {
   minio_name: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug?: Maybe<Scalars['String']['output']>;
@@ -660,7 +660,7 @@ export type Integration = {
   name: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -689,7 +689,7 @@ export type IntegrationHack = Document & Integration & Node & {
   name: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -849,7 +849,7 @@ export type MutationAddServicePictureArgs = {
 
 
 export type MutationAddSubscriptionArgs = {
-  service_instance_id?: InputMaybe<Scalars['String']['input']>;
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -857,7 +857,7 @@ export type MutationAddSubscriptionInServiceArgs = {
   capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
   organization_id?: InputMaybe<Scalars['ID']['input']>;
-  service_instance_id?: InputMaybe<Scalars['String']['input']>;
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
   start_date?: InputMaybe<Scalars['Date']['input']>;
 };
 
@@ -947,7 +947,7 @@ export type MutationCreateDocumentArgs = {
   input: CreateDocumentInput;
   logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
   sourceDocument?: InputMaybe<Scalars['Upload']['input']>;
 };
 
@@ -966,7 +966,7 @@ export type MutationDeleteCompetitorArgs = {
 export type MutationDeleteDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
   forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
-  service_instance_id?: InputMaybe<Scalars['String']['input']>;
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -1008,7 +1008,7 @@ export type MutationEditOrganizationArgs = {
 
 export type MutationEditServiceCapabilityArgs = {
   input?: InputMaybe<EditServiceCapabilityInput>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -1106,7 +1106,7 @@ export type MutationUpdateDocumentArgs = {
   input: UpdateDocumentInput;
   logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
   sourceDocument?: InputMaybe<Scalars['Upload']['input']>;
 };
 
@@ -1142,7 +1142,7 @@ export type OneClickDeployInput = {
   platform_service_instance_id: Scalars['ID']['input'];
   resource_id: Scalars['ID']['input'];
   resource_title: Scalars['String']['input'];
-  service_instance_id: Scalars['ID']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 export type OpenAevScenario = Document & Node & {
@@ -1158,7 +1158,7 @@ export type OpenAevScenario = Document & Node & {
   name: Scalars['String']['output'];
   product_version?: Maybe<Scalars['String']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -1420,13 +1420,13 @@ export type QueryDeploymentRequestsListArgs = {
 
 export type QueryDocumentArgs = {
   documentId?: InputMaybe<Scalars['ID']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
 export type QueryDocumentExistsArgs = {
   documentName?: InputMaybe<Scalars['String']['input']>;
-  service_instance_id?: InputMaybe<Scalars['String']['input']>;
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -1438,7 +1438,7 @@ export type QueryDocumentsArgs = {
   orderMode: OrderingMode;
   parentsOnly?: InputMaybe<Scalars['Boolean']['input']>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -1496,7 +1496,7 @@ export type QueryPlatformAssociatedOrganizationArgs = {
 
 
 export type QueryPublicDocumentBySlugArgs = {
-  serviceInstanceId: Scalars['ID']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
   slug: Scalars['String']['input'];
 };
 
@@ -1508,7 +1508,7 @@ export type QueryPublicDocumentsArgs = {
   orderBy: DocumentOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId: Scalars['ID']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
   slug: Scalars['String']['input'];
 };
 
@@ -1542,7 +1542,7 @@ export type QuerySeoServiceInstanceArgs = {
 
 
 export type QueryServiceGroupsArgs = {
-  serviceInstanceId: Scalars['ID']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1680,7 +1680,7 @@ export type RegisteredPlatform = Node & {
 };
 
 export type RegisteredPlatformInput = {
-  service_instance_id: Scalars['ID']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 export type RegisteredPlatformsInput = {
@@ -1728,7 +1728,7 @@ export type RssFeed = Document & Integration & Node & {
   name: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -1939,7 +1939,7 @@ export type Stream = Document & Integration & Node & {
   name: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2049,7 +2049,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   name: Scalars['String']['output'];
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2087,7 +2087,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   product_version?: Maybe<Scalars['String']['output']>;
   remover_id?: Maybe<Scalars['ID']['output']>;
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2275,7 +2275,7 @@ export type UserServiceAddInput = {
 
 export type UserServiceAddYourselfInput = {
   email: Array<Scalars['String']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ID']['input']>;
+  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 export type UserServiceCapability = Node & {
@@ -2819,7 +2819,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2852,7 +2852,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2878,7 +2878,7 @@ export type CustomDashboardResolvers<ContextType = PortalContext, ParentType ext
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2907,7 +2907,7 @@ export type DefaultDocumentResolvers<ContextType = PortalContext, ParentType ext
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2986,7 +2986,7 @@ export type DocumentResolvers<ContextType = PortalContext, ParentType extends Re
   minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3065,7 +3065,7 @@ export type IntegrationResolvers<ContextType = PortalContext, ParentType extends
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3093,7 +3093,7 @@ export type IntegrationHackResolvers<ContextType = PortalContext, ParentType ext
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3212,7 +3212,7 @@ export type OpenAevScenarioResolvers<ContextType = PortalContext, ParentType ext
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3421,7 +3421,7 @@ export type RssFeedResolvers<ContextType = PortalContext, ParentType extends Res
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3570,7 +3570,7 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3658,7 +3658,7 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3696,7 +3696,7 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
   product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   remover_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

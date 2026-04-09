@@ -12,7 +12,9 @@ export const serviceGroupFragment = graphql`
 `;
 
 export const ServiceGroupsByServiceInstanceId = graphql`
-  query serviceGroupsByServiceInstanceIdQuery($serviceInstanceId: ID!) {
+  query serviceGroupsByServiceInstanceIdQuery(
+    $serviceInstanceId: ServiceInstanceId!
+  ) {
     serviceGroups(serviceInstanceId: $serviceInstanceId) {
       ...serviceGroup_fragment
     }

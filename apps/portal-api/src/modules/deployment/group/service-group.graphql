@@ -14,7 +14,7 @@ input UpdateServiceGroupsInput {
 }
 
 type Query {
-  serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
+  serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
     @auth(
       portalCapa: [BYPASS]
       orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
