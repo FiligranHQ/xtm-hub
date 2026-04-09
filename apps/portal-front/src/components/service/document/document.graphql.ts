@@ -137,36 +137,32 @@ export const documentItem = graphql`
     }
 
     ... on Integration {
+      integration_type
       datasheet_url
       blogpost_url
       demo_url
     }
     
     ... on CsvFeed {
-      integration_type
       feed_url
     }
 
     ... on TaxiiFeed {
-      integration_type
       integration_subtype
       feed_url
     }
 
     ... on RssFeed {
-      integration_type
       integration_subtype
       feed_url
     }
 
     ... on Stream {
-      integration_type
       integration_subtype
       feed_url
     }
 
     ... on ThirdPartyIntegration {
-      integration_type
       integration_subtype
       product_version
       vendor_url
@@ -174,7 +170,6 @@ export const documentItem = graphql`
     }
 
     ... on Connector {
-      integration_type
       integration_subtype
       product_version
       container_image
