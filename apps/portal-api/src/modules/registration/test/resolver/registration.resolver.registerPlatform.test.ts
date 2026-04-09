@@ -2,7 +2,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextSimple2,
+  contextSimpleUserFiligran2,
   INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
@@ -45,7 +45,7 @@ describe('Mutation.registerPlatform', () => {
     const result = await registrationResolver.Mutation!.registerPlatform!(
       {},
       { input },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 
@@ -81,7 +81,7 @@ describe('Mutation.registerPlatform', () => {
     const call = registrationResolver.Mutation!.registerPlatform!(
       {},
       { input },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 

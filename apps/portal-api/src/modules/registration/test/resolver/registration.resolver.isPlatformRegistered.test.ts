@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextSimple2,
+  contextSimpleUserFiligran2,
   INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
@@ -35,7 +35,7 @@ describe('Query.isPlatformRegistered', () => {
     const result = await registrationResolver.Query!.isPlatformRegistered!(
       {},
       { input },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 
@@ -59,7 +59,7 @@ describe('Query.isPlatformRegistered', () => {
     const call = registrationResolver.Query!.isPlatformRegistered!(
       {},
       { input },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 

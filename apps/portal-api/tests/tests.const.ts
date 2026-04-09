@@ -303,7 +303,7 @@ export const requestContextSimpleUserSecondOrga = {
   portalContext: contextSimpleUserSecondOrga,
 };
 
-export const contextSimple2: PortalContext = {
+export const contextSimpleUserFiligran2: PortalContext = {
   user: {
     id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
     email: 'access-subscription@filigran.io',
@@ -335,7 +335,7 @@ export const contextSimple2: PortalContext = {
   },
 } as PortalContext;
 
-export const requestContextSimple2 = {
-  user: contextSimple2.user,
-  portalContext: contextSimple2,
+export const requestContextSimpleUserFiligran2 = {
+  user: contextSimpleUserFiligran2.user,
+  portalContext: contextSimpleUserFiligran2,
 };

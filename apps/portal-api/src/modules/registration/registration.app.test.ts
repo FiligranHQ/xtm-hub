@@ -14,6 +14,7 @@ import {
   contextBypassUser,
   requestContextAdminSecondOrga,
   requestContextAdminUser,
+  requestContextRegistererUserSecondOrga,
   requestContextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
@@ -145,15 +146,17 @@ describe('Registration app', () => {
       });
       await db<Subscription>('Subscription').insert({
         id: subscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
       });
+
+      requestContext.set(requestContextRegistererUserSecondOrga);
 
       const result =
         await registrationApp.loadPlatformAssociatedOrganization(platformId);
 
       expect(result).toBeDefined();
-      expect(result?.id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
+      expect(result?.id).toBe(TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID);
     });
   });
 
@@ -207,7 +210,7 @@ describe('Registration app', () => {
       });
       await db<Subscription>('Subscription').insert({
         id: subscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
       });
 
@@ -217,7 +220,9 @@ describe('Registration app', () => {
 
       expect(result).toBeDefined();
       expect(result.status).toBe(PlatformRegistrationStatus.Registered);
-      expect(result.organization?.id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
+      expect(result.organization?.id).toBe(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
       expect(result.platformTitle).toBe(platformTitle);
     });
     it('should return unregistered when platform registration is inactive', async () => {
@@ -237,7 +242,7 @@ describe('Registration app', () => {
       });
       await db<Subscription>('Subscription').insert({
         id: subscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
       });
 
@@ -247,7 +252,9 @@ describe('Registration app', () => {
 
       expect(result).toBeDefined();
       expect(result.status).toBe(PlatformRegistrationStatus.Unregistered);
-      expect(result.organization?.id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
+      expect(result.organization?.id).toBe(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
       expect(result.platformTitle).toBe(platformTitle);
     });
   });
@@ -261,10 +268,14 @@ describe('Registration app', () => {
       version: 'X.Y.Z',
     };
 
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     describe('invalid configuration', async () => {
       it('should throw when platformId is not valid', async () => {
         const call = registrationApp.registerPlatform({
-          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...platform,
             id: 'hello',
@@ -279,7 +290,7 @@ describe('Registration app', () => {
 
       it('should throw when platformUrl is not valid', async () => {
         const call = registrationApp.registerPlatform({
-          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...platform,
             url: 'hello',
@@ -294,7 +305,7 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not belong to the organization', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
+      requestContext.set(requestContextRegistererUserSecondOrga);
       const call = registrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform,
@@ -318,8 +329,10 @@ describe('Registration app', () => {
     });
 
     it('return token when platform is registered', async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       const token = await registrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -327,64 +340,43 @@ describe('Registration app', () => {
       expect(token).toBeDefined();
     });
 
-    it('should send a telemetry event when opencti platform is registered', async () => {
-      vi.useFakeTimers();
-      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-      vi.setSystemTime(date);
-      const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
-        .mockResolvedValue();
+    it.each`
+      platformName                  | telemetryProduct
+      ${PlatformIdentifier.Opencti} | ${TelemetryTargetProduct.OPEN_CTI}
+      ${PlatformIdentifier.Openaev} | ${TelemetryTargetProduct.OPEN_AEV}
+    `(
+      'should send a telemetry event when $platformName platform is registered',
+      async ({ platformName, telemetryProduct }) => {
+        requestContext.set(requestContextRegistererUserSecondOrga);
 
-      await registrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        platform,
-        identifier: PlatformIdentifier.Opencti,
-      });
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+        const telemetrySpy = vi
+          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
 
-      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-        '@timestamp': '2025-02-03T13:12:15.000Z',
-        event_type: TelemetryEventType.REGISTER,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-        source: TelemetrySource.XTMHUB,
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        platform_contract: 'EE',
-        platform_version: 'X.Y.Z',
-        platform_id: platform.id,
-        platform_url: platform.url,
-        target_product: TelemetryTargetProduct.OPEN_CTI,
-        organization_type: 'Professional',
-      });
-    });
-    it('should send a telemetry event when openaev platform is registered', async () => {
-      vi.useFakeTimers();
-      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-      vi.setSystemTime(date);
-      const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
-        .mockResolvedValue();
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform,
+          identifier: platformName,
+        });
 
-      await registrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        platform,
-        identifier: PlatformIdentifier.Openaev,
-      });
-
-      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-        '@timestamp': '2025-02-03T13:12:15.000Z',
-        event_type: TelemetryEventType.REGISTER,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-        source: TelemetrySource.XTMHUB,
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        platform_contract: 'EE',
-        platform_version: 'X.Y.Z',
-        platform_id: platform.id,
-        platform_url: platform.url,
-        target_product: TelemetryTargetProduct.OPEN_AEV,
-        organization_type: 'Professional',
-      });
-    });
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.REGISTER,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+          source: TelemetrySource.XTMHUB,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          platform_contract: 'EE',
+          platform_version: 'X.Y.Z',
+          platform_id: platform.id,
+          platform_url: platform.url,
+          target_product: telemetryProduct,
+          organization_type: 'Professional',
+        });
+      }
+    );
   });
 
   describe('unregisterPlatform', () => {
@@ -392,6 +384,8 @@ describe('Registration app', () => {
     let platform: PlatformInput;
 
     beforeEach(() => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       platformId = uuidv4();
       platform = {
         id: platformId,
@@ -403,13 +397,15 @@ describe('Registration app', () => {
     });
 
     it('should throw when user does not belong to the organization', async () => {
+      requestContext.set(requestContextAdminUser);
+
       await registrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
+      requestContext.set(requestContextRegistererUserSecondOrga);
 
-      requestContext.set(requestContextAdminSecondOrga);
       const call = registrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
@@ -439,7 +435,7 @@ describe('Registration app', () => {
 
     it('should throw when identifier is not the right type', async () => {
       await registrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -454,7 +450,7 @@ describe('Registration app', () => {
 
     it('should unregister platform when the platform is still active', async () => {
       await registrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -589,6 +585,9 @@ describe('Registration app', () => {
   });
 
   describe('loadPlatformRegistrationStatus', () => {
+    beforeEach(() => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+    });
     it('should return inactive when platform is not registered', async () => {
       const result = await registrationApp.loadPlatformRegistrationStatus({
         platformId: uuidv4(),
@@ -603,7 +602,7 @@ describe('Registration app', () => {
     it('should return active when platform is registered', async () => {
       const platformId = uuidv4();
       const token = await registrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
           id: platformId,
           url: 'http://example.com',
@@ -677,7 +676,7 @@ describe('Registration app', () => {
       it('should return active when platform is registered and update version', async () => {
         const platformId = uuidv4();
         const token = await registrationApp.registerPlatform({
-          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
             url: 'http://example.com',
@@ -711,7 +710,7 @@ describe('Registration app', () => {
     it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
       const token = await registrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
           id: platformId,
           url: 'http://example.com',
@@ -774,9 +773,11 @@ describe('Registration app', () => {
     };
 
     beforeEach(async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       const serviceInstanceId = await registrationDomain.registerNewPlatform({
         serviceDefinitionId: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platformIdentifier: PlatformIdentifier.Opencti,
         serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
       });
@@ -786,7 +787,7 @@ describe('Registration app', () => {
           activity_sector: DeploymentRequestActivitySector.ComputerGames,
           id: uuidv4() as DeploymentRequestId,
           job_title: DeploymentRequestJobTitle.CLevel,
-          organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform_identifier: PlatformIdentifier.Opencti,
           platform_token: uuidv4(),
           region: DeploymentRequestPlatformRegion.UsEast,
@@ -799,7 +800,7 @@ describe('Registration app', () => {
           use_case: DeploymentRequestUseCase.ThreatHunting,
           service_instance_id: serviceInstanceId as ServiceInstanceId,
           user_requester_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
         })) as DeploymentRequest;
     });
     afterEach(async () => {
@@ -869,7 +870,8 @@ describe('Registration app', () => {
           platform_title: platformConfiguration.title,
           platform_url: platformConfiguration.url,
           platform_version: platformConfiguration.version,
-          registerer_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          registerer_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           token: deploymentRequest.platform_token,
         },
         service_instance_id: deploymentRequest.service_instance_id,
@@ -910,7 +912,8 @@ describe('Registration app', () => {
           platform_title: newPlatformConfiguration.title,
           platform_url: newPlatformConfiguration.url,
           platform_version: newPlatformConfiguration.version,
-          registerer_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          registerer_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           token: deploymentRequest.platform_token,
         },
         service_instance_id: deploymentRequest.service_instance_id,
@@ -936,8 +939,8 @@ describe('Registration app', () => {
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.REGISTER,
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           platform_contract: PlatformContract.Trial,
           platform_id: platformConfiguration.id,
@@ -945,7 +948,7 @@ describe('Registration app', () => {
           platform_url: platformConfiguration.url,
           source: TelemetrySource.XTMHUB,
           target_product: 'open-cti',
-          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
         });
       });
 
@@ -966,8 +969,8 @@ describe('Registration app', () => {
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.REGISTER,
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           platform_contract: PlatformContract.Trial,
           platform_id: platformConfiguration.id,
@@ -975,7 +978,7 @@ describe('Registration app', () => {
           platform_url: platformConfiguration.url,
           source: TelemetrySource.XTMHUB,
           target_product: 'open-cti',
-          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           existing_users_count: 42,
         });
       });

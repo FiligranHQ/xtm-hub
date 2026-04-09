@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextSimple2, INFO } from '../../../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  INFO,
+} from '../../../../../tests/tests.const';
 import {
   PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
@@ -39,7 +42,7 @@ describe('Mutation.refreshPlatformRegistrationConnectivityStatus', () => {
         .refreshPlatformRegistrationConnectivityStatus!(
         {},
         { input },
-        contextSimple2,
+        contextSimpleUserFiligran2,
         INFO
       );
 
