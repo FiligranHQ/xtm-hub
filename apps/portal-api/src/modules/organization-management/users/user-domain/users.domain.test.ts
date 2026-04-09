@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
+  // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
   requestContextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,

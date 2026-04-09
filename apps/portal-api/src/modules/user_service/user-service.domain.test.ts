@@ -5,6 +5,7 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
+  // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
 } from '../../../tests/tests.const';
 import { requestContext } from '../../context/request.context';
@@ -19,12 +20,12 @@ import UserServiceCapability from '../../model/kanel/public/UserServiceCapabilit
 import * as mailService from '../../server/mail-service';
 import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
 import { removeUser } from '../organization-management/users/users.helper';
-import { createSubscription } from '../subcription/subscription.domain';
-import { SubscriptionStatus } from '../subscription.const';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
 } from '../security-management/service-capability/generic_service_capability.const';
+import { createSubscription } from '../subcription/subscription.domain';
+import { SubscriptionStatus } from '../subscription.const';
 import { UserServiceDomain } from './user_service.domain';
 
 // ---------------------------------------------------------------------------

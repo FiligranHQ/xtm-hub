@@ -15,10 +15,12 @@ import {
 import { SubscriptionSpy } from '../../../../tests/test-utils';
 import {
   contextAdminSecondOrga,
+  // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
   contextSimpleUserFiligran2,
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
+  // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
   requestContextSimpleUserSecondOrga,
   SERVICES,
@@ -32,13 +34,13 @@ import {
   OrganizationCapability,
   UserOrdering,
 } from '../../../__generated__/resolvers-types';
-import { loginFromProvider } from '../../security-management/authentication/auth-user';
 import { requestContext } from '../../../context/request.context';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import * as UserOrganizationDomain from '../../common/user-organization.domain';
+import { loginFromProvider } from '../../security-management/authentication/auth-user';
 import {
   deleteSubscription,
   insertSubscription,
