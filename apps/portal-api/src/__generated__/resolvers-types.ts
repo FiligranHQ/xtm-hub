@@ -1,4 +1,5 @@
 import type { CompetitorId } from '../model/kanel/public/Competitor.js';
+import type { DeploymentRequestId } from '../model/kanel/public/DeploymentRequest.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
@@ -21,6 +22,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   CompetitorId: { input: CompetitorId; output: CompetitorId; }
   Date: { input: any; output: any; }
+  DeploymentRequestId: { input: DeploymentRequestId; output: DeploymentRequestId; }
   JSON: { input: any; output: any; }
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
@@ -890,7 +892,7 @@ export type MutationAdminAddUserArgs = {
 
 
 export type MutationAdminCancelDeploymentRequestArgs = {
-  deploymentRequestId?: InputMaybe<Scalars['ID']['input']>;
+  deploymentRequestId?: InputMaybe<Scalars['DeploymentRequestId']['input']>;
 };
 
 
@@ -918,7 +920,7 @@ export type MutationBulkRemovePendingUserFromOrganizationArgs = {
 
 export type MutationCancelDeploymentRequestArgs = {
   cancellationReason?: InputMaybe<Scalars['String']['input']>;
-  deploymentRequestId: Scalars['ID']['input'];
+  deploymentRequestId: Scalars['DeploymentRequestId']['input'];
 };
 
 
@@ -1703,7 +1705,7 @@ export enum ReorderDeploymentRequestInQueueDirection {
 
 export type ReorderDeploymentRequestInQueueInput = {
   direction: ReorderDeploymentRequestInQueueDirection;
-  id: Scalars['ID']['input'];
+  id: Scalars['DeploymentRequestId']['input'];
 };
 
 export type RolePortal = Node & {
@@ -2144,7 +2146,7 @@ export type UpdateDeploymentRequestInput = {
   actual_state?: InputMaybe<DeploymentRequestPlatformState>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
   failure_reason?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
+  id: Scalars['DeploymentRequestId']['input'];
   ordering?: InputMaybe<Scalars['Int']['input']>;
   platform_id?: InputMaybe<Scalars['String']['input']>;
   start_date?: InputMaybe<Scalars['Date']['input']>;
@@ -2449,6 +2451,7 @@ export type ResolversTypes = ResolversObject<{
   DeploymentRequestFilter: DeploymentRequestFilter;
   DeploymentRequestFilterKey: DeploymentRequestFilterKey;
   DeploymentRequestHubStatus: DeploymentRequestHubStatus;
+  DeploymentRequestId: ResolverTypeWrapper<Scalars['DeploymentRequestId']['output']>;
   DeploymentRequestJobTitle: DeploymentRequestJobTitle;
   DeploymentRequestOrdering: DeploymentRequestOrdering;
   DeploymentRequestPlatformRegion: DeploymentRequestPlatformRegion;
@@ -2633,6 +2636,7 @@ export type ResolversParentTypes = ResolversObject<{
   DeploymentRequestConnection: DeploymentRequestConnection;
   DeploymentRequestEdge: DeploymentRequestEdge;
   DeploymentRequestFilter: DeploymentRequestFilter;
+  DeploymentRequestId: Scalars['DeploymentRequestId']['output'];
   Document: ResolversInterfaceTypes<ResolversParentTypes>['Document'];
   DocumentConnection: Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversParentTypes['DocumentEdge']> };
   DocumentEdge: Omit<DocumentEdge, 'node'> & { node: ResolversParentTypes['Document'] };
@@ -2981,6 +2985,10 @@ export type DeploymentRequestEdgeResolvers<ContextType = PortalContext, ParentTy
   node?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export interface DeploymentRequestIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DeploymentRequestId'], any> {
+  name: 'DeploymentRequestId';
+}
 
 export type DocumentResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Document'] = ResolversParentTypes['Document']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'IntegrationHack' | 'OpenAEVScenario' | 'RssFeed' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
@@ -3852,6 +3860,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   DeploymentRequest?: DeploymentRequestResolvers<ContextType>;
   DeploymentRequestConnection?: DeploymentRequestConnectionResolvers<ContextType>;
   DeploymentRequestEdge?: DeploymentRequestEdgeResolvers<ContextType>;
+  DeploymentRequestId?: GraphQLScalarType;
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
