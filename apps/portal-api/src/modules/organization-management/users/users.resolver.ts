@@ -1,11 +1,9 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
   Resolvers,
   User,
   UserPendingSubscription,
   UserSubscription,
 } from '../../../__generated__/resolvers-types';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { dispatch, listen } from '../../../pub';
 import { hubspotReachOutSalesHook } from '../../../thirdparty/hubspot/hubspot';
@@ -50,7 +48,7 @@ const resolvers: Resolvers = {
 
     usersWithCapabilitiesInOrganization: async (_, { input }) => {
       return loadUsersByCapabilitiesInOrganization(
-        fromGlobalId(input.organizationId).id,
+        input.organizationId,
         input.capabilities
       );
     },
@@ -176,9 +174,10 @@ const resolvers: Resolvers = {
     },
     changeSelectedOrganization: async (_, { organization_id }) => {
       try {
-        const user = await UsersOrganizationApp.changeSelectedOrganization(
-          extractId<OrganizationId>(organization_id)
-        );
+        const user =
+          await UsersOrganizationApp.changeSelectedOrganization(
+            organization_id
+          );
 
         return mapUserToGraphqlUser(user);
       } catch (error) {
@@ -189,7 +188,7 @@ const resolvers: Resolvers = {
       try {
         const user = await UsersOrganizationApp.removeUserFromOrganization({
           userId: extractId<UserId>(user_id),
-          organizationId: extractId<OrganizationId>(organization_id),
+          organizationId: organization_id,
         });
         return mapUserToGraphqlUser(user);
       } catch (error) {
@@ -254,11 +253,10 @@ const resolvers: Resolvers = {
       { user_id, organization_id }
     ) => {
       try {
-        const organizationId = extractId<OrganizationId>(organization_id);
         const user =
           await UsersOrganizationApp.removePendingUserFromOrganization({
             userId: extractId<UserId>(user_id),
-            organizationId,
+            organizationId: organization_id,
           });
 
         const graphQLUser = mapUserToGraphqlUser(user);
@@ -267,7 +265,7 @@ const resolvers: Resolvers = {
           'delete',
           {
             ...graphQLUser,
-            pending_organization_id: organizationId,
+            pending_organization_id: organization_id,
           } as User,
           'User'
         );

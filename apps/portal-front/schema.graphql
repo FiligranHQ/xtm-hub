@@ -157,11 +157,11 @@ type Mutation {
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
-  changeSelectedOrganization(organization_id: ID!): User
+  changeSelectedOrganization(organization_id: OrganizationId!): User
   bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
   bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
-  removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
-  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
+  removePendingUserFromOrganization(user_id: ID!, organization_id: OrganizationId!): User
+  removeUserFromOrganization(user_id: ID!, organization_id: OrganizationId!): User
   editMeUser(input: EditMeUserInput!): User!
   uploadUserPicture(document: Upload!): User!
   resetPassword: Success!
@@ -179,7 +179,7 @@ type Mutation {
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  addSubscriptionInService(service_instance_id: ServiceInstanceId, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
+  addSubscriptionInService(service_instance_id: ServiceInstanceId, organization_id: OrganizationId, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
   deleteSubscription(subscription_id: ID!): ServiceInstance
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
@@ -599,7 +599,7 @@ input UpdateDocumentInput {
   description: String
   active: Boolean
   use_cases: [String!]
-  uploader_organization_id: String
+  uploader_organization_id: OrganizationId
   uploader_id: String
 }
 
@@ -1006,14 +1006,14 @@ type User implements Node {
   picture: String
   country: String
   disabled: Boolean
-  selected_organization_id: String
+  selected_organization_id: OrganizationId
   organizations: [Organization!]
   organization_capabilities: [OrganizationCapabilities!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
   selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
-  pending_organization_id: ID
+  pending_organization_id: OrganizationId
 }
 
 type UserEdge {
@@ -1028,7 +1028,7 @@ type UserConnection {
 }
 
 input UsersWithCapabilitiesInOrganizationInput {
-  organizationId: ID!
+  organizationId: OrganizationId!
   capabilities: [OrganizationCapability!]!
 }
 
@@ -1051,7 +1051,7 @@ input EditMeUserInput {
 }
 
 input OrganizationCapabilitiesInput {
-  organization_id: ID!
+  organization_id: OrganizationId!
   capabilities: [String!]
 }
 

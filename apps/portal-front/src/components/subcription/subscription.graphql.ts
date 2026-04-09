@@ -50,7 +50,7 @@ export const SubscriptionDeleteMutation = graphql`
 export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
     $service_instance_id: ServiceInstanceId!
-    $organization_id: ID
+    $organization_id: OrganizationId
     $capability_ids: [ID]
     $start_date: Date!
     $end_date: Date

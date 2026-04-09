@@ -856,7 +856,7 @@ export type MutationAddSubscriptionArgs = {
 export type MutationAddSubscriptionInServiceArgs = {
   capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
-  organization_id?: InputMaybe<Scalars['ID']['input']>;
+  organization_id?: InputMaybe<Scalars['OrganizationId']['input']>;
   service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
   start_date?: InputMaybe<Scalars['Date']['input']>;
 };
@@ -921,7 +921,7 @@ export type MutationCancelDeploymentRequestArgs = {
 
 
 export type MutationChangeSelectedOrganizationArgs = {
-  organization_id: Scalars['ID']['input'];
+  organization_id: Scalars['OrganizationId']['input'];
 };
 
 
@@ -1053,13 +1053,13 @@ export type MutationRegisterPlatformArgs = {
 
 
 export type MutationRemovePendingUserFromOrganizationArgs = {
-  organization_id: Scalars['ID']['input'];
+  organization_id: Scalars['OrganizationId']['input'];
   user_id: Scalars['ID']['input'];
 };
 
 
 export type MutationRemoveUserFromOrganizationArgs = {
-  organization_id: Scalars['ID']['input'];
+  organization_id: Scalars['OrganizationId']['input'];
   user_id: Scalars['ID']['input'];
 };
 
@@ -1204,7 +1204,7 @@ export type OrganizationCapabilities = Node & {
 
 export type OrganizationCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
-  organization_id: Scalars['ID']['input'];
+  organization_id: Scalars['OrganizationId']['input'];
 };
 
 export enum OrganizationCapability {
@@ -2155,7 +2155,7 @@ export type UpdateDocumentInput = {
   short_description?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   uploader_id?: InputMaybe<Scalars['String']['input']>;
-  uploader_organization_id?: InputMaybe<Scalars['String']['input']>;
+  uploader_organization_id?: InputMaybe<Scalars['OrganizationId']['input']>;
   use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
@@ -2221,11 +2221,11 @@ export type User = Node & {
   last_name?: Maybe<Scalars['String']['output']>;
   organization_capabilities?: Maybe<Array<OrganizationCapabilities>>;
   organizations?: Maybe<Array<Organization>>;
-  pending_organization_id?: Maybe<Scalars['ID']['output']>;
+  pending_organization_id?: Maybe<Scalars['OrganizationId']['output']>;
   picture?: Maybe<Scalars['String']['output']>;
   roles_portal?: Maybe<Array<RolePortal>>;
   selected_org_capabilities?: Maybe<Array<OrganizationCapability>>;
-  selected_organization_id?: Maybe<Scalars['String']['output']>;
+  selected_organization_id?: Maybe<Scalars['OrganizationId']['output']>;
 };
 
 export type UserConnection = {
@@ -2334,7 +2334,7 @@ export type UserSubscription = {
 
 export type UsersWithCapabilitiesInOrganizationInput = {
   capabilities: Array<OrganizationCapability>;
-  organizationId: Scalars['ID']['input'];
+  organizationId: Scalars['OrganizationId']['input'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -3753,11 +3753,11 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization_capabilities?: Resolver<Maybe<Array<ResolversTypes['OrganizationCapabilities']>>, ParentType, ContextType>;
   organizations?: Resolver<Maybe<Array<ResolversTypes['Organization']>>, ParentType, ContextType>;
-  pending_organization_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  pending_organization_id?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   roles_portal?: Resolver<Maybe<Array<ResolversTypes['RolePortal']>>, ParentType, ContextType>;
   selected_org_capabilities?: Resolver<Maybe<Array<ResolversTypes['OrganizationCapability']>>, ParentType, ContextType>;
-  selected_organization_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  selected_organization_id?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

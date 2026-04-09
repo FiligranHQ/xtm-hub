@@ -1,6 +1,5 @@
 import { Resolvers } from '../../__generated__/resolvers-types';
 
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import {
   SubscriptionId,
@@ -54,8 +53,7 @@ const resolvers: Resolvers = {
     ) => {
       try {
         const organizationId =
-          extractId<OrganizationId>(organization_id) ??
-          context.user.selected_organization_id;
+          organization_id ?? context.user.selected_organization_id;
         const serviceInstanceId = service_instance_id;
         const capabilityIds = capability_ids.map((capability_id) =>
           extractId<ServiceCapabilityId>(capability_id)

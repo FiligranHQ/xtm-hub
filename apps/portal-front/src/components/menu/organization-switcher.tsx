@@ -15,7 +15,7 @@ interface TeamSwitcherProps {
 }
 
 const changeSelectedOrganizationMutation = graphql`
-  mutation organizationSwitcherMutation($organization_id: ID!) {
+  mutation organizationSwitcherMutation($organization_id: OrganizationId!) {
     changeSelectedOrganization(organization_id: $organization_id) {
       id
       selected_organization_id
