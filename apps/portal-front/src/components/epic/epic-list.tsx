@@ -2,6 +2,7 @@
 import { EpicFilter, EpicFilterType } from '@/components/epic/epic-filter';
 import { EpicFormSheet } from '@/components/epic/epic-form-sheet';
 import { EpicItem } from '@/components/epic/epic-item/epic-item';
+import { FiligranTimelineMapping } from '@/components/epic/epic-item/timeline-mapping';
 import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
@@ -63,12 +64,12 @@ export const EpicList = ({
   const sections = useMemo(
     () => [
       { title: 'draft', epics: draft },
-      { title: TimelineEnum.NOW, epics: now },
-      { title: TimelineEnum.NEXT, epics: next },
-      { title: TimelineEnum.UNDER_CONSIDERATION, epics: under_consideration },
       ...(showFinished
         ? [{ title: TimelineEnum.FINISHED, epics: finished }]
         : []),
+      { title: TimelineEnum.NOW, epics: now },
+      { title: TimelineEnum.NEXT, epics: next },
+      { title: TimelineEnum.UNDER_CONSIDERATION, epics: under_consideration },
     ],
     [draft, now, next, under_consideration, finished, showFinished]
   );
@@ -76,13 +77,15 @@ export const EpicList = ({
   const renderEpicItems = useCallback(
     (epicsList: typeof epics) =>
       epicsList.map((epic) => (
-        <EpicItem
-          key={epic.id}
-          epic={epic}
-          serviceInstanceId={serviceInstance.id}
-          userCanUpdate={userCanUpdate}
-          userCanDelete={userCanDelete}
-        />
+        <div key={epic.title}>
+          <EpicItem
+            key={epic.id}
+            epic={epic}
+            serviceInstanceId={serviceInstance.id}
+            userCanUpdate={userCanUpdate}
+            userCanDelete={userCanDelete}
+          />
+        </div>
       )),
     [serviceInstance.id, userCanUpdate, userCanDelete]
   );
@@ -98,14 +101,25 @@ export const EpicList = ({
 
   return (
     <>
-      <h1>{t('Epic.XTMRoadmap')}</h1>
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex m-s">
+        <h1>{t('Epic.XTMRoadmap')}</h1>
+        {userCanUpdate && (
+          <div className="ml-auto">
+            <EpicFormSheet
+              open={openSheet}
+              setOpen={setOpenSheet}
+            />
+          </div>
+        )}
+      </div>
+      <div className="flex flex-row items-center">
         <SearchInput
           containerClass="w-full sm:w-1/3"
           placeholder={t('Epic.Search')}
           onChange={debounceHandleInput}
         />
-        <div className="flex flex-row ml-auto items-center">
+
+        <div className="ml-auto">
           <EpicFilter
             selectedFilter={selectedProduct}
             onSelectedFilterChange={onFilterChange}
@@ -113,12 +127,6 @@ export const EpicList = ({
             showFinished={showFinished}
             onShowFinishedChange={setShowFinished}
           />
-          {userCanUpdate && (
-            <EpicFormSheet
-              open={openSheet}
-              setOpen={setOpenSheet}
-            />
-          )}
         </div>
       </div>
       {sections.map((timeline) => {
@@ -128,20 +136,40 @@ export const EpicList = ({
         ) {
           return null;
         }
+        const timelineColor =
+          FiligranTimelineMapping[timeline.title as TimelineEnum]?.color ??
+          'white';
+
         return (
-          <div key={timeline.title}>
-            <div className="relative my-xl">
-              <Separator />
-              <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-s text-muted-foreground">
-                {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
-              </span>
+          <div
+            key={timeline.title}
+            className="flex items-stretch gap-m">
+            <div className="flex flex-col items-center self-stretch mt-xl">
+              <div className="rounded-full w-6 h-6 flex items-center justify-center relative">
+                <div
+                  className={`absolute inset-0 bg-${timelineColor} opacity-30 rounded-full`}
+                />
+                <span
+                  className={`relative z-10 font-semibold txt-mini text-${timelineColor}`}>
+                  {timeline.epics.length}
+                </span>
+              </div>
+              <Separator
+                orientation="vertical"
+                className={`mt-s flex-1 w-px bg-${timelineColor}`}
+              />
             </div>
-            <ul
-              className={
-                'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
-              }>
-              {renderEpicItems(timeline.epics)}
-            </ul>
+            <div className="flex-1 mt-l">
+              <p className={`m-s font-semibold text-${timelineColor}`}>
+                {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
+              </p>
+              <ul
+                className={
+                  'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-l'
+                }>
+                {renderEpicItems(timeline.epics)}
+              </ul>
+            </div>
           </div>
         );
       })}

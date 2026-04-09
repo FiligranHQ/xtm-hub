@@ -52,7 +52,7 @@ const resolvers: Resolvers = {
             : undefined,
         };
       } catch (error) {
-        if (ErrorCode.PlatformNotRegistered) {
+        if (error.message === ErrorCode.PlatformNotRegistered) {
           return {
             isPlatformRegistered: false,
           };

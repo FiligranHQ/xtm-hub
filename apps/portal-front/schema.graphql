@@ -105,6 +105,11 @@ type Query {
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
+  me: User
+  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  userHasOrganizationWithSubscription: Boolean!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
@@ -114,8 +119,8 @@ type Query {
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
-  serviceInstanceById(service_instance_id: ID): ServiceInstance
-  serviceInstanceByIdWithSubscriptions(service_instance_id: ID, searchTerm: String): ServiceInstance
+  serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
+  serviceInstanceByIdWithSubscriptions(service_instance_id: ServiceInstanceId, searchTerm: String): ServiceInstance
   subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
@@ -125,11 +130,6 @@ type Query {
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
-  me: User
-  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
-  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  userHasOrganizationWithSubscription: Boolean!
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
   node(id: ID!): Node
 }
@@ -153,24 +153,6 @@ type Mutation {
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
-  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
-  unregisterPlatform(input: UnregisterPlatformInput): Success!
-  refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
-  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
-  autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
-  addServicePicture(serviceInstanceId: ID!, document: Upload, isLogo: Boolean): ServiceInstance
-  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
-  addSubscription(service_instance_id: String): ServiceInstance
-  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
-  deleteSubscription(subscription_id: ID!): ServiceInstance
-  sendTelemetryEvent: SendTelemetryMutation
-  addUseCase(input: AddUseCaseInput!): UseCase!
-  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
-  deleteUseCase(id: ID!): UseCase!
-  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
-  addUserService(input: UserServiceAddInput!): [UserService]
-  addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
-  deleteUserService(input: UserServiceDeleteInput!): UserService
   adminAddUser(input: AdminAddUserInput!): User
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
   addUser(input: AddUserInput!): User
@@ -188,6 +170,24 @@ type Mutation {
   login(email: String!, password: String): User
   logout: ID!
   contactUs(message: String, platformId: ID, platformIdentifier: PlatformIdentifier): Success!
+  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
+  unregisterPlatform(input: UnregisterPlatformInput): Success!
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
+  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
+  addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
+  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
+  addSubscription(service_instance_id: String): ServiceInstance
+  addSubscriptionInService(service_instance_id: String, organization_id: ID, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
+  deleteSubscription(subscription_id: ID!): ServiceInstance
+  sendTelemetryEvent: SendTelemetryMutation
+  addUseCase(input: AddUseCaseInput!): UseCase!
+  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
+  deleteUseCase(id: ID!): UseCase!
+  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: String): SubscriptionModel
+  addUserService(input: UserServiceAddInput!): [UserService]
+  addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
+  deleteUserService(input: UserServiceDeleteInput!): UserService
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
   deleteEpic(id: ID!): Epic!
@@ -314,8 +314,8 @@ type DeploymentRequest implements Node {
   hub_status: DeploymentRequestHubStatus!
   ordering: Int!
   requester_email: String
-  organization_requester_id: ID!
-  service_instance_id: ID!
+  organization_requester_id: OrganizationId!
+  service_instance_id: ServiceInstanceId!
   organization_name: String
   request_date: Date!
   counts_in_orga_quota: Boolean!
@@ -415,7 +415,7 @@ type DeploymentAvailability {
 }
 
 type DeployedPlatform {
-  serviceInstanceId: ID!
+  serviceInstanceId: ServiceInstanceId!
   platformIdentifier: PlatformIdentifier!
 }
 
@@ -456,7 +456,7 @@ input UpdateDeploymentQuotaCapacityInput {
 }
 
 input TrialDeploymentsInput {
-  organizationId: ID!
+  organizationId: OrganizationId!
   platformIdentifiers: [PlatformIdentifier!]
 }
 
@@ -945,7 +945,12 @@ enum OrganizationOrdering {
   name
 }
 
-type OrganizationId implements Node {
+"""
+A Relay global ID for Organization, extracted to a branded OrganizationId string
+"""
+scalar OrganizationId
+
+type OrganizationRef implements Node {
   id: ID!
 }
 
@@ -971,6 +976,128 @@ type OrganizationConnection {
 input OrganizationInput {
   name: String!
   domains: [String!]
+}
+
+enum UserOrdering {
+  email
+  first_name
+  last_name
+  disabled
+  country
+  last_login
+}
+
+type Capability implements Node {
+  id: ID!
+  name: PortalCapability!
+}
+
+type OrganizationCapabilities implements Node {
+  id: ID!
+  organization: Organization!
+  capabilities: [OrganizationCapability!]
+}
+
+type User implements Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  picture: String
+  country: String
+  disabled: Boolean
+  selected_organization_id: String
+  organizations: [Organization!]
+  organization_capabilities: [OrganizationCapabilities!]
+  capabilities: [Capability!]
+  roles_portal: [RolePortal!]
+  selected_org_capabilities: [OrganizationCapability!]
+  last_login: Date
+  pending_organization_id: ID
+}
+
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+type UserConnection {
+  totalCount: Int!
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+input UsersWithCapabilitiesInOrganizationInput {
+  organizationId: ID!
+  capabilities: [OrganizationCapability!]!
+}
+
+input AdminEditUserInput {
+  disabled: Boolean
+  first_name: String
+  last_name: String
+  email: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+input EditUserCapabilitiesInput {
+  capabilities: [String!]
+}
+
+input EditMeUserInput {
+  first_name: String
+  last_name: String
+  country: String
+}
+
+input OrganizationCapabilitiesInput {
+  organization_id: ID!
+  capabilities: [String!]
+}
+
+input AddUserInput {
+  email: String!
+  password: String
+  capabilities: [String!]
+}
+
+input AdminAddUserInput {
+  email: String!
+  first_name: String
+  last_name: String
+  password: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+input BulkPendingUserFromOrganizationInput {
+  ids: [ID!]
+  searchTerm: String
+  filters: [Filter!]
+  excludedIds: [ID!]
+}
+
+type UserSubscription {
+  add: User
+  edit: User
+  delete: User
+  merge: MergeEvent
+}
+
+type MeUserSubscription {
+  edit: User
+  delete: User
+}
+
+type UserPendingSubscription {
+  delete: User
+  invalidate: OrganizationRef
+}
+
+type Subscription {
+  User(organizationId: ID): UserSubscription
+  MeUser: MeUserSubscription
+  UserPending(organizationId: ID!): UserPendingSubscription
+  ServiceInstance: ServiceInstanceSubscription
 }
 
 input OpenCTIPlatformRegistrationStatusInput {
@@ -1133,6 +1260,11 @@ type ServiceLink implements Node {
   name: String
 }
 
+"""
+A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string
+"""
+scalar ServiceInstanceId
+
 enum ServiceInstanceOrdering {
   name
   description
@@ -1224,7 +1356,7 @@ input AddServiceInput {
 }
 
 input UpdatePlatformServiceMetadataInput {
-  serviceInstanceId: ID!
+  serviceInstanceId: ServiceInstanceId!
   name: String
 }
 
@@ -1238,7 +1370,7 @@ type SubscribedServiceInstanceConfiguration {
 }
 
 type SubscribedServiceInstance {
-  service_instance_id: ID!
+  service_instance_id: ServiceInstanceId!
   organization_id: ID!
   is_personal_space: Boolean!
   configurations: [SubscribedServiceInstanceConfiguration]
@@ -1248,13 +1380,6 @@ type ServiceInstanceSubscription {
   add: ServiceInstance
   edit: ServiceInstance
   delete: ServiceInstance
-}
-
-type Subscription {
-  ServiceInstance: ServiceInstanceSubscription
-  User(organizationId: ID): UserSubscription
-  MeUser: MeUserSubscription
-  UserPending(organizationId: ID!): UserPendingSubscription
 }
 
 type PlatformProvider {
@@ -1434,121 +1559,6 @@ type UserServiceDeleted implements Node {
   user_id: ID!
 }
 
-enum UserOrdering {
-  email
-  first_name
-  last_name
-  disabled
-  country
-  last_login
-}
-
-type Capability implements Node {
-  id: ID!
-  name: PortalCapability!
-}
-
-type OrganizationCapabilities implements Node {
-  id: ID!
-  organization: Organization!
-  capabilities: [OrganizationCapability!]
-}
-
-type User implements Node {
-  id: ID!
-  email: String!
-  first_name: String
-  last_name: String
-  picture: String
-  country: String
-  disabled: Boolean
-  selected_organization_id: String
-  organizations: [Organization!]
-  organization_capabilities: [OrganizationCapabilities!]
-  capabilities: [Capability!]
-  roles_portal: [RolePortal!]
-  selected_org_capabilities: [OrganizationCapability!]
-  last_login: Date
-  pending_organization_id: ID
-}
-
-type UserEdge {
-  cursor: String!
-  node: User!
-}
-
-type UserConnection {
-  totalCount: Int!
-  edges: [UserEdge!]!
-  pageInfo: PageInfo!
-}
-
-input UsersWithCapabilitiesInOrganizationInput {
-  organizationId: ID!
-  capabilities: [OrganizationCapability!]!
-}
-
-input AdminEditUserInput {
-  disabled: Boolean
-  first_name: String
-  last_name: String
-  email: String
-  organization_capabilities: [OrganizationCapabilitiesInput!]
-}
-
-input EditUserCapabilitiesInput {
-  capabilities: [String!]
-}
-
-input EditMeUserInput {
-  first_name: String
-  last_name: String
-  country: String
-}
-
-input OrganizationCapabilitiesInput {
-  organization_id: ID!
-  capabilities: [String!]
-}
-
-input AddUserInput {
-  email: String!
-  password: String
-  capabilities: [String!]
-}
-
-input AdminAddUserInput {
-  email: String!
-  first_name: String
-  last_name: String
-  password: String
-  organization_capabilities: [OrganizationCapabilitiesInput!]
-}
-
-input BulkPendingUserFromOrganizationInput {
-  ids: [ID!]
-  searchTerm: String
-  filters: [Filter!]
-  excludedIds: [ID!]
-}
-
-type UserSubscription {
-  add: User
-  edit: User
-  delete: User
-  merge: MergeEvent
-}
-
-type MeUserSubscription {
-  edit: User
-  delete: User
-}
-
-type UserPendingSubscription {
-  delete: User
-  invalidate: OrganizationId
-}
-
 enum FiligranProduct {
   opencti
   openaev
@@ -1571,7 +1581,6 @@ enum EpicType {
 
 type Epic implements Node {
   id: ID!
-  epic: String!
   title: String!
   short_description: String!
   description: String!
@@ -1588,7 +1597,6 @@ type Epic implements Node {
 }
 
 input CreateEpicInput {
-  epic: String!
   title: String!
   short_description: String!
   description: String!
@@ -1600,7 +1608,6 @@ input CreateEpicInput {
 }
 
 input UpdateEpicInput {
-  epic: String
   title: String
   short_description: String
   description: String
@@ -1623,7 +1630,7 @@ type EpicConnection {
 }
 
 enum EpicOrdering {
-  epic
+  title
 }
 
 enum PortalCapability {
