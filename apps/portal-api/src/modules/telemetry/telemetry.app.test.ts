@@ -1,6 +1,14 @@
 import { MockInstance } from '@vitest/spy';
 import config from 'config';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
@@ -34,6 +42,16 @@ import { deleteDocuments } from '../document/document.helper';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { INTEGRATION_SERVICE_INSTANCE_ID } from '../document/opencti/integrations/integrations.model';
 import * as serviceInstanceDomain from '../services/service-instance.domain';
+
+vi.mock('config', async (importOriginal) => {
+  const mod = await importOriginal<{ default: typeof config }>();
+  return {
+    default: {
+      get: vi.fn(mod.default.get.bind(mod.default)),
+      has: mod.default.has.bind(mod.default),
+    },
+  };
+});
 
 // Mock the ES Client
 vi.mock('@elastic/elasticsearch', () => ({
@@ -339,7 +357,13 @@ describe('TelemetryApp', () => {
   });
 
   describe('sendTelemetryEvent', () => {
-    const originalConfigGet = config.get;
+    let realConfigGet: typeof config.get;
+
+    beforeAll(() => {
+      realConfigGet = vi
+        .mocked(config.get)
+        .getMockImplementation() as typeof config.get;
+    });
     let pgBossSendSpy: MockInstance;
     let indexSpy: MockInstance;
     let logSpy: MockInstance;
@@ -373,10 +397,10 @@ describe('TelemetryApp', () => {
         pgBossSendSpy = vi
           .spyOn(PgBossProducer, 'send')
           .mockResolvedValue('job-id');
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+        vi.mocked(config.get).mockImplementation((key: string) => {
           if (key === 'telemetry_use_queue_processing') return false;
           if (key === 'telemetry_queued_event_types') return [];
-          return originalConfigGet.call(config, key);
+          return realConfigGet(key);
         });
       });
 
@@ -410,10 +434,10 @@ describe('TelemetryApp', () => {
           .spyOn(PgBossProducer, 'send')
           .mockResolvedValue('job-id');
         logSpy = vi.spyOn(logApp, 'error');
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+        vi.mocked(config.get).mockImplementation((key: string) => {
           if (key === 'telemetry_use_queue_processing') return true;
           if (key === 'telemetry_queued_event_types') return [];
-          return originalConfigGet.call(config, key);
+          return realConfigGet(key);
         });
       });
 
@@ -459,11 +483,11 @@ describe('TelemetryApp', () => {
         pgBossSendSpy = vi
           .spyOn(PgBossProducer, 'send')
           .mockResolvedValue('job-id');
-        vi.spyOn(config, 'get').mockImplementation((key: string) => {
+        vi.mocked(config.get).mockImplementation((key: string) => {
           if (key === 'telemetry_use_queue_processing') return true;
           if (key === 'telemetry_queued_event_types')
             return [TelemetryEventType.LOGIN];
-          return originalConfigGet.call(config, key);
+          return realConfigGet(key);
         });
       });
 

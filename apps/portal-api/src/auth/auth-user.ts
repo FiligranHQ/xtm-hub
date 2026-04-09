@@ -1,8 +1,11 @@
 import type { Request, Response } from 'express';
 import { UserInfo } from '../model/user';
+import {
+  loadUserBy,
+  updateUserAtLogin,
+} from '../modules/organization-management/users/user-domain/users.domain';
+import { getOrCreateUser } from '../modules/organization-management/users/users.helper';
 import { removeAllUserRolePortal } from '../modules/role-portal/role-portal.domain';
-import { loadUserBy, updateUserAtLogin } from '../modules/users/users.domain';
-import { getOrCreateUser } from '../modules/users/users.helper';
 import { PLATFORM_ORGANIZATION_UUID } from '../portal.const';
 import {
   addRoleToUser,
