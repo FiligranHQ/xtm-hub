@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { PortalContext } from '../../../model/portal-context';
+import type { PortalContext } from '../../../../model/portal-context';
 import {
   SYSTEM_TOKEN_HEADER,
   validateSystemToken,

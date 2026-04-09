@@ -44,8 +44,8 @@ import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
-} from './service-capability/generic_service_capability.const';
-import { insertCapabilities } from './user-service-capability/user-service-capability.helper';
+} from '../security-management/service-capability/generic_service_capability.const';
+import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
 
 export const UserServiceDomain = {
   addServiceToUsers: async (

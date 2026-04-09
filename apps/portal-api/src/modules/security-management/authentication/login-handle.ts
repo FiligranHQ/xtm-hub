@@ -1,6 +1,6 @@
-import { UserInfo } from '../model/user';
-import { AppLogsCategory, logApp } from '../utils/app-logger.util';
-import { ErrorType } from '../utils/error/error.type';
+import { UserInfo } from '../../../model/user';
+import { AppLogsCategory, logApp } from '../../../utils/app-logger.util';
+import { ErrorType } from '../../../utils/error/error.type';
 import { loginFromProvider } from './auth-user';
 
 export const providerLoginHandler = async (userInfo: UserInfo, done) => {

@@ -28,7 +28,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import * as mailService from '../../server/mail-service';
 import { PlatformConfiguration } from '../registration/registration.domain';
-import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
+import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic_service_capability.const';
 import {
   getUserJoined,
   grantServiceAccess,

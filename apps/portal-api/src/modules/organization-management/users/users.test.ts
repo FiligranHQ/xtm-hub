@@ -5,7 +5,7 @@ import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import Organization from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
-import { createUserOrganizationCapability } from '../../common/user-organization-capability.domain';
+import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { createUserOrganizationRelationAndRemovePending } from '../../common/user-organization.helper';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';

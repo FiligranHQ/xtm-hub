@@ -10,7 +10,7 @@ import ServiceGroup, {
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
-import { userHasBypassCapability } from '../../../security/auth.helper';
+import { userHasBypassCapability } from '../../security-management/capability/auth.helper';
 import { sendMail } from '../../../server/mail-service';
 import { auth0Client } from '../../../thirdparty/auth0/client';
 import { logApp } from '../../../utils/app-logger.util';

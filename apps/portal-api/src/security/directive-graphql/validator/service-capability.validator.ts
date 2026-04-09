@@ -1,6 +1,8 @@
 import { UserLoadUserBy } from '../../../model/user';
-import { getCapabilityUser, userHasBypassCapability } from '../../auth.helper';
-
+import {
+  getCapabilityUser,
+  userHasBypassCapability,
+} from '../../../modules/security-management/capability/auth.helper';
 export const SERVICE_CAPABILITY_DIRECTIVE_NAME = 'service_capa';
 
 export type ServiceCapabilityArgs = {
