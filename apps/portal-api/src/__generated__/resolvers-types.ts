@@ -25,6 +25,7 @@ export type Scalars = {
   DeploymentRequestId: { input: DeploymentRequestId; output: DeploymentRequestId; }
   JSON: { input: any; output: any; }
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
+  ServiceGroupId: { input: any; output: any; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
   Upload: { input: any; output: any; }
 };
@@ -2184,7 +2185,7 @@ export type UpdateServiceGroupsInput = {
 };
 
 export type UpdateServiceGroupsInputGroup = {
-  id: Scalars['ID']['input'];
+  id: Scalars['ServiceGroupId']['input'];
   userIds: Array<Scalars['ID']['input']>;
 };
 
@@ -2542,6 +2543,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
   ServiceGroup: ResolverTypeWrapper<ServiceGroup>;
+  ServiceGroupId: ResolverTypeWrapper<Scalars['ServiceGroupId']['output']>;
   ServiceInstance: ResolverTypeWrapper<ServiceInstance>;
   ServiceInstanceCreationStatus: ServiceInstanceCreationStatus;
   ServiceInstanceEdge: ResolverTypeWrapper<ServiceInstanceEdge>;
@@ -2699,6 +2701,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceConnection: ServiceConnection;
   ServiceDefinition: ServiceDefinition;
   ServiceGroup: ServiceGroup;
+  ServiceGroupId: Scalars['ServiceGroupId']['output'];
   ServiceInstance: ServiceInstance;
   ServiceInstanceEdge: ServiceInstanceEdge;
   ServiceInstanceFilter: ServiceInstanceFilter;
@@ -3501,6 +3504,10 @@ export type ServiceGroupResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface ServiceGroupIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['ServiceGroupId'], any> {
+  name: 'ServiceGroupId';
+}
+
 export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstance'] = ResolversParentTypes['ServiceInstance']> = ResolversObject<{
   capabilities?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
   creation_status?: Resolver<Maybe<ResolversTypes['ServiceInstanceCreationStatus']>, ParentType, ContextType>;
@@ -3903,6 +3910,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceDefinition?: ServiceDefinitionResolvers<ContextType>;
   ServiceGroup?: ServiceGroupResolvers<ContextType>;
+  ServiceGroupId?: GraphQLScalarType;
   ServiceInstance?: ServiceInstanceResolvers<ContextType>;
   ServiceInstanceEdge?: ServiceInstanceEdgeResolvers<ContextType>;
   ServiceInstanceId?: GraphQLScalarType;

@@ -2,10 +2,12 @@ import { Resolvers } from '../../../__generated__/resolvers-types';
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
 import { UserId } from '../../../model/kanel/public/User';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { extractId } from '../../../utils/utils';
 import { ServiceGroupApp } from './service-group.app';
 
 const resolvers: Resolvers = {
+  ServiceGroupId: createRelayIdScalar<ServiceGroupId>('ServiceGroup'),
   ServiceGroup: {
     users: ({ id }) => ServiceGroupApp.loadGroupUsers(id as ServiceGroupId),
   },
@@ -25,7 +27,7 @@ const resolvers: Resolvers = {
       try {
         const parsedInput = input.groups.map((group) => {
           return {
-            id: extractId<ServiceGroupId>(group.id),
+            id: group.id,
             userIds: group.userIds.map((userId) => extractId<UserId>(userId)),
           };
         });
