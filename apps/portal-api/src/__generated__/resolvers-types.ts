@@ -191,7 +191,6 @@ export type CreateDocumentInput = {
 export type CreateEpicInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description: Scalars['String']['input'];
-  epic: Scalars['String']['input'];
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   product: FiligranProduct;
@@ -581,7 +580,6 @@ export type Epic = Node & {
   description: Scalars['String']['output'];
   document?: Maybe<Document>;
   document_id?: Maybe<Scalars['ID']['output']>;
-  epic: Scalars['String']['output'];
   epic_type: EpicType;
   id: Scalars['ID']['output'];
   product: FiligranProduct;
@@ -607,7 +605,7 @@ export type EpicEdge = {
 };
 
 export enum EpicOrdering {
-  Epic = 'epic'
+  Title = 'title'
 }
 
 export enum EpicType {
@@ -2164,7 +2162,6 @@ export type UpdateDocumentInput = {
 export type UpdateEpicInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  epic?: InputMaybe<Scalars['String']['input']>;
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   product?: InputMaybe<FiligranProduct>;
@@ -3021,7 +3018,6 @@ export type EpicResolvers<ContextType = PortalContext, ParentType extends Resolv
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
   document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  epic?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;

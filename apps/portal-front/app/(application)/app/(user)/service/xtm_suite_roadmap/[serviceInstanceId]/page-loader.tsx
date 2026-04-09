@@ -20,7 +20,7 @@ const PageLoader = ({ serviceInstance }: PreloaderProps) => {
   const t = useTranslations();
   const queryData = useLazyLoadQuery<epicsQuery>(
     EpicListQuery,
-    { count: 500, orderBy: 'epic', orderMode: 'asc' },
+    { count: 500, orderBy: 'title', orderMode: 'asc' },
     { fetchPolicy: 'network-only' }
   );
   const [data, refetch] = useRefetchableFragment<

@@ -21,7 +21,7 @@ export const EpicItem = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <li className="group overflow-hidden border-light flex flex-col relative rounded border hover:cursor-pointer bg-page-background h-[364px]">
+    <li className="group overflow-hidden border-light flex flex-col relative rounded border hover:cursor-pointer bg-page-background h-[183px]">
       <EpicItemCard
         epic={epic}
         serviceInstanceId={serviceInstanceId}

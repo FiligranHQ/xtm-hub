@@ -19,7 +19,7 @@ export const PublicEpicListPageLoader = ({
       {
         count: 500,
 
-        orderBy: 'epic',
+        orderBy: 'title',
         orderMode: 'asc',
       },
       {

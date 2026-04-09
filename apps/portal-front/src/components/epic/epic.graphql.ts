@@ -5,7 +5,6 @@ export const epicFragment = graphql`
     id
     short_description
     description
-    epic
     title
     timeline
     product

@@ -6,10 +6,12 @@ import {
   CompetitorTier,
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
+  FiligranProduct,
   IntegrationType,
   PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
+  Timeline,
 } from '../src/__generated__/resolvers-types';
 import Competitor, {
   CompetitorId,
@@ -19,6 +21,7 @@ import Document, {
   DocumentId,
   DocumentMutator,
 } from '../src/model/kanel/public/Document';
+import Epic, { EpicId, EpicMutator } from '../src/model/kanel/public/Epic';
 import Organization, {
   OrganizationMutator,
 } from '../src/model/kanel/public/Organization';
@@ -134,11 +137,8 @@ export const TestHelper = {
       expect(document).toBeDefined();
       return document;
     },
-    load: async (documentId: DocumentId): Promise<Document | undefined> => {
-      return db<Document>('Document')
-        .where('id', '=', documentId)
-        .select('*')
-        .first();
+    load: async (field: DocumentMutator): Promise<Document | undefined> => {
+      return db<Document>('Document').where(field).select('*').first();
     },
     delete: async (field: DocumentMutator) => {
       await db<Document>('Document').where(field).del();
@@ -313,6 +313,29 @@ export const TestHelper = {
     },
     delete: async (field: CompetitorMutator) => {
       await db<Competitor>('Competitor').where(field).del();
+    },
+  },
+  epic: {
+    create: async (data?: EpicMutator): Promise<Epic | undefined> => {
+      const [epic] = await db<Epic>('Epic')
+        .insert({
+          id: uuidv4() as EpicId,
+          title: 'Test Epic',
+          short_description: 'Short desc',
+          description: 'Long description for the epic',
+          active: true,
+          product: FiligranProduct.Opencti,
+          timeline: Timeline.Now,
+          ...data,
+        })
+        .returning('*');
+      return epic;
+    },
+    delete: async (field: EpicMutator) => {
+      await db<Epic>('Epic').where(field).del();
+    },
+    load: async (field: EpicMutator): Promise<Epic | undefined> => {
+      return db<Epic>('Epic').where(field).select('*').first();
     },
   },
 };

@@ -53,7 +53,9 @@ describe('Document domain', () => {
     it('should do nothing when the document ids is an empty array', async () => {
       await DocumentDomain.deactivateDocuments([]);
 
-      const document = await TestHelper.document.load(createdDocument.id);
+      const document = await TestHelper.document.load({
+        id: createdDocument.id,
+      });
 
       expect(document).toBeDefined();
       expect(document!.active).toBe(true);
@@ -62,7 +64,9 @@ describe('Document domain', () => {
     it('should deactivate document and set remover id', async () => {
       await DocumentDomain.deactivateDocuments([createdDocument.id]);
 
-      const document = await TestHelper.document.load(createdDocument.id);
+      const document = await TestHelper.document.load({
+        id: createdDocument.id,
+      });
 
       expect(document).toBeDefined();
       expect(document!.active).toBe(false);
@@ -440,7 +444,7 @@ describe('Document domain', () => {
 
         // When
         const document = await DocumentDomain.createDocument(docData, []);
-        const dbDocument = await TestHelper.document.load(document!.id);
+        const dbDocument = await TestHelper.document.load({ id: document!.id });
 
         // Then
         const baseExpected = {

@@ -19,7 +19,6 @@ enum EpicType {
 
 type Epic implements Node {
   id: ID!
-  epic: String!
   title: String!
   short_description: String!
   description: String!
@@ -36,7 +35,6 @@ type Epic implements Node {
 }
 
 input CreateEpicInput {
-  epic: String!
   title: String!
   short_description: String!
   description: String!
@@ -48,7 +46,6 @@ input CreateEpicInput {
 }
 
 input UpdateEpicInput {
-  epic: String
   title: String
   short_description: String
   description: String
@@ -69,7 +66,7 @@ type EpicConnection {
   pageInfo: PageInfo!
 }
 enum EpicOrdering {
-  epic
+  title
 }
 type Query {
   epics(
