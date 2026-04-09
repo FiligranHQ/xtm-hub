@@ -2,8 +2,11 @@ import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/test.helper';
 import {
-  contextBypassUser,
+  contextRegistererUserSecondOrga,
+  contextSimpleUserSecondOrga,
+  requestContextRegistererUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -17,20 +20,16 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-} from '../../model/kanel/public/Subscription';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { PortalContext } from '../../model/portal-context';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import * as organizationDomain from '../organizations/organizations.domain';
+import * as organizationDomain from '../organization-management/organizations/organizations.domain';
 import { deleteServiceInstanceBy } from '../services/service-instance.domain';
 import * as subscriptionDomain from '../subcription/subscription.domain';
 import {
@@ -54,11 +53,18 @@ describe('Registration domain', () => {
 
   describe('registerNewPlatform', () => {
     it('save registration data', async () => {
+      const testContext = {
+        user: requestContextRegistererUserSecondOrga.user,
+        portalContext: {
+          ...contextRegistererUserSecondOrga,
+        },
+      };
+      requestContext.set(testContext);
       await registrationDomain.registerNewPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         configuration: {
-          registerer_id: contextBypassUser.user.id,
+          registerer_id: contextSimpleUserSecondOrga.user.id,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,
@@ -69,75 +75,66 @@ describe('Registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      const serviceInstance = await db<ServiceInstance>('ServiceInstance')
-        .where('name', '=', 'OpenCTI Platform')
-        .select('*')
-        .first();
+      const serviceInstanceFromDB = await TestHelper.serviceInstance.load({
+        name: 'OpenCTI Platform',
+      });
 
-      expect(serviceInstance).toBeDefined();
-      expect(serviceInstance?.creation_status).toBe(
-        ServiceInstanceCreationStatus.Ready
-      );
+      expect(serviceInstanceFromDB).toMatchObject({
+        creation_status: ServiceInstanceCreationStatus.Ready,
+      });
 
-      const subscription = await db<Subscription>('Subscription')
-        .where('service_instance_id', '=', serviceInstance.id)
-        .select('*')
-        .first();
+      const subscriptionFromDB = await TestHelper.subscription.load({
+        service_instance_id: serviceInstanceFromDB?.id,
+      });
 
-      expect(subscription).toBeDefined();
-      expect(subscription.organization_id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
+      expect(subscriptionFromDB?.[0]).toMatchObject({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
 
-      const serviceConfiguration = await db<ServiceConfiguration>(
-        'Service_Configuration'
-      )
-        .where('service_instance_id', '=', serviceInstance.id)
-        .select('*')
-        .first();
+      const serviceConfiguration = await TestHelper.serviceConfiguration.load({
+        service_instance_id: serviceInstanceFromDB?.id,
+      });
 
-      expect(serviceConfiguration).toBeDefined();
       const configuration = JSON.parse(
         JSON.stringify(serviceConfiguration?.config)
       );
 
-      expect(configuration.token).toBe(token);
-      expect(configuration.registerer_id).toBe(contextBypassUser.user.id);
-      expect(configuration.platform_id).toBe(platformId);
-      expect(configuration.platform_title).toBe(platformTitle);
-      expect(configuration.platform_url).toBe(platformUrl);
-      expect(configuration.platform_contract).toBe(platformContract);
+      expect(configuration).toMatchObject({
+        token: token,
+        registerer_id: contextSimpleUserSecondOrga.user.id,
+        platform_id: platformId,
+        platform_title: platformTitle,
+        platform_url: platformUrl,
+        platform_contract: platformContract,
+      });
     });
     it('can create pending platforms', async () => {
       const serviceInstanceId = await registrationDomain.registerNewPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         platformIdentifier: PlatformIdentifier.Opencti,
         serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
       });
 
-      const serviceInstance = await db<ServiceInstance>('ServiceInstance')
-        .where('id', '=', serviceInstanceId)
-        .select('*')
-        .first();
+      const serviceInstance = await TestHelper.serviceInstance.load({
+        id: serviceInstanceId,
+      });
+      const subscriptionFromDB = await TestHelper.subscription.load({
+        service_instance_id: serviceInstanceId,
+      });
+
+      const serviceConfiguration = await TestHelper.serviceConfiguration.load({
+        service_instance_id: serviceInstanceId,
+      });
 
       expect(serviceInstance).toBeDefined();
       expect(serviceInstance?.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
 
-      const subscription = await db<Subscription>('Subscription')
-        .where('service_instance_id', '=', serviceInstanceId)
-        .select('*')
-        .first();
-
-      expect(subscription).toBeDefined();
-      expect(subscription.organization_id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
-
-      const serviceConfiguration = await db<ServiceConfiguration>(
-        'Service_Configuration'
-      )
-        .where('service_instance_id', '=', serviceInstanceId)
-        .select('*')
-        .first();
+      expect(subscriptionFromDB?.[0]?.organization_id).toBe(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
 
       expect(serviceConfiguration).toBeUndefined();
     });
@@ -145,7 +142,7 @@ describe('Registration domain', () => {
 
   describe('refreshExistingPlatform', () => {
     const configuration: PlatformConfiguration = {
-      registerer_id: contextBypassUser.user.id,
+      registerer_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
       platform_id: uuidv4(),
       platform_contract: PlatformContract.Ce,
       platform_title: 'Title',
@@ -328,11 +325,14 @@ describe('Registration domain', () => {
 
     let openCTIServiceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         configuration: {
-          registerer_id: contextBypassUser.user.id,
+          registerer_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,
@@ -344,10 +344,11 @@ describe('Registration domain', () => {
       });
 
       await registrationDomain.registerNewPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId: openAEVServiceDefinitionId,
         configuration: {
-          registerer_id: contextBypassUser.user.id,
+          registerer_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           platform_id: openAEVplatformId,
           platform_url: openAEVplatformUrl,
           platform_title: openAEVplatformTitle,
@@ -369,7 +370,7 @@ describe('Registration domain', () => {
         openCTIServiceInstanceId
       );
 
-      expect(platforms.length).toBe(1);
+      expect(platforms).toHaveLength(1);
       expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
   });
@@ -387,11 +388,14 @@ describe('Registration domain', () => {
 
     let openCTIServiceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         configuration: {
-          registerer_id: contextBypassUser.user.id,
+          registerer_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           platform_id: platformId,
           platform_url: platformUrl,
           platform_title: platformTitle,
@@ -403,10 +407,11 @@ describe('Registration domain', () => {
       });
 
       await registrationDomain.registerNewPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId: openAEVServiceDefinitionId,
         configuration: {
-          registerer_id: contextBypassUser.user.id,
+          registerer_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           platform_id: openAEVplatformId,
           platform_url: openAEVplatformUrl,
           platform_title: openAEVplatformTitle,
@@ -465,7 +470,7 @@ describe('Registration domain', () => {
     it('should return platforms without configuration (not yet auto registered) ', async () => {
       const notYetRegisteredPlatformServiceInstanceId =
         await registrationDomain.registerNewPlatform({
-          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           serviceDefinitionId,
           platformIdentifier: PlatformIdentifier.Opencti,
         });
@@ -488,8 +493,9 @@ describe('Registration domain', () => {
         type: DeploymentRequestDeploymentType.Trial,
         hub_status: DeploymentRequestHubStatus.Cancelled,
         platform_token: uuidv4(),
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        user_requester_id: contextBypassUser.user.id,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
         ordering: 1,
         request_date: new Date(),
       });
@@ -510,8 +516,9 @@ describe('Registration domain', () => {
         type: DeploymentRequestDeploymentType.Trial,
         hub_status: DeploymentRequestHubStatus.Provisioning,
         platform_token: uuidv4(),
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        user_requester_id: contextBypassUser.user.id,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
         ordering: 1,
         request_date: new Date(),
       });
@@ -532,8 +539,9 @@ describe('Registration domain', () => {
         type: DeploymentRequestDeploymentType.Trial,
         hub_status: DeploymentRequestHubStatus.Active,
         platform_token: uuidv4(),
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        user_requester_id: contextBypassUser.user.id,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
         ordering: 1,
         request_date: new Date(),
       });
@@ -555,8 +563,9 @@ describe('Registration domain', () => {
         type: DeploymentRequestDeploymentType.Trial,
         hub_status: DeploymentRequestHubStatus.Active,
         platform_token: uuidv4(),
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        user_requester_id: contextBypassUser.user.id,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
         ordering: 1,
         request_date: new Date(),
       });
@@ -568,13 +577,14 @@ describe('Registration domain', () => {
         type: DeploymentRequestDeploymentType.Trial,
         hub_status: DeploymentRequestHubStatus.Pending,
         platform_token: uuidv4(),
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        user_requester_id: contextBypassUser.user.id,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        user_requester_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
         ordering: 1,
         request_date: new Date(),
       });
       await registrationDomain.registerNewPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         platformIdentifier: PlatformIdentifier.Opencti,
       });

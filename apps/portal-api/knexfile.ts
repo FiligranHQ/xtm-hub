@@ -16,8 +16,8 @@ import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
-import { normalizeDocumentName } from './src/modules/services/document/document.helper';
-import { INTEGRATION_METADATA_KEYS } from './src/modules/services/document/opencti/integrations/integrations.model';
+import { normalizeDocumentName } from './src/modules/document/document.helper';
+import { INTEGRATION_METADATA_KEYS } from './src/modules/document/opencti/integrations/integrations.model';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 import { compareVersions, isValidVersion } from './src/utils/versioning';
@@ -152,10 +152,7 @@ export interface QueryOpts {
   normalizeSearchTerm?: boolean;
 }
 
-export const dbRaw = (
-  statement: string,
-  binding?: Knex.RawBinding | Knex.RawBinding[]
-) => database.raw(statement, binding);
+export const dbRaw: Knex.RawBuilder = database.raw.bind(database);
 
 export const dbTx = () => database.transaction();
 
@@ -211,6 +208,8 @@ const searchAttributes = [
   'first_name',
   'last_name',
   'country',
+  'title',
+  'epic',
 ];
 
 type JoinFn = (qb: Knex.QueryBuilder, type: DatabaseType) => void;

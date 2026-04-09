@@ -6,6 +6,7 @@ import '../../styles/globals.css';
 import Login from '@/components/login/login';
 import { RelayProvider } from '@/relay/RelayProvider';
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
+import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
@@ -13,17 +14,15 @@ import meLoaderQueryNode, {
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
+export const generateMetadata = async (): Promise<Metadata> => {
   return {
     title: 'Sign in XTM Hub',
     description: 'XTM Hub application by Filigran',
-    metadataBase: new URL(`https://${h.get('host')}`),
+    metadataBase: await getMetadataBase(),
   };
-}
+};
 
 export const dynamic = 'force-dynamic';
 

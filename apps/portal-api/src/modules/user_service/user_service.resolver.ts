@@ -6,7 +6,7 @@ import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { extractId } from '../../utils/utils';
-import { loadUserDetails } from '../users/users.domain';
+import { loadUserDetails } from '../organization-management/users/user-domain/users.domain';
 import { UserServiceApp } from './user_service.app';
 import { UserServiceDomain } from './user_service.domain';
 

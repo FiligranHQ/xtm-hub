@@ -14,13 +14,13 @@ import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { BadRequestError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import { loadServiceInstanceSubscription } from '../services/service-instance.domain';
+import { loadSubscriptionByServiceInstanceAndOrganization } from '../services/service-instance.domain';
 import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {
   RegisteredPlatform: {
     subscription: ({ id }, _, context) =>
-      loadServiceInstanceSubscription(
+      loadSubscriptionByServiceInstanceAndOrganization(
         context.user.selected_organization_id,
         id as ServiceInstanceId
       ),
@@ -32,8 +32,7 @@ const resolvers: Resolvers = {
   Query: {
     isPlatformRegistered: async (_, { input }) => {
       try {
-        const response = await registrationApp.isPlatformRegistered(input);
-        return response;
+        return await registrationApp.isPlatformRegistered(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -53,7 +52,7 @@ const resolvers: Resolvers = {
             : undefined,
         };
       } catch (error) {
-        if (ErrorCode.PlatformNotRegistered) {
+        if (error.message === ErrorCode.PlatformNotRegistered) {
           return {
             isPlatformRegistered: false,
           };

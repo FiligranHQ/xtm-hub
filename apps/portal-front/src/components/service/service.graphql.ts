@@ -2,7 +2,7 @@ import { graphql } from 'react-relay';
 
 export const ServiceAddPicture = graphql`
   mutation serviceAddPictureMutation(
-    $serviceInstanceId: ID!
+    $serviceInstanceId: ServiceInstanceId!
     $document: Upload
     $isLogo: Boolean
   ) {
@@ -29,7 +29,7 @@ export const UpdatePlatformServiceMetadata = graphql`
 `;
 
 export const ServiceById = graphql`
-  query serviceByIdQuery($service_instance_id: ID) {
+  query serviceByIdQuery($service_instance_id: ServiceInstanceId) {
     serviceInstanceById(service_instance_id: $service_instance_id) {
       ...serviceInstance_fragment
     }
@@ -138,7 +138,7 @@ export const ServiceListQuery = graphql`
 
 export const ServiceByIdWithSubscriptions = graphql`
   query serviceByIdWithSubscriptionsQuery(
-    $service_instance_id: ID
+    $service_instance_id: ServiceInstanceId
     $searchTerm: String
   ) {
     serviceInstanceByIdWithSubscriptions(

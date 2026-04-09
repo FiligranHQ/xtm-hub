@@ -23,10 +23,10 @@ const PageLoader = ({ serviceInstance }: PreloaderProps) => {
     { count: 500, orderBy: 'epic', orderMode: 'asc' },
     { fetchPolicy: 'network-only' }
   );
-  const [data] = useRefetchableFragment<epicsQuery, epicsList_epics$key>(
-    epicsListFragment,
-    queryData
-  );
+  const [data, refetch] = useRefetchableFragment<
+    epicsQuery,
+    epicsList_epics$key
+  >(epicsListFragment, queryData);
 
   const epics =
     data.epics?.edges.map((epic) => epic?.node as epic_fragment$data) ?? [];
@@ -43,6 +43,10 @@ const PageLoader = ({ serviceInstance }: PreloaderProps) => {
       original: true,
     },
   ];
+
+  const handleSearch = (searchTerm: string) => {
+    refetch({ searchTerm: searchTerm || undefined });
+  };
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
@@ -51,6 +55,7 @@ const PageLoader = ({ serviceInstance }: PreloaderProps) => {
         connectionID={connectionID}
         serviceInstance={serviceInstance}
         epics={epics}
+        onSearch={handleSearch}
       />
     </>
   );

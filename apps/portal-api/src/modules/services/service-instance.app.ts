@@ -20,13 +20,13 @@ import { securityGuard } from '../../security/guard';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
+import { uploadNewFile } from '../document/document.helper';
+import { Upload } from '../document/document.uploads.helper';
 import { PlatformConfiguration } from '../registration/registration.domain';
 import { subscriptionApp } from '../subcription/subscription.app';
 import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../user_service/user_service.domain';
-import { uploadNewFile } from './document/document.helper';
-import { Upload } from './document/document.uploads.helper';
 import {
   grantServiceAccess,
   loadPlatformConfigurationByServiceInstanceId,
@@ -42,7 +42,7 @@ import {
 } from './service-instance.domain';
 
 export const ServiceInstanceApp = {
-  loadServiceInstance: async (
+  loadServiceInstanceAndGrantAccess: async (
     user: UserLoadUserBy,
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
@@ -242,10 +242,7 @@ export const ServiceInstanceApp = {
     return results.map((sub) => ({
       ...sub,
       organization_id: toGlobalId('Organization', sub.organization_id),
-      service_instance_id: toGlobalId(
-        'ServiceInstance',
-        sub.service_instance_id
-      ),
+      service_instance_id: sub.service_instance_id,
     }));
   },
 };

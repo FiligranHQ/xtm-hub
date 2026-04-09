@@ -8,10 +8,10 @@ import {
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { UserId } from '../../model/kanel/public/User';
-import { loadOrganizationBy } from '../organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
 
 import { requestContext } from '../../context/request.context';
-import { DocumentMetadataDomain } from '../services/document/domain/document.metadata.domain';
+import { DocumentMetadataDomain } from '../document/domain/document.metadata.domain';
 import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
 import {
   TelemetryEventService,

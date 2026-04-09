@@ -1,19 +1,21 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
-import { contextBypassUser, SERVICES } from '../../../../tests/tests.const';
+import { TestHelper } from '../../../../tests/test.helper';
+import {
+  contextSimpleUserSecondOrga,
+  SERVICES,
+} from '../../../../tests/tests.const';
 import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceDefinitionDomain } from '../../services/definition/service-definition.domain';
 import { ServiceConfigurationDomain } from './service-configuration.domain';
 
 describe('ServiceConfigurationDomain', () => {
   describe('isServiceConfigurationValid', () => {
-    const context = contextBypassUser;
+    const context = contextSimpleUserSecondOrga;
     it('should throw an error when service contract is not found', async () => {
       const call = ServiceConfigurationDomain.isServiceConfigurationValid(
         uuidv4() as ServiceDefinitionId,
@@ -71,8 +73,8 @@ describe('ServiceConfigurationDomain', () => {
       token = uuidv4();
       platformId = uuidv4();
 
-      await db<ServiceConfiguration>('Service_Configuration').del();
-      await db<ServiceConfiguration>('Service_Configuration').insert({
+      await TestHelper.serviceConfiguration.delete({});
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         status: ServiceConfigurationStatus.Active,
         config: {
@@ -99,35 +101,22 @@ describe('ServiceConfigurationDomain', () => {
       });
     });
 
-    it('should return undefined when platform is found but token does not match', async () => {
-      const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-          platformId,
-          token: uuidv4(),
-        });
+    it.each([
+      { platformId: () => platformId, token: () => uuidv4() },
+      { platformId: () => uuidv4(), token: () => token },
+      { platformId: () => uuidv4(), token: () => uuidv4() },
+    ])(
+      'should return undefined when platformId is $platformId and token is $token',
+      async ({ platformId, token }) => {
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+            platformId: platformId(),
+            token: token(),
+          });
 
-      expect(configuration).toBeUndefined();
-    });
-
-    it('should return undefined when token is found but platform does not match', async () => {
-      const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-          platformId: uuidv4(),
-          token,
-        });
-
-      expect(configuration).toBeUndefined();
-    });
-
-    it('should return undefined when token and platform does not exist', async () => {
-      const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-          platformId: uuidv4(),
-          token: uuidv4(),
-        });
-
-      expect(configuration).toBeUndefined();
-    });
+        expect(configuration).toBeUndefined();
+      }
+    );
   });
 
   describe('loadConfigurationByPlatform', () => {
@@ -138,8 +127,8 @@ describe('ServiceConfigurationDomain', () => {
       token = uuidv4();
       platformId = uuidv4();
 
-      await db<ServiceConfiguration>('Service_Configuration').del();
-      await db<ServiceConfiguration>('Service_Configuration').insert({
+      await TestHelper.serviceConfiguration.delete({});
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         status: ServiceConfigurationStatus.Active,
         config: {

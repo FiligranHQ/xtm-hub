@@ -87,7 +87,7 @@ export default class IntegrationPage {
       .fill(description);
 
     await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Native').click();
+    await this.page.getByLabel('Malware').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await expect(this.page).toHaveScreenshot();

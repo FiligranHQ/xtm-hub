@@ -52,6 +52,10 @@ interface PortalConfig {
     type: 'postgresql' | 'memory';
     cleanup_interval_minutes: number;
   };
+  session: {
+    name: string;
+    secret: string;
+  };
   services: Services[];
   serviceCapabilities: ServiceCapability[];
   service_definitions: ServiceDefinitions[];
@@ -108,6 +112,10 @@ const portalConfig: PortalConfig = {
     cleanup_interval_minutes: config.get<number>(
       'session_store.cleanup_interval_minutes'
     ),
+  },
+  session: {
+    name: config.get<string>('session.name'),
+    secret: config.get<string>('session.secret'),
   },
   environment: config.get<string>('environment'),
   enabled_features: config.get<string[]>('enabled_features') ?? [],

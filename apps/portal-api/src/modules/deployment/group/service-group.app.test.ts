@@ -7,6 +7,7 @@ import {
   expect,
   it,
   vi,
+  type MockInstance,
 } from 'vitest';
 import { db } from '../../../../knexfile';
 import {
@@ -16,6 +17,7 @@ import {
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   PlatformIdentifier,
   ServiceConfigurationStatus,
@@ -36,8 +38,12 @@ import Subscription, {
   SubscriptionId,
 } from '../../../model/kanel/public/Subscription';
 import * as mailService from '../../../server/mail-service';
+import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
+
+import { deleteServiceInstanceBy } from '../../services/service-instance.domain';
+import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupApp } from './service-group.app';
 
 describe('ServiceGroupApp', () => {
@@ -406,6 +412,175 @@ describe('ServiceGroupApp', () => {
 
         expect(sendMailSpy).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('removeExpiredGroups', () => {
+    let auth0Spy: MockInstance;
+    const trackedServiceInstanceIds: ServiceInstanceId[] = [];
+
+    beforeEach(() => {
+      auth0Spy = vi.spyOn(auth0ClientMock, 'updateUserRBACInstance');
+    });
+
+    afterEach(async () => {
+      vi.restoreAllMocks();
+      if (trackedServiceInstanceIds.length > 0) {
+        await db('DeploymentRequest')
+          .whereIn('service_instance_id', trackedServiceInstanceIds)
+          .delete();
+        await db('Subscription')
+          .whereIn('service_instance_id', trackedServiceInstanceIds)
+          .delete();
+        await db('ServiceGroup')
+          .whereIn('service_instance_id', trackedServiceInstanceIds)
+          .delete();
+        for (const id of trackedServiceInstanceIds) {
+          await deleteServiceInstanceBy({ id });
+        }
+        trackedServiceInstanceIds.length = 0;
+      }
+    });
+
+    it.each([
+      DeploymentRequestHubStatus.Expired,
+      DeploymentRequestHubStatus.Cancelled,
+    ])('should remove users from groups for a %s trial', async (hub_status) => {
+      // Given
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - 8);
+      const platformId = uuidv4();
+
+      const deploymentRequest = await insertDeploymentRequest({
+        hub_status,
+        end_date: endDate,
+        platform_id: platformId,
+      });
+      trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
+
+      const groupId = uuidv4() as ServiceGroupId;
+      await db<ServiceGroup>('ServiceGroup').insert({
+        id: groupId,
+        name: 'Admin',
+        service_instance_id: deploymentRequest.service_instance_id,
+      });
+      await db<ServiceGroupUser>('ServiceGroup_User').insert({
+        group_id: groupId,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      });
+
+      // When
+      await ServiceGroupApp.removeExpiredGroups();
+
+      // Then
+      const usersInGroup = await db<ServiceGroupUser>('ServiceGroup_User')
+        .where('group_id', groupId)
+        .select('*');
+      expect(usersInGroup).toEqual([]);
+
+      const groups = await db<ServiceGroup>('ServiceGroup')
+        .where('id', groupId)
+        .select('*');
+      expect(groups).toEqual([]);
+    });
+
+    it('should call auth0 with empty groups for each affected user', async () => {
+      // Given
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - 8);
+      const platformId = uuidv4();
+
+      const deploymentRequest = await insertDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Expired,
+        end_date: endDate,
+        platform_id: platformId,
+      });
+      trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
+
+      const groupId = uuidv4() as ServiceGroupId;
+      await db<ServiceGroup>('ServiceGroup').insert({
+        id: groupId,
+        name: 'Admin',
+        service_instance_id: deploymentRequest.service_instance_id,
+      });
+      await db<ServiceGroupUser>('ServiceGroup_User').insert([
+        {
+          group_id: groupId,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        },
+        {
+          group_id: groupId,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        },
+      ]);
+
+      // When
+      await ServiceGroupApp.removeExpiredGroups();
+
+      // Then
+      expect(auth0Spy).toHaveBeenCalledTimes(2);
+      expect(auth0Spy).toHaveBeenCalledWith(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+        { [platformId]: { groups: [] } }
+      );
+      expect(auth0Spy).toHaveBeenCalledWith(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
+        { [platformId]: { groups: [] } }
+      );
+    });
+
+    it('should not remove users from DB when auth0 call fails', async () => {
+      // Given
+      auth0Spy.mockRejectedValue(new Error('Auth0 failure'));
+
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - 8);
+      const platformId = uuidv4();
+
+      const deploymentRequest = await insertDeploymentRequest({
+        hub_status: DeploymentRequestHubStatus.Expired,
+        end_date: endDate,
+        platform_id: platformId,
+      });
+      trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
+
+      const groupId = uuidv4() as ServiceGroupId;
+      await db<ServiceGroup>('ServiceGroup').insert({
+        id: groupId,
+        name: 'Admin',
+        service_instance_id: deploymentRequest.service_instance_id,
+      });
+      await db<ServiceGroupUser>('ServiceGroup_User').insert({
+        group_id: groupId,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      });
+
+      // When
+      await ServiceGroupApp.removeExpiredGroups();
+
+      // Then
+      const usersInGroup = await db<ServiceGroupUser>('ServiceGroup_User')
+        .where('group_id', groupId)
+        .select('*');
+      expect(usersInGroup).toMatchObject([
+        {
+          group_id: groupId,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        },
+      ]);
+
+      const groups = await db<ServiceGroup>('ServiceGroup')
+        .where('id', groupId)
+        .select('*');
+      expect(groups).toHaveLength(1);
+    });
+
+    it('should not call auth0 when there are no expired groups', async () => {
+      // When
+      await ServiceGroupApp.removeExpiredGroups();
+
+      // Then
+      expect(auth0Spy).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,0 +1,53 @@
+enum OrganizationOrdering {
+  name
+}
+
+scalar OrganizationId
+
+type OrganizationRef implements Node {
+  id: ID!
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+  domains: [String!]
+  personal_space: Boolean!
+  capabilityUser: [Capability]
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Query {
+  organization(id: ID!): Organization @auth
+  organizations(
+    first: Int = 50
+    after: ID
+    orderBy: OrganizationOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+  ): OrganizationConnection! @auth
+  userOrganizations: [Organization!]! @auth
+}
+
+input OrganizationInput {
+  name: String!
+  domains: [String!]
+}
+
+type Mutation {
+  addOrganization(input: OrganizationInput!): Organization
+    @auth(portalCapa: [BYPASS])
+  editOrganization(id: ID!, input: OrganizationInput!): Organization
+    @auth(portalCapa: [BYPASS])
+  deleteOrganization(id: ID!): Organization @auth(portalCapa: [BYPASS])
+}

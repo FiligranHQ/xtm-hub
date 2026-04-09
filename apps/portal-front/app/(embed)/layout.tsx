@@ -4,32 +4,36 @@ import '@filigran/ui/theme.css';
 import '../../styles/embed.css';
 import '../../styles/globals.css';
 
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
+import serverPortalApiFetch, {
+  serverMutateGraphQL,
+} from '@/relay/serverPortalApiFetch';
 
 import { ContentLayout } from '@/components/content-layout';
 import { ErrorPage } from '@/components/ui/error-page';
 import { RelayProvider } from '@/relay/RelayProvider';
+import { getMetadataBase } from '@/utils/metadata';
 import { Card } from '@filigran/ui/servers';
+import errorFrontendLogMutationNode, {
+  errorFrontendLogMutation,
+} from '@generated/errorFrontendLogMutation.graphql';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
 import PageLoader from './page-loader';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
+export const generateMetadata = async (): Promise<Metadata> => {
   return {
     title: 'XTM Hub',
     description: 'XTM Hub application by Filigran',
-    metadataBase: new URL(`https://${h.get('host')}`),
+    metadataBase: await getMetadataBase(),
   };
-}
+};
 
 // Component interface
 interface RootLayoutProps {
@@ -73,7 +77,13 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
       redirect(`/`);
     }
 
-    console.error('RootLayout Error:', error);
+    await serverMutateGraphQL<errorFrontendLogMutation>(
+      errorFrontendLogMutationNode,
+      {
+        message: `EmbedLayout: unexpected ${(error as Error).name} error ${(error as Error).message}`,
+        componentStack: 'app/(embed)/layout.tsx',
+      }
+    );
     return (
       <div className="flex flex-col w-full h-screen">
         <ErrorPage>
