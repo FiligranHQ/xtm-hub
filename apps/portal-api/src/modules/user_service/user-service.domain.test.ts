@@ -284,7 +284,9 @@ describe('UserServiceDomain', () => {
     });
 
     it('should create a new User record for an unknown email in the org domain', async () => {
-      const newEmail = `new-user-${uuidv4()}@second-orga.com`;
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const newEmail = `new-user-${uuidv4()}@${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST.NAME}`;
       const subscription = await getSubscription();
 
       const result = await UserServiceDomain.addServiceToUsers(

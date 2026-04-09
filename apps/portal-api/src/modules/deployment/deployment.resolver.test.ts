@@ -1,6 +1,9 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../knexfile';
-import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
+import {
+  requestContextRegistererUserSecondOrga,
+  TEST_ORGANIZATIONS,
+} from '../../../tests/tests.const';
 import {
   DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
@@ -12,6 +15,7 @@ import {
   DeploymentRequestUseCase,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../utils/error/error.code';
 import { deleteServiceInstanceBy } from '../services/service-instance.domain';
@@ -27,6 +31,9 @@ describe('Deployment resolver', () => {
     await deleteSubscription({});
   });
   describe('createDeploymentRequest', () => {
+    beforeEach(() => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+    });
     it('should return the deployment request created', async () => {
       const deployment = await resolver.Mutation.createDeploymentRequest(
         undefined,
@@ -59,6 +66,9 @@ describe('Deployment resolver', () => {
   });
 
   describe('updateDeploymentRequest', () => {
+    beforeEach(() => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+    });
     it('should return the updated deployment request', async () => {
       const initialDeployment = await DeploymentApp.createDeploymentRequest({
         activity_sector:
@@ -129,15 +139,16 @@ describe('Deployment resolver', () => {
         end_date: new Date(2025, 2, 3),
         platform_id: 'fake product instance id',
         failure_reason: 'not failed',
-        organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
         organization_domains: [
-          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
-          TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.SECOND,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST.NAME,
         ],
-        requester_email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+        requester_email:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.EMAIL,
         requester_first_name:
-          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-        requester_last_name: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.FIRST_NAME,
+        requester_last_name:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.LAST_NAME,
       });
     });
     it('should return an error when status transition is not allowed', async () => {

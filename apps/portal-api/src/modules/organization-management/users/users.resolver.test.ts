@@ -16,6 +16,7 @@ import { SubscriptionSpy } from '../../../../tests/test-utils';
 import {
   contextAdminSecondOrga,
   contextBypassUser,
+  contextSimpleUserFiligran2,
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
   requestContextAdminUser,
@@ -431,7 +432,9 @@ describe('User mutation resolver', () => {
       let organizations: Organization[];
       let user: UserLoadUserBy;
       beforeAll(async () => {
-        const testMail = `testAddUser${uuidv4()}@test.fr`;
+        requestContext.set(requestContextAdminUser);
+
+        const testMail = `testAddUser${uuidv4()}@${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST}.fr`;
         // @ts-ignore
         response = await usersResolver.Mutation.adminAddUser(
           undefined,
@@ -968,14 +971,14 @@ describe('User mutation resolver', () => {
       const response = await usersResolver.Mutation.resetPassword(
         undefined,
         {},
-        contextBypassUser
+        contextSimpleUserFiligran2
       );
 
       // Then
       expect(response).toBeTruthy();
       expect(response.success).toBeTruthy();
       expect(auth0Spy).toBeCalledWith(
-        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL
       );
     });
 

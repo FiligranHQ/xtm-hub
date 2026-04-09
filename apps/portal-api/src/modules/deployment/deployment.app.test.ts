@@ -9,8 +9,12 @@ import {
   vi,
 } from 'vitest';
 import {
+  contextBypassUser,
+  contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
+  requestContextAdminUser,
+  requestContextRegistererUserSecondOrga,
   requestContextSimpleUserSecondOrga,
   TEST_DEPLOYMENT,
   TEST_ORGANIZATIONS,
@@ -104,6 +108,8 @@ describe('Deployment app', () => {
   describe('createDeploymentRequest', () => {
     it('should create a deployment request with associated registration', async () => {
       // Given
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
         isPlaceAvailable: true,
       });
@@ -128,7 +134,7 @@ describe('Deployment app', () => {
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         id: expect.any(String),
         job_title: DeploymentRequestJobTitle.CLevel,
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -148,6 +154,8 @@ describe('Deployment app', () => {
     });
     it('should create a deployment request with queued status when there is no space available', async () => {
       // Given
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
         isPlaceAvailable: false,
       });
@@ -173,7 +181,7 @@ describe('Deployment app', () => {
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         id: expect.any(String),
         job_title: DeploymentRequestJobTitle.CLevel,
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         platform_token: expect.any(String),
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -243,6 +251,8 @@ describe('Deployment app', () => {
 
     it('should allow deployment when organization domain is not blacklisted', async () => {
       // Given
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       await TestHelper.competitor.create({
         name: 'NotBlocked',
         domain: 'not-blocked.com',
@@ -256,6 +266,8 @@ describe('Deployment app', () => {
     });
 
     it('should allow deployment when no competitors exist', async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       const deployment =
         await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
@@ -273,6 +285,8 @@ describe('Deployment app', () => {
       `(
         'should send a telemetry event when trial for $product platform is launched',
         async ({ product, targetProduct, source, telemetrySource }) => {
+          requestContext.set(requestContextRegistererUserSecondOrga);
+
           vi.useFakeTimers();
           const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
           vi.setSystemTime(date);
@@ -291,13 +305,15 @@ describe('Deployment app', () => {
           expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
             '@timestamp': '2025-02-03T13:12:15.000Z',
             event_type: TelemetryEventType.CREATE_DEPLOYMENT,
-            organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-            organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+            organization_id:
+              contextRegistererUserSecondOrga.user.organizations[0]!.id,
+            organization_name:
+              contextRegistererUserSecondOrga.user.organizations[0]!.name,
             organization_type: TelemetryOrganizationType.PROFESSIONAL,
             source: telemetrySource,
-            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            email: contextRegistererUserSecondOrga.user.email,
             job_title: DeploymentRequestJobTitle.CLevel,
-            user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+            user_id: contextRegistererUserSecondOrga.user.id,
             deployment_id: deployment.id,
             region: DeploymentRequestPlatformRegion.UsEast,
             use_case: DeploymentRequestUseCase.ThreatHunting,
@@ -310,6 +326,8 @@ describe('Deployment app', () => {
         }
       );
       it('should not throw when an error is thrown by telemetry', async () => {
+        requestContext.set(requestContextRegistererUserSecondOrga);
+
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
@@ -325,6 +343,7 @@ describe('Deployment app', () => {
     describe('mail', () => {
       describe('development environment', () => {
         it('should send a mail if status is pending to dev team', async () => {
+          requestContext.set(requestContextAdminUser);
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -356,6 +375,8 @@ describe('Deployment app', () => {
         });
 
         it('should send a mail if there is no space available', async () => {
+          requestContext.set(requestContextRegistererUserSecondOrga);
+
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
@@ -364,10 +385,10 @@ describe('Deployment app', () => {
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
           expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            to: contextRegistererUserSecondOrga.user.email,
             template: 'free_trial_queued',
             params: {
-              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              firstName: contextRegistererUserSecondOrga.user.first_name,
               platformIdentifier: PlatformIdentifier.Opencti,
             },
           });
@@ -379,12 +400,13 @@ describe('Deployment app', () => {
               activitySector:
                 DeploymentRequestActivitySector.ComputerNetworkSecurity,
               deploymentType: 'Trial',
-              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              organizationName:
+                contextRegistererUserSecondOrga.user.organizations[0]!.name,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: 'us_east',
               useCase: DeploymentRequestUseCase.ThreatHunting,
-              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+              userEmail: contextRegistererUserSecondOrga.user.email,
+              userName: `${contextRegistererUserSecondOrga.user.first_name} ${contextRegistererUserSecondOrga.user.last_name}`,
             },
           });
         });
@@ -403,15 +425,17 @@ describe('Deployment app', () => {
         });
 
         it('should send a mail if status is pending to dev team', async () => {
+          requestContext.set(requestContextAdminUser);
+
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
           expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            to: contextBypassUser.user.email,
             template: 'free_trial_requested',
             params: {
-              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              firstName: contextBypassUser.user.first_name,
               platformIdentifier: PlatformIdentifier.Opencti,
             },
           });
@@ -423,17 +447,19 @@ describe('Deployment app', () => {
               activitySector:
                 DeploymentRequestActivitySector.ComputerNetworkSecurity,
               deploymentType: 'Trial',
-              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              organizationName: contextBypassUser.user.organizations[0]!.name,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: DeploymentRequestPlatformRegion.UsEast,
               useCase: DeploymentRequestUseCase.ThreatHunting,
-              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+              userEmail: contextBypassUser.user.email,
+              userName: `${contextBypassUser.user.first_name} ${contextBypassUser.user.last_name}`,
             },
           });
         });
 
         it('should send a mail if there is no space available', async () => {
+          requestContext.set(requestContextRegistererUserSecondOrga);
+
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
@@ -442,10 +468,12 @@ describe('Deployment app', () => {
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
           expect(mockSendMail).toHaveBeenNthCalledWith(1, {
-            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.EMAIL,
             template: 'free_trial_queued',
             params: {
-              firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+              firstName:
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER
+                  .FIRST_NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
             },
           });
@@ -457,12 +485,13 @@ describe('Deployment app', () => {
               activitySector:
                 DeploymentRequestActivitySector.ComputerNetworkSecurity,
               deploymentType: 'Trial',
-              organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+              organizationName: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
               platformIdentifier: PlatformIdentifier.Opencti,
               region: 'us_east',
               useCase: DeploymentRequestUseCase.ThreatHunting,
-              userEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-              userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
+              userEmail:
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.EMAIL,
+              userName: `${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.FIRST_NAME} ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.LAST_NAME}`,
             },
           });
         });
@@ -1298,7 +1327,7 @@ describe('Deployment app', () => {
           target_state: target_state,
           counts_in_orga_quota,
           cancellation_date: expect.any(Date),
-          cancellation_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          cancellation_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           cancellation_reason: isAdmin ? null : cancellationReason,
         });
 
@@ -1384,7 +1413,7 @@ describe('Deployment app', () => {
         organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TelemetrySource.XTMHUB,
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
         deployment_id: deployment.id,
         deployment_type: DeploymentRequestDeploymentType.Trial,
         status: DeploymentRequestHubStatus.Cancelled,
@@ -1615,7 +1644,7 @@ describe('Deployment app', () => {
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TelemetrySource.XTMHUB,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           deployment_id: queuedRequestId1!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1630,7 +1659,7 @@ describe('Deployment app', () => {
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TelemetrySource.XTMHUB,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           deployment_id: queuedRequestId2!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1844,7 +1873,7 @@ describe('Deployment app', () => {
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TelemetrySource.XTMHUB,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           deployment_id: pendingRequestId1!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -1859,7 +1888,7 @@ describe('Deployment app', () => {
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TelemetrySource.XTMHUB,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           deployment_id: pendingRequestId2!,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: null,
@@ -2154,7 +2183,7 @@ describe('Deployment app', () => {
           organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TelemetrySource.XTMHUB,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           deployment_id: queuedDeploymentRequest!.id,
           deployment_type: DeploymentRequestDeploymentType.Trial,
           platform_id: queuedDeploymentRequest!.platform_id,

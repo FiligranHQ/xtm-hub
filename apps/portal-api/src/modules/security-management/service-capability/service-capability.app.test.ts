@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import {
+  requestContextAdminUser,
   requestContextSimpleUserSecondOrga,
   SERVICES,
 } from '../../../../tests/tests.const';
@@ -37,6 +38,7 @@ describe('editServiceCapability', () => {
     await db<UserService>('User_Service').del();
   });
   it('should update capability', async () => {
+    requestContext.set(requestContextAdminUser);
     const userService = await UserServiceDomain.createUserServiceAccess({
       subscription_id: subscription.id,
       user_id: requestContextSimpleUserSecondOrga.user.id,

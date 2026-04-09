@@ -43,7 +43,7 @@ describe('organizationsApp', () => {
         organization_name: 'new OrgaName',
         organization_type: 'Professional',
         source: TelemetrySource.XTMHUB,
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
         domains: [
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST.NAME,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.SECOND.NAME,
@@ -73,7 +73,7 @@ describe('organizationsApp', () => {
         organization_name: 'test.com',
         organization_type: 'Professional',
         source: TelemetrySource.XTMHUB,
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
         domains: ['test.com', 'test.fr'],
       });
     });

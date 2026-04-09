@@ -1,7 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import {
+  requestContextAdminUser,
+  TEST_ORGANIZATIONS,
+} from '../../../../tests/tests.const';
 import { OrganizationCapability } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import Organization from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
@@ -43,9 +47,9 @@ describe('User helpers', async () => {
         });
       expect(newUser).toBeTruthy();
       expect(newUser.selected_org_capabilities.length).toBe(1);
-      expect(newUser.organizations[0].personal_space).toBe(true);
+      expect(newUser!.organizations[0]?.personal_space).toBe(true);
       expect(newUserPendingOrg.length).toBe(1);
-      expect(newUserPendingOrg[0].organization_id).toBe(
+      expect(newUserPendingOrg[0]?.organization_id).toBe(
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
 
@@ -168,6 +172,8 @@ describe('User helpers', async () => {
       });
 
       it(`should not throw when another user in the organization has ${OrganizationCapability.AdministrateOrganization}`, async () => {
+        requestContext.set(requestContextAdminUser);
+
         const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}`;
         await createNewUserFromInvitation({
           email: anotherUserEmail,
@@ -185,7 +191,7 @@ describe('User helpers', async () => {
         expect(anotherUserOrgRelation).toBeTruthy();
 
         await createUserOrganizationCapability({
-          user_organization_id: anotherUserOrgRelation.id,
+          user_organization_id: anotherUserOrgRelation!.id,
           capabilities_name: [OrganizationCapability.AdministrateOrganization],
         });
 
@@ -217,6 +223,8 @@ describe('User helpers', async () => {
       });
 
       it(`should not throw when another user in the organization has ${OrganizationCapability.AdministrateOrganization} and we remove its capabilities`, async () => {
+        requestContext.set(requestContextAdminUser);
+
         const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
         await createNewUserFromInvitation({
           email: anotherUserEmail,
@@ -234,7 +242,7 @@ describe('User helpers', async () => {
         expect(anotherUserOrgRelation).toBeTruthy();
 
         await createUserOrganizationCapability({
-          user_organization_id: anotherUserOrgRelation.id,
+          user_organization_id: anotherUserOrgRelation!.id,
           capabilities_name: [OrganizationCapability.AdministrateOrganization],
         });
 

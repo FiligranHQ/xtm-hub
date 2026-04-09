@@ -70,7 +70,9 @@ describe('Document domain', () => {
 
       expect(document).toBeDefined();
       expect(document!.active).toBe(false);
-      expect(document!.remover_id).toBe(ADMIN_UUID);
+      expect(document!.remover_id).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID
+      );
     });
   });
 
@@ -451,7 +453,7 @@ describe('Document domain', () => {
           name: docData.name,
           type: docData.type,
           slug: docData.slug,
-          uploader_id: ADMIN_UUID,
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
           active: true,
         };
