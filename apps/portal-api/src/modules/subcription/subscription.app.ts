@@ -20,6 +20,7 @@ import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import { addCapabilitiesToSubscription } from '../security-management/service-capability/subscription-capability.domain';
 import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceById,
@@ -30,7 +31,6 @@ import {
   buildSubscribeEvent,
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
-import { addCapabilitiesToSubscription } from '../security-management/service-capability/subscription-capability.domain';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import {
   createSubscription,
@@ -44,7 +44,7 @@ export const subscriptionApp = {
     service_instance_id: ServiceInstanceId
   ): Promise<SubscriptionModel> => {
     const subscription = await loadSubscriptionBy({
-      service_instance_id: service_instance_id,
+      service_instance_id,
       organization_id: user.selected_organization_id,
     });
 
