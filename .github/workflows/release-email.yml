@@ -24,7 +24,7 @@ jobs:
             core.setOutput("release_body", release.body);
             core.setOutput("release_url", release.html_url);
       - name: Send Email
-        uses: dawidd6/action-send-mail@v9
+        uses: dawidd6/action-send-mail@v12
         with:
           server_address: ${{ secrets.SMTP_ADDRESS }}
           server_port: 465
