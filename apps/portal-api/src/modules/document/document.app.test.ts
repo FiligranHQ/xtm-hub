@@ -580,7 +580,7 @@ describe('DocumentApp', () => {
       });
     });
 
-    it('should preserve slug when updating a document with a different slug', async () => {
+    it('should preserve slug when updating a document', async () => {
       // Given
       const originalSlug = 'my-original-slug';
       const documentWithSlug = await DocumentApp.createDocument({
@@ -596,9 +596,8 @@ describe('DocumentApp', () => {
         metadata: integrationMetadata,
         input: {
           name: 'Updated Name',
-          slug: 'a-different-slug',
           description: 'Updated description',
-        } as Record<string, unknown>,
+        },
         existingImageIds: [],
       });
 

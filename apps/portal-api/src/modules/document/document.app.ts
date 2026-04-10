@@ -260,14 +260,10 @@ export const DocumentApp = {
         ? sourceDocumentFile
         : undefined;
 
-      const { slug: _slug, ...inputWithoutSlug } = input as typeof input & {
-        slug?: string;
-      };
-
       const updatedDocument = await DocumentDomain.updateDocument({
         parentDocumentId,
         document: {
-          data: inputWithoutSlug,
+          data: input,
           file,
           type: documentType,
         },
