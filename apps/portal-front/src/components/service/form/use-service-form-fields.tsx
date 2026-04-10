@@ -222,7 +222,7 @@ export const useServiceFormFields = ({
         label: t('Service.Form.SlugLabel'),
         inputProps: {
           placeholder: t('Service.Form.SlugPlaceholder'),
-          disabled: disabledFields.includes('slug'),
+          disabled: !isCreation || disabledFields.includes('slug'),
         },
       },
       name: {
