@@ -146,9 +146,7 @@ export const DocumentDomain = {
         searchTerm: input.searchTerm,
       },
       {
-        'Document.service_instance_id': extractId<ServiceInstanceId>(
-          input.serviceInstanceId
-        ),
+        'Document.service_instance_id': input.serviceInstanceId,
         'Document.type': type,
       },
       include_metadata

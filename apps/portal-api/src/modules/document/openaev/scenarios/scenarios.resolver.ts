@@ -1,5 +1,4 @@
 import { Resolvers } from '../../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import { getServiceInstance } from '../../../services/service-instance.domain';
 import { subscriptionApp } from '../../../subcription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
@@ -15,7 +14,7 @@ const resolvers: Resolvers = {
     uploader_organization: ({ id }, _) =>
       DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
-      getServiceInstance(service_instance_id as ServiceInstanceId),
+      getServiceInstance(service_instance_id),
     subscription: ({ service_instance_id }, _, context) =>
       subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
   },

@@ -1,8 +1,6 @@
 import { Resolvers } from '../../__generated__/resolvers-types';
 
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -34,11 +32,9 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     addSubscription: async (_, { service_instance_id }) => {
-      const serviceInstanceId =
-        extractId<ServiceInstanceId>(service_instance_id);
       try {
         return await subscriptionApp.subscribeSelectedOrganizationToService({
-          serviceInstanceId,
+          serviceInstanceId: service_instance_id,
         });
       } catch (error) {
         throw mapToGraphQLError(error);
@@ -57,10 +53,8 @@ const resolvers: Resolvers = {
     ) => {
       try {
         const organizationId =
-          extractId<OrganizationId>(organization_id) ??
-          context.user.selected_organization_id;
-        const serviceInstanceId =
-          extractId<ServiceInstanceId>(service_instance_id);
+          organization_id ?? context.user.selected_organization_id;
+        const serviceInstanceId = service_instance_id;
         const capabilityIds = capability_ids.map((capability_id) =>
           extractId<ServiceCapabilityId>(capability_id)
         );
@@ -73,9 +67,7 @@ const resolvers: Resolvers = {
           capabilityIds,
         });
 
-        return loadServiceWithSubscriptions(
-          extractId<ServiceInstanceId>(service_instance_id)
-        );
+        return loadServiceWithSubscriptions(serviceInstanceId);
       } catch (error) {
         throw mapToGraphQLError(
           error,

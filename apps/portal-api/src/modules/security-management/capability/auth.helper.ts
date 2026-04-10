@@ -1,4 +1,3 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbRaw } from '../../../../knexfile';
 import { loadSubscriptionBy } from '../../subcription/subscription.helper';
 import { CAPABILITY_BYPASS } from '../../../portal.const';
@@ -94,10 +93,7 @@ export const getCapabilityUser = (
   args: ServiceCapabilityArgs
 ) =>
   args.service_instance_id
-    ? loadCapabilitiesByServiceId(
-        user,
-        fromGlobalId(args.service_instance_id).id
-      )
+    ? loadCapabilitiesByServiceId(user, args.service_instance_id)
     : loadSubscriptionBy({
         id: extractId(args.subscription_id),
       } as SubscriptionMutator).then(([subscription]) =>

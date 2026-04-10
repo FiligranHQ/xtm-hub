@@ -18,7 +18,7 @@ input UserServiceAddInput {
 
 input UserServiceAddYourselfInput {
   email: [String!]!
-  serviceInstanceId: ID
+  serviceInstanceId: ServiceInstanceId
 }
 
 input UserServiceDeleteInput {

@@ -8,7 +8,7 @@ import { CompetitorId } from '../../../model/kanel/public/Competitor';
 import Organization from '../../../model/kanel/public/Organization';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { AlreadyExistsError } from '../../../utils/error/error.util';
-import { extractId, omit } from '../../../utils/utils';
+import { omit } from '../../../utils/utils';
 import { CompetitorDomain } from './competitor.domain';
 
 const throwIfUniqueViolation = (error: Error) => {
@@ -34,7 +34,7 @@ export const CompetitorApp = {
   async updateCompetitorById(data: UpdateCompetitorInput): Promise<Competitor> {
     try {
       return await CompetitorDomain.updateCompetitorBy(
-        { id: extractId<CompetitorId>(data.id) },
+        { id: data.id },
         { ...omit(data, ['id']) }
       );
     } catch (error) {
