@@ -6,7 +6,6 @@ import { TestHelper } from '../../../tests/test.helper';
 import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
-  requestContextAdminUser,
   requestContextRegistererUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
@@ -110,7 +109,7 @@ describe('Registration domain', () => {
       });
     });
     it('can create pending platforms', async () => {
-      requestContext.set(requestContextAdminUser);
+      requestContext.set(requestContextRegistererUserSecondOrga);
 
       const serviceInstanceId = await registrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
