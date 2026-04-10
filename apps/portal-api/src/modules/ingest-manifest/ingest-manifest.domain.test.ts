@@ -325,10 +325,11 @@ describe('upsertConnectors', () => {
     });
   });
 
-  describe('datasheet_url and demo_url preservation', () => {
+  describe('datasheet_url, demo_url and blogpost_url preservation', () => {
     const baseManifest = sampleExtractedManifest[0] as ManifestInformation;
     const initialDatasheetUrl = 'https://filigran.io/datasheet.pdf';
     const initialDemoUrl = 'https://filigran.io/demo';
+    const initialBlogpostUrl = 'https://filigran.io/blogpost';
 
     it('should preserve datasheet_url and demo_url from the first creation', async () => {
       // First creation with datasheet_url and demo_url set
@@ -338,6 +339,7 @@ describe('upsertConnectors', () => {
         name: 'Datasheet Demo Test',
         datasheet_url: initialDatasheetUrl,
         demo_url: initialDemoUrl,
+        blogpost_url: initialBlogpostUrl,
       };
       await upsertConnectors([manifest]);
 
@@ -347,12 +349,14 @@ describe('upsertConnectors', () => {
         description: 'Updated description',
         datasheet_url: 'https://malicious-override.com/datasheet.pdf',
         demo_url: 'https://malicious-override.com/demo',
+        blogpost_url: 'https://malicious-override.com/blogpost',
       };
       const [secondResult] = await upsertConnectors([updatedManifest]);
 
       expect(secondResult).toBeDefined();
       expect(secondResult!.datasheet_url).toBe(initialDatasheetUrl);
       expect(secondResult!.demo_url).toBe(initialDemoUrl);
+      expect(secondResult!.blogpost_url).toBe(initialBlogpostUrl);
     });
   });
 });

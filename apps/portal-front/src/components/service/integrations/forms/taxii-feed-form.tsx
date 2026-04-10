@@ -29,6 +29,7 @@ const taxiiFeedFormSchema = z.object({
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
+  blogpost_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
   logo: z.custom<FileList>(optionalFileListCheck).optional(),
@@ -107,6 +108,7 @@ export const TaxiiFeedForm = ({
     integration_type,
     integration_subtype,
     datasheet_url,
+    blogpost_url,
     demo_url,
     imagesField,
     images,
@@ -169,6 +171,7 @@ export const TaxiiFeedForm = ({
           integration_type,
           integration_subtype,
           datasheet_url,
+          blogpost_url,
           demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />

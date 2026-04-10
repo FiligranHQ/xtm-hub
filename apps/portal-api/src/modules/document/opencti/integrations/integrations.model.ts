@@ -21,6 +21,7 @@ export const isIntegrationType = (
 export type Integration = Document & {
   integration_type: IntegrationType;
   datasheet_url?: string;
+  blogpost_url?: string;
   demo_url?: string;
 };
 export type CsvFeed = Integration & {
@@ -84,6 +85,7 @@ export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 export const INTEGRATION_CSV_FEED_METADATA_KEYS =
@@ -94,6 +96,7 @@ export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
@@ -104,6 +107,7 @@ export const INTEGRATION_RSS_FEED_METADATA: RssFeedMetadata = [
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 
@@ -115,6 +119,7 @@ export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 export const INTEGRATION_STREAM_METADATA_KEYS = INTEGRATION_STREAM_METADATA.map(
@@ -128,6 +133,7 @@ export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA: ThirdPartyIntegration
     { key: DocumentMetadataKeyCode.VendorUrl },
     { key: DocumentMetadataKeyCode.GithubUrl, optional: true },
     { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+    { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
     { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
   ];
 export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS =
@@ -145,6 +151,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.PlaybookSupported },
   { key: DocumentMetadataKeyCode.MinimumDeployableVersion, optional: true },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =

@@ -166,6 +166,12 @@ const ShareableResourceDetails: React.FunctionComponent<
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
+        metadataKey={DocumentMetadataKeyCodeEnum.BLOGPOST_URL}
+        translationKey="BlogpostURL"
+        variant="link"
+      />
+      <ShareableResourceDetailMetadataItem
+        documentData={documentData}
         metadataKey={DocumentMetadataKeyCodeEnum.DEMO_URL}
         translationKey="DemoURL"
         variant="link"
