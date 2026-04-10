@@ -20,7 +20,7 @@ export default async function RootLayout({
   return (
     <div className="md:flex md:flex-col md:h-screen">
       <PublicTryFiligranProductsBanner />
-      <header className="max-md:sticky max-md:top-0 max-md:z-20 flex h-16 w-full flex-shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
+      <header className="max-md:sticky max-md:top-0 max-md:z-20 flex h-16 w-full shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
         <Link href="/">
           <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
           <span className="sr-only">XTM Hub by Filigran</span>
@@ -31,7 +31,7 @@ export default async function RootLayout({
           <Link href="/login">Sign In</Link>
         </Button>
       </header>
-      <main className="flex-grow overflow-auto">
+      <main className="grow overflow-auto">
         <div className="container pt-l">{children}</div>
       </main>
       <footer className="container text-muted-foreground">

@@ -35,7 +35,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
         currentPath === href &&
           'bg-menu-active shadow-[inset_2px_0px] shadow-primary'
       )}>
-      <span className="flex w-8 flex-shrink-0 justify-center">
+      <span className="flex w-8 shrink-0 justify-center">
         <Icon className="h-4 w-4" />
       </span>
       <span className={cn(open ? 'ml-2' : 'sr-only')}>{text}</span>
@@ -52,7 +52,7 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'mobile:hidden z-20 sticky flex-shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-background duration-300 ease-in-out',
+        'mobile:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-background duration-300 ease-in-out',
         open ? 'w-48' : 'w-14'
       )}>
       <MenuLogo />

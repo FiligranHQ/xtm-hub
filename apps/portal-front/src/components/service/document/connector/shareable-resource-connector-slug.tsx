@@ -57,7 +57,7 @@ const ShareableResourceConnectorSlug = ({
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s flex-col md:flex-row">
         {!!logo && (
-          <div className="w-24 flex-shrink-0 rounded overflow-hidden">
+          <div className="w-24 shrink-0 rounded overflow-hidden">
             <Image
               src={`/document/images/${serviceInstance.id}/${logo.id}`}
               width={96}
