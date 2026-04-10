@@ -9071,6 +9071,7 @@ __metadata:
     rehype-sanitize: "npm:6.0.0"
     relay-compiler: "npm:20.1.1"
     relay-test-utils: "npm:20.1.1"
+    remark-gfm: "npm:4.0.1"
     slugify: "npm:1.6.9"
     tailwind-merge: "npm:3.5.0"
     tailwindcss: "npm:3.4.19"
@@ -18189,7 +18190,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remark-gfm@npm:~4.0.0":
+"remark-gfm@npm:4.0.1, remark-gfm@npm:~4.0.0":
   version: 4.0.1
   resolution: "remark-gfm@npm:4.0.1"
   dependencies:

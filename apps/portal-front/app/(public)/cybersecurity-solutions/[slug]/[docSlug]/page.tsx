@@ -32,6 +32,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -317,7 +318,9 @@ const Page = async ({
             <section className="border rounded border-border-light bg-page-background">
               <h2 className="p-l">{document?.short_description}</h2>
               <div className="p-l !bg-page-background markdown-content">
-                <MarkdownAsync>{document?.description ?? ''}</MarkdownAsync>
+                <MarkdownAsync remarkPlugins={[remarkGfm]}>
+                  {document?.description ?? ''}
+                </MarkdownAsync>
               </div>
             </section>
           </div>
