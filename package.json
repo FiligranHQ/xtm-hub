@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "eslint": "^9.30.1",
-    "eslint-config-next": "^16.0.0",
     "eslint-config-prettier": "^10.1.5",
     "stylus": "github:stylus/stylus#0.64.0",
     "typescript": "5.9.3"
