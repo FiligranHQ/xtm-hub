@@ -22,9 +22,11 @@ test.describe('XTM Suite Roadmap', () => {
         short_description: 'Short description',
         description: 'This is a test epic',
       });
-      await xtmSuiteRoadmapPage.checkFilters({
-        openCTINumbers: 1,
-      });
+
+      await expect(
+        page.getByRole('combobox').filter({ hasText: 'OpenCTI (1)' })
+      ).toBeVisible();
+
       await expect(page.getByText(/^Title$/)).toBeVisible();
     });
     await test.step('Update an epic', async () => {
@@ -33,14 +35,16 @@ test.describe('XTM Suite Roadmap', () => {
         description: 'This is a test epicModified',
         draft: false,
       });
-      await xtmSuiteRoadmapPage.checkFilters({
-        openCTINumbers: 1,
-      });
+      await expect(
+        page.getByRole('combobox').filter({ hasText: 'OpenCTI (1)' })
+      ).toBeVisible();
       await expect(page.getByText('TitleModified')).toBeVisible();
     });
     await test.step('Delete an epic', async () => {
       await xtmSuiteRoadmapPage.deleteEpic();
-      await xtmSuiteRoadmapPage.checkFilters({});
+      await expect(
+        page.getByRole('combobox').filter({ hasText: 'OpenCTI (0)' })
+      ).toBeVisible();
     });
     await test.step('Create an epic integration', async () => {
       await xtmSuiteRoadmapPage.addEpic({
@@ -49,9 +53,9 @@ test.describe('XTM Suite Roadmap', () => {
         description: 'This is an integration epic',
         integration: true,
       });
-      await xtmSuiteRoadmapPage.checkFilters({
-        openCTINumbers: 1,
-      });
+      await expect(
+        page.getByRole('combobox').filter({ hasText: 'OpenCTI (1)' })
+      ).toBeVisible();
     });
     await test.step('Create an epic draft', async () => {
       await xtmSuiteRoadmapPage.addEpic({
@@ -60,9 +64,9 @@ test.describe('XTM Suite Roadmap', () => {
         description: 'This is a draft epic',
         draft: true,
       });
-      await xtmSuiteRoadmapPage.checkFilters({
-        openCTINumbers: 2,
-      });
+      await expect(
+        page.getByRole('combobox').filter({ hasText: 'OpenCTI (2)' })
+      ).toBeVisible();
     });
   });
 
@@ -120,11 +124,6 @@ test.describe('XTM Suite Roadmap', () => {
         page.getByRole('button', { name: 'Create' })
       ).not.toBeVisible();
 
-      await xtmSuiteRoadmapPage.checkFilters({
-        openCTINumbers: 1,
-        openAEVNumbers: 1,
-      });
-
       await expect(
         page.getByText('TitleDraft1', { exact: true })
       ).not.toBeVisible();
@@ -132,7 +131,8 @@ test.describe('XTM Suite Roadmap', () => {
       await expect(page.getByText('Title3', { exact: true })).toBeVisible();
     });
     await test.step('It should filter', async () => {
-      await page.getByRole('button', { name: 'OpenAEV (1)' }).click();
+      await page.getByText('Filter by product').click();
+      await page.getByText('OpenAEV (1)').click();
       await expect(page.getByText('Title2', { exact: true })).not.toBeVisible();
       await expect(page.getByText('Title3', { exact: true })).toBeVisible();
     });
