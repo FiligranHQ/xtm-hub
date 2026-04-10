@@ -117,8 +117,8 @@ export const ServiceFormMultipleImagesField = ({
                 <div
                   className={`absolute inset-0 bg-black flex flex-col items-center justify-center transition-all duration-800 ease-in ${
                     imagesToDelete.includes(doc!.id)
-                      ? 'bg-opacity-90 opacity-100'
-                      : 'bg-opacity-0 opacity-0'
+                      ? 'bg-black/90 opacity-100'
+                      : 'bg-black/0 opacity-0'
                   }`}>
                   <Button
                     variant="outline"

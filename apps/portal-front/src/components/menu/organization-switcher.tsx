@@ -81,7 +81,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
             className={cn(
               'px-m w-full justify-between rounded-none normal-case'
             )}>
-            <span className={'flex w-8 flex-shrink-0 justify-center'}>
+            <span className={'flex w-8 shrink-0 justify-center'}>
               <CityIcon
                 aria-hidden={true}
                 focusable={false}
