@@ -25,6 +25,19 @@ export default defineConfig([
     files: ['**/*.test.ts', '**/*.test.utils.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/tests.const', '**/tests.ts'],
+              importNames: ['requestContextAdminUser', 'contextBypassUser'],
+              message:
+                'Use a dedicated test context helper instead of bypass/admin shared contexts.',
+            },
+          ],
+        },
+      ],
     },
   },
   {

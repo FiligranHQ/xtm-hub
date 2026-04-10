@@ -5,6 +5,7 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
+  // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
 } from '../../../tests/tests.const';
 import { requestContext } from '../../context/request.context';
@@ -19,12 +20,12 @@ import UserServiceCapability from '../../model/kanel/public/UserServiceCapabilit
 import * as mailService from '../../server/mail-service';
 import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
 import { removeUser } from '../organization-management/users/users.helper';
-import { createSubscription } from '../subcription/subscription.domain';
-import { SubscriptionStatus } from '../subscription.const';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
 } from '../security-management/service-capability/generic_service_capability.const';
+import { createSubscription } from '../subcription/subscription.domain';
+import { SubscriptionStatus } from '../subscription.const';
 import { UserServiceDomain } from './user_service.domain';
 
 // ---------------------------------------------------------------------------
@@ -284,7 +285,9 @@ describe('UserServiceDomain', () => {
     });
 
     it('should create a new User record for an unknown email in the org domain', async () => {
-      const newEmail = `new-user-${uuidv4()}@second-orga.com`;
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const newEmail = `new-user-${uuidv4()}@${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST.NAME}`;
       const subscription = await getSubscription();
 
       const result = await UserServiceDomain.addServiceToUsers(

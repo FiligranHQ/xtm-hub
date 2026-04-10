@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
 import {
+  // eslint-disable-next-line no-restricted-imports
+  requestContextAdminUser,
   requestContextSimpleUserSecondOrga,
   SERVICES,
 } from '../../../../tests/tests.const';
@@ -13,8 +15,8 @@ import UserService from '../../../model/kanel/public/UserService';
 import UserServiceCapability from '../../../model/kanel/public/UserServiceCapability';
 import { createSubscription } from '../../subcription/subscription.domain';
 import { SubscriptionStatus } from '../../subscription.const';
-import { loadCapabilities } from '../user-service-capability/user-service-capability.helper';
 import { UserServiceDomain } from '../../user_service/user_service.domain';
+import { loadCapabilities } from '../user-service-capability/user-service-capability.helper';
 import { GenericServiceCapabilityName } from './generic_service_capability.const';
 import { serviceCapabilityApp } from './service-capability.app';
 
@@ -37,6 +39,7 @@ describe('editServiceCapability', () => {
     await db<UserService>('User_Service').del();
   });
   it('should update capability', async () => {
+    requestContext.set(requestContextAdminUser);
     const userService = await UserServiceDomain.createUserServiceAccess({
       subscription_id: subscription.id,
       user_id: requestContextSimpleUserSecondOrga.user.id,

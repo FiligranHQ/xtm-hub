@@ -1,14 +1,15 @@
 import { MockInstance } from '@vitest/spy';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
   requestContextAdminSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../tests/tests.const';
 import { OrganizationCapability } from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
-import { ErrorCode } from '../utils/error/error.code';
 import * as authHelper from '../modules/security-management/capability/auth.helper';
+import { ErrorCode } from '../utils/error/error.code';
 import { securityGuard } from './guard';
 
 describe('Security Guard', () => {

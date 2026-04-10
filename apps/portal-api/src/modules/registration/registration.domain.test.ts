@@ -109,6 +109,8 @@ describe('Registration domain', () => {
       });
     });
     it('can create pending platforms', async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       const serviceInstanceId = await registrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextSimple2,
+  contextSimpleUserFiligran2,
   INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
@@ -36,7 +36,7 @@ describe('Query.platformAssociatedOrganization', () => {
       .platformAssociatedOrganization!(
       {},
       { platformId },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 
@@ -63,7 +63,7 @@ describe('Query.platformAssociatedOrganization', () => {
       .platformAssociatedOrganization!(
       {},
       { platformId },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 
@@ -90,7 +90,7 @@ describe('Query.platformAssociatedOrganization', () => {
       const call = registrationResolver.Query!.platformAssociatedOrganization!(
         {},
         { platformId },
-        contextSimple2,
+        contextSimpleUserFiligran2,
         INFO
       );
 
