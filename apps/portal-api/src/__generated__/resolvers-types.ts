@@ -132,6 +132,7 @@ export enum CompetitorTier {
 export type Connector = Document & Integration & Node & {
   __typename?: 'Connector';
   active: Scalars['Boolean']['output'];
+  blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
   container_image?: Maybe<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
@@ -207,6 +208,7 @@ export type CreateEpicInput = {
 export type CsvFeed = Document & Integration & Node & {
   __typename?: 'CsvFeed';
   active: Scalars['Boolean']['output'];
+  blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
@@ -526,6 +528,7 @@ export type DocumentMetadata = {
 };
 
 export enum DocumentMetadataKeyCode {
+  BlogpostUrl = 'blogpost_url',
   ContainerImage = 'container_image',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
@@ -652,6 +655,7 @@ export type GenericServiceCapability = Node & {
 
 export type Integration = {
   active: Scalars['Boolean']['output'];
+  blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
@@ -681,6 +685,7 @@ export type Integration = {
 export type IntegrationHack = Document & Integration & Node & {
   __typename?: 'IntegrationHack';
   active: Scalars['Boolean']['output'];
+  blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
@@ -1718,6 +1723,7 @@ export type RolePortal = Node & {
 export type RssFeed = Document & Integration & Node & {
   __typename?: 'RssFeed';
   active: Scalars['Boolean']['output'];
+  blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
@@ -1929,6 +1935,7 @@ export type ShareableResource = {
 export type Stream = Document & Integration & Node & {
   __typename?: 'Stream';
   active: Scalars['Boolean']['output'];
+  blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
@@ -2039,6 +2046,7 @@ export type Success = {
 export type TaxiiFeed = Document & Integration & Node & {
   __typename?: 'TaxiiFeed';
   active: Scalars['Boolean']['output'];
+  blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
@@ -2076,6 +2084,7 @@ export type TelemetryResponse = {
 export type ThirdPartyIntegration = Document & Integration & Node & {
   __typename?: 'ThirdPartyIntegration';
   active: Scalars['Boolean']['output'];
+  blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
@@ -2815,6 +2824,7 @@ export interface CompetitorIdScalarConfig extends GraphQLScalarTypeConfig<Resolv
 
 export type ConnectorResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Connector'] = ResolversParentTypes['Connector']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   container_image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -2853,6 +2863,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
 
 export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CsvFeed'] = ResolversParentTypes['CsvFeed']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3071,6 +3082,7 @@ export type GenericServiceCapabilityResolvers<ContextType = PortalContext, Paren
 export type IntegrationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'IntegrationHack' | 'RssFeed' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3099,6 +3111,7 @@ export type IntegrationResolvers<ContextType = PortalContext, ParentType extends
 
 export type IntegrationHackResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationHack'] = ResolversParentTypes['IntegrationHack']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3425,6 +3438,7 @@ export type RolePortalResolvers<ContextType = PortalContext, ParentType extends 
 
 export type RssFeedResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RssFeed'] = ResolversParentTypes['RssFeed']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3578,6 +3592,7 @@ export type ShareableResourceResolvers<ContextType = PortalContext, ParentType e
 
 export type StreamResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Stream'] = ResolversParentTypes['Stream']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3666,6 +3681,7 @@ export type SuccessResolvers<ContextType = PortalContext, ParentType extends Res
 
 export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TaxiiFeed'] = ResolversParentTypes['TaxiiFeed']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3703,6 +3719,7 @@ export type TelemetryResponseResolvers<ContextType = PortalContext, ParentType e
 
 export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ThirdPartyIntegration'] = ResolversParentTypes['ThirdPartyIntegration']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
