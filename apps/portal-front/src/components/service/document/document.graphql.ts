@@ -136,49 +136,40 @@ export const documentItem = graphql`
       product_version
     }
 
-    ... on CsvFeed {
+    ... on Integration {
       integration_type
-      feed_url
       datasheet_url
+      blogpost_url
       demo_url
+    }
+    
+    ... on CsvFeed {
+      feed_url
     }
 
     ... on TaxiiFeed {
-      integration_type
       integration_subtype
       feed_url
-      datasheet_url
-      demo_url
     }
 
     ... on RssFeed {
-      integration_type
       integration_subtype
       feed_url
-      datasheet_url
-      demo_url
     }
 
     ... on Stream {
-      integration_type
       integration_subtype
       feed_url
-      datasheet_url
-      demo_url
     }
 
     ... on ThirdPartyIntegration {
-      integration_type
       integration_subtype
       product_version
       vendor_url
       github_url
-      datasheet_url
-      demo_url
     }
 
     ... on Connector {
-      integration_type
       integration_subtype
       product_version
       container_image
@@ -187,8 +178,6 @@ export const documentItem = graphql`
       subscription_link
       manager_supported
       playbook_supported
-      datasheet_url
-      demo_url
       minimum_deployable_version
     }
 
