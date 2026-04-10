@@ -59,6 +59,9 @@ describe('createRelayIdScalar', () => {
         `${typeName}Id must be a string`
       );
     });
+    it('should return the raw ID as-is if already decoded', () => {
+      expect(scalar.parseValue(rawId)).toBe(rawId);
+    });
   });
 
   describe('parseLiteral', () => {
@@ -82,5 +85,10 @@ describe('createRelayIdScalar', () => {
         );
       }
     );
+    it('should return the raw ID as-is if already decoded', () => {
+      expect(scalar.parseLiteral({ kind: Kind.STRING, value: rawId })).toBe(
+        rawId
+      );
+    });
   });
 });

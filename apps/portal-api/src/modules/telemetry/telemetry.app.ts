@@ -2,7 +2,6 @@ import config from 'config';
 import { OneClickDeployInput } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
@@ -91,7 +90,7 @@ export const telemetryApp = {
       id: selected_organization_id,
     });
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      extractId<ServiceInstanceId>(input.service_instance_id)
+      input.service_instance_id
     );
 
     const platformServiceInstanceId = extractId<'RegisteredPlatform'>(

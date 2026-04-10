@@ -1,7 +1,7 @@
 import { beforeAll } from 'vitest';
 import { requestContext, RequestContext } from '../src/context/request.context';
 import { closeDbTestConnection, getDbTestConnection } from './config-test';
-import { requestContextAdminUser } from './tests.const';
+import { requestContextSimpleUserFiligran2 } from './tests.const';
 
 function isUtilOrHelper(filepath?: string) {
   if (!filepath) return true;
@@ -39,7 +39,11 @@ function mockRequestContext() {
 
   requestContext.get = vi.fn(() => {
     const testKey = getCurrentTestKey();
-    return testRequestStorage.get(testKey) || { ...requestContextAdminUser };
+    return (
+      testRequestStorage.get(testKey) || {
+        ...requestContextSimpleUserFiligran2,
+      }
+    );
   });
 
   requestContext.require = vi.fn(() => {
@@ -53,7 +57,7 @@ function mockRequestContext() {
   requestContext.update = vi.fn((updates) => {
     const testKey = getCurrentTestKey();
     const current = testRequestStorage.get(testKey) || {
-      ...requestContextAdminUser,
+      ...requestContextSimpleUserFiligran2,
     };
     testRequestStorage.set(testKey, { ...current, ...updates });
   });
@@ -84,7 +88,7 @@ function mockRequestContext() {
 beforeEach(() => {
   // Set fresh context for each test
   const testKey = getCurrentTestKey();
-  testRequestStorage.set(testKey, { ...requestContextAdminUser });
+  testRequestStorage.set(testKey, { ...requestContextSimpleUserFiligran2 });
 });
 
 beforeAll(async (suite) => {

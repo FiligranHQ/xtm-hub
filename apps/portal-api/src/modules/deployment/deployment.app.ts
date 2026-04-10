@@ -244,7 +244,7 @@ export const DeploymentApp = {
   updateDeploymentRequest: async (
     input: UpdateDeploymentRequestInput
   ): Promise<PlatformDeploymentRequest> => {
-    const deploymentRequestId = input.id as DeploymentRequestId;
+    const deploymentRequestId = input.id;
     const deploymentRequest =
       await loadDeploymentRequestForUpdate(deploymentRequestId);
     await checkStatusAndDataValidity(deploymentRequest, input);

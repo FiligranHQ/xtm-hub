@@ -1,6 +1,14 @@
 import { GraphQLScalarType, Kind } from 'graphql';
-import { toGlobalId } from 'graphql-relay/node/node.js';
-import { extractId } from './utils';
+import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
+
+const parseRelayId = <T extends string>(typeName: string, value: string): T => {
+  const { type, id } = fromGlobalId(value);
+  if (type === typeName && id) {
+    return id as T;
+  }
+  // Already a raw ID (not a Relay-encoded global ID)
+  return value as T;
+};
 
 export const createRelayIdScalar = <T extends string>(
   typeName: string
@@ -13,13 +21,13 @@ export const createRelayIdScalar = <T extends string>(
     },
     parseValue(value: unknown): T {
       if (typeof value === 'string') {
-        return extractId<T>(value);
+        return parseRelayId<T>(typeName, value);
       }
       throw new Error(`${typeName}Id must be a string`);
     },
     parseLiteral(ast): T {
       if (ast.kind === Kind.STRING) {
-        return extractId<T>(ast.value);
+        return parseRelayId<T>(typeName, ast.value);
       }
       throw new Error(`${typeName}Id must be a string`);
     },

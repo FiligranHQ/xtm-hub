@@ -1,7 +1,9 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextSimple2, INFO } from '../../../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  INFO,
+} from '../../../../../tests/tests.const';
 import {
   PlatformIdentifier,
   RegisteredPlatform,
@@ -19,7 +21,6 @@ describe('Query.registeredPlatform', () => {
   it('should decode the service_instance_id from global ID and pass the raw UUID to registrationApp', async () => {
     // Given
     const rawId = uuidv4() as ServiceInstanceId;
-    const globalId = toGlobalId('ServiceInstance', rawId);
     const expectedPlatform = { id: rawId, title: 'My Platform' };
     vi.spyOn(registrationApp, 'loadRegisteredPlatform').mockResolvedValue(
       expectedPlatform as unknown as RegisteredPlatform
@@ -28,8 +29,8 @@ describe('Query.registeredPlatform', () => {
     // When
     const result = await registrationResolver.Query!.registeredPlatform!(
       {},
-      { input: { service_instance_id: globalId } },
-      contextSimple2,
+      { input: { service_instance_id: rawId } },
+      contextSimpleUserFiligran2,
       INFO
     );
 
@@ -60,7 +61,7 @@ describe('Query.registeredPlatforms', () => {
     const result = await registrationResolver.Query!.registeredPlatforms!(
       {},
       { input },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 

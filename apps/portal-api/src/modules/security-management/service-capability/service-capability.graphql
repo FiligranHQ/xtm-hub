@@ -11,6 +11,6 @@ input EditServiceCapabilityInput {
 type Mutation {
   editServiceCapability(
     input: EditServiceCapabilityInput
-    serviceInstanceId: String
+    serviceInstanceId: ServiceInstanceId
   ): SubscriptionModel @auth
 }

@@ -17,7 +17,6 @@ import { updateUserSession } from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import { extractId } from '../../../../utils/utils';
 import {
   loadUserOrganization,
   updateMultipleUserOrgWithCapabilities,
@@ -48,9 +47,7 @@ export const usersAdminApp = {
     // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
     const chosenOrganizationId: OrganizationId | undefined = input
       .organization_capabilities?.[0]
-      ? extractId<OrganizationId>(
-          input.organization_capabilities?.[0].organization_id
-        )
+      ? input.organization_capabilities?.[0].organization_id
       : undefined;
 
     // The admin orga should only allow to add users in the same organization and with the same domain.
@@ -102,9 +99,7 @@ export const usersAdminApp = {
     const { organization_capabilities, ...userInput } = input;
     const mappedCapabilities = (organization_capabilities ?? []).map(
       (orgCapability) => ({
-        organizationId: extractId<OrganizationId>(
-          orgCapability.organization_id
-        ),
+        organizationId: orgCapability.organization_id,
         capabilities: orgCapability.capabilities,
       })
     );

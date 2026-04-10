@@ -27,7 +27,7 @@ export const DeploymentRequestsAvailableQuery = graphql`
 
 export const CancelDeploymentRequestMutation = graphql`
   mutation trialInstancesCancelDeploymentRequestMutation(
-    $deploymentRequestId: ID!
+    $deploymentRequestId: DeploymentRequestId!
     $cancellationReason: String
   ) {
     cancelDeploymentRequest(

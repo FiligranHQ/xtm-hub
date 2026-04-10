@@ -15,9 +15,12 @@ import {
 import { SubscriptionSpy } from '../../../../tests/test-utils';
 import {
   contextAdminSecondOrga,
+  // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
+  contextSimpleUserFiligran2,
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
+  // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
   requestContextSimpleUserSecondOrga,
   SERVICES,
@@ -31,13 +34,13 @@ import {
   OrganizationCapability,
   UserOrdering,
 } from '../../../__generated__/resolvers-types';
-import { loginFromProvider } from '../../security-management/authentication/auth-user';
 import { requestContext } from '../../../context/request.context';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import * as UserOrganizationDomain from '../../common/user-organization.domain';
+import { loginFromProvider } from '../../security-management/authentication/auth-user';
 import {
   deleteSubscription,
   insertSubscription,
@@ -367,10 +370,7 @@ describe('User mutation resolver', () => {
             password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
             organization_capabilities: [
               {
-                organization_id: toGlobalId(
-                  'Organization',
-                  TEST_ORGANIZATIONS.FILIGRAN.ID
-                ),
+                organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
                 capabilities: [],
               },
             ],
@@ -431,7 +431,9 @@ describe('User mutation resolver', () => {
       let organizations: Organization[];
       let user: UserLoadUserBy;
       beforeAll(async () => {
-        const testMail = `testAddUser${uuidv4()}@test.fr`;
+        requestContext.set(requestContextAdminUser);
+
+        const testMail = `testAddUser${uuidv4()}@${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST}.fr`;
         // @ts-ignore
         response = await usersResolver.Mutation.adminAddUser(
           undefined,
@@ -441,10 +443,7 @@ describe('User mutation resolver', () => {
               password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
                   capabilities: [],
                 },
               ],
@@ -523,10 +522,7 @@ describe('User mutation resolver', () => {
               password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
                   capabilities: [],
                 },
               ],
@@ -583,30 +579,21 @@ describe('User mutation resolver', () => {
             input: {
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
                   capabilities: [
                     OrganizationCapability.ManageAccess,
                     OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
                   capabilities: [
                     OrganizationCapability.ManageAccess,
                     OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
                   capabilities: [],
                 },
               ],
@@ -627,20 +614,14 @@ describe('User mutation resolver', () => {
             input: {
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
                   capabilities: [
                     OrganizationCapability.ManageAccess,
                     OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
                   capabilities: [
                     OrganizationCapability.ManageAccess,
                     OrganizationCapability.ManageSubscription,
@@ -679,10 +660,7 @@ describe('User mutation resolver', () => {
               organization_capabilities:
                 secondOrgaUser.organization_capabilities.map(
                   (organizationCapabilities) => ({
-                    organization_id: toGlobalId(
-                      'Organization',
-                      organizationCapabilities.organization.id
-                    ),
+                    organization_id: organizationCapabilities.organization.id,
                     capabilities: organizationCapabilities.capabilities,
                   })
                 ),
@@ -701,10 +679,7 @@ describe('User mutation resolver', () => {
             input: {
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
                   capabilities: [],
                 },
               ],
@@ -737,10 +712,7 @@ describe('User mutation resolver', () => {
             organization_capabilities:
               secondOrgaUser.organization_capabilities.map(
                 (organizationCapabilities) => ({
-                  organization_id: toGlobalId(
-                    'Organization',
-                    organizationCapabilities.organization.id
-                  ),
+                  organization_id: organizationCapabilities.organization.id,
                   capabilities: organizationCapabilities.capabilities,
                 })
               ),
@@ -968,14 +940,14 @@ describe('User mutation resolver', () => {
       const response = await usersResolver.Mutation.resetPassword(
         undefined,
         {},
-        contextBypassUser
+        contextSimpleUserFiligran2
       );
 
       // Then
       expect(response).toBeTruthy();
       expect(response.success).toBeTruthy();
       expect(auth0Spy).toBeCalledWith(
-        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL
       );
     });
 
@@ -1007,11 +979,7 @@ describe('User mutation resolver', () => {
       });
 
       const userId = toGlobalId('User', pendingUser.id);
-      const organizationId = toGlobalId(
-        'Organization',
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-      );
-
+      const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       // When
       await usersResolver.Mutation.removePendingUserFromOrganization(
         undefined,
@@ -1053,15 +1021,12 @@ describe('User mutation resolver', () => {
         roles: [],
       });
       const userId = toGlobalId('User', pendingUser.id);
-      const organizationId = toGlobalId(
-        'Organization',
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-      );
+      const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       const subscriptionSpy = new SubscriptionSpy();
       await subscriptionSpy.spy(
         usersResolver.Subscription?.UserPending,
         {
-          organizationId: organizationId,
+          organizationId: toGlobalId('Organization', organizationId),
         },
         contextAdminSecondOrga,
         ['delete']

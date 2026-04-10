@@ -8,11 +8,13 @@ import {
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
-import { extractId } from '../../utils/utils';
+import { createRelayIdScalar } from '../../utils/scalar.util';
 import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
 
 const resolvers: Resolvers = {
+  DeploymentRequestId:
+    createRelayIdScalar<DeploymentRequestId>('DeploymentRequest'),
   Query: {
     deploymentRequests: async (_, args: QueryDeploymentRequestsArgs) => {
       try {
@@ -93,7 +95,7 @@ const resolvers: Resolvers = {
     ) => {
       try {
         return await DeploymentApp.cancelDeploymentRequest(
-          extractId<DeploymentRequestId>(deploymentRequestId),
+          deploymentRequestId,
           false,
           cancellationReason
         );
@@ -107,7 +109,7 @@ const resolvers: Resolvers = {
     adminCancelDeploymentRequest: async (_, { deploymentRequestId }) => {
       try {
         return await DeploymentApp.cancelDeploymentRequest(
-          extractId<DeploymentRequestId>(deploymentRequestId),
+          deploymentRequestId,
           true
         );
       } catch (error) {
@@ -122,7 +124,7 @@ const resolvers: Resolvers = {
       try {
         return await DeploymentApp.reorderDeploymentRequestInQueue({
           ...input,
-          id: extractId<DeploymentRequestId>(input.id),
+          id: input.id,
         });
       } catch (error) {
         throw mapToGraphQLError(error);

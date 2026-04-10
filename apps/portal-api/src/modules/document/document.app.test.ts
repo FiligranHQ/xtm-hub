@@ -74,7 +74,7 @@ describe('DocumentApp', () => {
   const documentData = {
     short_description: 'short_description',
     slug: 'slug',
-    uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+    uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
     name: 'name',
     description: 'description',
     active: true,
@@ -237,7 +237,7 @@ describe('DocumentApp', () => {
         organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
         organization_type: 'Professional',
         source: TelemetrySource.XTMHUB,
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
         service: TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
         resource_id: expect.any(String),
         resource_title: documentData.name,

@@ -14,6 +14,7 @@ import { db } from '../../../knexfile';
 import {
   contextAdminSecondOrga,
   requestContextAdminSecondOrga,
+  TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import { requestContext } from '../../context/request.context';
 import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
@@ -155,10 +156,10 @@ describe('Hubspot', () => {
         expect.objectContaining({
           body: JSON.stringify({
             type: 'reachOutSales',
-            email: 'admin@filigran.io',
-            firstname: 'Al',
-            lastname: 'Beback',
-            company: 'Filigran',
+            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            firstname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            lastname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
+            company: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             message:
               'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
@@ -178,10 +179,10 @@ describe('Hubspot', () => {
         expect.objectContaining({
           body: JSON.stringify({
             type: 'reachOutSales',
-            email: 'admin@filigran.io',
-            firstname: 'Al',
-            lastname: 'Beback',
-            company: 'Filigran',
+            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            firstname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            lastname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
+            company: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             message:
               'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
@@ -196,10 +197,10 @@ describe('Hubspot', () => {
         expect.objectContaining({
           body: JSON.stringify({
             type: 'reachOutSales',
-            email: 'admin@filigran.io',
-            firstname: 'Al',
-            lastname: 'Beback',
-            company: 'Filigran',
+            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
+            firstname: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME,
+            lastname: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.LAST_NAME,
+            company: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             message: 'opencti: Please contact me about the OpenCTI free trial',
           }),
         })
@@ -214,10 +215,10 @@ describe('Hubspot', () => {
         expect.objectContaining({
           body: JSON.stringify({
             type: 'reachOutSales',
-            email: 'admin@filigran.io',
-            firstname: 'Al',
-            lastname: 'Beback',
-            company: 'Filigran',
+            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            firstname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+            lastname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
+            company: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             message:
               'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
           }),
