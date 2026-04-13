@@ -83,7 +83,7 @@ const ShareableResourceDetails: React.FunctionComponent<
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Author')}>
         <div className="flex items-center gap-s">
-          <div className="size-8">
+          <div className="size-8 [&_img]:object-cover">
             <Avatar src={documentData.uploader?.picture ?? ''} />
           </div>
           <span>{formatPersonNames(documentData.uploader)}</span>
