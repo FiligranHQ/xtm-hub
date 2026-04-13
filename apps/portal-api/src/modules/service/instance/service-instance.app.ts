@@ -26,7 +26,7 @@ import { PlatformConfiguration } from '../../registration/registration.domain';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import { subscriptionApp } from '../../subscription/subscription.app';
 import { loadSubscriptionBy } from '../../subscription/subscription.domain';
-import { UserServiceDomain } from '../../user_service/user_service.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 import {
   grantServiceAccess,
   loadPlatformConfigurationByServiceInstanceId,

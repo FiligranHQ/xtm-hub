@@ -31,7 +31,7 @@ import {
   buildSubscribeEvent,
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
-import { UserServiceDomain } from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user-service/user-service.domain';
 import {
   createSubscription,
   loadSubscriptionBy,

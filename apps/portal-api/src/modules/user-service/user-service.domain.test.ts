@@ -26,7 +26,7 @@ import {
 } from '../security-management/service-capability/generic-service-capability.const';
 import { SubscriptionStatus } from '../subscription.const';
 import { createSubscription } from '../subscription/subscription.domain';
-import { UserServiceDomain } from './user_service.domain';
+import { UserServiceDomain } from './user-service.domain';
 
 // ---------------------------------------------------------------------------
 // Constants

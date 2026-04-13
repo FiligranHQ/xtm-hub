@@ -11,7 +11,7 @@ import { loadUserOrganization } from '../modules/common/user-organization.domain
 import { isUserAllowedOnOrganization } from '../modules/security-management/capability/auth.helper';
 import { GenericServiceCapabilityName } from '../modules/security-management/service-capability/generic-service-capability.const';
 import { loadSubscriptionBy } from '../modules/subscription/subscription.domain';
-import { UserServiceDomain } from '../modules/user_service/user_service.domain';
+import { UserServiceDomain } from '../modules/user-service/user-service.domain';
 import { ErrorCode } from '../utils/error/error.code';
 import { BadRequestError, ForbiddenAccess } from '../utils/error/error.util';
 import { isUserAdminPlatform, isUserGranted } from './access';

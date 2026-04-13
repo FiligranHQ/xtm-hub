@@ -40,7 +40,7 @@ import * as documentHelper from '../../document/document.helper';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import { subscriptionApp } from '../../subscription/subscription.app';
 import * as subscriptionDomain from '../../subscription/subscription.domain';
-import { UserServiceDomain } from '../../user_service/user_service.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 import {
   ServiceInstanceApp,
   withServiceInstanceGlobalIDs,

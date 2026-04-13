@@ -10,7 +10,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
-import { UserServiceDomain } from './user_service.domain';
+import { UserServiceDomain } from './user-service.domain';
 
 export const UserServiceApp = {
   addYourselfInUserService: async (

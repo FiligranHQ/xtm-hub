@@ -21,7 +21,7 @@ import settingsResolver from '../modules/settings/settings.resolver';
 import subscriptionsResolver from '../modules/subscription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
 import useCaseResolver from '../modules/use-case/use-case.resolver';
-import userServiceResolver from '../modules/user_service/user_service.resolver';
+import userServiceResolver from '../modules/user-service/user-service.resolver';
 import xtmSuiteRoadmapResolver from '../modules/xtm-suite-roadmap/epic.resolver';
 import nodesResolver from '../nodes/nodes.resolver';
 import { authDirectiveTransformer } from '../security/directive-graphql/directive-auth';

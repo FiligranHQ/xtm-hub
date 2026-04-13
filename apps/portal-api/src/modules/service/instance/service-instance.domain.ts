@@ -42,7 +42,7 @@ import {
 import { insertServiceCapability } from '../../security-management/service-capability/service-capability.helper';
 import { loadSubscriptionCapabilities } from '../../security-management/service-capability/subscription-capability.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscription/subscription.helper';
-import { UserServiceDomain } from '../../user_service/user_service.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 
 export const ServiceInstanceDomain = {
   createPlatformServiceInstance: async (

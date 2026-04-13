@@ -3,7 +3,7 @@ import { requestContext } from '../../../context/request.context';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
-import { UserServiceDomain } from '../../user_service/user_service.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { GenericServiceCapabilityName } from './generic-service-capability.const';
 import * as ServiceCapaDomain from './service-capability.domain';
 import { willManageAccessBeConserved } from './service-capability.helper';

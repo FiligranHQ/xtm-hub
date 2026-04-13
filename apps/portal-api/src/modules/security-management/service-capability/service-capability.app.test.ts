@@ -15,7 +15,7 @@ import UserService from '../../../model/kanel/public/UserService';
 import UserServiceCapability from '../../../model/kanel/public/UserServiceCapability';
 import { SubscriptionStatus } from '../../subscription.const';
 import { createSubscription } from '../../subscription/subscription.domain';
-import { UserServiceDomain } from '../../user_service/user_service.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { loadCapabilities } from '../user-service-capability/user-service-capability.helper';
 import { GenericServiceCapabilityName } from './generic-service-capability.const';
 import { serviceCapabilityApp } from './service-capability.app';
