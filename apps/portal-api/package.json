@@ -67,7 +67,7 @@
     "express-prom-bundle": "8.0.0",
     "express-rate-limit": "8.3.2",
     "express-session": "1.19.0",
-    "glob": "11.1.0",
+    "glob": "13.0.6",
     "graphql": "16.13.2",
     "graphql-relay": "0.10.2",
     "graphql-sse": "2.6.0",
