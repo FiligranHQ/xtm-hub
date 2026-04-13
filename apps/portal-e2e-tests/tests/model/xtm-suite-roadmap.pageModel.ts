@@ -114,41 +114,6 @@ export default class XTMSuiteRoadmapPage {
     await this.page.locator('input[type="file"]').setInputFiles(filePath);
   }
 
-  async checkFilters({
-    openCTINumbers = 0,
-    openAEVNumbers = 0,
-    openGRCNumbers = 0,
-    xtmHubNumbers = 0,
-    xtmOneNumbers = 0,
-  }: {
-    openCTINumbers?: number;
-    openAEVNumbers?: number;
-    openGRCNumbers?: number;
-    xtmHubNumbers?: number;
-    xtmOneNumbers?: number;
-  }) {
-    await expect(
-      this.page.getByRole('button', {
-        name: `All products (${openCTINumbers + openAEVNumbers + openGRCNumbers + xtmHubNumbers + xtmOneNumbers})`,
-      })
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole('button', { name: `OpenCTI (${openCTINumbers})` })
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole('button', { name: `OpenAEV (${openAEVNumbers})` })
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole('button', { name: `OpenGRC (${openGRCNumbers})` })
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole('button', { name: `XTM Hub (${xtmHubNumbers})` })
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole('button', { name: `XTM One (${xtmOneNumbers})` })
-    ).toBeVisible();
-  }
-
   async navigateToService() {
     await this.page.getByRole('link', { name: 'Public Roadmap' }).click();
   }

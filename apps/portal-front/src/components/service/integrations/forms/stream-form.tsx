@@ -124,7 +124,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
           onSubmit(values as StreamFormValues);
         }}
         onValuesChange={(values, form) => {
-          if (values.name) {
+          if (isCreation && values.name) {
             const generatedSlug = slugify(values.name, {
               lower: true,
               strict: true,
