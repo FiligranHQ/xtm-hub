@@ -77,7 +77,6 @@ const AskArianePanel = ({
       onResizeStart={onResizeStart}
       onResizeEnd={onResizeEnd}
     />,
-
     container
   );
 };

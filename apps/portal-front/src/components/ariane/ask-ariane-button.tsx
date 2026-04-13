@@ -20,7 +20,7 @@ const AskArianeButton: FunctionComponent = () => {
     setIsResizing,
   } = useChatbot();
 
-  const askArianeButtonClassName = cn(
+  const askArianeButtonStyle = cn(
     'gap-2 transition-all duration-200',
     'hover:bg-[#D6C2FA]/15',
     'active:bg-[#D6C2FA]/25',
@@ -33,7 +33,7 @@ const AskArianeButton: FunctionComponent = () => {
         variant="ghost"
         size="sm"
         onClick={toggleChat}
-        className={askArianeButtonClassName}>
+        className={askArianeButtonStyle}>
         <LogoXtmOneIcon
           className="size-4"
           style={{ color: '#D6C2FA' }}

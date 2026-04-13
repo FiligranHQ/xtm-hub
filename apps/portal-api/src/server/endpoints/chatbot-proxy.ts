@@ -1,7 +1,8 @@
 import { Express, Request, Response } from 'express';
+import { validate as uuidValidate } from 'uuid';
 import { logApp } from '../../utils/app-logger.util';
 
-const COPILOT_BASE_URL = 'https://copilot.filigran.ai/api/v1/public'; // TODO move to config
+const COPILOT_BASE_URL = 'https://copilot.filigran.ai/api/v1/public';
 const COPILOT_TOKEN = 'jNJu1JTbbPwNqk1tqEOw-WjsKU4dEcgn';
 
 interface CopilotConfig {
@@ -58,7 +59,7 @@ export const chatbotProxyEndpoint = (app: Express) => {
         return res.status(401).json({ message: 'Unauthorized' });
       }
       const { conversation_id } = req.body;
-      if (!conversation_id) {
+      if (!conversation_id || !uuidValidate(conversation_id)) {
         return res.json({ messages: [] });
       }
       try {
@@ -88,6 +89,9 @@ export const chatbotProxyEndpoint = (app: Express) => {
       try {
         // Create or reuse session
         let sessionId = conversation_id;
+        if (sessionId && !uuidValidate(sessionId)) {
+          return res.status(400).json({ message: 'Invalid conversation_id' });
+        }
         if (!sessionId) {
           const sessionResponse = await fetch(
             `${COPILOT_BASE_URL}/chat/${COPILOT_TOKEN}/sessions`,
@@ -132,8 +136,7 @@ export const chatbotProxyEndpoint = (app: Express) => {
 
         let body = await streamResponse.text();
 
-        // Inject conversation_id into the done event so the component
-        // can persist the session in localStorage
+        // Inject conversation_id into the done event
         body = body.replace(
           /data: ({.*"type"\s*:\s*"done".*})/,
           (_match, json: string) => {
