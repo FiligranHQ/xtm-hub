@@ -4,7 +4,7 @@ import {
 } from '../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../utils/app-logger.util';
 import { getServiceInstance } from '../../../services/service-instance.domain';
-import { subscriptionApp } from '../../../subcription/subscription.app';
+import { subscriptionApp } from '../../../subscription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
 import { DocumentChildrenDomain } from '../../domain/document.children.domain';
 import { DocumentDomain } from '../../domain/document.domain';

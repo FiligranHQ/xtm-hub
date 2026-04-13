@@ -24,8 +24,8 @@ import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
 } from '../security-management/service-capability/generic_service_capability.const';
-import { createSubscription } from '../subcription/subscription.domain';
 import { SubscriptionStatus } from '../subscription.const';
+import { createSubscription } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user_service.domain';
 
 // ---------------------------------------------------------------------------

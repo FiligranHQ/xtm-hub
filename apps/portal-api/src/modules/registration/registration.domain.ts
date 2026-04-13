@@ -25,7 +25,7 @@ import {
   createSubscription,
   loadSubscriptionBy,
   transferSubscriptionToOrganization,
-} from '../subcription/subscription.domain';
+} from '../subscription/subscription.domain';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 import { serviceInstanceDomain } from '../services/instances/domain';

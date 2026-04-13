@@ -32,8 +32,8 @@ import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail
 import { formatRawObject } from '../../utils/queryRaw.util';
 import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
 import { PlatformConfiguration } from '../registration/registration.domain';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
 import { loadSubscriptionCapabilities } from '../security-management/service-capability/subscription-capability.domain';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
 

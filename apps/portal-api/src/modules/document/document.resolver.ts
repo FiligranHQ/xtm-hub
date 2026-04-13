@@ -15,7 +15,7 @@ import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
 } from '../services/service-instance.domain';
-import { loadSubscriptionBy } from '../subcription/subscription.domain';
+import { loadSubscriptionBy } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildShareEvent,

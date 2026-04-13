@@ -23,9 +23,9 @@ import { NotFoundError } from '../../utils/error/error.util';
 import { uploadNewFile } from '../document/document.helper';
 import { Upload } from '../document/document.uploads.helper';
 import { PlatformConfiguration } from '../registration/registration.domain';
-import { subscriptionApp } from '../subcription/subscription.app';
-import { loadSubscriptionBy } from '../subcription/subscription.domain';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic_service_capability.const';
+import { subscriptionApp } from '../subscription/subscription.app';
+import { loadSubscriptionBy } from '../subscription/subscription.domain';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import {
   grantServiceAccess,

@@ -8,8 +8,8 @@ import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { ErrorCode } from '../../utils/error/error.code';
 import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
-import { SubscriptionDomain } from '../subcription/subscription.domain';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subcription/subscription.helper';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
 import { UserServiceDomain } from './user_service.domain';
 
 export const UserServiceApp = {

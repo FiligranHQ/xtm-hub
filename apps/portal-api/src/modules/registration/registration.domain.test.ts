@@ -31,7 +31,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import * as organizationDomain from '../organization-management/organizations/organizations.domain';
 import { deleteServiceInstanceBy } from '../services/service-instance.domain';
-import * as subscriptionDomain from '../subcription/subscription.domain';
+import * as subscriptionDomain from '../subscription/subscription.domain';
 import {
   PlatformConfiguration,
   registrationDomain,

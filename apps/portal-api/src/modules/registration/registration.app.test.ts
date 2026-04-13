@@ -64,7 +64,7 @@ import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
 } from '../services/service-instance.domain';
-import * as subscriptionDomain from '../subcription/subscription.domain';
+import * as subscriptionDomain from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,

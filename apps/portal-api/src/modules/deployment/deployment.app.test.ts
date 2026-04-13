@@ -54,8 +54,8 @@ import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
-import { loadSubscriptionBy } from '../subcription/subscription.domain';
-import { deleteSubscription } from '../subcription/subscription.helper';
+import { loadSubscriptionBy } from '../subscription/subscription.domain';
+import { deleteSubscription } from '../subscription/subscription.helper';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,

@@ -35,17 +35,17 @@ import {
   getOrCreateUser,
   insertUserIntoOrganization,
 } from '../organization-management/users/users.helper';
-import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
-import {
-  loadServiceDefinitionByServiceInstance,
-  loadServiceInstanceBy,
-} from '../services/service-instance.domain';
-import { loadSubscriptionBy } from '../subcription/subscription.helper';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
 } from '../security-management/service-capability/generic_service_capability.const';
 import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
+import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
+import {
+  loadServiceDefinitionByServiceInstance,
+  loadServiceInstanceBy,
+} from '../services/service-instance.domain';
+import { loadSubscriptionBy } from '../subscription/subscription.helper';
 
 export const UserServiceDomain = {
   addServiceToUsers: async (
