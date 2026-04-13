@@ -29,6 +29,7 @@ export const PageLoader: React.FC = () => {
     platform_url,
     platform_contract,
     platform_version,
+    tenant_id,
   } = useDecodedQuery();
 
   const areParametersValid =
@@ -41,7 +42,9 @@ export const PageLoader: React.FC = () => {
     useQueryLoader<registerIsPlatformRegisteredQuery>(
       RegisterIsPlatformRegisteredQueryGraphql
     );
-  useMountingLoader(loadQuery, { input: { platformId: platform_id } });
+  useMountingLoader(loadQuery, {
+    input: { platformId: platform_id, tenantId: tenant_id },
+  });
 
   const platform: PlatformInput = {
     id: platform_id,
@@ -49,6 +52,7 @@ export const PageLoader: React.FC = () => {
     url: platform_url,
     contract: platform_contract as PlatformContract,
     version: platform_version,
+    tenantId: tenant_id,
   };
 
   return queryRef ? (

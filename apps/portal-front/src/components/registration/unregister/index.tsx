@@ -25,12 +25,17 @@ import {
 
 interface Props {
   platformId: string;
+  tenantId?: string | null;
   queryRef: PreloadedQuery<registerCanUnregisterPlatformQuery>;
 }
 
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
 
-export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
+export const Unregister: React.FC<Props> = ({
+  queryRef,
+  platformId,
+  tenantId,
+}) => {
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
   const t = useTranslations();
   const canUnregisterPreloadedQuery =
@@ -63,6 +68,7 @@ export const Unregister: React.FC<Props> = ({ queryRef, platformId }) => {
         input: {
           platformId,
           identifier,
+          tenantId,
         },
       },
       onCompleted: () => {

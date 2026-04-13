@@ -18,6 +18,7 @@ describe('Display unregister button', () => {
     id: 'test-platform-id',
     identifier: ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
     platform_id: 'id',
+    tenant_id: null,
     title: 'title',
     url: 'url',
   };

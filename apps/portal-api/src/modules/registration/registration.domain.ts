@@ -34,6 +34,7 @@ import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registr
 export type PlatformConfiguration = {
   registerer_id: string;
   platform_id: string;
+  tenant_id?: string;
   platform_url: string;
   platform_title: string;
   platform_version: string;

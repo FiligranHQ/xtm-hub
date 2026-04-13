@@ -55,15 +55,19 @@ export const ServiceConfigurationDomain = {
 
   loadConfigurationByPlatform: async (
     platformId: string,
-    status?: ServiceConfigurationStatus
+    options?: { tenantId?: string | null; status?: ServiceConfigurationStatus }
   ): Promise<ServiceConfiguration | undefined> => {
     const qb = db('Service_Configuration')
       .whereRaw("config->>'platform_id' = ?", platformId)
       .first()
       .select('*');
 
-    if (status) {
-      qb.where({ status });
+    if (options?.tenantId) {
+      qb.whereRaw("config->>'tenant_id' = ?", options.tenantId);
+    }
+
+    if (options?.status) {
+      qb.where({ status: options.status });
     }
 
     return qb;
