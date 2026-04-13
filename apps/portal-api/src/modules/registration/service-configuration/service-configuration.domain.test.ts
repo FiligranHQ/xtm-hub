@@ -10,7 +10,7 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
-import { ServiceDefinitionDomain } from '../../services/definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../../service/definition/service-definition.domain';
 import { ServiceConfigurationDomain } from './service-configuration.domain';
 
 describe('ServiceConfigurationDomain', () => {

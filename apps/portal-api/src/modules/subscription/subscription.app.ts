@@ -24,14 +24,14 @@ import { addCapabilitiesToSubscription } from '../security-management/service-ca
 import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceById,
-} from '../services/service-instance.domain';
+} from '../service/instance/service-instance.domain';
 import { SubscriptionStatus } from '../subscription.const';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildSubscribeEvent,
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
-import { UserServiceDomain } from '../user_service/user_service.domain';
+import { UserServiceDomain } from '../user-service/user-service.domain';
 import {
   createSubscription,
   loadSubscriptionBy,

@@ -7,26 +7,26 @@ import {
   ServiceInstanceJoinType,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
-} from '../../__generated__/resolvers-types';
-import { withTransaction } from '../../context/database.context';
+} from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import {
   ServiceInstanceId,
   ServiceInstanceMutator,
-} from '../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../model/kanel/public/User';
-import { UserLoadUserBy } from '../../model/user';
-import { dispatch } from '../../pub';
-import { securityGuard } from '../../security/guard';
-import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
-import { NotFoundError } from '../../utils/error/error.util';
-import { uploadNewFile } from '../document/document.helper';
-import { Upload } from '../document/document.uploads.helper';
-import { PlatformConfiguration } from '../registration/registration.domain';
-import { subscriptionApp } from '../subcription/subscription.app';
-import { loadSubscriptionBy } from '../subcription/subscription.domain';
-import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic_service_capability.const';
-import { UserServiceDomain } from '../user_service/user_service.domain';
+} from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../../model/user';
+import { dispatch } from '../../../pub';
+import { securityGuard } from '../../../security/guard';
+import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
+import { NotFoundError } from '../../../utils/error/error.util';
+import { uploadNewFile } from '../../document/document.helper';
+import { Upload } from '../../document/document.uploads.helper';
+import { PlatformConfiguration } from '../../registration/registration.domain';
+import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
+import { subscriptionApp } from '../../subscription/subscription.app';
+import { loadSubscriptionBy } from '../../subscription/subscription.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 import {
   grantServiceAccess,
   loadPlatformConfigurationByServiceInstanceId,

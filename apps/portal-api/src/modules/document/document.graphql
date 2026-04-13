@@ -13,7 +13,7 @@ enum DocumentMetadataKeyCode {
   integration_type
   integration_subtype
   datasheet_url
-    blogpost_url
+  blogpost_url
   demo_url
   product_version
   vendor_url

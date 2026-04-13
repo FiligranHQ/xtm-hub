@@ -1,6 +1,6 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { ServiceCapabilityMutator } from '../../../model/kanel/public/ServiceCapability';
-import { loadServiceCapabilitiesBy } from './service-capability/service-capability.domain';
+import { loadServiceCapabilitiesBy } from '../../security-management/service-capability/service-capability.domain';
 
 const resolvers: Resolvers = {
   ServiceDefinition: {

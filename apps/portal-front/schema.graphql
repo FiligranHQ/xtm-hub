@@ -1285,6 +1285,13 @@ type ServiceCapability implements Node {
   service_definition_id: ID
 }
 
+type ServiceLink implements Node {
+  id: ID!
+  service_instance_id: ID
+  url: String
+  name: String
+}
+
 enum ServiceDefinitionIdentifier {
   vault
   link
@@ -1303,13 +1310,6 @@ type ServiceDefinition implements Node {
   public: Boolean
   identifier: ServiceDefinitionIdentifier!
   service_capability: [ServiceCapability]
-}
-
-type ServiceLink implements Node {
-  id: ID!
-  service_instance_id: ID
-  url: String
-  name: String
 }
 
 """
