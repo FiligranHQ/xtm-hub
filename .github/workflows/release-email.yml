@@ -32,7 +32,7 @@ jobs:
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "[XTM Hub] Version: ${{ steps.last_release.outputs.release_tag }}"
           to: "all-employees@filigran.io"
-          from: "XTM Hub Team"
+          from: "XTM Hub Team <xtm-hub-support@filigran.io>"
           convert_markdown: true
           html_body:
            🔔 DING DING 🔔
