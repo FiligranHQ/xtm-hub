@@ -1,14 +1,17 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
-import { requestContext } from '../../context/request.context';
-import { SYSTEM_USER_CONTEXT, SYSTEM_USER_UUID } from '../../portal.const';
-import { minioInit } from '../../server/initialize';
-import { DocumentChildrenDomain } from '../document/domain/document.children.domain';
+import { TEST_ORGANIZATIONS } from '../../../../../../tests/tests.const';
+import { requestContext } from '../../../../../context/request.context';
+import {
+  SYSTEM_USER_CONTEXT,
+  SYSTEM_USER_UUID,
+} from '../../../../../portal.const';
+import { minioInit } from '../../../../../server/initialize';
+import { DocumentChildrenDomain } from '../../../../document/domain/document.children.domain';
+import { useCaseDomain } from '../../../../use-case/use-case.domain';
 import {
   Connector,
   INTEGRATION_SERVICE_INSTANCE_ID,
-} from '../document/opencti/integrations/integrations.model';
-import { useCaseDomain } from '../use-case/use-case.domain';
+} from '../integration.model';
 import { upsertConnectors } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
 import sampleExtractedManifest from './test/sample-extracted-manifest.json';

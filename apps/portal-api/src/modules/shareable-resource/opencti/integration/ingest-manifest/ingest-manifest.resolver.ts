@@ -1,4 +1,4 @@
-import { Resolvers } from '../../__generated__/resolvers-types';
+import { Resolvers } from '../../../../../__generated__/resolvers-types';
 import { IngestManifestApp } from './ingest-manifest.app';
 
 const resolvers: Resolvers = {

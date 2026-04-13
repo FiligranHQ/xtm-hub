@@ -5,15 +5,15 @@ import {
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
-} from '../../__generated__/resolvers-types';
-import { logApp } from '../../utils/app-logger.util';
-import { fetchWithCacheForLocalTesting } from '../../utils/fetch-with-cache';
-import { isValidVersion } from '../../utils/versioning';
-import { Upload } from '../document/document.uploads.helper';
+} from '../../../../../__generated__/resolvers-types';
+import { logApp } from '../../../../../utils/app-logger.util';
+import { fetchWithCacheForLocalTesting } from '../../../../../utils/fetch-with-cache';
+import { isValidVersion } from '../../../../../utils/versioning';
+import { Upload } from '../../../../document/document.uploads.helper';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../document/opencti/integrations/integrations.model';
+} from '../integration.model';
 import { ManifestInformation } from './ingest-manifest.model';
 
 export interface ManifestExtractionResult {

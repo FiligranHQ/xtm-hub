@@ -21,6 +21,12 @@ import { default as DocumentModel } from '../../model/kanel/public/Document';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { MinioFile } from '../../thirdparty/minio/types';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
+import {
+  INTEGRATION_SERVICE_INSTANCE_ID,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../shareable-resource/opencti/integration/integration.model';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
@@ -34,12 +40,6 @@ import {
 } from './document.helper';
 import * as DocumentUploadsHelper from './document.uploads.helper';
 import { DocumentDomain } from './domain/document.domain';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev/scenarios/scenarios.model';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './opencti/custom-dashboards/custom-dashboards.model';
-import {
-  INTEGRATION_SERVICE_INSTANCE_ID,
-  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from './opencti/integrations/integrations.model';
 
 describe('DocumentHelper', () => {
   const minioFileMock = {

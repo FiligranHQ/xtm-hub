@@ -6,10 +6,6 @@ import competitorResolver from '../modules/deployment/competitor/competitor.reso
 import deploymentResolver from '../modules/deployment/deployment.resolver';
 import serviceGroupResolver from '../modules/deployment/group/service-group.resolver';
 import vaultResolver from '../modules/document/document.resolver';
-import openAEVScenariosResolver from '../modules/document/openaev/scenarios/scenarios.resolver';
-import customDashboardsResolver from '../modules/document/opencti/custom-dashboards/custom-dashboards.resolver';
-import integrationsResolver from '../modules/document/opencti/integrations/integrations.resolver';
-import ingestManifestResolver from '../modules/ingest-manifest/ingest-manifest.resolver';
 import logResolver from '../modules/log/log.resolver';
 import organizationsResolver from '../modules/organization-management/organizations/organizations.resolver';
 import usersResolver from '../modules/organization-management/users/users.resolver';
@@ -18,6 +14,10 @@ import serviceCapabilityResolver from '../modules/security-management/service-ca
 import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';
 import ServiceInstanceResolver from '../modules/service/instance/service-instance.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
+import openAEVScenariosResolver from '../modules/shareable-resource/openaev/scenario/scenario.resolver';
+import customDashboardsResolver from '../modules/shareable-resource/opencti/custom-dashboard/custom-dashboard.resolver';
+import ingestManifestResolver from '../modules/shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.resolver';
+import integrationsResolver from '../modules/shareable-resource/opencti/integration/integration.resolver';
 import subscriptionsResolver from '../modules/subscription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
 import useCaseResolver from '../modules/use-case/use-case.resolver';

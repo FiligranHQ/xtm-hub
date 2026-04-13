@@ -17,7 +17,7 @@ import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
 import { normalizeDocumentName } from './src/modules/document/document.helper';
-import { INTEGRATION_METADATA_KEYS } from './src/modules/document/opencti/integrations/integrations.model';
+import { INTEGRATION_METADATA_KEYS } from './src/modules/shareable-resource/opencti/integration/integration.model';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 import { compareVersions, isValidVersion } from './src/utils/versioning';

@@ -19,22 +19,16 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { OptionalMetadata } from '../../utils/metadata';
 import { WithUseCases } from '../../utils/types';
 import { isValidUrl } from '../../utils/utils';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { DocumentApp } from './document.app';
-import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
-import { Upload } from './document.uploads.helper';
-import { DocumentDomain } from './domain/document.domain';
 import {
   OPENAEV_SCENARIO_DOCUMENT_TYPE,
   OPENAEV_SCENARIO_METADATA,
   OPENAEV_SCENARIO_METADATA_KEYS,
-} from './openaev/scenarios/scenarios.model';
+} from '../shareable-resource/openaev/scenario/scenario.model';
 import {
   CUSTOM_DASHBOARD_METADATA,
   CUSTOM_DASHBOARD_METADATA_KEYS,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-} from './opencti/custom-dashboards/custom-dashboards.model';
+} from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import {
   INTEGRATION_CONNECTOR_METADATA,
   INTEGRATION_CSV_FEED_METADATA,
@@ -45,7 +39,13 @@ import {
   INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
   isIntegrationType,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from './opencti/integrations/integrations.model';
+} from '../shareable-resource/opencti/integration/integration.model';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryEventType } from '../telemetry/telemetry.types';
+import { DocumentApp } from './document.app';
+import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
+import { Upload } from './document.uploads.helper';
+import { DocumentDomain } from './domain/document.domain';
 
 export const BOOLEAN_METADATA = [
   DocumentMetadataKeyCode.Verified,
