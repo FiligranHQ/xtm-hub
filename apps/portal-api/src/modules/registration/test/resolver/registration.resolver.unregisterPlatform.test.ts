@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextSimple2, INFO } from '../../../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  INFO,
+} from '../../../../../tests/tests.const';
 import {
   PlatformIdentifier,
   UnregisterPlatformInput,
@@ -28,7 +31,7 @@ describe('Mutation.unregisterPlatform', () => {
     const result = await registrationResolver.Mutation!.unregisterPlatform!(
       {},
       { input },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 
@@ -51,7 +54,7 @@ describe('Mutation.unregisterPlatform', () => {
     const call = registrationResolver.Mutation!.unregisterPlatform!(
       {},
       { input },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 

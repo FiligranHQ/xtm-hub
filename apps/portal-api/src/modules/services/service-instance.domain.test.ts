@@ -12,6 +12,8 @@ import {
 import { TestHelper } from '../../../tests/test.helper';
 import {
   contextRegistererUserSecondOrga,
+  // eslint-disable-next-line no-restricted-imports
+  requestContextAdminUser,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -21,6 +23,7 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../model/kanel/public/ServiceInstance';
@@ -28,7 +31,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import * as mailService from '../../server/mail-service';
 import { PlatformConfiguration } from '../registration/registration.domain';
-import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
+import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic_service_capability.const';
 import {
   getUserJoined,
   grantServiceAccess,
@@ -595,6 +598,9 @@ describe('Service instance domain', () => {
     `(
       'should return subscriptions for searchTerm=$searchTerm',
       async ({ searchTerm, expectedNames }) => {
+        // Given
+        requestContext.set(requestContextAdminUser);
+
         // When
         const result = await loadServiceWithSubscriptions(
           serviceInstanceId,

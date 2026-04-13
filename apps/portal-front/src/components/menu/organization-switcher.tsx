@@ -15,7 +15,7 @@ interface TeamSwitcherProps {
 }
 
 const changeSelectedOrganizationMutation = graphql`
-  mutation organizationSwitcherMutation($organization_id: ID!) {
+  mutation organizationSwitcherMutation($organization_id: OrganizationId!) {
     changeSelectedOrganization(organization_id: $organization_id) {
       id
       selected_organization_id
@@ -81,7 +81,7 @@ export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
             className={cn(
               'px-m w-full justify-between rounded-none normal-case'
             )}>
-            <span className={'flex w-8 flex-shrink-0 justify-center'}>
+            <span className={'flex w-8 shrink-0 justify-center'}>
               <CityIcon
                 aria-hidden={true}
                 focusable={false}

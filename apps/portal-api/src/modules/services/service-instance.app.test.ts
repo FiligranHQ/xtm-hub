@@ -39,7 +39,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import * as documentHelper from '../document/document.helper';
 import { subscriptionApp } from '../subcription/subscription.app';
 import * as subscriptionDomain from '../subcription/subscription.domain';
-import { GenericServiceCapabilityIds } from '../user_service/service-capability/generic_service_capability.const';
+import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic_service_capability.const';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import {
   ServiceInstanceApp,

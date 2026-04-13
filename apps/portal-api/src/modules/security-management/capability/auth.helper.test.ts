@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { OrganizationCapability } from '../__generated__/resolvers-types';
-import { CAPABILITY_BYPASS } from '../portal.const';
+import { OrganizationCapability } from '../../../__generated__/resolvers-types';
+import { CAPABILITY_BYPASS } from '../../../portal.const';
 import { isUserAllowed } from './auth.helper';
 
 describe('AuthHelper', () => {

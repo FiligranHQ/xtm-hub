@@ -2,7 +2,7 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  contextSimple2,
+  contextSimpleUserFiligran2,
   INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
@@ -46,7 +46,7 @@ describe('Query.canUnregisterPlatform', () => {
       const result = await registrationResolver.Query!.canUnregisterPlatform!(
         {},
         { input },
-        contextSimple2,
+        contextSimpleUserFiligran2,
         INFO
       );
 
@@ -69,7 +69,7 @@ describe('Query.canUnregisterPlatform', () => {
     const result = await registrationResolver.Query!.canUnregisterPlatform!(
       {},
       { input },
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 
@@ -95,7 +95,7 @@ describe('Query.canUnregisterPlatform', () => {
       const call = registrationResolver.Query!.canUnregisterPlatform!(
         {},
         { input },
-        contextSimple2,
+        contextSimpleUserFiligran2,
         INFO
       );
 

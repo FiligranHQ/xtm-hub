@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/test.helper';
 import {
@@ -22,10 +21,7 @@ describe('Subscription mutation resolver', () => {
       const response = await subscriptionResolver.Mutation.addSubscription(
         undefined,
         {
-          service_instance_id: toGlobalId(
-            'ServiceInstance',
-            SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
-          ),
+          service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
         },
         contextSimpleUserSecondOrga
       );
@@ -47,10 +43,7 @@ describe('Subscription mutation resolver', () => {
       await subscriptionResolver.Mutation.addSubscription(
         undefined,
         {
-          service_instance_id: toGlobalId(
-            'ServiceInstance',
-            SERVICES.INSTANCES.INTEGRATIONS.ID
-          ),
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         },
         contextSimpleUserSecondOrga
       );
@@ -72,10 +65,7 @@ describe('Subscription mutation resolver', () => {
       await subscriptionResolver.Mutation.addSubscription(
         undefined,
         {
-          service_instance_id: toGlobalId(
-            'ServiceInstance',
-            SERVICES.INSTANCES.VAULT.ID
-          ),
+          service_instance_id: SERVICES.INSTANCES.VAULT.ID,
         },
         contextSimpleUserSecondOrga
       );

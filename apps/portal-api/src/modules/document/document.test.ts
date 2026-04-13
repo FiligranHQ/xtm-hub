@@ -204,10 +204,7 @@ describe('Documents loading', () => {
         searchTerm: '',
         orderBy: 'file_name',
         orderMode: 'asc',
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
-        ),
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       },
       contextSimpleUserSecondOrga as PortalContext
     );
@@ -224,10 +221,7 @@ describe('Documents loading', () => {
         searchTerm: '',
         orderBy: 'file_name',
         orderMode: 'desc',
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
-        ),
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       },
       contextSimpleUserSecondOrga
     );
@@ -245,10 +239,7 @@ describe('Documents loading', () => {
         searchTerm: 'xfi',
         orderBy: 'file_name',
         orderMode: 'asc',
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
-        ),
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       },
       contextSimpleUserSecondOrga
     );

@@ -1,4 +1,3 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
   IntegrationType,
   Resolvers,
@@ -6,7 +5,6 @@ import {
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../model/kanel/public/Document';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
@@ -42,9 +40,7 @@ const resolvers: Resolvers = {
       try {
         return await DocumentApp.createDocument({
           ...input,
-          serviceInstanceId: extractId<ServiceInstanceId>(
-            input.serviceInstanceId
-          ),
+          serviceInstanceId: input.serviceInstanceId,
         });
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
@@ -60,9 +56,7 @@ const resolvers: Resolvers = {
         return await DocumentApp.updateDocument({
           ...input,
           parentDocumentId: extractId<DocumentId>(input.documentId),
-          serviceInstanceId: extractId<ServiceInstanceId>(
-            input.serviceInstanceId
-          ),
+          serviceInstanceId: input.serviceInstanceId,
           existingImageIds: (input.existingImageIds ?? []).map((imageId) =>
             extractId<DocumentId>(imageId)
           ),
@@ -83,7 +77,7 @@ const resolvers: Resolvers = {
       try {
         return await DocumentApp.deleteDocument(
           extractId<DocumentId>(documentId),
-          extractId<ServiceInstanceId>(service_instance_id),
+          service_instance_id,
           forceDelete
         );
       } catch (error) {
@@ -172,11 +166,11 @@ const resolvers: Resolvers = {
     uploader_organization: ({ id }, _) =>
       DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
-      return getServiceInstance(service_instance_id as ServiceInstanceId);
+      return getServiceInstance(service_instance_id);
     },
     subscription: async ({ service_instance_id }, _, context) => {
       const subscription = await loadSubscriptionBy({
-        service_instance_id: service_instance_id as ServiceInstanceId,
+        service_instance_id,
         organization_id: context.user.selected_organization_id,
       });
 
@@ -188,7 +182,7 @@ const resolvers: Resolvers = {
       try {
         return checkDocumentExists(
           input.documentName ?? '',
-          fromGlobalId(input.service_instance_id).id as ServiceInstanceId
+          input.service_instance_id
         );
       } catch (error) {
         throw mapToGraphQLError(error);
@@ -212,10 +206,7 @@ const resolvers: Resolvers = {
     },
     publicDocumentBySlug: async (_, { serviceInstanceId, slug }) => {
       try {
-        return DocumentApp.loadPublicDocumentBySlug(
-          extractId<ServiceInstanceId>(serviceInstanceId),
-          slug
-        );
+        return DocumentApp.loadPublicDocumentBySlug(serviceInstanceId, slug);
       } catch (error) {
         throw mapToGraphQLError(error);
       }

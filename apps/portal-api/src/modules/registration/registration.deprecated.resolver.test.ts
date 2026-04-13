@@ -4,6 +4,7 @@ import type { MockInstance } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserSecondOrga,
+  requestContextRegistererUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
@@ -12,6 +13,7 @@ import {
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
 } from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
 import { BadRequestErrorCode } from '../../utils/error/error.code';
 import { registrationApp } from './registration.app';
 import registrationResolver from './registration.resolver';
@@ -53,6 +55,8 @@ describe('Registration query resolver', () => {
       );
     });
     it('should return active when platform is registered', async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       expect(
         registrationResolver.Query?.openCTIPlatformRegistrationStatus
       ).toBeDefined();
@@ -62,7 +66,7 @@ describe('Registration query resolver', () => {
 
       const platformId = uuidv4();
       const token = await registrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
           id: platformId,
           url: 'http://example.com',

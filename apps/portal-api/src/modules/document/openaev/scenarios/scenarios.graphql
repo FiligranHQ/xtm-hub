@@ -16,7 +16,7 @@ type OpenAEVScenario implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]

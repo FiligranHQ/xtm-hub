@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextSimple2, INFO } from '../../../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  INFO,
+} from '../../../../../tests/tests.const';
 import { RegisteredPlatform } from '../../../../__generated__/resolvers-types';
 import DeploymentRequest from '../../../../model/kanel/public/DeploymentRequest';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
@@ -39,7 +42,7 @@ describe('RegisteredPlatform type resolvers', () => {
         .subscription!(
         { id: serviceInstanceId } as unknown as RegisteredPlatform,
         {},
-        contextSimple2,
+        contextSimpleUserFiligran2,
         INFO
       );
 
@@ -47,7 +50,7 @@ describe('RegisteredPlatform type resolvers', () => {
       expect(
         loadSubscriptionByServiceInstanceAndOrganizationSpy
       ).toHaveBeenCalledWith(
-        contextSimple2.user.selected_organization_id,
+        contextSimpleUserFiligran2.user.selected_organization_id,
         serviceInstanceId
       );
       expect(result).toEqual(expectedSubscription);
@@ -71,7 +74,7 @@ describe('RegisteredPlatform type resolvers', () => {
         .deployment_request!(
         { id: serviceInstanceId } as unknown as RegisteredPlatform,
         {},
-        contextSimple2,
+        contextSimpleUserFiligran2,
         INFO
       );
 

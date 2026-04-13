@@ -36,6 +36,7 @@ const thirdPartyIntegrationFormSchema = z.object({
     .nullish(),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
+  blogpost_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
   logo: z.custom<FileList>(optionalFileListCheck).optional(),
@@ -138,6 +139,7 @@ export const ThirdPartyIntegrationForm = ({
     integration_type,
     integration_subtype,
     datasheet_url,
+    blogpost_url,
     demo_url,
     imagesField,
     images,
@@ -196,6 +198,7 @@ export const ThirdPartyIntegrationForm = ({
           github_url,
           product_version,
           datasheet_url,
+          blogpost_url,
           demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />

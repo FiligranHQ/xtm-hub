@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { contextSimple2, INFO } from '../../../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  INFO,
+} from '../../../../../tests/tests.const';
 import { RefreshUserPlatformTokenResponse } from '../../../../__generated__/resolvers-types';
 import { UnknownErrorCode } from '../../../../utils/error/error.code';
 import { registrationApp } from '../../registration.app';
@@ -23,11 +26,11 @@ describe('Mutation.refreshUserPlatformToken', () => {
 
     // When
     const result = await registrationResolver.Mutation!
-      .refreshUserPlatformToken!({}, {}, contextSimple2, INFO);
+      .refreshUserPlatformToken!({}, {}, contextSimpleUserFiligran2, INFO);
 
     // Then
     expect(registrationApp.refreshUserPlatformToken).toHaveBeenCalledWith(
-      contextSimple2.user.id
+      contextSimpleUserFiligran2.user.id
     );
     expect(result).toMatchObject({ token: newToken });
   });
@@ -42,7 +45,7 @@ describe('Mutation.refreshUserPlatformToken', () => {
     const call = registrationResolver.Mutation!.refreshUserPlatformToken!(
       {},
       {},
-      contextSimple2,
+      contextSimpleUserFiligran2,
       INFO
     );
 

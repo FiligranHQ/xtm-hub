@@ -61,7 +61,7 @@ export const CompetitorEditMutation = graphql`
 `;
 
 export const CompetitorDeleteMutation = graphql`
-  mutation competitorDeleteMutation($id: ID!, $connections: [ID!]!) {
+  mutation competitorDeleteMutation($id: CompetitorId!, $connections: [ID!]!) {
     deleteCompetitor(id: $id) {
       id @deleteEdge(connections: $connections)
     }

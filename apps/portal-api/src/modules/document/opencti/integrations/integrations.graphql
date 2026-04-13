@@ -52,7 +52,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -61,6 +61,7 @@ interface Integration implements Node & Document {
   remover_id: ID
   integration_type: IntegrationType!
   datasheet_url: String
+  blogpost_url: String
   demo_url: String
 }
 
@@ -86,7 +87,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -95,6 +96,7 @@ type IntegrationHack implements Node & Document & Integration {
   remover_id: ID
   integration_type: IntegrationType!
   datasheet_url: String
+  blogpost_url: String
   demo_url: String
 }
 
@@ -119,7 +121,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -129,6 +131,7 @@ type CsvFeed implements Node & Document & Integration {
   feed_url: String
   integration_type: IntegrationType!
   datasheet_url: String
+  blogpost_url: String
   demo_url: String
 }
 
@@ -153,7 +156,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -170,6 +173,7 @@ type Connector implements Node & Document & Integration {
   manager_supported: Boolean!
   playbook_supported: Boolean!
   datasheet_url: String
+  blogpost_url: String
   demo_url: String
   minimum_deployable_version: String
 }
@@ -195,7 +199,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -206,6 +210,7 @@ type TaxiiFeed implements Node & Document & Integration {
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
   datasheet_url: String
+  blogpost_url: String
   demo_url: String
 }
 type RssFeed implements Node & Document & Integration {
@@ -229,7 +234,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -240,6 +245,7 @@ type RssFeed implements Node & Document & Integration {
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
   datasheet_url: String
+  blogpost_url: String
   demo_url: String
 }
 
@@ -264,7 +270,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -275,6 +281,7 @@ type Stream implements Node & Document & Integration {
   integration_type: IntegrationType!
   integration_subtype: IntegrationSubType!
   datasheet_url: String
+  blogpost_url: String
   demo_url: String
 }
 
@@ -299,7 +306,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: String! @auth
+  service_instance_id: ServiceInstanceId! @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -312,5 +319,6 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   product_version: String
   github_url: String
   datasheet_url: String
+  blogpost_url: String
   demo_url: String
 }

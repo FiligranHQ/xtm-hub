@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../../../knexfile';
@@ -32,7 +31,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { hashPassword } from '../../../utils/hash-password.util';
 import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
-import { createUserOrganizationCapability } from '../../common/user-organization-capability.domain';
+import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import {
   loadUserOrganization,
   updateUserOrgCapabilities,
@@ -280,10 +279,7 @@ export const mapUserToGraphqlUser = (
 ): GraphqlUser => {
   return {
     ...user,
-    selected_organization_id: toGlobalId(
-      'Organization',
-      user.selected_organization_id
-    ),
+    selected_organization_id: user.selected_organization_id,
     capabilities:
       'capabilities' in user ? (user.capabilities as Capability[]) : null,
   };

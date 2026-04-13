@@ -3,7 +3,7 @@ import { requestContext } from '../../../context/request.context';
 import { PortalContext } from '../../../model/portal-context';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
-import { validatePassword } from '../../utils/user';
+import { validatePassword } from '../../util/user';
 
 export const SYSTEM_TOKEN_HEADER = 'x-xtm-hub-token';
 export const SYSTEM_TOKEN_HASH = config.get<string>('system_token_hash');
@@ -45,19 +45,15 @@ export const createSystemTokenResolver = (originalResolve) => {
       throw new Error('Valid system token is required for this operation');
     }
 
-    // If token is valid, override context with system user
-    if (hasValidToken) {
-      const enhancedContext: PortalContext = {
-        ...portalContext,
-        user: SYSTEM_USER_CONTEXT.user,
-      };
-      requestContext.update({
-        user: SYSTEM_USER_CONTEXT.user,
-        portalContext: enhancedContext,
-      });
-    }
+    const enhancedContext: PortalContext = {
+      ...portalContext,
+      user: SYSTEM_USER_CONTEXT.user,
+    };
+    requestContext.update({
+      user: SYSTEM_USER_CONTEXT.user,
+      portalContext: enhancedContext,
+    });
 
-    // Execute with original context
-    return originalResolve(source, args, portalContext, info);
+    return originalResolve(source, args, enhancedContext, info);
   };
 };

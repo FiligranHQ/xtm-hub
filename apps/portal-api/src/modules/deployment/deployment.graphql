@@ -1,3 +1,5 @@
+scalar DeploymentRequestId
+
 enum DeploymentRequestPlatformRegion {
   eu_west
   us_east
@@ -167,7 +169,7 @@ input CreateDeploymentRequestInput {
 }
 
 input UpdateDeploymentRequestInput {
-  id: ID!
+  id: DeploymentRequestId!
   start_date: Date
   end_date: Date
   platform_id: String
@@ -249,7 +251,7 @@ enum ReorderDeploymentRequestInQueueDirection {
 }
 
 input ReorderDeploymentRequestInQueueInput {
-  id: ID!
+  id: DeploymentRequestId!
   direction: ReorderDeploymentRequestInQueueDirection!
 }
 
@@ -301,12 +303,13 @@ extend type Mutation {
     input: ReorderDeploymentRequestInQueueInput!
   ): Success! @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
   cancelDeploymentRequest(
-    deploymentRequestId: ID!
+    deploymentRequestId: DeploymentRequestId!
     cancellationReason: String
   ): DeploymentRequest
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
-  adminCancelDeploymentRequest(deploymentRequestId: ID): DeploymentRequest
-    @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
+  adminCancelDeploymentRequest(
+    deploymentRequestId: DeploymentRequestId
+  ): DeploymentRequest @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
   updateDeploymentQuotaCapacity(
     input: UpdateDeploymentQuotaCapacityInput!
   ): Success! @auth(portalCapa: [BYPASS, MODIFY_TRIALS_QUOTA])

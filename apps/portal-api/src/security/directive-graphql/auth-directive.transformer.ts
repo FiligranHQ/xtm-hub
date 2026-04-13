@@ -2,16 +2,16 @@ import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { AuthFn, RoleFn, ServiceFn } from './directive.model';
 import { createSecureFieldResolver } from './directive.resolver';
-import { AUTH_DIRECTIVE_NAME } from './validators/auth.validator';
+import { AUTH_DIRECTIVE_NAME } from './validator/auth.validator';
 import {
   createPlatformTokenResolver,
   PLATFORM_TOKEN_DIRECTIVE_NAME,
-} from './validators/platform-token-validator';
-import { SERVICE_CAPABILITY_DIRECTIVE_NAME } from './validators/service-capability.validator';
+} from './validator/platform-token-validator';
+import { SERVICE_CAPABILITY_DIRECTIVE_NAME } from './validator/service-capability.validator';
 import {
   createSystemTokenResolver,
   SYSTEM_TOKEN_DIRECTIVE_NAME,
-} from './validators/system-token.validator';
+} from './validator/system-token.validator';
 
 /**
  * Creates a schema transformer for authentication directives

@@ -50,6 +50,10 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
           connector.datasheet_url = existingConnector.datasheet_url;
         }
 
+        if (existingConnector.blogpost_url) {
+          connector.blogpost_url = existingConnector.blogpost_url;
+        }
+
         if (existingConnector.demo_url) {
           connector.demo_url = existingConnector.demo_url;
         }

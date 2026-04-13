@@ -29,7 +29,7 @@ import Organization, {
 } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
-import { isUserAllowedOnOrganization } from '../../security/auth.helper';
+import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { logApp } from '../../utils/app-logger.util';

@@ -14,11 +14,11 @@ import UserOrganization, {
 } from '../../model/kanel/public/UserOrganization';
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
-import { extractId, isEmpty } from '../../utils/utils';
+import { isEmpty } from '../../utils/utils';
 import {
   createUserOrganizationCapability,
   updateUserOrganizationCapability,
-} from './user-organization-capability.domain';
+} from '../security-management/user-organization-capability/user-organization-capability.domain';
 
 export const insertNewUserOrganization = (
   field: UserOrganizationInitializer | UserOrganizationInitializer[]
@@ -44,7 +44,7 @@ export const updateMultipleUserOrgWithCapabilities = async (
     return;
   }
   for (const orgCapa of orgCapabilities) {
-    const organization_id = extractId<OrganizationId>(orgCapa.organization_id);
+    const organization_id = orgCapa.organization_id;
     if (organization_id !== userId.toString()) {
       const [newUserOrganization] = await insertNewUserOrganization({
         user_id: userId,

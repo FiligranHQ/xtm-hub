@@ -38,6 +38,7 @@ export const publicDocumentItem = graphql`
     ... on Integration {
       integration_type
       datasheet_url
+      blogpost_url
       demo_url
     }
 
@@ -46,30 +47,23 @@ export const publicDocumentItem = graphql`
     }
 
     ... on CsvFeed {
-      integration_type
       feed_url
     }
 
     ... on TaxiiFeed {
-      integration_type
       feed_url
     }
 
     ... on RssFeed {
-      integration_type
       integration_subtype
       feed_url
-      datasheet_url
-      demo_url
     }
 
     ... on Stream {
-      integration_type
       feed_url
     }
 
     ... on ThirdPartyIntegration {
-      integration_type
       integration_subtype
       product_version
       vendor_url
@@ -77,7 +71,6 @@ export const publicDocumentItem = graphql`
     }
 
     ... on Connector {
-      integration_type
       integration_subtype
       product_version
       container_image
@@ -128,7 +121,7 @@ export const PublicDocumentListQuery = graphql`
     $orderMode: OrderingMode!
     $logicalFilters: LogicalFilterInput
     $searchTerm: String
-    $serviceInstanceId: ID!
+    $serviceInstanceId: ServiceInstanceId!
   ) {
     ...publicDocumentList
   }
@@ -143,7 +136,10 @@ export const PublicDocumentsByServiceSlugQuery = graphql`
 `;
 
 export const PublicDocumentBySlugQuery = graphql`
-  query publicDocumentBySlugQuery($serviceInstanceId: ID!, $slug: String!) {
+  query publicDocumentBySlugQuery(
+    $serviceInstanceId: ServiceInstanceId!
+    $slug: String!
+  ) {
     publicDocumentBySlug(serviceInstanceId: $serviceInstanceId, slug: $slug) {
       ...publicDocumentItemFragment
     }

@@ -1,20 +1,19 @@
-import { fromGlobalId } from 'graphql-relay/node/node.js';
-import { db, dbRaw } from '../../knexfile';
-import { loadSubscriptionBy } from '../modules/subcription/subscription.helper';
-import { CAPABILITY_BYPASS } from '../portal.const';
+import { db, dbRaw } from '../../../../knexfile';
+import { loadSubscriptionBy } from '../../subcription/subscription.helper';
+import { CAPABILITY_BYPASS } from '../../../portal.const';
 
 import {
   OrganizationCapability,
   ServiceInstance,
-} from '../__generated__/resolvers-types';
-import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
-import { OrganizationId } from '../model/kanel/public/Organization';
-import { SubscriptionMutator } from '../model/kanel/public/Subscription';
-import { UserLoadUserBy } from '../model/user';
-import { loadUserOrganizationCapabilities } from '../modules/common/user-organization-capability.domain';
-import { loadUserOrganization } from '../modules/common/user-organization.domain';
-import { extractId } from '../utils/utils';
-import { ServiceCapabilityArgs } from './directive-graphql/validators/service-capability.validator';
+} from '../../../__generated__/resolvers-types';
+import CapabilityPortal from '../../../model/kanel/public/CapabilityPortal';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { SubscriptionMutator } from '../../../model/kanel/public/Subscription';
+import { UserLoadUserBy } from '../../../model/user';
+import { loadUserOrganizationCapabilities } from '../user-organization-capability/user-organization-capability.domain';
+import { loadUserOrganization } from '../../common/user-organization.domain';
+import { extractId } from '../../../utils/utils';
+import { ServiceCapabilityArgs } from '../../../security/directive-graphql/validator/service-capability.validator';
 
 export const loadCapabilitiesByServiceId = async (
   user: UserLoadUserBy,
@@ -94,10 +93,7 @@ export const getCapabilityUser = (
   args: ServiceCapabilityArgs
 ) =>
   args.service_instance_id
-    ? loadCapabilitiesByServiceId(
-        user,
-        fromGlobalId(args.service_instance_id).id
-      )
+    ? loadCapabilitiesByServiceId(user, args.service_instance_id)
     : loadSubscriptionBy({
         id: extractId(args.subscription_id),
       } as SubscriptionMutator).then(([subscription]) =>

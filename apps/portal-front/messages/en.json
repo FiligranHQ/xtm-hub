@@ -636,6 +636,7 @@
       "ContainerImageLabel": "Container image",
       "CurrentLogo": "Current logo",
       "DatasheetUrlLabel": "Datasheet link (url)",
+      "BlogpostUrlLabel": "Blogpost link (url)",
       "DeleteSentence": "After clicking that button, click VALIDATE to permanently delete this image.",
       "DemoUrlLabel": "Demo link (url)",
       "DescriptionLabel": "Description",
@@ -917,6 +918,7 @@
         "VendorURL": "Vendor URL",
         "FeedURL": "Feed URL",
         "DatasheetURL": "Datasheet URL",
+        "BlogpostURL": "Blogpost URL",
         "DemoURL": "Demo URL"
       },
       "Download": "Download",

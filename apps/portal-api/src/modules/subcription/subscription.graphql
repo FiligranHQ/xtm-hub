@@ -28,11 +28,11 @@ type SubscriptionEdge {
 }
 
 type Mutation {
-  addSubscription(service_instance_id: String): ServiceInstance
+  addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   addSubscriptionInService(
-    service_instance_id: String
-    organization_id: ID
+    service_instance_id: ServiceInstanceId
+    organization_id: OrganizationId
     capability_ids: [ID]
     start_date: Date
     end_date: Date
