@@ -114,8 +114,7 @@ const adminLinksData = (t: UseTranslationsProps) => [
     label: t('MenuLinks.Security'),
   },
   {
-    href: `/${APP_PATH}/admin/use-case
-    `,
+    href: `/${APP_PATH}/admin/use-case`,
     label: t('MenuLinks.UseCases'),
   },
   {
