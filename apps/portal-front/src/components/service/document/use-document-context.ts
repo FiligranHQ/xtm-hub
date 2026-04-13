@@ -163,10 +163,13 @@ export function useDocumentContext({
     onSuccess: (serviceName: string) => void,
     onError: (error: Error) => void
   ) => {
-    const input = {
-      ...pick(values, documentBaseKeys),
-      uploader_id: values?.uploader_id ?? '',
-    };
+    const input = omit(
+      {
+        ...pick(values, documentBaseKeys),
+        uploader_id: values?.uploader_id ?? '',
+      },
+      ['slug']
+    );
 
     const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
     const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);

@@ -610,7 +610,6 @@ input CreateDocumentInput {
 
 input UpdateDocumentInput {
   name: String
-  slug: String
   short_description: String
   description: String
   active: Boolean

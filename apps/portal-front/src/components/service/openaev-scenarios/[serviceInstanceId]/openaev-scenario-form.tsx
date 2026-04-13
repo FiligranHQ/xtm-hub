@@ -124,7 +124,7 @@ export const OpenaevScenarioForm = ({
         onSubmit(values as OpenAEVScenarioFormValues);
       }}
       onValuesChange={(values, form) => {
-        if (values.name) {
+        if (isCreation && values.name) {
           const generatedSlug = slugify(values.name, {
             lower: true,
             strict: true,
