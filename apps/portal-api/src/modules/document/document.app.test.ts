@@ -579,6 +579,31 @@ describe('DocumentApp', () => {
         product_version: '2.0.0',
       });
     });
+
+    it('should preserve slug when updating a document', async () => {
+      // Given
+      const originalSlug = 'my-original-slug';
+      const documentWithSlug = await DocumentApp.createDocument({
+        input: { ...documentData, slug: originalSlug },
+        metadata: integrationMetadata,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+
+      // When
+      const updatedDocument = await DocumentApp.updateDocument({
+        parentDocumentId: documentWithSlug!.id,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        metadata: integrationMetadata,
+        input: {
+          name: 'Updated Name',
+          description: 'Updated description',
+        },
+        existingImageIds: [],
+      });
+
+      // Then
+      expect(updatedDocument.slug).toBe(originalSlug);
+    });
   });
 
   describe('loadDocument', () => {

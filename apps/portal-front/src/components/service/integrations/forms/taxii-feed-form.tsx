@@ -127,7 +127,7 @@ export const TaxiiFeedForm = ({
           onSubmit(values as TaxiiFeedFormValues);
         }}
         onValuesChange={(values, form) => {
-          if (values.name) {
+          if (isCreation && values.name) {
             const generatedSlug = slugify(values.name, {
               lower: true,
               strict: true,

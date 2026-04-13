@@ -4,11 +4,11 @@ import { screen } from '@testing-library/react';
 
 describe('CompetitorForm', () => {
   describe('domain field validation', () => {
-    const mockHandleSubmit = jest.fn();
-    const mockOnClose = jest.fn();
+    const mockHandleSubmit = vi.fn();
+    const mockOnClose = vi.fn();
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     const renderAndSubmit = async (domainValue: string) => {
