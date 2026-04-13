@@ -3,10 +3,11 @@ import { requestContext } from '../../../context/request.context';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { assertUserCanManageService } from '../../../security/guard';
-import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subcription/subscription.domain';
+import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subscription/subscription.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { insertCapabilities } from '../user-service-capability/user-service-capability.helper';
-import { UserServiceDomain } from '../../user_service/user_service.domain';
-import { willManageAccessBeConserved } from './service_capability.helper';
+
+import { willManageAccessBeConserved } from './service-capability.helper';
 
 export const serviceCapabilityApp = {
   editServiceCapability: async (

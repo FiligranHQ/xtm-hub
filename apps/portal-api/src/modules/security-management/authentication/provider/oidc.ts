@@ -5,8 +5,8 @@ import {
   Issuer as OpenIDIssuer,
   Strategy as OpenIDStrategy,
 } from 'openid-client';
-import { loadRolePortalsBySSOGroups } from '../../../role-portal/role-portal.domain';
 import { logApp } from '../../../../utils/app-logger.util';
+import { loadRolePortalsBySSOGroups } from '../../../role-portal/role-portal.domain';
 import { providerLoginHandler } from '../login-handle';
 import { extractRole } from '../mapping-roles';
 

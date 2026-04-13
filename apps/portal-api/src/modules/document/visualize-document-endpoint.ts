@@ -10,7 +10,7 @@ import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
-import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
+import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
 import { DocumentDomain } from './domain/document.domain';
 
 export const documentVisualizeEndpoint = (app) => {

@@ -44,7 +44,7 @@ import { loginFromProvider } from '../../security-management/authentication/auth
 import {
   deleteSubscription,
   insertSubscription,
-} from '../../subcription/subscription.helper';
+} from '../../subscription/subscription.helper';
 import {
   deleteUserById,
   loadUser,

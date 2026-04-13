@@ -4,7 +4,6 @@ import { UserLoadUserBy } from '../model/user';
 import { TypedNode } from '../pub';
 import { isUserGranted } from './access';
 
-
 // Used to check access in SSE
 export const meUserSSESecurity = (opt: {
   user: UserLoadUserBy;

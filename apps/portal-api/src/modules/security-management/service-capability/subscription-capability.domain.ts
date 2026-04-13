@@ -1,7 +1,15 @@
 import { db, dbRaw } from '../../../../knexfile';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
-import SubscriptionCapability from '../../../model/kanel/public/SubscriptionCapability';
+import SubscriptionCapability, {
+  SubscriptionCapabilityMutator,
+} from '../../../model/kanel/public/SubscriptionCapability';
+
+export const loadSubscriptionCapabilitiesBy = async (
+  field: SubscriptionCapabilityMutator
+) => {
+  return db<SubscriptionCapability>('Subscription_Capability').where(field);
+};
 
 export const addCapabilitiesToSubscription = async (
   subscriptionId: SubscriptionId,

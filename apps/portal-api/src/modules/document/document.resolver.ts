@@ -14,8 +14,8 @@ import { loadOrganizationBy } from '../organization-management/organizations/org
 import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
-} from '../services/service-instance.domain';
-import { loadSubscriptionBy } from '../subcription/subscription.domain';
+} from '../service/instance/service-instance.domain';
+import { loadSubscriptionBy } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildShareEvent,

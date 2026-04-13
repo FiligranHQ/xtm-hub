@@ -54,8 +54,8 @@ import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
-import { loadSubscriptionBy } from '../subcription/subscription.domain';
-import { deleteSubscription } from '../subcription/subscription.helper';
+import { loadSubscriptionBy } from '../subscription/subscription.domain';
+import { deleteSubscription } from '../subscription/subscription.helper';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
@@ -80,7 +80,7 @@ import { ServiceConfigurationDomain } from '../registration/service-configuratio
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
-} from '../services/service-instance.domain';
+} from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
 import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';

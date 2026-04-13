@@ -10,8 +10,8 @@ import Subscription, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
 import { ErrorCode } from '../../utils/error/error.code';
-import { SubscriptionStatus } from '../subscription.const';
 import { loadSubscriptionCapabilities } from '../security-management/service-capability/subscription-capability.domain';
+import { SubscriptionStatus } from '../subscription.const';
 import { subscriptionApp } from './subscription.app';
 import { createSubscription } from './subscription.domain';
 

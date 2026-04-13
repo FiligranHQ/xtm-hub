@@ -11,36 +11,36 @@ import {
   it,
   vi,
 } from 'vitest';
-import { mockPlatformConfig, TestHelper } from '../../../tests/test.helper';
+import { mockPlatformConfig, TestHelper } from '../../../../tests/test.helper';
 import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
-} from '../../../tests/tests.const';
+} from '../../../../tests/tests.const';
 import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceJoinType,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
-} from '../../__generated__/resolvers-types';
-import { DocumentId } from '../../model/kanel/public/Document';
-import { OrganizationId } from '../../model/kanel/public/Organization';
+} from '../../../__generated__/resolvers-types';
+import { DocumentId } from '../../../model/kanel/public/Document';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceDefinition, {
   ServiceDefinitionId,
-} from '../../model/kanel/public/ServiceDefinition';
+} from '../../../model/kanel/public/ServiceDefinition';
 import ServiceInstance, {
   ServiceInstanceId,
-} from '../../model/kanel/public/ServiceInstance';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import * as pub from '../../pub';
-import * as securityGuardModule from '../../security/guard';
-import { ErrorCode } from '../../utils/error/error.code';
-import * as documentHelper from '../document/document.helper';
-import { subscriptionApp } from '../subcription/subscription.app';
-import * as subscriptionDomain from '../subcription/subscription.domain';
-import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic_service_capability.const';
-import { UserServiceDomain } from '../user_service/user_service.domain';
+} from '../../../model/kanel/public/ServiceInstance';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
+import * as pub from '../../../pub';
+import * as securityGuardModule from '../../../security/guard';
+import { ErrorCode } from '../../../utils/error/error.code';
+import * as documentHelper from '../../document/document.helper';
+import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
+import { subscriptionApp } from '../../subscription/subscription.app';
+import * as subscriptionDomain from '../../subscription/subscription.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 import {
   ServiceInstanceApp,
   withServiceInstanceGlobalIDs,

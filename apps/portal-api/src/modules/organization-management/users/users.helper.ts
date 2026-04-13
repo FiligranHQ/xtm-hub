@@ -31,7 +31,6 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { hashPassword } from '../../../utils/hash-password.util';
 import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
-import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import {
   loadUserOrganization,
   updateUserOrgCapabilities,
@@ -40,7 +39,8 @@ import {
   createUserOrganizationRelation,
   createUserOrganizationRelationAndRemovePending,
 } from '../../common/user-organization.helper';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subcription/subscription.helper';
+import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscription/subscription.helper';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
 import {

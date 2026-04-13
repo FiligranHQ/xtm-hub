@@ -1,9 +1,23 @@
 import { db } from '../../../../knexfile';
+import ServiceCapability, {
+  ServiceCapabilityMutator,
+} from '../../../model/kanel/public/ServiceCapability';
 import UserService, {
   UserServiceId,
 } from '../../../model/kanel/public/UserService';
 import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
-import { GenericServiceCapabilityName } from './generic_service_capability.const';
+import { addPrefixToObject } from '../../../utils/typescript';
+import { GenericServiceCapabilityName } from './generic-service-capability.const';
+
+export const loadServiceCapabilitiesBy = async (
+  field:
+    | addPrefixToObject<ServiceCapabilityMutator, 'Service_Capability.'>
+    | ServiceCapabilityMutator
+): Promise<ServiceCapability[]> => {
+  return db<ServiceCapability>('Service_Capability')
+    .where(field)
+    .select('Service_Capability.*');
+};
 
 export const getManageAccessLeft = async (userServiceId: UserServiceId) => {
   const userService = await db<UserService>('User_Service')

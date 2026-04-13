@@ -11,7 +11,7 @@ import { extractId } from '../../utils/utils';
 import {
   loadServiceInstanceBy,
   loadServiceWithSubscriptions,
-} from '../services/service-instance.domain';
+} from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import {
   getServiceCapability,

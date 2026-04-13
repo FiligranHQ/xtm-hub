@@ -23,7 +23,7 @@ import {
   Upload,
   waitForUploads,
 } from '../../../document/document.uploads.helper';
-import { updateSubscriptionBy } from '../../../subcription/subscription.domain';
+import { updateSubscriptionBy } from '../../../subscription/subscription.domain';
 import {
   loadOrganizationBy,
   loadUserByOrganization,

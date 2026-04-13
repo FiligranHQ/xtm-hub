@@ -12,7 +12,7 @@ import { loadOrganizationBy } from '../organization-management/organizations/org
 import {
   loadPlatformConfigurationByServiceInstanceId,
   loadServiceDefinitionByServiceInstance,
-} from '../services/service-instance.domain';
+} from '../service/instance/service-instance.domain';
 import { buildOneClickDeployEvent } from './telemetry.helper';
 import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
 
