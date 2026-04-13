@@ -9,6 +9,7 @@ import {
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
+  PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
@@ -64,6 +65,19 @@ import {
 } from './registration.domain';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from './registration.mapping';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
+
+// Returns true when the platform version meets or exceeds the configured threshold for tenantId.
+// A null threshold means tenantId is never required for that identifier.
+// A missing or invalid version is treated as legacy (no tenantId required).
+const isTenantIdRequired = (
+  identifier: PlatformIdentifier,
+  version?: string | null
+): boolean => {
+  const requiredVersion = RequiredPlatformVersions.TenantIdRequired[identifier];
+  if (!requiredVersion) return false;
+  if (!version || !isValidVersion(version)) return false;
+  return doesVersionSatisfy({ givenVersion: version, requiredVersion });
+};
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
@@ -197,6 +211,14 @@ export const registrationApp = {
   }: RegisterPlatformInput): Promise<string> => {
     const { user } = requestContext.require();
     const token = uuidv4();
+
+    if (
+      isTenantIdRequired(identifier, platform.version) &&
+      !platform.tenantId
+    ) {
+      throw new Error(BadRequestErrorCode.TenantIdMandatory);
+    }
+
     const configuration: PlatformConfiguration = {
       registerer_id: user.id,
       platform_id: platform.id,
@@ -232,6 +254,13 @@ export const registrationApp = {
           tenantId: platform.tenantId,
         }
       );
+
+    const existingConfigTenantId = (
+      serviceConfiguration?.config as PlatformConfiguration | undefined
+    )?.tenant_id;
+    if (existingConfigTenantId && !platform.tenantId) {
+      throw new Error(BadRequestErrorCode.TenantIdMandatory);
+    }
 
     await withTransaction(async () => {
       if (serviceConfiguration) {
@@ -304,6 +333,13 @@ export const registrationApp = {
       });
     if (!activeServiceConfiguration) {
       return;
+    }
+
+    const configTenantId = (
+      activeServiceConfiguration.config as PlatformConfiguration
+    )?.tenant_id;
+    if (configTenantId && !tenantId) {
+      throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
     const subscription = await loadSubscriptionBy({
@@ -458,6 +494,16 @@ export const registrationApp = {
       });
 
     assertValidDeploymentRequest(deploymentRequest, input.platform.id);
+
+    if (
+      isTenantIdRequired(
+        deploymentRequest.platform_identifier,
+        input.platform.version
+      ) &&
+      !input.platform.tenantId
+    ) {
+      throw new Error(BadRequestErrorCode.TenantIdMandatory);
+    }
 
     const configuration: PlatformConfiguration = {
       registerer_id: deploymentRequest.user_requester_id,
