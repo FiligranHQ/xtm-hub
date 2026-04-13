@@ -309,7 +309,9 @@ export const registrationApp = {
         platform.id,
         platform.contract,
         platform.version,
-        platform.url
+        platform.url,
+        undefined,
+        platform.tenantId ?? undefined
       );
       await telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
@@ -542,7 +544,8 @@ export const registrationApp = {
           input.platform.contract,
           input.platform.version,
           input.platform.url,
-          input.existing_users_count ?? undefined
+          input.existing_users_count ?? undefined,
+          input.platform.tenantId ?? undefined
         );
         await telemetryApp.sendTelemetryEvent(registerEvent);
       } catch (error) {

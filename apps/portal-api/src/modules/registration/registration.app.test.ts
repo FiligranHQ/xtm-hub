@@ -427,6 +427,40 @@ describe('registration app', () => {
       }
     );
 
+    it('should include tenant_id in register event when tenantId is provided', async () => {
+      vi.useFakeTimers();
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+
+      const tenantId = uuidv4();
+      await registrationApp.registerPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        platform: { ...platform, tenantId },
+        identifier: PlatformIdentifier.Openaev,
+      });
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.REGISTER,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+        source: TelemetrySource.XTMHUB,
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+        platform_contract: 'EE',
+        platform_version: 'X.Y.Z',
+        platform_id: platform.id,
+        platform_url: platform.url,
+        target_product: TelemetryTargetProduct.OPEN_AEV,
+        organization_type: 'Professional',
+        tenant_id: tenantId,
+      });
+    });
+
     describe('with tenantId', () => {
       beforeEach(() => {
         requestContext.set(requestContextRegistererUserSecondOrga);
@@ -1396,6 +1430,74 @@ describe('registration app', () => {
           target_product: 'open-cti',
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           existing_users_count: 42,
+        });
+      });
+
+      it('should include tenant_id in register event when tenantId is provided', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        const serviceInstanceId = await registrationDomain.registerNewPlatform({
+          serviceDefinitionId: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platformIdentifier: PlatformIdentifier.Openaev,
+          serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
+        });
+
+        deploymentRequest =
+          (await DeploymentRequestDomain.insertDeploymentRequest({
+            activity_sector: DeploymentRequestActivitySector.ComputerGames,
+            id: uuidv4() as DeploymentRequestId,
+            job_title: DeploymentRequestJobTitle.CLevel,
+            organization_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            platform_identifier: PlatformIdentifier.Openaev,
+            platform_token: uuidv4(),
+            region: DeploymentRequestPlatformRegion.UsEast,
+            request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+            ordering: 1,
+            type: DeploymentRequestDeploymentType.Trial,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+            service_instance_id: serviceInstanceId as ServiceInstanceId,
+            user_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          })) as DeploymentRequest;
+
+        const telemetrySpy = vi
+          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
+
+        const openaevPlatformConfiguration = {
+          id: uuidv4(),
+          title: 'My OpenAEV platform',
+          url: 'http://example.com',
+          contract: PlatformContract.Trial,
+          version: '4.4.2',
+          tenantId: uuidv4(),
+        };
+        await registrationApp.autoRegisterPlatform(
+          deploymentRequest.platform_token as string,
+          { platform: openaevPlatformConfiguration }
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.REGISTER,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          platform_contract: PlatformContract.Trial,
+          platform_id: openaevPlatformConfiguration.id,
+          platform_version: openaevPlatformConfiguration.version,
+          platform_url: openaevPlatformConfiguration.url,
+          source: TelemetrySource.XTMHUB,
+          target_product: TelemetryTargetProduct.OPEN_AEV,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          tenant_id: openaevPlatformConfiguration.tenantId,
         });
       });
     });
