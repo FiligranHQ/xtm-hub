@@ -37,6 +37,50 @@ const EditUseCase = ({
     });
   };
 
+  const onDeleteUseCase = () => {
+    deleteUseCase({
+      variables: {
+        id: useCase.id,
+        connections,
+      },
+      onCompleted: () => {
+        toast({
+          title: t('Utils.Success'),
+        });
+        handleOpenSheet(false);
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${error.message}`)}</>,
+        });
+      },
+    });
+  };
+
+  const onUpdateUseCase = (input: { name: string; color: string }) => {
+    editUseCase({
+      variables: {
+        id: useCase.id,
+        input,
+      },
+      onCompleted: () => {
+        toast({
+          title: t('Utils.Success'),
+        });
+        handleOpenSheet(false);
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${error.message}`)}</>,
+        });
+      },
+    });
+  };
+
   return (
     <SheetWithPreventingDialog
       title={t('UseCaseActions.AddUseCase')}
@@ -45,48 +89,8 @@ const EditUseCase = ({
       <UseCaseForm
         useCase={useCase}
         onClose={() => handleOpenSheet(false)}
-        handleDelete={() =>
-          deleteUseCase({
-            variables: {
-              id: useCase.id,
-              connections,
-            },
-            onCompleted: () => {
-              toast({
-                title: t('Utils.Success'),
-              });
-              onClose();
-            },
-            onError: (error) => {
-              toast({
-                variant: 'destructive',
-                title: t('Utils.Error'),
-                description: <>{t(`Error.Server.${error.message}`)}</>,
-              });
-            },
-          })
-        }
-        handleSubmit={(input) =>
-          editUseCase({
-            variables: {
-              id: useCase.id,
-              input,
-            },
-            onCompleted: () => {
-              toast({
-                title: t('Utils.Success'),
-              });
-              onClose();
-            },
-            onError: (error) => {
-              toast({
-                variant: 'destructive',
-                title: t('Utils.Error'),
-                description: <>{t(`Error.Server.${error.message}`)}</>,
-              });
-            },
-          })
-        }
+        handleDelete={onDeleteUseCase}
+        handleSubmit={onUpdateUseCase}
       />
     </SheetWithPreventingDialog>
   );
