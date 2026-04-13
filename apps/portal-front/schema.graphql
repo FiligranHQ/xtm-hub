@@ -1,4 +1,4 @@
-directive @system_token repeatable on OBJECT | FIELD_DEFINITION
+directive @system_token(required: [OrganizationCapability!] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 

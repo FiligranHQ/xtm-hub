@@ -271,7 +271,8 @@ extend type Query {
     first: Int!
     after: ID
     filters: [DeploymentRequestFilter!]
-  ): PlatformDeploymentRequestConnection! @system_token
+  ): PlatformDeploymentRequestConnection!
+    @system_token(required: [MANAGE_DEPLOYMENT])
   deploymentRequestsAvailable(
     platformIdentifier: PlatformIdentifier
   ): [DeploymentAvailability!]!
@@ -298,7 +299,8 @@ extend type Mutation {
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   updateDeploymentRequest(
     input: UpdateDeploymentRequestInput!
-  ): PlatformDeploymentRequest! @system_token
+  ): PlatformDeploymentRequest!
+    @system_token(required: [MANAGE_DEPLOYMENT])
   reorderDeploymentRequestInQueue(
     input: ReorderDeploymentRequestInQueueInput!
   ): Success! @auth(portalCapa: [BYPASS, MODIFY_TRIALS])

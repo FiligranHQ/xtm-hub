@@ -13,6 +13,7 @@ import {
   PlatformDeploymentRequest,
   PlatformDeploymentRequestConnection,
   PlatformIdentifier,
+  PortalCapability,
   QueryDeploymentRequestsArgs,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
@@ -244,6 +245,10 @@ export const DeploymentApp = {
   updateDeploymentRequest: async (
     input: UpdateDeploymentRequestInput
   ): Promise<PlatformDeploymentRequest> => {
+    await securityGuard.assertUserPortalCapabilities([
+      PortalCapability.ManageDeployment,
+    ]);
+
     const deploymentRequestId = input.id;
     const deploymentRequest =
       await loadDeploymentRequestForUpdate(deploymentRequestId);
@@ -290,6 +295,10 @@ export const DeploymentApp = {
   loadPlatformDeploymentRequests: async (
     args: QueryDeploymentRequestsArgs
   ): Promise<PlatformDeploymentRequestConnection> => {
+    await securityGuard.assertUserPortalCapabilities([
+      PortalCapability.ManageDeployment,
+    ]);
+
     args.filters = args.filters || [];
 
     // By default, only return deployments with sync offset (target_state different from actual_state)

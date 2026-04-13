@@ -1,12 +1,16 @@
 import { MockInstance } from '@vitest/spy';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  CAPABILITY_MODIFY_TRIALS,
   // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
   requestContextAdminSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../tests/tests.const';
-import { OrganizationCapability } from '../__generated__/resolvers-types';
+import {
+  OrganizationCapability,
+  PortalCapability,
+} from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
 import * as authHelper from '../modules/security-management/capability/auth.helper';
 import { ErrorCode } from '../utils/error/error.code';
@@ -95,6 +99,48 @@ describe('security Guard', () => {
           [OrganizationCapability.AdministrateOrganization],
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         )
+      ).resolves.not.toThrow();
+    });
+
+    it('should not throw when user has bypass capability for portal capability checks', async () => {
+      requestContext.set({
+        user: contextBypassUser.user,
+        portalContext: contextBypassUser,
+      });
+
+      await expect(
+        securityGuard.assertUserPortalCapabilities([
+          PortalCapability.ManageDeployment,
+        ])
+      ).resolves.not.toThrow();
+    });
+
+    it('should throw when user does not have required portal capability', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const call = securityGuard.assertUserPortalCapabilities([
+        PortalCapability.ManageDeployment,
+      ]);
+
+      await expect(call).rejects.toThrow(
+        ErrorCode.MissingCapabilityOnOrganization
+      );
+    });
+
+    it('should not throw when user has one required portal capability', async () => {
+      requestContext.set({
+        ...requestContextAdminSecondOrga,
+        user: {
+          ...requestContextAdminSecondOrga.user,
+          capabilities: [CAPABILITY_MODIFY_TRIALS],
+        },
+      });
+
+      await expect(
+        securityGuard.assertUserPortalCapabilities([
+          PortalCapability.ModifyTrials,
+          PortalCapability.ManageDeployment,
+        ])
       ).resolves.not.toThrow();
     });
   });

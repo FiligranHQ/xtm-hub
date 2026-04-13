@@ -11,6 +11,7 @@ import { SERVICE_CAPABILITY_DIRECTIVE_NAME } from './validator/service-capabilit
 import {
   createSystemTokenResolver,
   SYSTEM_TOKEN_DIRECTIVE_NAME,
+  SystemTokenDirectiveArgs,
 } from './validator/system-token.validator';
 
 /**
@@ -21,7 +22,10 @@ export const createAuthDirectiveTransformer = (
   hasCapabilityFn: RoleFn,
   hasServiceCapabilityFn: ServiceFn
 ) => {
-  const typeDirectiveArgumentMaps: Record<string, unknown> = {};
+  const authTypeDirectiveArgumentMaps: Record<string, unknown> = {};
+  const serviceCapaTypeDirectiveArgumentMaps: Record<string, unknown> = {};
+  const systemTokenTypeDirectiveArgumentMaps: Record<string, unknown> = {};
+  const platformTokenTypeDirectiveArgumentMaps: Record<string, unknown> = {};
 
   return (schema: GraphQLSchema): GraphQLSchema => {
     return mapSchema(schema, {
@@ -32,9 +36,36 @@ export const createAuthDirectiveTransformer = (
           type,
           AUTH_DIRECTIVE_NAME
         )?.[0];
+        const serviceCapaDirective = getDirective(
+          schema,
+          type,
+          SERVICE_CAPABILITY_DIRECTIVE_NAME
+        )?.[0];
+        const systemTokenDirective = getDirective(
+          schema,
+          type,
+          SYSTEM_TOKEN_DIRECTIVE_NAME
+        )?.[0];
+        const platformTokenDirective = getDirective(
+          schema,
+          type,
+          PLATFORM_TOKEN_DIRECTIVE_NAME
+        )?.[0];
 
         if (authDirective) {
-          typeDirectiveArgumentMaps[type.name] = authDirective;
+          authTypeDirectiveArgumentMaps[type.name] = authDirective;
+        }
+        if (serviceCapaDirective) {
+          serviceCapaTypeDirectiveArgumentMaps[type.name] =
+            serviceCapaDirective;
+        }
+        if (systemTokenDirective) {
+          systemTokenTypeDirectiveArgumentMaps[type.name] =
+            systemTokenDirective;
+        }
+        if (platformTokenDirective) {
+          platformTokenTypeDirectiveArgumentMaps[type.name] =
+            platformTokenDirective;
         }
 
         return undefined;
@@ -45,25 +76,29 @@ export const createAuthDirectiveTransformer = (
         // Get directives (field-level or inherited from type)
         const authDirective =
           getDirective(schema, fieldConfig, AUTH_DIRECTIVE_NAME)?.[0] ??
-          typeDirectiveArgumentMaps[typeName];
+          authTypeDirectiveArgumentMaps[typeName];
 
         const serviceCapaDirective =
           getDirective(
             schema,
             fieldConfig,
             SERVICE_CAPABILITY_DIRECTIVE_NAME
-          )?.[0] ?? typeDirectiveArgumentMaps[typeName];
+          )?.[0] ?? serviceCapaTypeDirectiveArgumentMaps[typeName];
 
-        const systemTokenDirective =
-          getDirective(schema, fieldConfig, SYSTEM_TOKEN_DIRECTIVE_NAME)?.[0] ??
-          typeDirectiveArgumentMaps[typeName];
+        const systemTokenDirective = (getDirective(
+          schema,
+          fieldConfig,
+          SYSTEM_TOKEN_DIRECTIVE_NAME
+        )?.[0] ?? systemTokenTypeDirectiveArgumentMaps[typeName]) as
+          | SystemTokenDirectiveArgs
+          | undefined;
 
         const platformTokenDirective =
           getDirective(
             schema,
             fieldConfig,
             PLATFORM_TOKEN_DIRECTIVE_NAME
-          )?.[0] ?? typeDirectiveArgumentMaps[typeName];
+          )?.[0] ?? platformTokenTypeDirectiveArgumentMaps[typeName];
 
         // Skip if no directives
         if (
@@ -78,7 +113,10 @@ export const createAuthDirectiveTransformer = (
         // Replace resolver with secure version
         const { resolve = defaultFieldResolver } = fieldConfig;
         if (systemTokenDirective) {
-          fieldConfig.resolve = createSystemTokenResolver(resolve);
+          fieldConfig.resolve = createSystemTokenResolver(
+            resolve,
+            systemTokenDirective
+          );
         } else if (platformTokenDirective) {
           fieldConfig.resolve = createPlatformTokenResolver(resolve);
         } else {

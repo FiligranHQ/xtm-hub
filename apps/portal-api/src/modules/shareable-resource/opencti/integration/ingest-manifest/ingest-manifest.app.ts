@@ -1,3 +1,5 @@
+import { PortalCapability } from '../../../../../__generated__/resolvers-types';
+import { securityGuard } from '../../../../../security/guard';
 import { BadRequestError } from '../../../../../utils/error/error.util';
 import { upsertConnectors } from './ingest-manifest.domain';
 import {
@@ -11,6 +13,10 @@ const getOpenCTIConnectorsManifest = (tag: string) =>
 
 export const IngestManifestApp = {
   async updateOpenCTIManifest(tag: string): Promise<ManifestExtractionResult> {
+    await securityGuard.assertUserPortalCapabilities([
+      PortalCapability.ManageConnectorsIngestions,
+    ]);
+
     const manifest = await fetchManifest(getOpenCTIConnectorsManifest(tag));
     const result = extractManifestInformation(manifest);
 
