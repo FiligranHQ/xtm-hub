@@ -106,7 +106,6 @@ type Query {
   publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ServiceInstanceId): Document
-  updateOpenCTIManifest(tag: String): Success!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
@@ -130,6 +129,7 @@ type Query {
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
+  updateOpenCTIManifest(tag: String): Success!
   subscriptionById(subscription_id: ID): SubscriptionModel
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
@@ -629,341 +629,6 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
-type OpenAEVScenario implements Document & Node {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String!
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  product_version: String
-}
-
-type CustomDashboard implements Document & Node {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String!
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  product_version: String
-}
-
-enum IntegrationType {
-  csv_feed
-  connector
-  rss_feed
-  json_feed
-  taxii_feed
-  stream
-  third_party_integration
-}
-
-enum IntegrationSubType {
-  EXTERNAL_IMPORT
-  INTERNAL_ENRICHMENT
-  INTERNAL_EXPORT_FILE
-  INTERNAL_IMPORT_FILE
-  STREAM
-  NATIVE
-  ORCHESTRATION
-  DETECTION
-  CASE_MANAGEMENT
-  THREAT_ACTORS
-  MALWARE
-  CYBER_INDUSTRY
-  PERIODIC_BRIEFING
-  SECURITY_RESEARCHER
-  VENDORS
-  FEDERAL_ORGANIZATION
-  JOURNALISTS
-  NOT_FOR_PROFIT_ORGANIZATION
-  SOCIAL_MEDIA
-  DARKWEB
-}
-
-interface Integration implements Node & Document {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  remover_id: ID
-  integration_type: IntegrationType!
-  datasheet_url: String
-  blogpost_url: String
-  demo_url: String
-}
-
-type IntegrationHack implements Node & Document & Integration {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  remover_id: ID
-  integration_type: IntegrationType!
-  datasheet_url: String
-  blogpost_url: String
-  demo_url: String
-}
-
-type CsvFeed implements Node & Document & Integration {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  remover_id: ID
-  feed_url: String
-  integration_type: IntegrationType!
-  datasheet_url: String
-  blogpost_url: String
-  demo_url: String
-}
-
-type Connector implements Node & Document & Integration {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  remover_id: ID
-  integration_type: IntegrationType!
-  product_version: String
-  container_image: String
-  verified: Boolean!
-  source_code: String
-  subscription_link: String
-  integration_subtype: IntegrationSubType!
-  manager_supported: Boolean!
-  playbook_supported: Boolean!
-  datasheet_url: String
-  blogpost_url: String
-  demo_url: String
-  minimum_deployable_version: String
-}
-
-type TaxiiFeed implements Node & Document & Integration {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  remover_id: ID
-  feed_url: String
-  integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
-  datasheet_url: String
-  blogpost_url: String
-  demo_url: String
-}
-
-type RssFeed implements Node & Document & Integration {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  remover_id: ID
-  feed_url: String
-  integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
-  datasheet_url: String
-  blogpost_url: String
-  demo_url: String
-}
-
-type Stream implements Node & Document & Integration {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  remover_id: ID
-  feed_url: String
-  integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
-  datasheet_url: String
-  blogpost_url: String
-  demo_url: String
-}
-
-type ThirdPartyIntegration implements Node & Document & Integration {
-  id: ID!
-  type: String!
-  uploader: User
-  uploader_organization: Organization
-  name: String!
-  short_description: String
-  description: String
-  file_name: String
-  minio_name: String!
-  active: Boolean!
-  created_at: Date!
-  updated_at: Date
-  updater_id: String
-  download_number: Int
-  share_number: Int
-  slug: String!
-  use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
-  service_instance: ServiceInstance
-  subscription: SubscriptionModel
-  children_documents: [ShareableResource!]
-  remover_id: ID
-  integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
-  vendor_url: String!
-  product_version: String
-  github_url: String
-  datasheet_url: String
-  blogpost_url: String
-  demo_url: String
-}
-
 enum OrganizationOrdering {
   name
 }
@@ -1445,6 +1110,341 @@ type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
+}
+
+type OpenAEVScenario implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
+}
+
+type CustomDashboard implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
+}
+
+enum IntegrationType {
+  csv_feed
+  connector
+  rss_feed
+  json_feed
+  taxii_feed
+  stream
+  third_party_integration
+}
+
+enum IntegrationSubType {
+  EXTERNAL_IMPORT
+  INTERNAL_ENRICHMENT
+  INTERNAL_EXPORT_FILE
+  INTERNAL_IMPORT_FILE
+  STREAM
+  NATIVE
+  ORCHESTRATION
+  DETECTION
+  CASE_MANAGEMENT
+  THREAT_ACTORS
+  MALWARE
+  CYBER_INDUSTRY
+  PERIODIC_BRIEFING
+  SECURITY_RESEARCHER
+  VENDORS
+  FEDERAL_ORGANIZATION
+  JOURNALISTS
+  NOT_FOR_PROFIT_ORGANIZATION
+  SOCIAL_MEDIA
+  DARKWEB
+}
+
+interface Integration implements Node & Document {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type IntegrationHack implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type CsvFeed implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type Connector implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  product_version: String
+  container_image: String
+  verified: Boolean!
+  source_code: String
+  subscription_link: String
+  integration_subtype: IntegrationSubType!
+  manager_supported: Boolean!
+  playbook_supported: Boolean!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+  minimum_deployable_version: String
+}
+
+type TaxiiFeed implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type RssFeed implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type Stream implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type ThirdPartyIntegration implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  vendor_url: String!
+  product_version: String
+  github_url: String
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
 }
 
 enum SubscriptionOrdering {

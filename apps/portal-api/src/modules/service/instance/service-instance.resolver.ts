@@ -9,10 +9,10 @@ import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../document/openaev/scenarios/scenarios.model';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../document/opencti/custom-dashboards/custom-dashboards.model';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../document/opencti/integrations/integrations.model';
 import { loadCapabilities } from '../../security-management/user-service-capability/user-service-capability.helper';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
 import { ServiceInstanceApp } from './service-instance.app';
 import {
   getUserJoined,

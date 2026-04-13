@@ -51,8 +51,8 @@ import UserService, {
 } from '../src/model/kanel/public/UserService';
 import { DocumentApp } from '../src/modules/document/document.app';
 import { Upload } from '../src/modules/document/document.uploads.helper';
-import { INTEGRATION_SERVICE_INSTANCE_ID } from '../src/modules/document/opencti/integrations/integrations.model';
 import { PlatformConfiguration } from '../src/modules/registration/registration.domain';
+import { INTEGRATION_SERVICE_INSTANCE_ID } from '../src/modules/shareable-resource/opencti/integration/integration.model';
 import {
   contextRegistererUserSecondOrga,
   TEST_ORGANIZATIONS,

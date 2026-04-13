@@ -1,12 +1,12 @@
 import { Resolvers } from '../../../../__generated__/resolvers-types';
+import { DocumentChildrenDomain } from '../../../document/domain/document.children.domain';
+import { DocumentDomain } from '../../../document/domain/document.domain';
 import { getServiceInstance } from '../../../service/instance/service-instance.domain';
 import { subscriptionApp } from '../../../subscription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
-import { DocumentChildrenDomain } from '../../domain/document.children.domain';
-import { DocumentDomain } from '../../domain/document.domain';
 
 const resolvers: Resolvers = {
-  CustomDashboard: {
+  OpenAEVScenario: {
     use_cases: ({ id }) => useCaseDomain.loadUseCasesByDocumentId(id),
     children_documents: ({ id }) =>
       DocumentChildrenDomain.loadImagesByDocumentId(id),
@@ -15,7 +15,7 @@ const resolvers: Resolvers = {
       DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) =>
       getServiceInstance(service_instance_id),
-    subscription: async ({ service_instance_id }, _, context) =>
+    subscription: ({ service_instance_id }, _, context) =>
       subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
   },
 };

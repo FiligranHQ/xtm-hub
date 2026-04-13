@@ -4,8 +4,8 @@ import {
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
-} from '../../__generated__/resolvers-types';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../document/opencti/integrations/integrations.model';
+} from '../../../../../__generated__/resolvers-types';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integration.model';
 import {
   extractManifestInformation,
   ManifestExtractionResult,
