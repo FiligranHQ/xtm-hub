@@ -1,4 +1,4 @@
-import { BadRequestError } from '../../utils/error/error.util';
+import { BadRequestError } from '../../../../../utils/error/error.util';
 import { upsertConnectors } from './ingest-manifest.domain';
 import {
   extractManifestInformation,
