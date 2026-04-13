@@ -13,7 +13,7 @@ import { UserMutator } from '../../model/kanel/public/User';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
 import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
-import { loadServiceInstanceBy } from '../services/service-instance.domain';
+import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { UserServiceDomain } from '../user_service/user_service.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 

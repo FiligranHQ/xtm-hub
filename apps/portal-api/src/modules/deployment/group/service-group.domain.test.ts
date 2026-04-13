@@ -12,7 +12,7 @@ import ServiceGroup, {
 } from '../../../model/kanel/public/ServiceGroup';
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { deleteServiceInstanceBy } from '../../services/service-instance.domain';
+import { deleteServiceInstanceBy } from '../../service/instance/service-instance.domain';
 import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupDomain } from './service-group.domain';
 

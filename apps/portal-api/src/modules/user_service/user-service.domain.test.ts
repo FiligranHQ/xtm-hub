@@ -23,7 +23,7 @@ import { removeUser } from '../organization-management/users/users.helper';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
-} from '../security-management/service-capability/generic_service_capability.const';
+} from '../security-management/service-capability/generic-service-capability.const';
 import { SubscriptionStatus } from '../subscription.const';
 import { createSubscription } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user_service.domain';

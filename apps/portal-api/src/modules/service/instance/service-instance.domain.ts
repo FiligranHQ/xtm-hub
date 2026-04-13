@@ -1,43 +1,73 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, paginate } from '../../../knexfile';
+import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
+  PlatformIdentifier,
   SeoServiceInstance,
   ServiceConnection,
   ServiceDefinition,
   ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
+  ServiceInstanceJoinType,
   ServiceInstanceTag,
   ServiceLink,
-} from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
+} from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
+import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
   ServiceInstanceInitializer,
   ServiceInstanceMutator,
-} from '../../model/kanel/public/ServiceInstance';
+} from '../../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
-} from '../../model/kanel/public/Subscription';
-import { UserId, UserMutator } from '../../model/kanel/public/User';
+} from '../../../model/kanel/public/Subscription';
+import { UserId, UserMutator } from '../../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
-} from '../../model/kanel/public/UserService';
-import { UserServiceCapabilityId } from '../../model/kanel/public/UserServiceCapability';
-import { isUserAdminPlatform } from '../../security/access';
-import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
-import { buildServiceLink, sendMail } from '../../server/mail-service';
-import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
-import { formatRawObject } from '../../utils/queryRaw.util';
-import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
-import { PlatformConfiguration } from '../registration/registration.domain';
-import { loadSubscriptionCapabilities } from '../security-management/service-capability/subscription-capability.domain';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
-import { UserServiceDomain } from '../user_service/user_service.domain';
-import { insertServiceCapability } from './instances/service-capabilities/service_capabilities.helper';
+} from '../../../model/kanel/public/UserService';
+import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
+import { isUserAdminPlatform } from '../../../security/access';
+import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
+import { buildServiceLink, sendMail } from '../../../server/mail-service';
+import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
+import { formatRawObject } from '../../../utils/queryRaw.util';
+import { loadUserBy } from '../../organization-management/users/user-domain/users.domain';
+import { PlatformConfiguration } from '../../registration/registration.domain';
+import {
+  serviceInstanceNameMappedByPlatformIdentifier,
+  serviceInstanceTagMappedByPlatformIdentifier,
+} from '../../registration/registration.mapping';
+import { insertServiceCapability } from '../../security-management/service-capability/service-capability.helper';
+import { loadSubscriptionCapabilities } from '../../security-management/service-capability/subscription-capability.domain';
+import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscription/subscription.helper';
+import { UserServiceDomain } from '../../user_service/user_service.domain';
 
 export const ServiceInstanceDomain = {
+  createPlatformServiceInstance: async (
+    serviceDefinitionId: string,
+    platformIdentifier: PlatformIdentifier,
+    creation_status: ServiceInstanceCreationStatus = ServiceInstanceCreationStatus.Ready
+  ): Promise<ServiceInstanceId> => {
+    const id = uuidv4() as ServiceInstanceId;
+    await db('ServiceInstance').insert([
+      {
+        id,
+        name: serviceInstanceNameMappedByPlatformIdentifier[platformIdentifier],
+        description: '',
+        creation_status,
+        public: false,
+        join_type: ServiceInstanceJoinType.JoinAuto,
+        tags: [
+          serviceInstanceTagMappedByPlatformIdentifier[platformIdentifier],
+        ],
+        service_definition_id: serviceDefinitionId,
+      },
+    ]);
+
+    return id;
+  },
   loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription: async (
     serviceDefinitionIdentifier: ServiceDefinitionIdentifier,
     tags: ServiceInstanceTag[]

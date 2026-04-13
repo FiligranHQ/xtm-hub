@@ -9,29 +9,29 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestHelper } from '../../../../tests/test.helper';
 import {
   contextRegistererUserSecondOrga,
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
   SERVICES,
   TEST_ORGANIZATIONS,
-} from '../../../tests/tests.const';
+} from '../../../../tests/tests.const';
 import {
   PlatformContract,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceTag,
-} from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
+} from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import ServiceInstance, {
   ServiceInstanceId,
-} from '../../model/kanel/public/ServiceInstance';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { UserServiceId } from '../../model/kanel/public/UserService';
-import * as mailService from '../../server/mail-service';
-import { PlatformConfiguration } from '../registration/registration.domain';
-import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic_service_capability.const';
+} from '../../../model/kanel/public/ServiceInstance';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
+import { UserServiceId } from '../../../model/kanel/public/UserService';
+import * as mailService from '../../../server/mail-service';
+import { PlatformConfiguration } from '../../registration/registration.domain';
+import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import {
   getUserJoined,
   grantServiceAccess,

@@ -59,11 +59,11 @@ import {
 } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import * as authHelper from '../security-management/capability/auth.helper';
-import * as serviceInstanceDomain from '../services/service-instance.domain';
+import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
-} from '../services/service-instance.domain';
+} from '../service/instance/service-instance.domain';
 import * as subscriptionDomain from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {

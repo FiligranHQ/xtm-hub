@@ -80,7 +80,7 @@ import { ServiceConfigurationDomain } from '../registration/service-configuratio
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
-} from '../services/service-instance.domain';
+} from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
 import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';

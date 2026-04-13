@@ -7,7 +7,7 @@ import { UserLoadUserBy } from '../../model/user';
 import { isUserGranted } from '../../security/access';
 import { ErrorCode } from '../../utils/error/error.code';
 import { loadCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
-import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
+import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
 
 export const isUserRestrictedToActiveDocument = async (
   user: UserLoadUserBy,

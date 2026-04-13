@@ -6,7 +6,8 @@ import { assertUserCanManageService } from '../../../security/guard';
 import { fillSubscriptionWithOrgaServiceAndUserService } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user_service/user_service.domain';
 import { insertCapabilities } from '../user-service-capability/user-service-capability.helper';
-import { willManageAccessBeConserved } from './service_capability.helper';
+
+import { willManageAccessBeConserved } from './service-capability.helper';
 
 export const serviceCapabilityApp = {
   editServiceCapability: async (

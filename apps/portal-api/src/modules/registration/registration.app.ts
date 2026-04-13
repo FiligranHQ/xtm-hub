@@ -49,11 +49,11 @@ import {
   updateUser,
 } from '../organization-management/users/user-domain/users.domain';
 import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
-import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import {
   loadServiceDefinitionByServiceInstance,
   updateServiceInstance,
-} from '../services/service-instance.domain';
+} from '../service/instance/service-instance.domain';
 import { loadSubscriptionBy } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../telemetry/telemetry.helper';

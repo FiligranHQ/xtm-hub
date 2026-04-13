@@ -15,8 +15,8 @@ import organizationsResolver from '../modules/organization-management/organizati
 import usersResolver from '../modules/organization-management/users/users.resolver';
 import registrationResolver from '../modules/registration/registration.resolver';
 import serviceCapabilityResolver from '../modules/security-management/service-capability/service-capability.resolver';
-import ServiceDefinitionResolver from '../modules/services/definition/service-definition.resolver';
-import ServiceInstanceResolver from '../modules/services/services.resolver';
+import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';
+import ServiceInstanceResolver from '../modules/service/instance/service-instance.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
 import subscriptionsResolver from '../modules/subscription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';

@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { db } from '../../../../../knexfile';
+import { db } from '../../../../knexfile';
 import ServiceCapability, {
   ServiceCapabilityId,
-} from '../../../../model/kanel/public/ServiceCapability';
+} from '../../../model/kanel/public/ServiceCapability';
 import ServiceDefinition, {
   ServiceDefinitionId,
-} from '../../../../model/kanel/public/ServiceDefinition';
+} from '../../../model/kanel/public/ServiceDefinition';
 import { loadServiceCapabilitiesBy } from './service-capability.domain';
 
 describe('Service Capability domain', () => {

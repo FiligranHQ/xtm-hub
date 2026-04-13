@@ -38,13 +38,13 @@ import {
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
-} from '../security-management/service-capability/generic_service_capability.const';
+} from '../security-management/service-capability/generic-service-capability.const';
+import { insertServiceCapability } from '../security-management/service-capability/service-capability.helper';
 import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
-import { insertServiceCapability } from '../services/instances/service-capabilities/service_capabilities.helper';
 import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
-} from '../services/service-instance.domain';
+} from '../service/instance/service-instance.domain';
 import { loadSubscriptionBy } from '../subscription/subscription.helper';
 
 export const UserServiceDomain = {

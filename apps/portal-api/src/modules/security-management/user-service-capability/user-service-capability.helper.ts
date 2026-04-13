@@ -9,10 +9,9 @@ import UserServiceCapability, {
   UserServiceCapabilityId,
 } from '../../../model/kanel/public/UserServiceCapability';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { loadSubscriptionCapabilitiesBy } from '../../services/instances/service-capabilities/service_capabilities.helper';
-import { loadGenericServiceCapabilityBy } from '../service-capability/generic_service_capability.helper';
-import { loadServiceCapabilityBy } from '../service-capability/service_capability.helper';
-import { loadSubscriptionCapabilityBy } from '../service-capability/subscription_capability.helper';
+import { loadGenericServiceCapabilityBy } from '../service-capability/generic-service-capability.helper';
+import { loadServiceCapabilitiesBy } from '../service-capability/service-capability.domain';
+import { loadSubscriptionCapabilitiesBy } from '../service-capability/subscription-capability.domain';
 
 export const insertCapabilities = async (
   capabilities: string[],
@@ -30,11 +29,11 @@ export const insertCapabilities = async (
         generic_service_capability_id: genericCapability.id,
       });
     } else {
-      const [serviceCapability] = await loadServiceCapabilityBy({
+      const [serviceCapability] = await loadServiceCapabilitiesBy({
         id: fromGlobalId(insertingCapability).id as ServiceCapabilityId,
       });
 
-      const [subscriptionCapability] = await loadSubscriptionCapabilityBy({
+      const [subscriptionCapability] = await loadSubscriptionCapabilitiesBy({
         service_capability_id: serviceCapability.id,
         subscription_id: userService.subscription_id,
       });
