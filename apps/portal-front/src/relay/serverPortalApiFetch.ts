@@ -23,7 +23,8 @@ export default async function serverPortalApiFetch<
   const c = await cookies();
   const h = await headers();
   const cookieName = process.env.PORTAL_COOKIE_NAME ?? 'cloud-portal';
-  const portalCookie = c.get(cookieName);  const pathname = h.get('x-pathname');
+  const portalCookie = c.get(cookieName);
+  const pathname = h.get('x-pathname');
   const apiUri = getGraphqlApi(true, 'api');
   return networkFetch({
     apiUri,
