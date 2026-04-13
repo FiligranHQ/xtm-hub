@@ -20,6 +20,7 @@
     "extract-error-code-translation-key": "tsx scripts/extract-error-code-translation-keys.ts"
   },
   "dependencies": {
+    "@filigran/chatbot": "3.1.0",
     "@filigran/icon": "0.22.6",
     "@filigran/ui": "0.46.0",
     "@hookform/resolvers": "5.2.2",

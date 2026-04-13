@@ -18,7 +18,6 @@ import { createServer } from 'http';
 import fs from 'node:fs';
 import { v4 as uuidv4 } from 'uuid';
 import { dbMigration } from '../knexfile';
-import { initAuthPlatform } from './modules/security-management/authentication/auth-platform';
 import portalConfig from './config';
 import { requestContext } from './context/request.context';
 import { initCronJobs, stopCronJobs } from './crons';
@@ -26,6 +25,7 @@ import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/document/document-download-endpoint';
 import { documentVisualizeEndpoint } from './modules/document/visualize-document-endpoint';
+import { initAuthPlatform } from './modules/security-management/authentication/auth-platform';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import {
   operationMetricsPlugin,
@@ -33,6 +33,7 @@ import {
   sseMessageCounter,
   sseSubscriptionCounter,
 } from './server/apollo-plugins/metrics';
+import { chatbotProxyEndpoint } from './server/endpoints/chatbot-proxy';
 import { healthEndpoint } from './server/endpoints/health';
 import { userPictureEndpoint } from './server/endpoints/user-picture-endpoint';
 import createSchema from './server/graphql-schema';
@@ -326,6 +327,7 @@ documentDownloadEndpoint(app);
 documentVisualizeEndpoint(app);
 healthEndpoint(app);
 userPictureEndpoint(app);
+chatbotProxyEndpoint(app);
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema

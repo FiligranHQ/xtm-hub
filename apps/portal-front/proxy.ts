@@ -26,5 +26,6 @@ export const config = {
     '/document/images/:documentId*',
     '/user/picture/:userId*',
     '/app/:path*',
+    '/api/chatbot/:path*',
   ],
 };
