@@ -1,4 +1,3 @@
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { RequestParameters, UploadableMap } from 'relay-runtime';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
@@ -57,7 +56,7 @@ describe('fetchFormData', () => {
       );
     });
 
-    it('should set cookie header if portalCookie is provided', async () => {
+    it('should set cookie header if cookieList is provided', async () => {
       const mockJson = { data: { foo: 'bar' } };
       let headers: Record<string, unknown> = {};
       globalThis.fetch = vi.fn().mockImplementation((_, opts) => {
@@ -66,9 +65,12 @@ describe('fetchFormData', () => {
           json: () => Promise.resolve(mockJson),
         });
       });
-      const portalCookie = { name: 'session', value: 'abc' } as RequestCookie;
-      await fetchFormData('/api', request, {}, {}, portalCookie);
-      expect(headers.cookie).toBe('session=abc');
+      const cookieList = [
+        { name: 'session', value: 'abc' },
+        { name: 'other', value: 'xyz' },
+      ];
+      await fetchFormData('/api', request, {}, {}, cookieList);
+      expect(headers.cookie).toBe('session=abc; other=xyz');
     });
 
     describe('file mapping', () => {

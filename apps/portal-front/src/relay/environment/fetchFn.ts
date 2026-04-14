@@ -1,6 +1,5 @@
 import { isDevelopment } from '@/lib/utils';
 import { createClient } from 'graphql-sse';
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import {
   GraphQLResponse,
   Observable,
@@ -39,14 +38,14 @@ export async function networkFetch({
   apiUri = '/graphql-api',
   request,
   variables,
-  portalCookie,
-  cache = portalCookie ? 'no-store' : undefined,
+  cookieList,
+  cache = cookieList?.length ? 'no-store' : undefined,
   options = {},
 }: {
   apiUri?: string;
   request: RequestParameters;
   variables: Variables;
-  portalCookie?: RequestCookie;
+  cookieList?: { name: string; value: string }[];
   cache?: RequestCache;
   options?: RequestInit;
 }): Promise<GraphQLResponse> {
@@ -58,8 +57,10 @@ export async function networkFetch({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   };
-  if (portalCookie) {
-    headers.cookie = portalCookie.name + '=' + portalCookie.value;
+  if (cookieList?.length) {
+    headers.cookie = cookieList
+      .map((ck) => `${ck.name}=${ck.value}`)
+      .join('; ');
   }
 
   const activeCacheConfig = isDevelopment()
