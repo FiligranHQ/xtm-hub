@@ -82,7 +82,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: Props) => {
           </article>
           <article className="border border-solid border-b rounded p-6 basis-full">
             <h3 className="flex items-center gap-l text-blue mb-s font-bold">
-              <span className="p-2 bg-blue/5 bg-opacity-5 rounded">
+              <span className="p-2 bg-blue/5 rounded">
                 <AnalyticsIcon className="size-4" />
               </span>
               {t(`${baseTranslationKey}.Blocks.Second.Title`)}
@@ -91,7 +91,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: Props) => {
           </article>
           <article className="border border-solid border-b rounded p-6 basis-full">
             <h3 className="flex items-center gap-l text-blue mb-s font-bold">
-              <span className="p-2 bg-blue/5 bg-opacity-5 rounded">
+              <span className="p-2 bg-blue/5 rounded">
                 <ArrowsOutputIcon className="size-4" />
               </span>
               {t(`${baseTranslationKey}.Blocks.Third.Title`)}

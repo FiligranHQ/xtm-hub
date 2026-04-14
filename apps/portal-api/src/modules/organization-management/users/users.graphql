@@ -26,14 +26,14 @@ type User implements Node {
   picture: String
   country: String
   disabled: Boolean
-  selected_organization_id: String
+  selected_organization_id: OrganizationId
   organizations: [Organization!]
   organization_capabilities: [OrganizationCapabilities!]
   capabilities: [Capability!]
   roles_portal: [RolePortal!]
   selected_org_capabilities: [OrganizationCapability!]
   last_login: Date
-  pending_organization_id: ID
+  pending_organization_id: OrganizationId
 }
 
 type UserEdge {
@@ -48,7 +48,7 @@ type UserConnection {
 }
 
 input UsersWithCapabilitiesInOrganizationInput {
-  organizationId: ID!
+  organizationId: OrganizationId!
   capabilities: [OrganizationCapability!]!
 }
 
@@ -95,7 +95,7 @@ input EditMeUserInput {
 }
 
 input OrganizationCapabilitiesInput {
-  organization_id: ID!
+  organization_id: OrganizationId!
   capabilities: [String!]
 }
 
@@ -130,17 +130,21 @@ type Mutation {
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
-  changeSelectedOrganization(organization_id: ID!): User @auth
+  changeSelectedOrganization(organization_id: OrganizationId!): User @auth
   bulkRemovePendingUserFromOrganization(
     input: BulkPendingUserFromOrganizationInput
   ): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   bulkAcceptPendingUserInOrganization(
     input: BulkPendingUserFromOrganizationInput
   ): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
-  removePendingUserFromOrganization(user_id: ID!, organization_id: ID!): User
-    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
-  removeUserFromOrganization(user_id: ID!, organization_id: ID!): User
-    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  removePendingUserFromOrganization(
+    user_id: ID!
+    organization_id: OrganizationId!
+  ): User @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  removeUserFromOrganization(
+    user_id: ID!
+    organization_id: OrganizationId!
+  ): User @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
 
   # Profile
   editMeUser(input: EditMeUserInput!): User! @auth

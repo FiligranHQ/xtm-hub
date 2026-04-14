@@ -44,7 +44,7 @@ import { loginFromProvider } from '../../security-management/authentication/auth
 import {
   deleteSubscription,
   insertSubscription,
-} from '../../subcription/subscription.helper';
+} from '../../subscription/subscription.helper';
 import {
   deleteUserById,
   loadUser,
@@ -370,10 +370,7 @@ describe('User mutation resolver', () => {
             password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
             organization_capabilities: [
               {
-                organization_id: toGlobalId(
-                  'Organization',
-                  TEST_ORGANIZATIONS.FILIGRAN.ID
-                ),
+                organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
                 capabilities: [],
               },
             ],
@@ -446,10 +443,7 @@ describe('User mutation resolver', () => {
               password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
                   capabilities: [],
                 },
               ],
@@ -528,10 +522,7 @@ describe('User mutation resolver', () => {
               password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
                   capabilities: [],
                 },
               ],
@@ -588,30 +579,21 @@ describe('User mutation resolver', () => {
             input: {
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
                   capabilities: [
                     OrganizationCapability.ManageAccess,
                     OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
                   capabilities: [
                     OrganizationCapability.ManageAccess,
                     OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
                   capabilities: [],
                 },
               ],
@@ -632,20 +614,14 @@ describe('User mutation resolver', () => {
             input: {
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
                   capabilities: [
                     OrganizationCapability.ManageAccess,
                     OrganizationCapability.ManageSubscription,
                   ],
                 },
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.FILIGRAN.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
                   capabilities: [
                     OrganizationCapability.ManageAccess,
                     OrganizationCapability.ManageSubscription,
@@ -684,10 +660,7 @@ describe('User mutation resolver', () => {
               organization_capabilities:
                 secondOrgaUser.organization_capabilities.map(
                   (organizationCapabilities) => ({
-                    organization_id: toGlobalId(
-                      'Organization',
-                      organizationCapabilities.organization.id
-                    ),
+                    organization_id: organizationCapabilities.organization.id,
                     capabilities: organizationCapabilities.capabilities,
                   })
                 ),
@@ -706,10 +679,7 @@ describe('User mutation resolver', () => {
             input: {
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
                   capabilities: [],
                 },
               ],
@@ -742,10 +712,7 @@ describe('User mutation resolver', () => {
             organization_capabilities:
               secondOrgaUser.organization_capabilities.map(
                 (organizationCapabilities) => ({
-                  organization_id: toGlobalId(
-                    'Organization',
-                    organizationCapabilities.organization.id
-                  ),
+                  organization_id: organizationCapabilities.organization.id,
                   capabilities: organizationCapabilities.capabilities,
                 })
               ),
@@ -1012,11 +979,7 @@ describe('User mutation resolver', () => {
       });
 
       const userId = toGlobalId('User', pendingUser.id);
-      const organizationId = toGlobalId(
-        'Organization',
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-      );
-
+      const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       // When
       await usersResolver.Mutation.removePendingUserFromOrganization(
         undefined,
@@ -1058,15 +1021,12 @@ describe('User mutation resolver', () => {
         roles: [],
       });
       const userId = toGlobalId('User', pendingUser.id);
-      const organizationId = toGlobalId(
-        'Organization',
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-      );
+      const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       const subscriptionSpy = new SubscriptionSpy();
       await subscriptionSpy.spy(
         usersResolver.Subscription?.UserPending,
         {
-          organizationId: organizationId,
+          organizationId: toGlobalId('Organization', organizationId),
         },
         contextAdminSecondOrga,
         ['delete']

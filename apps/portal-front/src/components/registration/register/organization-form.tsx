@@ -56,7 +56,7 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
                     return (
                       <FormItem
                         key={organization.id}
-                        className="flex justify-start gap-xs items-center">
+                        className="flex items-center flex-row">
                         <FormControl>
                           <Input
                             className="w-auto h-4 w-4 accent-primary"

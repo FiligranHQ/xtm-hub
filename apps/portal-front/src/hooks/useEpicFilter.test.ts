@@ -18,23 +18,47 @@ describe('useEpicFilter', () => {
     } as never);
   });
 
-  it.each`
-    searchQuery                                       | expectedSelectedProduct
-    ${''}                                             | ${'all'}
-    ${`product=${FiligranProductEnum.OPENCTI}`}       | ${FiligranProductEnum.OPENCTI}
-    ${'product=unknown'}                              | ${'all'}
-    ${'product='}                                     | ${'all'}
-    ${`page=2&product=${FiligranProductEnum.XTMHUB}`} | ${FiligranProductEnum.XTMHUB}
-  `(
-    'should expose "$expectedSelectedProduct" from "$searchQuery"',
-    ({ searchQuery, expectedSelectedProduct }) => {
-      vi.mocked(useSearchParams).mockReturnValue(
-        new URLSearchParams(searchQuery) as never
-      );
+  describe('selectedProduct', () => {
+    it.each`
+      searchQuery                                 | expectedSelectedProduct        | description
+      ${''}                                       | ${undefined}                   | ${'no param → undefined'}
+      ${'product=all'}                            | ${'all'}                       | ${'explicit "all" → "all"'}
+      ${`product=${FiligranProductEnum.OPENCTI}`} | ${FiligranProductEnum.OPENCTI} | ${'valid enum value → enum'}
+      ${'product=unknown'}                        | ${undefined}                   | ${'unknown value → undefined'}
+      ${'product='}                               | ${undefined}                   | ${'empty value → undefined'}
+    `(
+      'should expose "$expectedSelectedProduct" from "$searchQuery" ($description)',
+      ({ searchQuery, expectedSelectedProduct }) => {
+        vi.mocked(useSearchParams).mockReturnValue(
+          new URLSearchParams(searchQuery) as never
+        );
 
-      const { result } = renderHook(() => useEpicFilter());
+        const { result } = renderHook(() => useEpicFilter());
 
-      expect(result.current.selectedProduct).toBe(expectedSelectedProduct);
-    }
-  );
+        expect(result.current.selectedProduct).toBe(expectedSelectedProduct);
+      }
+    );
+  });
+
+  describe('setSelectedProduct', () => {
+    it.each`
+      initialSearch                                                                      | filter                         | expectedUrl                                        | description
+      ${''}                                                                              | ${'all'}                       | ${'/epics?product=all'}                            | ${'sets "all" on empty params'}
+      ${''}                                                                              | ${FiligranProductEnum.OPENCTI} | ${`/epics?product=${FiligranProductEnum.OPENCTI}`} | ${'sets a product on empty params'}
+      ${`product=${FiligranProductEnum.OPENCTI}`}                                        | ${FiligranProductEnum.XTMHUB}  | ${`/epics?product=${FiligranProductEnum.XTMHUB}`}  | ${'replaces existing product'}
+      ${`product=${FiligranProductEnum.OPENCTI}&product=${FiligranProductEnum.OPENAEV}`} | ${FiligranProductEnum.OPENCTI} | ${`/epics?product=${FiligranProductEnum.OPENCTI}`} | ${'get first product if user plays with URL'}
+    `(
+      'should call router.replace with "$expectedUrl" ($description)',
+      ({ initialSearch, filter, expectedUrl }) => {
+        vi.mocked(useSearchParams).mockReturnValue(
+          new URLSearchParams(initialSearch) as never
+        );
+
+        const { result } = renderHook(() => useEpicFilter());
+        result.current.setSelectedProduct(filter);
+
+        expect(mockReplace).toHaveBeenCalledWith(expectedUrl);
+      }
+    );
+  });
 });

@@ -30,7 +30,7 @@ export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
       hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
 
   return (
-    <nav className="flex-1 flex-shrink-0 pt-s">
+    <nav className="flex-1 shrink-0 pt-s">
       <OrganizationSwitcher open={open} />
 
       <ul className="space-y-s">

@@ -104,7 +104,7 @@ input RegisteredPlatformsInput {
 }
 
 input RegisteredPlatformInput {
-  service_instance_id: ID!
+  service_instance_id: ServiceInstanceId!
 }
 
 input AutoRegisterPlatformInput {

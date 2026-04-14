@@ -3,7 +3,7 @@ import { graphql } from 'react-relay';
 export const ServiceCapabilityCreateMutation = graphql`
   mutation serviceCapabilityMutation(
     $input: EditServiceCapabilityInput
-    $serviceInstanceId: String
+    $serviceInstanceId: ServiceInstanceId
   ) {
     editServiceCapability(
       input: $input

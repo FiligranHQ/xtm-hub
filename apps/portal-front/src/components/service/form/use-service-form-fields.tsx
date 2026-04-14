@@ -59,6 +59,7 @@ type AvailableFields =
   | 'vendor_url'
   | 'github_url'
   | 'datasheet_url'
+  | 'blogpost_url'
   | 'demo_url'
   | 'product_version'
   | 'container_image'
@@ -221,7 +222,9 @@ export const useServiceFormFields = ({
         label: t('Service.Form.SlugLabel'),
         inputProps: {
           placeholder: t('Service.Form.SlugPlaceholder'),
+          readOnly: !isCreation,
           disabled: disabledFields.includes('slug'),
+          className: !isCreation ? 'opacity-50 cursor-not-allowed' : '',
         },
       },
       name: {
@@ -255,6 +258,15 @@ export const useServiceFormFields = ({
           placeholder: t('Service.Form.UrlPlaceholder'),
           disabled: disabledFields.includes(
             DocumentMetadataKeyCodeEnum.DATASHEET_URL
+          ),
+        },
+      },
+      blogpost_url: {
+        label: t('Service.Form.BlogpostUrlLabel'),
+        inputProps: {
+          placeholder: t('Service.Form.UrlPlaceholder'),
+          disabled: disabledFields.includes(
+            DocumentMetadataKeyCodeEnum.BLOGPOST_URL
           ),
         },
       },

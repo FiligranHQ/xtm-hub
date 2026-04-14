@@ -12,7 +12,7 @@ import { loadOrganizationBy } from '../organization-management/organizations/org
 
 import { requestContext } from '../../context/request.context';
 import { DocumentMetadataDomain } from '../document/domain/document.metadata.domain';
-import { loadServiceDefinitionByServiceInstance } from '../services/service-instance.domain';
+import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,

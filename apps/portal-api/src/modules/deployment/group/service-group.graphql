@@ -1,3 +1,5 @@
+scalar ServiceGroupId
+
 type ServiceGroup implements Node {
   id: ID!
   name: String!
@@ -5,7 +7,7 @@ type ServiceGroup implements Node {
 }
 
 input UpdateServiceGroupsInputGroup {
-  id: ID!
+  id: ServiceGroupId!
   userIds: [ID!]!
 }
 
@@ -14,7 +16,7 @@ input UpdateServiceGroupsInput {
 }
 
 type Query {
-  serviceGroups(serviceInstanceId: ID!): [ServiceGroup!]!
+  serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
     @auth(
       portalCapa: [BYPASS]
       orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]

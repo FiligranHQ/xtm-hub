@@ -160,6 +160,7 @@
     "XTMRoadmap": "Roadmap Suite XTM",
     "AllProducts": "Tous les produits",
     "ShowFinished": "Afficher les épics terminés",
+    "FilterByProduct": "Filtrer par produit",
     "Search": "Rechercher des épics...",
     "Timeline": {
       "draft": "Brouillons",
@@ -695,6 +696,7 @@
       "ContainerImageLabel": "Image du conteneur",
       "CurrentLogo": "Logo actuel",
       "DatasheetUrlLabel": "Lien vers la fiche technique (url)",
+      "BlogpostUrlLabel": "Lien vers l'article de blog (url)",
       "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
       "DemoUrlLabel": "Lien vers la démo (url)",
       "DescriptionLabel": "Description",
@@ -976,6 +978,7 @@
         "VendorURL": "URL du fournisseur",
         "FeedURL": "URL du flux",
         "DatasheetURL": "URL de la fiche technique",
+        "BlogpostURL": "URL de l'article de blog",
         "DemoURL": "URL de la démo"
       },
       "Download": "Télécharger",

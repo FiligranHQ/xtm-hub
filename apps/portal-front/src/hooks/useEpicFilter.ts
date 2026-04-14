@@ -12,20 +12,20 @@ export const useEpicFilter = () => {
   const pathname = usePathname();
 
   const rawParam = searchParams.get(PRODUCT_PARAM);
-  const selectedProduct: EpicFilterType =
-    rawParam &&
-    Object.values(FiligranProductEnum).includes(rawParam as FiligranProductEnum)
-      ? (rawParam as FiligranProductEnum)
-      : 'all';
+  const selectedProduct: EpicFilterType | undefined =
+    rawParam === 'all'
+      ? 'all'
+      : rawParam &&
+          Object.values(FiligranProductEnum).includes(
+            rawParam as FiligranProductEnum
+          )
+        ? (rawParam as FiligranProductEnum)
+        : undefined;
 
   const setSelectedProduct = useCallback(
     (filter: EpicFilterType) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (filter === 'all') {
-        params.delete(PRODUCT_PARAM);
-      } else {
-        params.set(PRODUCT_PARAM, filter);
-      }
+      params.set(PRODUCT_PARAM, filter);
       const query = params.toString();
       router.replace(query ? `${pathname}?${query}` : pathname);
     },

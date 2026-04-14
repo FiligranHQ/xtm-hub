@@ -28,6 +28,7 @@ const csvFeedFormSchema = z.object({
   use_cases: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
+  blogpost_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
   logo: z.custom<FileList>(optionalFileListCheck).optional(),
@@ -102,6 +103,7 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
     uploader_organization_id,
     integration_type,
     datasheet_url,
+    blogpost_url,
     demo_url,
     imagesField,
     images,
@@ -120,7 +122,7 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
           onSubmit(values as CsvFeedFormValues);
         }}
         onValuesChange={(values, form) => {
-          if (values.name) {
+          if (isCreation && values.name) {
             const generatedSlug = slugify(values.name, {
               lower: true,
               strict: true,
@@ -163,6 +165,7 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
           name,
           integration_type,
           datasheet_url,
+          blogpost_url,
           demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />

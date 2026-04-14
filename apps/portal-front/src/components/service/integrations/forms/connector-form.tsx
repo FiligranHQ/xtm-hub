@@ -54,6 +54,7 @@ const connectorSchema = z.object({
   manager_supported: z.boolean().optional(),
   playbook_supported: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
+  blogpost_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
   logo: z.custom<FileList>(optionalFileListCheck).optional(),
@@ -115,6 +116,7 @@ export const ConnectorForm = ({
     uploader_organization_id,
     integration_type,
     datasheet_url,
+    blogpost_url,
     demo_url,
     product_version,
     integration_subtype,
@@ -176,6 +178,7 @@ export const ConnectorForm = ({
           name,
           integration_type,
           datasheet_url,
+          blogpost_url,
           product_version,
           minimum_deployable_version: document?.manager_supported
             ? minimum_deployable_version

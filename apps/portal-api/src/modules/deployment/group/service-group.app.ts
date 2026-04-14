@@ -10,7 +10,6 @@ import ServiceGroup, {
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
-import { userHasBypassCapability } from '../../security-management/capability/auth.helper';
 import { sendMail } from '../../../server/mail-service';
 import { auth0Client } from '../../../thirdparty/auth0/client';
 import { logApp } from '../../../utils/app-logger.util';
@@ -20,6 +19,7 @@ import { organizationDomain } from '../../organization-management/organizations/
 import { UsersDomain } from '../../organization-management/users/user-domain/users.domain';
 import { PlatformConfiguration } from '../../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
+import { userHasBypassCapability } from '../../security-management/capability/auth.helper';
 import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
 import { ServiceGroupHelper } from './service-group.helper';

@@ -62,7 +62,7 @@ import { useDebounceCallback } from 'usehooks-ts';
 const removePendingUser = graphql`
   mutation pendingUserListRemoveUserMutation(
     $user_id: ID!
-    $organization_id: ID!
+    $organization_id: OrganizationId!
   ) {
     removePendingUserFromOrganization(
       user_id: $user_id

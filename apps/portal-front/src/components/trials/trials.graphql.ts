@@ -68,7 +68,7 @@ export const TrialsReorderRequestInQueueMutation = graphql`
 
 export const TrialsAdminCancelDeploymentRequestMutation = graphql`
   mutation trialsAdminCancelDeploymentRequestMutation(
-    $deploymentRequestId: ID!
+    $deploymentRequestId: DeploymentRequestId!
     $removeConnections: [ID!]!
   ) {
     adminCancelDeploymentRequest(deploymentRequestId: $deploymentRequestId) {

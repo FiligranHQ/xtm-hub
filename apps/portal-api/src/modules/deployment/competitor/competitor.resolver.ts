@@ -6,10 +6,12 @@ import {
 
 import { CompetitorId } from '../../../model/kanel/public/Competitor';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
+import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { CompetitorApp } from './competitor.app';
 import { CompetitorDomain } from './competitor.domain';
 
 const resolvers: Resolvers = {
+  CompetitorId: createRelayIdScalar<CompetitorId>('Competitor'),
   Query: {
     competitors: async (_, args: QueryCompetitorsArgs) => {
       try {
@@ -38,7 +40,7 @@ const resolvers: Resolvers = {
 
     deleteCompetitor: async (_, { id }) => {
       try {
-        return await CompetitorApp.deleteCompetitorById(id as CompetitorId);
+        return await CompetitorApp.deleteCompetitorById(id);
       } catch (error) {
         throw mapToGraphQLError(error);
       }

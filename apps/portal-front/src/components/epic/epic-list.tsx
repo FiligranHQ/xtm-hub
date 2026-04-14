@@ -18,14 +18,13 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
-import { SearchInput } from '../ui/search-input';
 
 interface EpicListProps {
   epics: epic_fragment$data[];
   serviceInstance:
     | serviceInstance_fragment$data
     | seoServiceInstanceFragment$data;
-  selectedProduct: EpicFilterType;
+  selectedProduct?: EpicFilterType;
   onFilterChange: (filter: EpicFilterType) => void;
   onSearch: (searchTerm: string) => void;
 }
@@ -49,7 +48,7 @@ export const EpicList = ({
     serviceInstance as serviceInstance_fragment$data
   );
   const filteredEpics =
-    selectedProduct === 'all'
+    !selectedProduct || selectedProduct === 'all'
       ? epics
       : epics.filter((epic) => epic.product === selectedProduct);
 
@@ -112,23 +111,14 @@ export const EpicList = ({
           </div>
         )}
       </div>
-      <div className="flex flex-row items-center">
-        <SearchInput
-          containerClass="w-full sm:w-1/3"
-          placeholder={t('Epic.Search')}
-          onChange={debounceHandleInput}
-        />
-
-        <div className="ml-auto">
-          <EpicFilter
-            selectedFilter={selectedProduct}
-            onSelectedFilterChange={onFilterChange}
-            countsByProduct={countsByProduct}
-            showFinished={showFinished}
-            onShowFinishedChange={setShowFinished}
-          />
-        </div>
-      </div>
+      <EpicFilter
+        selectedFilter={selectedProduct}
+        onSelectedFilterChange={onFilterChange}
+        countsByProduct={countsByProduct}
+        showFinished={showFinished}
+        onShowFinishedChange={setShowFinished}
+        debounceHandleInput={debounceHandleInput}
+      />
       {sections.map((timeline) => {
         if (
           (timeline.title === 'draft' && !(userCanUpdate || userCanDelete)) ||

@@ -12,9 +12,8 @@ import {
 } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { BadRequestError } from '../../utils/error/error.util';
-import { extractId } from '../../utils/utils';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import { loadSubscriptionByServiceInstanceAndOrganization } from '../services/service-instance.domain';
+import { loadSubscriptionByServiceInstanceAndOrganization } from '../service/instance/service-instance.domain';
 import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {
@@ -65,9 +64,7 @@ const resolvers: Resolvers = {
       }
     },
     registeredPlatform: async (_, { input }) =>
-      registrationApp.loadRegisteredPlatform(
-        extractId<ServiceInstanceId>(input.service_instance_id)
-      ),
+      registrationApp.loadRegisteredPlatform(input.service_instance_id),
     registeredPlatforms: async (_, { input }) =>
       registrationApp.loadRegisteredPlatforms(input),
     /**

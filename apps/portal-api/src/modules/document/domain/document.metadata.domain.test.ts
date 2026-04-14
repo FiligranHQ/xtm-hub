@@ -7,12 +7,12 @@ import {
   IntegrationType,
 } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
-import { DocumentApp } from '../document.app';
-import * as DocumentUploadsHelper from '../document.uploads.helper';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from '../opencti/integrations/integrations.model';
+} from '../../shareable-resource/opencti/integration/integration.model';
+import { DocumentApp } from '../document.app';
+import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentMetadataDomain } from './document.metadata.domain';
 
 describe('DocumentMetadataDomain', () => {

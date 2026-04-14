@@ -32,6 +32,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -260,7 +261,7 @@ const Page = async ({
         <BreadcrumbNav value={breadcrumbValue} />
         <div className="flex gap-s pb-l flex-col md:flex-row">
           {logo ? (
-            <div className="w-24 flex-shrink-0 rounded overflow-hidden">
+            <div className="w-24 shrink-0 rounded overflow-hidden">
               <Image
                 src={`/document/images/${serviceInstance.id}/${logo.id}`}
                 alt={`${document.name} logo`}
@@ -271,7 +272,7 @@ const Page = async ({
               />
             </div>
           ) : (
-            <div className="w-24 p-m border border-light flex-shrink-0">
+            <div className="w-24 p-m border border-light shrink-0">
               <LogoFiligranIcon className="size-18" />
             </div>
           )}
@@ -317,7 +318,9 @@ const Page = async ({
             <section className="border rounded border-border-light bg-page-background">
               <h2 className="p-l">{document?.short_description}</h2>
               <div className="p-l !bg-page-background markdown-content">
-                <MarkdownAsync>{document?.description ?? ''}</MarkdownAsync>
+                <MarkdownAsync remarkPlugins={[remarkGfm]}>
+                  {document?.description ?? ''}
+                </MarkdownAsync>
               </div>
             </section>
           </div>

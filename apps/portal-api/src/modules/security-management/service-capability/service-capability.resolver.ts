@@ -1,5 +1,4 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
@@ -15,7 +14,7 @@ const resolvers: Resolvers = {
         return serviceCapabilityApp.editServiceCapability(
           user_service_id,
           input.capabilities,
-          extractId<ServiceInstanceId>(serviceInstanceId)
+          serviceInstanceId
         );
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EditCapabilitiesError);

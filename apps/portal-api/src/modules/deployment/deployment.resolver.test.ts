@@ -18,8 +18,8 @@ import {
 import { requestContext } from '../../context/request.context';
 import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../utils/error/error.code';
-import { deleteServiceInstanceBy } from '../services/service-instance.domain';
-import { deleteSubscription } from '../subcription/subscription.helper';
+import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
+import { deleteSubscription } from '../subscription/subscription.helper';
 import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
 import resolver from './deployment.resolver';

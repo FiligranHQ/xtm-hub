@@ -36,7 +36,7 @@ const OpenedMenuAdmin = () => {
         className="border-none"
         value="item-1">
         <AccordionTrigger className="h-9 px-m py-s hover:bg-hover hover:no-underline">
-          <span className="flex w-8 flex-shrink-0 justify-center">
+          <span className="flex w-8 shrink-0 justify-center">
             <SettingsIcon
               aria-hidden={true}
               focusable={false}
@@ -80,7 +80,7 @@ const ClosedMenuAdmin = () => {
               'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
           )}
           aria-label={t('MenuLinks.SettingsLabel')}>
-          <span className="flex w-8 flex-shrink-0 justify-center">
+          <span className="flex w-8 shrink-0 justify-center">
             <SettingsIcon
               aria-hidden={true}
               focusable={false}
@@ -114,8 +114,7 @@ const adminLinksData = (t: UseTranslationsProps) => [
     label: t('MenuLinks.Security'),
   },
   {
-    href: `/${APP_PATH}/admin/use-case
-    `,
+    href: `/${APP_PATH}/admin/use-case`,
     label: t('MenuLinks.UseCases'),
   },
   {

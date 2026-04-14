@@ -29,6 +29,7 @@ const streamFormSchema = z.object({
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
+  blogpost_url: z.url().or(z.literal('')).nullish(),
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck),
   logo: z.custom<FileList>(optionalFileListCheck).optional(),
@@ -104,6 +105,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
     integration_subtype,
     integration_type,
     datasheet_url,
+    blogpost_url,
     demo_url,
     imagesField,
     images,
@@ -122,7 +124,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
           onSubmit(values as StreamFormValues);
         }}
         onValuesChange={(values, form) => {
-          if (values.name) {
+          if (isCreation && values.name) {
             const generatedSlug = slugify(values.name, {
               lower: true,
               strict: true,
@@ -166,6 +168,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
           integration_type,
           integration_subtype,
           datasheet_url,
+          blogpost_url,
           demo_url,
         }}>
         <ServiceFormSheetFooter handleCloseSheet={handleCloseSheet} />
