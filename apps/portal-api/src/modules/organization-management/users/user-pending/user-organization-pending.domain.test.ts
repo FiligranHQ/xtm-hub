@@ -40,7 +40,7 @@ describe('UserOrganizationPendingDomain', () => {
       const result =
         await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
 
       const secondOrgaResult = result.find(
         (orga) => orga.id === TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
@@ -64,7 +64,7 @@ describe('UserOrganizationPendingDomain', () => {
       const result =
         await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
 
-      expect(result.length).toBe(0);
+      expect(result).toHaveLength(0);
     });
   });
   describe('removeUserFromOrganizationPendingBulk', () => {

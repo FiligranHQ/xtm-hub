@@ -153,7 +153,7 @@ describe('Document domain', () => {
           INTEGRATION_METADATA_KEYS
         );
 
-      expect(csvFeedConnection.edges.length).toBe(1);
+      expect(csvFeedConnection.edges).toHaveLength(1);
       expect(csvFeedConnection.edges[0]?.node.id).toBe(csvFeed!.id);
       expect(csvFeedConnection.edges[0]?.node.integration_type).toBe(
         IntegrationType.CsvFeed
@@ -266,7 +266,7 @@ describe('Document domain', () => {
           sampleExtractedManifest as ManifestInformation[]
         );
 
-        expect(connectors.length).toBe(2);
+        expect(connectors).toHaveLength(2);
 
         // Fetch connectors with version
         const connectorConnection: DocumentConnection =
@@ -309,7 +309,7 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(connectorConnection.edges.length).toBe(2);
+        expect(connectorConnection.edges).toHaveLength(2);
 
         expect(connectorConnection.edges).toEqual(
           expect.arrayContaining([
@@ -337,7 +337,7 @@ describe('Document domain', () => {
         );
 
         expect(connectors).toBeDefined();
-        expect(connectors.length).toBe(2);
+        expect(connectors).toHaveLength(2);
 
         const secondContractConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
@@ -362,7 +362,7 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(secondContractConnection.edges.length).toBe(2);
+        expect(secondContractConnection.edges).toHaveLength(2);
         expect(secondContractConnection.edges[0]?.node.id).toBe(
           connectors[0]?.id
         );
@@ -375,7 +375,7 @@ describe('Document domain', () => {
         );
 
         expect(connectors).toBeDefined();
-        expect(connectors.length).toBe(2);
+        expect(connectors).toHaveLength(2);
 
         const allContractsConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
@@ -400,7 +400,7 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(allContractsConnection.edges.length).toBe(3);
+        expect(allContractsConnection.edges).toHaveLength(3);
       });
     });
   });
@@ -665,7 +665,7 @@ describe('Document domain', () => {
         TEST_SERVICE_SLUG,
         [TEST_METADATA_KEY]
       );
-      expect(docs.length).toBe(1);
+      expect(docs).toHaveLength(1);
       expect(docs[0][TEST_METADATA_KEY]).toBe(TEST_METADATA_VALUE);
     });
 
@@ -675,7 +675,7 @@ describe('Document domain', () => {
         'nonexistent-slug'
       );
       expect(Array.isArray(docs)).toBe(true);
-      expect(docs.length).toBe(0);
+      expect(docs).toHaveLength(0);
     });
   });
 
@@ -711,7 +711,7 @@ describe('Document domain', () => {
         TEST_VALUE
       );
       expect(Array.isArray(docs)).toBe(true);
-      expect(docs.length).toBe(1);
+      expect(docs).toHaveLength(1);
       expect(docs[0]!.id).toBe(doc1.id);
     });
 
@@ -737,7 +737,7 @@ describe('Document domain', () => {
         'nonexistent'
       );
       expect(Array.isArray(docs)).toBe(true);
-      expect(docs.length).toBe(0);
+      expect(docs).toHaveLength(0);
     });
 
     it('should include requested metadata fields', async () => {
@@ -746,7 +746,7 @@ describe('Document domain', () => {
         TEST_VALUE,
         [TEST_KEY]
       );
-      expect(docs.length).toBe(1);
+      expect(docs).toHaveLength(1);
       expect((docs[0] as unknown as { [TEST_KEY]: string })[TEST_KEY]).toBe(
         TEST_VALUE
       );

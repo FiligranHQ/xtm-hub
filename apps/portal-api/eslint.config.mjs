@@ -1,14 +1,15 @@
 import pluginJs from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import vitest from 'eslint-plugin-vitest';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-
 export default defineConfig([
   {
     languageOptions: { globals: globals.node },
     plugins: {
       prettier: eslintConfigPrettier,
+      vitest,
     },
   },
   pluginJs.configs.recommended,
@@ -25,6 +26,7 @@ export default defineConfig([
     files: ['**/*.test.ts', '**/*.test.utils.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
+      'vitest/prefer-to-have-length': 'error',
       'no-restricted-imports': [
         'error',
         {

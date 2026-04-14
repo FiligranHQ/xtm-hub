@@ -372,7 +372,7 @@ describe('DeploymentRequestDomain', () => {
 
       expect(result).toBeDefined();
       expect(result!.organization_name).toBe(TEST_ORGANIZATIONS.FILIGRAN.NAME);
-      expect(result!.organization_domains.length).toBe(2);
+      expect(result!.organization_domains).toHaveLength(2);
       expect(result!.organization_domains).toContain(
         TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST
       );

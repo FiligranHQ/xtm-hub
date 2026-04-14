@@ -93,7 +93,7 @@ describe('Subscription app', () => {
         await loadSubscriptionCapabilities(
           createdSubscription?.id ?? ('' as SubscriptionId)
         );
-      expect(capabilities.length).toBe(2);
+      expect(capabilities).toHaveLength(2);
       expect(
         capabilities.some(
           (capa) =>

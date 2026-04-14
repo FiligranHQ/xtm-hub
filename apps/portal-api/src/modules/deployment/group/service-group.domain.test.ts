@@ -70,7 +70,7 @@ describe('ServiceGroupDomain', () => {
       const ids =
         await ServiceGroupDomain.loadGroupsServiceInstanceIds(groupIds);
 
-      expect(ids.length).toBe(2);
+      expect(ids).toHaveLength(2);
       expect(ids.find((id) => id === serviceInstanceId1)).toBeTruthy();
       expect(ids.find((id) => id === serviceInstanceId2)).toBeTruthy();
     });
@@ -92,7 +92,7 @@ describe('ServiceGroupDomain', () => {
       });
 
       const adminUsers = await ServiceGroupDomain.loadGroupUsers(adminGroupId);
-      expect(adminUsers.length).toBe(2);
+      expect(adminUsers).toHaveLength(2);
       expect(
         adminUsers.find(
           ({ id }) => id === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
@@ -107,7 +107,7 @@ describe('ServiceGroupDomain', () => {
 
       const analystUsers =
         await ServiceGroupDomain.loadGroupUsers(analystGroupId);
-      expect(analystUsers.length).toBe(1);
+      expect(analystUsers).toHaveLength(1);
       expect(
         analystUsers[0]?.id ===
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID

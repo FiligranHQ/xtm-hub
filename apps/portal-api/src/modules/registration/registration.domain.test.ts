@@ -471,7 +471,7 @@ describe('Registration domain', () => {
       const platforms = await registrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
       });
-      expect(platforms.length).toBe(0);
+      expect(platforms).toHaveLength(0);
     });
     it('should return platforms without configuration (not yet auto registered) ', async () => {
       const notYetRegisteredPlatformServiceInstanceId =
@@ -510,7 +510,7 @@ describe('Registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      expect(platforms.length).toBe(1);
+      expect(platforms).toHaveLength(1);
       expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
     it('should not return platforms with non-active trials when onlyActiveTrials is true', async () => {
@@ -534,7 +534,7 @@ describe('Registration domain', () => {
         onlyActive: true,
       });
 
-      expect(platforms.length).toBe(0);
+      expect(platforms).toHaveLength(0);
     });
     it('should return platforms with active trials when onlyActiveTrials is true', async () => {
       await DeploymentRequestDomain.insertDeploymentRequest({
@@ -557,7 +557,7 @@ describe('Registration domain', () => {
         onlyActive: true,
       });
 
-      expect(platforms.length).toBe(1);
+      expect(platforms).toHaveLength(1);
       expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
     it('should return platforms only active trials when onlyActiveTrials is true AND onlyTrial is true', async () => {
@@ -601,7 +601,7 @@ describe('Registration domain', () => {
         onlyTrial: true,
       });
 
-      expect(platforms.length).toBe(1);
+      expect(platforms).toHaveLength(1);
       expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
   });

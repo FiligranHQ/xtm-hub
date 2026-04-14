@@ -469,7 +469,7 @@ describe('User mutation resolver', () => {
           organizations.some((org) => org.id.toString() === user.id.toString())
         ).toBeTruthy();
 
-        expect(organizations.length).toEqual(2);
+        expect(organizations).toHaveLength(2);
       });
 
       afterAll(async () => {
@@ -553,7 +553,7 @@ describe('User mutation resolver', () => {
           organizations.some((org) => org.id.toString() === user.id.toString())
         ).toBeTruthy();
 
-        expect(organizations.length).toEqual(2);
+        expect(organizations).toHaveLength(2);
       });
 
       afterAll(async () => {
@@ -635,7 +635,7 @@ describe('User mutation resolver', () => {
       });
 
       it('should have update organisations, first_name and last_name', async () => {
-        expect(response.organization_capabilities.length).toEqual(3);
+        expect(response.organization_capabilities).toHaveLength(3);
       });
       it('should not have update other fields', async () => {
         expect(fallbackUser.first_name).toEqual(response.first_name);
@@ -839,7 +839,7 @@ describe('User mutation resolver', () => {
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: updatedUser.id,
         });
-      expect(usersPendingOrg.length).toBe(0);
+      expect(usersPendingOrg).toHaveLength(0);
 
       await removeUser({ email: pendingUser.email });
     });

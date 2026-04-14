@@ -190,7 +190,7 @@ describe('Workers – dead-letter routing (integration)', () => {
 
     // Verify nothing landed in the DLQ
     const deadLetterJobs = await boss.findJobs(HUBSPOT_QUEUES.DEAD_LETTER);
-    expect(deadLetterJobs.length).toBe(0);
+    expect(deadLetterJobs).toHaveLength(0);
   }, 5_000);
 
   it('should log when the DLQ worker processes a dead-lettered job', async () => {

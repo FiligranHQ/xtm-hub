@@ -620,7 +620,7 @@ describe('Service instance domain', () => {
         );
 
         // Then
-        expect(result.subscriptions.length).toBe(expectedNames.length);
+        expect(result.subscriptions).toHaveLength(expectedNames.length);
         type SubscriptionWithOrg = {
           organization: {
             name: string;
@@ -741,7 +741,7 @@ describe('Service instance domain', () => {
       );
 
       // Then
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -764,7 +764,7 @@ describe('Service instance domain', () => {
       );
 
       // Then
-      expect(result.length).toBe(0);
+      expect(result).toHaveLength(0);
     });
   });
 

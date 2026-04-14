@@ -45,7 +45,7 @@ describe('OrganizationsDomain', () => {
       const orgaId = uuidv4() as OrganizationId;
       const users = await loadUserByOrganization(orgaId);
 
-      expect(users.length).toBe(0);
+      expect(users).toHaveLength(0);
     });
   });
 

@@ -248,7 +248,7 @@ describe('UsersOrganizationApp', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(userPendingExisted.length).toEqual(1);
+      expect(userPendingExisted).toHaveLength(1);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
       await UsersOrganizationApp.sendPendingUsersDigest();
@@ -260,7 +260,7 @@ describe('UsersOrganizationApp', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(userPendingShouldExistAnymore.length).toEqual(0);
+      expect(userPendingShouldExistAnymore).toHaveLength(0);
     });
   });
   describe('addUserToOrganization', async () => {
@@ -278,7 +278,7 @@ describe('UsersOrganizationApp', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
-      expect(userShouldNotBeInTheOrg.length).toEqual(0);
+      expect(userShouldNotBeInTheOrg).toHaveLength(0);
 
       const userPendingExisted =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
@@ -286,7 +286,7 @@ describe('UsersOrganizationApp', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(userPendingExisted.length).toEqual(1);
+      expect(userPendingExisted).toHaveLength(1);
       await UsersOrganizationApp.addUserToOrganization({
         email: 'testAddingPendingUser@filigran.io',
       });
@@ -297,14 +297,14 @@ describe('UsersOrganizationApp', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(userPendingShouldExistAnymore.length).toEqual(0);
+      expect(userPendingShouldExistAnymore).toHaveLength(0);
 
       const userShouldBeAdded = await loadUserOrganization({
         user_id: newUser.id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
-      expect(userShouldBeAdded.length).toEqual(1);
+      expect(userShouldBeAdded).toHaveLength(1);
     });
   });
   describe('changeSelectedOrganization', () => {

@@ -204,7 +204,7 @@ describe('DocumentApp', () => {
       );
 
       // Then
-      expect(children.length).toBe(2);
+      expect(children).toHaveLength(2);
       expect(createdDocument).toBeDefined();
       expect(image).toBeDefined();
       expect(logo).toBeDefined();

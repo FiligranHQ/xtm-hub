@@ -101,7 +101,7 @@ describe('DocumentChildrenDomain', () => {
       const deleted =
         await DocumentChildrenDomain.deleteExternalImages(parentId);
       expect(Array.isArray(deleted)).toBe(true);
-      expect(deleted.length).toBe(2);
+      expect(deleted).toHaveLength(2);
       const deletedIds = deleted.map((d) => d.id);
       expect(deletedIds).toContain(childId1);
       expect(deletedIds).toContain(childId2);
@@ -146,7 +146,7 @@ describe('DocumentChildrenDomain', () => {
 
       const deleted =
         await DocumentChildrenDomain.deleteExternalImages(parentId);
-      expect(deleted.length).toBe(2);
+      expect(deleted).toHaveLength(2);
       // The other child should still exist
       const exists = await TestDocumentHelper.document.load({
         id: otherChildId,
@@ -219,13 +219,13 @@ describe('DocumentChildrenDomain', () => {
       const externalImages = children.filter(
         (c) => c.source_type === DocumentSourceType.External
       );
-      expect(externalImages.length).toBe(1);
+      expect(externalImages).toHaveLength(1);
       expect(externalImages[0]!.minio_name).toBe('new-minio');
       // Internal image child should remain
       const internalImages = children.filter(
         (c) => c.source_type === DocumentSourceType.Internal
       );
-      expect(internalImages.length).toBe(1);
+      expect(internalImages).toHaveLength(1);
       expect(internalImages[0]!.id).toBe(oldInternalId);
       // Old external image should be deleted
       const oldExternal = await TestDocumentHelper.document.load({
@@ -259,7 +259,7 @@ describe('DocumentChildrenDomain', () => {
       const externalImages = children.filter(
         (c) => c.source_type === 'external'
       );
-      expect(externalImages.length).toBe(1);
+      expect(externalImages).toHaveLength(1);
       expect(externalImages[0]!.minio_name).toBe('new-minio');
       // No MinIO file deletion should be called
       expect(MinIOClient.deleteFile).not.toHaveBeenCalled();
@@ -329,7 +329,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         DOCUMENT_IMAGE_METADATA_KEYS
       );
-      expect(children.length).toBe(1);
+      expect(children).toHaveLength(1);
       expect(children[0]).toMatchObject({
         file_name: 'img1.png',
         minio_name: 'minio-img1',
@@ -369,7 +369,7 @@ describe('DocumentChildrenDomain', () => {
         )
         .where('Document_Children.parent_document_id', parentId)
         .select('Document.*');
-      expect(children.length).toBe(2);
+      expect(children).toHaveLength(2);
       const fileNames = children.map((c: Document) => c.file_name);
       expect(fileNames).toContain('img1.png');
       expect(fileNames).toContain('img2.jpg');
@@ -395,7 +395,7 @@ describe('DocumentChildrenDomain', () => {
         )
         .where('Document_Children.parent_document_id', parentId)
         .select('Document.*');
-      expect(children.length).toBe(0);
+      expect(children).toHaveLength(0);
     });
 
     it('should default to internal source_type if not specified', async () => {
@@ -414,7 +414,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         DOCUMENT_IMAGE_METADATA_KEYS
       );
-      expect(children.length).toBe(1);
+      expect(children).toHaveLength(1);
       expect(children[0]!.source_type).toBe(DocumentSourceType.Internal);
     });
   });

@@ -17,7 +17,7 @@ describe('UserOrganizationCapabilityDomain', () => {
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
-      expect(capabilities.length).toBe(1);
+      expect(capabilities).toHaveLength(1);
       expect(capabilities?.[0]?.name).toBe(
         OrganizationCapability.AdministrateOrganization
       );
@@ -28,7 +28,7 @@ describe('UserOrganizationCapabilityDomain', () => {
       const capabilities =
         await loadUserOrganizationCapabilities(organizationId);
 
-      expect(capabilities.length).toBe(0);
+      expect(capabilities).toHaveLength(0);
     });
   });
 });

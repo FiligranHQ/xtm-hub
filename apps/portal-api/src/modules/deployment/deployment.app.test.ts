@@ -568,7 +568,7 @@ describe('Deployment app', () => {
       });
 
       expect(deployments.totalCount).toBe('1');
-      expect(deployments.edges.length).toBe(1);
+      expect(deployments.edges).toHaveLength(1);
       expect(deployments.edges[0]?.node?.hub_status).toBe(
         DeploymentRequestHubStatus.Pending
       );
@@ -596,7 +596,7 @@ describe('Deployment app', () => {
       });
 
       expect(deployments.totalCount).toBe('1');
-      expect(deployments.edges.length).toBe(1);
+      expect(deployments.edges).toHaveLength(1);
       expect(deployments.edges[0]?.node?.hub_status).toBe(
         DeploymentRequestHubStatus.Pending
       );
@@ -650,7 +650,7 @@ describe('Deployment app', () => {
       });
 
       expect(deployments.totalCount).toBe('3');
-      expect(deployments.edges.length).toBe(3);
+      expect(deployments.edges).toHaveLength(3);
 
       // Verify only out-of-sync deployments are returned
       const returnedIds = deployments.edges.map((edge) => edge.node.id);
@@ -694,7 +694,7 @@ describe('Deployment app', () => {
       });
 
       expect(deployments.totalCount).toBe('0');
-      expect(deployments.edges.length).toBe(0);
+      expect(deployments.edges).toHaveLength(0);
     });
   });
   describe('updateDeploymentRequest', () => {
@@ -785,7 +785,7 @@ describe('Deployment app', () => {
       const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
-      expect(serviceGroups.length).toBe(3);
+      expect(serviceGroups).toHaveLength(3);
       expect(serviceGroups.map((g) => g.name).sort()).toEqual([
         ServiceGroupName.Admin,
         ServiceGroupName.Analyst,
@@ -797,7 +797,7 @@ describe('Deployment app', () => {
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Admin
         );
-      expect(userAdminGroup.length).toBe(1);
+      expect(userAdminGroup).toHaveLength(1);
       expect(
         userAdminGroup.find(
           ({ email }) =>
@@ -809,14 +809,14 @@ describe('Deployment app', () => {
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Analyst
         );
-      expect(userAnalystGroup.length).toBe(0);
+      expect(userAnalystGroup).toHaveLength(0);
       const userReaderGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Reader
         );
 
-      expect(userReaderGroup.length).toBe(0);
+      expect(userReaderGroup).toHaveLength(0);
     });
 
     it('with Active status for OpenAEV, it should create OpenAEV ServiceGroups (Admin, Manager, Observer) with admin user', async () => {
@@ -842,7 +842,7 @@ describe('Deployment app', () => {
       const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
-      expect(serviceGroups.length).toBe(3);
+      expect(serviceGroups).toHaveLength(3);
       expect(serviceGroups.map((g) => g.name).sort()).toEqual([
         ServiceGroupName.Admin,
         ServiceGroupName.Manager,
@@ -854,7 +854,7 @@ describe('Deployment app', () => {
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Admin
         );
-      expect(userAdminGroup.length).toBe(1);
+      expect(userAdminGroup).toHaveLength(1);
       expect(
         userAdminGroup.find(
           ({ email }) =>
@@ -866,13 +866,13 @@ describe('Deployment app', () => {
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Manager
         );
-      expect(userManagerGroup.length).toBe(0);
+      expect(userManagerGroup).toHaveLength(0);
       const userObserverGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Observer
         );
-      expect(userObserverGroup.length).toBe(0);
+      expect(userObserverGroup).toHaveLength(0);
     });
     it('should throw if deployment request does not exist', async () => {
       const call = DeploymentApp.updateDeploymentRequest({

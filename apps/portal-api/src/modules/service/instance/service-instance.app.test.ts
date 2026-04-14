@@ -692,7 +692,7 @@ describe('Service Instance app', () => {
         ]);
 
       // Then
-      expect(serviceInstances.length).toBe(3);
+      expect(serviceInstances).toHaveLength(3);
       expect(
         serviceInstances.find(({ name }) => name === 'Filigran Blog')
       ).toBeDefined();
