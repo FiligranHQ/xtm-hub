@@ -15,6 +15,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { BadRequestErrorCode } from '../../utils/error/error.code';
+import { ErrorType } from '../../utils/error/error.type';
 import { registrationApp } from './registration.app';
 import registrationResolver from './registration.resolver';
 
@@ -110,9 +111,10 @@ describe('registration query resolver', () => {
         {} as GraphQLResolveInfo
       );
 
-      await expect(call).rejects.toThrow(
-        BadRequestErrorCode.MissingAutoRegisterPlatformArgument
-      );
+      await expect(call).rejects.toMatchObject({
+        name: ErrorType.BadRequest,
+        message: BadRequestErrorCode.MissingAutoRegisterPlatformArgument,
+      });
     });
 
     it('should use the deprecated platform arg when input is not provided', async () => {

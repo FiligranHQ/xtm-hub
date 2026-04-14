@@ -11,7 +11,8 @@ import {
   PlatformIdentifier,
   RegisterPlatformInput,
 } from '../../../../__generated__/resolvers-types';
-import { UnknownErrorCode } from '../../../../utils/error/error.code';
+import { BadRequestErrorCode } from '../../../../utils/error/error.code';
+import { ErrorType } from '../../../../utils/error/error.type';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
@@ -53,7 +54,7 @@ describe('mutation.registerPlatform', () => {
     expect(result).toMatchObject({ token: generatedToken });
   });
 
-  it('should throw a mapped GraphQL error with RegisterPlatformUnknownError when the app throws', async () => {
+  it('should map to BadRequest for InvalidPlatformVersion error', async () => {
     // Given
     const input: RegisterPlatformInput = {
       organizationId: toGlobalId(
@@ -70,7 +71,7 @@ describe('mutation.registerPlatform', () => {
       identifier: PlatformIdentifier.Opencti,
     };
     vi.spyOn(registrationApp, 'registerPlatform').mockRejectedValue(
-      new Error('UNEXPECTED')
+      new Error(BadRequestErrorCode.InvalidPlatformVersion)
     );
 
     // When
@@ -82,8 +83,6 @@ describe('mutation.registerPlatform', () => {
     );
 
     // Then
-    await expect(call).rejects.toThrow(
-      UnknownErrorCode.RegisterPlatformUnknownError
-    );
+    await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
   });
 });

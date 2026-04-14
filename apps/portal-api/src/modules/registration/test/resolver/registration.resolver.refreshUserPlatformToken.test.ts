@@ -5,7 +5,8 @@ import {
   INFO,
 } from '../../../../../tests/tests.const';
 import { RefreshUserPlatformTokenResponse } from '../../../../__generated__/resolvers-types';
-import { UnknownErrorCode } from '../../../../utils/error/error.code';
+import { NotFoundErrorCode } from '../../../../utils/error/error.code';
+import { ErrorType } from '../../../../utils/error/error.type';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
@@ -31,10 +32,10 @@ describe('mutation.refreshUserPlatformToken', () => {
     expect(result).toMatchObject({ token: newToken });
   });
 
-  it('should throw a mapped GraphQL error with RefreshUserPlatformTokenUnknownError when the app throws', async () => {
+  it('should map to NotFound for ServiceContractNotFound error', async () => {
     // Given
     vi.spyOn(registrationApp, 'refreshUserPlatformToken').mockRejectedValue(
-      new Error('UNEXPECTED')
+      new Error(NotFoundErrorCode.ServiceContractNotFound)
     );
 
     // When
@@ -46,8 +47,6 @@ describe('mutation.refreshUserPlatformToken', () => {
     );
 
     // Then
-    await expect(call).rejects.toThrow(
-      UnknownErrorCode.RefreshUserPlatformTokenUnknownError
-    );
+    await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
   });
 });
