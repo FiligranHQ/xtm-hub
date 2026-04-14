@@ -51,7 +51,7 @@ import {
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
-describe('DocumentApp', () => {
+describe('documentApp', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',

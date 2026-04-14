@@ -52,12 +52,11 @@ import {
 } from './user-domain/users.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { removeUser } from './users.helper';
-import usersResolver from './users.resolver';
 
 const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
 const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
 
-describe('User query resolver', () => {
+describe('user query resolver', () => {
   describe('userHasOrganizationWithSubscription', () => {
     beforeEach(async () => {
       await insertSubscription({
@@ -66,13 +65,20 @@ describe('User query resolver', () => {
         service_instance_id: SERVICES.INSTANCES.VAULT.ID,
       });
     });
+
+    afterEach(async () => {
+      await deleteSubscription({
+        id: SUBSCRIPTION_ID as SubscriptionId,
+      });
+    });
+
     it.each`
       expected | organizations                                                                                                                                                                                     | description
       ${true}  | ${[{ id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID, name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME, personal_space: false, domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST] }]} | ${'organization has subscription'}
       ${false} | ${[]}                                                                                                                                                                                             | ${'has no organization'}
       ${false} | ${[{ id: RANDOM_ORGA_ID, name: 'Other', personal_space: false, domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST] }]}                                                                | ${'no organization has subscription'}
     `(
-      'Should return $expected if $description',
+      'should return $expected if $description',
       async ({ expected, organizations }) => {
         const currentContext = {
           ...contextAdminSecondOrga,
@@ -88,7 +94,7 @@ describe('User query resolver', () => {
 
         const response =
           // @ts-ignore
-          await usersResolver.Query.userHasOrganizationWithSubscription(
+          await queryResolver.userHasOrganizationWithSubscription(
             undefined,
             {},
             currentContext
@@ -97,11 +103,6 @@ describe('User query resolver', () => {
         expect(response).toStrictEqual(expected);
       }
     );
-    afterEach(async () => {
-      await deleteSubscription({
-        id: SUBSCRIPTION_ID as SubscriptionId,
-      });
-    });
   });
 
   describe('listPendingUser', () => {
@@ -132,7 +133,7 @@ describe('User query resolver', () => {
         filters: [],
       };
 
-      const response = await usersResolver.Query.pendingUsers(
+      const response = await queryResolver.pendingUsers(
         undefined,
         options,
         testContext,
@@ -185,7 +186,7 @@ describe('User query resolver', () => {
         user: testContext.user,
         portalContext: testContext,
       });
-      const response = await usersResolver.Query.pendingUsers(
+      const response = await queryResolver.pendingUsers(
         undefined,
         options,
         testContext,
@@ -231,7 +232,7 @@ describe('User query resolver', () => {
         user: testContext.user,
         portalContext: testContext,
       });
-      const response = await usersResolver.Query.pendingUsers(
+      const response = await queryResolver.pendingUsers(
         undefined,
         options,
         testContext,
@@ -248,11 +249,11 @@ describe('User query resolver', () => {
   });
 });
 
-describe('User mutation resolver', () => {
+describe('user mutation resolver', () => {
   it('should be login', async () => {
     // When
     // @ts-ignore
-    const response = await usersResolver.Mutation.login(
+    const response = await mutationResolver.login(
       undefined,
       {
         email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
@@ -278,7 +279,7 @@ describe('User mutation resolver', () => {
       // Given
       try {
         // @ts-ignore
-        await usersResolver.Mutation.adminAddUser(
+        await mutationResolver.adminAddUser(
           undefined,
           {
             input: {
@@ -308,7 +309,7 @@ describe('User mutation resolver', () => {
         const testEmail = 'testRollback@company.com';
         // When
         // @ts-ignore
-        await usersResolver.Mutation.adminAddUser(
+        await mutationResolver.adminAddUser(
           undefined,
           {
             input: {
@@ -335,7 +336,7 @@ describe('User mutation resolver', () => {
       const secondOrgaSpy = new SubscriptionSpy();
       // @ts-ignore
       await filigranSpy.spy(
-        usersResolver.Subscription.User,
+        subscriptionResolver.User,
         {
           organizationId: toGlobalId(
             'Organization',
@@ -347,7 +348,7 @@ describe('User mutation resolver', () => {
       );
 
       await secondOrgaSpy.spy(
-        usersResolver.Subscription.User,
+        subscriptionResolver.User,
         {
           organizationId: toGlobalId(
             'Organization',
@@ -362,7 +363,7 @@ describe('User mutation resolver', () => {
       // When
 
       // @ts-ignore
-      await usersResolver.Mutation.adminAddUser(
+      await mutationResolver.adminAddUser(
         undefined,
         {
           input: {
@@ -396,7 +397,7 @@ describe('User mutation resolver', () => {
       beforeAll(async () => {
         const testMail = `testAddUser${uuidv4()}@test.fr`;
         // @ts-ignore
-        const response = await usersResolver.Mutation.adminAddUser(
+        const response = await mutationResolver.adminAddUser(
           undefined,
           {
             input: {
@@ -410,7 +411,7 @@ describe('User mutation resolver', () => {
 
         user = await loadUserBy({ 'User.id': response.id });
         // @ts-expect-error organizations is not considered as callable
-        organizations = await usersResolver.User.organizations(
+        organizations = await userResolver.organizations(
           user,
           undefined,
           contextBypassUser,
@@ -435,7 +436,7 @@ describe('User mutation resolver', () => {
 
         const testMail = `testAddUser${uuidv4()}@${TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST}.fr`;
         // @ts-ignore
-        response = await usersResolver.Mutation.adminAddUser(
+        response = await mutationResolver.adminAddUser(
           undefined,
           {
             input: {
@@ -453,12 +454,16 @@ describe('User mutation resolver', () => {
         );
         expect(response).toBeTruthy();
         user = await loadUserBy({ 'User.id': response.id });
-        organizations = await usersResolver.User.organizations(
+        organizations = await usersResolver.organizations(
           user,
           undefined,
           contextBypassUser,
           undefined
         );
+      });
+
+      afterAll(async () => {
+        await deleteUserById(response.id as UserId);
       });
 
       it('should have Personal space and Internal as organization', async () => {
@@ -471,17 +476,13 @@ describe('User mutation resolver', () => {
 
         expect(organizations).toHaveLength(2);
       });
-
-      afterAll(async () => {
-        await deleteUserById(response.id as UserId);
-      });
     });
     it('as Admin Organization - should not able to create user with different email domain', async () => {
       const testMail = `testAddUser${uuidv4()}@test.fr`;
       try {
         requestContext.set(requestContextAdminSecondOrga);
         // @ts-ignore
-        await usersResolver.Mutation.adminAddUser(
+        await mutationResolver.adminAddUser(
           undefined,
           {
             input: {
@@ -514,7 +515,7 @@ describe('User mutation resolver', () => {
         const testMail = `testAddUser${uuidv4()}@second-orga.com`;
         requestContext.set(requestContextAdminSecondOrga);
         // @ts-ignore
-        response = await usersResolver.Mutation.adminAddUser(
+        response = await mutationResolver.adminAddUser(
           undefined,
           {
             input: {
@@ -533,7 +534,7 @@ describe('User mutation resolver', () => {
         user = await loadUserBy({ 'User.id': response.id });
 
         requestContext.set(requestContextAdminUser);
-        organizations = await usersResolver.User.organizations(
+        organizations = await userResolver.organizations(
           user,
           undefined,
           contextAdminSecondOrga,
@@ -541,6 +542,10 @@ describe('User mutation resolver', () => {
         );
 
         expect(response).toBeTruthy();
+      });
+
+      afterAll(async () => {
+        await deleteUserById(response.id as UserId);
       });
 
       it('should have Personal space and ORGANIZATIONS_TEST.SECOND_ORGANIZATION.NAME as organization', async () => {
@@ -555,10 +560,6 @@ describe('User mutation resolver', () => {
 
         expect(organizations).toHaveLength(2);
       });
-
-      afterAll(async () => {
-        await deleteUserById(response.id as UserId);
-      });
     });
   });
 
@@ -572,7 +573,7 @@ describe('User mutation resolver', () => {
         fallbackUser = await loadUserBy({ email: 'user15@test.fr' });
 
         // @ts-ignore
-        response = await usersResolver.Mutation.adminEditUser(
+        response = await mutationResolver.adminEditUser(
           undefined,
           {
             id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
@@ -607,7 +608,7 @@ describe('User mutation resolver', () => {
 
       afterAll(async () => {
         // @ts-ignore
-        await usersResolver.Mutation.adminEditUser(
+        await mutationResolver.adminEditUser(
           undefined,
           {
             id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
@@ -652,7 +653,7 @@ describe('User mutation resolver', () => {
 
       afterEach(async () => {
         // @ts-expect-error adminEditUser is not considered as callable
-        await usersResolver.Mutation.adminEditUser(
+        await mutationResolver.adminEditUser(
           undefined,
           {
             id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
@@ -672,7 +673,7 @@ describe('User mutation resolver', () => {
 
       it('should prevent deletion of the last organization administrator', async () => {
         // @ts-expect-error adminEditUser is not considered as callable
-        const call = usersResolver.Mutation.adminEditUser(
+        const call = mutationResolver.adminEditUser(
           undefined,
           {
             id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
@@ -704,7 +705,7 @@ describe('User mutation resolver', () => {
 
     afterEach(async () => {
       requestContext.set(requestContextAdminUser);
-      await usersResolver.Mutation.adminEditUser(
+      await mutationResolver.adminEditUser(
         undefined,
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
@@ -735,7 +736,7 @@ describe('User mutation resolver', () => {
         user: testContext.user,
         portalContext: testContext,
       });
-      const call = usersResolver.Mutation.editUserCapabilities(
+      const call = mutationResolver.editUserCapabilities(
         undefined,
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
@@ -749,7 +750,7 @@ describe('User mutation resolver', () => {
     });
 
     it('should edit capabilities', async () => {
-      expect(secondOrgaUser.selected_org_capabilities).not.to.includes(
+      expect(secondOrgaUser.selected_org_capabilities).not.toContain(
         'MANAGE_PLATFORM_REGISTRATION'
       );
 
@@ -764,7 +765,7 @@ describe('User mutation resolver', () => {
         user: testContext.user,
         portalContext: testContext,
       });
-      await usersResolver.Mutation.editUserCapabilities(
+      await mutationResolver.editUserCapabilities(
         undefined,
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
@@ -781,11 +782,11 @@ describe('User mutation resolver', () => {
       secondOrgaUser = await loadUserBy({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
       });
-      expect(secondOrgaUser.selected_org_capabilities).to.includes(
+      expect(secondOrgaUser.selected_org_capabilities).toContain(
         'MANAGE_PLATFORM_REGISTRATION'
       );
       // Put back the original capabilities
-      await usersResolver.Mutation.editUserCapabilities(
+      await mutationResolver.editUserCapabilities(
         undefined,
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
@@ -816,7 +817,7 @@ describe('User mutation resolver', () => {
         roles: [],
       });
 
-      await usersResolver.Mutation.editUserCapabilities(
+      await mutationResolver.editUserCapabilities(
         undefined,
         {
           id: pendingUser.id,
@@ -832,7 +833,7 @@ describe('User mutation resolver', () => {
       );
       const updatedUser = await loadUserBy({ email: pendingUser.email });
 
-      expect(updatedUser.selected_org_capabilities).to.includes(
+      expect(updatedUser.selected_org_capabilities).toContain(
         'ADMINISTRATE_ORGANIZATION'
       );
       const usersPendingOrg =
@@ -859,6 +860,24 @@ describe('User mutation resolver', () => {
       auth0Spy = vi.spyOn(auth0ClientMock, 'updateUser');
     });
 
+    afterAll(async () => {
+      // @ts-expect-error editMeUser is not considered as callable
+      await mutationResolver.editMeUser(
+        undefined,
+        {
+          input: {
+            first_name: simpleUserSecondOrga.first_name,
+            last_name: simpleUserSecondOrga.last_name,
+            country: simpleUserSecondOrga.country,
+            picture: simpleUserSecondOrga.picture,
+          },
+        },
+        contextSimpleUserSecondOrga
+      );
+
+      auth0Spy.mockReset();
+    });
+
     it('should edit user profile information on auth0 and locally', async () => {
       const newFirstName = 'Roger';
       const newLastName = 'Testeur';
@@ -867,7 +886,7 @@ describe('User mutation resolver', () => {
         'https://www.labrouettemaraichere.com/cdn/shop/products/29109696c-www.fullstackgardener.com_720x.jpg';
 
       // @ts-expect-error editMeUser is not considered as callable
-      const response = await usersResolver.Mutation.editMeUser(
+      const response = await mutationResolver.editMeUser(
         undefined,
         {
           input: {
@@ -908,24 +927,6 @@ describe('User mutation resolver', () => {
         picture: newPicture,
       });
     });
-
-    afterAll(async () => {
-      // @ts-expect-error editMeUser is not considered as callable
-      await usersResolver.Mutation.editMeUser(
-        undefined,
-        {
-          input: {
-            first_name: simpleUserSecondOrga.first_name,
-            last_name: simpleUserSecondOrga.last_name,
-            country: simpleUserSecondOrga.country,
-            picture: simpleUserSecondOrga.picture,
-          },
-        },
-        contextSimpleUserSecondOrga
-      );
-
-      auth0Spy.mockReset();
-    });
   });
 
   describe('resetPassword', () => {
@@ -934,10 +935,14 @@ describe('User mutation resolver', () => {
       auth0Spy = vi.spyOn(auth0ClientMock, 'resetPassword');
     });
 
+    afterAll(() => {
+      auth0Spy.mockReset();
+    });
+
     it('should call auth0 to reset password', async () => {
       // When
       // @ts-expect-error resetPassword is not considered as callable
-      const response = await usersResolver.Mutation.resetPassword(
+      const response = await mutationResolver.resetPassword(
         undefined,
         {},
         contextSimpleUserFiligran2
@@ -949,10 +954,6 @@ describe('User mutation resolver', () => {
       expect(auth0Spy).toBeCalledWith(
         TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL
       );
-    });
-
-    afterAll(() => {
-      auth0Spy.mockReset();
     });
   });
 
@@ -981,7 +982,7 @@ describe('User mutation resolver', () => {
       const userId = toGlobalId('User', pendingUser.id);
       const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       // When
-      await usersResolver.Mutation.removePendingUserFromOrganization(
+      await mutationResolver.removePendingUserFromOrganization(
         undefined,
         {
           user_id: userId,
@@ -1024,7 +1025,7 @@ describe('User mutation resolver', () => {
       const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       const subscriptionSpy = new SubscriptionSpy();
       await subscriptionSpy.spy(
-        usersResolver.Subscription?.UserPending,
+        subscriptionResolver.UserPending,
         {
           organizationId: toGlobalId('Organization', organizationId),
         },
@@ -1032,7 +1033,7 @@ describe('User mutation resolver', () => {
         ['delete']
       );
 
-      await usersResolver.Mutation.removePendingUserFromOrganization(
+      await mutationResolver.removePendingUserFromOrganization(
         undefined,
         {
           user_id: userId,
@@ -1072,7 +1073,7 @@ describe('User mutation resolver', () => {
         portalContext: testContext,
       });
 
-      await usersResolver.Mutation?.bulkRemovePendingUserFromOrganization!(
+      await mutationResolver.bulkRemovePendingUserFromOrganization!(
         {},
         {
           input: {
@@ -1122,7 +1123,7 @@ describe('User mutation resolver', () => {
       );
       const subscriptionSpy = new SubscriptionSpy();
       await subscriptionSpy.spy(
-        usersResolver.Subscription?.UserPending,
+        subscriptionResolver.UserPending,
         {
           organizationId: organizationId,
         },
@@ -1130,7 +1131,7 @@ describe('User mutation resolver', () => {
         ['invalidate']
       );
 
-      await usersResolver.Mutation?.bulkRemovePendingUserFromOrganization!(
+      await mutationResolver.bulkRemovePendingUserFromOrganization!(
         {},
         {
           input: {

@@ -12,7 +12,7 @@ import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefiniti
 import { ServiceDefinitionDomain } from '../../service/definition/service-definition.domain';
 import { ServiceConfigurationDomain } from './service-configuration.domain';
 
-describe('ServiceConfigurationDomain', () => {
+describe('serviceConfigurationDomain', () => {
   describe('isServiceConfigurationValid', () => {
     const context = contextSimpleUserSecondOrga;
     it('should throw an error when service contract is not found', async () => {

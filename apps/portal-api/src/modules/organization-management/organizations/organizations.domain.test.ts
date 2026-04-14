@@ -14,7 +14,7 @@ import {
   organizationDomain,
 } from './organizations.domain';
 
-describe('OrganizationsDomain', () => {
+describe('organizationsDomain', () => {
   describe('loadOrganizationsByUser', () => {
     it('should return the user organizations when user exists', async () => {
       const organizations = await loadOrganizationsByUser(
@@ -24,7 +24,7 @@ describe('OrganizationsDomain', () => {
       expect(organizations).toHaveLength(2);
     });
 
-    it('should return the user organizations when user exists', async () => {
+    it('should return the user organizations when user does not exists', async () => {
       const userId = uuidv4() as UserId;
       const organizations = await loadOrganizationsByUser(userId);
 

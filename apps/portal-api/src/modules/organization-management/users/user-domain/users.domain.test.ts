@@ -24,7 +24,11 @@ import {
 } from '../user-domain/users.domain';
 
 //Issue with test
-describe('Users domain', () => {
+describe('users domain', () => {
+  afterEach(async () => {
+    vi.useRealTimers();
+  });
+
   it('should load user Admin', async () => {
     const response = await loadUserBy({
       'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId,
@@ -70,10 +74,6 @@ describe('Users domain', () => {
       user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
     });
   });
-  afterEach(async () => {
-    vi.useRealTimers();
-  });
-
   describe('loadUserConnection', () => {
     const opts = {
       first: 50,

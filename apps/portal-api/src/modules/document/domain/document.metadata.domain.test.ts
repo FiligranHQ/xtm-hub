@@ -15,7 +15,7 @@ import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentMetadataDomain } from './document.metadata.domain';
 
-describe('DocumentMetadataDomain', () => {
+describe('documentMetadataDomain', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',

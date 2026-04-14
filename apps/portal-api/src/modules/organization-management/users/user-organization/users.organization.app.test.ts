@@ -17,7 +17,7 @@ import { UserOrganizationPendingDomain } from '../user-pending/user-organization
 import { insertUser } from '../users.test.utils';
 import { UsersOrganizationApp } from './users.organization.app';
 
-describe('UsersOrganizationApp', () => {
+describe('usersOrganizationApp', () => {
   describe('sendPendingUsersDigest', () => {
     let originalEnabledEmails: typeof portalConfig.enabled_emails;
 

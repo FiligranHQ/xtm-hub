@@ -12,7 +12,7 @@ import * as authHelper from '../modules/security-management/capability/auth.help
 import { ErrorCode } from '../utils/error/error.code';
 import { securityGuard } from './guard';
 
-describe('Security Guard', () => {
+describe('security Guard', () => {
   let isUserAllowedOnOrganizationSpy: MockInstance;
   beforeEach(() => {
     isUserAllowedOnOrganizationSpy = vi.spyOn(

@@ -22,7 +22,7 @@ const countItems = async (): Promise<number> => {
   return Number(count);
 };
 
-describe('DatabaseContext Tests', () => {
+describe('databaseContext Tests', () => {
   beforeAll(async () => {
     await database.schema.dropTableIfExists('TestTable');
     await database.schema.createTable('TestTable', (table) => {
@@ -31,14 +31,14 @@ describe('DatabaseContext Tests', () => {
     });
   });
 
-  afterAll(async () => {
-    await database.schema.dropTableIfExists('TestTable');
-  });
-
   beforeEach(async () => {
     // eslint-disable-next-line no-restricted-syntax
     await db<TestTable>('TestTable').del();
     databaseContext.clearTransaction();
+  });
+
+  afterAll(async () => {
+    await database.schema.dropTableIfExists('TestTable');
   });
 
   describe('transaction context', () => {

@@ -7,7 +7,7 @@ import {
 import { ErrorCode } from '../../../utils/error/error.code';
 import { DeploymentQuotaDomain } from './deployment.quota.domain';
 
-describe('DeploymentQuotaDomain', () => {
+describe('deploymentQuotaDomain', () => {
   const platformIdentifier = PlatformIdentifier.Opencti;
   const region = DeploymentRequestPlatformRegion.UsEast;
 

@@ -41,7 +41,7 @@ import {
 import * as DocumentUploadsHelper from './document.uploads.helper';
 import { DocumentDomain } from './domain/document.domain';
 
-describe('DocumentHelper', () => {
+describe('documentHelper', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',

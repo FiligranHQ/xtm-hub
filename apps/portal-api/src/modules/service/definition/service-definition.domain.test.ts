@@ -6,7 +6,7 @@ import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-ty
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ServiceDefinitionDomain } from './service-definition.domain';
 
-describe('ServiceDefinitionDomain', () => {
+describe('serviceDefinitionDomain', () => {
   describe('loadServiceDefinitionByServiceInstanceSlug', () => {
     it('should return undefined when service definition is not found', async () => {
       const result =

@@ -22,7 +22,7 @@ import * as ServiceInstanceDomain from '../service/instance/service-instance.dom
 import { EpicApp } from './epic.app';
 import { EpicDomain } from './epic.domain';
 
-describe('EpicApp', () => {
+describe('epicApp', () => {
   const minioFileMock = {
     minioName: 'epic-image.png',
     mimeType: 'image/png',

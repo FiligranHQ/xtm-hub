@@ -31,7 +31,7 @@ import {
   removeUser,
 } from './users.helper';
 
-describe('User helpers', async () => {
+describe('user helpers', async () => {
   afterEach(async () => {
     vi.useRealTimers();
   });

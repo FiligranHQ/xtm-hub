@@ -17,7 +17,7 @@ import { PgBossProducer } from './producer';
 // ---------------------------------------------------------------------------
 // Integration tests – PgBossProducer transactional enqueue
 // ---------------------------------------------------------------------------
-describe('PgBossProducer – transactional enqueue (integration)', () => {
+describe('pgBossProducer – transactional enqueue (integration)', () => {
   let boss: PgBoss;
   const TEST_SCHEMA = 'pgboss_producer_test';
   const TEST_QUEUE = 'producer_txn_test';
@@ -41,13 +41,6 @@ describe('PgBossProducer – transactional enqueue (integration)', () => {
     vi.spyOn(PgBossApp, 'get').mockReturnValue(boss);
   }, 10_000);
 
-  afterAll(async () => {
-    vi.restoreAllMocks();
-    if (boss) {
-      await boss.stop({ graceful: true, timeout: 2_000 });
-    }
-  }, 5_000);
-
   beforeEach(async () => {
     boss.clearSpies();
     await boss.createQueue(TEST_QUEUE);
@@ -56,6 +49,13 @@ describe('PgBossProducer – transactional enqueue (integration)', () => {
   afterEach(async () => {
     await boss.deleteQueue(TEST_QUEUE);
   });
+
+  afterAll(async () => {
+    vi.restoreAllMocks();
+    if (boss) {
+      await boss.stop({ graceful: true, timeout: 2_000 });
+    }
+  }, 5_000);
 
   it('should enqueue a job when the transaction commits', async () => {
     const spy: JobSpyInterface = boss.getSpy(TEST_QUEUE);

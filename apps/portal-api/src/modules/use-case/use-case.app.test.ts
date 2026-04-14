@@ -6,7 +6,7 @@ import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseApp } from './use-case.app';
 import { useCaseDomain } from './use-case.domain';
 
-describe('Use Case app', () => {
+describe('use Case app', () => {
   describe(`${useCaseApp.loadOrCreateUseCase.name}`, () => {
     beforeEach(async () => {
       // Clean up the Use Case table before each test

@@ -23,7 +23,7 @@ import {
   insertDeploymentRequest,
 } from './deployment.test.utils';
 
-describe('DeploymentRequestDomain', () => {
+describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
     await TestDeploymentHelper.deploymentRequest.delete({});
   });

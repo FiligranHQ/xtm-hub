@@ -48,7 +48,7 @@ import {
   updateServiceInstance,
 } from './service-instance.domain';
 
-describe('Service instance domain', () => {
+describe('service instance domain', () => {
   afterEach(async () => {
     await TestHelper.subscription.delete({});
   });
@@ -838,7 +838,7 @@ describe('Service instance domain', () => {
       });
     });
 
-    it('Should return only public service instances', async () => {
+    it('should return only public service instances', async () => {
       const result = await loadPublicServiceInstances(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,

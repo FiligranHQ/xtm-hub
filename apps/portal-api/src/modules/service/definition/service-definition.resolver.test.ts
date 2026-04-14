@@ -8,7 +8,7 @@ import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefiniti
 import * as ServiceCapabilityDomain from '../../security-management/service-capability/service-capability.domain';
 import serviceDefinitionResolver from './service-definition.resolver';
 
-describe('ServiceDefinition resolver fields', () => {
+describe('serviceDefinition resolver fields', () => {
   afterEach(async () => {
     vi.clearAllTimers();
     vi.restoreAllMocks();

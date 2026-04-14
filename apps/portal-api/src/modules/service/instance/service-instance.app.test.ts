@@ -50,7 +50,7 @@ import {
 } from './service-instance.app';
 import * as serviceInstanceDomain from './service-instance.domain';
 
-describe('Service Instance app', () => {
+describe('service Instance app', () => {
   describe('loadServiceInstance', () => {
     let loadSubscriptionBySpy: MockInstance;
     let loadUserServiceBySpy: MockInstance;

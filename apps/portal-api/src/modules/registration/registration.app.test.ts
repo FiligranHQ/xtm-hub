@@ -74,7 +74,7 @@ import { registrationApp } from './registration.app';
 import { registrationDomain } from './registration.domain';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
-describe('Registration app', () => {
+describe('registration app', () => {
   afterAll(async () => {
     vi.useRealTimers();
   });

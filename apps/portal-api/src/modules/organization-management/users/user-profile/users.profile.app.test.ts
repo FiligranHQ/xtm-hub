@@ -27,7 +27,7 @@ import {
   insertNewUserTransfer,
 } from '../user-transferRequest/user_transferRequest.domain';
 
-describe('User profile app', () => {
+describe('user profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [
     {
       id: uuidv4() as unknown as UserTransferRequestId,
@@ -72,7 +72,7 @@ describe('User profile app', () => {
     afterEach(async () => {
       vi.restoreAllMocks();
     });
-    it('Should send error if email is not valid format', async () => {
+    it('should send error if email is not valid format', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
           contextSimpleUserSecondOrga.user,
@@ -80,7 +80,7 @@ describe('User profile app', () => {
         )
       ).rejects.toThrow('INVALID_EMAIL');
     });
-    it('Should not send error if email does not already exist (for vilain users)', async () => {
+    it('should not send error if email does not already exist (for vilain users)', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
           contextSimpleUserSecondOrga.user,
@@ -88,7 +88,7 @@ describe('User profile app', () => {
         )
       ).resolves.toBeUndefined();
     });
-    it('Should call send email with right values', async () => {
+    it('should call send email with right values', async () => {
       const mockSendMail = vi.spyOn(mailService, 'sendMail');
 
       vi.spyOn(
@@ -136,7 +136,7 @@ describe('User profile app', () => {
       });
       await deleteUserTransferRequest({ id: mockTransferRequestData[0]?.id });
     });
-    it('Should update subscription', async () => {
+    it('should update subscription', async () => {
       requestContext.set(requestContextAdminSecondOrga);
 
       const subsFromBefore = await TestHelper.subscription.loadAll({
@@ -165,7 +165,7 @@ describe('User profile app', () => {
       expect(subsToAfter).toHaveLength(1);
     });
 
-    it('Should reject transfer if caller is not the intended recipient', async () => {
+    it('should reject transfer if caller is not the intended recipient', async () => {
       await expect(
         usersProfileApp.transferPersonalSpace(
           mockTransferRequestData[0]?.id as UserTransferRequestId
@@ -173,7 +173,7 @@ describe('User profile app', () => {
       ).rejects.toThrow();
     });
 
-    it('Should throw error if no request found', async () => {
+    it('should throw error if no request found', async () => {
       await expect(
         usersProfileApp.transferPersonalSpace('noId' as UserTransferRequestId)
       ).rejects.toThrow();

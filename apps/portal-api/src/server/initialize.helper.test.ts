@@ -21,7 +21,7 @@ import {
   initializeDevUsers,
 } from './initialize.helper';
 
-describe('Dev users seeding', () => {
+describe('dev users seeding', () => {
   // Set up required roles before each test
   beforeEach(async () => {
     await withTransaction(async () => {

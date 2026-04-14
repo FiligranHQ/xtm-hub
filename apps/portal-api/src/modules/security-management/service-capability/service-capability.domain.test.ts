@@ -6,7 +6,7 @@ import ServiceDefinition, {
 } from '../../../model/kanel/public/ServiceDefinition';
 import { loadServiceCapabilitiesBy } from './service-capability.domain';
 
-describe('Service Capability domain', () => {
+describe('service Capability domain', () => {
   let serviceDefinition1: ServiceDefinition;
   let serviceDefinition2: ServiceDefinition;
   let testCapabilityIds: ServiceCapabilityId[] = [];

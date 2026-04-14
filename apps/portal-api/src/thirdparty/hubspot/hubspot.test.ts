@@ -35,7 +35,7 @@ vi.mock('config', async (importOriginal) => {
   };
 });
 
-describe('Hubspot', () => {
+describe('hubspot', () => {
   let realConfigGet: typeof config.get;
 
   beforeAll(() => {

@@ -14,7 +14,7 @@ type SessionDataWithUser = SessionData & {
   user?: UserWithOrganizationsAndRole;
 };
 
-describe('SessionStoreManager - Configuration-based Store Selection', () => {
+describe('sessionStoreManager - Configuration-based Store Selection', () => {
   let db: Knex;
 
   beforeAll(async () => {
@@ -27,7 +27,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
     await db('sessions').del();
   });
 
-  describe('Store Instance', () => {
+  describe('store Instance', () => {
     it('should return a session store instance', () => {
       const store = getSessionStoreInstance();
       expect(store).toBeDefined();
@@ -181,7 +181,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
     });
   });
 
-  describe('Session operations', () => {
+  describe('session operations', () => {
     it('should support basic session CRUD operations', async () => {
       const store = getSessionStoreInstance();
       const sessionId = 'crud-test-' + uuidv4();
@@ -250,7 +250,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
     });
   });
 
-  describe('Store configuration validation', () => {
+  describe('store configuration validation', () => {
     it('should use the store type defined in configuration', () => {
       const store = getSessionStoreInstance();
 
@@ -284,7 +284,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
     });
   });
 
-  describe('Error handling', () => {
+  describe('error handling', () => {
     it('should handle updateUserSession with invalid user gracefully', () => {
       const invalidUser = null;
 

@@ -12,7 +12,7 @@ import { SubscriptionStatus } from '../subscription.const';
 import { subscriptionApp } from './subscription.app';
 import { createSubscription } from './subscription.domain';
 
-describe('Subscription app', () => {
+describe('subscription app', () => {
   describe('subscribeOrganizationToService', async () => {
     let serviceInstanceId: ServiceInstanceId;
     beforeEach(async () => {

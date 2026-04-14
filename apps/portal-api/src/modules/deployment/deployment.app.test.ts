@@ -90,7 +90,7 @@ import {
 } from './deployment.test.utils';
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
-describe('Deployment app', () => {
+describe('deployment app', () => {
   const telemetrySpy = vi
     .spyOn(telemetryApp, 'sendTelemetryEvent')
     .mockResolvedValue();
@@ -1305,7 +1305,7 @@ describe('Deployment app', () => {
       ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
       ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestPlatformState.Removed}
     `(
-      'Should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
+      'should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
       async ({
         isAdmin,
         hub_status,

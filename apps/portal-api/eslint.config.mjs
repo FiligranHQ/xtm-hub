@@ -1,5 +1,6 @@
 import pluginJs from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import jest from 'eslint-plugin-jest';
 import vitest from 'eslint-plugin-vitest';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
@@ -10,6 +11,7 @@ export default defineConfig([
     plugins: {
       prettier: eslintConfigPrettier,
       vitest,
+      jest,
     },
   },
   pluginJs.configs.recommended,
@@ -27,6 +29,20 @@ export default defineConfig([
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
       'vitest/prefer-to-have-length': 'error',
+      'jest/prefer-to-be': 'error',
+      'jest/valid-expect-in-promise': 'error',
+      'vitest/valid-expect': 'error',
+      'vitest/no-identical-title': 'error',
+      'vitest/no-commented-out-tests': 'error',
+      'vitest/no-disabled-tests': 'error',
+      'vitest/no-focused-tests': 'error',
+      'vitest/no-import-node-test': 'error',
+      'vitest/no-done-callback': 'error',
+      'vitest/prefer-hooks-on-top': 'error',
+      'vitest/prefer-hooks-in-order': 'error',
+      'vitest/prefer-each': 'error',
+      'vitest/prefer-lowercase-title': 'error',
+
       'no-restricted-imports': [
         'error',
         {

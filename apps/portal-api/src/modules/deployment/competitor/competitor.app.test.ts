@@ -20,7 +20,7 @@ const DEFAULT_COMPETITOR = {
 const createCompetitor = (overrides: Partial<CompetitorInitializer> = {}) =>
   CompetitorDomain.insertCompetitor({ ...DEFAULT_COMPETITOR, ...overrides });
 
-describe('CompetitorApp', () => {
+describe('competitorApp', () => {
   afterEach(async () => {
     await TestHelper.competitor.delete({});
   });

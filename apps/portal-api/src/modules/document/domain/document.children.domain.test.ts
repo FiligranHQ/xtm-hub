@@ -40,7 +40,7 @@ async function insertDocument({
   return realId;
 }
 
-describe('DocumentChildrenDomain', () => {
+describe('documentChildrenDomain', () => {
   let parentId: DocumentId;
   let childId1: DocumentId;
   let childId2: DocumentId;

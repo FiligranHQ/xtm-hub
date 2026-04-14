@@ -82,7 +82,7 @@ describe('should call S3 to send file', () => {
   });
 });
 
-describe('Should modify document', () => {
+describe('should modify document', () => {
   beforeAll(async () => {
     await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
@@ -102,8 +102,11 @@ describe('Should modify document', () => {
       []
     );
   });
+  afterAll(async () => {
+    await deleteDocuments();
+  });
 
-  it('Should delete document', async () => {
+  it('should delete document', async () => {
     await deleteDocumentBy({
       id: 'bc348e84-3635-46de-9b56-38db09c35f4d',
     } as DocumentMutator);
@@ -112,9 +115,6 @@ describe('Should modify document', () => {
       'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId
     );
     expect(result).toBe(false);
-  });
-  afterAll(async () => {
-    await deleteDocuments();
   });
 });
 
@@ -150,25 +150,25 @@ describe('should check if file already exists', () => {
     );
   });
 
+  afterAll(async () => {
+    await deleteDocuments();
+  });
+
   it.each`
     expected | fileName      | title               | serviceInstanceId
     ${true}  | ${'filename'} | ${'Already exists'} | ${SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID}
     ${false} | ${'test'}     | ${'Does not exist'} | ${SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID}
     ${false} | ${'test'}     | ${'Does not exist'} | ${SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID}
   `(
-    'Should return $expected if filename $title',
+    'should return $expected if filename $title',
     async ({ expected, fileName, serviceInstanceId }) => {
       const result = await checkDocumentExists(fileName, serviceInstanceId);
       expect(result).toEqual(expected);
     }
   );
-
-  afterAll(async () => {
-    await deleteDocuments();
-  });
 });
 
-describe('Documents loading', () => {
+describe('documents loading', () => {
   beforeAll(async () => {
     await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
@@ -287,6 +287,11 @@ describe('increment shared counter', () => {
     );
   });
 
+  afterAll(async () => {
+    await deleteDocuments();
+    vi.useRealTimers();
+  });
+
   it('should send a share telemetry event for a logged user', async () => {
     vi.useFakeTimers();
     const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
@@ -342,10 +347,5 @@ describe('increment shared counter', () => {
       resource_id: documentId,
       resource_title: 'Csv Feed',
     });
-  });
-
-  afterAll(async () => {
-    await deleteDocuments();
-    vi.useRealTimers();
   });
 });

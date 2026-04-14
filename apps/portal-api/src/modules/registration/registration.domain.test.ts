@@ -39,7 +39,7 @@ import {
 } from './registration.domain';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
-describe('Registration domain', () => {
+describe('registration domain', () => {
   let platformId: string;
   const token = uuidv4();
   const platformTitle = 'My OpenCTI platform';

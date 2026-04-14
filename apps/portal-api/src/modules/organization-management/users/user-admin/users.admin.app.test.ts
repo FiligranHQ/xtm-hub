@@ -14,7 +14,7 @@ import * as UsersHelper from '../users.helper';
 import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
 import { usersAdminApp } from './users.admin.app';
 
-describe('Users admin app', () => {
+describe('users admin app', () => {
   describe('bulkAcceptPendingUserInOrganization', () => {
     let createdUsers: User[];
     let mockAcceptPendingUser: MockInstance<

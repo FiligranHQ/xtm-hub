@@ -29,7 +29,7 @@ import { ADMIN_UUID } from '../../../portal.const';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
 
-describe('Document domain', () => {
+describe('document domain', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',

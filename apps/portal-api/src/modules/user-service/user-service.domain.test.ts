@@ -153,7 +153,7 @@ const useSubscription = () => {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('UserServiceDomain', () => {
+describe('userServiceDomain', () => {
   describe('addServiceToUsers', () => {
     const sub = useSubscription();
 

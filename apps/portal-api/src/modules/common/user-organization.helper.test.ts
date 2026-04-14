@@ -5,7 +5,7 @@ import { UserOrganizationPendingDomain } from '../organization-management/users/
 import { createNewUserFromInvitation } from '../organization-management/users/users.helper';
 import { createUserOrganizationRelationAndRemovePending } from './user-organization.helper';
 
-describe('UserOrganizationHelper', () => {
+describe('userOrganizationHelper', () => {
   describe('createUserOrganizationRelationUnsecure', () => {
     it('should delete pending organization before adding an organization', async () => {
       const testMail = `createUserOrganizationRelationUnsecure${uuidv4()}@filigran.io`;

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
+import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestHubStatus,
@@ -13,7 +14,7 @@ import { deleteServiceInstanceBy } from '../../service/instance/service-instance
 import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupDomain } from './service-group.domain';
 
-describe('ServiceGroupDomain', () => {
+describe('serviceGroupDomain', () => {
   const adminGroupId = uuidv4() as ServiceGroupId;
   const analystGroupId = uuidv4() as ServiceGroupId;
   const readerGroupId = uuidv4() as ServiceGroupId;
@@ -127,18 +128,16 @@ describe('ServiceGroupDomain', () => {
       });
 
       expect(serviceGroupUsers).toHaveLength(2);
-      expect(
-        serviceGroupUsers!.find(
-          ({ user_id }) =>
-            user_id === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
-        )
-      );
-      expect(
-        serviceGroupUsers!.find(
-          ({ user_id }) =>
-            user_id ===
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
-        )
+
+      expect(serviceGroupUsers).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          }),
+          expect.objectContaining({
+            user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+          }),
+        ])
       );
     });
   });

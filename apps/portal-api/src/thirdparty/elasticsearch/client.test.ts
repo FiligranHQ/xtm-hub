@@ -12,7 +12,7 @@ interface TestDocument {
   value: number;
 }
 
-describe('EsClient', () => {
+describe('esClient', () => {
   describe('simpleSearch', () => {
     const esService: ElasticSearchService = new ElasticSearchService();
     let mockSearch: MockedFunction<typeof esService.search>;

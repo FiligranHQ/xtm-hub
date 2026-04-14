@@ -15,7 +15,7 @@ import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
 import { insertUser, linkUsersToOrganization } from '../users.test.utils';
 import { UserOrganizationPendingDomain } from './user-organization-pending.domain';
 
-describe('UserOrganizationPendingDomain', () => {
+describe('userOrganizationPendingDomain', () => {
   describe('loadOrganizationsWithPendingUsers', () => {
     it('should return list of pending organizations with their pending users', async () => {
       const secondOrgaUsers = [

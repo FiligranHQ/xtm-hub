@@ -7,7 +7,7 @@ import {
 
 // Import after mocking
 
-describe('System Token Validation', () => {
+describe('system Token Validation', () => {
   describe('validateSystemToken', () => {
     it('should return true when token is valid', () => {
       const context: PortalContext = {

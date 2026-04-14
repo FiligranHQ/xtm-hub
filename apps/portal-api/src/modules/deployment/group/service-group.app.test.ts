@@ -38,7 +38,7 @@ import { deleteServiceInstanceBy } from '../../service/instance/service-instance
 import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupApp } from './service-group.app';
 
-describe('ServiceGroupApp', () => {
+describe('serviceGroupApp', () => {
   const adminGroupId = uuidv4() as ServiceGroupId;
   const analystGroupId = uuidv4() as ServiceGroupId;
   const adminGroupIdServiceInstance2 = uuidv4() as ServiceGroupId;

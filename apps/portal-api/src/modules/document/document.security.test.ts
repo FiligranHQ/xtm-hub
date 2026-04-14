@@ -44,7 +44,7 @@ const mockServiceDefinition = (identifier: ServiceDefinitionIdentifier) => ({
   service_capability: [],
 });
 
-describe('Document security', () => {
+describe('document security', () => {
   describe('isUserRestrictedToActiveDocument', () => {
     beforeEach(() => {
       vi.restoreAllMocks();
