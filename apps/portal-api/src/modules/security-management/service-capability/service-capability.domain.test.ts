@@ -1,91 +1,73 @@
-import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
-import ServiceCapability, {
-  ServiceCapabilityId,
-} from '../../../model/kanel/public/ServiceCapability';
+import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
+import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import ServiceDefinition, {
   ServiceDefinitionId,
 } from '../../../model/kanel/public/ServiceDefinition';
 import { loadServiceCapabilitiesBy } from './service-capability.domain';
 
 describe('Service Capability domain', () => {
-  let testServiceDefinitionId: ServiceDefinitionId;
-  let testServiceDefinitionId2: ServiceDefinitionId;
+  let serviceDefinition1: ServiceDefinition;
+  let serviceDefinition2: ServiceDefinition;
   let testCapabilityIds: ServiceCapabilityId[] = [];
   let testServiceDefIds: ServiceDefinitionId[] = [];
 
   beforeAll(async () => {
-    const serviceDefinition = await db<ServiceDefinition>('ServiceDefinition')
-      .insert([
-        {
-          id: uuidv4() as ServiceDefinitionId,
-          name: 'Test Service Definition',
-          description: 'Test service definition for capability tests',
-        },
-        {
-          id: uuidv4() as ServiceDefinitionId,
-          name: '2 Test Service Definition 2',
-          description: '2 Test service definition for capability tests2 ',
-        },
-      ])
-      .returning('*');
+    serviceDefinition1 = await TestServiceHelper.serviceDefinition.create({
+      name: 'Test Service Definition',
+      description: 'Test service definition for capability tests',
+    });
+    serviceDefinition2 = await TestServiceHelper.serviceDefinition.create({
+      name: '2 Test Service Definition 2',
+      description: '2 Test service definition for capability tests2 ',
+    });
+    const capabilities1 = await TestServiceHelper.serviceCapability.create({
+      name: 'Test Capability 1',
+      description: 'First test capability',
+      service_definition_id: serviceDefinition1.id,
+    });
+    const capabilities2 = await TestServiceHelper.serviceCapability.create({
+      name: 'Test Capability 2',
+      description: 'Second test capability',
+      service_definition_id: serviceDefinition1.id,
+    });
+    const capabilities3 = await TestServiceHelper.serviceCapability.create({
+      name: 'Test Capability 3',
+      description: 'Third test capability',
+      service_definition_id: serviceDefinition2.id,
+    });
 
-    testServiceDefinitionId =
-      serviceDefinition[0]?.id ?? (uuidv4() as ServiceDefinitionId);
-    testServiceDefinitionId2 =
-      serviceDefinition[1]?.id ?? (uuidv4() as ServiceDefinitionId);
-
-    const capabilities = await db<ServiceCapability>('Service_Capability')
-      .insert([
-        {
-          id: uuidv4() as ServiceCapabilityId,
-          name: 'Test Capability 1',
-          description: 'First test capability',
-          service_definition_id: testServiceDefinitionId,
-        },
-        {
-          id: uuidv4() as ServiceCapabilityId,
-          name: 'Test Capability 2',
-          description: 'Second test capability',
-          service_definition_id: testServiceDefinitionId,
-        },
-        {
-          id: uuidv4() as ServiceCapabilityId,
-          name: 'Test Capability 3',
-          description: 'Third test capability',
-          service_definition_id: testServiceDefinitionId2,
-        },
-      ])
-      .returning('*');
-
-    testCapabilityIds = capabilities.map((cap) => cap.id);
-    testServiceDefIds = serviceDefinition.map((def) => def.id);
+    testCapabilityIds = [capabilities1.id, capabilities2.id, capabilities3.id];
+    testServiceDefIds = [serviceDefinition1.id, serviceDefinition2.id];
   });
 
   afterAll(async () => {
     if (testCapabilityIds.length > 0) {
-      await db<ServiceCapability>('Service_Capability')
-        .whereIn('id', testCapabilityIds)
-        .delete();
+      await Promise.all(
+        testCapabilityIds.map((id) =>
+          TestServiceHelper.serviceCapability.delete({ id })
+        )
+      );
     }
 
-    if (testServiceDefinitionId) {
-      await db<ServiceDefinition>('ServiceDefinition')
-        .whereIn('id', testServiceDefIds)
-        .delete();
+    if (testServiceDefIds.length > 0) {
+      await Promise.all(
+        testServiceDefIds.map((id) =>
+          TestServiceHelper.serviceDefinition.delete({ id })
+        )
+      );
     }
   });
 
   describe('loadServiceCapabilitiesBy', () => {
     it('should load service capabilities by service_definition_id', async () => {
       const capabilities = await loadServiceCapabilitiesBy({
-        service_definition_id: testServiceDefinitionId,
+        service_definition_id: serviceDefinition1.id,
       });
 
       expect(capabilities).toHaveLength(2);
       expect(capabilities[0]?.service_definition_id).toBe(
-        testServiceDefinitionId
+        serviceDefinition1.id
       );
       expect(capabilities.map((cap) => cap.name)).toContain(
         'Test Capability 1'
@@ -126,14 +108,14 @@ describe('Service Capability domain', () => {
 
     it('should handle multiple criteria', async () => {
       const capabilities = await loadServiceCapabilitiesBy({
-        service_definition_id: testServiceDefinitionId,
+        service_definition_id: serviceDefinition1.id,
         name: 'Test Capability 1',
       });
 
       expect(capabilities).toHaveLength(1);
       expect(capabilities[0]?.name).toBe('Test Capability 1');
       expect(capabilities[0]?.service_definition_id).toBe(
-        testServiceDefinitionId
+        serviceDefinition1.id
       );
     });
   });

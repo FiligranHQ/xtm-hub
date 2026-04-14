@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
   SERVICES,

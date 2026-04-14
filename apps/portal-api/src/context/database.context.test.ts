@@ -9,6 +9,7 @@ interface TestTable {
 }
 
 const createItem = async (name: string) => {
+  // eslint-disable-next-line no-restricted-syntax
   const [item] = await db<TestTable>('TestTable')
     .insert({ name })
     .returning('*');
@@ -16,6 +17,7 @@ const createItem = async (name: string) => {
 };
 
 const countItems = async (): Promise<number> => {
+  // eslint-disable-next-line no-restricted-syntax
   const [{ count }] = await db<TestTable>('TestTable').count('* as count');
   return Number(count);
 };
@@ -34,6 +36,7 @@ describe('DatabaseContext Tests', () => {
   });
 
   beforeEach(async () => {
+    // eslint-disable-next-line no-restricted-syntax
     await db<TestTable>('TestTable').del();
     databaseContext.clearTransaction();
   });

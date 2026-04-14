@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../../knexfile';
+import { TestUserHelper } from '../../../../../tests/helper/test.user.helper';
 import {
   contextAdminSecondOrga,
   contextSimpleUserSecondOrga,
@@ -9,7 +9,6 @@ import {
 import portalConfig from '../../../../config';
 import { requestContext } from '../../../../context/request.context';
 import User, { UserId } from '../../../../model/kanel/public/User';
-import UserOrganizationPending from '../../../../model/kanel/public/UserOrganizationPending';
 import { PortalContext } from '../../../../model/portal-context';
 import * as MailService from '../../../../server/mail-service';
 import { ErrorCode } from '../../../../utils/error/error.code';
@@ -234,7 +233,7 @@ describe('UsersOrganizationApp', () => {
         email: 'testPendingUser@filigran.io',
       });
 
-      await db<UserOrganizationPending>('User_Organization').insert({
+      await TestUserHelper.user_OrganizationPending.create({
         user_id: newUser.id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });

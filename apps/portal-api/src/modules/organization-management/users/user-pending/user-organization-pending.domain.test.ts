@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../../../knexfile';
+import { TestUserHelper } from '../../../../../tests/helper/test.user.helper';
 import {
   TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
@@ -9,7 +9,6 @@ import {
 import { FilterKey } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import User from '../../../../model/kanel/public/User';
-import UserOrganizationPending from '../../../../model/kanel/public/UserOrganizationPending';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { loadOrganizationBy } from '../../organizations/organizations.domain';
 import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
@@ -61,7 +60,7 @@ describe('UserOrganizationPendingDomain', () => {
     });
 
     it('should return an empty list when organizations does not have pending users', async () => {
-      await db('User_Organization_Pending').del();
+      await TestUserHelper.user_OrganizationPending.delete({});
       const result =
         await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
 
@@ -108,7 +107,8 @@ describe('UserOrganizationPendingDomain', () => {
       createdUsers.push(filigranUser);
     });
     afterEach(async () => {
-      await db<UserOrganizationPending>('User_Organization_Pending').del();
+      await TestUserHelper.user_OrganizationPending.delete({});
+
       await Promise.all(
         createdUsers.map((user) => removeUser({ email: user.email }))
       );
@@ -311,7 +311,7 @@ describe('UserOrganizationPendingDomain', () => {
     });
 
     afterEach(async () => {
-      await db<UserOrganizationPending>('User_Organization_Pending').del();
+      await TestUserHelper.user_OrganizationPending.delete({});
       await removeUser({ email: createdUser.email });
     });
 

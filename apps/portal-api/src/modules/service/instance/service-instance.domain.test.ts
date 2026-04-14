@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestHelper } from '../../../../tests/test.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   contextRegistererUserSecondOrga,
   // eslint-disable-next-line no-restricted-imports
@@ -56,8 +56,12 @@ describe('Service instance domain', () => {
   describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
     // Happy path
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ name: 'ServiceInstance 1' });
-      await TestHelper.serviceInstance.delete({ name: 'One serviceInstance' });
+      await TestServiceHelper.serviceInstance.delete({
+        name: 'ServiceInstance 1',
+      });
+      await TestServiceHelper.serviceInstance.delete({
+        name: 'One serviceInstance',
+      });
     });
     it('should return service instances linked to service definition and with tags', async () => {
       // When
@@ -76,11 +80,12 @@ describe('Service instance domain', () => {
 
     it('should not return service instance linked to a subscription', async () => {
       // Given
-      const linkServiceDefinition = await TestHelper.serviceDefinition.load({
-        identifier: ServiceDefinitionIdentifier.Link,
-      });
+      const linkServiceDefinition =
+        await TestServiceHelper.serviceDefinition.load({
+          identifier: ServiceDefinitionIdentifier.Link,
+        });
 
-      const instance = await TestHelper.serviceInstance.create({
+      const instance = await TestServiceHelper.serviceInstance.create({
         name: 'ServiceInstance 1',
         service_definition_id: linkServiceDefinition!.id,
       });
@@ -109,11 +114,12 @@ describe('Service instance domain', () => {
       'should exclude instance if $title',
       async ({ serviceDefinitionIdentifier, tags }) => {
         // Given
-        const serviceDefinition = await TestHelper.serviceDefinition.load({
-          identifier: serviceDefinitionIdentifier,
-        });
+        const serviceDefinition =
+          await TestServiceHelper.serviceDefinition.load({
+            identifier: serviceDefinitionIdentifier,
+          });
 
-        const instance = await TestHelper.serviceInstance.create({
+        const instance = await TestServiceHelper.serviceInstance.create({
           name: 'One serviceInstance',
           tags: tags,
           service_definition_id: serviceDefinition.id,
@@ -136,7 +142,7 @@ describe('Service instance domain', () => {
     // Happy path
     const generateId = uuidv4() as ServiceInstanceId;
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ id: generateId });
+      await TestServiceHelper.serviceInstance.delete({ id: generateId });
     });
     it('should return the service link when the service instance exists and has links', async () => {
       const links = await loadLinks(SERVICES.INSTANCES.VAULT.ID);
@@ -146,7 +152,7 @@ describe('Service instance domain', () => {
 
     it('should return an empty array when the service instance exists but has no links', async () => {
       // Given
-      await TestHelper.serviceInstance.create({
+      await TestServiceHelper.serviceInstance.create({
         id: generateId,
       });
       // When
@@ -167,18 +173,19 @@ describe('Service instance domain', () => {
 
   describe('loadPlatformServiceInstance', () => {
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({
+      await TestServiceHelper.serviceInstance.delete({
         name: 'Test OpenCTI Platform',
       });
-      await TestHelper.serviceInstance.delete({
+      await TestServiceHelper.serviceInstance.delete({
         name: 'Test OpenCTI Platform without subscription',
       });
     });
     it('should load platform service instance when it exists and user has subscription', async () => {
       // Given
-      const serviceDefinition = await TestHelper.serviceDefinition.create();
+      const serviceDefinition =
+        await TestServiceHelper.serviceDefinition.create();
 
-      const serviceInstance = await TestHelper.serviceInstance.create({
+      const serviceInstance = await TestServiceHelper.serviceInstance.create({
         service_definition_id: serviceDefinition.id,
         name: 'Test OpenCTI Platform',
       });
@@ -213,9 +220,10 @@ describe('Service instance domain', () => {
 
     it('should return null when user has no subscription to the service', async () => {
       // Given
-      const serviceDefinition = await TestHelper.serviceDefinition.create();
+      const serviceDefinition =
+        await TestServiceHelper.serviceDefinition.create();
 
-      const serviceInstance = await TestHelper.serviceInstance.create({
+      const serviceInstance = await TestServiceHelper.serviceInstance.create({
         service_definition_id: serviceDefinition.id,
         name: 'Test OpenCTI Platform without subscription',
       });
@@ -233,7 +241,7 @@ describe('Service instance domain', () => {
   describe('updateServiceInstance', () => {
     let serviceInstance: ServiceInstance;
     beforeEach(async () => {
-      serviceInstance = await TestHelper.serviceInstance.create({
+      serviceInstance = await TestServiceHelper.serviceInstance.create({
         name: 'Original Name',
         description: 'Original Description',
         public: false,
@@ -241,8 +249,10 @@ describe('Service instance domain', () => {
     });
 
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ name: 'Original Name' });
-      await TestHelper.serviceInstance.delete({ name: 'Only Name Updated' });
+      await TestServiceHelper.serviceInstance.delete({ name: 'Original Name' });
+      await TestServiceHelper.serviceInstance.delete({
+        name: 'Only Name Updated',
+      });
     });
 
     it('should update only provided fields', async () => {
@@ -284,20 +294,20 @@ describe('Service instance domain', () => {
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
 
     beforeAll(async () => {
-      await TestHelper.serviceInstance.create({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
 
-      await TestHelper.serviceConfiguration.create({
+      await TestServiceHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
       });
     });
     afterAll(async () => {
-      await TestHelper.serviceConfiguration.delete({
+      await TestServiceHelper.serviceConfiguration.delete({
         service_instance_id: serviceInstanceId,
       });
-      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+      await TestServiceHelper.serviceInstance.delete({ id: serviceInstanceId });
     });
 
     it('should load platform configuration when it exists', async () => {
@@ -323,7 +333,7 @@ describe('Service instance domain', () => {
 
     it('should return undefined when configuration does not exist', async () => {
       // Given
-      const serviceInstance = await TestHelper.serviceInstance.create({
+      const serviceInstance = await TestServiceHelper.serviceInstance.create({
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
 
@@ -340,20 +350,20 @@ describe('Service instance domain', () => {
   describe('updatePlatformConfigurationByServiceInstanceId', () => {
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
     beforeAll(async () => {
-      await TestHelper.serviceInstance.create({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestServiceHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
       });
     });
 
     afterAll(async () => {
-      await TestHelper.serviceConfiguration.delete({
+      await TestServiceHelper.serviceConfiguration.delete({
         service_instance_id: serviceInstanceId,
       });
-      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+      await TestServiceHelper.serviceInstance.delete({ id: serviceInstanceId });
     });
 
     it('should handle complete configuration replacement', async () => {
@@ -441,7 +451,7 @@ describe('Service instance domain', () => {
       filigranSubscriptionId = uuidv4() as SubscriptionId;
       secondOrgaSubscriptionId = uuidv4() as SubscriptionId;
 
-      await TestHelper.serviceInstance.create({
+      await TestServiceHelper.serviceInstance.create({
         id: testServiceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_INTEGRATIONS.ID,
         name: 'Test Service for Grant Access',
@@ -462,19 +472,19 @@ describe('Service instance domain', () => {
     afterEach(async () => {
       vi.restoreAllMocks();
 
-      await TestHelper.user_Service.delete({
+      await TestUserHelper.user_service.delete({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
-      await TestHelper.serviceConfiguration.delete({
+      await TestServiceHelper.serviceConfiguration.delete({
         service_instance_id: testServiceInstanceId,
       });
-      await TestHelper.serviceConfiguration.delete({
+      await TestServiceHelper.serviceConfiguration.delete({
         service_instance_id: otherServiceInstanceId,
       });
-      await TestHelper.serviceInstance.delete({
+      await TestServiceHelper.serviceInstance.delete({
         id: testServiceInstanceId,
       });
-      await TestHelper.serviceInstance.delete({
+      await TestServiceHelper.serviceInstance.delete({
         id: otherServiceInstanceId,
       });
     });
@@ -496,7 +506,7 @@ describe('Service instance domain', () => {
       expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
 
       // Check in DB
-      const userServiceInDb = await TestHelper.user_Service.load({
+      const userServiceInDb = await TestUserHelper.user_service.load({
         id: result[0]?.id as UserServiceId,
       });
 
@@ -517,7 +527,7 @@ describe('Service instance domain', () => {
       expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
 
       // Check in DB
-      const userServicesInDb = await TestHelper.user_Service.load({
+      const userServicesInDb = await TestUserHelper.user_service.load({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
 
@@ -550,9 +560,11 @@ describe('Service instance domain', () => {
       // Given
       const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
 
-      const anyServiceInstance = await TestHelper.serviceInstance.create({
-        id: otherServiceInstanceId,
-      });
+      const anyServiceInstance = await TestServiceHelper.serviceInstance.create(
+        {
+          id: otherServiceInstanceId,
+        }
+      );
 
       const subscription = await TestHelper.subscription.create({
         service_instance_id: anyServiceInstance.id,
@@ -573,7 +585,7 @@ describe('Service instance domain', () => {
   describe('loadServiceWithSubscriptions', () => {
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
     beforeEach(async () => {
-      await TestHelper.serviceInstance.create({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
       });
       await TestHelper.subscription.create({
@@ -587,7 +599,7 @@ describe('Service instance domain', () => {
     });
 
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+      await TestServiceHelper.serviceInstance.delete({ id: serviceInstanceId });
     });
 
     it.each`
@@ -624,7 +636,7 @@ describe('Service instance domain', () => {
 
   describe('getUserJoined', () => {
     afterAll(async () => {
-      await TestHelper.user_Service.delete({
+      await TestUserHelper.user_service.delete({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
     });
@@ -634,7 +646,7 @@ describe('Service instance domain', () => {
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       });
-      await TestHelper.user_Service.create({
+      await TestUserHelper.user_service.create({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         subscription_id: subscription!.id,
       });
@@ -760,7 +772,7 @@ describe('Service instance domain', () => {
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
 
     beforeEach(async () => {
-      await TestHelper.serviceInstance.create({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
@@ -772,7 +784,7 @@ describe('Service instance domain', () => {
     });
 
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+      await TestServiceHelper.serviceInstance.delete({ id: serviceInstanceId });
     });
 
     it('should return subscribed service instances for the user', async () => {
@@ -807,19 +819,23 @@ describe('Service instance domain', () => {
     const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
 
     beforeEach(async () => {
-      await TestHelper.serviceInstance.create({
+      await TestServiceHelper.serviceInstance.create({
         id: publicServiceInstanceId,
         public: true,
       });
-      await TestHelper.serviceInstance.create({
+      await TestServiceHelper.serviceInstance.create({
         id: privateServiceInstanceId,
         public: false,
       });
     });
 
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ id: publicServiceInstanceId });
-      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
+      await TestServiceHelper.serviceInstance.delete({
+        id: publicServiceInstanceId,
+      });
+      await TestServiceHelper.serviceInstance.delete({
+        id: privateServiceInstanceId,
+      });
     });
 
     it('Should return only public service instances', async () => {

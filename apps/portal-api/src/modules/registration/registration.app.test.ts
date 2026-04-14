@@ -9,7 +9,9 @@ import {
   it,
   vi,
 } from 'vitest';
-import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/helper/test.helper';
+import { TestServiceHelper } from '../../../tests/helper/test.service.helper';
+import { TestUserHelper } from '../../../tests/helper/test.user.helper';
 import {
   // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
@@ -42,15 +44,11 @@ import { requestContext } from '../../context/request.context';
 import DeploymentRequest, {
   DeploymentRequestId,
 } from '../../model/kanel/public/DeploymentRequest';
-import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-} from '../../model/kanel/public/Subscription';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 
-import { UserLoadUserBy } from '../../model/user';
 import {
   BadRequestErrorCode,
   ErrorCode,
@@ -92,11 +90,11 @@ describe('Registration app', () => {
     it('should throw an error when subscription is not found', async () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await db<ServiceInstance>('ServiceInstance').insert({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await db<ServiceConfiguration>('Service_Configuration').insert({
+      await TestServiceHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId },
         status: ServiceConfigurationStatus.Active,
@@ -112,16 +110,16 @@ describe('Registration app', () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const subscriptionId = uuidv4() as SubscriptionId;
-      await db<ServiceInstance>('ServiceInstance').insert({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await db<ServiceConfiguration>('Service_Configuration').insert({
+      await TestServiceHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId },
         status: ServiceConfigurationStatus.Active,
       });
-      await db<Subscription>('Subscription').insert({
+      await TestHelper.subscription.create({
         id: subscriptionId,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -137,16 +135,16 @@ describe('Registration app', () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const subscriptionId = uuidv4() as SubscriptionId;
-      await db<ServiceInstance>('ServiceInstance').insert({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await db<ServiceConfiguration>('Service_Configuration').insert({
+      await TestServiceHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId },
         status: ServiceConfigurationStatus.Active,
       });
-      await db<Subscription>('Subscription').insert({
+      await TestHelper.subscription.create({
         id: subscriptionId,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
@@ -178,11 +176,11 @@ describe('Registration app', () => {
     it('should throw subscription not found error when associated subscription is not found', async () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await db<ServiceInstance>('ServiceInstance').insert({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await db<ServiceConfiguration>('Service_Configuration').insert({
+      await TestServiceHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId },
         status: ServiceConfigurationStatus.Active,
@@ -201,16 +199,16 @@ describe('Registration app', () => {
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const subscriptionId = uuidv4() as SubscriptionId;
 
-      await db<ServiceInstance>('ServiceInstance').insert({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await db<ServiceConfiguration>('Service_Configuration').insert({
+      await TestServiceHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId, platform_title: platformTitle },
         status: ServiceConfigurationStatus.Active,
       });
-      await db<Subscription>('Subscription').insert({
+      await TestHelper.subscription.create({
         id: subscriptionId,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
@@ -233,16 +231,16 @@ describe('Registration app', () => {
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const subscriptionId = uuidv4() as SubscriptionId;
 
-      await db<ServiceInstance>('ServiceInstance').insert({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await db<ServiceConfiguration>('Service_Configuration').insert({
+      await TestServiceHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId, platform_title: platformTitle },
         status: ServiceConfigurationStatus.Inactive,
       });
-      await db<Subscription>('Subscription').insert({
+      await TestHelper.subscription.create({
         id: subscriptionId,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
@@ -472,14 +470,9 @@ describe('Registration app', () => {
         ServiceConfigurationStatus.Inactive
       );
 
-      const subscription = await db<Subscription>('Subscription')
-        .where(
-          'service_instance_id',
-          '=',
-          serviceConfiguration?.service_instance_id ?? ''
-        )
-        .select('*')
-        .first();
+      const subscription = await TestHelper.subscription.load({
+        service_instance_id: serviceConfiguration!.service_instance_id,
+      });
 
       expect(subscription).toBeDefined();
       expect(subscription?.end_date).toBeDefined();
@@ -745,9 +738,9 @@ describe('Registration app', () => {
       const { token } = await registrationApp.refreshUserPlatformToken(
         contextBypassUser.user.id
       );
-      const user = await db<UserLoadUserBy>('User')
-        .where({ id: contextBypassUser.user.id })
-        .first();
+      const user = await TestUserHelper.user.load({
+        id: contextBypassUser.user.id,
+      });
 
       expect(token).toBe(user.platform_token);
 
@@ -755,9 +748,9 @@ describe('Registration app', () => {
         await registrationApp.refreshUserPlatformToken(
           contextBypassUser.user.id
         );
-      const updatedUser = await db<UserLoadUserBy>('User')
-        .where({ id: contextBypassUser.user.id })
-        .first();
+      const updatedUser = await TestUserHelper.user.load({
+        id: contextBypassUser.user.id,
+      });
 
       expect(anotherToken).toBe(updatedUser.platform_token);
       expect(anotherToken === token).toBeFalsy();

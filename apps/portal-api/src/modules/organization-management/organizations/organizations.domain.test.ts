@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { TestHelper } from '../../../../tests/test.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
@@ -52,7 +52,7 @@ describe('OrganizationsDomain', () => {
   describe('loadOrganizationSubscribedToServiceInstance', () => {
     let serviceInstance: ServiceInstance;
     beforeAll(async () => {
-      serviceInstance = await TestHelper.serviceInstance.create();
+      serviceInstance = await TestServiceHelper.serviceInstance.create();
     });
 
     it('should return null when organization is not subscribed to service instance', async () => {

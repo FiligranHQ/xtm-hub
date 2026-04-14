@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
+import { TestUserHelper } from '../../../../tests/helper/test.user.helper';
 import {
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
@@ -11,8 +11,6 @@ import { requestContext } from '../../../context/request.context';
 import Subscription, {
   SubscriptionId,
 } from '../../../model/kanel/public/Subscription';
-import UserService from '../../../model/kanel/public/UserService';
-import UserServiceCapability from '../../../model/kanel/public/UserServiceCapability';
 import { SubscriptionStatus } from '../../subscription.const';
 import { createSubscription } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
@@ -35,8 +33,8 @@ describe('editServiceCapability', () => {
     });
   });
   afterEach(async () => {
-    await db<UserServiceCapability>('UserService_Capability').del();
-    await db<UserService>('User_Service').del();
+    await TestUserHelper.user_ServiceCapability.delete({});
+    await TestUserHelper.user_Service.delete({});
   });
   it('should update capability', async () => {
     requestContext.set(requestContextAdminUser);

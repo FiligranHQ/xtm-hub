@@ -3,6 +3,7 @@ import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getDbTestConnection } from '../tests/config-test';
+import { UserId } from './model/kanel/public/User';
 import { UserWithOrganizationsAndRole } from './model/user';
 import {
   getSessionStoreInstance,
@@ -22,6 +23,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
   });
 
   afterAll(async () => {
+    // eslint-disable-next-line no-restricted-syntax
     await db('sessions').del();
   });
 
@@ -80,6 +82,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
 
       // Only test if it's PostgreSQL store (has cleanup method)
       if ('cleanup' in store) {
+        // eslint-disable-next-line no-restricted-syntax
         await db('sessions').del();
 
         const userId = 'update-test-' + uuidv4();
@@ -91,7 +94,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
             expires: new Date(Date.now() + 3600000),
             originalMaxAge: 3600000,
           },
-          user: { id: userId, first_name: 'Original Name' },
+          user: { id: userId as UserId, first_name: 'Original Name' },
         };
 
         // Create session

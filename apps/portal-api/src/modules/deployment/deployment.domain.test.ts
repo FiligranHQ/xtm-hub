@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../knexfile';
+import { TestDeploymentHelper } from '../../../tests/helper/test.deployment.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
@@ -13,9 +13,7 @@ import {
   OrderingMode,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
-import DeploymentRequest, {
-  DeploymentRequestId,
-} from '../../model/kanel/public/DeploymentRequest';
+import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
 import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { deleteSubscription } from '../subscription/subscription.helper';
@@ -27,7 +25,7 @@ import {
 
 describe('DeploymentRequestDomain', () => {
   beforeEach(async () => {
-    await db<DeploymentRequest>('DeploymentRequest').del();
+    await TestDeploymentHelper.deploymentRequest.delete({});
   });
 
   describe('loadDeploymentRequest', () => {
@@ -778,7 +776,7 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should do nothing when there is no pending requests', async () => {
-      await db<DeploymentRequest>('DeploymentRequest').update({
+      await TestDeploymentHelper.deploymentRequest.update({
         hub_status: DeploymentRequestHubStatus.Queued,
       });
 

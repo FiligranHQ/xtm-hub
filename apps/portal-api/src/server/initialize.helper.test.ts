@@ -1,10 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../knexfile';
+import { TestHelper } from '../../tests/helper/test.helper';
+import { TestUserHelper } from '../../tests/helper/test.user.helper';
 import { TEST_ORGANIZATIONS } from '../../tests/tests.const';
 import { withTransaction } from '../context/database.context';
-import { UserInitializer } from '../model/kanel/public/User';
-import UserOrganization from '../model/kanel/public/UserOrganization';
+import { OrganizationId } from '../model/kanel/public/Organization';
+import { RolePortalId } from '../model/kanel/public/RolePortal';
+import User, { UserId, UserInitializer } from '../model/kanel/public/User';
 import { loadOrganizationBy } from '../modules/organization-management/organizations/organizations.domain';
 import { CAPABILITY_BYPASS, ROLE_ADMIN, ROLE_USER } from '../portal.const';
 import { DevUser } from '../utils/config-validation.util';
@@ -33,6 +36,7 @@ describe('Dev users seeding', () => {
   // Clean up test data after each test
   afterEach(async () => {
     // Clean up test users and their data
+    // eslint-disable-next-line no-restricted-syntax
     const testUsers = await db<UserInitializer>('User').where(
       'email',
       'like',
@@ -41,19 +45,28 @@ describe('Dev users seeding', () => {
 
     for (const user of testUsers) {
       // Clean user roles
-      await db('User_RolePortal').where('user_id', user.id).del();
+      await TestUserHelper.user_RolePortal.delete({
+        user_id: user.id,
+      });
 
       // Clean user organizations
-      await db('User_Organization').where('user_id', user.id).del();
+      await TestUserHelper.user_Organization.delete({
+        user_id: user.id,
+      });
 
       // Clean personal space organization
-      await db('Organization').where('id', user.id).del();
+      await TestHelper.organization.delete({
+        id: user.id,
+      });
     }
 
     // Clean test users
+    await TestUserHelper.user.delete({});
+    // eslint-disable-next-line no-restricted-syntax
     await db('User').where('email', 'like', '%@test-dev.com').del();
 
     // Clean test organizations
+    // eslint-disable-next-line no-restricted-syntax
     await db('Organization')
       .where('name', 'like', '%Test%')
       .where('personal_space', false)
@@ -107,14 +120,15 @@ describe('Dev users seeding', () => {
       await ensureDevUserExists(userConfig);
 
       // Verify user exists
-      const user = await db<UserInitializer>('User')
-        .where({ email: 'simple@test-dev.com' })
-        .first();
+      const user = await TestUserHelper.user.load({
+        email: 'simple@test-dev.com',
+      });
 
       expect(user).toBeDefined();
-      expect(user?.email).toBe('simple@test-dev.com');
+      expect(user!.email).toBe('simple@test-dev.com');
 
       // Verify user has USER role
+      // eslint-disable-next-line no-restricted-syntax
       const userRole = await db('User_RolePortal')
         .join('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
         .where('User_RolePortal.user_id', user?.id)
@@ -124,18 +138,16 @@ describe('Dev users seeding', () => {
       expect(userRole).toBeDefined();
 
       // Verify platform organization membership
-      const platformMembership = await db<UserOrganization>('User_Organization')
-        .where({
-          user_id: user?.id,
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        })
-        .first();
+      const platformMembership = await TestUserHelper.user_Organization.load({
+        user_id: user?.id,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
 
       expect(platformMembership).toBeDefined();
 
       // Verify personal space exists
       const personalSpace = await loadOrganizationBy({
-        id: user?.id,
+        id: user?.id as unknown as OrganizationId,
         personal_space: true,
       });
 
@@ -151,13 +163,14 @@ describe('Dev users seeding', () => {
 
       await ensureDevUserExists(adminConfig);
 
-      const user = await db<UserInitializer>('User')
-        .where({ email: 'admin@test-dev.com' })
-        .first();
+      const user = await TestUserHelper.user.load({
+        email: 'admin@test-dev.com',
+      });
 
       expect(user).toBeDefined();
 
       // Verify user has ADMIN role
+      // eslint-disable-next-line no-restricted-syntax
       const adminRole = await db('User_RolePortal')
         .join('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
         .where('User_RolePortal.user_id', user?.id)
@@ -179,9 +192,9 @@ describe('Dev users seeding', () => {
 
       await ensureDevUserExists(userWithOrgConfig);
 
-      const user = await db<UserInitializer>('User')
-        .where({ email: 'orguser@test-dev.com' })
-        .first();
+      const user = await TestUserHelper.user.load({
+        email: 'orguser@test-dev.com',
+      });
 
       expect(user).toBeDefined();
 
@@ -192,12 +205,10 @@ describe('Dev users seeding', () => {
       expect(org?.domains).toEqual(['userorg.test-dev.com']);
 
       // Verify user is member of the organization
-      const orgMembership = await db<UserOrganization>('User_Organization')
-        .where({
-          user_id: user?.id,
-          organization_id: org?.id,
-        })
-        .first();
+      const orgMembership = await TestUserHelper.user_Organization.load({
+        user_id: user?.id,
+        organization_id: org?.id,
+      });
 
       expect(orgMembership).toBeDefined();
     });
@@ -211,9 +222,9 @@ describe('Dev users seeding', () => {
       // Create user first time
       await ensureDevUserExists(userConfig);
 
-      const originalUser = await db<UserInitializer>('User')
-        .where({ email: 'update@test-dev.com' })
-        .first();
+      const originalUser = await TestUserHelper.user.load({
+        email: 'update@test-dev.com',
+      });
 
       const originalPassword = originalUser?.password;
 
@@ -225,9 +236,9 @@ describe('Dev users seeding', () => {
 
       await ensureDevUserExists(updatedConfig);
 
-      const updatedUser = await db<UserInitializer>('User')
-        .where({ email: 'update@test-dev.com' })
-        .first();
+      const updatedUser = await TestUserHelper.user.load({
+        email: 'update@test-dev.com',
+      });
 
       // User ID should be the same
       expect(updatedUser?.id).toBe(originalUser?.id);
@@ -268,6 +279,7 @@ describe('Dev users seeding', () => {
         await initializeDevUsers();
 
         // Verify all users were created
+        // eslint-disable-next-line no-restricted-syntax
         const createdUsers = await db<UserInitializer>('User').whereIn(
           'email',
           ['dev1@test-dev.com', 'dev2@test-dev.com', 'dev3@test-dev.com']
@@ -276,7 +288,10 @@ describe('Dev users seeding', () => {
         expect(createdUsers).toHaveLength(3);
 
         // Verify admin role for dev2
-        const dev2 = createdUsers.find((u) => u.email === 'dev2@test-dev.com');
+        const dev2 = createdUsers.find(
+          (u: User) => u.email === 'dev2@test-dev.com'
+        );
+        // eslint-disable-next-line no-restricted-syntax
         const adminRole = await db('User_RolePortal')
           .join('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
           .where('User_RolePortal.user_id', dev2?.id)
@@ -312,13 +327,14 @@ describe('Dev users seeding', () => {
         await initializeDevUsers();
 
         // User should still be created
-        const user = await db<UserInitializer>('User')
-          .where({ email: 'invalidrole@test-dev.com' })
-          .first();
+        const user = await TestUserHelper.user.load({
+          email: 'invalidrole@test-dev.com',
+        });
 
         expect(user).toBeDefined();
 
         // Should have USER role (valid role was processed)
+        // eslint-disable-next-line no-restricted-syntax
         const userRole = await db('User_RolePortal')
           .join('RolePortal', 'User_RolePortal.role_portal_id', 'RolePortal.id')
           .where('User_RolePortal.user_id', user?.id)
@@ -340,6 +356,7 @@ describe('Dev users seeding', () => {
         await initializeDevUsers();
 
         // Should not create any test users
+        // eslint-disable-next-line no-restricted-syntax
         const testUsers = await db<UserInitializer>('User').where(
           'email',
           'like',
@@ -361,9 +378,11 @@ describe('addRoleToUser', () => {
   // Clean up test data after each test
   afterEach(async () => {
     if (testUserIds.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
       await db('User_RolePortal').whereIn('user_id', testUserIds).del();
     }
     if (testRolePortalIds.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
       await db('RolePortal').whereIn('id', testRolePortalIds).del();
     }
     testUserIds.length = 0;
@@ -377,32 +396,31 @@ describe('addRoleToUser', () => {
     testUserIds.push(user_id);
     testRolePortalIds.push(rolePortalId);
 
-    await db('RolePortal').insert({
-      id: rolePortalId,
-      name: `test-admin-${rolePortalId}`,
-    });
+    await TestUserHelper.rolePortal.create({});
 
     // Execute
     await addRoleToUser(user_id, `test-admin-${rolePortalId}`);
 
     // Assert
-    const userRole = await db('User_RolePortal')
-      .where({ user_id, role_portal_id: rolePortalId })
-      .first();
+    const userRole = await TestUserHelper.user_RolePortal.load({
+      user_id: user_id as unknown as UserId,
+      role_portal_id: rolePortalId as RolePortalId,
+    });
 
-    expect(userRole).toBeDefined();
-    expect(userRole.user_id).toBe(user_id);
-    expect(userRole.role_portal_id).toBe(rolePortalId);
+    expect(userRole).toMatchObject({
+      user_id,
+      role_portal_id: rolePortalId,
+    });
   });
 
   it('should not duplicate role if user already has it', async () => {
     // Setup test data
-    const rolePortalId = uuidv4();
+    const rolePortalId = uuidv4() as RolePortalId;
 
     testUserIds.push(user_id);
     testRolePortalIds.push(rolePortalId);
 
-    await db('RolePortal').insert({
+    await TestUserHelper.rolePortal.create({
       id: rolePortalId,
       name: `test-editor-${rolePortalId}`,
     });
@@ -414,8 +432,8 @@ describe('addRoleToUser', () => {
     await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
 
     // Assert - should only have one record
-    const userRoles = await db('User_RolePortal').where({
-      user_id,
+    const userRoles = await TestUserHelper.user_RolePortal.loadAll({
+      user_id: user_id as UserId,
       role_portal_id: rolePortalId,
     });
 
@@ -431,7 +449,9 @@ describe('addRoleToUser', () => {
     ).resolves.not.toThrow();
 
     // Assert - no user role should be created
-    const userRoles = await db('User_RolePortal').where({ user_id });
+    const userRoles = await TestUserHelper.user_RolePortal.loadAll({
+      user_id: user_id as UserId,
+    });
 
     expect(userRoles).toHaveLength(0);
   });
@@ -441,14 +461,15 @@ describe('addRoleToUser', () => {
     testUserIds.push(user_id);
 
     // Get an existing role from database
-    const existingRole = await db('RolePortal').first();
+    const existingRole = await TestUserHelper.rolePortal.load({});
 
     if (existingRole) {
       await addRoleToUser(user_id, existingRole.name);
 
-      const userRole = await db('User_RolePortal')
-        .where({ user_id, role_portal_id: existingRole.id })
-        .first();
+      const userRole = await TestUserHelper.user_RolePortal.load({
+        user_id: user_id as UserId,
+        role_portal_id: existingRole.id,
+      });
 
       expect(userRole).toBeDefined();
     }

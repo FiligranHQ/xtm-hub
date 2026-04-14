@@ -9,7 +9,6 @@ import {
   vi,
   type MockInstance,
 } from 'vitest';
-import { db } from '../../../../knexfile';
 import {
   requestContextAdminSecondOrga,
   // eslint-disable-next-line no-restricted-imports
@@ -18,32 +17,23 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
-  DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
-  DeploymentRequestPlatformRegion,
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceInstanceCreationStatus,
   ServiceInstanceJoinType,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
-import DeploymentRequest, {
-  DeploymentRequestId,
-} from '../../../model/kanel/public/DeploymentRequest';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
-import ServiceGroup, {
-  ServiceGroupId,
-} from '../../../model/kanel/public/ServiceGroup';
-import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
+import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-} from '../../../model/kanel/public/Subscription';
 import * as mailService from '../../../server/mail-service';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 
+import { TestDeploymentHelper } from '../../../../tests/helper/test.deployment.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
+import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
 import { deleteServiceInstanceBy } from '../../service/instance/service-instance.domain';
 import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupApp } from './service-group.app';
@@ -58,82 +48,76 @@ describe('ServiceGroupApp', () => {
   const serviceInstanceId2 = uuidv4() as ServiceInstanceId;
 
   beforeAll(async () => {
-    await db('ServiceInstance').insert([
-      {
-        id: serviceInstanceId1,
-        name: 'Service instance 1',
-        description: '',
-        creation_status: ServiceInstanceCreationStatus.Ready,
-        public: false,
-        join_type: ServiceInstanceJoinType.JoinAuto,
-        tags: [],
-        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-      },
-      {
-        id: serviceInstanceId2,
-        name: 'Service instance 2',
-        description: '',
-        creation_status: ServiceInstanceCreationStatus.Ready,
-        public: false,
-        join_type: ServiceInstanceJoinType.JoinAuto,
-        tags: [],
-        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-      },
-    ]);
+    await TestServiceHelper.serviceInstance.create({
+      id: serviceInstanceId1,
+      name: 'Service instance 1',
+      description: '',
+      creation_status: ServiceInstanceCreationStatus.Ready,
+      public: false,
+      join_type: ServiceInstanceJoinType.JoinAuto,
+      tags: [],
+      service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+    });
+    await TestServiceHelper.serviceInstance.create({
+      id: serviceInstanceId2,
+      name: 'Service instance 2',
+      description: '',
+      creation_status: ServiceInstanceCreationStatus.Ready,
+      public: false,
+      join_type: ServiceInstanceJoinType.JoinAuto,
+      tags: [],
+      service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+    });
 
-    await db<ServiceGroup>('ServiceGroup').insert([
-      {
-        id: adminGroupId,
-        name: 'Admin',
-        service_instance_id: serviceInstanceId1,
-      },
-      {
-        id: analystGroupId,
-        name: 'Analyst',
-        service_instance_id: serviceInstanceId1,
-      },
-      {
-        id: adminGroupIdServiceInstance2,
-        name: 'Admin',
-        service_instance_id: serviceInstanceId2,
-      },
-      {
-        id: analystGroupIdServiceInstance2,
-        name: 'Analyst',
-        service_instance_id: serviceInstanceId2,
-      },
-    ]);
+    await TestServiceHelper.serviceGroup.create({
+      id: adminGroupId,
+      name: 'Admin',
+      service_instance_id: serviceInstanceId1,
+    });
+    await TestServiceHelper.serviceGroup.create({
+      id: analystGroupId,
+      name: 'Analyst',
+      service_instance_id: serviceInstanceId1,
+    });
+    await TestServiceHelper.serviceGroup.create({
+      id: adminGroupIdServiceInstance2,
+      name: 'Admin',
+      service_instance_id: serviceInstanceId2,
+    });
+    await TestServiceHelper.serviceGroup.create({
+      id: analystGroupIdServiceInstance2,
+      name: 'Analyst',
+      service_instance_id: serviceInstanceId2,
+    });
   });
 
   describe('updateGroups', () => {
     afterEach(async () => {
       vi.restoreAllMocks();
-      await db('ServiceGroup_User')
-        .whereIn('group_id', [
-          adminGroupId,
-          analystGroupId,
-          adminGroupIdServiceInstance2,
-          analystGroupIdServiceInstance2,
-        ])
-        .delete();
-      await db('DeploymentRequest')
-        .whereIn('service_instance_id', [
-          serviceInstanceId1,
-          serviceInstanceId2,
-        ])
-        .delete();
-      await db('Subscription')
-        .whereIn('service_instance_id', [
-          serviceInstanceId1,
-          serviceInstanceId2,
-        ])
-        .delete();
-      await db('Service_Configuration')
-        .whereIn('service_instance_id', [
-          serviceInstanceId1,
-          serviceInstanceId2,
-        ])
-        .delete();
+
+      for (const groupId of [
+        adminGroupId,
+        analystGroupId,
+        adminGroupIdServiceInstance2,
+        analystGroupIdServiceInstance2,
+      ]) {
+        await TestServiceHelper.serviceGroupUser.delete({ group_id: groupId });
+      }
+
+      for (const serviceInstanceId of [
+        serviceInstanceId1,
+        serviceInstanceId2,
+      ]) {
+        await TestDeploymentHelper.deploymentRequest.delete({
+          service_instance_id: serviceInstanceId,
+        });
+        await TestHelper.subscription.delete({
+          service_instance_id: serviceInstanceId,
+        });
+        await TestServiceHelper.serviceConfiguration.delete({
+          service_instance_id: serviceInstanceId,
+        });
+      }
     });
 
     const payload = [
@@ -168,8 +152,7 @@ describe('ServiceGroupApp', () => {
     });
 
     it('should prevent user from updating groups in another organization than selected', async () => {
-      await db<Subscription>('Subscription').insert({
-        id: uuidv4() as SubscriptionId,
+      await TestHelper.subscription.create({
         service_instance_id: serviceInstanceId1,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
@@ -185,21 +168,16 @@ describe('ServiceGroupApp', () => {
     it('should allow bypass user to update groups in another organization', async () => {
       requestContext.set(requestContextAdminUser);
 
-      await db<Subscription>('Subscription').insert({
-        id: uuidv4() as SubscriptionId,
+      await TestHelper.subscription.create({
         service_instance_id: serviceInstanceId2,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
-      await db<DeploymentRequest>('DeploymentRequest').insert({
-        id: uuidv4() as DeploymentRequestId,
+
+      await TestDeploymentHelper.deploymentRequest.create({
         service_instance_id: serviceInstanceId2,
-        platform_id: uuidv4(),
         user_requester_id:
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
         organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        type: DeploymentRequestDeploymentType.Trial,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.EuWest,
       });
 
       const bypassPayload = [
@@ -221,50 +199,45 @@ describe('ServiceGroupApp', () => {
     it('should update groups with new user list and remove old ones', async () => {
       requestContext.set(requestContextAdminUser);
 
-      await db<ServiceGroupUser>('ServiceGroup_User').insert({
+      await TestServiceHelper.serviceGroupUser.create({
         group_id: analystGroupId,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
       });
-      await db<DeploymentRequest>('DeploymentRequest').insert({
-        id: uuidv4() as DeploymentRequestId,
+      await TestDeploymentHelper.deploymentRequest.create({
         service_instance_id: serviceInstanceId1,
-        platform_id: uuidv4(),
         user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
         organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        type: DeploymentRequestDeploymentType.Trial,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.EuWest,
       });
 
       const result = await ServiceGroupApp.updateGroups(payload);
 
       expect(result.success).toBeTruthy();
 
-      const admins = await db<ServiceGroupUser[]>('ServiceGroup_User')
-        .where('group_id', '=', adminGroupId)
-        .select('*');
+      const admins = await TestServiceHelper.serviceGroupUser.load({
+        group_id: adminGroupId,
+      });
 
-      expect(admins.length).toBe(2);
+      expect(admins).toHaveLength(2);
       expect(
-        admins.find(
+        admins!.find(
           ({ user_id }) =>
             user_id === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
         )
       ).toBeTruthy();
       expect(
-        admins.find(
+        admins!.find(
           ({ user_id }) =>
             user_id ===
             TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
         )
       ).toBeTruthy();
 
-      const analysts = await db<ServiceGroupUser[]>('ServiceGroup_User')
-        .where('group_id', analystGroupId)
-        .select('*');
+      const analysts = await TestServiceHelper.serviceGroupUser.load({
+        group_id: analystGroupId,
+      });
 
-      expect(analysts.length).toBe(1);
-      expect(analysts[0]?.user_id).toBe(
+      expect(analysts).toHaveLength(1);
+      expect(analysts?.[0]?.user_id).toBe(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
       );
     });
@@ -275,25 +248,19 @@ describe('ServiceGroupApp', () => {
       const endDate = new Date('2026-06-01');
 
       beforeEach(async () => {
-        await db<Subscription>('Subscription').insert({
-          id: uuidv4() as SubscriptionId,
+        await TestHelper.subscription.create({
           service_instance_id: serviceInstanceId1,
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
-
-        await db<DeploymentRequest>('DeploymentRequest').insert({
-          id: uuidv4() as DeploymentRequestId,
+        await TestDeploymentHelper.deploymentRequest.create({
           service_instance_id: serviceInstanceId1,
           platform_id: platformId,
           user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          type: DeploymentRequestDeploymentType.Trial,
-          platform_identifier: PlatformIdentifier.Opencti,
-          region: DeploymentRequestPlatformRegion.EuWest,
           end_date: endDate,
         });
 
-        await db<ServiceConfiguration>('Service_Configuration').insert({
+        await TestServiceHelper.serviceConfiguration.create({
           service_instance_id: serviceInstanceId1,
           status: ServiceConfigurationStatus.Active,
           config: {
@@ -360,7 +327,7 @@ describe('ServiceGroupApp', () => {
       });
 
       it('should not send email to users already in the group', async () => {
-        await db<ServiceGroupUser>('ServiceGroup_User').insert({
+        await TestServiceHelper.serviceGroupUser.create({
           group_id: adminGroupId,
           user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         });
@@ -390,16 +357,14 @@ describe('ServiceGroupApp', () => {
       });
 
       it('should not send any email when all users were already in their groups', async () => {
-        await db<ServiceGroupUser>('ServiceGroup_User').insert([
-          {
-            group_id: adminGroupId,
-            user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          },
-          {
-            group_id: analystGroupId,
-            user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-          },
-        ]);
+        await TestServiceHelper.serviceGroupUser.create({
+          group_id: adminGroupId,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        });
+        await TestServiceHelper.serviceGroupUser.create({
+          group_id: analystGroupId,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        });
 
         const sendMailSpy = vi
           .spyOn(mailService, 'sendMail')
@@ -432,15 +397,18 @@ describe('ServiceGroupApp', () => {
     afterEach(async () => {
       vi.restoreAllMocks();
       if (trackedServiceInstanceIds.length > 0) {
-        await db('DeploymentRequest')
-          .whereIn('service_instance_id', trackedServiceInstanceIds)
-          .delete();
-        await db('Subscription')
-          .whereIn('service_instance_id', trackedServiceInstanceIds)
-          .delete();
-        await db('ServiceGroup')
-          .whereIn('service_instance_id', trackedServiceInstanceIds)
-          .delete();
+        for (const serviceInstanceId of trackedServiceInstanceIds) {
+          await TestDeploymentHelper.deploymentRequest.delete({
+            service_instance_id: serviceInstanceId,
+          });
+          await TestHelper.subscription.delete({
+            service_instance_id: serviceInstanceId,
+          });
+          await TestServiceHelper.serviceGroup.delete({
+            service_instance_id: serviceInstanceId,
+          });
+        }
+
         for (const id of trackedServiceInstanceIds) {
           await deleteServiceInstanceBy({ id });
         }
@@ -465,12 +433,12 @@ describe('ServiceGroupApp', () => {
       trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
       const groupId = uuidv4() as ServiceGroupId;
-      await db<ServiceGroup>('ServiceGroup').insert({
+      await TestServiceHelper.serviceGroup.create({
         id: groupId,
         name: 'Admin',
         service_instance_id: deploymentRequest.service_instance_id,
       });
-      await db<ServiceGroupUser>('ServiceGroup_User').insert({
+      await TestServiceHelper.serviceGroupUser.create({
         group_id: groupId,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       });
@@ -479,14 +447,15 @@ describe('ServiceGroupApp', () => {
       await ServiceGroupApp.removeExpiredGroups();
 
       // Then
-      const usersInGroup = await db<ServiceGroupUser>('ServiceGroup_User')
-        .where('group_id', groupId)
-        .select('*');
+      const usersInGroup = await TestServiceHelper.serviceGroupUser.load({
+        group_id: groupId,
+      });
       expect(usersInGroup).toEqual([]);
 
-      const groups = await db<ServiceGroup>('ServiceGroup')
-        .where('id', groupId)
-        .select('*');
+      const groups = await TestServiceHelper.serviceGroup.load({
+        id: groupId,
+      });
+
       expect(groups).toEqual([]);
     });
 
@@ -504,21 +473,19 @@ describe('ServiceGroupApp', () => {
       trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
       const groupId = uuidv4() as ServiceGroupId;
-      await db<ServiceGroup>('ServiceGroup').insert({
+      await TestServiceHelper.serviceGroup.create({
         id: groupId,
         name: 'Admin',
         service_instance_id: deploymentRequest.service_instance_id,
       });
-      await db<ServiceGroupUser>('ServiceGroup_User').insert([
-        {
-          group_id: groupId,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        },
-        {
-          group_id: groupId,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-        },
-      ]);
+      await TestServiceHelper.serviceGroupUser.create({
+        group_id: groupId,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      });
+      await TestServiceHelper.serviceGroupUser.create({
+        group_id: groupId,
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+      });
 
       // When
       await ServiceGroupApp.removeExpiredGroups();
@@ -551,12 +518,12 @@ describe('ServiceGroupApp', () => {
       trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
       const groupId = uuidv4() as ServiceGroupId;
-      await db<ServiceGroup>('ServiceGroup').insert({
+      await TestServiceHelper.serviceGroup.create({
         id: groupId,
         name: 'Admin',
         service_instance_id: deploymentRequest.service_instance_id,
       });
-      await db<ServiceGroupUser>('ServiceGroup_User').insert({
+      await TestServiceHelper.serviceGroupUser.create({
         group_id: groupId,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       });
@@ -565,9 +532,9 @@ describe('ServiceGroupApp', () => {
       await ServiceGroupApp.removeExpiredGroups();
 
       // Then
-      const usersInGroup = await db<ServiceGroupUser>('ServiceGroup_User')
-        .where('group_id', groupId)
-        .select('*');
+      const usersInGroup = await TestServiceHelper.serviceGroupUser.load({
+        group_id: groupId,
+      });
       expect(usersInGroup).toMatchObject([
         {
           group_id: groupId,
@@ -575,9 +542,9 @@ describe('ServiceGroupApp', () => {
         },
       ]);
 
-      const groups = await db<ServiceGroup>('ServiceGroup')
-        .where('id', groupId)
-        .select('*');
+      const groups = await TestServiceHelper.serviceGroup.load({
+        id: groupId,
+      });
       expect(groups).toHaveLength(1);
     });
 

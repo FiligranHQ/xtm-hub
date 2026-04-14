@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestHelper } from '../../../../../tests/test.helper';
+import { TestHelper } from '../../../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
@@ -139,22 +139,22 @@ describe('User profile app', () => {
     it('Should update subscription', async () => {
       requestContext.set(requestContextAdminSecondOrga);
 
-      const subsFromBefore = await TestHelper.subscription.load({
+      const subsFromBefore = await TestHelper.subscription.loadAll({
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
           .ID as unknown as OrganizationId,
       });
-      const subsToBefore = await TestHelper.subscription.load({
+      const subsToBefore = await TestHelper.subscription.loadAll({
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
           .ID as unknown as OrganizationId,
       });
       await usersProfileApp.transferPersonalSpace(
         mockTransferRequestData[0]?.id as UserTransferRequestId
       );
-      const subsFromAfter = await TestHelper.subscription.load({
+      const subsFromAfter = await TestHelper.subscription.loadAll({
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
           .ID as unknown as OrganizationId,
       });
-      const subsToAfter = await TestHelper.subscription.load({
+      const subsToAfter = await TestHelper.subscription.loadAll({
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
           .ID as unknown as OrganizationId,
       });

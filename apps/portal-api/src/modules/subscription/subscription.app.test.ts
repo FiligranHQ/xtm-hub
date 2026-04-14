@@ -1,14 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/helper/test.helper';
+import { TestServiceHelper } from '../../../tests/helper/test.service.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../model/kanel/public/ServiceInstance';
-import Subscription, {
-  SubscriptionId,
-} from '../../model/kanel/public/Subscription';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { ErrorCode } from '../../utils/error/error.code';
 import { loadSubscriptionCapabilities } from '../security-management/service-capability/subscription-capability.domain';
 import { SubscriptionStatus } from '../subscription.const';
@@ -20,7 +17,7 @@ describe('Subscription app', () => {
     let serviceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
       serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await db<ServiceInstance>('ServiceInstance').insert({
+      await TestServiceHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
@@ -59,13 +56,10 @@ describe('Subscription app', () => {
         capabilityIds: [],
       });
 
-      const createdSubscription = await db<Subscription>('Subscription')
-        .where({
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          service_instance_id: serviceInstanceId,
-        })
-        .select('*')
-        .first();
+      const createdSubscription = await TestHelper.subscription.load({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: serviceInstanceId,
+      });
 
       expect(createdSubscription).toBeDefined();
 
@@ -73,7 +67,7 @@ describe('Subscription app', () => {
         await loadSubscriptionCapabilities(
           createdSubscription?.id ?? ('' as SubscriptionId)
         );
-      expect(capabilities.length).toBe(0);
+      expect(capabilities).toHaveLength(0);
     });
 
     it('should subscribe the organization to the service instance (with capabilities)', async () => {
@@ -88,13 +82,10 @@ describe('Subscription app', () => {
         ],
       });
 
-      const createdSubscription = await db<Subscription>('Subscription')
-        .where({
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          service_instance_id: serviceInstanceId,
-        })
-        .select('*')
-        .first();
+      const createdSubscription = await TestHelper.subscription.load({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: serviceInstanceId,
+      });
 
       expect(createdSubscription).toBeDefined();
 

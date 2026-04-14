@@ -38,6 +38,13 @@ export default defineConfig([
           ],
         },
       ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.name='db']",
+          message: 'Use TestHelper to make calls to DB in tests.',
+        },
+      ],
     },
   },
   {

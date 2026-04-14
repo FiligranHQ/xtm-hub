@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { CompetitorTier } from '../../../__generated__/resolvers-types';
-import Competitor, {
+import {
   CompetitorId,
   CompetitorInitializer,
 } from '../../../model/kanel/public/Competitor';
@@ -22,7 +22,7 @@ const createCompetitor = (overrides: Partial<CompetitorInitializer> = {}) =>
 
 describe('CompetitorApp', () => {
   afterEach(async () => {
-    await db('Competitor').delete();
+    await TestHelper.competitor.delete({});
   });
 
   describe('insertCompetitor', () => {
@@ -106,9 +106,9 @@ describe('CompetitorApp', () => {
         id as CompetitorId
       );
 
-      const competitor = await db<Competitor>('Competitor')
-        .where({ id })
-        .first();
+      const competitor = await TestHelper.competitor.load({
+        id,
+      });
 
       expect(competitor).not.toBeDefined();
       expect(result).toMatchObject(DEFAULT_COMPETITOR);

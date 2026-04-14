@@ -178,6 +178,7 @@ describe('Deployment resolver', () => {
   });
   describe('deploymentRequestsAvailable', () => {
     it('should return the available deployment request', async () => {
+      // eslint-disable-next-line no-restricted-syntax
       await db<DeploymentRequestQuota>('DeploymentRequestQuota')
         .update({
           availability: 10,
@@ -187,6 +188,7 @@ describe('Deployment resolver', () => {
           DeploymentRequestPlatformRegion.ApacSg,
         ]);
 
+      // eslint-disable-next-line no-restricted-syntax
       await db<DeploymentRequestQuota>('DeploymentRequestQuota')
         .update({
           availability: 20,

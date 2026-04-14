@@ -1,8 +1,9 @@
 import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../knexfile';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestDeploymentHelper } from '../../../tests/helper/test.deployment.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
+import { TestServiceHelper } from '../../../tests/helper/test.service.helper';
 import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
@@ -75,15 +76,16 @@ describe('Registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      const serviceInstanceFromDB = await TestHelper.serviceInstance.load({
-        name: 'OpenCTI Platform',
-      });
+      const serviceInstanceFromDB =
+        await TestServiceHelper.serviceInstance.load({
+          name: 'OpenCTI Platform',
+        });
 
       expect(serviceInstanceFromDB).toMatchObject({
         creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
-      const subscriptionFromDB = await TestHelper.subscription.load({
+      const subscriptionFromDB = await TestHelper.subscription.loadAll({
         service_instance_id: serviceInstanceFromDB?.id,
       });
 
@@ -91,9 +93,10 @@ describe('Registration domain', () => {
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
-      const serviceConfiguration = await TestHelper.serviceConfiguration.load({
-        service_instance_id: serviceInstanceFromDB?.id,
-      });
+      const serviceConfiguration =
+        await TestServiceHelper.serviceConfiguration.load({
+          service_instance_id: serviceInstanceFromDB?.id,
+        });
 
       const configuration = JSON.parse(
         JSON.stringify(serviceConfiguration?.config)
@@ -118,16 +121,17 @@ describe('Registration domain', () => {
         serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
       });
 
-      const serviceInstance = await TestHelper.serviceInstance.load({
+      const serviceInstance = await TestServiceHelper.serviceInstance.load({
         id: serviceInstanceId,
       });
-      const subscriptionFromDB = await TestHelper.subscription.load({
+      const subscriptionFromDB = await TestHelper.subscription.loadAll({
         service_instance_id: serviceInstanceId,
       });
 
-      const serviceConfiguration = await TestHelper.serviceConfiguration.load({
-        service_instance_id: serviceInstanceId,
-      });
+      const serviceConfiguration =
+        await TestServiceHelper.serviceConfiguration.load({
+          service_instance_id: serviceInstanceId,
+        });
 
       expect(serviceInstance).toBeDefined();
       expect(serviceInstance?.creation_status).toBe(
@@ -362,7 +366,7 @@ describe('Registration domain', () => {
       });
     });
     afterEach(async () => {
-      await db('DeploymentRequest').delete();
+      await TestDeploymentHelper.deploymentRequest.delete({});
       await ServiceConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
@@ -425,7 +429,7 @@ describe('Registration domain', () => {
       });
     });
     afterEach(async () => {
-      await db('DeploymentRequest').delete();
+      await TestDeploymentHelper.deploymentRequest.delete({});
       await ServiceConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });

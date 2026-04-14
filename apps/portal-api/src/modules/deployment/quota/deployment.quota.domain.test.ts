@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
+import { TestDeploymentHelper } from '../../../../tests/helper/test.deployment.helper';
 import {
   DeploymentRequestPlatformRegion,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
-import DeploymentRequestQuota from '../../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { DeploymentQuotaDomain } from './deployment.quota.domain';
 
@@ -25,9 +24,13 @@ describe('DeploymentQuotaDomain', () => {
     });
 
     it('should return that place is not available when availability is equal to 0', async () => {
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({ availability: 0 })
-        .where({ region, platform_identifier: platformIdentifier });
+      await TestDeploymentHelper.deploymentRequestQuota.update(
+        {
+          region,
+          platform_identifier: platformIdentifier,
+        },
+        { availability: 0 }
+      );
 
       const result = await DeploymentQuotaDomain.reservePlace(
         platformIdentifier,
@@ -38,9 +41,13 @@ describe('DeploymentQuotaDomain', () => {
     });
 
     it('should return that place is not available when availability is lower than 0', async () => {
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({ availability: -1 })
-        .where({ region, platform_identifier: platformIdentifier });
+      await TestDeploymentHelper.deploymentRequestQuota.update(
+        {
+          region,
+          platform_identifier: platformIdentifier,
+        },
+        { availability: -1 }
+      );
 
       const result = await DeploymentQuotaDomain.reservePlace(
         platformIdentifier,
@@ -50,9 +57,13 @@ describe('DeploymentQuotaDomain', () => {
       expect(result.isPlaceAvailable).toBe(false);
     });
     it('should return that place is available when availability is greater than 0', async () => {
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({ availability: 1 })
-        .where({ region, platform_identifier: platformIdentifier });
+      await TestDeploymentHelper.deploymentRequestQuota.update(
+        {
+          region,
+          platform_identifier: platformIdentifier,
+        },
+        { availability: 1 }
+      );
 
       const result = await DeploymentQuotaDomain.reservePlace(
         platformIdentifier,
@@ -62,18 +73,21 @@ describe('DeploymentQuotaDomain', () => {
       expect(result.isPlaceAvailable).toBe(true);
     });
     it('should reserve a place when availability is greater than 0', async () => {
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({ availability: 1 })
-        .where({ region, platform_identifier: platformIdentifier });
+      await TestDeploymentHelper.deploymentRequestQuota.update(
+        {
+          region,
+          platform_identifier: platformIdentifier,
+        },
+        { availability: 1 }
+      );
 
       await DeploymentQuotaDomain.reservePlace(platformIdentifier, region);
 
-      const updatedRequestQuota = await db<DeploymentRequestQuota>(
-        'DeploymentRequestQuota'
-      )
-        .select('*')
-        .where({ region, platform_identifier: platformIdentifier })
-        .first();
+      const updatedRequestQuota =
+        await TestDeploymentHelper.deploymentRequestQuota.load({
+          region,
+          platform_identifier: platformIdentifier,
+        });
 
       expect(updatedRequestQuota).toBeDefined();
       expect(updatedRequestQuota!.availability).toBe(0);
@@ -93,18 +107,21 @@ describe('DeploymentQuotaDomain', () => {
     });
 
     it('should free a place', async () => {
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({ availability: 0 })
-        .where({ region, platform_identifier: platformIdentifier });
+      await TestDeploymentHelper.deploymentRequestQuota.update(
+        {
+          region,
+          platform_identifier: platformIdentifier,
+        },
+        { availability: 0 }
+      );
 
       await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
 
-      const updatedRequestQuota = await db<DeploymentRequestQuota>(
-        'DeploymentRequestQuota'
-      )
-        .select('*')
-        .where({ region, platform_identifier: platformIdentifier })
-        .first();
+      const updatedRequestQuota =
+        await TestDeploymentHelper.deploymentRequestQuota.load({
+          region,
+          platform_identifier: platformIdentifier,
+        });
 
       expect(updatedRequestQuota).toBeDefined();
       expect(updatedRequestQuota!.availability).toBe(1);
@@ -136,9 +153,13 @@ describe('DeploymentQuotaDomain', () => {
         newCapacity,
         expectedAvailability,
       }) => {
-        await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-          .update({ capacity: oldCapacity, availability: oldAvailability })
-          .where({ region, platform_identifier: platformIdentifier });
+        await TestDeploymentHelper.deploymentRequestQuota.update(
+          {
+            region,
+            platform_identifier: platformIdentifier,
+          },
+          { capacity: oldCapacity, availability: oldAvailability }
+        );
 
         const result = await DeploymentQuotaDomain.updateQuotaCapacity({
           platformIdentifier,
@@ -146,16 +167,16 @@ describe('DeploymentQuotaDomain', () => {
           newCapacity: newCapacity,
         });
 
-        const updatedRequestQuota = await db<DeploymentRequestQuota>(
-          'DeploymentRequestQuota'
-        )
-          .where({ region, platform_identifier: platformIdentifier })
-          .select('*')
-          .first();
+        const updatedRequestQuota =
+          await TestDeploymentHelper.deploymentRequestQuota.load({
+            region,
+            platform_identifier: platformIdentifier,
+          });
 
-        expect(updatedRequestQuota).toBeDefined();
-        expect(updatedRequestQuota!.capacity).toBe(newCapacity);
-        expect(updatedRequestQuota!.availability).toBe(expectedAvailability);
+        expect(updatedRequestQuota).toMatchObject({
+          capacity: newCapacity,
+          availability: expectedAvailability,
+        });
         expect(result.newAvailability).toBe(expectedAvailability);
       }
     );
