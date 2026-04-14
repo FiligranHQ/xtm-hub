@@ -7,8 +7,12 @@ import {
 } from '../../../../tests/tests.const';
 import {
   OrderingMode,
+  Organization,
+  OrganizationConnection,
+  OrganizationEdge,
   OrganizationInput,
   OrganizationOrdering,
+  PageInfo,
 } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import {
@@ -60,7 +64,27 @@ describe('Query.organizations', () => {
       orderBy: OrganizationOrdering.Name,
       orderMode: OrderingMode.Asc,
     };
-    const expected = { edges: [], pageInfo: {} } as never;
+    const orgId = uuidv4() as OrganizationId;
+    const organization: Organization = {
+      id: orgId,
+      name: 'Filigran',
+      personal_space: false,
+    };
+    const edge: OrganizationEdge = {
+      cursor: orgId,
+      node: organization,
+    };
+    const pageInfo: PageInfo = {
+      hasNextPage: false,
+      hasPreviousPage: false,
+      startCursor: orgId,
+      endCursor: orgId,
+    };
+    const expected: OrganizationConnection = {
+      edges: [edge],
+      pageInfo,
+      totalCount: 1,
+    };
     vi.spyOn(organizationsDomain, 'loadOrganizations').mockReturnValue(
       expected
     );
@@ -252,6 +276,27 @@ describe('Mutation.deleteOrganization', () => {
     // Then
     await expect(call).rejects.toMatchObject({
       name: ErrorType.ForbiddenAccess,
+    });
+  });
+
+  it('should throw StillReferencedError when error message includes STILL_IN_ORGANIZATION', async () => {
+    // Given
+    const id = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
+    vi.spyOn(organizationsApp, 'deleteOrganization').mockRejectedValue(
+      new Error('STILL_IN_ORGANIZATION')
+    );
+
+    // When
+    const call = organizationsResolver.Mutation!.deleteOrganization!(
+      {},
+      { id },
+      contextSimpleUserFiligran2,
+      INFO
+    );
+
+    // Then
+    await expect(call).rejects.toMatchObject({
+      name: ErrorType.StillReference,
     });
   });
 });
