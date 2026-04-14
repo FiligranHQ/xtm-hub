@@ -621,6 +621,10 @@ export enum EpicType {
   Other = 'other'
 }
 
+export enum FeatureFlag {
+  Dummy = 'DUMMY'
+}
+
 export enum FiligranProduct {
   Openaev = 'openaev',
   Opencti = 'opencti',
@@ -1915,7 +1919,7 @@ export type Settings = {
   __typename?: 'Settings';
   base_url_front: Scalars['String']['output'];
   environment: Scalars['String']['output'];
-  platform_feature_flags: Array<Scalars['String']['output']>;
+  platform_feature_flags: Array<FeatureFlag>;
   platform_providers: Array<PlatformProvider>;
 };
 
@@ -2484,6 +2488,7 @@ export type ResolversTypes = ResolversObject<{
   EpicEdge: ResolverTypeWrapper<Omit<EpicEdge, 'node'> & { node: ResolversTypes['Epic'] }>;
   EpicOrdering: EpicOrdering;
   EpicType: EpicType;
+  FeatureFlag: FeatureFlag;
   FiligranProduct: FiligranProduct;
   Filter: Filter;
   FilterKey: FilterKey;
@@ -3571,7 +3576,7 @@ export type ServiceLinkResolvers<ContextType = PortalContext, ParentType extends
 export type SettingsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Settings'] = ResolversParentTypes['Settings']> = ResolversObject<{
   base_url_front?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   environment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  platform_feature_flags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  platform_feature_flags?: Resolver<Array<ResolversTypes['FeatureFlag']>, ParentType, ContextType>;
   platform_providers?: Resolver<Array<ResolversTypes['PlatformProvider']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

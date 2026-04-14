@@ -1,7 +1,8 @@
 import config from 'config';
+import { FeatureFlag } from '../__generated__/resolvers-types'
 import { ForbiddenAccess } from './error/error.util';
 
-export const isFeatureEnabled = (requiredFlag: string) => {
+export const isFeatureEnabled = (requiredFlag: FeatureFlag) => {
   const isEnabled = (config.get<string[]>('enabled_features') ?? []).some(
     (flag) => ['*', requiredFlag].includes(flag)
   );
