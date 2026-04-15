@@ -1,5 +1,6 @@
 'use client';
 import { FiligranProductMapping } from '@/components/epic/epic-item/filigran-product-mapping';
+import { SearchInput } from '@/components/ui/search-input';
 import {
   Select,
   SelectContent,
@@ -8,18 +9,19 @@ import {
   SelectValue,
   Switch,
 } from '@filigran/ui';
-import { Button } from '@filigran/ui/servers';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { useTranslations } from 'next-intl';
+import React from 'react';
 
 export type EpicFilterType = 'all' | FiligranProductEnum;
 
 interface EpicFilterProps {
-  selectedFilter: EpicFilterType;
+  selectedFilter?: EpicFilterType;
   onSelectedFilterChange: (filter: EpicFilterType) => void;
   countsByProduct: Record<FiligranProductEnum, number>;
   showFinished: boolean;
   onShowFinishedChange: (show: boolean) => void;
+  debounceHandleInput?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const EpicFilter = ({
@@ -28,6 +30,7 @@ export const EpicFilter = ({
   countsByProduct,
   showFinished,
   onShowFinishedChange,
+  debounceHandleInput,
 }: EpicFilterProps) => {
   const t = useTranslations();
 
@@ -39,15 +42,22 @@ export const EpicFilter = ({
   );
 
   return (
-    <>
-      <div className="lg:hidden m-s">
+    <div className="ml-xl pl-m grid grid-cols-1 sm:grid-cols-3 gap-l items-center">
+      <div className="max-w-full sm:max-w-[100%]">
+        <SearchInput
+          placeholder={t('Epic.Search')}
+          onChange={debounceHandleInput}
+        />
+      </div>
+
+      <div className="max-w-full sm:max-w-[100%]">
         <Select
           value={selectedFilter}
           onValueChange={(value) =>
             onSelectedFilterChange(value as EpicFilterType)
           }>
-          <SelectTrigger className="bg-page-background text-primary">
-            <SelectValue placeholder={t('Epic.AllProducts')} />
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={t('Epic.FilterByProduct')} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">
@@ -67,37 +77,13 @@ export const EpicFilter = ({
           </SelectContent>
         </Select>
       </div>
-      <div className="flex flex-row">
-        <div className="flex items-center gap-xs px-xs">
-          <Switch
-            checked={showFinished}
-            onCheckedChange={onShowFinishedChange}
-          />
-          <span className="text-sm font-normal text-white">
-            {t('Epic.ShowFinished')}
-          </span>
-        </div>
-        <div className="hidden lg:flex flex-row gap-xs bg-page-background p-xs rounded-lg w-fit text-primary font-bold">
-          <Button
-            variant={selectedFilter === 'all' ? 'default' : 'ghost'}
-            onClick={() => onSelectedFilterChange('all')}>
-            {t('Epic.AllProducts')} ({totalCount})
-          </Button>
-
-          {products.map((product) => {
-            const count = countsByProduct[product] ?? 0;
-
-            return (
-              <Button
-                key={product}
-                variant={selectedFilter === product ? 'default' : 'ghost'}
-                onClick={() => onSelectedFilterChange(product)}>
-                {FiligranProductMapping[product].name} ({count})
-              </Button>
-            );
-          })}
-        </div>
+      <div className="ml-auto flex items-center gap-s">
+        <Switch
+          checked={showFinished}
+          onCheckedChange={onShowFinishedChange}
+        />
+        <span className="text-sm">{t('Epic.ShowFinished')}</span>
       </div>
-    </>
+    </div>
   );
 };

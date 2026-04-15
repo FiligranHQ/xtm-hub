@@ -1,11 +1,5 @@
 import type { Request, Response } from 'express';
 import { UserInfo } from '../../../model/user';
-import {
-  loadUserBy,
-  updateUserAtLogin,
-} from '../../organization-management/users/user-domain/users.domain';
-import { getOrCreateUser } from '../../organization-management/users/users.helper';
-import { removeAllUserRolePortal } from '../../role-portal/role-portal.domain';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import {
   addRoleToUser,
@@ -13,6 +7,12 @@ import {
 } from '../../../server/initialize.helper';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { isEmptyField } from '../../../utils/utils';
+import {
+  loadUserBy,
+  updateUserAtLogin,
+} from '../../organization-management/users/user-domain/users.domain';
+import { getOrCreateUser } from '../../organization-management/users/users.helper';
+import { removeAllUserRolePortal } from '../../role-portal/role-portal.domain';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {
   // region test the groups existence and eventually auto create groups

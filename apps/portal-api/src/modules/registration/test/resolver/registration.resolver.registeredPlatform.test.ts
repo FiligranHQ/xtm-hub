@@ -8,7 +8,7 @@ import { RegisteredPlatform } from '../../../../__generated__/resolvers-types';
 import DeploymentRequest from '../../../../model/kanel/public/DeploymentRequest';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
 import { DeploymentRequestDomain } from '../../../deployment/deployment.domain';
-import * as ServiceInstanceDomain from '../../../services/service-instance.domain';
+import * as ServiceInstanceDomain from '../../../service/instance/service-instance.domain';
 import registrationResolver from '../../registration.resolver';
 
 vi.mock('../../../deployment/deployment.domain', () => ({

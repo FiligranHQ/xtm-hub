@@ -18,7 +18,7 @@ import UserTransferRequest, {
   UserTransferRequestId,
 } from '../../../../model/kanel/public/UserTransferRequest';
 import * as mailService from '../../../../server/mail-service';
-import { deleteSubscription } from '../../../subcription/subscription.helper';
+import { deleteSubscription } from '../../../subscription/subscription.helper';
 import { updateUser } from '../user-domain/users.domain';
 import { usersProfileApp } from '../user-profile/users.profile.app';
 import * as UserTransferRequestDomain from '../user-transferRequest/user_transferRequest.domain';

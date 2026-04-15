@@ -14,8 +14,11 @@ import { loadOrganizationBy } from '../organization-management/organizations/org
 import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
-} from '../services/service-instance.domain';
-import { loadSubscriptionBy } from '../subcription/subscription.domain';
+} from '../service/instance/service-instance.domain';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
+import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
+import { loadSubscriptionBy } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildShareEvent,
@@ -30,9 +33,6 @@ import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from './openaev/scenarios/scenarios.model';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './opencti/custom-dashboards/custom-dashboards.model';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from './opencti/integrations/integrations.model';
 
 const resolvers: Resolvers = {
   Mutation: {

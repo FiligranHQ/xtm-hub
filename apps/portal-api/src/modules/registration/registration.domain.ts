@@ -25,10 +25,10 @@ import {
   createSubscription,
   loadSubscriptionBy,
   transferSubscriptionToOrganization,
-} from '../subcription/subscription.domain';
+} from '../subscription/subscription.domain';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
-import { serviceInstanceDomain } from '../services/instances/domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 
 export type PlatformConfiguration = {
@@ -69,7 +69,7 @@ export const registrationDomain = {
     });
 
     const serviceInstanceId =
-      await serviceInstanceDomain.createPlatformServiceInstance(
+      await ServiceInstanceDomain.createPlatformServiceInstance(
         serviceDefinitionId,
         platformIdentifier,
         serviceInstanceCreationStatus
