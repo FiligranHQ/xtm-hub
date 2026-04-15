@@ -13,6 +13,9 @@ generates:
       inputMaybeValue: T | null
       makeResolverTypeCallable: true
       contextType: "../model/portal-context.js#PortalContext"
+      enumValues:
+        NewsFeedItemType:
+          RESOURCE_CUSTOM_DASHBOARD: "resource:custom-dashboard"
       scalars:
         ServiceInstanceId: "../model/kanel/public/ServiceInstance.js#ServiceInstanceId"
         OrganizationId: "../model/kanel/public/Organization.js#OrganizationId"
