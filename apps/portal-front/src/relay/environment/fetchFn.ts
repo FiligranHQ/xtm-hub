@@ -6,7 +6,7 @@ import {
   RequestParameters,
   Variables,
 } from 'relay-runtime';
-import { scrubSensitiveVariables } from './fetchFn.utils';
+import { buildCookieHeader, scrubSensitiveVariables } from './fetchFn.utils';
 
 function prepareUri(uri: string | undefined) {
   if (uri) {
@@ -57,10 +57,10 @@ export async function networkFetch({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   };
-  if (cookieList?.length) {
-    headers.cookie = cookieList
-      .map((ck) => `${ck.name}=${ck.value}`)
-      .join('; ');
+
+  const cookieHeader = buildCookieHeader(cookieList);
+  if (cookieHeader) {
+    headers.cookie = cookieHeader;
   }
 
   const activeCacheConfig = isDevelopment()
