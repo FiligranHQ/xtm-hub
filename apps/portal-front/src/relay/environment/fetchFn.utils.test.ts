@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scrubSensitiveVariables } from './fetchFn.utils';
+import { buildCookieHeader, scrubSensitiveVariables } from './fetchFn.utils';
 
 describe('scrubSensitiveVariables', () => {
   describe('sensitive top-level fields', () => {
@@ -99,6 +99,18 @@ describe('scrubSensitiveVariables', () => {
 
     it('returns undefined as-is', () => {
       expect(scrubSensitiveVariables(undefined)).toBeUndefined();
+    });
+  });
+
+  describe('buildCookieHeader', () => {
+    it.each`
+      description           | input                                                                    | expected
+      ${'single cookie'}    | ${[{ name: 'session', value: 'abc' }]}                                   | ${'session=abc'}
+      ${'multiple cookies'} | ${[{ name: 'session', value: 'abc' }, { name: 'theme', value: 'dark' }]} | ${'session=abc; theme=dark'}
+      ${'empty array'}      | ${[]}                                                                    | ${undefined}
+      ${'undefined'}        | ${undefined}                                                             | ${undefined}
+    `('should return $expected for $description', ({ input, expected }) => {
+      expect(buildCookieHeader(input)).toBe(expected);
     });
   });
 });

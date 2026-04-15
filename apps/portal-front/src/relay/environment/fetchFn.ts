@@ -1,13 +1,12 @@
 import { isDevelopment } from '@/lib/utils';
 import { createClient } from 'graphql-sse';
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import {
   GraphQLResponse,
   Observable,
   RequestParameters,
   Variables,
 } from 'relay-runtime';
-import { scrubSensitiveVariables } from './fetchFn.utils';
+import { buildCookieHeader, scrubSensitiveVariables } from './fetchFn.utils';
 
 function prepareUri(uri: string | undefined) {
   if (uri) {
@@ -39,14 +38,14 @@ export async function networkFetch({
   apiUri = '/graphql-api',
   request,
   variables,
-  portalCookie,
-  cache = portalCookie ? 'no-store' : undefined,
+  cookieList,
+  cache = cookieList?.length ? 'no-store' : undefined,
   options = {},
 }: {
   apiUri?: string;
   request: RequestParameters;
   variables: Variables;
-  portalCookie?: RequestCookie;
+  cookieList?: { name: string; value: string }[];
   cache?: RequestCache;
   options?: RequestInit;
 }): Promise<GraphQLResponse> {
@@ -58,8 +57,10 @@ export async function networkFetch({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   };
-  if (portalCookie) {
-    headers.cookie = portalCookie.name + '=' + portalCookie.value;
+
+  const cookieHeader = buildCookieHeader(cookieList);
+  if (cookieHeader) {
+    headers.cookie = cookieHeader;
   }
 
   const activeCacheConfig = isDevelopment()
