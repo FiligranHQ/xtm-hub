@@ -10,6 +10,7 @@ import {
 import {
   DocumentId,
   default as DocumentModel,
+  DocumentMutator,
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
@@ -72,9 +73,12 @@ export const DocumentDomain = {
   },
 
   loadDocumentBy: async (
-    field: Record<string, unknown>
-  ): Promise<DocumentModel[]> => {
-    return db<DocumentModel>('Document').where(field).select('Document.*');
+    field: DocumentMutator
+  ): Promise<DocumentModel | undefined> => {
+    return db<DocumentModel>('Document')
+      .where(field)
+      .select('Document.*')
+      .first();
   },
 
   loadDocumentWithMetadataById: async <T extends Document>(

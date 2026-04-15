@@ -302,12 +302,12 @@ export const checkDocumentExists = async (
   documentName: string,
   serviceInstanceId: ServiceInstanceId
 ) => {
-  const documents = await DocumentDomain.loadDocumentBy({
+  const document = await DocumentDomain.loadDocumentBy({
     file_name: normalizeDocumentName(documentName),
     active: true,
     service_instance_id: serviceInstanceId,
   });
-  return documents.length > 0;
+  return !!document;
 };
 
 export const uploadNewFile = async (

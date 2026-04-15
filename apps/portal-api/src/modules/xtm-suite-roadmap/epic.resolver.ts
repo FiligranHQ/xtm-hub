@@ -15,7 +15,7 @@ const resolvers: Resolvers = {
       const document = await DocumentDomain.loadDocumentBy({
         id: document_id as DocumentId,
       });
-      return document[0] ?? null;
+      return document ?? null;
     },
     document_id: ({ document_id }) => {
       if (document_id) {
