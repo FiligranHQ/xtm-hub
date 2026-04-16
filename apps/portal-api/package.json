@@ -109,7 +109,7 @@
     "esbuild": "0.28.0",
     "eslint": "9.x",
     "eslint-config-prettier": "10.1.8",
-    "globals": "15.15.0",
+    "globals": "17.4.0",
     "husky": "9.1.7",
     "kanel": "3.16.1",
     "lint-staged": "15.5.2",
