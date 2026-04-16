@@ -326,7 +326,7 @@ describe('userServiceDomain', () => {
       expect(result).toHaveLength(1);
       expect(result[0]!.user_id).toBe(SIMPLE.ID);
 
-      const usersWithEmail = await TestUserHelper.user.load({
+      const usersWithEmail = await TestUserHelper.user.loadAll({
         email: SIMPLE.EMAIL,
       });
       expect(usersWithEmail).toHaveLength(1);
@@ -335,7 +335,7 @@ describe('userServiceDomain', () => {
     it('should persist UserService_Capability rows including ACCESS', async () => {
       const result = await addSimpleUser();
 
-      const capabilities = await TestUserHelper.user_ServiceCapability.load({
+      const capabilities = await TestUserHelper.user_ServiceCapability.loadAll({
         user_service_id: result[0]!.id,
       });
 
@@ -354,7 +354,7 @@ describe('userServiceDomain', () => {
         GenericServiceCapabilityName.MANAGE_ACCESS,
       ]);
 
-      const capabilities = await TestUserHelper.user_ServiceCapability.load({
+      const capabilities = await TestUserHelper.user_ServiceCapability.loadAll({
         user_service_id: result[0]!.id,
       });
 
@@ -766,8 +766,8 @@ describe('userServiceDomain', () => {
       const { userServiceId, capabilityId } =
         await insertUserServiceWithCapability(SIMPLE.ID, sub.id);
 
-      const before = await TestUserHelper.user_Service.load({
-        id: capabilityId as UserServiceId,
+      const before = await TestUserHelper.user_ServiceCapability.load({
+        id: capabilityId as UserServiceCapabilityId,
       });
       expect(before).toBeDefined();
 
@@ -822,7 +822,7 @@ describe('userServiceDomain', () => {
 
       expect(result).toBeUndefined();
 
-      const remaining = await TestUserHelper.user_Service.load({
+      const remaining = await TestUserHelper.user_Service.loadAll({
         subscription_id: sub.id,
       });
       expect(remaining).toHaveLength(1);
@@ -870,7 +870,7 @@ describe('userServiceDomain', () => {
       expect(adminService).toBeDefined();
       expect(adminService!.user_id).toBe(ADMIN.ID);
 
-      const remaining = await TestUserHelper.user_Service.load({
+      const remaining = await TestUserHelper.user_Service.loadAll({
         subscription_id: sub.id,
       });
       expect(remaining).toHaveLength(1);

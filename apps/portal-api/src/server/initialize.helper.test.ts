@@ -61,7 +61,7 @@ describe('dev users seeding', () => {
     }
 
     // Clean test users
-    await TestUserHelper.user.delete({});
+    // Keep seeded users untouched to avoid cross-test FK issues.
     // eslint-disable-next-line no-restricted-syntax
     await db('User').where('email', 'like', '%@test-dev.com').del();
 
@@ -374,37 +374,63 @@ describe('dev users seeding', () => {
 describe('addRoleToUser', () => {
   const testUserIds: string[] = [];
   const testRolePortalIds: string[] = [];
-  const user_id = 'e389e507-f1cd-4f2f-bfb2-274140d87d28';
+  let user_id: UserId;
+
+  beforeEach(async () => {
+    user_id = uuidv4() as UserId;
+    testUserIds.push(user_id);
+
+    await TestUserHelper.user.create({
+      id: user_id,
+      email: `add-role-${user_id}@test-dev.com`,
+      salt: 'test-salt',
+      password: 'test-password',
+      selected_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+    });
+  });
+
   // Clean up test data after each test
   afterEach(async () => {
     if (testUserIds.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       await db('User_RolePortal').whereIn('user_id', testUserIds).del();
+
+      for (const testUserId of testUserIds) {
+        await TestUserHelper.user.delete({ id: testUserId as UserId });
+      }
     }
+
     if (testRolePortalIds.length > 0) {
-      // eslint-disable-next-line no-restricted-syntax
-      await db('RolePortal').whereIn('id', testRolePortalIds).del();
+      for (const testRolePortalId of testRolePortalIds) {
+        await TestUserHelper.rolePortal.delete({
+          id: testRolePortalId as RolePortalId,
+        });
+      }
     }
+
     testUserIds.length = 0;
     testRolePortalIds.length = 0;
   });
 
   it('should add role to user when role exists and user does not have it', async () => {
-    // Setup test data
-    const rolePortalId = uuidv4();
+    // Given
+    const rolePortalId = uuidv4() as RolePortalId;
+    const roleName = `test-admin-${rolePortalId}`;
 
-    testUserIds.push(user_id);
     testRolePortalIds.push(rolePortalId);
 
-    await TestUserHelper.rolePortal.create({});
+    await TestUserHelper.rolePortal.create({
+      id: rolePortalId,
+      name: roleName,
+    });
 
-    // Execute
-    await addRoleToUser(user_id, `test-admin-${rolePortalId}`);
+    // When
+    await addRoleToUser(user_id, roleName);
 
-    // Assert
+    // Then
     const userRole = await TestUserHelper.user_RolePortal.load({
-      user_id: user_id as unknown as UserId,
-      role_portal_id: rolePortalId as RolePortalId,
+      user_id,
+      role_portal_id: rolePortalId,
     });
 
     expect(userRole).toMatchObject({
@@ -414,10 +440,9 @@ describe('addRoleToUser', () => {
   });
 
   it('should not duplicate role if user already has it', async () => {
-    // Setup test data
+    // Given
     const rolePortalId = uuidv4() as RolePortalId;
 
-    testUserIds.push(user_id);
     testRolePortalIds.push(rolePortalId);
 
     await TestUserHelper.rolePortal.create({
@@ -425,53 +450,57 @@ describe('addRoleToUser', () => {
       name: `test-editor-${rolePortalId}`,
     });
 
-    // Add role first time
+    // When
+    await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
     await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
 
-    // Add role second time
-    await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
-
-    // Assert - should only have one record
+    // Then
     const userRoles = await TestUserHelper.user_RolePortal.loadAll({
-      user_id: user_id as UserId,
+      user_id,
       role_portal_id: rolePortalId,
     });
 
     expect(userRoles).toHaveLength(1);
+    expect(userRoles[0]).toMatchObject({
+      user_id,
+      role_portal_id: rolePortalId,
+    });
   });
 
   it('should handle when role does not exist', async () => {
-    testUserIds.push(user_id);
+    // Given
 
-    // Execute - should not throw
+    // When
     await expect(
       addRoleToUser(user_id, 'non-existent-role')
     ).resolves.not.toThrow();
 
-    // Assert - no user role should be created
+    // Then
     const userRoles = await TestUserHelper.user_RolePortal.loadAll({
-      user_id: user_id as UserId,
+      user_id,
     });
 
     expect(userRoles).toHaveLength(0);
   });
 
   it('should work with existing role names in database', async () => {
-    // This test assumes you have actual roles in your database
-    testUserIds.push(user_id);
-
-    // Get an existing role from database
+    // Given
     const existingRole = await TestUserHelper.rolePortal.load({});
 
+    // When
     if (existingRole) {
       await addRoleToUser(user_id, existingRole.name);
 
+      // Then
       const userRole = await TestUserHelper.user_RolePortal.load({
-        user_id: user_id as UserId,
+        user_id,
         role_portal_id: existingRole.id,
       });
 
-      expect(userRole).toBeDefined();
+      expect(userRole).toMatchObject({
+        user_id,
+        role_portal_id: existingRole.id,
+      });
     }
   });
 });

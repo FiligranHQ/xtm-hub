@@ -10,6 +10,8 @@ import {
   vi,
 } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
+import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
+import { TestUserHelper } from '../../../../tests/helper/test.user.helper';
 import {
   contextRegistererUserSecondOrga,
   // eslint-disable-next-line no-restricted-imports
@@ -472,7 +474,7 @@ describe('service instance domain', () => {
     afterEach(async () => {
       vi.restoreAllMocks();
 
-      await TestUserHelper.user_service.delete({
+      await TestUserHelper.user_Service.delete({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
       await TestServiceHelper.serviceConfiguration.delete({
@@ -506,7 +508,7 @@ describe('service instance domain', () => {
       expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
 
       // Check in DB
-      const userServiceInDb = await TestUserHelper.user_service.load({
+      const userServiceInDb = await TestUserHelper.user_Service.load({
         id: result[0]?.id as UserServiceId,
       });
 
@@ -527,7 +529,7 @@ describe('service instance domain', () => {
       expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
 
       // Check in DB
-      const userServicesInDb = await TestUserHelper.user_service.load({
+      const userServicesInDb = await TestUserHelper.user_Service.load({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
 
@@ -636,7 +638,7 @@ describe('service instance domain', () => {
 
   describe('getUserJoined', () => {
     afterAll(async () => {
-      await TestUserHelper.user_service.delete({
+      await TestUserHelper.user_Service.delete({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
     });
@@ -646,7 +648,7 @@ describe('service instance domain', () => {
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       });
-      await TestUserHelper.user_service.create({
+      await TestUserHelper.user_Service.create({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         subscription_id: subscription!.id,
       });

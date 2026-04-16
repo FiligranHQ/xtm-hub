@@ -80,7 +80,7 @@ describe('use Case app', () => {
       // Verify only one use case exists with original name and color
       const useCases = await TestHelper.useCase.loadAll({});
       expect(useCases).toHaveLength(1);
-      expect(useCases).toMatchObject({
+      expect(useCases?.[0]).toMatchObject({
         name: 'test usecase',
         color: '#aaaaaa',
       });

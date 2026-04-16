@@ -6,6 +6,7 @@ import RolePortal, {
 } from '../../src/model/kanel/public/RolePortal';
 import User, { UserMutator } from '../../src/model/kanel/public/User';
 import UserOrganization, {
+  UserOrganizationInitializer,
   UserOrganizationMutator,
 } from '../../src/model/kanel/public/UserOrganization';
 import UserOrganizationPending, {
@@ -64,10 +65,15 @@ export const TestUserHelper = {
     },
     load: async (
       field: UserServiceCapabilityMutator
-    ): Promise<UserServiceCapability[]> => {
-      return db<UserServiceCapability[]>('UserService_Capability')
+    ): Promise<UserServiceCapability> => {
+      return db<UserServiceCapability>('UserService_Capability')
         .where(field)
         .first();
+    },
+    loadAll: async (
+      field: UserServiceCapabilityMutator
+    ): Promise<UserServiceCapability[]> => {
+      return db<UserServiceCapability[]>('UserService_Capability').where(field);
     },
     delete: async (field: UserServiceCapabilityMutator) => {
       await db<UserServiceCapability>('UserService_Capability')
@@ -89,6 +95,12 @@ export const TestUserHelper = {
     },
   },
   user_Organization: {
+    create: async (data: UserOrganizationInitializer) => {
+      const [userOrg] = await db<UserOrganization>('User_Organization')
+        .insert(data)
+        .returning('*');
+      return userOrg;
+    },
     delete: async (field: UserOrganizationMutator) => {
       await db<UserOrganization>('User_Organization').where(field).del();
     },
@@ -98,7 +110,9 @@ export const TestUserHelper = {
   },
   user_OrganizationPending: {
     create: async (data: UserOrganizationPendingMutator) => {
-      db<UserOrganizationPending>('User_Organization_Pending').insert(data);
+      await db<UserOrganizationPending>('User_Organization_Pending').insert(
+        data
+      );
     },
     delete: async (field: UserOrganizationPendingMutator) => {
       await db<UserOrganizationPending>('User_Organization_Pending')
@@ -112,6 +126,9 @@ export const TestUserHelper = {
     },
     load: async (field: UserMutator): Promise<User> => {
       return db<User>('User').where(field).first();
+    },
+    loadAll: async (field: UserMutator): Promise<User[]> => {
+      return db<User[]>('User').where(field);
     },
     create: async (data: UserMutator) => {
       const [user] = await db<User>('User').insert(data).returning('*');

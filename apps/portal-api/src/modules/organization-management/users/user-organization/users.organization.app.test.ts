@@ -233,7 +233,7 @@ describe('usersOrganizationApp', () => {
         email: 'testPendingUser@filigran.io',
       });
 
-      await TestUserHelper.user_OrganizationPending.create({
+      await TestUserHelper.user_Organization.create({
         user_id: newUser.id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });

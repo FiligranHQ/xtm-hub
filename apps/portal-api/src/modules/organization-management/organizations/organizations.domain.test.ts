@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
+import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
 import {
   contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,

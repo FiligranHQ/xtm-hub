@@ -11,10 +11,12 @@ import {
   it,
   vi,
 } from 'vitest';
+import { TestDocumentHelper } from '../../../../tests/helper/test.document.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   mockPlatformConfig,
-  TestHelper,
-} from '../../../../tests/helper/test.helper';
+  TestServiceHelper,
+} from '../../../../tests/helper/test.service.helper';
 import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,

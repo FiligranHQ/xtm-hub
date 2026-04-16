@@ -2,6 +2,7 @@ import { GraphQLResolveInfo } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
 import { contextSimpleUserSecondOrga } from '../../../../tests/tests.const';
 import { ServiceDefinition } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
