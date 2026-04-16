@@ -64,7 +64,7 @@
     "@types/react-relay": "18.2.1",
     "@types/relay-test-utils": "19.0.0",
     "@vitejs/plugin-react": "6.0.1",
-    "@vitest/coverage-v8": "3.2.4",
+    "@vitest/coverage-v8": "4.1.4",
     "babel-plugin-relay": "20.1.1",
     "concurrently": "9.2.1",
     "eslint": "9.39.4",
@@ -82,9 +82,10 @@
     "relay-compiler": "20.1.1",
     "relay-test-utils": "20.1.1",
     "typescript": "5.9.3",
+    "vite": "8.0.8",
     "vite-plugin-relay": "2.1.0",
-    "vite-tsconfig-paths": "4.3.2",
-    "vitest": "3.2.4"
+    "vite-tsconfig-paths": "6.1.1",
+    "vitest": "4.1.4"
   },
   "tsConfig": "apps/portal-front/tsconfig.json",
   "packageManager": "yarn@4.13.0+sha512.5c20ba010c99815433e5c8453112165e673f1c7948d8d2b267f4b5e52097538658388ebc9f9580656d9b75c5cc996f990f611f99304a2197d4c56d21eea370e7",
