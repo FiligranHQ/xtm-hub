@@ -25,7 +25,15 @@ import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { ErrorCode } from '../../utils/error/error.code';
-import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
+import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
+import {
+  CUSTOM_DASHBOARD_METADATA_KEYS,
+  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+} from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
+import {
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+  ThirdPartyIntegration,
+} from '../shareable-resource/opencti/integration/integration.model';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
@@ -42,14 +50,6 @@ import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
-import {
-  CUSTOM_DASHBOARD_METADATA_KEYS,
-  OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
-} from './opencti/custom-dashboards/custom-dashboards.model';
-import {
-  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-  ThirdPartyIntegration,
-} from './opencti/integrations/integrations.model';
 
 describe('DocumentApp', () => {
   const minioFileMock = {

@@ -44,7 +44,7 @@ import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 
-import { deleteServiceInstanceBy } from '../../services/service-instance.domain';
+import { deleteServiceInstanceBy } from '../../service/instance/service-instance.domain';
 import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupApp } from './service-group.app';
 

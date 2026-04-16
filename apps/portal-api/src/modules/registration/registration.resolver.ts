@@ -13,7 +13,7 @@ import {
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { BadRequestError } from '../../utils/error/error.util';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import { loadSubscriptionByServiceInstanceAndOrganization } from '../services/service-instance.domain';
+import { loadSubscriptionByServiceInstanceAndOrganization } from '../service/instance/service-instance.domain';
 import { registrationApp } from './registration.app';
 
 const resolvers: Resolvers = {

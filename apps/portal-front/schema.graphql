@@ -106,7 +106,6 @@ type Query {
   publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
   document(documentId: ID, serviceInstanceId: ServiceInstanceId): Document
-  updateOpenCTIManifest(tag: String): Success!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
@@ -130,6 +129,7 @@ type Query {
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
+  updateOpenCTIManifest(tag: String): Success!
   subscriptionById(subscription_id: ID): SubscriptionModel
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
@@ -629,6 +629,493 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
+enum OrganizationOrdering {
+  name
+}
+
+"""
+A Relay global ID for Organization, extracted to a branded OrganizationId string
+"""
+scalar OrganizationId
+
+type OrganizationRef implements Node {
+  id: ID!
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+  domains: [String!]
+  personal_space: Boolean!
+  capabilityUser: [Capability]
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input OrganizationInput {
+  name: String!
+  domains: [String!]
+}
+
+enum UserOrdering {
+  email
+  first_name
+  last_name
+  disabled
+  country
+  last_login
+}
+
+type Capability implements Node {
+  id: ID!
+  name: PortalCapability!
+}
+
+type OrganizationCapabilities implements Node {
+  id: ID!
+  organization: Organization!
+  capabilities: [OrganizationCapability!]
+}
+
+type User implements Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  picture: String
+  country: String
+  disabled: Boolean
+  selected_organization_id: OrganizationId
+  organizations: [Organization!]
+  organization_capabilities: [OrganizationCapabilities!]
+  capabilities: [Capability!]
+  roles_portal: [RolePortal!]
+  selected_org_capabilities: [OrganizationCapability!]
+  last_login: Date
+  pending_organization_id: OrganizationId
+}
+
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+type UserConnection {
+  totalCount: Int!
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+input UsersWithCapabilitiesInOrganizationInput {
+  organizationId: OrganizationId!
+  capabilities: [OrganizationCapability!]!
+}
+
+input AdminEditUserInput {
+  disabled: Boolean
+  first_name: String
+  last_name: String
+  email: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+input EditUserCapabilitiesInput {
+  capabilities: [String!]
+}
+
+input EditMeUserInput {
+  first_name: String
+  last_name: String
+  country: String
+}
+
+input OrganizationCapabilitiesInput {
+  organization_id: OrganizationId!
+  capabilities: [String!]
+}
+
+input AddUserInput {
+  email: String!
+  password: String
+  capabilities: [String!]
+}
+
+input AdminAddUserInput {
+  email: String!
+  first_name: String
+  last_name: String
+  password: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+input BulkPendingUserFromOrganizationInput {
+  ids: [ID!]
+  searchTerm: String
+  filters: [Filter!]
+  excludedIds: [ID!]
+}
+
+type UserSubscription {
+  add: User
+  edit: User
+  delete: User
+  merge: MergeEvent
+}
+
+type MeUserSubscription {
+  edit: User
+  delete: User
+}
+
+type UserPendingSubscription {
+  delete: User
+  invalidate: OrganizationRef
+}
+
+type Subscription {
+  User(organizationId: ID): UserSubscription
+  MeUser: MeUserSubscription
+  UserPending(organizationId: ID!): UserPendingSubscription
+  ServiceInstance: ServiceInstanceSubscription
+}
+
+input OpenCTIPlatformRegistrationStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+enum PlatformContract {
+  CE
+  EE
+  trial
+}
+
+type RegisteredPlatform implements Node {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  platform_id: String!
+  identifier: ServiceDefinitionIdentifier!
+  version: String
+  illustration_document_id: String
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
+}
+
+input PlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  version: String
+}
+
+enum PlatformIdentifier {
+  opencti
+  openaev
+}
+
+input RegisterPlatformInput {
+  organizationId: ID!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
+}
+
+input CanUnregisterPlatformInput {
+  platformId: String!
+}
+
+type RegistrationResponse {
+  token: String!
+}
+
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
+}
+
+input IsPlatformRegisteredInput {
+  platformId: String!
+}
+
+type IsPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
+type IsPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  platformTitle: String
+  organization: IsPlatformRegisteredOrganization
+}
+
+type CanUnregisterResponse {
+  isPlatformRegistered: Boolean!
+  isAllowed: Boolean
+  isInOrganization: Boolean
+  organizationId: ID
+}
+
+input UnregisterPlatformInput {
+  platformId: String!
+  identifier: PlatformIdentifier!
+}
+
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
+  not_found
+}
+
+input RefreshPlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier
+}
+
+type RefreshPlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshUserPlatformTokenResponse {
+  token: String!
+}
+
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier
+  onlyActive: Boolean
+  onlyTrial: Boolean
+}
+
+input RegisteredPlatformInput {
+  service_instance_id: ServiceInstanceId!
+}
+
+input AutoRegisterPlatformInput {
+  platform: PlatformInput!
+  existing_users_count: Int
+}
+
+enum ServiceConfigurationStatus {
+  active
+  inactive
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+type GenericServiceCapability implements Node {
+  id: ID!
+  name: String
+}
+
+input EditServiceCapabilityInput {
+  user_service_id: String
+  capabilities: [String]!
+}
+
+type UserServiceCapability implements Node {
+  id: ID!
+  user_service_id: ID!
+  generic_service_capability: GenericServiceCapability
+  subscription_capability: SubscriptionCapability
+}
+
+type SubscriptionCapability implements Node {
+  id: ID!
+  service_capability: ServiceCapability
+}
+
+type ServiceCapability implements Node {
+  id: ID!
+  name: String
+  description: String
+  service_definition_id: ID
+}
+
+type ServiceLink implements Node {
+  id: ID!
+  service_instance_id: ID
+  url: String
+  name: String
+}
+
+enum ServiceDefinitionIdentifier {
+  vault
+  link
+  opencti_custom_dashboards
+  opencti_integrations
+  openaev_scenarios
+  opencti_registration
+  openaev_registration
+  xtm_suite_roadmap
+}
+
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  identifier: ServiceDefinitionIdentifier!
+  service_capability: [ServiceCapability]
+}
+
+"""
+A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string
+"""
+scalar ServiceInstanceId
+
+enum ServiceInstanceOrdering {
+  name
+  description
+  ordering
+}
+
+enum ServiceInstanceCreationStatus {
+  DISABLED
+  PENDING
+  CREATED
+  READY
+}
+
+enum ServiceInstanceJoinType {
+  JOIN_INVITE
+  JOIN_ASK
+  JOIN_AUTO
+  JOIN_SELF
+}
+
+enum ServiceInstanceTag {
+  openCTI
+  openAEV
+  trial
+  others
+}
+
+enum ServiceInstanceFilterKey {
+  tags
+  service_definition_identifier
+}
+
+input ServiceInstanceFilter {
+  key: ServiceInstanceFilterKey
+  value: [String!]!
+}
+
+type ServiceInstance implements Node {
+  id: ID!
+  name: String!
+  description: String
+  slug: String
+  creation_status: ServiceInstanceCreationStatus
+  organization_subscribed: Boolean
+  user_joined: Boolean
+  links: [ServiceLink]
+  organization: [Organization]
+  subscriptions: [SubscriptionModel]
+  capabilities: [String]!
+  public: Boolean
+  join_type: ServiceInstanceJoinType
+  tags: [ServiceInstanceTag!]
+  service_definition: ServiceDefinition
+  logo_document_id: ID
+  illustration_document_id: ID
+  ordering: Int!
+}
+
+type ServiceInstanceEdge {
+  cursor: String!
+  node: ServiceInstance
+}
+
+type ServiceConnection {
+  totalCount: Int!
+  edges: [ServiceInstanceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type SeoServiceInstance implements Node {
+  id: ID!
+  name: String!
+  slug: String
+  description: String
+  links: [ServiceLink]
+  tags: [ServiceInstanceTag!]
+  service_definition: ServiceDefinition!
+  logo_document_id: ID
+  illustration_document_id: ID
+}
+
+input AddServiceInput {
+  service_instance_name: String
+  service_instance_description: String
+  fee_type: String
+  price: Int
+  organization_id: String
+  url: String
+}
+
+input UpdatePlatformServiceMetadataInput {
+  serviceInstanceId: ServiceInstanceId!
+  name: String
+}
+
+type SubscribedServiceInstanceConfiguration {
+  token: String!
+  platform_id: String!
+  platform_url: String!
+  registerer_id: String!
+  platform_title: String!
+  platform_contract: PlatformContract!
+}
+
+type SubscribedServiceInstance {
+  service_instance_id: ServiceInstanceId!
+  organization_id: ID!
+  is_personal_space: Boolean!
+  configurations: [SubscribedServiceInstanceConfiguration]
+}
+
+type ServiceInstanceSubscription {
+  add: ServiceInstance
+  edit: ServiceInstance
+  delete: ServiceInstance
+}
+
+enum FeatureFlag {
+  DUMMY
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_feature_flags: [FeatureFlag!]!
+  platform_providers: [PlatformProvider!]!
+  base_url_front: String!
+  environment: String!
+}
+
 type OpenAEVScenario implements Document & Node {
   id: ID!
   type: String!
@@ -962,489 +1449,6 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-}
-
-enum OrganizationOrdering {
-  name
-}
-
-"""
-A Relay global ID for Organization, extracted to a branded OrganizationId string
-"""
-scalar OrganizationId
-
-type OrganizationRef implements Node {
-  id: ID!
-}
-
-type Organization implements Node {
-  id: ID!
-  name: String!
-  domains: [String!]
-  personal_space: Boolean!
-  capabilityUser: [Capability]
-}
-
-type OrganizationEdge {
-  cursor: String!
-  node: Organization!
-}
-
-type OrganizationConnection {
-  totalCount: Int!
-  edges: [OrganizationEdge!]!
-  pageInfo: PageInfo!
-}
-
-input OrganizationInput {
-  name: String!
-  domains: [String!]
-}
-
-enum UserOrdering {
-  email
-  first_name
-  last_name
-  disabled
-  country
-  last_login
-}
-
-type Capability implements Node {
-  id: ID!
-  name: PortalCapability!
-}
-
-type OrganizationCapabilities implements Node {
-  id: ID!
-  organization: Organization!
-  capabilities: [OrganizationCapability!]
-}
-
-type User implements Node {
-  id: ID!
-  email: String!
-  first_name: String
-  last_name: String
-  picture: String
-  country: String
-  disabled: Boolean
-  selected_organization_id: OrganizationId
-  organizations: [Organization!]
-  organization_capabilities: [OrganizationCapabilities!]
-  capabilities: [Capability!]
-  roles_portal: [RolePortal!]
-  selected_org_capabilities: [OrganizationCapability!]
-  last_login: Date
-  pending_organization_id: OrganizationId
-}
-
-type UserEdge {
-  cursor: String!
-  node: User!
-}
-
-type UserConnection {
-  totalCount: Int!
-  edges: [UserEdge!]!
-  pageInfo: PageInfo!
-}
-
-input UsersWithCapabilitiesInOrganizationInput {
-  organizationId: OrganizationId!
-  capabilities: [OrganizationCapability!]!
-}
-
-input AdminEditUserInput {
-  disabled: Boolean
-  first_name: String
-  last_name: String
-  email: String
-  organization_capabilities: [OrganizationCapabilitiesInput!]
-}
-
-input EditUserCapabilitiesInput {
-  capabilities: [String!]
-}
-
-input EditMeUserInput {
-  first_name: String
-  last_name: String
-  country: String
-}
-
-input OrganizationCapabilitiesInput {
-  organization_id: OrganizationId!
-  capabilities: [String!]
-}
-
-input AddUserInput {
-  email: String!
-  password: String
-  capabilities: [String!]
-}
-
-input AdminAddUserInput {
-  email: String!
-  first_name: String
-  last_name: String
-  password: String
-  organization_capabilities: [OrganizationCapabilitiesInput!]
-}
-
-input BulkPendingUserFromOrganizationInput {
-  ids: [ID!]
-  searchTerm: String
-  filters: [Filter!]
-  excludedIds: [ID!]
-}
-
-type UserSubscription {
-  add: User
-  edit: User
-  delete: User
-  merge: MergeEvent
-}
-
-type MeUserSubscription {
-  edit: User
-  delete: User
-}
-
-type UserPendingSubscription {
-  delete: User
-  invalidate: OrganizationRef
-}
-
-type Subscription {
-  User(organizationId: ID): UserSubscription
-  MeUser: MeUserSubscription
-  UserPending(organizationId: ID!): UserPendingSubscription
-  ServiceInstance: ServiceInstanceSubscription
-}
-
-input OpenCTIPlatformRegistrationStatusInput {
-  platformId: String!
-  token: String!
-}
-
-type OpenCTIPlatformRegistrationStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
-enum PlatformContract {
-  CE
-  EE
-  trial
-}
-
-type RegisteredPlatform implements Node {
-  id: ID!
-  url: String!
-  title: String!
-  contract: PlatformContract!
-  platform_id: String!
-  identifier: ServiceDefinitionIdentifier!
-  version: String
-  illustration_document_id: String
-  deployment_request: DeploymentRequest
-  subscription: SubscriptionModel
-}
-
-input PlatformInput {
-  id: ID!
-  url: String!
-  title: String!
-  contract: PlatformContract!
-  version: String
-}
-
-enum PlatformIdentifier {
-  opencti
-  openaev
-}
-
-input RegisterPlatformInput {
-  organizationId: ID!
-  platform: PlatformInput!
-  identifier: PlatformIdentifier!
-}
-
-input CanUnregisterPlatformInput {
-  platformId: String!
-}
-
-type RegistrationResponse {
-  token: String!
-}
-
-enum PlatformRegistrationStatus {
-  registered
-  unregistered
-  never_registered
-}
-
-input IsPlatformRegisteredInput {
-  platformId: String!
-}
-
-type IsPlatformRegisteredOrganization implements Node {
-  id: ID!
-}
-
-type IsPlatformRegisteredResponse {
-  status: PlatformRegistrationStatus!
-  platformTitle: String
-  organization: IsPlatformRegisteredOrganization
-}
-
-type CanUnregisterResponse {
-  isPlatformRegistered: Boolean!
-  isAllowed: Boolean
-  isInOrganization: Boolean
-  organizationId: ID
-}
-
-input UnregisterPlatformInput {
-  platformId: String!
-  identifier: PlatformIdentifier!
-}
-
-enum PlatformRegistrationConnectivityStatus {
-  active
-  inactive
-  not_found
-}
-
-input RefreshPlatformRegistrationConnectivityStatusInput {
-  platformId: String!
-  token: String!
-  platformVersion: String!
-  platformIdentifier: PlatformIdentifier
-}
-
-type RefreshPlatformRegistrationConnectivityStatusResponse {
-  status: PlatformRegistrationConnectivityStatus!
-}
-
-type RefreshUserPlatformTokenResponse {
-  token: String!
-}
-
-input RegisteredPlatformsInput {
-  identifier: PlatformIdentifier
-  onlyActive: Boolean
-  onlyTrial: Boolean
-}
-
-input RegisteredPlatformInput {
-  service_instance_id: ServiceInstanceId!
-}
-
-input AutoRegisterPlatformInput {
-  platform: PlatformInput!
-  existing_users_count: Int
-}
-
-enum ServiceConfigurationStatus {
-  active
-  inactive
-}
-
-type RolePortal implements Node {
-  id: ID!
-  name: String!
-}
-
-type GenericServiceCapability implements Node {
-  id: ID!
-  name: String
-}
-
-input EditServiceCapabilityInput {
-  user_service_id: String
-  capabilities: [String]!
-}
-
-type UserServiceCapability implements Node {
-  id: ID!
-  user_service_id: ID!
-  generic_service_capability: GenericServiceCapability
-  subscription_capability: SubscriptionCapability
-}
-
-type SubscriptionCapability implements Node {
-  id: ID!
-  service_capability: ServiceCapability
-}
-
-type ServiceCapability implements Node {
-  id: ID!
-  name: String
-  description: String
-  service_definition_id: ID
-}
-
-enum ServiceDefinitionIdentifier {
-  vault
-  link
-  opencti_custom_dashboards
-  opencti_integrations
-  openaev_scenarios
-  opencti_registration
-  openaev_registration
-  xtm_suite_roadmap
-}
-
-type ServiceDefinition implements Node {
-  id: ID!
-  name: String!
-  description: String
-  public: Boolean
-  identifier: ServiceDefinitionIdentifier!
-  service_capability: [ServiceCapability]
-}
-
-type ServiceLink implements Node {
-  id: ID!
-  service_instance_id: ID
-  url: String
-  name: String
-}
-
-"""
-A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string
-"""
-scalar ServiceInstanceId
-
-enum ServiceInstanceOrdering {
-  name
-  description
-  ordering
-}
-
-enum ServiceInstanceCreationStatus {
-  DISABLED
-  PENDING
-  CREATED
-  READY
-}
-
-enum ServiceInstanceJoinType {
-  JOIN_INVITE
-  JOIN_ASK
-  JOIN_AUTO
-  JOIN_SELF
-}
-
-enum ServiceInstanceTag {
-  openCTI
-  openAEV
-  trial
-  others
-}
-
-enum ServiceInstanceFilterKey {
-  tags
-  service_definition_identifier
-}
-
-input ServiceInstanceFilter {
-  key: ServiceInstanceFilterKey
-  value: [String!]!
-}
-
-type ServiceInstance implements Node {
-  id: ID!
-  name: String!
-  description: String
-  slug: String
-  creation_status: ServiceInstanceCreationStatus
-  organization_subscribed: Boolean
-  user_joined: Boolean
-  links: [ServiceLink]
-  organization: [Organization]
-  subscriptions: [SubscriptionModel]
-  capabilities: [String]!
-  public: Boolean
-  join_type: ServiceInstanceJoinType
-  tags: [ServiceInstanceTag!]
-  service_definition: ServiceDefinition
-  logo_document_id: ID
-  illustration_document_id: ID
-  ordering: Int!
-}
-
-type ServiceInstanceEdge {
-  cursor: String!
-  node: ServiceInstance
-}
-
-type ServiceConnection {
-  totalCount: Int!
-  edges: [ServiceInstanceEdge!]!
-  pageInfo: PageInfo!
-}
-
-type SeoServiceInstance implements Node {
-  id: ID!
-  name: String!
-  slug: String
-  description: String
-  links: [ServiceLink]
-  tags: [ServiceInstanceTag!]
-  service_definition: ServiceDefinition!
-  logo_document_id: ID
-  illustration_document_id: ID
-}
-
-input AddServiceInput {
-  service_instance_name: String
-  service_instance_description: String
-  fee_type: String
-  price: Int
-  organization_id: String
-  url: String
-}
-
-input UpdatePlatformServiceMetadataInput {
-  serviceInstanceId: ServiceInstanceId!
-  name: String
-}
-
-type SubscribedServiceInstanceConfiguration {
-  token: String!
-  platform_id: String!
-  platform_url: String!
-  registerer_id: String!
-  platform_title: String!
-  platform_contract: PlatformContract!
-}
-
-type SubscribedServiceInstance {
-  service_instance_id: ServiceInstanceId!
-  organization_id: ID!
-  is_personal_space: Boolean!
-  configurations: [SubscribedServiceInstanceConfiguration]
-}
-
-type ServiceInstanceSubscription {
-  add: ServiceInstance
-  edit: ServiceInstance
-  delete: ServiceInstance
-}
-
-type PlatformProvider {
-  name: String!
-  type: String!
-  provider: String!
-}
-
-type Settings {
-  platform_feature_flags: [String!]!
-  platform_providers: [PlatformProvider!]!
-  base_url_front: String!
-  environment: String!
 }
 
 enum SubscriptionOrdering {

@@ -17,6 +17,12 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../model/portal-context';
 import { MinIOClient } from '../../thirdparty/minio/client';
+import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
+import {
+  CsvFeed,
+  INTEGRATION_CSV_FEED_METADATA_KEYS,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+} from '../shareable-resource/opencti/integration/integration.model';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
@@ -33,12 +39,6 @@ import {
   normalizeDocumentName,
 } from './document.helper';
 import documentResolver from './document.resolver';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from './opencti/custom-dashboards/custom-dashboards.model';
-import {
-  CsvFeed,
-  INTEGRATION_CSV_FEED_METADATA_KEYS,
-  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-} from './opencti/integrations/integrations.model';
 
 describe('should call S3 to send file', () => {
   it('should call S3', async () => {

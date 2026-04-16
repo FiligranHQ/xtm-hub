@@ -17,7 +17,7 @@ import { MinIOClient } from '../../thirdparty/minio/client';
 import { DocumentApp } from '../document/document.app';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
-import * as ServiceInstanceDomain from '../services/service-instance.domain';
+import * as ServiceInstanceDomain from '../service/instance/service-instance.domain';
 import { EpicApp } from './epic.app';
 import { EpicDomain } from './epic.domain';
 

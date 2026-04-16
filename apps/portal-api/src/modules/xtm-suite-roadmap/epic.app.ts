@@ -16,7 +16,7 @@ import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { processUploads, Upload } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
-import { loadSubscribedServiceInstancesByIdentifier } from '../services/service-instance.domain';
+import { loadSubscribedServiceInstancesByIdentifier } from '../service/instance/service-instance.domain';
 import { EpicDomain } from './epic.domain';
 
 const addImage = async (user: User, uploads: Upload[]) => {

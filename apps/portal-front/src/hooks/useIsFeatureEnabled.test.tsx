@@ -4,7 +4,7 @@ import {
   SettingsProps,
 } from '@/components/settings/env-portal-context';
 import { useIsFeatureEnabled } from '@/hooks/useIsFeatureEnabled';
-import { FeatureFlag } from '@/utils/constant';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { settingsContext_fragment$data } from '@generated/settingsContext_fragment.graphql';
 import { renderHook } from '@testing-library/react';
 import { expect } from 'vitest';
@@ -21,8 +21,7 @@ describe('useIsFeatureEnabled', () => {
 
   it.each`
     expected | featureFlags
-    ${true}  | ${['*']}
-    ${true}  | ${[FeatureFlag.DUMMY]}
+    ${true}  | ${[FeatureFlagEnum.DUMMY]}
     ${false} | ${[]}
   `(
     'Should return $expected when enabled feature flags are $featureFlags',
@@ -32,7 +31,7 @@ describe('useIsFeatureEnabled', () => {
       } as Partial<settingsContext_fragment$data> as settingsContext_fragment$data;
 
       const { result } = renderHook(
-        () => useIsFeatureEnabled(FeatureFlag.DUMMY),
+        () => useIsFeatureEnabled(FeatureFlagEnum.DUMMY),
         { wrapper: createWrapper({ settings }) }
       );
 

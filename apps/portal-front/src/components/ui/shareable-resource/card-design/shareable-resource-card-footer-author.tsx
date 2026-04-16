@@ -39,7 +39,7 @@ export const ShareableResourceCardFooterAuthor: FunctionComponent<
         )}
         {shouldDisplayAuthor && (
           <div className="flex items-center gap-s whitespace-nowrap">
-            <div className="size-8 shrink-0">
+            <div className="size-8 shrink-0 [&_img]:object-cover">
               <Avatar src={document.uploader?.picture ?? ''} />
             </div>
             <span className="truncate max-w-[220px]">

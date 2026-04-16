@@ -17,8 +17,8 @@ import DeploymentRequest, {
   DeploymentRequestId,
 } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
-import { deleteServiceInstanceBy } from '../services/service-instance.domain';
-import { deleteSubscription } from '../subcription/subscription.helper';
+import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
+import { deleteSubscription } from '../subscription/subscription.helper';
 import { DeploymentRequestDomain } from './deployment.domain';
 import {
   assertDeploymentRequestProperties,

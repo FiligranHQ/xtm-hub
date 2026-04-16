@@ -48,9 +48,9 @@ import { loadOrganizationBy } from '../organization-management/organizations/org
 import { loadUser } from '../organization-management/users/user-domain/users.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
-import { ServiceDefinitionDomain } from '../services/definition/service-definition.domain';
-import { updateServiceInstance } from '../services/service-instance.domain';
-import { updateSubscriptionBy } from '../subcription/subscription.domain';
+import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
+import { updateServiceInstance } from '../service/instance/service-instance.domain';
+import { updateSubscriptionBy } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
