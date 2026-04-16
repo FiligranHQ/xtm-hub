@@ -212,6 +212,10 @@ export const registrationApp = {
     const { user } = requestContext.require();
     const token = uuidv4();
 
+    if (platform.version && !isValidVersion(platform.version)) {
+      throw new Error(BadRequestErrorCode.InvalidPlatformVersion);
+    }
+
     if (
       isTenantIdRequired(identifier, platform.version) &&
       !platform.tenantId

@@ -273,7 +273,7 @@ describe('registration app', () => {
             title: 'My OpenAEV platform',
             url: 'http://example.com',
             contract: PlatformContract.Ee,
-            version: 'X.Y.Z',
+            version: '1.0.0',
             tenantId,
           },
           identifier: PlatformIdentifier.Openaev,
@@ -312,7 +312,7 @@ describe('registration app', () => {
       title: 'My OpenCTI platform',
       url: 'http://example.com',
       contract: PlatformContract.Ee,
-      version: 'X.Y.Z',
+      version: '1.0.0',
     };
 
     afterEach(() => {
@@ -348,6 +348,21 @@ describe('registration app', () => {
 
         await expect(call).rejects.toThrow(
           ErrorCode.InvalidServiceConfiguration
+        );
+      });
+
+      it('should throw when platform version is not a valid semantic version', async () => {
+        const call = registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            ...platform,
+            version: '9.Y.Z',
+          },
+          identifier: PlatformIdentifier.Opencti,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.InvalidPlatformVersion
         );
       });
     });
@@ -417,7 +432,7 @@ describe('registration app', () => {
           source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           platform_contract: 'EE',
-          platform_version: 'X.Y.Z',
+          platform_version: '1.0.0',
           platform_id: platform.id,
           platform_url: platform.url,
           target_product: telemetryProduct,
@@ -451,7 +466,7 @@ describe('registration app', () => {
         source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
         platform_contract: 'EE',
-        platform_version: 'X.Y.Z',
+        platform_version: '1.0.0',
         platform_id: platform.id,
         platform_url: platform.url,
         target_product: TelemetryTargetProduct.OPEN_AEV,
@@ -478,7 +493,7 @@ describe('registration app', () => {
             title: 'My OpenAEV platform',
             url: 'http://example.com',
             contract: PlatformContract.Ee,
-            version: 'X.Y.Z',
+            version: '1.0.0',
             tenantId,
           },
           identifier: PlatformIdentifier.Openaev,
@@ -507,7 +522,7 @@ describe('registration app', () => {
             title: 'My OpenAEV platform',
             url: 'http://example.com',
             contract: PlatformContract.Ee,
-            version: 'X.Y.Z',
+            version: '1.0.0',
           },
           identifier: PlatformIdentifier.Openaev,
         });
@@ -530,7 +545,7 @@ describe('registration app', () => {
           title: 'My OpenAEV platform',
           url: 'http://example.com',
           contract: PlatformContract.Ee,
-          version: 'X.Y.Z',
+          version: '1.0.0',
         };
 
         // When
@@ -576,7 +591,7 @@ describe('registration app', () => {
           title: 'My OpenAEV platform',
           url: 'http://example.com',
           contract: PlatformContract.Ee,
-          version: 'X.Y.Z',
+          version: '1.0.0',
           tenantId,
         };
         await registrationApp.registerPlatform({
@@ -774,7 +789,7 @@ describe('registration app', () => {
         title: 'My OpenCTI platform',
         url: 'http://example.com',
         contract: PlatformContract.Ee,
-        version: 'X.Y.Z',
+        version: '1.0.0',
       };
     });
 
@@ -1057,7 +1072,7 @@ describe('registration app', () => {
           url: 'http://example.com',
           contract: PlatformContract.Ee,
           title: 'Fake title',
-          version: 'X.Y.Z',
+          version: '1.0.0',
         },
         identifier: PlatformIdentifier.Opencti,
       });
@@ -1131,7 +1146,7 @@ describe('registration app', () => {
             url: 'http://example.com',
             contract: PlatformContract.Ee,
             title: 'Fake title',
-            version: 'X.Y.Z',
+            version: '1.0.0',
           },
           identifier: PlatformIdentifier.Opencti,
         });
@@ -1165,7 +1180,7 @@ describe('registration app', () => {
           url: 'http://example.com',
           contract: PlatformContract.Ee,
           title: 'Fake title',
-          version: 'X.Y.Z',
+          version: '1.0.0',
         },
         identifier: PlatformIdentifier.Opencti,
       });
@@ -1218,7 +1233,7 @@ describe('registration app', () => {
       title: 'My OpenCTI platform',
       url: 'http://example.com',
       contract: PlatformContract.Trial,
-      version: 'X.Y.Z',
+      version: '1.0.0',
     };
 
     beforeEach(async () => {
