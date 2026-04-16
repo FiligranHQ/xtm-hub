@@ -1,5 +1,4 @@
 'use client';
-
 import { PortalContext } from '@/components/me/app-portal-context';
 import { type ChatMode, ChatPanel } from '@filigran/chatbot';
 import { LogoXtmOneIcon } from '@filigran/icon';
@@ -17,6 +16,21 @@ interface AskArianePanelProps {
   onResizeEnd?: () => void;
 }
 
+/**
+ * Maps the chatbot package's internal default keys (which contain "." or "…")
+ */
+const ARIANE_KEY_MAP: Record<string, string> = {
+  'Analyzing results…': 'AnalyzingResults',
+  'Ask a question...': 'AskQuestion',
+  'Composing answer…': 'ComposingAnswer',
+  'How can I help you, ': 'WelcomeMessage',
+  'Sorry, an error occurred. Please try again.': 'ErrorOccurred',
+  'Thinking...': 'Thinking',
+  'Unable to connect. Please check the configuration.': 'UnableToConnect',
+  'Uses AI. Verify results.': 'Disclaimer',
+  'Using tools…': 'UsingTools',
+};
+
 const AskArianePanel = ({
   mode,
   onClose,
@@ -27,14 +41,17 @@ const AskArianePanel = ({
 }: AskArianePanelProps) => {
   const messages = useMessages();
   const arianeMessages = (messages?.Ariane ?? {}) as Record<string, string>;
-  const t = (key: string): string => arianeMessages[key] ?? key;
+  const t = (key: string): string => {
+    const mappedKey = ARIANE_KEY_MAP[key] ?? key;
+    return arianeMessages[mappedKey] ?? key;
+  };
 
   const { me } = useContext(PortalContext);
   const { resolvedTheme } = useTheme();
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
   const isDarkMode = resolvedTheme === 'dark';
-  const firstName = me?.first_name ?? 'User';
+  const firstName = me?.first_name;
   const topOffset = 128;
 
   const logoIcon = <LogoXtmOneIcon className="size-4" />;
