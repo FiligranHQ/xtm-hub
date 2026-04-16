@@ -51,7 +51,7 @@ const AskArianePanel = ({
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
   const isDarkMode = resolvedTheme === 'dark';
-  const firstName = me?.first_name;
+  const firstName = me?.first_name ?? 'User';
   const topOffset = 128;
 
   const logoIcon = <LogoXtmOneIcon className="size-4" />;
