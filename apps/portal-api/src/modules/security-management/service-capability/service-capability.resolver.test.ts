@@ -13,7 +13,7 @@ import { ErrorType } from '../../../utils/error/error.type';
 import { serviceCapabilityApp } from './service-capability.app';
 import serviceCapabilityResolver from './service-capability.resolver';
 
-describe('Mutation.editServiceCapability', () => {
+describe('mutation.editServiceCapability', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

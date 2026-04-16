@@ -235,12 +235,12 @@ describe('deployment resolver', () => {
   });
 });
 
-describe('Deployment resolver — unit tests', () => {
+describe('deployment resolver — unit tests', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('Query.deploymentRequests', () => {
+  describe('query.deploymentRequests', () => {
     it('should delegate to DeploymentApp.loadPlatformDeploymentRequests and return result', async () => {
       const expected = { edges: [] } as never;
       vi.spyOn(
@@ -267,7 +267,7 @@ describe('Deployment resolver — unit tests', () => {
     });
   });
 
-  describe('Query.deploymentRequestsList', () => {
+  describe('query.deploymentRequestsList', () => {
     it('should delegate to DeploymentRequestDomain.loadDeploymentRequests', async () => {
       const expected = { edges: [] } as never;
       vi.spyOn(
@@ -299,7 +299,7 @@ describe('Deployment resolver — unit tests', () => {
     });
   });
 
-  describe('Query.trialDeployments', () => {
+  describe('query.trialDeployments', () => {
     it('should delegate to DeploymentApp.loadTrialDeployments and return result', async () => {
       const expected = [] as never;
       vi.spyOn(DeploymentApp, 'loadTrialDeployments').mockResolvedValue(
@@ -325,7 +325,7 @@ describe('Deployment resolver — unit tests', () => {
     });
   });
 
-  describe('Mutation.cancelDeploymentRequest', () => {
+  describe('mutation.cancelDeploymentRequest', () => {
     it('should call DeploymentApp.cancelDeploymentRequest with isAdmin=false', async () => {
       const expected = { id: 'req-1' } as never;
       vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockResolvedValue(
@@ -361,7 +361,7 @@ describe('Deployment resolver — unit tests', () => {
     });
   });
 
-  describe('Mutation.adminCancelDeploymentRequest', () => {
+  describe('mutation.adminCancelDeploymentRequest', () => {
     it('should call DeploymentApp.cancelDeploymentRequest with isAdmin=true', async () => {
       const expected = { id: 'req-1' } as never;
       vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockResolvedValue(
@@ -393,7 +393,7 @@ describe('Deployment resolver — unit tests', () => {
     });
   });
 
-  describe('Mutation.reorderDeploymentRequestInQueue', () => {
+  describe('mutation.reorderDeploymentRequestInQueue', () => {
     it('should delegate to DeploymentApp.reorderDeploymentRequestInQueue and return result', async () => {
       const expected = { success: true } as never;
       vi.spyOn(
@@ -417,7 +417,7 @@ describe('Deployment resolver — unit tests', () => {
     });
   });
 
-  describe('Mutation.updateDeploymentQuotaCapacity', () => {
+  describe('mutation.updateDeploymentQuotaCapacity', () => {
     it('should delegate to DeploymentApp.updateDeploymentQuotaCapacity and return result', async () => {
       const expected = { success: true } as never;
       vi.spyOn(

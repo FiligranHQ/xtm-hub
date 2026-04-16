@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppLogsCategory, logApp } from '../../utils/app-logger.util';
 import logResolver from './log.resolver';
 
-describe('Mutation.frontendErrorLog', () => {
+describe('mutation.frontendErrorLog', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

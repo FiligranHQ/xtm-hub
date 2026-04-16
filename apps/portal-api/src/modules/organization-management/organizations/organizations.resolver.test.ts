@@ -25,7 +25,7 @@ import { organizationsApp } from './organizations.app';
 import * as organizationsDomain from './organizations.domain';
 import organizationsResolver from './organizations.resolver';
 
-describe('Query.organization', () => {
+describe('query.organization', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -52,7 +52,7 @@ describe('Query.organization', () => {
   });
 });
 
-describe('Query.organizations', () => {
+describe('query.organizations', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -103,7 +103,7 @@ describe('Query.organizations', () => {
   });
 });
 
-describe('Query.userOrganizations', () => {
+describe('query.userOrganizations', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -133,7 +133,7 @@ describe('Query.userOrganizations', () => {
   });
 });
 
-describe('Mutation.addOrganization', () => {
+describe('mutation.addOrganization', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -185,7 +185,7 @@ describe('Mutation.addOrganization', () => {
   });
 });
 
-describe('Mutation.editOrganization', () => {
+describe('mutation.editOrganization', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -232,7 +232,7 @@ describe('Mutation.editOrganization', () => {
   });
 });
 
-describe('Mutation.deleteOrganization', () => {
+describe('mutation.deleteOrganization', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

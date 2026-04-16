@@ -21,7 +21,7 @@ const buildInput = (): OneClickDeployInput => ({
   platform_identifier: PlatformIdentifier.Opencti,
 });
 
-describe('Mutation.sendTelemetryEvent', () => {
+describe('mutation.sendTelemetryEvent', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -40,7 +40,7 @@ describe('Mutation.sendTelemetryEvent', () => {
   });
 });
 
-describe('SendTelemetryMutation.oneClickDeploy', () => {
+describe('sendTelemetryMutation.oneClickDeploy', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

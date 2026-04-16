@@ -17,12 +17,12 @@ import { subscriptionApp } from '../../../subscription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
 import customDashboardResolver from './custom-dashboard.resolver';
 
-describe('CustomDashboard field resolvers', () => {
+describe('customDashboard field resolvers', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('CustomDashboard.use_cases', () => {
+  describe('customDashboard.use_cases', () => {
     it('should load use cases by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -47,7 +47,7 @@ describe('CustomDashboard field resolvers', () => {
     });
   });
 
-  describe('CustomDashboard.children_documents', () => {
+  describe('customDashboard.children_documents', () => {
     it('should load children images by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -74,7 +74,7 @@ describe('CustomDashboard field resolvers', () => {
     });
   });
 
-  describe('CustomDashboard.uploader', () => {
+  describe('customDashboard.uploader', () => {
     it('should load uploader by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -97,7 +97,7 @@ describe('CustomDashboard field resolvers', () => {
     });
   });
 
-  describe('CustomDashboard.uploader_organization', () => {
+  describe('customDashboard.uploader_organization', () => {
     it('should load uploader organization by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -123,7 +123,7 @@ describe('CustomDashboard field resolvers', () => {
     });
   });
 
-  describe('CustomDashboard.service_instance', () => {
+  describe('customDashboard.service_instance', () => {
     it('should load service instance by service_instance_id', async () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID;
@@ -151,7 +151,7 @@ describe('CustomDashboard field resolvers', () => {
     });
   });
 
-  describe('CustomDashboard.subscription', () => {
+  describe('customDashboard.subscription', () => {
     it('should load subscription model using context user and service_instance_id', async () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS

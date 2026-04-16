@@ -29,7 +29,7 @@ import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
-describe('Mutation.createDocument', () => {
+describe('mutation.createDocument', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -80,7 +80,7 @@ describe('Mutation.createDocument', () => {
   });
 });
 
-describe('Mutation.updateDocument', () => {
+describe('mutation.updateDocument', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -150,7 +150,7 @@ describe('Mutation.updateDocument', () => {
   });
 });
 
-describe('Mutation.deleteDocument', () => {
+describe('mutation.deleteDocument', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -200,7 +200,7 @@ describe('Mutation.deleteDocument', () => {
   });
 });
 
-describe('Mutation.incrementShareNumberDocument', () => {
+describe('mutation.incrementShareNumberDocument', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -253,7 +253,7 @@ describe('Mutation.incrementShareNumberDocument', () => {
   });
 });
 
-describe('Document.__resolveType', () => {
+describe('document.__resolveType', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -309,7 +309,7 @@ describe('Document.__resolveType', () => {
   });
 });
 
-describe('Document field resolvers', () => {
+describe('document field resolvers', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -405,7 +405,7 @@ describe('Document field resolvers', () => {
   });
 });
 
-describe('Query.documentExists', () => {
+describe('query.documentExists', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -431,7 +431,7 @@ describe('Query.documentExists', () => {
   });
 });
 
-describe('Query.publicDocuments', () => {
+describe('query.publicDocuments', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -451,7 +451,7 @@ describe('Query.publicDocuments', () => {
   });
 });
 
-describe('Query.publicDocumentsByServiceSlug', () => {
+describe('query.publicDocumentsByServiceSlug', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -476,7 +476,7 @@ describe('Query.publicDocumentsByServiceSlug', () => {
   });
 });
 
-describe('Query.publicDocumentBySlug', () => {
+describe('query.publicDocumentBySlug', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -502,7 +502,7 @@ describe('Query.publicDocumentBySlug', () => {
   });
 });
 
-describe('Query.documents', () => {
+describe('query.documents', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -522,7 +522,7 @@ describe('Query.documents', () => {
   });
 });
 
-describe('Query.document', () => {
+describe('query.document', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

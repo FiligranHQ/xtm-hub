@@ -29,7 +29,7 @@ const getResolveType = (): IntegrationResolveTypeFn =>
     }
   ).__resolveType;
 
-describe('Integration.__resolveType', () => {
+describe('integration.__resolveType', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -80,12 +80,12 @@ describe('Integration.__resolveType', () => {
   });
 });
 
-describe('Integration field resolvers', () => {
+describe('integration field resolvers', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('Integration.use_cases', () => {
+  describe('integration.use_cases', () => {
     it('should load use cases by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -110,7 +110,7 @@ describe('Integration field resolvers', () => {
     });
   });
 
-  describe('Integration.children_documents', () => {
+  describe('integration.children_documents', () => {
     it('should load children images by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -136,7 +136,7 @@ describe('Integration field resolvers', () => {
     });
   });
 
-  describe('Integration.uploader', () => {
+  describe('integration.uploader', () => {
     it('should load uploader by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -159,7 +159,7 @@ describe('Integration field resolvers', () => {
     });
   });
 
-  describe('Integration.uploader_organization', () => {
+  describe('integration.uploader_organization', () => {
     it('should load uploader organization by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -185,7 +185,7 @@ describe('Integration field resolvers', () => {
     });
   });
 
-  describe('Integration.service_instance', () => {
+  describe('integration.service_instance', () => {
     it('should load service instance by service_instance_id', async () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS.ID;
@@ -210,7 +210,7 @@ describe('Integration field resolvers', () => {
     });
   });
 
-  describe('Integration.subscription', () => {
+  describe('integration.subscription', () => {
     it('should load subscription model using context user and service_instance_id', async () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS

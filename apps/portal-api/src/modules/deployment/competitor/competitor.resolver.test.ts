@@ -21,7 +21,7 @@ import { CompetitorApp } from './competitor.app';
 import { CompetitorDomain } from './competitor.domain';
 import competitorResolver from './competitor.resolver';
 
-describe('Query.competitors', () => {
+describe('query.competitors', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -94,7 +94,7 @@ describe('Query.competitors', () => {
   });
 });
 
-describe('Mutation.createCompetitor', () => {
+describe('mutation.createCompetitor', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -151,7 +151,7 @@ describe('Mutation.createCompetitor', () => {
   });
 });
 
-describe('Mutation.updateCompetitor', () => {
+describe('mutation.updateCompetitor', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -208,7 +208,7 @@ describe('Mutation.updateCompetitor', () => {
   });
 });
 
-describe('Mutation.deleteCompetitor', () => {
+describe('mutation.deleteCompetitor', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

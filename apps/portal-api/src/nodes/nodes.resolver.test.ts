@@ -11,7 +11,7 @@ vi.mock('../../knexfile', () => ({
 
 import { db } from '../../knexfile';
 
-describe('Query.node', () => {
+describe('query.node', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -49,8 +49,8 @@ describe('Query.node', () => {
   });
 });
 
-describe('Node type resolvers', () => {
-  describe('Node.id', () => {
+describe('node type resolvers', () => {
+  describe('node.id', () => {
     it('should encode id and __typename as a Relay global ID', () => {
       const node = {
         id: uuidv4(),
@@ -66,7 +66,7 @@ describe('Node type resolvers', () => {
     });
   });
 
-  describe('Node.__resolveType', () => {
+  describe('node.__resolveType', () => {
     it('should return the __typename of the node', () => {
       const node = { id: uuidv4(), __typename: 'ServiceInstance' } as never;
       const result = (nodesResolver.Node as never).__resolveType(node);

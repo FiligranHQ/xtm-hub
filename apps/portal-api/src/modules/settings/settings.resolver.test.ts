@@ -1,6 +1,7 @@
 import config from 'config';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { contextSimpleUserFiligran2, INFO } from '../../../tests/tests.const';
+import { FeatureFlag } from '../../__generated__/resolvers-types';
 import settingsResolver from './settings.resolver';
 
 vi.mock('config', () => ({
@@ -8,10 +9,10 @@ vi.mock('config', () => ({
 }));
 
 vi.mock('../../config', () => ({
-  default: { enabled_features: ['feature-a', 'feature-b'] },
+  default: { enabled_features: [FeatureFlag.Dummy] },
 }));
 
-describe('Query.settings', () => {
+describe('query.settings', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -39,7 +40,7 @@ describe('Query.settings', () => {
       platform_providers: mockLoginSettings,
       base_url_front: mockBaseUrl,
       environment: mockEnvironment,
-      platform_feature_flags: ['feature-a', 'feature-b'],
+      platform_feature_flags: [FeatureFlag.Dummy],
     });
   });
 

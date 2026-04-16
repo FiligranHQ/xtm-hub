@@ -14,7 +14,7 @@ import { useCaseApp } from './use-case.app';
 import { useCaseDomain } from './use-case.domain';
 import useCaseResolver from './use-case.resolver';
 
-describe('Query.useCases', () => {
+describe('query.useCases', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -62,7 +62,7 @@ describe('Query.useCases', () => {
   });
 });
 
-describe('Mutation.addUseCase', () => {
+describe('mutation.addUseCase', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -91,7 +91,7 @@ describe('Mutation.addUseCase', () => {
   });
 });
 
-describe('Mutation.editUseCase', () => {
+describe('mutation.editUseCase', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -117,7 +117,7 @@ describe('Mutation.editUseCase', () => {
   });
 });
 
-describe('Mutation.deleteUseCase', () => {
+describe('mutation.deleteUseCase', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

@@ -93,12 +93,12 @@ describe('subscription mutation resolver', () => {
   });
 });
 
-describe('Subscription resolver — unit tests', () => {
+describe('subscription resolver — unit tests', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('SubscriptionModel field resolvers', () => {
+  describe('subscriptionModel field resolvers', () => {
     it('subscription_capability should call getSubscriptionCapability with subscription id', async () => {
       const id = uuidv4();
       const expected = [] as never;
@@ -157,7 +157,7 @@ describe('Subscription resolver — unit tests', () => {
     });
   });
 
-  describe('SubscriptionCapability field resolvers', () => {
+  describe('subscriptionCapability field resolvers', () => {
     it('service_capability should call getServiceCapability with subscription capability id', async () => {
       const id = uuidv4();
       const expected = { id: uuidv4() } as never;
@@ -174,7 +174,7 @@ describe('Subscription resolver — unit tests', () => {
     });
   });
 
-  describe('Mutation.addSubscriptionInService', () => {
+  describe('mutation.addSubscriptionInService', () => {
     it('should extract capability ids and subscribe organization, then load service with subscriptions', async () => {
       const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
       const expected = { id: serviceInstanceId } as never;
@@ -268,7 +268,7 @@ describe('Subscription resolver — unit tests', () => {
     });
   });
 
-  describe('Mutation.deleteSubscription', () => {
+  describe('mutation.deleteSubscription', () => {
     it('should decode subscription_id and call deleteSubscription app', async () => {
       const rawId = uuidv4() as SubscriptionId;
       const globalId = toGlobalId('Subscription', rawId);
@@ -309,7 +309,7 @@ describe('Subscription resolver — unit tests', () => {
     });
   });
 
-  describe('Query.subscriptionById', () => {
+  describe('query.subscriptionById', () => {
     it('should decode subscription_id and return first subscription', async () => {
       const rawId = uuidv4() as SubscriptionId;
       const globalId = toGlobalId('Subscription', rawId);

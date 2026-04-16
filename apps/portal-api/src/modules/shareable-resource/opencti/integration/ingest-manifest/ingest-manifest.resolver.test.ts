@@ -6,7 +6,7 @@ import {
 import { IngestManifestApp } from './ingest-manifest.app';
 import ingestManifestResolver from './ingest-manifest.resolver';
 
-describe('Query.updateOpenCTIManifest', () => {
+describe('query.updateOpenCTIManifest', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

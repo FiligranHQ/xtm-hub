@@ -22,7 +22,7 @@ import { DocumentDomain } from '../document/domain/document.domain';
 import { EpicApp } from './epic.app';
 import epicResolver from './epic.resolver';
 
-describe('Epic.document', () => {
+describe('epic.document', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -95,7 +95,7 @@ describe('Epic.document', () => {
   });
 });
 
-describe('Epic.document_id', () => {
+describe('epic.document_id', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -140,7 +140,7 @@ describe('Epic.document_id', () => {
   });
 });
 
-describe('Query.epics', () => {
+describe('query.epics', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -200,7 +200,7 @@ describe('Query.epics', () => {
   });
 });
 
-describe('Mutation.createEpic', () => {
+describe('mutation.createEpic', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -261,7 +261,7 @@ describe('Mutation.createEpic', () => {
   });
 });
 
-describe('Mutation.updateEpic', () => {
+describe('mutation.updateEpic', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -314,7 +314,7 @@ describe('Mutation.updateEpic', () => {
   });
 });
 
-describe('Mutation.deleteEpic', () => {
+describe('mutation.deleteEpic', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

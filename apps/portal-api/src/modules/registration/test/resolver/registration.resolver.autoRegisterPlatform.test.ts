@@ -28,7 +28,7 @@ const validInput: AutoRegisterPlatformInput = {
   },
 };
 
-describe('Mutation.autoRegisterPlatform', () => {
+describe('mutation.autoRegisterPlatform', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

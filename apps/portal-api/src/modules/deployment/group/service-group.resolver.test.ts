@@ -13,7 +13,7 @@ import { ErrorType } from '../../../utils/error/error.type';
 import { ServiceGroupApp } from './service-group.app';
 import serviceGroupResolver from './service-group.resolver';
 
-describe('ServiceGroup.users', () => {
+describe('serviceGroup.users', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -40,7 +40,7 @@ describe('ServiceGroup.users', () => {
   });
 });
 
-describe('Query.serviceGroups', () => {
+describe('query.serviceGroups', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -86,7 +86,7 @@ describe('Query.serviceGroups', () => {
   });
 });
 
-describe('Mutation.updateServiceGroups', () => {
+describe('mutation.updateServiceGroups', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

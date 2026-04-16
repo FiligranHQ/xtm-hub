@@ -28,12 +28,12 @@ import { UserServiceApp } from './user-service.app';
 import { UserServiceDomain } from './user-service.domain';
 import userServiceResolver from './user-service.resolver';
 
-describe('UserService field resolvers', () => {
+describe('userService field resolvers', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('UserService.user', () => {
+  describe('userService.user', () => {
     it('should load user details by user_id', async () => {
       // Given
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID;
@@ -58,7 +58,7 @@ describe('UserService field resolvers', () => {
     });
   });
 
-  describe('UserService.subscription', () => {
+  describe('userService.subscription', () => {
     it('should load subscription by user service id', async () => {
       // Given
       const userServiceId = uuidv4() as UserServiceId;
@@ -84,7 +84,7 @@ describe('UserService field resolvers', () => {
     });
   });
 
-  describe('UserService.user_service_capability', () => {
+  describe('userService.user_service_capability', () => {
     it('should load user service capabilities by user service id', async () => {
       // Given
       const userServiceId = uuidv4() as UserServiceId;
@@ -112,7 +112,7 @@ describe('UserService field resolvers', () => {
   });
 });
 
-describe('Query.userServiceOwned', () => {
+describe('query.userServiceOwned', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -168,7 +168,7 @@ describe('Query.userServiceOwned', () => {
   });
 });
 
-describe('Query.userServiceFromSubscription', () => {
+describe('query.userServiceFromSubscription', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -226,7 +226,7 @@ describe('Query.userServiceFromSubscription', () => {
   });
 });
 
-describe('Mutation.addYourselfInUserService', () => {
+describe('mutation.addYourselfInUserService', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -286,7 +286,7 @@ describe('Mutation.addYourselfInUserService', () => {
   });
 });
 
-describe('Mutation.addUserService', () => {
+describe('mutation.addUserService', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -350,7 +350,7 @@ describe('Mutation.addUserService', () => {
   });
 });
 
-describe('Mutation.deleteUserService', () => {
+describe('mutation.deleteUserService', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

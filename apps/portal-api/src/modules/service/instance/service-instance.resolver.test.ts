@@ -18,7 +18,7 @@ import { ServiceInstanceApp } from './service-instance.app';
 import * as serviceInstanceDomain from './service-instance.domain';
 import serviceInstanceResolver from './service-instance.resolver';
 
-describe('ServiceInstance.__resolveType', () => {
+describe('serviceInstance.__resolveType', () => {
   it.each`
     type                                      | integration_type             | expected
     ${OPENAEV_SCENARIO_DOCUMENT_TYPE}         | ${undefined}                 | ${'OpenAEVScenario'}
@@ -38,7 +38,7 @@ describe('ServiceInstance.__resolveType', () => {
   );
 });
 
-describe('ServiceInstance field resolvers', () => {
+describe('serviceInstance field resolvers', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -170,7 +170,7 @@ describe('ServiceInstance field resolvers', () => {
   });
 });
 
-describe('Query.serviceInstances', () => {
+describe('query.serviceInstances', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -192,7 +192,7 @@ describe('Query.serviceInstances', () => {
   });
 });
 
-describe('Query.publicServiceInstances', () => {
+describe('query.publicServiceInstances', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -222,7 +222,7 @@ describe('Query.publicServiceInstances', () => {
   });
 });
 
-describe('Query.serviceInstanceLinksByTags', () => {
+describe('query.serviceInstanceLinksByTags', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -249,7 +249,7 @@ describe('Query.serviceInstanceLinksByTags', () => {
   });
 });
 
-describe('Query.serviceInstanceById', () => {
+describe('query.serviceInstanceById', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -276,7 +276,7 @@ describe('Query.serviceInstanceById', () => {
   });
 });
 
-describe('Query.serviceInstanceByIdWithSubscriptions', () => {
+describe('query.serviceInstanceByIdWithSubscriptions', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -304,7 +304,7 @@ describe('Query.serviceInstanceByIdWithSubscriptions', () => {
   });
 });
 
-describe('Query.subscribedServiceInstancesByIdentifier', () => {
+describe('query.subscribedServiceInstancesByIdentifier', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -331,7 +331,7 @@ describe('Query.subscribedServiceInstancesByIdentifier', () => {
   });
 });
 
-describe('Query.seoServiceInstances', () => {
+describe('query.seoServiceInstances', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -353,7 +353,7 @@ describe('Query.seoServiceInstances', () => {
   });
 });
 
-describe('Query.seoServiceInstance', () => {
+describe('query.seoServiceInstance', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -407,7 +407,7 @@ describe('Query.seoServiceInstance', () => {
   });
 });
 
-describe('Mutation.addServicePicture', () => {
+describe('mutation.addServicePicture', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -438,7 +438,7 @@ describe('Mutation.addServicePicture', () => {
   });
 });
 
-describe('Mutation.updatePlatformServiceMetadata', () => {
+describe('mutation.updatePlatformServiceMetadata', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

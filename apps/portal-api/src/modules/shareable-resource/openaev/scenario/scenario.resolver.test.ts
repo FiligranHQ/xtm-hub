@@ -17,12 +17,12 @@ import { subscriptionApp } from '../../../subscription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
 import scenarioResolver from './scenario.resolver';
 
-describe('OpenAEVScenario field resolvers', () => {
+describe('openAEVScenario field resolvers', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('OpenAEVScenario.use_cases', () => {
+  describe('openAEVScenario.use_cases', () => {
     it('should load use cases by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -47,7 +47,7 @@ describe('OpenAEVScenario field resolvers', () => {
     });
   });
 
-  describe('OpenAEVScenario.children_documents', () => {
+  describe('openAEVScenario.children_documents', () => {
     it('should load children images by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -74,7 +74,7 @@ describe('OpenAEVScenario field resolvers', () => {
     });
   });
 
-  describe('OpenAEVScenario.uploader', () => {
+  describe('openAEVScenario.uploader', () => {
     it('should load uploader by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -97,7 +97,7 @@ describe('OpenAEVScenario field resolvers', () => {
     });
   });
 
-  describe('OpenAEVScenario.uploader_organization', () => {
+  describe('openAEVScenario.uploader_organization', () => {
     it('should load uploader organization by document id', async () => {
       // Given
       const documentId = uuidv4();
@@ -123,7 +123,7 @@ describe('OpenAEVScenario field resolvers', () => {
     });
   });
 
-  describe('OpenAEVScenario.service_instance', () => {
+  describe('openAEVScenario.service_instance', () => {
     it('should load service instance by service_instance_id', async () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID;
@@ -150,7 +150,7 @@ describe('OpenAEVScenario field resolvers', () => {
     });
   });
 
-  describe('OpenAEVScenario.subscription', () => {
+  describe('openAEVScenario.subscription', () => {
     it('should load subscription model using context user and service_instance_id', async () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.OPENAEV_SCENARIOS
