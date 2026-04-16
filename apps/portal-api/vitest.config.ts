@@ -22,6 +22,7 @@ export default defineConfig({
         '**/*.config.*',
         '**/*.d.ts',
         '**/*.mjs',
+        '**/*.json',
       ],
     },
   },
