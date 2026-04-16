@@ -280,31 +280,29 @@ describe('registration app', () => {
         });
       });
 
-      it('should return registered when queried with the matching tenantId', async () => {
-        // When
-        const result = await registrationApp.isPlatformRegistered({
-          platformId,
-          tenantId,
-        });
+      it.each`
+        description               | getTenantId       | expectedStatus
+        ${'matching tenantId'}    | ${() => tenantId} | ${PlatformRegistrationStatus.Registered}
+        ${'a different tenantId'} | ${() => uuidv4()} | ${PlatformRegistrationStatus.NeverRegistered}
+      `(
+        'should return $expectedStatus when queried with $description',
+        async ({
+          getTenantId,
+          expectedStatus,
+        }: {
+          getTenantId: () => string;
+          expectedStatus: PlatformRegistrationStatus;
+        }) => {
+          // When
+          const result = await registrationApp.isPlatformRegistered({
+            platformId,
+            tenantId: getTenantId(),
+          });
 
-        // Then
-        expect(result).toMatchObject({
-          status: PlatformRegistrationStatus.Registered,
-        });
-      });
-
-      it('should return never_registered when queried with a different tenantId', async () => {
-        // When
-        const result = await registrationApp.isPlatformRegistered({
-          platformId,
-          tenantId: uuidv4(),
-        });
-
-        // Then
-        expect(result).toMatchObject({
-          status: PlatformRegistrationStatus.NeverRegistered,
-        });
-      });
+          // Then
+          expect(result).toMatchObject({ status: expectedStatus });
+        }
+      );
     });
   });
 
@@ -319,6 +317,7 @@ describe('registration app', () => {
 
     afterEach(() => {
       vi.useRealTimers();
+      vi.restoreAllMocks();
     });
 
     describe('invalid configuration', async () => {
