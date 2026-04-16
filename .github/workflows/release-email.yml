@@ -24,7 +24,7 @@ jobs:
             core.setOutput("release_body", release.body);
             core.setOutput("release_url", release.html_url);
       - name: Send Email
-        uses: dawidd6/action-send-mail@v12
+        uses: dawidd6/action-send-mail@v9
         with:
           server_address: ${{ secrets.SMTP_ADDRESS }}
           server_port: 465
@@ -32,20 +32,19 @@ jobs:
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "[XTM Hub] Version: ${{ steps.last_release.outputs.release_tag }}"
           to: "all-employees@filigran.io"
-          from: "XTM Hub Team <xtm-hub-support@filigran.io>"
+          from: "XTM Hub Team <xtm-hub@filigran.io>"
           convert_markdown: true
-          html_body:
-           🔔 DING DING 🔔
+          html_body: 🔔 DING DING 🔔
             </br> </br>
-           Dear Filigran team,
+            Dear Filigran team,
             </br> </br>
-           The Engineering team is glad to inform you that <a href=${{steps.last_release.outputs.release_url}} target="_blank"> XTM Hub ${{ steps.last_release.outputs.release_tag }}</a> has been released 🥳!
-           </br> </br>
-           <h2>Release Note</h2>
-            
-           ${{ steps.last_release.outputs.release_body }}
-            
+            The Engineering team is glad to inform you that <a href=${{steps.last_release.outputs.release_url}} target="_blank"> XTM Hub ${{ steps.last_release.outputs.release_tag }}</a> has been released 🥳!
+            </br> </br>
+            <h2>Release Note</h2>
+
+            ${{ steps.last_release.outputs.release_body }}
+
             </br></br>
             Feel free to reach out to the <a href="mailto:engineering-product-management@filigran.io">product management team</a> to get more information 🚀
             </br></br>
-           Thank you all for your efforts in serving our community and our customers 🎀
+            Thank you all for your efforts in serving our community and our customers 🎀

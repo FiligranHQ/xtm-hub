@@ -1,6 +1,6 @@
-import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
 import { UnauthenticatedError } from './fetchFn';
+import { buildCookieHeader } from './fetchFn.utils';
 
 const FILE_PREFIX_SEPARATOR = 'prefix-';
 
@@ -32,7 +32,7 @@ export const fetchFormData = async (
   request: RequestParameters,
   variables: Variables,
   uploadables: UploadableMap,
-  portalCookie?: RequestCookie
+  cookieList?: { name: string; value: string }[]
 ) => {
   const headers: { [k: string]: string } = {
     Accept: 'application/json',
@@ -78,14 +78,16 @@ export const fetchFormData = async (
     formData.append(String(index), file)
   );
 
-  if (portalCookie) {
-    headers.cookie = portalCookie.name + '=' + portalCookie.value;
+  const cookieHeader = buildCookieHeader(cookieList);
+  if (cookieHeader) {
+    headers.cookie = cookieHeader;
   }
+
   const resp = await fetch(apiUri, {
     method: 'POST',
     credentials: 'same-origin',
     headers,
-    cache: portalCookie ? 'no-store' : undefined,
+    cache: cookieHeader ? 'no-store' : undefined,
     body: formData,
   });
   const json = await resp.json();
