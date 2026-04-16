@@ -43,8 +43,43 @@ jobs:
               - "package.json"
               - "yarn.lock"
 
-  build-images-tests:
+  run-lint:
+    name: Lint ${{ matrix.label }}
     needs: detect-changes
+    if: needs.detect-changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: portal-api
+            working-directory: apps/portal-api
+          - label: portal-front
+            working-directory: apps/portal-front
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.13.0 --activate
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run lint
+        working-directory: ${{ matrix.working-directory }}
+        run: yarn lint
+
+  build-images-tests:
+    needs:
+      - detect-changes
     if: needs.detect-changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -349,6 +384,7 @@ jobs:
 
   build-images-prod:
     needs:
+      - run-lint
       - run-e2e-tests
       - run-front-unit-tests
       - run-api-unit-tests
@@ -368,6 +404,7 @@ jobs:
     if: |
       always() &&
       github.event_name != 'pull_request' &&
+      (needs.run-lint.result == 'success') &&
       (needs.run-e2e-tests.result == 'success') &&
       (needs.run-front-unit-tests.result == 'skipped' || needs.run-front-unit-tests.result == 'success') &&
       (needs.run-api-unit-tests.result == 'skipped' || needs.run-api-unit-tests.result == 'success')
