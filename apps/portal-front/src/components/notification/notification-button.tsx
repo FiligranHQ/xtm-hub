@@ -117,7 +117,7 @@ export const NotificationButton: React.FC = () => {
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="w-9 px-0 relative">
+          className="text-primary w-9 px-0 relative">
           <NotificationsIcon className="h-4 w-4" />
           {nbUsers > 0 && (
             <span className="absolute top-2 right-2.5 block h-[6px] w-[6px] transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full"></span>
@@ -140,7 +140,7 @@ export const NotificationButton: React.FC = () => {
                 href={`/${APP_PATH}/manage/user?pendingUsers`}
                 onClick={() => setOpenPopover(false)}
                 className="flex items-center my-2 px-4">
-                <IndividualIcon className="mr-4 h-4 w-4 text-gray-300" />
+                <IndividualIcon className="mr-4 h-4 w-4 text-muted-foreground" />
                 <div className="">
                   <span className="block text-sm">
                     {t('Notifications.UserNotification.Title')}

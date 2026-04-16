@@ -22,7 +22,7 @@ export const DisplayTrialItem = ({ freeTrial, t }: DisplayTrialItemProps) => {
       target="_blank">
       <div className={cn('w-2 h-2 rounded-full mr-s', dotColor)} />
       <span>{freeTrial.title}</span>
-      <span className="p-m text-gray-300 text-sm">
+      <span className="p-m text-muted-foreground text-sm">
         {'-'} {freeTrial.daysUntilEnd}{' '}
         {t('Service.Trials.Header.DaysRemaining')}
         {freeTrial.daysUntilEnd > 1 && <span>{'s'}</span>}
