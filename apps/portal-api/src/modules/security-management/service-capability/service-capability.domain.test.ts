@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import ServiceDefinition, {
   ServiceDefinitionId,
@@ -13,25 +13,25 @@ describe('service Capability domain', () => {
   let testServiceDefIds: ServiceDefinitionId[] = [];
 
   beforeAll(async () => {
-    serviceDefinition1 = await TestServiceHelper.serviceDefinition.create({
+    serviceDefinition1 = await TestHelper.serviceDefinition.create({
       name: 'Test Service Definition',
       description: 'Test service definition for capability tests',
     });
-    serviceDefinition2 = await TestServiceHelper.serviceDefinition.create({
+    serviceDefinition2 = await TestHelper.serviceDefinition.create({
       name: '2 Test Service Definition 2',
       description: '2 Test service definition for capability tests2 ',
     });
-    const capabilities1 = await TestServiceHelper.serviceCapability.create({
+    const capabilities1 = await TestHelper.serviceCapability.create({
       name: 'Test Capability 1',
       description: 'First test capability',
       service_definition_id: serviceDefinition1.id,
     });
-    const capabilities2 = await TestServiceHelper.serviceCapability.create({
+    const capabilities2 = await TestHelper.serviceCapability.create({
       name: 'Test Capability 2',
       description: 'Second test capability',
       service_definition_id: serviceDefinition1.id,
     });
-    const capabilities3 = await TestServiceHelper.serviceCapability.create({
+    const capabilities3 = await TestHelper.serviceCapability.create({
       name: 'Test Capability 3',
       description: 'Third test capability',
       service_definition_id: serviceDefinition2.id,
@@ -45,7 +45,7 @@ describe('service Capability domain', () => {
     if (testCapabilityIds.length > 0) {
       await Promise.all(
         testCapabilityIds.map((id) =>
-          TestServiceHelper.serviceCapability.delete({ id })
+          TestHelper.serviceCapability.delete({ id })
         )
       );
     }
@@ -53,7 +53,7 @@ describe('service Capability domain', () => {
     if (testServiceDefIds.length > 0) {
       await Promise.all(
         testServiceDefIds.map((id) =>
-          TestServiceHelper.serviceDefinition.delete({ id })
+          TestHelper.serviceDefinition.delete({ id })
         )
       );
     }

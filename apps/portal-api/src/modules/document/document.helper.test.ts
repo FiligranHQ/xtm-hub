@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestDocumentHelper } from '../../../tests/helper/test.document.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
@@ -67,7 +67,7 @@ describe('documentHelper', () => {
 
   afterEach(async () => {
     vi.restoreAllMocks();
-    await TestDocumentHelper.document.delete({});
+    await TestHelper.document.delete({});
   });
 
   describe('loadDocumentWithCountersById', () => {

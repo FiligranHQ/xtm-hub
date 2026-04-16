@@ -22,7 +22,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../shareable-resource/opencti/integration/integration.model';
 
-import { TestDocumentHelper } from '../../../../tests/helper/test.document.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import Document from '../../../model/kanel/public/Document';
 import { ADMIN_UUID } from '../../../portal.const';
@@ -40,21 +40,19 @@ describe('document domain', () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
-    await TestDocumentHelper.document.delete({});
+    await TestHelper.document.delete({});
   });
 
   describe('deactivateDocuments', () => {
     let createdDocument: Document;
     beforeEach(async () => {
-      createdDocument = await TestDocumentHelper.document.createWholeDocument(
-        {}
-      );
+      createdDocument = await TestHelper.document.createWholeDocument({});
     });
 
     it('should do nothing when the document ids is an empty array', async () => {
       await DocumentDomain.deactivateDocuments([]);
 
-      const document = await TestDocumentHelper.document.load({
+      const document = await TestHelper.document.load({
         id: createdDocument.id,
       });
 
@@ -66,7 +64,7 @@ describe('document domain', () => {
     it('should deactivate document and set remover id', async () => {
       await DocumentDomain.deactivateDocuments([createdDocument.id]);
 
-      const document = await TestDocumentHelper.document.load({
+      const document = await TestHelper.document.load({
         id: createdDocument.id,
       });
 
@@ -80,11 +78,11 @@ describe('document domain', () => {
   describe(`loadParentDocumentsByServiceInstance`, () => {
     let csvFeed: Document;
     beforeEach(async () => {
-      await TestDocumentHelper.document.delete({
+      await TestHelper.document.delete({
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       });
 
-      csvFeed = await TestDocumentHelper.document.createWholeDocument({});
+      csvFeed = await TestHelper.document.createWholeDocument({});
     });
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
@@ -424,7 +422,7 @@ describe('document domain', () => {
 
         // When
         const document = await DocumentDomain.createDocument(docData, []);
-        const dbDocument = await TestDocumentHelper.document.load({
+        const dbDocument = await TestHelper.document.load({
           id: document!.id,
         });
 
@@ -454,7 +452,7 @@ describe('document domain', () => {
 
   describe('loadDocumentWithMetadataById', () => {
     it('should load a document with metadata keys', async () => {
-      const inserted = await TestDocumentHelper.document.create({
+      const inserted = await TestHelper.document.create({
         name: 'DocMeta2',
         type: 'meta-type',
         slug: 'doc-meta2',
@@ -463,7 +461,7 @@ describe('document domain', () => {
         active: true,
       });
 
-      await TestDocumentHelper.documentMetadata.create({
+      await TestHelper.documentMetadata.create({
         document_id: inserted.id,
         key: DocumentMetadataKeyCode.ProductVersion,
         value: '1.2.3',
@@ -489,7 +487,7 @@ describe('document domain', () => {
 
   describe('loadUploader', () => {
     it('should return the user who uploaded document', async () => {
-      const inserted = await TestDocumentHelper.document.create({
+      const inserted = await TestHelper.document.create({
         name: 'DocMeta2',
         type: 'meta-type',
         slug: 'doc-meta2',
@@ -516,9 +514,7 @@ describe('document domain', () => {
 
   describe('loadUploaderOrganization', () => {
     it('should return the organization which uploaded document', async () => {
-      const inserted = await TestDocumentHelper.document.createWholeDocument(
-        {}
-      );
+      const inserted = await TestHelper.document.createWholeDocument({});
 
       const uploaderOrganization =
         await DocumentDomain.loadUploaderOrganization(inserted.id);
@@ -547,11 +543,11 @@ describe('document domain', () => {
     let otherServiceDoc: Document;
 
     beforeEach(async () => {
-      await TestDocumentHelper.documentChildren.delete({});
-      await TestDocumentHelper.documentMetadata.delete({});
-      await TestDocumentHelper.document.delete({});
+      await TestHelper.documentChildren.delete({});
+      await TestHelper.documentMetadata.delete({});
+      await TestHelper.document.delete({});
 
-      parentDoc = await TestDocumentHelper.document.create({
+      parentDoc = await TestHelper.document.create({
         name: 'Parent SEO Doc',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         slug: 'parent-seo',
@@ -562,7 +558,7 @@ describe('document domain', () => {
         created_at: new Date('2023-01-01T10:00:00Z'),
         updated_at: new Date('2023-01-02T10:00:00Z'),
       });
-      childDoc = await TestDocumentHelper.document.create({
+      childDoc = await TestHelper.document.create({
         name: 'Child SEO Doc',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         slug: 'child-seo',
@@ -573,12 +569,12 @@ describe('document domain', () => {
         created_at: new Date('2023-01-01T11:00:00Z'),
         updated_at: new Date('2023-01-02T11:00:00Z'),
       });
-      await TestDocumentHelper.documentChildren.create({
+      await TestHelper.documentChildren.create({
         parent_document_id: parentDoc.id,
         child_document_id: childDoc.id,
       });
 
-      inactiveDoc = await TestDocumentHelper.document.create({
+      inactiveDoc = await TestHelper.document.create({
         name: 'Inactive SEO Doc',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         slug: 'inactive-seo',
@@ -590,7 +586,7 @@ describe('document domain', () => {
         updated_at: new Date('2023-01-02T12:00:00Z'),
       });
 
-      otherServiceDoc = await TestDocumentHelper.document.create({
+      otherServiceDoc = await TestHelper.document.create({
         name: 'Other Service Doc',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         slug: 'other-service-doc',
@@ -602,7 +598,7 @@ describe('document domain', () => {
         updated_at: new Date('2023-01-02T13:00:00Z'),
       });
 
-      await TestDocumentHelper.documentMetadata.create({
+      await TestHelper.documentMetadata.create({
         document_id: parentDoc.id,
         key: TEST_METADATA_KEY,
         value: TEST_METADATA_VALUE,
@@ -637,7 +633,7 @@ describe('document domain', () => {
 
     it('should order results by updated_at and created_at descending when orderResults is true', async () => {
       // Insert a second parent doc with later updated_at
-      const secondParent = await TestDocumentHelper.document.create({
+      const secondParent = await TestHelper.document.create({
         name: 'Second Parent',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         slug: 'second-parent',
@@ -688,17 +684,17 @@ describe('document domain', () => {
     const OTHER_VALUE = 'other_value';
 
     beforeEach(async () => {
-      await TestDocumentHelper.document.delete({});
-      await TestDocumentHelper.documentMetadata.delete({});
-      doc1 = await TestDocumentHelper.document.create();
-      doc2 = await TestDocumentHelper.document.create({ slug: 'doc2-slug' });
-      doc3 = await TestDocumentHelper.document.create({ slug: 'doc3-slug' });
-      await TestDocumentHelper.documentMetadata.create({
+      await TestHelper.document.delete({});
+      await TestHelper.documentMetadata.delete({});
+      doc1 = await TestHelper.document.create();
+      doc2 = await TestHelper.document.create({ slug: 'doc2-slug' });
+      doc3 = await TestHelper.document.create({ slug: 'doc3-slug' });
+      await TestHelper.documentMetadata.create({
         document_id: doc1.id,
         key: TEST_KEY,
         value: TEST_VALUE,
       });
-      await TestDocumentHelper.documentMetadata.create({
+      await TestHelper.documentMetadata.create({
         document_id: doc2.id,
         key: TEST_KEY,
         value: OTHER_VALUE,
@@ -716,7 +712,7 @@ describe('document domain', () => {
     });
 
     it('should return multiple documents if multiple match', async () => {
-      await TestDocumentHelper.documentMetadata.create({
+      await TestHelper.documentMetadata.create({
         document_id: doc3.id,
         key: TEST_KEY,
         value: TEST_VALUE,

@@ -1,6 +1,5 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestDocumentHelper } from '../../../tests/helper/test.document.helper';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
@@ -47,7 +46,7 @@ describe('epicApp', () => {
   afterEach(async () => {
     // Clean up the Document and Epic tables before each test
     await TestHelper.epic.delete({});
-    await TestDocumentHelper.document.delete({ file_name: 'epic-image.png' });
+    await TestHelper.document.delete({ file_name: 'epic-image.png' });
     vi.restoreAllMocks();
   });
 
@@ -104,7 +103,7 @@ describe('epicApp', () => {
       const createdEpic = await EpicApp.createEpic(input, uploads);
 
       // Verify document was created in DB
-      const dbDocument = await TestDocumentHelper.document.load({
+      const dbDocument = await TestHelper.document.load({
         id: createdEpic!.document_id as DocumentId,
       });
 
@@ -219,7 +218,7 @@ describe('epicApp', () => {
       );
 
       // Check in DB
-      const dbDocument = await TestDocumentHelper.document.load({
+      const dbDocument = await TestHelper.document.load({
         id: updatedEpic?.document_id as DocumentId,
       });
 

@@ -69,9 +69,7 @@ import {
 
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { TestDeploymentHelper } from '../../../tests/helper/test.deployment.helper';
 import { TestHelper } from '../../../tests/helper/test.helper';
-import { TestServiceHelper } from '../../../tests/helper/test.service.helper';
 import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
@@ -528,7 +526,7 @@ describe('deployment app', () => {
     it('should return platform_url when Service_Configuration exists', async () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: deploymentRequest!.service_instance_id,
         config: { platform_url: 'https://test-platform.opencti.io' },
         status: 'active',
@@ -546,7 +544,7 @@ describe('deployment app', () => {
         'https://test-platform.opencti.io'
       );
 
-      await TestServiceHelper.serviceConfiguration.delete({
+      await TestHelper.serviceConfiguration.delete({
         service_instance_id: deploymentRequest!.service_instance_id,
       });
     });
@@ -1449,7 +1447,7 @@ describe('deployment app', () => {
     const platformIdentifier = PlatformIdentifier.Opencti;
     const region = DeploymentRequestPlatformRegion.EuWest;
     beforeEach(async () => {
-      await TestDeploymentHelper.deploymentRequest.delete({});
+      await TestHelper.deploymentRequest.delete({});
     });
 
     const insertRequest = async (
@@ -1471,7 +1469,7 @@ describe('deployment app', () => {
       capacity: number;
       availability: number;
     }) => {
-      await TestDeploymentHelper.deploymentRequestQuota.update(
+      await TestHelper.deploymentRequestQuota.update(
         {
           platform_identifier: platformIdentifier,
           region,
@@ -1490,7 +1488,7 @@ describe('deployment app', () => {
       capacity: number;
       availability: number;
     }) => {
-      const newQuota = await TestDeploymentHelper.deploymentRequestQuota.load({
+      const newQuota = await TestHelper.deploymentRequestQuota.load({
         platform_identifier: platformIdentifier,
         region,
       });

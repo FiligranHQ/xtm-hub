@@ -1,20 +1,20 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../knexfile';
-import { TestUserHelper } from '../../../tests/helper/test.user.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { loadRolePortalsBySSOGroups } from './role-portal.domain';
 
 describe('loadRolePortalsBySSOGroups', () => {
   beforeEach(async () => {
     // eslint-disable-next-line no-restricted-syntax
     await db('SSOGroup_RolePortal').del();
-    await TestUserHelper.rolePortal.delete({});
-    await TestUserHelper.rolePortal.create({
+    await TestHelper.rolePortal.delete({});
+    await TestHelper.rolePortal.create({
       name: 'POTATO_PEELER',
     });
-    await TestUserHelper.rolePortal.create({
+    await TestHelper.rolePortal.create({
       name: 'UNICORN_RIDER',
     });
-    await TestUserHelper.rolePortal.create({
+    await TestHelper.rolePortal.create({
       name: 'BANANA_INSPECTOR',
     });
 

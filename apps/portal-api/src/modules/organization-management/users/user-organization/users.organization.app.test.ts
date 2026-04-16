@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestUserHelper } from '../../../../../tests/helper/test.user.helper';
+import { TestHelper } from '../../../../../tests/helper/test.helper';
 import {
   contextAdminSecondOrga,
   contextSimpleUserSecondOrga,
@@ -233,7 +233,7 @@ describe('usersOrganizationApp', () => {
         email: 'testPendingUser@filigran.io',
       });
 
-      await TestUserHelper.user_Organization.create({
+      await TestHelper.user_Organization.create({
         user_id: newUser.id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });

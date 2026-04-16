@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
 import { TestHelper } from '../../../tests/helper/test.helper';
-import { TestUserHelper } from '../../../tests/helper/test.user.helper';
 import {
   SERVICES,
   TEST_ORGANIZATIONS,
@@ -48,7 +47,7 @@ const DAY = 86_400_000;
 // ---------------------------------------------------------------------------
 
 const cleanupUserServices = async (subscriptionId: SubscriptionId) => {
-  const userServices = await TestUserHelper.user_Service.loadAll({
+  const userServices = await TestHelper.user_Service.loadAll({
     subscription_id: subscriptionId,
   });
 
@@ -62,7 +61,7 @@ const cleanupUserServices = async (subscriptionId: SubscriptionId) => {
       .delete();
   }
 
-  await TestUserHelper.user_Service.delete({ subscription_id: subscriptionId });
+  await TestHelper.user_Service.delete({ subscription_id: subscriptionId });
 };
 
 const makeSubscription = (overrides?: {
@@ -98,7 +97,7 @@ const insertUserService = async (
   subId: SubscriptionId
 ): Promise<UserServiceId> => {
   const id = uuidv4() as UserServiceId;
-  await TestUserHelper.user_Service.create({
+  await TestHelper.user_Service.create({
     id,
     user_id: userId,
     subscription_id: subId,
@@ -113,7 +112,7 @@ const insertUserServiceWithCapability = async (
 ): Promise<{ userServiceId: UserServiceId; capabilityId: string }> => {
   const userServiceId = await insertUserService(userId, subId);
   const capabilityId = uuidv4();
-  await TestUserHelper.user_ServiceCapability.create({
+  await TestHelper.user_ServiceCapability.create({
     id: capabilityId as UserServiceCapabilityId,
     user_service_id: userServiceId,
     generic_service_capability_id:
@@ -191,7 +190,7 @@ describe('userServiceDomain', () => {
         user_id: SIMPLE.ID,
       });
 
-      const persisted = await TestUserHelper.user_Service.load({
+      const persisted = await TestHelper.user_Service.load({
         id: result[0]!.id,
       });
       expect(persisted).toMatchObject({
@@ -260,7 +259,7 @@ describe('userServiceDomain', () => {
 
       expect(result).toEqual([]);
 
-      const rows = await TestUserHelper.user_Service.loadAll({
+      const rows = await TestHelper.user_Service.loadAll({
         subscription_id: sub.id,
       });
       expect(rows).toHaveLength(0);
@@ -272,7 +271,7 @@ describe('userServiceDomain', () => {
 
       expect(secondResult).toHaveLength(0);
 
-      const rows = await TestUserHelper.user_Service.loadAll({
+      const rows = await TestHelper.user_Service.loadAll({
         subscription_id: sub.id,
       });
       expect(rows).toHaveLength(1);
@@ -326,7 +325,7 @@ describe('userServiceDomain', () => {
       expect(result).toHaveLength(1);
       expect(result[0]!.user_id).toBe(SIMPLE.ID);
 
-      const usersWithEmail = await TestUserHelper.user.loadAll({
+      const usersWithEmail = await TestHelper.user.loadAll({
         email: SIMPLE.EMAIL,
       });
       expect(usersWithEmail).toHaveLength(1);
@@ -335,7 +334,7 @@ describe('userServiceDomain', () => {
     it('should persist UserService_Capability rows including ACCESS', async () => {
       const result = await addSimpleUser();
 
-      const capabilities = await TestUserHelper.user_ServiceCapability.loadAll({
+      const capabilities = await TestHelper.user_ServiceCapability.loadAll({
         user_service_id: result[0]!.id,
       });
 
@@ -354,7 +353,7 @@ describe('userServiceDomain', () => {
         GenericServiceCapabilityName.MANAGE_ACCESS,
       ]);
 
-      const capabilities = await TestUserHelper.user_ServiceCapability.loadAll({
+      const capabilities = await TestHelper.user_ServiceCapability.loadAll({
         user_service_id: result[0]!.id,
       });
 
@@ -380,7 +379,7 @@ describe('userServiceDomain', () => {
         'The email address does not correspond to the current organization'
       );
 
-      const rows = await TestUserHelper.user_Service.loadAll({
+      const rows = await TestHelper.user_Service.loadAll({
         subscription_id: sub.id,
       });
       expect(rows).toHaveLength(0);
@@ -428,7 +427,7 @@ describe('userServiceDomain', () => {
 
       expect(result).toHaveLength(1);
 
-      const rows = await TestUserHelper.user_Service.loadAll({
+      const rows = await TestHelper.user_Service.loadAll({
         subscription_id: sub.id,
       });
       expect(rows).toHaveLength(1);
@@ -577,7 +576,7 @@ describe('userServiceDomain', () => {
         billing: 0,
         status: SubscriptionStatus.REQUESTED,
       });
-      await TestUserHelper.user_Service.create({
+      await TestHelper.user_Service.create({
         user_id: simpleUser.id,
         subscription_id: subId,
       });
@@ -756,7 +755,7 @@ describe('userServiceDomain', () => {
         subscription_id: sub.id,
       });
 
-      const remaining = await TestUserHelper.user_Service.load({
+      const remaining = await TestHelper.user_Service.load({
         id: userServiceId,
       });
       expect(remaining).toBeUndefined();
@@ -766,22 +765,21 @@ describe('userServiceDomain', () => {
       const { userServiceId, capabilityId } =
         await insertUserServiceWithCapability(SIMPLE.ID, sub.id);
 
-      const before = await TestUserHelper.user_ServiceCapability.load({
+      const before = await TestHelper.user_ServiceCapability.load({
         id: capabilityId as UserServiceCapabilityId,
       });
       expect(before).toBeDefined();
 
       await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
 
-      const deletedService = await TestUserHelper.user_Service.load({
+      const deletedService = await TestHelper.user_Service.load({
         id: userServiceId,
       });
       expect(deletedService).toBeUndefined();
 
-      const deletedCapability =
-        await TestUserHelper.user_ServiceCapability.load({
-          id: capabilityId as UserServiceCapabilityId,
-        });
+      const deletedCapability = await TestHelper.user_ServiceCapability.load({
+        id: capabilityId as UserServiceCapabilityId,
+      });
       expect(deletedCapability).toBeUndefined();
     });
 
@@ -790,13 +788,13 @@ describe('userServiceDomain', () => {
 
       const cap1Id = uuidv4();
       const cap2Id = uuidv4();
-      await TestUserHelper.user_ServiceCapability.create({
+      await TestHelper.user_ServiceCapability.create({
         id: cap1Id as UserServiceCapabilityId,
         user_service_id: userServiceId,
         generic_service_capability_id:
           GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
       });
-      await TestUserHelper.user_ServiceCapability.create({
+      await TestHelper.user_ServiceCapability.create({
         id: cap2Id as UserServiceCapabilityId,
         user_service_id: userServiceId,
         generic_service_capability_id:
@@ -822,7 +820,7 @@ describe('userServiceDomain', () => {
 
       expect(result).toBeUndefined();
 
-      const remaining = await TestUserHelper.user_Service.loadAll({
+      const remaining = await TestHelper.user_Service.loadAll({
         subscription_id: sub.id,
       });
       expect(remaining).toHaveLength(1);
@@ -839,7 +837,7 @@ describe('userServiceDomain', () => {
 
       expect(result).toBeUndefined();
 
-      const remaining = await TestUserHelper.user_Service.load({
+      const remaining = await TestHelper.user_Service.load({
         user_id: SIMPLE.ID,
         subscription_id: sub.id,
       });
@@ -864,13 +862,13 @@ describe('userServiceDomain', () => {
 
       await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
 
-      const adminService = await TestUserHelper.user_Service.load({
+      const adminService = await TestHelper.user_Service.load({
         id: adminServiceId,
       });
       expect(adminService).toBeDefined();
       expect(adminService!.user_id).toBe(ADMIN.ID);
 
-      const remaining = await TestUserHelper.user_Service.loadAll({
+      const remaining = await TestHelper.user_Service.loadAll({
         subscription_id: sub.id,
       });
       expect(remaining).toHaveLength(1);
@@ -888,7 +886,7 @@ describe('userServiceDomain', () => {
 
       await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
 
-      const secondService = await TestUserHelper.user_Service.load({
+      const secondService = await TestHelper.user_Service.load({
         id: secondServiceId,
       });
       expect(secondService).toMatchObject({

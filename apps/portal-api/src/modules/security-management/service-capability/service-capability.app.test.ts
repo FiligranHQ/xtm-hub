@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { TestUserHelper } from '../../../../tests/helper/test.user.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
@@ -33,8 +33,10 @@ describe('editServiceCapability', () => {
     });
   });
   afterEach(async () => {
-    await TestUserHelper.user_ServiceCapability.delete({});
-    await TestUserHelper.user_Service.delete({});
+    await TestHelper.user_ServiceCapability.delete({});
+    await TestHelper.user_Service.delete({
+      subscription_id: subscription.id,
+    });
   });
   it('should update capability', async () => {
     requestContext.set(requestContextAdminUser);

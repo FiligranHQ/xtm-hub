@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestDocumentHelper } from '../../../tests/helper/test.document.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentImageType,
@@ -250,7 +250,7 @@ describe('documentApp', () => {
   describe('updateDocument', () => {
     let createdDocument: Document | undefined;
     beforeEach(async () => {
-      await TestDocumentHelper.document.delete({});
+      await TestHelper.document.delete({});
       createdDocument = await DocumentApp.createDocument({
         input: documentData,
         metadata: integrationMetadata,

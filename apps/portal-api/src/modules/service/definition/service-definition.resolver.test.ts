@@ -2,7 +2,7 @@ import { GraphQLResolveInfo } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { contextSimpleUserSecondOrga } from '../../../../tests/tests.const';
 import { ServiceDefinition } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
@@ -18,12 +18,11 @@ describe('serviceDefinition resolver fields', () => {
   describe('service_capability field resolver', () => {
     it('should load service capabilities for a given service definition', async () => {
       // Given
-      const serviceDefinition =
-        await TestServiceHelper.serviceDefinition.create();
-      await TestServiceHelper.serviceCapability.create({
+      const serviceDefinition = await TestHelper.serviceDefinition.create();
+      await TestHelper.serviceCapability.create({
         service_definition_id: serviceDefinition.id,
       });
-      await TestServiceHelper.serviceCapability.create();
+      await TestHelper.serviceCapability.create();
       const resolver =
         serviceDefinitionResolver.ServiceDefinition?.service_capability;
       if (!resolver) {

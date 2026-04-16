@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
-import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES } from '../../../../tests/tests.const';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -41,7 +41,7 @@ describe('serviceDefinitionDomain', () => {
     });
 
     it('should return service definition when is it linked to the service instance', async () => {
-      const serviceInstance = await TestServiceHelper.serviceInstance.load({
+      const serviceInstance = await TestHelper.serviceInstance.load({
         slug: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG,
       });
 

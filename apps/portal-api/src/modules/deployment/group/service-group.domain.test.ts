@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { db } from '../../../../knexfile';
-import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestHubStatus,
@@ -23,7 +23,7 @@ describe('serviceGroupDomain', () => {
   const serviceInstanceId2 = uuidv4() as ServiceInstanceId;
 
   beforeAll(async () => {
-    await TestServiceHelper.serviceInstance.create({
+    await TestHelper.serviceInstance.create({
       id: serviceInstanceId1,
       name: 'Service instance 1',
       description: '',
@@ -33,7 +33,7 @@ describe('serviceGroupDomain', () => {
       tags: [],
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });
-    await TestServiceHelper.serviceInstance.create({
+    await TestHelper.serviceInstance.create({
       id: serviceInstanceId2,
       name: 'Service instance 2',
       description: '',
@@ -44,17 +44,17 @@ describe('serviceGroupDomain', () => {
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });
 
-    await TestServiceHelper.serviceGroup.create({
+    await TestHelper.serviceGroup.create({
       id: adminGroupId,
       name: 'Admin',
       service_instance_id: serviceInstanceId1,
     });
-    await TestServiceHelper.serviceGroup.create({
+    await TestHelper.serviceGroup.create({
       id: analystGroupId,
       name: 'Analyst',
       service_instance_id: serviceInstanceId1,
     });
-    await TestServiceHelper.serviceGroup.create({
+    await TestHelper.serviceGroup.create({
       id: readerGroupId,
       name: 'Reader',
       service_instance_id: serviceInstanceId2,
@@ -62,7 +62,7 @@ describe('serviceGroupDomain', () => {
   });
 
   afterEach(async () => {
-    await TestServiceHelper.serviceGroupUser.delete({});
+    await TestHelper.serviceGroupUser.delete({});
   });
 
   describe('loadGroupsServiceInstanceIds', () => {
@@ -79,15 +79,15 @@ describe('serviceGroupDomain', () => {
 
   describe('loadGroupUsers', () => {
     it('should return users associated to service group', async () => {
-      await TestServiceHelper.serviceGroupUser.create({
+      await TestHelper.serviceGroupUser.create({
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         group_id: adminGroupId,
       });
-      await TestServiceHelper.serviceGroupUser.create({
+      await TestHelper.serviceGroupUser.create({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
         group_id: adminGroupId,
       });
-      await TestServiceHelper.serviceGroupUser.create({
+      await TestHelper.serviceGroupUser.create({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         group_id: analystGroupId,
       });
@@ -123,7 +123,7 @@ describe('serviceGroupDomain', () => {
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
       ]);
 
-      const serviceGroupUsers = await TestServiceHelper.serviceGroupUser.load({
+      const serviceGroupUsers = await TestHelper.serviceGroupUser.load({
         group_id: adminGroupId,
       });
 
@@ -176,7 +176,7 @@ describe('serviceGroupDomain', () => {
         trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
         const groupId = uuidv4() as ServiceGroupId;
-        await TestServiceHelper.serviceGroup.create({
+        await TestHelper.serviceGroup.create({
           id: groupId,
           name: 'Admin',
           service_instance_id: deploymentRequest.service_instance_id,
@@ -206,7 +206,7 @@ describe('serviceGroupDomain', () => {
       });
       trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
-      await TestServiceHelper.serviceGroup.create({
+      await TestHelper.serviceGroup.create({
         name: 'Admin',
         service_instance_id: deploymentRequest.service_instance_id,
       });
@@ -233,7 +233,7 @@ describe('serviceGroupDomain', () => {
         });
         trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
-        await TestServiceHelper.serviceGroup.create({
+        await TestHelper.serviceGroup.create({
           name: 'Admin',
           service_instance_id: deploymentRequest.service_instance_id,
         });
@@ -258,7 +258,7 @@ describe('serviceGroupDomain', () => {
       trackedServiceInstanceIds.push(deploymentRequest1.service_instance_id);
 
       const groupId1 = uuidv4() as ServiceGroupId;
-      await TestServiceHelper.serviceGroup.create({
+      await TestHelper.serviceGroup.create({
         id: groupId1,
         name: 'Admin',
         service_instance_id: deploymentRequest1.service_instance_id,
@@ -271,7 +271,7 @@ describe('serviceGroupDomain', () => {
       trackedServiceInstanceIds.push(deploymentRequest2.service_instance_id);
 
       const groupId2 = uuidv4() as ServiceGroupId;
-      await TestServiceHelper.serviceGroup.create({
+      await TestHelper.serviceGroup.create({
         id: groupId2,
         name: 'Admin',
         service_instance_id: deploymentRequest2.service_instance_id,

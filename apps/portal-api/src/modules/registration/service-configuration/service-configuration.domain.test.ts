@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TestServiceHelper } from '../../../../tests/helper/test.service.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
   SERVICES,
@@ -73,8 +73,8 @@ describe('serviceConfigurationDomain', () => {
       token = uuidv4();
       platformId = uuidv4();
 
-      await TestServiceHelper.serviceConfiguration.delete({});
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.delete({});
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         status: ServiceConfigurationStatus.Active,
         config: {
@@ -127,8 +127,8 @@ describe('serviceConfigurationDomain', () => {
       token = uuidv4();
       platformId = uuidv4();
 
-      await TestServiceHelper.serviceConfiguration.delete({});
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.delete({});
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         status: ServiceConfigurationStatus.Active,
         config: {

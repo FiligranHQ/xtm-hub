@@ -11,12 +11,10 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestDocumentHelper } from '../../../../tests/helper/test.document.helper';
-import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   mockPlatformConfig,
-  TestServiceHelper,
-} from '../../../../tests/helper/test.service.helper';
+  TestHelper,
+} from '../../../../tests/helper/test.helper';
 import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
@@ -381,29 +379,29 @@ describe('service Instance app', () => {
         securityGuardModule.securityGuard,
         'assertUserIsAllowedOnOrganization'
       ).mockResolvedValue(undefined);
-      serviceDefinition = await TestServiceHelper.serviceDefinition.create({
+      serviceDefinition = await TestHelper.serviceDefinition.create({
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       });
-      serviceInstance = await TestServiceHelper.serviceInstance.create({
+      serviceInstance = await TestHelper.serviceInstance.create({
         service_definition_id: serviceDefinition.id as ServiceDefinitionId,
       });
       await TestHelper.subscription.create({
         service_instance_id: serviceInstance.id,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstance.id,
       });
     });
 
     afterEach(async () => {
       vi.restoreAllMocks();
-      await TestServiceHelper.serviceConfiguration.delete({});
+      await TestHelper.serviceConfiguration.delete({});
       await TestHelper.subscription.delete({});
-      await TestServiceHelper.serviceInstance.delete({
+      await TestHelper.serviceInstance.delete({
         id: serviceInstance.id,
       });
-      await TestServiceHelper.serviceDefinition.delete({
+      await TestHelper.serviceDefinition.delete({
         id: serviceDefinition.id,
       });
     });
@@ -711,10 +709,10 @@ describe('service Instance app', () => {
 
   describe('loadSeoServiceInstance', () => {
     afterAll(async () => {
-      await TestServiceHelper.serviceInstance.delete({
+      await TestHelper.serviceInstance.delete({
         slug: 'test-seo-slug-with-docs',
       });
-      await TestServiceHelper.serviceInstance.delete({
+      await TestHelper.serviceInstance.delete({
         slug: 'test-seo-slug-no-docs',
       });
     });
@@ -725,9 +723,9 @@ describe('service Instance app', () => {
       const illustrationId = uuidv4();
 
       // logo_document_id has a FK to Document, so insert the document first
-      await TestDocumentHelper.document.create({ id: logoId, type: 'logo' });
+      await TestHelper.document.create({ id: logoId, type: 'logo' });
 
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         name: 'Test SEO Service',
         slug,
         logo_document_id: logoId,
@@ -757,7 +755,7 @@ describe('service Instance app', () => {
     it('should handle null document IDs without converting them', async () => {
       // Given
       const slug = 'test-seo-slug-no-docs';
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         name: 'Test SEO Service No Docs',
         slug,
       });
@@ -777,21 +775,21 @@ describe('service Instance app', () => {
     const secondServiceInstancePublicId = uuidv4() as ServiceInstanceId;
     const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
     afterAll(async () => {
-      await TestServiceHelper.serviceInstance.delete({
+      await TestHelper.serviceInstance.delete({
         id: firstServiceInstancePublicId,
       });
-      await TestServiceHelper.serviceInstance.delete({
+      await TestHelper.serviceInstance.delete({
         id: secondServiceInstancePublicId,
       });
-      await TestServiceHelper.serviceInstance.delete({
+      await TestHelper.serviceInstance.delete({
         id: privateServiceInstanceId,
       });
-      await TestDocumentHelper.document.delete({ id: logoId });
+      await TestHelper.document.delete({ id: logoId });
     });
     it('should return public service instances with document IDs converted to global IDs', async () => {
       // Given
-      await TestDocumentHelper.document.create({ id: logoId, type: 'logo' });
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.document.create({ id: logoId, type: 'logo' });
+      await TestHelper.serviceInstance.create({
         id: firstServiceInstancePublicId,
         name: 'Test Public SEO Service',
         public: true,
@@ -815,7 +813,7 @@ describe('service Instance app', () => {
 
     it('should not include non-public service instances', async () => {
       // Given
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: privateServiceInstanceId,
         name: 'Non-public service',
         public: false,
@@ -832,7 +830,7 @@ describe('service Instance app', () => {
 
     it('should return instances ordered by ordering field ascending', async () => {
       // Given
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: secondServiceInstancePublicId,
         name: 'Test Public SEO Service',
         public: true,

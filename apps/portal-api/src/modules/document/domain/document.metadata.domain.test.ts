@@ -1,6 +1,6 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestDocumentHelper } from '../../../../tests/helper/test.document.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
@@ -38,7 +38,7 @@ describe('documentMetadataDomain', () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockImplementation(
       async () => [minioFileMock]
     );
-    await TestDocumentHelper.document.delete({
+    await TestHelper.document.delete({
       type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
     });
   });

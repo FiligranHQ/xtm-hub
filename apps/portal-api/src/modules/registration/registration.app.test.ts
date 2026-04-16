@@ -10,8 +10,6 @@ import {
   vi,
 } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
-import { TestServiceHelper } from '../../../tests/helper/test.service.helper';
-import { TestUserHelper } from '../../../tests/helper/test.user.helper';
 import {
   // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
@@ -90,11 +88,11 @@ describe('registration app', () => {
     it('should throw an error when subscription is not found', async () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId },
         status: ServiceConfigurationStatus.Active,
@@ -110,11 +108,11 @@ describe('registration app', () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const subscriptionId = uuidv4() as SubscriptionId;
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId },
         status: ServiceConfigurationStatus.Active,
@@ -135,11 +133,11 @@ describe('registration app', () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const subscriptionId = uuidv4() as SubscriptionId;
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId },
         status: ServiceConfigurationStatus.Active,
@@ -176,11 +174,11 @@ describe('registration app', () => {
     it('should throw subscription not found error when associated subscription is not found', async () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId },
         status: ServiceConfigurationStatus.Active,
@@ -199,11 +197,11 @@ describe('registration app', () => {
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const subscriptionId = uuidv4() as SubscriptionId;
 
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId, platform_title: platformTitle },
         status: ServiceConfigurationStatus.Active,
@@ -231,11 +229,11 @@ describe('registration app', () => {
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const subscriptionId = uuidv4() as SubscriptionId;
 
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestServiceHelper.serviceConfiguration.create({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
         config: { platform_id: platformId, platform_title: platformTitle },
         status: ServiceConfigurationStatus.Inactive,
@@ -738,7 +736,7 @@ describe('registration app', () => {
       const { token } = await registrationApp.refreshUserPlatformToken(
         contextBypassUser.user.id
       );
-      const user = await TestUserHelper.user.load({
+      const user = await TestHelper.user.load({
         id: contextBypassUser.user.id,
       });
 
@@ -748,7 +746,7 @@ describe('registration app', () => {
         await registrationApp.refreshUserPlatformToken(
           contextBypassUser.user.id
         );
-      const updatedUser = await TestUserHelper.user.load({
+      const updatedUser = await TestHelper.user.load({
         id: contextBypassUser.user.id,
       });
 

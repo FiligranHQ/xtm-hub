@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../knexfile';
 import { TestHelper } from '../../tests/helper/test.helper';
-import { TestUserHelper } from '../../tests/helper/test.user.helper';
 import { TEST_ORGANIZATIONS } from '../../tests/tests.const';
 import { withTransaction } from '../context/database.context';
 import { OrganizationId } from '../model/kanel/public/Organization';
@@ -45,12 +44,12 @@ describe('dev users seeding', () => {
 
     for (const user of testUsers) {
       // Clean user roles
-      await TestUserHelper.user_RolePortal.delete({
+      await TestHelper.user_RolePortal.delete({
         user_id: user.id,
       });
 
       // Clean user organizations
-      await TestUserHelper.user_Organization.delete({
+      await TestHelper.user_Organization.delete({
         user_id: user.id,
       });
 
@@ -120,7 +119,7 @@ describe('dev users seeding', () => {
       await ensureDevUserExists(userConfig);
 
       // Verify user exists
-      const user = await TestUserHelper.user.load({
+      const user = await TestHelper.user.load({
         email: 'simple@test-dev.com',
       });
 
@@ -138,7 +137,7 @@ describe('dev users seeding', () => {
       expect(userRole).toBeDefined();
 
       // Verify platform organization membership
-      const platformMembership = await TestUserHelper.user_Organization.load({
+      const platformMembership = await TestHelper.user_Organization.load({
         user_id: user?.id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
@@ -163,7 +162,7 @@ describe('dev users seeding', () => {
 
       await ensureDevUserExists(adminConfig);
 
-      const user = await TestUserHelper.user.load({
+      const user = await TestHelper.user.load({
         email: 'admin@test-dev.com',
       });
 
@@ -192,7 +191,7 @@ describe('dev users seeding', () => {
 
       await ensureDevUserExists(userWithOrgConfig);
 
-      const user = await TestUserHelper.user.load({
+      const user = await TestHelper.user.load({
         email: 'orguser@test-dev.com',
       });
 
@@ -205,7 +204,7 @@ describe('dev users seeding', () => {
       expect(org?.domains).toEqual(['userorg.test-dev.com']);
 
       // Verify user is member of the organization
-      const orgMembership = await TestUserHelper.user_Organization.load({
+      const orgMembership = await TestHelper.user_Organization.load({
         user_id: user?.id,
         organization_id: org?.id,
       });
@@ -222,7 +221,7 @@ describe('dev users seeding', () => {
       // Create user first time
       await ensureDevUserExists(userConfig);
 
-      const originalUser = await TestUserHelper.user.load({
+      const originalUser = await TestHelper.user.load({
         email: 'update@test-dev.com',
       });
 
@@ -236,7 +235,7 @@ describe('dev users seeding', () => {
 
       await ensureDevUserExists(updatedConfig);
 
-      const updatedUser = await TestUserHelper.user.load({
+      const updatedUser = await TestHelper.user.load({
         email: 'update@test-dev.com',
       });
 
@@ -327,7 +326,7 @@ describe('dev users seeding', () => {
         await initializeDevUsers();
 
         // User should still be created
-        const user = await TestUserHelper.user.load({
+        const user = await TestHelper.user.load({
           email: 'invalidrole@test-dev.com',
         });
 
@@ -380,7 +379,7 @@ describe('addRoleToUser', () => {
     user_id = uuidv4() as UserId;
     testUserIds.push(user_id);
 
-    await TestUserHelper.user.create({
+    await TestHelper.user.create({
       id: user_id,
       email: `add-role-${user_id}@test-dev.com`,
       salt: 'test-salt',
@@ -396,13 +395,13 @@ describe('addRoleToUser', () => {
       await db('User_RolePortal').whereIn('user_id', testUserIds).del();
 
       for (const testUserId of testUserIds) {
-        await TestUserHelper.user.delete({ id: testUserId as UserId });
+        await TestHelper.user.delete({ id: testUserId as UserId });
       }
     }
 
     if (testRolePortalIds.length > 0) {
       for (const testRolePortalId of testRolePortalIds) {
-        await TestUserHelper.rolePortal.delete({
+        await TestHelper.rolePortal.delete({
           id: testRolePortalId as RolePortalId,
         });
       }
@@ -419,7 +418,7 @@ describe('addRoleToUser', () => {
 
     testRolePortalIds.push(rolePortalId);
 
-    await TestUserHelper.rolePortal.create({
+    await TestHelper.rolePortal.create({
       id: rolePortalId,
       name: roleName,
     });
@@ -428,7 +427,7 @@ describe('addRoleToUser', () => {
     await addRoleToUser(user_id, roleName);
 
     // Then
-    const userRole = await TestUserHelper.user_RolePortal.load({
+    const userRole = await TestHelper.user_RolePortal.load({
       user_id,
       role_portal_id: rolePortalId,
     });
@@ -445,7 +444,7 @@ describe('addRoleToUser', () => {
 
     testRolePortalIds.push(rolePortalId);
 
-    await TestUserHelper.rolePortal.create({
+    await TestHelper.rolePortal.create({
       id: rolePortalId,
       name: `test-editor-${rolePortalId}`,
     });
@@ -455,7 +454,7 @@ describe('addRoleToUser', () => {
     await addRoleToUser(user_id, `test-editor-${rolePortalId}`);
 
     // Then
-    const userRoles = await TestUserHelper.user_RolePortal.loadAll({
+    const userRoles = await TestHelper.user_RolePortal.loadAll({
       user_id,
       role_portal_id: rolePortalId,
     });
@@ -476,7 +475,7 @@ describe('addRoleToUser', () => {
     ).resolves.not.toThrow();
 
     // Then
-    const userRoles = await TestUserHelper.user_RolePortal.loadAll({
+    const userRoles = await TestHelper.user_RolePortal.loadAll({
       user_id,
     });
 
@@ -485,14 +484,14 @@ describe('addRoleToUser', () => {
 
   it('should work with existing role names in database', async () => {
     // Given
-    const existingRole = await TestUserHelper.rolePortal.load({});
+    const existingRole = await TestHelper.rolePortal.load({});
 
     // When
     if (existingRole) {
       await addRoleToUser(user_id, existingRole.name);
 
       // Then
-      const userRole = await TestUserHelper.user_RolePortal.load({
+      const userRole = await TestHelper.user_RolePortal.load({
         user_id,
         role_portal_id: existingRole.id,
       });

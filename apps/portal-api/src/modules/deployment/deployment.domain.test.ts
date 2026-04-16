@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { TestDeploymentHelper } from '../../../tests/helper/test.deployment.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
@@ -25,7 +25,7 @@ import {
 
 describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
-    await TestDeploymentHelper.deploymentRequest.delete({});
+    await TestHelper.deploymentRequest.delete({});
   });
 
   describe('loadDeploymentRequest', () => {
@@ -776,7 +776,7 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should do nothing when there is no pending requests', async () => {
-      await TestDeploymentHelper.deploymentRequest.update({
+      await TestHelper.deploymentRequest.update({
         hub_status: DeploymentRequestHubStatus.Queued,
       });
 

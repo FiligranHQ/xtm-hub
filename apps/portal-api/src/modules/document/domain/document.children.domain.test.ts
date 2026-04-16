@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../knexfile';
-import { TestDocumentHelper } from '../../../../tests/helper/test.document.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
@@ -26,7 +26,7 @@ async function insertDocument({
   ...rest
 }: Partial<Document> & { id?: DocumentId } = {}): Promise<DocumentId> {
   const realId = id ?? (uuidv4() as DocumentId);
-  await TestDocumentHelper.document.create({
+  await TestHelper.document.create({
     id: realId,
     type,
     source_type,
@@ -53,8 +53,8 @@ describe('documentChildrenDomain', () => {
   let minioFileMock: { minioName: string; mimeType: string; fileName: string };
 
   beforeEach(async () => {
-    await TestDocumentHelper.documentChildren.delete({});
-    await TestDocumentHelper.document.delete({});
+    await TestHelper.documentChildren.delete({});
+    await TestHelper.document.delete({});
     parentId = uuidv4() as DocumentId;
     childId1 = await insertDocument({});
     childId2 = await insertDocument({ minio_name: 'minio-file-2' });
@@ -74,8 +74,8 @@ describe('documentChildrenDomain', () => {
   });
 
   afterEach(async () => {
-    await TestDocumentHelper.documentChildren.delete({});
-    await TestDocumentHelper.document.delete({});
+    await TestHelper.documentChildren.delete({});
+    await TestHelper.document.delete({});
 
     vi.restoreAllMocks();
   });
@@ -83,15 +83,15 @@ describe('documentChildrenDomain', () => {
   describe('deleteExternalImages', () => {
     beforeEach(async () => {
       // Link children to parent
-      await TestDocumentHelper.documentChildren.create({
+      await TestHelper.documentChildren.create({
         parent_document_id: parentId,
         child_document_id: childId1,
       });
-      await TestDocumentHelper.documentChildren.create({
+      await TestHelper.documentChildren.create({
         parent_document_id: parentId,
         child_document_id: childId2,
       });
-      await TestDocumentHelper.documentChildren.create({
+      await TestHelper.documentChildren.create({
         parent_document_id: parentId,
         child_document_id: unrelatedChildId,
       });
@@ -109,7 +109,7 @@ describe('documentChildrenDomain', () => {
       expect(deleted.find((d) => d.minio_name === 'minio-file-2')).toBeTruthy();
 
       // Check DB: only unrelated child remains
-      const remaining = await TestDocumentHelper.document.loadAll({});
+      const remaining = await TestHelper.document.loadAll({});
       expect(remaining).toHaveLength(2); // parent + unrelated child
       const remainingIds = remaining!.map(({ id }) => id);
       expect(remainingIds).toContain(parentId);
@@ -126,7 +126,7 @@ describe('documentChildrenDomain', () => {
         await DocumentChildrenDomain.deleteExternalImages(parentId);
       expect(deleted).toEqual([]);
       // All children remain
-      const remaining = await TestDocumentHelper.document.loadAll({});
+      const remaining = await TestHelper.document.loadAll({});
       expect(remaining).toHaveLength(4); // parent + 3 children
     });
 
@@ -139,7 +139,7 @@ describe('documentChildrenDomain', () => {
         minio_name: 'other-minio',
         source_type: DocumentSourceType.External,
       });
-      await TestDocumentHelper.documentChildren.create({
+      await TestHelper.documentChildren.create({
         parent_document_id: otherParentId,
         child_document_id: otherChildId,
       });
@@ -148,7 +148,7 @@ describe('documentChildrenDomain', () => {
         await DocumentChildrenDomain.deleteExternalImages(parentId);
       expect(deleted).toHaveLength(2);
       // The other child should still exist
-      const exists = await TestDocumentHelper.document.load({
+      const exists = await TestHelper.document.load({
         id: otherChildId,
       });
       expect(exists).toBeTruthy();
@@ -171,11 +171,11 @@ describe('documentChildrenDomain', () => {
         minio_name: 'old-internal',
         service_instance_id: serviceInstanceId,
       });
-      await TestDocumentHelper.documentChildren.create({
+      await TestHelper.documentChildren.create({
         parent_document_id: parentId,
         child_document_id: oldExternalId,
       });
-      await TestDocumentHelper.documentChildren.create({
+      await TestHelper.documentChildren.create({
         parent_document_id: parentId,
         child_document_id: oldInternalId,
       });
@@ -200,7 +200,7 @@ describe('documentChildrenDomain', () => {
 
     it('should replace all external image children with the new upload and delete old MinIO files', async () => {
       // Insert a fake parent doc model
-      const parentDoc = await TestDocumentHelper.document.load({
+      const parentDoc = await TestHelper.document.load({
         id: parentId,
       });
       // upsertExternalImage expects a DocumentModel, so we use the DB row
@@ -228,7 +228,7 @@ describe('documentChildrenDomain', () => {
       expect(internalImages).toHaveLength(1);
       expect(internalImages[0]!.id).toBe(oldInternalId);
       // Old external image should be deleted
-      const oldExternal = await TestDocumentHelper.document.load({
+      const oldExternal = await TestHelper.document.load({
         id: oldExternalId,
       });
       expect(oldExternal).toBeUndefined();
@@ -238,12 +238,12 @@ describe('documentChildrenDomain', () => {
 
     it('should work if there are no previous external images', async () => {
       // Remove all external images
-      await TestDocumentHelper.document.update(
+      await TestHelper.document.update(
         { id: oldExternalId },
         { source_type: DocumentSourceType.Internal }
       );
 
-      const parentDoc = await TestDocumentHelper.document.load({
+      const parentDoc = await TestHelper.document.load({
         id: parentId,
       });
       await DocumentChildrenDomain.upsertExternalImage(parentDoc, upload);
@@ -275,23 +275,23 @@ describe('documentChildrenDomain', () => {
         source_type: 'external',
         service_instance_id: serviceInstanceId,
       });
-      await TestDocumentHelper.documentChildren.create({
+      await TestHelper.documentChildren.create({
         parent_document_id: otherParentId,
         child_document_id: otherChildId,
       });
 
-      const parentDoc = await TestDocumentHelper.document.load({
+      const parentDoc = await TestHelper.document.load({
         id: parentId,
       });
       await DocumentChildrenDomain.upsertExternalImage(parentDoc, upload);
       // The other child should still exist
-      const exists = await TestDocumentHelper.document.load({
+      const exists = await TestHelper.document.load({
         id: otherChildId,
       });
       expect(exists).toBeTruthy();
 
       // The other parent should still have its child
-      const otherChildren = await TestDocumentHelper.documentChildren.load({
+      const otherChildren = await TestHelper.documentChildren.load({
         parent_document_id: otherParentId,
       });
       expect(otherChildren).toHaveLength(1);
@@ -303,8 +303,8 @@ describe('documentChildrenDomain', () => {
     let parentId: DocumentId;
     let serviceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
-      await TestDocumentHelper.documentChildren.delete({});
-      await TestDocumentHelper.document.delete({});
+      await TestHelper.documentChildren.delete({});
+      await TestHelper.document.delete({});
       parentId = await insertDocument({
         type: 'folder',
         source_type: DocumentSourceType.Internal,

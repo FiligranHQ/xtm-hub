@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
-import { TestServiceHelper } from '../../../tests/helper/test.service.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -17,7 +16,7 @@ describe('subscription app', () => {
     let serviceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
       serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await TestServiceHelper.serviceInstance.create({
+      await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
       });

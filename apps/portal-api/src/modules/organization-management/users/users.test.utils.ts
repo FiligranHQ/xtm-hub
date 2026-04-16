@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { expect } from 'vitest';
 import { db } from '../../../../knexfile';
-import { TestUserHelper } from '../../../../tests/helper/test.user.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import User, { UserId, UserMutator } from '../../../model/kanel/public/User';
@@ -28,7 +28,7 @@ export const linkUsersToOrganization = async (
   organizationId: OrganizationId
 ): Promise<void> => {
   const promises = users.map(async (user) => {
-    await TestUserHelper.user_OrganizationPending.create({
+    await TestHelper.user_OrganizationPending.create({
       organization_id: organizationId,
       user_id: user!.id,
     });

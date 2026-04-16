@@ -22,8 +22,18 @@ import Subscription, {
 } from '../../src/model/kanel/public/Subscription';
 import UseCase, { UseCaseMutator } from '../../src/model/kanel/public/UseCase';
 import { TEST_ORGANIZATIONS } from '../tests.const';
+import { TestDeploymentHelper } from './test.deployment.helper';
+import { TestDocumentHelper } from './test.document.helper';
+import { mockPlatformConfig, TestServiceHelper } from './test.service.helper';
+import { TestUserHelper } from './test.user.helper';
+
+export { mockPlatformConfig };
 
 export const TestHelper = {
+  ...TestDocumentHelper,
+  ...TestServiceHelper,
+  ...TestUserHelper,
+  ...TestDeploymentHelper,
   subscription: {
     create: async (data?: Partial<Subscription>): Promise<Subscription> => {
       const [subscription] = await db<Subscription>('Subscription')

@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { TestUserHelper } from '../../../../../tests/helper/test.user.helper';
+import { TestHelper } from '../../../../../tests/helper/test.helper';
 import {
   TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
@@ -60,7 +60,7 @@ describe('userOrganizationPendingDomain', () => {
     });
 
     it('should return an empty list when organizations does not have pending users', async () => {
-      await TestUserHelper.user_OrganizationPending.delete({});
+      await TestHelper.user_OrganizationPending.delete({});
       const result =
         await UserOrganizationPendingDomain.loadOrganizationsWithPendingUsers();
 
@@ -107,7 +107,7 @@ describe('userOrganizationPendingDomain', () => {
       createdUsers.push(filigranUser);
     });
     afterEach(async () => {
-      await TestUserHelper.user_OrganizationPending.delete({});
+      await TestHelper.user_OrganizationPending.delete({});
 
       await Promise.all(
         createdUsers.map((user) => removeUser({ email: user.email }))
@@ -311,7 +311,7 @@ describe('userOrganizationPendingDomain', () => {
     });
 
     afterEach(async () => {
-      await TestUserHelper.user_OrganizationPending.delete({});
+      await TestHelper.user_OrganizationPending.delete({});
       await removeUser({ email: createdUser.email });
     });
 

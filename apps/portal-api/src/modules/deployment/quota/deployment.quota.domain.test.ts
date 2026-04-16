@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TestDeploymentHelper } from '../../../../tests/helper/test.deployment.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   DeploymentRequestPlatformRegion,
   PlatformIdentifier,
@@ -24,7 +24,7 @@ describe('deploymentQuotaDomain', () => {
     });
 
     it('should return that place is not available when availability is equal to 0', async () => {
-      await TestDeploymentHelper.deploymentRequestQuota.update(
+      await TestHelper.deploymentRequestQuota.update(
         {
           region,
           platform_identifier: platformIdentifier,
@@ -41,7 +41,7 @@ describe('deploymentQuotaDomain', () => {
     });
 
     it('should return that place is not available when availability is lower than 0', async () => {
-      await TestDeploymentHelper.deploymentRequestQuota.update(
+      await TestHelper.deploymentRequestQuota.update(
         {
           region,
           platform_identifier: platformIdentifier,
@@ -57,7 +57,7 @@ describe('deploymentQuotaDomain', () => {
       expect(result.isPlaceAvailable).toBe(false);
     });
     it('should return that place is available when availability is greater than 0', async () => {
-      await TestDeploymentHelper.deploymentRequestQuota.update(
+      await TestHelper.deploymentRequestQuota.update(
         {
           region,
           platform_identifier: platformIdentifier,
@@ -73,7 +73,7 @@ describe('deploymentQuotaDomain', () => {
       expect(result.isPlaceAvailable).toBe(true);
     });
     it('should reserve a place when availability is greater than 0', async () => {
-      await TestDeploymentHelper.deploymentRequestQuota.update(
+      await TestHelper.deploymentRequestQuota.update(
         {
           region,
           platform_identifier: platformIdentifier,
@@ -83,11 +83,10 @@ describe('deploymentQuotaDomain', () => {
 
       await DeploymentQuotaDomain.reservePlace(platformIdentifier, region);
 
-      const updatedRequestQuota =
-        await TestDeploymentHelper.deploymentRequestQuota.load({
-          region,
-          platform_identifier: platformIdentifier,
-        });
+      const updatedRequestQuota = await TestHelper.deploymentRequestQuota.load({
+        region,
+        platform_identifier: platformIdentifier,
+      });
 
       expect(updatedRequestQuota).toBeDefined();
       expect(updatedRequestQuota!.availability).toBe(0);
@@ -107,7 +106,7 @@ describe('deploymentQuotaDomain', () => {
     });
 
     it('should free a place', async () => {
-      await TestDeploymentHelper.deploymentRequestQuota.update(
+      await TestHelper.deploymentRequestQuota.update(
         {
           region,
           platform_identifier: platformIdentifier,
@@ -117,11 +116,10 @@ describe('deploymentQuotaDomain', () => {
 
       await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
 
-      const updatedRequestQuota =
-        await TestDeploymentHelper.deploymentRequestQuota.load({
-          region,
-          platform_identifier: platformIdentifier,
-        });
+      const updatedRequestQuota = await TestHelper.deploymentRequestQuota.load({
+        region,
+        platform_identifier: platformIdentifier,
+      });
 
       expect(updatedRequestQuota).toBeDefined();
       expect(updatedRequestQuota!.availability).toBe(1);
@@ -153,7 +151,7 @@ describe('deploymentQuotaDomain', () => {
         newCapacity,
         expectedAvailability,
       }) => {
-        await TestDeploymentHelper.deploymentRequestQuota.update(
+        await TestHelper.deploymentRequestQuota.update(
           {
             region,
             platform_identifier: platformIdentifier,
@@ -168,7 +166,7 @@ describe('deploymentQuotaDomain', () => {
         });
 
         const updatedRequestQuota =
-          await TestDeploymentHelper.deploymentRequestQuota.load({
+          await TestHelper.deploymentRequestQuota.load({
             region,
             platform_identifier: platformIdentifier,
           });

@@ -10,7 +10,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestDeploymentHelper } from '../../../tests/helper/test.deployment.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   contextAdminSecondOrga,
   requestContextAdminSecondOrga,
@@ -47,7 +47,7 @@ describe('hubspot', () => {
   let logSpy: MockInstance;
 
   afterEach(async () => {
-    await TestDeploymentHelper.deploymentRequest.delete({});
+    await TestHelper.deploymentRequest.delete({});
     vi.restoreAllMocks();
   });
 

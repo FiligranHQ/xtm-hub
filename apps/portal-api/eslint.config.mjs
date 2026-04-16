@@ -53,6 +53,11 @@ export default defineConfig([
               message:
                 'Use a dedicated test context helper instead of bypass/admin shared contexts.',
             },
+            {
+              group: ['**/tests/helper/test.*.helper'],
+              message:
+                'Import TestHelper from tests/helper/test.helper instead.',
+            },
           ],
         },
       ],
