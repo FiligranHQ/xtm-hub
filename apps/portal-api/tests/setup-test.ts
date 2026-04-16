@@ -91,7 +91,7 @@ beforeEach(() => {
   testRequestStorage.set(testKey, { ...requestContextSimpleUserFiligran2 });
 });
 
-beforeAll(async (suite) => {
+beforeAll(async ({}, suite) => {
   mockRequestContext();
 
   const currentFile = suite?.file?.name;
