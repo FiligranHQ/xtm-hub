@@ -9,6 +9,7 @@ export default defineConfig({
     fileParallelism: false,
     coverage: {
       provider: 'v8',
+      include: ['./**'],
       exclude: [
         'builder/**',
         'src/__generated__/**',
