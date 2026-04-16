@@ -8956,6 +8956,7 @@ __metadata:
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.58.1"
     uuid: "npm:13.0.0"
+    vite: "npm:8.0.8"
     vitest: "npm:4.1.4"
     winston: "npm:3.19.0"
     zod: "npm:4.3.6"
