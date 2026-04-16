@@ -10,14 +10,13 @@ import {
   it,
   vi,
 } from 'vitest';
-import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   contextAdminSecondOrga,
   requestContextAdminSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import { requestContext } from '../../context/request.context';
-import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
 import { UserLoadUserBy } from '../../model/user';
 import { insertDeploymentRequest } from '../../modules/deployment/deployment.test.utils';
 import { logApp } from '../../utils/app-logger.util';
@@ -36,7 +35,7 @@ vi.mock('config', async (importOriginal) => {
   };
 });
 
-describe('Hubspot', () => {
+describe('hubspot', () => {
   let realConfigGet: typeof config.get;
 
   beforeAll(() => {
@@ -48,7 +47,7 @@ describe('Hubspot', () => {
   let logSpy: MockInstance;
 
   afterEach(async () => {
-    await db<DeploymentRequest>('DeploymentRequest').del();
+    await TestHelper.deploymentRequest.delete({});
     vi.restoreAllMocks();
   });
 

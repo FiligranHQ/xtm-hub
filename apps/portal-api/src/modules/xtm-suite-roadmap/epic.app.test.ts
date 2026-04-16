@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   EpicOrdering,
@@ -21,7 +21,7 @@ import * as ServiceInstanceDomain from '../service/instance/service-instance.dom
 import { EpicApp } from './epic.app';
 import { EpicDomain } from './epic.domain';
 
-describe('EpicApp', () => {
+describe('epicApp', () => {
   const minioFileMock = {
     minioName: 'epic-image.png',
     mimeType: 'image/png',

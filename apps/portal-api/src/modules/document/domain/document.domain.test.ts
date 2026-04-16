@@ -1,6 +1,5 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../knexfile';
 import {
   DocumentConnection,
   DocumentMetadataKeyCode,
@@ -23,14 +22,14 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../shareable-resource/opencti/integration/integration.model';
 
-import { TestHelper } from '../../../../tests/test.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import Document from '../../../model/kanel/public/Document';
 import { ADMIN_UUID } from '../../../portal.const';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
 
-describe('Document domain', () => {
+describe('document domain', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',
@@ -41,7 +40,7 @@ describe('Document domain', () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
-    await db<Document>('Document').delete();
+    await TestHelper.document.delete({});
   });
 
   describe('deactivateDocuments', () => {
@@ -57,8 +56,9 @@ describe('Document domain', () => {
         id: createdDocument.id,
       });
 
-      expect(document).toBeDefined();
-      expect(document!.active).toBe(true);
+      expect(document).toMatchObject({
+        active: true,
+      });
     });
 
     it('should deactivate document and set remover id', async () => {
@@ -68,20 +68,20 @@ describe('Document domain', () => {
         id: createdDocument.id,
       });
 
-      expect(document).toBeDefined();
-      expect(document!.active).toBe(false);
-      expect(document!.remover_id).toBe(
-        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID
-      );
+      expect(document).toMatchObject({
+        active: false,
+        remover_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+      });
     });
   });
 
   describe(`loadParentDocumentsByServiceInstance`, () => {
     let csvFeed: Document;
     beforeEach(async () => {
-      await db<Document>('Document')
-        .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
-        .delete();
+      await TestHelper.document.delete({
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+      });
+
       csvFeed = await TestHelper.document.createWholeDocument({});
     });
 
@@ -151,7 +151,7 @@ describe('Document domain', () => {
           INTEGRATION_METADATA_KEYS
         );
 
-      expect(csvFeedConnection.edges.length).toBe(1);
+      expect(csvFeedConnection.edges).toHaveLength(1);
       expect(csvFeedConnection.edges[0]?.node.id).toBe(csvFeed!.id);
       expect(csvFeedConnection.edges[0]?.node.integration_type).toBe(
         IntegrationType.CsvFeed
@@ -181,11 +181,11 @@ describe('Document domain', () => {
           INTEGRATION_METADATA_KEYS
         );
 
-      expect(connectorConnection.edges.length).toBe(1);
-      expect(connectorConnection.edges[0]?.node.id).toBe(connector?.id);
-      expect(connectorConnection.edges[0]?.node.integration_type).toBe(
-        IntegrationType.Connector
-      );
+      expect(connectorConnection.edges).toHaveLength(1);
+      expect(connectorConnection.edges[0]?.node).toMatchObject({
+        id: connector?.id,
+        integration_type: IntegrationType.Connector,
+      });
 
       // fetch both
       const integrationConnection: DocumentConnection =
@@ -211,7 +211,7 @@ describe('Document domain', () => {
           INTEGRATION_METADATA_KEYS
         );
 
-      expect(integrationConnection.edges.length).toBe(2);
+      expect(integrationConnection.edges).toHaveLength(2);
     });
 
     describe('multiple filters', () => {
@@ -220,7 +220,7 @@ describe('Document domain', () => {
           sampleExtractedManifest as ManifestInformation[]
         );
 
-        expect(connectors.length).toBe(2);
+        expect(connectors).toHaveLength(2);
 
         // Fetch connectors with version
         const connectorConnection: { edges: { node: Integration }[] } =
@@ -252,11 +252,11 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(connectorConnection.edges.length).toBe(1);
-        expect(connectorConnection.edges[0]?.node.id).toBe(connectors[0]?.id);
-        expect(connectorConnection.edges[0]?.node.integration_type).toBe(
-          IntegrationType.Connector
-        );
+        expect(connectorConnection.edges).toHaveLength(1);
+        expect(connectorConnection.edges[0]?.node).toMatchObject({
+          id: connectors[0]?.id,
+          integration_type: IntegrationType.Connector,
+        });
       });
 
       it('should handle type and subtype', async () => {
@@ -264,7 +264,7 @@ describe('Document domain', () => {
           sampleExtractedManifest as ManifestInformation[]
         );
 
-        expect(connectors.length).toBe(2);
+        expect(connectors).toHaveLength(2);
 
         // Fetch connectors with version
         const connectorConnection: DocumentConnection =
@@ -307,7 +307,7 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(connectorConnection.edges.length).toBe(2);
+        expect(connectorConnection.edges).toHaveLength(2);
 
         expect(connectorConnection.edges).toEqual(
           expect.arrayContaining([
@@ -335,7 +335,7 @@ describe('Document domain', () => {
         );
 
         expect(connectors).toBeDefined();
-        expect(connectors.length).toBe(2);
+        expect(connectors).toHaveLength(2);
 
         const secondContractConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
@@ -360,7 +360,7 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(secondContractConnection.edges.length).toBe(2);
+        expect(secondContractConnection.edges).toHaveLength(2);
         expect(secondContractConnection.edges[0]?.node.id).toBe(
           connectors[0]?.id
         );
@@ -373,7 +373,7 @@ describe('Document domain', () => {
         );
 
         expect(connectors).toBeDefined();
-        expect(connectors.length).toBe(2);
+        expect(connectors).toHaveLength(2);
 
         const allContractsConnection: DocumentConnection =
           await DocumentDomain.loadParentDocumentsByServiceInstance(
@@ -398,7 +398,7 @@ describe('Document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(allContractsConnection.edges.length).toBe(3);
+        expect(allContractsConnection.edges).toHaveLength(3);
       });
     });
   });
@@ -422,7 +422,9 @@ describe('Document domain', () => {
 
         // When
         const document = await DocumentDomain.createDocument(docData, []);
-        const dbDocument = await TestHelper.document.load({ id: document!.id });
+        const dbDocument = await TestHelper.document.load({
+          id: document!.id,
+        });
 
         // Then
         const baseExpected = {
@@ -450,18 +452,16 @@ describe('Document domain', () => {
 
   describe('loadDocumentWithMetadataById', () => {
     it('should load a document with metadata keys', async () => {
-      const [inserted] = await db('Document')
-        .insert({
-          name: 'DocMeta2',
-          type: 'meta-type',
-          slug: 'doc-meta2',
-          uploader_id: ADMIN_UUID,
-          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          active: true,
-        })
-        .returning('*');
+      const inserted = await TestHelper.document.create({
+        name: 'DocMeta2',
+        type: 'meta-type',
+        slug: 'doc-meta2',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        active: true,
+      });
 
-      await db('Document_Metadata').insert({
+      await TestHelper.documentMetadata.create({
         document_id: inserted.id,
         key: DocumentMetadataKeyCode.ProductVersion,
         value: '1.2.3',
@@ -470,7 +470,6 @@ describe('Document domain', () => {
         inserted.id,
         [DocumentMetadataKeyCode.ProductVersion]
       );
-      expect(loaded).toBeDefined();
       expect(loaded).toMatchObject({
         id: inserted.id,
         name: 'DocMeta2',
@@ -488,21 +487,20 @@ describe('Document domain', () => {
 
   describe('loadUploader', () => {
     it('should return the user who uploaded document', async () => {
-      const [inserted] = await db('Document')
-        .insert({
-          name: 'DocMeta2',
-          type: 'meta-type',
-          slug: 'doc-meta2',
-          uploader_id: ADMIN_UUID,
-          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          active: true,
-        })
-        .returning('*');
+      const inserted = await TestHelper.document.create({
+        name: 'DocMeta2',
+        type: 'meta-type',
+        slug: 'doc-meta2',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        active: true,
+      });
 
       const uploader = await DocumentDomain.loadUploader(inserted.id);
 
-      expect(uploader).toBeDefined();
-      expect(uploader!.id).toBe(ADMIN_UUID);
+      expect(uploader).toMatchObject({
+        id: ADMIN_UUID,
+      });
     });
 
     it('should return undefined when document does not exist', async () => {
@@ -545,71 +543,62 @@ describe('Document domain', () => {
     let otherServiceDoc: Document;
 
     beforeEach(async () => {
-      await db('Document_Children').delete();
-      await db('Document_Metadata').delete();
-      await db('Document').delete();
+      await TestHelper.documentChildren.delete({});
+      await TestHelper.documentMetadata.delete({});
+      await TestHelper.document.delete({});
 
-      [parentDoc] = await db('Document')
-        .insert({
-          name: 'Parent SEO Doc',
-          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          slug: 'parent-seo',
-          uploader_id: ADMIN_UUID,
-          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          active: true,
-          created_at: new Date('2023-01-01T10:00:00Z'),
-          updated_at: new Date('2023-01-02T10:00:00Z'),
-        })
-        .returning('*');
-
-      [childDoc] = await db('Document')
-        .insert({
-          name: 'Child SEO Doc',
-          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          slug: 'child-seo',
-          uploader_id: ADMIN_UUID,
-          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          active: true,
-          created_at: new Date('2023-01-01T11:00:00Z'),
-          updated_at: new Date('2023-01-02T11:00:00Z'),
-        })
-        .returning('*');
-      await db('Document_Children').insert({
+      parentDoc = await TestHelper.document.create({
+        name: 'Parent SEO Doc',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'parent-seo',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+        created_at: new Date('2023-01-01T10:00:00Z'),
+        updated_at: new Date('2023-01-02T10:00:00Z'),
+      });
+      childDoc = await TestHelper.document.create({
+        name: 'Child SEO Doc',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'child-seo',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+        created_at: new Date('2023-01-01T11:00:00Z'),
+        updated_at: new Date('2023-01-02T11:00:00Z'),
+      });
+      await TestHelper.documentChildren.create({
         parent_document_id: parentDoc.id,
         child_document_id: childDoc.id,
       });
 
-      [inactiveDoc] = await db('Document')
-        .insert({
-          name: 'Inactive SEO Doc',
-          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          slug: 'inactive-seo',
-          uploader_id: ADMIN_UUID,
-          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          active: false,
-          created_at: new Date('2023-01-01T12:00:00Z'),
-          updated_at: new Date('2023-01-02T12:00:00Z'),
-        })
-        .returning('*');
+      inactiveDoc = await TestHelper.document.create({
+        name: 'Inactive SEO Doc',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'inactive-seo',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: false,
+        created_at: new Date('2023-01-01T12:00:00Z'),
+        updated_at: new Date('2023-01-02T12:00:00Z'),
+      });
 
-      [otherServiceDoc] = await db('Document')
-        .insert({
-          name: 'Other Service Doc',
-          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          slug: 'other-service-doc',
-          uploader_id: ADMIN_UUID,
-          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          service_instance_id: SERVICES.INSTANCES.EPIC.ID,
-          active: true,
-          created_at: new Date('2023-01-01T13:00:00Z'),
-          updated_at: new Date('2023-01-02T13:00:00Z'),
-        })
-        .returning('*');
+      otherServiceDoc = await TestHelper.document.create({
+        name: 'Other Service Doc',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'other-service-doc',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+        active: true,
+        created_at: new Date('2023-01-01T13:00:00Z'),
+        updated_at: new Date('2023-01-02T13:00:00Z'),
+      });
 
-      await db('Document_Metadata').insert({
+      await TestHelper.documentMetadata.create({
         document_id: parentDoc.id,
         key: TEST_METADATA_KEY,
         value: TEST_METADATA_VALUE,
@@ -622,7 +611,7 @@ describe('Document domain', () => {
         TEST_SERVICE_SLUG
       );
 
-      expect(docs.length).toBe(1);
+      expect(docs).toHaveLength(1);
       expect(docs[0]).toMatchObject({
         id: parentDoc.id,
         active: true,
@@ -644,26 +633,24 @@ describe('Document domain', () => {
 
     it('should order results by updated_at and created_at descending when orderResults is true', async () => {
       // Insert a second parent doc with later updated_at
-      const [secondParent] = await db('Document')
-        .insert({
-          name: 'Second Parent',
-          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          slug: 'second-parent',
-          uploader_id: ADMIN_UUID,
-          uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          active: true,
-          created_at: new Date('2023-01-01T14:00:00Z'),
-          updated_at: new Date('2023-01-03T10:00:00Z'),
-        })
-        .returning('*');
+      const secondParent = await TestHelper.document.create({
+        name: 'Second Parent',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'second-parent',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+        created_at: new Date('2023-01-01T14:00:00Z'),
+        updated_at: new Date('2023-01-03T10:00:00Z'),
+      });
       const docs = await DocumentDomain.loadSeoDocumentsByServiceSlug(
         OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         TEST_SERVICE_SLUG,
         [],
         true
       );
-      expect(docs.length).toBe(2);
+      expect(docs).toHaveLength(2);
       expect(docs[0].id).toBe(secondParent.id);
       expect(docs[1].id).toBe(parentDoc.id);
     });
@@ -674,7 +661,7 @@ describe('Document domain', () => {
         TEST_SERVICE_SLUG,
         [TEST_METADATA_KEY]
       );
-      expect(docs.length).toBe(1);
+      expect(docs).toHaveLength(1);
       expect(docs[0][TEST_METADATA_KEY]).toBe(TEST_METADATA_VALUE);
     });
 
@@ -684,7 +671,7 @@ describe('Document domain', () => {
         'nonexistent-slug'
       );
       expect(Array.isArray(docs)).toBe(true);
-      expect(docs.length).toBe(0);
+      expect(docs).toHaveLength(0);
     });
   });
 
@@ -697,15 +684,21 @@ describe('Document domain', () => {
     const OTHER_VALUE = 'other_value';
 
     beforeEach(async () => {
-      await db<Document>('Document').delete();
-      await db('Document_Metadata').delete();
+      await TestHelper.document.delete({});
+      await TestHelper.documentMetadata.delete({});
       doc1 = await TestHelper.document.create();
       doc2 = await TestHelper.document.create({ slug: 'doc2-slug' });
       doc3 = await TestHelper.document.create({ slug: 'doc3-slug' });
-      await db('Document_Metadata').insert([
-        { document_id: doc1.id, key: TEST_KEY, value: TEST_VALUE },
-        { document_id: doc2.id, key: TEST_KEY, value: OTHER_VALUE },
-      ]);
+      await TestHelper.documentMetadata.create({
+        document_id: doc1.id,
+        key: TEST_KEY,
+        value: TEST_VALUE,
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: doc2.id,
+        key: TEST_KEY,
+        value: OTHER_VALUE,
+      });
     });
 
     it('should return documents matching the metadata key and value', async () => {
@@ -714,12 +707,12 @@ describe('Document domain', () => {
         TEST_VALUE
       );
       expect(Array.isArray(docs)).toBe(true);
-      expect(docs.length).toBe(1);
+      expect(docs).toHaveLength(1);
       expect(docs[0]!.id).toBe(doc1.id);
     });
 
     it('should return multiple documents if multiple match', async () => {
-      await db('Document_Metadata').insert({
+      await TestHelper.documentMetadata.create({
         document_id: doc3.id,
         key: TEST_KEY,
         value: TEST_VALUE,
@@ -728,7 +721,7 @@ describe('Document domain', () => {
         TEST_KEY,
         TEST_VALUE
       );
-      expect(docs.length).toBe(2);
+      expect(docs).toHaveLength(2);
       const ids = docs.map((d) => d.id);
       expect(ids).toContain(doc1.id);
       expect(ids).toContain(doc3.id);
@@ -740,7 +733,7 @@ describe('Document domain', () => {
         'nonexistent'
       );
       expect(Array.isArray(docs)).toBe(true);
-      expect(docs.length).toBe(0);
+      expect(docs).toHaveLength(0);
     });
 
     it('should include requested metadata fields', async () => {
@@ -749,7 +742,7 @@ describe('Document domain', () => {
         TEST_VALUE,
         [TEST_KEY]
       );
-      expect(docs.length).toBe(1);
+      expect(docs).toHaveLength(1);
       expect((docs[0] as unknown as { [TEST_KEY]: string })[TEST_KEY]).toBe(
         TEST_VALUE
       );

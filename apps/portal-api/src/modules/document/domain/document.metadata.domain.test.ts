@@ -1,12 +1,12 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../knexfile';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
   IntegrationType,
 } from '../../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../../model/kanel/public/Document';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -15,7 +15,7 @@ import { DocumentApp } from '../document.app';
 import * as DocumentUploadsHelper from '../document.uploads.helper';
 import { DocumentMetadataDomain } from './document.metadata.domain';
 
-describe('DocumentMetadataDomain', () => {
+describe('documentMetadataDomain', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',
@@ -38,9 +38,9 @@ describe('DocumentMetadataDomain', () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockImplementation(
       async () => [minioFileMock]
     );
-    await db<Document>('Document')
-      .where('type', OPENCTI_INTEGRATION_DOCUMENT_TYPE)
-      .delete();
+    await TestHelper.document.delete({
+      type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+    });
   });
 
   afterEach(() => {

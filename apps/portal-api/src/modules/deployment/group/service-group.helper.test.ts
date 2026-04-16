@@ -5,7 +5,7 @@ import { UserId } from '../../../model/kanel/public/User';
 import { UpdateGroupsPayload } from './service-group.app';
 import { ServiceGroupHelper, UserGroups } from './service-group.helper';
 
-describe('ServiceGroupHelper', () => {
+describe('serviceGroupHelper', () => {
   const userId1 = 'u1' as UserId;
   const userId2 = 'u2' as UserId;
 

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { TestHelper } from '../../../../tests/test.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
@@ -14,7 +14,7 @@ import {
   organizationDomain,
 } from './organizations.domain';
 
-describe('OrganizationsDomain', () => {
+describe('organizationsDomain', () => {
   describe('loadOrganizationsByUser', () => {
     it('should return the user organizations when user exists', async () => {
       const organizations = await loadOrganizationsByUser(
@@ -24,7 +24,7 @@ describe('OrganizationsDomain', () => {
       expect(organizations).toHaveLength(2);
     });
 
-    it('should return the user organizations when user exists', async () => {
+    it('should return the user organizations when user does not exists', async () => {
       const userId = uuidv4() as UserId;
       const organizations = await loadOrganizationsByUser(userId);
 
@@ -45,7 +45,7 @@ describe('OrganizationsDomain', () => {
       const orgaId = uuidv4() as OrganizationId;
       const users = await loadUserByOrganization(orgaId);
 
-      expect(users.length).toBe(0);
+      expect(users).toHaveLength(0);
     });
   });
 

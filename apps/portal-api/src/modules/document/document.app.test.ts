@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentImageType,
@@ -51,7 +51,7 @@ import {
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
-describe('DocumentApp', () => {
+describe('documentApp', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',
@@ -204,7 +204,7 @@ describe('DocumentApp', () => {
       );
 
       // Then
-      expect(children.length).toBe(2);
+      expect(children).toHaveLength(2);
       expect(createdDocument).toBeDefined();
       expect(image).toBeDefined();
       expect(logo).toBeDefined();

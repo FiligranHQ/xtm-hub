@@ -33,7 +33,7 @@ const platformInput: PlatformInput = {
   version: 'X.Y.Z',
 };
 
-describe('Registration query resolver', () => {
+describe('registration query resolver', () => {
   describe('openCTIPlatformRegistrationStatus', () => {
     it('should return inactive when platform is not registered', async () => {
       expect(

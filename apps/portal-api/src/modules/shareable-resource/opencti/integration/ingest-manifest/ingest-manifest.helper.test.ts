@@ -12,7 +12,7 @@ import {
 } from './ingest-manifest.helper';
 import sampleManifest from './test/sample-manifest.json';
 
-describe('Ingest manifest helper', () => {
+describe('ingest manifest helper', () => {
   describe('extractManifestInfo', () => {
     describe('with valid manifest data', () => {
       it('should extract manifest information from valid JSON', () => {

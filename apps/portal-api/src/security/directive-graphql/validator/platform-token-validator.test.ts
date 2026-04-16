@@ -13,7 +13,7 @@ import {
   validateAndGetRequestedPlatformToken,
 } from './platform-token-validator';
 
-describe('Platform Token Validation', () => {
+describe('platform Token Validation', () => {
   describe('validateActivePlatformToken', () => {
     it('should return false when platform token header is missing', async () => {
       const req: express.Request = {

@@ -8,7 +8,7 @@ import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { loadUserOrganizationCapabilities } from './user-organization-capability.domain';
 
-describe('UserOrganizationCapabilityDomain', () => {
+describe('userOrganizationCapabilityDomain', () => {
   describe('loadUserOrganizationCapabilities', () => {
     it('should return the user capabilities when organization exists', async () => {
       requestContext.set(requestContextAdminSecondOrga);
@@ -17,7 +17,7 @@ describe('UserOrganizationCapabilityDomain', () => {
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
-      expect(capabilities.length).toBe(1);
+      expect(capabilities).toHaveLength(1);
       expect(capabilities?.[0]?.name).toBe(
         OrganizationCapability.AdministrateOrganization
       );
@@ -28,7 +28,7 @@ describe('UserOrganizationCapabilityDomain', () => {
       const capabilities =
         await loadUserOrganizationCapabilities(organizationId);
 
-      expect(capabilities.length).toBe(0);
+      expect(capabilities).toHaveLength(0);
     });
   });
 });

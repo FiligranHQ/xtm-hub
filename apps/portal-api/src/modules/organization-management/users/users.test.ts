@@ -31,7 +31,7 @@ import {
   removeUser,
 } from './users.helper';
 
-describe('User helpers', async () => {
+describe('user helpers', async () => {
   afterEach(async () => {
     vi.useRealTimers();
   });
@@ -47,9 +47,9 @@ describe('User helpers', async () => {
           user_id: newUser.id,
         });
       expect(newUser).toBeTruthy();
-      expect(newUser.selected_org_capabilities.length).toBe(1);
+      expect(newUser.selected_org_capabilities).toHaveLength(1);
       expect(newUser!.organizations[0]?.personal_space).toBe(true);
-      expect(newUserPendingOrg.length).toBe(1);
+      expect(newUserPendingOrg).toHaveLength(1);
       expect(newUserPendingOrg[0]?.organization_id).toBe(
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
@@ -78,7 +78,7 @@ describe('User helpers', async () => {
         });
 
       expect(newUser).toBeTruthy();
-      expect(newUserPendingOrg.length).toBe(0);
+      expect(newUserPendingOrg).toHaveLength(0);
 
       const newOrganization = await loadOrganizationBy({
         name: organizationName,
@@ -123,9 +123,9 @@ describe('User helpers', async () => {
           user_id: newUser.id,
         });
       expect(newUser).toBeTruthy();
-      expect(newUser.selected_org_capabilities.length).toBe(1);
+      expect(newUser.selected_org_capabilities).toHaveLength(1);
 
-      expect(newUserPendingOrg.length).toBe(0);
+      expect(newUserPendingOrg).toHaveLength(0);
     });
   });
 

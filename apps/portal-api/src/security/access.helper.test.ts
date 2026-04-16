@@ -4,7 +4,7 @@ import { UserLoadUserBy } from '../model/user';
 import { CAPABILITY_BYPASS } from '../portal.const';
 import { isUserGranted } from './access';
 
-describe('Access', () => {
+describe('access', () => {
   describe('isUserGranted', () => {
     it.each`
       isUserDefined | userCapabilities       | organizationCapabilities                             | expected | reason

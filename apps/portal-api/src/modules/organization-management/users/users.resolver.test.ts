@@ -57,7 +57,7 @@ import usersResolver from './users.resolver';
 const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
 const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
 
-describe('User query resolver', () => {
+describe('user query resolver', () => {
   describe('userHasOrganizationWithSubscription', () => {
     beforeEach(async () => {
       await insertSubscription({
@@ -66,13 +66,20 @@ describe('User query resolver', () => {
         service_instance_id: SERVICES.INSTANCES.VAULT.ID,
       });
     });
+
+    afterEach(async () => {
+      await deleteSubscription({
+        id: SUBSCRIPTION_ID as SubscriptionId,
+      });
+    });
+
     it.each`
       expected | organizations                                                                                                                                                                                     | description
       ${true}  | ${[{ id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID, name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME, personal_space: false, domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST] }]} | ${'organization has subscription'}
       ${false} | ${[]}                                                                                                                                                                                             | ${'has no organization'}
       ${false} | ${[{ id: RANDOM_ORGA_ID, name: 'Other', personal_space: false, domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST] }]}                                                                | ${'no organization has subscription'}
     `(
-      'Should return $expected if $description',
+      'should return $expected if $description',
       async ({ expected, organizations }) => {
         const currentContext = {
           ...contextAdminSecondOrga,
@@ -97,11 +104,6 @@ describe('User query resolver', () => {
         expect(response).toStrictEqual(expected);
       }
     );
-    afterEach(async () => {
-      await deleteSubscription({
-        id: SUBSCRIPTION_ID as SubscriptionId,
-      });
-    });
   });
 
   describe('listPendingUser', () => {
@@ -248,7 +250,7 @@ describe('User query resolver', () => {
   });
 });
 
-describe('User mutation resolver', () => {
+describe('user mutation resolver', () => {
   it('should be login', async () => {
     // When
     // @ts-ignore
@@ -308,7 +310,7 @@ describe('User mutation resolver', () => {
         const testEmail = 'testRollback@company.com';
         // When
         // @ts-ignore
-        await usersResolver.Mutation.adminAddUser(
+        await mutationResolver.adminAddUser(
           undefined,
           {
             input: {
@@ -461,6 +463,10 @@ describe('User mutation resolver', () => {
         );
       });
 
+      afterAll(async () => {
+        if (response) await deleteUserById(response.id as UserId);
+      });
+
       it('should have Personal space and Internal as organization', async () => {
         expect(
           organizations.some((org) => org.id === TEST_ORGANIZATIONS.FILIGRAN.ID)
@@ -469,11 +475,7 @@ describe('User mutation resolver', () => {
           organizations.some((org) => org.id.toString() === user.id.toString())
         ).toBeTruthy();
 
-        expect(organizations.length).toEqual(2);
-      });
-
-      afterAll(async () => {
-        await deleteUserById(response.id as UserId);
+        expect(organizations).toHaveLength(2);
       });
     });
     it('as Admin Organization - should not able to create user with different email domain', async () => {
@@ -481,7 +483,7 @@ describe('User mutation resolver', () => {
       try {
         requestContext.set(requestContextAdminSecondOrga);
         // @ts-ignore
-        await usersResolver.Mutation.adminAddUser(
+        await mutationResolver.adminAddUser(
           undefined,
           {
             input: {
@@ -543,6 +545,10 @@ describe('User mutation resolver', () => {
         expect(response).toBeTruthy();
       });
 
+      afterAll(async () => {
+        await deleteUserById(response.id as UserId);
+      });
+
       it('should have Personal space and ORGANIZATIONS_TEST.SECOND_ORGANIZATION.NAME as organization', async () => {
         expect(
           organizations.some(
@@ -553,11 +559,7 @@ describe('User mutation resolver', () => {
           organizations.some((org) => org.id.toString() === user.id.toString())
         ).toBeTruthy();
 
-        expect(organizations.length).toEqual(2);
-      });
-
-      afterAll(async () => {
-        await deleteUserById(response.id as UserId);
+        expect(organizations).toHaveLength(2);
       });
     });
   });
@@ -635,7 +637,7 @@ describe('User mutation resolver', () => {
       });
 
       it('should have update organisations, first_name and last_name', async () => {
-        expect(response.organization_capabilities.length).toEqual(3);
+        expect(response.organization_capabilities).toHaveLength(3);
       });
       it('should not have update other fields', async () => {
         expect(fallbackUser.first_name).toEqual(response.first_name);
@@ -749,7 +751,7 @@ describe('User mutation resolver', () => {
     });
 
     it('should edit capabilities', async () => {
-      expect(secondOrgaUser.selected_org_capabilities).not.to.includes(
+      expect(secondOrgaUser.selected_org_capabilities).not.toContain(
         'MANAGE_PLATFORM_REGISTRATION'
       );
 
@@ -781,7 +783,7 @@ describe('User mutation resolver', () => {
       secondOrgaUser = await loadUserBy({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
       });
-      expect(secondOrgaUser.selected_org_capabilities).to.includes(
+      expect(secondOrgaUser.selected_org_capabilities).toContain(
         'MANAGE_PLATFORM_REGISTRATION'
       );
       // Put back the original capabilities
@@ -832,14 +834,14 @@ describe('User mutation resolver', () => {
       );
       const updatedUser = await loadUserBy({ email: pendingUser.email });
 
-      expect(updatedUser.selected_org_capabilities).to.includes(
+      expect(updatedUser.selected_org_capabilities).toContain(
         'ADMINISTRATE_ORGANIZATION'
       );
       const usersPendingOrg =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: updatedUser.id,
         });
-      expect(usersPendingOrg.length).toBe(0);
+      expect(usersPendingOrg).toHaveLength(0);
 
       await removeUser({ email: pendingUser.email });
     });
@@ -857,6 +859,24 @@ describe('User mutation resolver', () => {
       requestContext.set(requestContextSimpleUserSecondOrga);
 
       auth0Spy = vi.spyOn(auth0ClientMock, 'updateUser');
+    });
+
+    afterAll(async () => {
+      // @ts-expect-error editMeUser is not considered as callable
+      await usersResolver.Mutation.editMeUser(
+        undefined,
+        {
+          input: {
+            first_name: simpleUserSecondOrga.first_name,
+            last_name: simpleUserSecondOrga.last_name,
+            country: simpleUserSecondOrga.country,
+            picture: simpleUserSecondOrga.picture,
+          },
+        },
+        contextSimpleUserSecondOrga
+      );
+
+      auth0Spy.mockReset();
     });
 
     it('should edit user profile information on auth0 and locally', async () => {
@@ -908,30 +928,16 @@ describe('User mutation resolver', () => {
         picture: newPicture,
       });
     });
-
-    afterAll(async () => {
-      // @ts-expect-error editMeUser is not considered as callable
-      await usersResolver.Mutation.editMeUser(
-        undefined,
-        {
-          input: {
-            first_name: simpleUserSecondOrga.first_name,
-            last_name: simpleUserSecondOrga.last_name,
-            country: simpleUserSecondOrga.country,
-            picture: simpleUserSecondOrga.picture,
-          },
-        },
-        contextSimpleUserSecondOrga
-      );
-
-      auth0Spy.mockReset();
-    });
   });
 
   describe('resetPassword', () => {
     let auth0Spy: MockInstance;
     beforeAll(() => {
       auth0Spy = vi.spyOn(auth0ClientMock, 'resetPassword');
+    });
+
+    afterAll(() => {
+      auth0Spy.mockReset();
     });
 
     it('should call auth0 to reset password', async () => {
@@ -949,10 +955,6 @@ describe('User mutation resolver', () => {
       expect(auth0Spy).toBeCalledWith(
         TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL
       );
-    });
-
-    afterAll(() => {
-      auth0Spy.mockReset();
     });
   });
 

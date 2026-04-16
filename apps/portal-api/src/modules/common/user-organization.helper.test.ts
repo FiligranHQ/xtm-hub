@@ -5,7 +5,7 @@ import { UserOrganizationPendingDomain } from '../organization-management/users/
 import { createNewUserFromInvitation } from '../organization-management/users/users.helper';
 import { createUserOrganizationRelationAndRemovePending } from './user-organization.helper';
 
-describe('UserOrganizationHelper', () => {
+describe('userOrganizationHelper', () => {
   describe('createUserOrganizationRelationUnsecure', () => {
     it('should delete pending organization before adding an organization', async () => {
       const testMail = `createUserOrganizationRelationUnsecure${uuidv4()}@filigran.io`;
@@ -16,19 +16,19 @@ describe('UserOrganizationHelper', () => {
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: user.id,
         });
-      expect(initialPendingOrg.length).toBe(1);
+      expect(initialPendingOrg).toHaveLength(1);
 
       const user_orgs = await createUserOrganizationRelationAndRemovePending({
         user_id: user.id,
         organizations_id: [TEST_ORGANIZATIONS.FILIGRAN.ID],
       });
 
-      expect(user_orgs.length).toBe(1);
+      expect(user_orgs).toHaveLength(1);
       const finalPendingOrg =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: user.id,
         });
-      expect(finalPendingOrg.length).toBe(0);
+      expect(finalPendingOrg).toHaveLength(0);
     });
 
     it('should not fail if there is no organization to remove', async () => {
@@ -40,14 +40,14 @@ describe('UserOrganizationHelper', () => {
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: user.id,
         });
-      expect(initialPendingOrg.length).toBe(0);
+      expect(initialPendingOrg).toHaveLength(0);
 
       const user_orgs = await createUserOrganizationRelationAndRemovePending({
         user_id: user.id,
         organizations_id: [TEST_ORGANIZATIONS.FILIGRAN.ID],
       });
 
-      expect(user_orgs.length).toBe(1);
+      expect(user_orgs).toHaveLength(1);
     });
   });
 });

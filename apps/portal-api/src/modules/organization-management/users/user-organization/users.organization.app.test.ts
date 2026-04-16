@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../../../knexfile';
+import { TestHelper } from '../../../../../tests/helper/test.helper';
 import {
   contextAdminSecondOrga,
   contextSimpleUserSecondOrga,
@@ -9,7 +9,6 @@ import {
 import portalConfig from '../../../../config';
 import { requestContext } from '../../../../context/request.context';
 import User, { UserId } from '../../../../model/kanel/public/User';
-import UserOrganizationPending from '../../../../model/kanel/public/UserOrganizationPending';
 import { PortalContext } from '../../../../model/portal-context';
 import * as MailService from '../../../../server/mail-service';
 import { ErrorCode } from '../../../../utils/error/error.code';
@@ -18,7 +17,7 @@ import { UserOrganizationPendingDomain } from '../user-pending/user-organization
 import { insertUser } from '../users.test.utils';
 import { UsersOrganizationApp } from './users.organization.app';
 
-describe('UsersOrganizationApp', () => {
+describe('usersOrganizationApp', () => {
   describe('sendPendingUsersDigest', () => {
     let originalEnabledEmails: typeof portalConfig.enabled_emails;
 
@@ -234,7 +233,7 @@ describe('UsersOrganizationApp', () => {
         email: 'testPendingUser@filigran.io',
       });
 
-      await db<UserOrganizationPending>('User_Organization').insert({
+      await TestHelper.user_Organization.create({
         user_id: newUser.id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
@@ -249,7 +248,7 @@ describe('UsersOrganizationApp', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(userPendingExisted.length).toEqual(1);
+      expect(userPendingExisted).toHaveLength(1);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
       await UsersOrganizationApp.sendPendingUsersDigest();
@@ -261,7 +260,7 @@ describe('UsersOrganizationApp', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(userPendingShouldExistAnymore.length).toEqual(0);
+      expect(userPendingShouldExistAnymore).toHaveLength(0);
     });
   });
   describe('addUserToOrganization', async () => {
@@ -279,7 +278,7 @@ describe('UsersOrganizationApp', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
-      expect(userShouldNotBeInTheOrg.length).toEqual(0);
+      expect(userShouldNotBeInTheOrg).toHaveLength(0);
 
       const userPendingExisted =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
@@ -287,7 +286,7 @@ describe('UsersOrganizationApp', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(userPendingExisted.length).toEqual(1);
+      expect(userPendingExisted).toHaveLength(1);
       await UsersOrganizationApp.addUserToOrganization({
         email: 'testAddingPendingUser@filigran.io',
       });
@@ -298,14 +297,14 @@ describe('UsersOrganizationApp', () => {
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         });
 
-      expect(userPendingShouldExistAnymore.length).toEqual(0);
+      expect(userPendingShouldExistAnymore).toHaveLength(0);
 
       const userShouldBeAdded = await loadUserOrganization({
         user_id: newUser.id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
-      expect(userShouldBeAdded.length).toEqual(1);
+      expect(userShouldBeAdded).toHaveLength(1);
     });
   });
   describe('changeSelectedOrganization', () => {

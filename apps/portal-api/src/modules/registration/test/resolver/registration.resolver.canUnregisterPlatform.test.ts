@@ -16,7 +16,7 @@ import {
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
-describe('Query.canUnregisterPlatform', () => {
+describe('query.canUnregisterPlatform', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

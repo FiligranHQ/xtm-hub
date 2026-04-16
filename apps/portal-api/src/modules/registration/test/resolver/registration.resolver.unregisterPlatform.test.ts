@@ -12,7 +12,7 @@ import { UnknownErrorCode } from '../../../../utils/error/error.code';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
-describe('Mutation.unregisterPlatform', () => {
+describe('mutation.unregisterPlatform', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

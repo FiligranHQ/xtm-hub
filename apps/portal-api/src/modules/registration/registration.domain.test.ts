@@ -1,8 +1,7 @@
 import { MockInstance } from '@vitest/spy';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { db } from '../../../knexfile';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
@@ -38,7 +37,7 @@ import {
 } from './registration.domain';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
-describe('Registration domain', () => {
+describe('registration domain', () => {
   let platformId: string;
   const token = uuidv4();
   const platformTitle = 'My OpenCTI platform';
@@ -83,7 +82,7 @@ describe('Registration domain', () => {
         creation_status: ServiceInstanceCreationStatus.Ready,
       });
 
-      const subscriptionFromDB = await TestHelper.subscription.load({
+      const subscriptionFromDB = await TestHelper.subscription.loadAll({
         service_instance_id: serviceInstanceFromDB?.id,
       });
 
@@ -121,7 +120,7 @@ describe('Registration domain', () => {
       const serviceInstance = await TestHelper.serviceInstance.load({
         id: serviceInstanceId,
       });
-      const subscriptionFromDB = await TestHelper.subscription.load({
+      const subscriptionFromDB = await TestHelper.subscription.loadAll({
         service_instance_id: serviceInstanceId,
       });
 
@@ -362,7 +361,7 @@ describe('Registration domain', () => {
       });
     });
     afterEach(async () => {
-      await db('DeploymentRequest').delete();
+      await TestHelper.deploymentRequest.delete({});
       await ServiceConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
@@ -425,7 +424,7 @@ describe('Registration domain', () => {
       });
     });
     afterEach(async () => {
-      await db('DeploymentRequest').delete();
+      await TestHelper.deploymentRequest.delete({});
       await ServiceConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
@@ -467,7 +466,7 @@ describe('Registration domain', () => {
       const platforms = await registrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
       });
-      expect(platforms.length).toBe(0);
+      expect(platforms).toHaveLength(0);
     });
     it('should return platforms without configuration (not yet auto registered) ', async () => {
       const notYetRegisteredPlatformServiceInstanceId =
@@ -506,7 +505,7 @@ describe('Registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      expect(platforms.length).toBe(1);
+      expect(platforms).toHaveLength(1);
       expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
     it('should not return platforms with non-active trials when onlyActiveTrials is true', async () => {
@@ -530,7 +529,7 @@ describe('Registration domain', () => {
         onlyActive: true,
       });
 
-      expect(platforms.length).toBe(0);
+      expect(platforms).toHaveLength(0);
     });
     it('should return platforms with active trials when onlyActiveTrials is true', async () => {
       await DeploymentRequestDomain.insertDeploymentRequest({
@@ -553,7 +552,7 @@ describe('Registration domain', () => {
         onlyActive: true,
       });
 
-      expect(platforms.length).toBe(1);
+      expect(platforms).toHaveLength(1);
       expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
     it('should return platforms only active trials when onlyActiveTrials is true AND onlyTrial is true', async () => {
@@ -597,7 +596,7 @@ describe('Registration domain', () => {
         onlyTrial: true,
       });
 
-      expect(platforms.length).toBe(1);
+      expect(platforms).toHaveLength(1);
       expect(platforms[0]?.config.platform_id).toBe(platformId);
     });
   });

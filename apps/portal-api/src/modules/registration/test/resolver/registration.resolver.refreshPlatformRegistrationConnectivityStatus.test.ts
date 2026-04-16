@@ -12,7 +12,7 @@ import {
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
-describe('Mutation.refreshPlatformRegistrationConnectivityStatus', () => {
+describe('mutation.refreshPlatformRegistrationConnectivityStatus', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

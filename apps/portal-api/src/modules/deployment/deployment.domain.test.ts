@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestConnection,
@@ -13,9 +13,7 @@ import {
   OrderingMode,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
-import DeploymentRequest, {
-  DeploymentRequestId,
-} from '../../model/kanel/public/DeploymentRequest';
+import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
 import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { deleteSubscription } from '../subscription/subscription.helper';
@@ -25,9 +23,9 @@ import {
   insertDeploymentRequest,
 } from './deployment.test.utils';
 
-describe('DeploymentRequestDomain', () => {
+describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
-    await db<DeploymentRequest>('DeploymentRequest').del();
+    await TestHelper.deploymentRequest.delete({});
   });
 
   describe('loadDeploymentRequest', () => {
@@ -374,7 +372,7 @@ describe('DeploymentRequestDomain', () => {
 
       expect(result).toBeDefined();
       expect(result!.organization_name).toBe(TEST_ORGANIZATIONS.FILIGRAN.NAME);
-      expect(result!.organization_domains.length).toBe(2);
+      expect(result!.organization_domains).toHaveLength(2);
       expect(result!.organization_domains).toContain(
         TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST
       );
@@ -778,7 +776,7 @@ describe('DeploymentRequestDomain', () => {
     });
 
     it('should do nothing when there is no pending requests', async () => {
-      await db<DeploymentRequest>('DeploymentRequest').update({
+      await TestHelper.deploymentRequest.update({
         hub_status: DeploymentRequestHubStatus.Queued,
       });
 

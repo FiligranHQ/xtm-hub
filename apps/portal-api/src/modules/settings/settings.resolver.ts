@@ -10,7 +10,9 @@ const resolvers: Resolvers = {
         platform_providers: config.get('login_settings'),
         base_url_front: config.get('base_url_front'),
         environment: config.get('environment'),
-        platform_feature_flags: resolveFeatureFlags(portalConfig.enabled_features),
+        platform_feature_flags: resolveFeatureFlags(
+          portalConfig.enabled_features
+        ),
       };
     },
   },
