@@ -1,22 +1,20 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
-import {
-  contextSimpleUserFiligran2,
-  GRAPHQL_RESOLVE_INFO,
-} from '../../../../../tests/tests.const';
+import { GRAPHQL_RESOLVE_INFO } from '../../../../../tests/tests.const';
 import {
   AutoRegisterPlatformInput,
   PlatformContract,
 } from '../../../../__generated__/resolvers-types';
+import { PortalContext } from '../../../../model/portal-context';
 import { BadRequestErrorCode } from '../../../../utils/error/error.code';
 import { ErrorType } from '../../../../utils/error/error.type';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
-const makeContext = (token: string | null = null) => ({
-  ...contextSimpleUserFiligran2,
-  req: { header: vi.fn().mockReturnValue(token) },
-});
+const makeContext = (token: string | null = null): PortalContext =>
+  ({
+    req: { header: vi.fn().mockReturnValue(token) },
+  }) as unknown as PortalContext;
 
 const validInput: AutoRegisterPlatformInput = {
   platform: {
@@ -71,7 +69,7 @@ describe('mutation.autoRegisterPlatform', () => {
     const result = await registrationResolver.Mutation!.autoRegisterPlatform!(
       {},
       { platform: validInput.platform, input: null },
-      makeContext() as never,
+      makeContext(),
       GRAPHQL_RESOLVE_INFO
     );
 
