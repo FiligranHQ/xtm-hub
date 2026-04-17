@@ -11,7 +11,10 @@ import {
   it,
   vi,
 } from 'vitest';
-import { mockPlatformConfig, TestHelper } from '../../../../tests/test.helper';
+import {
+  mockPlatformConfig,
+  TestHelper,
+} from '../../../../tests/helper/test.helper';
 import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
@@ -47,7 +50,7 @@ import {
 } from './service-instance.app';
 import * as serviceInstanceDomain from './service-instance.domain';
 
-describe('Service Instance app', () => {
+describe('service Instance app', () => {
   describe('loadServiceInstance', () => {
     let loadSubscriptionBySpy: MockInstance;
     let loadUserServiceBySpy: MockInstance;
@@ -395,8 +398,12 @@ describe('Service Instance app', () => {
       vi.restoreAllMocks();
       await TestHelper.serviceConfiguration.delete({});
       await TestHelper.subscription.delete({});
-      await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
-      await TestHelper.serviceDefinition.delete({ id: serviceDefinition.id });
+      await TestHelper.serviceInstance.delete({
+        id: serviceInstance.id,
+      });
+      await TestHelper.serviceDefinition.delete({
+        id: serviceDefinition.id,
+      });
     });
 
     it('should update name, sync config title, dispatch, and return RegisteredPlatform', async () => {
@@ -685,7 +692,7 @@ describe('Service Instance app', () => {
         ]);
 
       // Then
-      expect(serviceInstances.length).toBe(3);
+      expect(serviceInstances).toHaveLength(3);
       expect(
         serviceInstances.find(({ name }) => name === 'Filigran Blog')
       ).toBeDefined();
@@ -774,7 +781,9 @@ describe('Service Instance app', () => {
       await TestHelper.serviceInstance.delete({
         id: secondServiceInstancePublicId,
       });
-      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
+      await TestHelper.serviceInstance.delete({
+        id: privateServiceInstanceId,
+      });
       await TestHelper.document.delete({ id: logoId });
     });
     it('should return public service instances with document IDs converted to global IDs', async () => {

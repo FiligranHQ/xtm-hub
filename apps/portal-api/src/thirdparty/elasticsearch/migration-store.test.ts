@@ -21,7 +21,7 @@ const emptyState = {
   migrations: [],
 };
 
-describe('Migration State Storage', () => {
+describe('migration State Storage', () => {
   describe('load', () => {
     let storage: StateStore;
     beforeEach(() => {

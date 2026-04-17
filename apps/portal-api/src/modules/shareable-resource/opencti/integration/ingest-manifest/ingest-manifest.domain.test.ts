@@ -97,7 +97,7 @@ describe('upsertConnectors', () => {
       });
     });
 
-    describe('Contract One connector', () => {
+    describe('contract One connector', () => {
       let contractOne: Connector;
 
       beforeAll(() => {
@@ -131,7 +131,7 @@ describe('upsertConnectors', () => {
       });
     });
 
-    describe('Contract Two connector', () => {
+    describe('contract Two connector', () => {
       let contractTwo: Connector;
 
       beforeAll(() => {

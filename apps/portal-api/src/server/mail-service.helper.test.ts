@@ -52,7 +52,7 @@ describe('renderEmail', () => {
     });
   });
 
-  describe('HTML escaping', () => {
+  describe('hTML escaping', () => {
     it('should escape HTML in double-brace variables by default', async () => {
       const html = await renderEmail('new_user_organization', {
         organizationName: '<script>alert("xss")</script>',

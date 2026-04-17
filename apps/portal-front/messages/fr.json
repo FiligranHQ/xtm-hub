@@ -149,7 +149,7 @@
     "TextDeleteUseCase": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
   },
   "DialogActions": {
-    "ContinueTitle": "Progrès non sauvegardé",
+    "ContinueTitle": "Voulez-vous continuer ?",
     "PreventSheetSentence": "Vous avez commencé à remplir le formulaire. Le fait de le fermer maintenant annulera toute progression non enregistrée. Voulez-vous continuer ?",
     "PreventSheetTitle": "Progrès non sauvegardé"
   },
@@ -646,10 +646,10 @@
     },
     "Succeeded": {
       "Description": "Cet onglet sera bientôt fermé",
-      "Title": "{La plateforme a été enregistrée avec succès"
+      "Title": "La plateforme {platformIdentifier} a été enregistrée avec succès"
     },
     "TooMuchOrganization": {
-      "Description1": "Votre plateforme {platformIdentifier} {platformIdentifier} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+      "Description1": "Votre plateforme {platformIdentifier} {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
       "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
       "Title": "Avis de réenregistrement de la plateforme"
     }
@@ -993,9 +993,9 @@
     "SureWantSubscriptionDirect": "Commencez avec notre service gratuit {serviceName} et explorez les ressources créées par l'équipe Filigran.",
     "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
-      "ExploreBold": "Free Trial!",
-      "ExplorePlatform": "Explore {platformName} platform with 30 days",
-      "ExploreProducts": "Explore OpenCTI or OpenAEV platform with 30 days",
+      "ExploreBold": "Essai gratuit !",
+      "ExplorePlatform": "Explorez {platformName} pendant 30 jours",
+      "ExploreProducts": "Explorez OpenCTI ou OpenAEV pendant 30 jours",
       "Active": "Votre essai gratuit d'OpenCTI est actif",
       "Provisioning": "Votre essai gratuit d'OpenCTI est en cours de provisionnement.",
       "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
@@ -1253,7 +1253,7 @@
     },
     "Succeeded": {
       "Description": "Cet onglet sera bientôt fermé.",
-      "Title": "la plateforme {capability} s'est désinscrite avec succès"
+      "Title": "la plateforme {platformIdentifier} s'est désinscrite avec succès"
     }
   },
   "UpdateUserDialog": {

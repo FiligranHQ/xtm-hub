@@ -3,7 +3,7 @@ import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { CAPABILITY_BYPASS } from '../../../portal.const';
 import { isUserAllowed } from './auth.helper';
 
-describe('AuthHelper', () => {
+describe('authHelper', () => {
   describe('isUserAllowed', () => {
     it('should allow user if he has bypass capability', async () => {
       const result = isUserAllowed({

@@ -17,12 +17,12 @@ vi.mock('../../../deployment/deployment.domain', () => ({
   },
 }));
 
-describe('RegisteredPlatform type resolvers', () => {
+describe('registeredPlatform type resolvers', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('RegisteredPlatform.subscription', () => {
+  describe('registeredPlatform.subscription', () => {
     it('should call loadSubscriptionByServiceInstanceAndOrganization with the organization id and instance id from parent', async () => {
       // Given
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
@@ -57,7 +57,7 @@ describe('RegisteredPlatform type resolvers', () => {
     });
   });
 
-  describe('RegisteredPlatform.deployment_request', () => {
+  describe('registeredPlatform.deployment_request', () => {
     it('should call DeploymentRequestDomain.loadDeploymentRequestBy with the service_instance_id from parent', async () => {
       // Given
       const serviceInstanceId = uuidv4() as ServiceInstanceId;

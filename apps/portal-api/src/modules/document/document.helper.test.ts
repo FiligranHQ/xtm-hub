@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
@@ -41,7 +41,7 @@ import {
 import * as DocumentUploadsHelper from './document.uploads.helper';
 import { DocumentDomain } from './domain/document.domain';
 
-describe('DocumentHelper', () => {
+describe('documentHelper', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',
@@ -67,7 +67,7 @@ describe('DocumentHelper', () => {
 
   afterEach(async () => {
     vi.restoreAllMocks();
-    await db<Document>('Document').delete();
+    await TestHelper.document.delete({});
   });
 
   describe('loadDocumentWithCountersById', () => {

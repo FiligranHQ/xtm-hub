@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { validateDevUser } from './config-validation.util';
 
-describe('Zod Config Validation', () => {
+describe('zod Config Validation', () => {
   it('should validate a valid dev user', () => {
     const validUser = {
       email: 'test@example.com',

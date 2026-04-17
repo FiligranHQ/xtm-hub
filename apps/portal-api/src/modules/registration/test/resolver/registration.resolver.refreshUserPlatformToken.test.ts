@@ -9,7 +9,7 @@ import { UnknownErrorCode } from '../../../../utils/error/error.code';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
-describe('Mutation.refreshUserPlatformToken', () => {
+describe('mutation.refreshUserPlatformToken', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

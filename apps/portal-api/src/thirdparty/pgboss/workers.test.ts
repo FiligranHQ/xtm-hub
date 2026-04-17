@@ -41,7 +41,7 @@ async function waitForQueue(
 // ---------------------------------------------------------------------------
 // Unit tests – verify queue wiring via a mocked PgBoss instance
 // ---------------------------------------------------------------------------
-describe('Workers – queue configuration (unit)', () => {
+describe('workers – queue configuration (unit)', () => {
   it('should create deadletter queue and wire hubspot queues with standard retry + deadletter', async () => {
     const createQueue = vi.fn();
     const work = vi.fn();
@@ -83,7 +83,7 @@ describe('Workers – queue configuration (unit)', () => {
 // ---------------------------------------------------------------------------
 // Integration tests – verify dead-letter behavior against real Postgres
 // ---------------------------------------------------------------------------
-describe('Workers – dead-letter routing (integration)', () => {
+describe('workers – dead-letter routing (integration)', () => {
   let boss: PgBoss;
   const TEST_SCHEMA = 'pgboss_test';
 
@@ -105,12 +105,6 @@ describe('Workers – dead-letter routing (integration)', () => {
     await boss.start();
   }, 5_000);
 
-  afterAll(async () => {
-    if (boss) {
-      await boss.stop({ graceful: true, timeout: 1_000 });
-    }
-  }, 1_500);
-
   beforeEach(async () => {
     boss.clearSpies();
 
@@ -127,6 +121,12 @@ describe('Workers – dead-letter routing (integration)', () => {
     await boss.deleteQueue(SOURCE_QUEUE);
     await boss.deleteQueue(HUBSPOT_QUEUES.DEAD_LETTER);
   });
+
+  afterAll(async () => {
+    if (boss) {
+      await boss.stop({ graceful: true, timeout: 1_000 });
+    }
+  }, 1_500);
 
   it('should move a failed job to the dead-letter queue after retries are exhausted', async () => {
     // Obtain a spy for the source queue so we can wait for the job to fail
@@ -190,7 +190,7 @@ describe('Workers – dead-letter routing (integration)', () => {
 
     // Verify nothing landed in the DLQ
     const deadLetterJobs = await boss.findJobs(HUBSPOT_QUEUES.DEAD_LETTER);
-    expect(deadLetterJobs.length).toBe(0);
+    expect(deadLetterJobs).toHaveLength(0);
   }, 5_000);
 
   it('should log when the DLQ worker processes a dead-lettered job', async () => {

@@ -9,7 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestHelper } from '../../../../tests/test.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   contextRegistererUserSecondOrga,
   // eslint-disable-next-line no-restricted-imports
@@ -48,7 +48,7 @@ import {
   updateServiceInstance,
 } from './service-instance.domain';
 
-describe('Service instance domain', () => {
+describe('service instance domain', () => {
   afterEach(async () => {
     await TestHelper.subscription.delete({});
   });
@@ -56,8 +56,12 @@ describe('Service instance domain', () => {
   describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
     // Happy path
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ name: 'ServiceInstance 1' });
-      await TestHelper.serviceInstance.delete({ name: 'One serviceInstance' });
+      await TestHelper.serviceInstance.delete({
+        name: 'ServiceInstance 1',
+      });
+      await TestHelper.serviceInstance.delete({
+        name: 'One serviceInstance',
+      });
     });
     it('should return service instances linked to service definition and with tags', async () => {
       // When
@@ -242,7 +246,9 @@ describe('Service instance domain', () => {
 
     afterAll(async () => {
       await TestHelper.serviceInstance.delete({ name: 'Original Name' });
-      await TestHelper.serviceInstance.delete({ name: 'Only Name Updated' });
+      await TestHelper.serviceInstance.delete({
+        name: 'Only Name Updated',
+      });
     });
 
     it('should update only provided fields', async () => {
@@ -608,7 +614,7 @@ describe('Service instance domain', () => {
         );
 
         // Then
-        expect(result.subscriptions.length).toBe(expectedNames.length);
+        expect(result.subscriptions).toHaveLength(expectedNames.length);
         type SubscriptionWithOrg = {
           organization: {
             name: string;
@@ -729,7 +735,7 @@ describe('Service instance domain', () => {
       );
 
       // Then
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
 
       expect(result).toEqual(
         expect.arrayContaining([
@@ -752,7 +758,7 @@ describe('Service instance domain', () => {
       );
 
       // Then
-      expect(result.length).toBe(0);
+      expect(result).toHaveLength(0);
     });
   });
 
@@ -818,11 +824,15 @@ describe('Service instance domain', () => {
     });
 
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ id: publicServiceInstanceId });
-      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
+      await TestHelper.serviceInstance.delete({
+        id: publicServiceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({
+        id: privateServiceInstanceId,
+      });
     });
 
-    it('Should return only public service instances', async () => {
+    it('should return only public service instances', async () => {
       const result = await loadPublicServiceInstances(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,

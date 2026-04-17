@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
   SERVICES,
@@ -14,8 +14,13 @@ import {
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import subscriptionResolver from './subscription.resolver';
 
-describe('Subscription mutation resolver', () => {
+describe('subscription mutation resolver', () => {
   describe('addSubscription mutation - should create subscription', () => {
+    afterEach(async () => {
+      vi.useRealTimers();
+      await TestHelper.subscription.delete({});
+    });
+
     it('should return the service subscribed', async () => {
       // @ts-ignore
       const response = await subscriptionResolver.Mutation.addSubscription(
@@ -70,11 +75,6 @@ describe('Subscription mutation resolver', () => {
         contextSimpleUserSecondOrga
       );
       expect(telemetrySpy).not.toHaveBeenCalled();
-    });
-
-    afterEach(async () => {
-      vi.useRealTimers();
-      await TestHelper.subscription.delete({});
     });
   });
 });

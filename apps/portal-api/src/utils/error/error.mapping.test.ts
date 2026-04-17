@@ -4,7 +4,7 @@ import { ErrorCode, UnknownErrorCode } from './error.code';
 import { mapToGraphQLError } from './error.mapping';
 import { ErrorCategory } from './error.type';
 
-describe('Error mapping', () => {
+describe('error mapping', () => {
   describe('mapToGraphQLError', () => {
     it('should return mapped error when error is known', () => {
       const error = new Error(ErrorCode.InvalidServiceConfiguration);

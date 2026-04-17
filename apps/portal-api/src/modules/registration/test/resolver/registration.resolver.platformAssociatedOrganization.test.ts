@@ -14,7 +14,7 @@ import {
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
-describe('Query.platformAssociatedOrganization', () => {
+describe('query.platformAssociatedOrganization', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

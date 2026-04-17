@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
-import { db } from '../../../../knexfile';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES } from '../../../../tests/tests.const';
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ServiceDefinitionDomain } from './service-definition.domain';
 
-describe('ServiceDefinitionDomain', () => {
+describe('serviceDefinitionDomain', () => {
   describe('loadServiceDefinitionByServiceInstanceSlug', () => {
     it('should return undefined when service definition is not found', async () => {
       const result =
@@ -41,9 +41,9 @@ describe('ServiceDefinitionDomain', () => {
     });
 
     it('should return service definition when is it linked to the service instance', async () => {
-      const serviceInstance = await db('ServiceInstance')
-        .where({ slug: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG })
-        .first();
+      const serviceInstance = await TestHelper.serviceInstance.load({
+        slug: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG,
+      });
 
       expect(serviceInstance).toBeDefined();
 
