@@ -3,6 +3,7 @@ import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getDbTestConnection } from '../tests/config-test';
+import { UserId } from './model/kanel/public/User';
 import { UserWithOrganizationsAndRole } from './model/user';
 import {
   getSessionStoreInstance,
@@ -13,7 +14,7 @@ type SessionDataWithUser = SessionData & {
   user?: UserWithOrganizationsAndRole;
 };
 
-describe('SessionStoreManager - Configuration-based Store Selection', () => {
+describe('sessionStoreManager - Configuration-based Store Selection', () => {
   let db: Knex;
 
   beforeAll(async () => {
@@ -22,10 +23,11 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
   });
 
   afterAll(async () => {
+    // eslint-disable-next-line no-restricted-syntax
     await db('sessions').del();
   });
 
-  describe('Store Instance', () => {
+  describe('store Instance', () => {
     it('should return a session store instance', () => {
       const store = getSessionStoreInstance();
       expect(store).toBeDefined();
@@ -80,6 +82,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
 
       // Only test if it's PostgreSQL store (has cleanup method)
       if ('cleanup' in store) {
+        // eslint-disable-next-line no-restricted-syntax
         await db('sessions').del();
 
         const userId = 'update-test-' + uuidv4();
@@ -91,7 +94,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
             expires: new Date(Date.now() + 3600000),
             originalMaxAge: 3600000,
           },
-          user: { id: userId, first_name: 'Original Name' },
+          user: { id: userId as UserId, first_name: 'Original Name' },
         };
 
         // Create session
@@ -178,7 +181,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
     });
   });
 
-  describe('Session operations', () => {
+  describe('session operations', () => {
     it('should support basic session CRUD operations', async () => {
       const store = getSessionStoreInstance();
       const sessionId = 'crud-test-' + uuidv4();
@@ -247,7 +250,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
     });
   });
 
-  describe('Store configuration validation', () => {
+  describe('store configuration validation', () => {
     it('should use the store type defined in configuration', () => {
       const store = getSessionStoreInstance();
 
@@ -281,7 +284,7 @@ describe('SessionStoreManager - Configuration-based Store Selection', () => {
     });
   });
 
-  describe('Error handling', () => {
+  describe('error handling', () => {
     it('should handle updateUserSession with invalid user gracefully', () => {
       const invalidUser = null;
 

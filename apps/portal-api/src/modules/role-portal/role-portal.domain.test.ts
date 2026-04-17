@@ -1,18 +1,24 @@
-import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { loadRolePortalsBySSOGroups } from './role-portal.domain';
 
 describe('loadRolePortalsBySSOGroups', () => {
   beforeEach(async () => {
+    // eslint-disable-next-line no-restricted-syntax
     await db('SSOGroup_RolePortal').del();
-    await db('RolePortal').del();
-    await db('RolePortal').insert([
-      { id: uuidv4(), name: 'POTATO_PEELER' },
-      { id: uuidv4(), name: 'UNICORN_RIDER' },
-      { id: uuidv4(), name: 'BANANA_INSPECTOR' },
-    ]);
+    await TestHelper.rolePortal.delete({});
+    await TestHelper.rolePortal.create({
+      name: 'POTATO_PEELER',
+    });
+    await TestHelper.rolePortal.create({
+      name: 'UNICORN_RIDER',
+    });
+    await TestHelper.rolePortal.create({
+      name: 'BANANA_INSPECTOR',
+    });
 
+    // eslint-disable-next-line no-restricted-syntax
     await db('SSOGroup_RolePortal').insert([
       { SSOGroup: 'purple-elephants-club', RolePortal: 'POTATO_PEELER' },
       { SSOGroup: 'flying-pizza-society', RolePortal: 'POTATO_PEELER' },

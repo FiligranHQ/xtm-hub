@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../../knexfile';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
   DocumentSourceType,
 } from '../../../__generated__/resolvers-types';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
-import DocumentChildren from '../../../model/kanel/public/DocumentChildren';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID } from '../../../portal.const';
 import { MinIOClient } from '../../../thirdparty/minio/client';
@@ -26,7 +26,7 @@ async function insertDocument({
   ...rest
 }: Partial<Document> & { id?: DocumentId } = {}): Promise<DocumentId> {
   const realId = id ?? (uuidv4() as DocumentId);
-  await db<Document>('Document').insert({
+  await TestHelper.document.create({
     id: realId,
     type,
     source_type,
@@ -40,7 +40,7 @@ async function insertDocument({
   return realId;
 }
 
-describe('DocumentChildrenDomain', () => {
+describe('documentChildrenDomain', () => {
   let parentId: DocumentId;
   let childId1: DocumentId;
   let childId2: DocumentId;
@@ -53,8 +53,8 @@ describe('DocumentChildrenDomain', () => {
   let minioFileMock: { minioName: string; mimeType: string; fileName: string };
 
   beforeEach(async () => {
-    await db<DocumentChildren>('Document_Children').delete();
-    await db<Document>('Document').delete();
+    await TestHelper.documentChildren.delete({});
+    await TestHelper.document.delete({});
     parentId = uuidv4() as DocumentId;
     childId1 = await insertDocument({});
     childId2 = await insertDocument({ minio_name: 'minio-file-2' });
@@ -74,8 +74,8 @@ describe('DocumentChildrenDomain', () => {
   });
 
   afterEach(async () => {
-    await db<DocumentChildren>('Document_Children').delete();
-    await db<Document>('Document').delete();
+    await TestHelper.documentChildren.delete({});
+    await TestHelper.document.delete({});
 
     vi.restoreAllMocks();
   });
@@ -83,18 +83,25 @@ describe('DocumentChildrenDomain', () => {
   describe('deleteExternalImages', () => {
     beforeEach(async () => {
       // Link children to parent
-      await db<DocumentChildren>('Document_Children').insert([
-        { parent_document_id: parentId, child_document_id: childId1 },
-        { parent_document_id: parentId, child_document_id: childId2 },
-        { parent_document_id: parentId, child_document_id: unrelatedChildId },
-      ]);
+      await TestHelper.documentChildren.create({
+        parent_document_id: parentId,
+        child_document_id: childId1,
+      });
+      await TestHelper.documentChildren.create({
+        parent_document_id: parentId,
+        child_document_id: childId2,
+      });
+      await TestHelper.documentChildren.create({
+        parent_document_id: parentId,
+        child_document_id: unrelatedChildId,
+      });
     });
 
     it('should delete only external image children and return their ids and minio_names', async () => {
       const deleted =
         await DocumentChildrenDomain.deleteExternalImages(parentId);
       expect(Array.isArray(deleted)).toBe(true);
-      expect(deleted.length).toBe(2);
+      expect(deleted).toHaveLength(2);
       const deletedIds = deleted.map((d) => d.id);
       expect(deletedIds).toContain(childId1);
       expect(deletedIds).toContain(childId2);
@@ -102,15 +109,16 @@ describe('DocumentChildrenDomain', () => {
       expect(deleted.find((d) => d.minio_name === 'minio-file-2')).toBeTruthy();
 
       // Check DB: only unrelated child remains
-      const remaining: Document[] = await db<Document>('Document').select('id');
-      expect(remaining.length).toBe(2); // parent + unrelated child
-      const remainingIds = remaining.map(({ id }) => id);
+      const remaining = await TestHelper.document.loadAll({});
+      expect(remaining).toHaveLength(2); // parent + unrelated child
+      const remainingIds = remaining!.map(({ id }) => id);
       expect(remainingIds).toContain(parentId);
       expect(remainingIds).toContain(unrelatedChildId);
     });
 
     it('should not delete anything if no external image children', async () => {
       // Remove external type from children
+      // eslint-disable-next-line no-restricted-syntax
       await db<Document>('Document')
         .whereIn('id', [childId1, childId2])
         .update({ source_type: DocumentSourceType.Internal });
@@ -118,8 +126,8 @@ describe('DocumentChildrenDomain', () => {
         await DocumentChildrenDomain.deleteExternalImages(parentId);
       expect(deleted).toEqual([]);
       // All children remain
-      const remaining = await db<Document>('Document').select('id');
-      expect(remaining.length).toBe(4); // parent + 3 children
+      const remaining = await TestHelper.document.loadAll({});
+      expect(remaining).toHaveLength(4); // parent + 3 children
     });
 
     it('should not delete children of other parents', async () => {
@@ -131,17 +139,18 @@ describe('DocumentChildrenDomain', () => {
         minio_name: 'other-minio',
         source_type: DocumentSourceType.External,
       });
-      await db<DocumentChildren>('Document_Children').insert({
+      await TestHelper.documentChildren.create({
         parent_document_id: otherParentId,
         child_document_id: otherChildId,
       });
+
       const deleted =
         await DocumentChildrenDomain.deleteExternalImages(parentId);
-      expect(deleted.length).toBe(2);
+      expect(deleted).toHaveLength(2);
       // The other child should still exist
-      const exists = await db<Document>('Document')
-        .where('id', otherChildId)
-        .first();
+      const exists = await TestHelper.document.load({
+        id: otherChildId,
+      });
       expect(exists).toBeTruthy();
     });
   });
@@ -162,10 +171,15 @@ describe('DocumentChildrenDomain', () => {
         minio_name: 'old-internal',
         service_instance_id: serviceInstanceId,
       });
-      await db<DocumentChildren>('Document_Children').insert([
-        { parent_document_id: parentId, child_document_id: oldExternalId },
-        { parent_document_id: parentId, child_document_id: oldInternalId },
-      ]);
+      await TestHelper.documentChildren.create({
+        parent_document_id: parentId,
+        child_document_id: oldExternalId,
+      });
+      await TestHelper.documentChildren.create({
+        parent_document_id: parentId,
+        child_document_id: oldInternalId,
+      });
+
       // Mock upload
       upload = {
         filename: 'new-image.png',
@@ -186,12 +200,13 @@ describe('DocumentChildrenDomain', () => {
 
     it('should replace all external image children with the new upload and delete old MinIO files', async () => {
       // Insert a fake parent doc model
-      const parentDoc = await db<Document>('Document')
-        .where('id', parentId)
-        .first();
+      const parentDoc = await TestHelper.document.load({
+        id: parentId,
+      });
       // upsertExternalImage expects a DocumentModel, so we use the DB row
       await DocumentChildrenDomain.upsertExternalImage(parentDoc, upload);
       // Only one external image child should remain
+      // eslint-disable-next-line no-restricted-syntax
       const children: Document[] = await db<Document>('Document')
         .leftJoin(
           'Document_Children',
@@ -204,18 +219,18 @@ describe('DocumentChildrenDomain', () => {
       const externalImages = children.filter(
         (c) => c.source_type === DocumentSourceType.External
       );
-      expect(externalImages.length).toBe(1);
+      expect(externalImages).toHaveLength(1);
       expect(externalImages[0]!.minio_name).toBe('new-minio');
       // Internal image child should remain
       const internalImages = children.filter(
         (c) => c.source_type === DocumentSourceType.Internal
       );
-      expect(internalImages.length).toBe(1);
+      expect(internalImages).toHaveLength(1);
       expect(internalImages[0]!.id).toBe(oldInternalId);
       // Old external image should be deleted
-      const oldExternal = await db<Document>('Document')
-        .where('id', oldExternalId)
-        .first();
+      const oldExternal = await TestHelper.document.load({
+        id: oldExternalId,
+      });
       expect(oldExternal).toBeUndefined();
       // MinIOClient.deleteFile should be called for old external image
       expect(MinIOClient.deleteFile).toHaveBeenCalledWith('old-external');
@@ -223,13 +238,16 @@ describe('DocumentChildrenDomain', () => {
 
     it('should work if there are no previous external images', async () => {
       // Remove all external images
-      await db<Document>('Document')
-        .where('id', oldExternalId)
-        .update({ source_type: DocumentSourceType.Internal });
-      const parentDoc = await db<Document>('Document')
-        .where('id', parentId)
-        .first();
+      await TestHelper.document.update(
+        { id: oldExternalId },
+        { source_type: DocumentSourceType.Internal }
+      );
+
+      const parentDoc = await TestHelper.document.load({
+        id: parentId,
+      });
       await DocumentChildrenDomain.upsertExternalImage(parentDoc, upload);
+      // eslint-disable-next-line no-restricted-syntax
       const children: Document[] = await db<Document>('Document')
         .leftJoin(
           'Document_Children',
@@ -241,7 +259,7 @@ describe('DocumentChildrenDomain', () => {
       const externalImages = children.filter(
         (c) => c.source_type === 'external'
       );
-      expect(externalImages.length).toBe(1);
+      expect(externalImages).toHaveLength(1);
       expect(externalImages[0]!.minio_name).toBe('new-minio');
       // No MinIO file deletion should be called
       expect(MinIOClient.deleteFile).not.toHaveBeenCalled();
@@ -257,26 +275,27 @@ describe('DocumentChildrenDomain', () => {
         source_type: 'external',
         service_instance_id: serviceInstanceId,
       });
-      await db<DocumentChildren>('Document_Children').insert({
+      await TestHelper.documentChildren.create({
         parent_document_id: otherParentId,
         child_document_id: otherChildId,
       });
-      const parentDoc = await db<Document>('Document')
-        .where('id', parentId)
-        .first();
+
+      const parentDoc = await TestHelper.document.load({
+        id: parentId,
+      });
       await DocumentChildrenDomain.upsertExternalImage(parentDoc, upload);
       // The other child should still exist
-      const exists = await db<Document>('Document')
-        .where('id', otherChildId)
-        .first();
+      const exists = await TestHelper.document.load({
+        id: otherChildId,
+      });
       expect(exists).toBeTruthy();
 
       // The other parent should still have its child
-      const otherChildren = await db<DocumentChildren>(
-        'Document_Children'
-      ).where('parent_document_id', otherParentId);
-      expect(otherChildren.length).toBe(1);
-      expect(otherChildren[0].child_document_id).toBe(otherChildId);
+      const otherChildren = await TestHelper.documentChildren.load({
+        parent_document_id: otherParentId,
+      });
+      expect(otherChildren).toHaveLength(1);
+      expect(otherChildren[0]?.child_document_id).toBe(otherChildId);
     });
   });
 
@@ -284,8 +303,8 @@ describe('DocumentChildrenDomain', () => {
     let parentId: DocumentId;
     let serviceInstanceId: ServiceInstanceId;
     beforeEach(async () => {
-      await db<DocumentChildren>('Document_Children').delete();
-      await db<Document>('Document').delete();
+      await TestHelper.documentChildren.delete({});
+      await TestHelper.document.delete({});
       parentId = await insertDocument({
         type: 'folder',
         source_type: DocumentSourceType.Internal,
@@ -310,7 +329,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         DOCUMENT_IMAGE_METADATA_KEYS
       );
-      expect(children.length).toBe(1);
+      expect(children).toHaveLength(1);
       expect(children[0]).toMatchObject({
         file_name: 'img1.png',
         minio_name: 'minio-img1',
@@ -341,6 +360,7 @@ describe('DocumentChildrenDomain', () => {
         DocumentImageType.Image,
         DocumentSourceType.Internal
       );
+      // eslint-disable-next-line no-restricted-syntax
       const children = await db<Document>('Document')
         .leftJoin(
           'Document_Children',
@@ -349,7 +369,7 @@ describe('DocumentChildrenDomain', () => {
         )
         .where('Document_Children.parent_document_id', parentId)
         .select('Document.*');
-      expect(children.length).toBe(2);
+      expect(children).toHaveLength(2);
       const fileNames = children.map((c: Document) => c.file_name);
       expect(fileNames).toContain('img1.png');
       expect(fileNames).toContain('img2.jpg');
@@ -366,6 +386,7 @@ describe('DocumentChildrenDomain', () => {
         DocumentImageType.Logo,
         DocumentSourceType.External
       );
+      // eslint-disable-next-line no-restricted-syntax
       const children = await db<Document>('Document')
         .leftJoin(
           'Document_Children',
@@ -374,7 +395,7 @@ describe('DocumentChildrenDomain', () => {
         )
         .where('Document_Children.parent_document_id', parentId)
         .select('Document.*');
-      expect(children.length).toBe(0);
+      expect(children).toHaveLength(0);
     });
 
     it('should default to internal source_type if not specified', async () => {
@@ -393,7 +414,7 @@ describe('DocumentChildrenDomain', () => {
         parentId,
         DOCUMENT_IMAGE_METADATA_KEYS
       );
-      expect(children.length).toBe(1);
+      expect(children).toHaveLength(1);
       expect(children[0]!.source_type).toBe(DocumentSourceType.Internal);
     });
   });

@@ -22,7 +22,7 @@ describe('willManageAccessBeConserved', () => {
     ${[GenericServiceCapabilityName.MANAGE_ACCESS]} | ${false}            | ${'theSame'}    | ${false}
     ${[]}                                           | ${true}             | ${'theSame'}    | ${false}
   `(
-    'Should return $shouldThrowError if capabilities, $capabilities and manageAccessCount is $manageAccessCount and userId is $userId',
+    'should return $shouldThrowError if capabilities, $capabilities and manageAccessCount is $manageAccessCount and userId is $userId',
     async ({ capabilities, getManageAccessLeft, userId, shouldThrowError }) => {
       vi.spyOn(ServiceCapaDomain, 'getManageAccessLeft').mockResolvedValueOnce(
         getManageAccessLeft

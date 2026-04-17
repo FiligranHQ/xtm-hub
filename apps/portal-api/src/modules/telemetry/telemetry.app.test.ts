@@ -68,7 +68,7 @@ const mockWriteResponse = {
   _primary_term: 1,
 };
 
-describe('TelemetryApp', () => {
+describe('telemetryApp', () => {
   const minioFileMock = {
     minioName: 'minioFile',
     mimeType: 'mimeType',

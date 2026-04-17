@@ -1,18 +1,18 @@
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
-import { FeatureFlag } from '@/utils/constant';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import SettingsQuery, {
   settingsQuery,
   settingsQuery$data,
 } from '@generated/settingsQuery.graphql';
 
-let cachedFeatureFlags: FeatureFlag[];
+let cachedFeatureFlags: string[];
 
 export interface SettingsResponse {
   data: settingsQuery$data;
 }
 
 export async function isFeatureEnabled(
-  flagName: FeatureFlag
+  flagName: FeatureFlagEnum
 ): Promise<boolean> {
   if (cachedFeatureFlags === undefined) {
     try {
@@ -22,12 +22,12 @@ export async function isFeatureEnabled(
       >(SettingsQuery, {}, { cache: 'force-cache' })) as SettingsResponse;
       cachedFeatureFlags = [
         ...(response.data?.settings?.platform_feature_flags || []),
-      ] as FeatureFlag[];
+      ];
     } catch (error) {
       console.error('Failed to fetch feature flags:', error);
       cachedFeatureFlags = [];
     }
   }
 
-  return !!cachedFeatureFlags?.some((flag) => [flagName, '*'].includes(flag));
+  return !!cachedFeatureFlags?.some((flag) => [flagName as string].includes(flag));
 }

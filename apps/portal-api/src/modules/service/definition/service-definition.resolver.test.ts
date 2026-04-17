@@ -2,14 +2,14 @@ import { GraphQLResolveInfo } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { TestHelper } from '../../../../tests/test.helper';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { contextSimpleUserSecondOrga } from '../../../../tests/tests.const';
 import { ServiceDefinition } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import * as ServiceCapabilityDomain from '../../security-management/service-capability/service-capability.domain';
 import serviceDefinitionResolver from './service-definition.resolver';
 
-describe('ServiceDefinition resolver fields', () => {
+describe('serviceDefinition resolver fields', () => {
   afterEach(async () => {
     vi.clearAllTimers();
     vi.restoreAllMocks();

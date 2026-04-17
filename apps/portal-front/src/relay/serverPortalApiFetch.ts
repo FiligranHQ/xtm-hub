@@ -22,14 +22,14 @@ export default async function serverPortalApiFetch<
 ): Promise<GraphQLResponse> {
   const c = await cookies();
   const h = await headers();
-  const cookieName = process.env.PORTAL_COOKIE_NAME ?? 'cloud-portal';
-  const portalCookie = c.get(cookieName);  const pathname = h.get('x-pathname');
+  const cookieList = c.getAll();
+  const pathname = h.get('x-pathname');
   const apiUri = getGraphqlApi(true, 'api');
   return networkFetch({
     apiUri,
     request: request.params,
     variables,
-    portalCookie,
+    cookieList,
     options,
   }).catch((e: unknown) => {
     if (e instanceof UnauthenticatedError) {

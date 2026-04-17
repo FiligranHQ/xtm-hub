@@ -23,3 +23,10 @@ export function scrubSensitiveVariables(variables: Variables): Variables {
     })
   );
 }
+
+export function buildCookieHeader(
+  cookieList?: { name: string; value: string }[]
+): string | undefined {
+  if (!cookieList?.length) return undefined;
+  return cookieList.map((ck) => `${ck.name}=${ck.value}`).join('; ');
+}

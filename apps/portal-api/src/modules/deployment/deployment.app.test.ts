@@ -69,12 +69,10 @@ import {
 
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../knexfile';
-import { TestHelper } from '../../../tests/test.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
-import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
 import { PortalContext } from '../../model/portal-context';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import {
@@ -90,7 +88,7 @@ import {
 } from './deployment.test.utils';
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
-describe('Deployment app', () => {
+describe('deployment app', () => {
   const telemetrySpy = vi
     .spyOn(telemetryApp, 'sendTelemetryEvent')
     .mockResolvedValue();
@@ -528,7 +526,7 @@ describe('Deployment app', () => {
     it('should return platform_url when Service_Configuration exists', async () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
-      await db('Service_Configuration').insert({
+      await TestHelper.serviceConfiguration.create({
         service_instance_id: deploymentRequest!.service_instance_id,
         config: { platform_url: 'https://test-platform.opencti.io' },
         status: 'active',
@@ -546,9 +544,9 @@ describe('Deployment app', () => {
         'https://test-platform.opencti.io'
       );
 
-      await db('Service_Configuration')
-        .where('service_instance_id', deploymentRequest!.service_instance_id)
-        .delete();
+      await TestHelper.serviceConfiguration.delete({
+        service_instance_id: deploymentRequest!.service_instance_id,
+      });
     });
 
     it('should return out-of-sync deployment requests by default', async () => {
@@ -568,7 +566,7 @@ describe('Deployment app', () => {
       });
 
       expect(deployments.totalCount).toBe('1');
-      expect(deployments.edges.length).toBe(1);
+      expect(deployments.edges).toHaveLength(1);
       expect(deployments.edges[0]?.node?.hub_status).toBe(
         DeploymentRequestHubStatus.Pending
       );
@@ -596,7 +594,7 @@ describe('Deployment app', () => {
       });
 
       expect(deployments.totalCount).toBe('1');
-      expect(deployments.edges.length).toBe(1);
+      expect(deployments.edges).toHaveLength(1);
       expect(deployments.edges[0]?.node?.hub_status).toBe(
         DeploymentRequestHubStatus.Pending
       );
@@ -650,7 +648,7 @@ describe('Deployment app', () => {
       });
 
       expect(deployments.totalCount).toBe('3');
-      expect(deployments.edges.length).toBe(3);
+      expect(deployments.edges).toHaveLength(3);
 
       // Verify only out-of-sync deployments are returned
       const returnedIds = deployments.edges.map((edge) => edge.node.id);
@@ -694,7 +692,7 @@ describe('Deployment app', () => {
       });
 
       expect(deployments.totalCount).toBe('0');
-      expect(deployments.edges.length).toBe(0);
+      expect(deployments.edges).toHaveLength(0);
     });
   });
   describe('updateDeploymentRequest', () => {
@@ -709,7 +707,7 @@ describe('Deployment app', () => {
 
     it('should update a deployment request', async () => {
       const deployment = await DeploymentApp.updateDeploymentRequest({
-        id: initialDeployment?.id as string,
+        id: initialDeployment?.id as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
@@ -771,7 +769,7 @@ describe('Deployment app', () => {
 
     it('with Active status for OpenCTI, it should create OpenCTI ServiceGroups (Admin, Analyst, Reader) with admin user', async () => {
       const deployment = await DeploymentApp.updateDeploymentRequest({
-        id: initialDeployment?.id as string,
+        id: initialDeployment?.id as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
@@ -785,7 +783,7 @@ describe('Deployment app', () => {
       const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
-      expect(serviceGroups.length).toBe(3);
+      expect(serviceGroups).toHaveLength(3);
       expect(serviceGroups.map((g) => g.name).sort()).toEqual([
         ServiceGroupName.Admin,
         ServiceGroupName.Analyst,
@@ -797,7 +795,7 @@ describe('Deployment app', () => {
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Admin
         );
-      expect(userAdminGroup.length).toBe(1);
+      expect(userAdminGroup).toHaveLength(1);
       expect(
         userAdminGroup.find(
           ({ email }) =>
@@ -809,14 +807,14 @@ describe('Deployment app', () => {
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Analyst
         );
-      expect(userAnalystGroup.length).toBe(0);
+      expect(userAnalystGroup).toHaveLength(0);
       const userReaderGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Reader
         );
 
-      expect(userReaderGroup.length).toBe(0);
+      expect(userReaderGroup).toHaveLength(0);
     });
 
     it('with Active status for OpenAEV, it should create OpenAEV ServiceGroups (Admin, Manager, Observer) with admin user', async () => {
@@ -828,7 +826,7 @@ describe('Deployment app', () => {
       })) as DeploymentRequest;
 
       const deployment = await DeploymentApp.updateDeploymentRequest({
-        id: openaevDeployment.id as string,
+        id: openaevDeployment.id as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
         start_date: new Date(2025, 1, 3),
         end_date: new Date(2025, 2, 3),
@@ -842,7 +840,7 @@ describe('Deployment app', () => {
       const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
-      expect(serviceGroups.length).toBe(3);
+      expect(serviceGroups).toHaveLength(3);
       expect(serviceGroups.map((g) => g.name).sort()).toEqual([
         ServiceGroupName.Admin,
         ServiceGroupName.Manager,
@@ -854,7 +852,7 @@ describe('Deployment app', () => {
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Admin
         );
-      expect(userAdminGroup.length).toBe(1);
+      expect(userAdminGroup).toHaveLength(1);
       expect(
         userAdminGroup.find(
           ({ email }) =>
@@ -866,17 +864,17 @@ describe('Deployment app', () => {
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Manager
         );
-      expect(userManagerGroup.length).toBe(0);
+      expect(userManagerGroup).toHaveLength(0);
       const userObserverGroup =
         await ServiceGroupDomain.loadGroupUsersByServiceAndName(
           dbDeploymentRequest!.service_instance_id,
           ServiceGroupName.Observer
         );
-      expect(userObserverGroup.length).toBe(0);
+      expect(userObserverGroup).toHaveLength(0);
     });
     it('should throw if deployment request does not exist', async () => {
       const call = DeploymentApp.updateDeploymentRequest({
-        id: uuidv4(),
+        id: uuidv4() as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
       });
       await expect(call).rejects.toThrow(
@@ -924,7 +922,7 @@ describe('Deployment app', () => {
         const end_date = new Date(2025, 2, 3);
 
         await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as string,
+          id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
           start_date,
           end_date,
@@ -951,14 +949,14 @@ describe('Deployment app', () => {
 
       it('should not send a telemetry event when data did not change', async () => {
         await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as string,
+          id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
         telemetrySpy.mockClear();
 
         await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as string,
+          id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
@@ -975,7 +973,7 @@ describe('Deployment app', () => {
         const end_date = new Date(2025, 2, 3);
 
         const deployment = await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as string,
+          id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
           start_date,
           end_date,
@@ -988,7 +986,7 @@ describe('Deployment app', () => {
     describe('mail', () => {
       it('should send a mail in case deployment request is in provisioning (only first time)', async () => {
         await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as string,
+          id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
         expect(mockSendMail).toHaveBeenCalledWith({
@@ -1003,7 +1001,7 @@ describe('Deployment app', () => {
         mockSendMail.mockClear();
 
         await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as string,
+          id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
@@ -1020,7 +1018,7 @@ describe('Deployment app', () => {
           status: DeploymentRequestPlatformState.Active,
         });
         await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as string,
+          id: initialDeployment?.id as DeploymentRequestId,
           start_date: new Date(2025, 12, 1),
           end_date: new Date(2026, 1, 1),
           actual_state: DeploymentRequestPlatformState.Active,
@@ -1043,7 +1041,7 @@ describe('Deployment app', () => {
         mockSendMail.mockClear();
 
         await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as string,
+          id: initialDeployment?.id as DeploymentRequestId,
           start_date: new Date(2025, 12, 1),
           end_date: new Date(2026, 1, 1),
           actual_state: DeploymentRequestPlatformState.Active,
@@ -1100,7 +1098,7 @@ describe('Deployment app', () => {
         isBlacklisted: true,
       });
 
-      await db('Competitor').delete();
+      await TestHelper.competitor.delete({});
     });
     it('should return trial as available if the created one does not count in quota', async () => {
       await insertDeploymentRequest({
@@ -1305,7 +1303,7 @@ describe('Deployment app', () => {
       ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
       ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestPlatformState.Removed}
     `(
-      'Should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
+      'should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
       async ({
         isAdmin,
         hub_status,
@@ -1449,7 +1447,7 @@ describe('Deployment app', () => {
     const platformIdentifier = PlatformIdentifier.Opencti;
     const region = DeploymentRequestPlatformRegion.EuWest;
     beforeEach(async () => {
-      await db<DeploymentRequest>('DeploymentRequest').del();
+      await TestHelper.deploymentRequest.delete({});
     });
 
     const insertRequest = async (
@@ -1471,15 +1469,16 @@ describe('Deployment app', () => {
       capacity: number;
       availability: number;
     }) => {
-      await db<DeploymentRequestQuota>('DeploymentRequestQuota')
-        .update({
-          capacity,
-          availability,
-        })
-        .where({
+      await TestHelper.deploymentRequestQuota.update(
+        {
           platform_identifier: platformIdentifier,
           region,
-        });
+        },
+        {
+          capacity,
+          availability,
+        }
+      );
     };
 
     const assertQuota = async ({
@@ -1489,19 +1488,15 @@ describe('Deployment app', () => {
       capacity: number;
       availability: number;
     }) => {
-      const newQuota = await db<DeploymentRequestQuota>(
-        'DeploymentRequestQuota'
-      )
-        .select('*')
-        .where({
-          platform_identifier: platformIdentifier,
-          region,
-        })
-        .first();
+      const newQuota = await TestHelper.deploymentRequestQuota.load({
+        platform_identifier: platformIdentifier,
+        region,
+      });
 
-      expect(newQuota).toBeDefined();
-      expect(newQuota!.capacity).toBe(capacity);
-      expect(newQuota!.availability).toBe(availability);
+      expect(newQuota).toMatchObject({
+        capacity: capacity,
+        availability: availability,
+      });
     };
 
     describe('increase capacity', () => {

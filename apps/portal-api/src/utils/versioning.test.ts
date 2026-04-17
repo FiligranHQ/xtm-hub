@@ -5,7 +5,7 @@ import {
   isValidVersion,
 } from './versioning';
 
-describe('Versioning', () => {
+describe('versioning', () => {
   describe('isValidVersion', () => {
     it.each`
       version               | expected

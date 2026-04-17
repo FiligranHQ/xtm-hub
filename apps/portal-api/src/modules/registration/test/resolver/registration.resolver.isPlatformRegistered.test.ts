@@ -14,7 +14,7 @@ import { UnknownErrorCode } from '../../../../utils/error/error.code';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
-describe('Query.isPlatformRegistered', () => {
+describe('query.isPlatformRegistered', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

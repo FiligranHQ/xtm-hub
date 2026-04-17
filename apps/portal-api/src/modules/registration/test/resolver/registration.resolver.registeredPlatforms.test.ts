@@ -13,7 +13,7 @@ import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstanc
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
-describe('Query.registeredPlatform', () => {
+describe('query.registeredPlatform', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -40,7 +40,7 @@ describe('Query.registeredPlatform', () => {
   });
 });
 
-describe('Query.registeredPlatforms', () => {
+describe('query.registeredPlatforms', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

@@ -14,7 +14,7 @@ import { CAPABILITY_BYPASS } from '../../portal.const';
 import { authDirectives } from './directive-auth';
 import { RoleType } from './directive.model';
 
-describe('Auth directives', () => {
+describe('auth directives', () => {
   describe('isAuthenticated', () => {
     it('should return false if user is disabled', () => {
       const user = {

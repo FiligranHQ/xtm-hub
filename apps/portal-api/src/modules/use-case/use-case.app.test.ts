@@ -1,18 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { db } from '../../../knexfile';
-import ObjectUseCase, {
-  ObjectUseCaseObjectId,
-} from '../../model/kanel/public/ObjectUseCase';
+import { TestHelper } from '../../../tests/helper/test.helper';
+import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseApp } from './use-case.app';
 import { useCaseDomain } from './use-case.domain';
 
-describe('Use Case app', () => {
+describe('use Case app', () => {
   describe(`${useCaseApp.loadOrCreateUseCase.name}`, () => {
     beforeEach(async () => {
       // Clean up the Use Case table before each test
-      await db('UseCase').delete();
+      await TestHelper.useCase.delete({});
     });
 
     it('should create a new useCase when it does not exist', async () => {
@@ -22,11 +20,12 @@ describe('Use Case app', () => {
       });
 
       // Verify the use Case was created
-      const useCase = await db('UseCase').where('id', newUseCase.id).first();
+      const useCase = await TestHelper.useCase.load({ id: newUseCase.id });
 
-      expect(useCase.id).toBeDefined();
-      expect(useCase.name).toBe('Test UseCase');
-      expect(useCase.color).toBe('#ff0000');
+      expect(useCase).toMatchObject({
+        name: 'Test UseCase',
+        color: '#ff0000',
+      });
     });
 
     it('should return existing use case id when use case already exists', async () => {
@@ -46,12 +45,12 @@ describe('Use Case app', () => {
       expect(secondUseCase.id).toBe(firstUseCase.id);
 
       // Verify only one use case exists with the original color
-      const useCases = await db('UseCase')
-        .where('name', 'Existing Use Case')
-        .select();
+      const useCases = await TestHelper.useCase.loadAll({
+        name: 'Existing Use Case',
+      });
 
       expect(useCases).toHaveLength(1);
-      expect(useCases[0].color).toBe('#00ff00'); // Original color preserved
+      expect(useCases?.[0]?.color).toBe('#00ff00'); // Original color preserved
     });
 
     it('should be case-insensitive for use case names', async () => {
@@ -79,10 +78,12 @@ describe('Use Case app', () => {
       expect(mixedCaseUseCase.id).toBe(lowercaseUseCase.id);
 
       // Verify only one use case exists with original name and color
-      const useCases = await db('UseCase').select();
+      const useCases = await TestHelper.useCase.loadAll({});
       expect(useCases).toHaveLength(1);
-      expect(useCases[0].name).toBe('test usecase'); // Original name preserved
-      expect(useCases[0].color).toBe('#aaaaaa'); // Original color preserved
+      expect(useCases?.[0]).toMatchObject({
+        name: 'test usecase',
+        color: '#aaaaaa',
+      });
     });
 
     it('should use default color when color is not provided', async () => {
@@ -116,7 +117,7 @@ describe('Use Case app', () => {
       expect(useCase1.id).not.toBe(useCase3.id);
 
       // Verify all use cases exist
-      const useCases = await db('UseCase').select();
+      const useCases = await TestHelper.useCase.loadAll({});
       expect(useCases).toHaveLength(3);
     });
   });
@@ -145,13 +146,11 @@ describe('Use Case app', () => {
       });
       expect(resultUseCase1).toBeUndefined();
 
-      const resultObjectUseCases = await db<ObjectUseCase>(
-        'Object_UseCase'
-      ).where({
+      const resultObjectUseCases = await TestHelper.objectUseCase.load({
         use_case_id: useCase1.id,
       });
 
-      expect(resultObjectUseCases.length).toBe(0);
+      expect(resultObjectUseCases).toHaveLength(0);
     });
   });
 });
