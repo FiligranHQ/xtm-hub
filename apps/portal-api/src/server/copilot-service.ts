@@ -67,7 +67,7 @@ export const fetchSessionMessages = async (
   conversationId: string
 ): Promise<{ role: string; content: string }[]> => {
   const response = await fetch(
-    `${COPILOT_BASE_URL}/chat/${COPILOT_TOKEN}/sessions/${conversationId}`
+    `${COPILOT_BASE_URL}/chat/${COPILOT_TOKEN}/sessions/${encodeURIComponent(conversationId)}`
   );
   if (!response.ok) {
     return [];
@@ -101,7 +101,7 @@ export const streamMessage = async (opts: {
   }
 
   const streamResponse = await fetch(
-    `${COPILOT_BASE_URL}/chat/${COPILOT_TOKEN}/sessions/${sessionId}/messages/stream`,
+    `${COPILOT_BASE_URL}/chat/${COPILOT_TOKEN}/sessions/${encodeURIComponent(sessionId)}/messages/stream`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
