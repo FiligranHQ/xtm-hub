@@ -17,7 +17,7 @@ test.describe('TAXII Feeds', () => {
     integrationPage = new IntegrationPage(page);
 
     await loginPage.navigateToAndLogin();
-    await integrationPage.subscribeIntegrationsService();
+    await integrationPage.navigateToIntegrationsService();
     await integrationPage.fillTaxiiFeed(TAXI_FEED_TEST);
   });
 

@@ -1,4 +1,4 @@
-import { expect, test } from '../../fixtures/baseFixtures';
+import { test } from '../../fixtures/baseFixtures';
 import LoginPage from '../../model/login.pageModel';
 import { CybersecuritySolutionsPage } from '../../model/cybersecurity-solutions.pageModel';
 import { HomePage } from '../../model/home.pageModel';
@@ -25,7 +25,8 @@ test.describe('Public redirections', () => {
       await loginPage.assertCurrentPage();
     });
 
-    await test.step('should navigate user to login page', async () => {
+    await test.step('should navigate user to login page from a public page', async () => {
+      await cyberSecurityPage.navigateTo();
       await cyberSecurityPage.clickOnSignIn();
       await loginPage.assertCurrentPage();
     });
