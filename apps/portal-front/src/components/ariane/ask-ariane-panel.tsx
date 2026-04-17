@@ -86,6 +86,12 @@ const AskArianePanel = ({
         sessions: '/sessions',
         messages: '/messages',
       }}
+      promptSuggestions={[
+        t('PromptSuggestion1'),
+        t('PromptSuggestion2'),
+        t('PromptSuggestion3'),
+        t('PromptSuggestion4'),
+      ]}
       user={{ firstName }}
       t={t}
       logoIcon={logoIcon}
