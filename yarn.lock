@@ -3284,9 +3284,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:1.0.6":
-  version: 1.0.6
-  resolution: "@filigran/ui@npm:1.0.6"
+"@filigran/ui@npm:1.0.7":
+  version: 1.0.7
+  resolution: "@filigran/ui@npm:1.0.7"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -3329,7 +3329,7 @@ __metadata:
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10/75a0459f73f6aa089b3d1524d1110d377a636ee42a0066a57baea33033bab5fa07dad89637d94801c244675d1be4b5fcd67fc8ccf27006202686e4e3fdf10a97
+  checksum: 10/d814f4566c7c5e898f1090fe39824b93f7156a04901067e2332e66200c2cda46c08f600b3bafe50230a9a3f2c1502098188707f08e4d56b42d1d01b534601f7f
   languageName: node
   linkType: hard
 
@@ -9051,7 +9051,7 @@ __metadata:
   resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
   dependencies:
     "@filigran/icon": "npm:0.22.6"
-    "@filigran/ui": "npm:1.0.6"
+    "@filigran/ui": "npm:1.0.7"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@tailwindcss/postcss": "npm:4.2.2"
