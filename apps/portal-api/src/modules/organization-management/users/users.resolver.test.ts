@@ -273,9 +273,6 @@ describe('user mutation resolver', () => {
   });
 
   describe('adminAddUser', () => {
-    afterEach(async () => {
-      vi.restoreAllMocks();
-    });
     it('should not create an existing user', async () => {
       // Given
       try {

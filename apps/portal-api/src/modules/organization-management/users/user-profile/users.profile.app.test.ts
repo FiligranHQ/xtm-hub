@@ -69,9 +69,6 @@ describe('user profile app', () => {
   });
 
   describe('requestTransferPersonalSpace', () => {
-    afterEach(async () => {
-      vi.restoreAllMocks();
-    });
     it('should send error if email is not valid format', async () => {
       await expect(
         usersProfileApp.requestTransferPersonalSpace(
@@ -130,7 +127,6 @@ describe('user profile app', () => {
       });
     });
     afterEach(async () => {
-      vi.restoreAllMocks();
       await deleteSubscription({
         id: newSubscription.id as SubscriptionId,
       });
@@ -182,7 +178,6 @@ describe('user profile app', () => {
 
   describe('uploadUserPicture', () => {
     afterEach(async () => {
-      vi.restoreAllMocks();
       await updateUser(TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID, {
         picture: null,
         picture_minio: null,

@@ -1,5 +1,5 @@
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
@@ -41,10 +41,6 @@ describe('documentMetadataDomain', () => {
     await TestHelper.document.delete({
       type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
     });
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   describe('loadMetadataValueByKey', () => {

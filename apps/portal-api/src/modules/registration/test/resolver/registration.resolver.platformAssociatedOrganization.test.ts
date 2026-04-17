@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -15,10 +15,6 @@ import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.platformAssociatedOrganization', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should return the organization returned by the app on success', async () => {
     // Given
     const platformId = uuidv4();
