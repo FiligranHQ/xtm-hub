@@ -306,7 +306,11 @@ const SelectUsersFormField = React.forwardRef<
               placeholder="Search user..."
               onKeyDown={handleInputKeyDown}
             />
-            <CommandList>
+            <CommandList
+              onWheel={(e) => {
+                e.currentTarget.scrollTop += e.deltaY;
+                e.stopPropagation();
+              }}>
               <CommandEmpty>{t('Utils.NotFound')}</CommandEmpty>
               <CommandGroup>
                 {users.map((option) => {
