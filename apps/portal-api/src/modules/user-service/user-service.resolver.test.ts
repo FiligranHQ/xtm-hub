@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -29,10 +29,6 @@ import { UserServiceDomain } from './user-service.domain';
 import userServiceResolver from './user-service.resolver';
 
 describe('userService field resolvers', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   describe('userService.user', () => {
     it('should load user details by user_id', async () => {
       // Given
@@ -113,10 +109,6 @@ describe('userService field resolvers', () => {
 });
 
 describe('query.userServiceOwned', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to UserServiceDomain.loadUserServiceByUser with context user', async () => {
     // Given
     const paginationArgs = {
@@ -169,10 +161,6 @@ describe('query.userServiceOwned', () => {
 });
 
 describe('query.userServiceFromSubscription', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode subscription_id from global ID and delegate to UserServiceDomain', async () => {
     // Given
     const rawSubscriptionId = uuidv4() as SubscriptionId;
@@ -227,10 +215,6 @@ describe('query.userServiceFromSubscription', () => {
 });
 
 describe('mutation.addYourselfInUserService', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to UserServiceApp and return result', async () => {
     // Given
     const input = {
@@ -287,10 +271,6 @@ describe('mutation.addYourselfInUserService', () => {
 });
 
 describe('mutation.addUserService', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode subscriptionId from global ID and delegate to UserServiceApp', async () => {
     // Given
     const rawSubscriptionId = uuidv4() as SubscriptionId;
@@ -351,10 +331,6 @@ describe('mutation.addUserService', () => {
 });
 
 describe('mutation.deleteUserService', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode subscriptionId from global ID and delegate to UserServiceApp', async () => {
     // Given
     const rawSubscriptionId = uuidv4() as SubscriptionId;

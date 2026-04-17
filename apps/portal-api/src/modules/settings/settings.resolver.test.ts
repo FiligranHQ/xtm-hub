@@ -1,5 +1,5 @@
 import config from 'config';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { contextSimpleUserFiligran2, INFO } from '../../../tests/tests.const';
 import { FeatureFlag } from '../../__generated__/resolvers-types';
 import settingsResolver from './settings.resolver';
@@ -13,10 +13,6 @@ vi.mock('../../config', () => ({
 }));
 
 describe('query.settings', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should return settings built from config and portalConfig', () => {
     // Given
     const mockLoginSettings = [{ provider: 'local' }];

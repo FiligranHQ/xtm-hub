@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -14,10 +14,6 @@ import { ServiceGroupApp } from './service-group.app';
 import serviceGroupResolver from './service-group.resolver';
 
 describe('serviceGroup.users', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should load group users by service group id', async () => {
     // Given
     const groupId = uuidv4() as ServiceGroupId;
@@ -41,10 +37,6 @@ describe('serviceGroup.users', () => {
 });
 
 describe('query.serviceGroups', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should load groups for given serviceInstanceId and return result', async () => {
     // Given
     const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
@@ -87,10 +79,6 @@ describe('query.serviceGroups', () => {
 });
 
 describe('mutation.updateServiceGroups', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode user IDs from global IDs and delegate to ServiceGroupApp.updateGroups', async () => {
     // Given
     const groupId = uuidv4() as ServiceGroupId;

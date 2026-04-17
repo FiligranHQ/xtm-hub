@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -30,10 +30,6 @@ import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 describe('mutation.createDocument', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to DocumentApp.createDocument and return result', async () => {
     const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
     const expected = { id: uuidv4() as DocumentId } as never;
@@ -81,10 +77,6 @@ describe('mutation.createDocument', () => {
 });
 
 describe('mutation.updateDocument', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode documentId and delegate to DocumentApp.updateDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);
@@ -151,10 +143,6 @@ describe('mutation.updateDocument', () => {
 });
 
 describe('mutation.deleteDocument', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode documentId and delegate to DocumentApp.deleteDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);
@@ -201,10 +189,6 @@ describe('mutation.deleteDocument', () => {
 });
 
 describe('mutation.incrementShareNumberDocument', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should load document, update counters, and return result', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const doc = {
@@ -254,10 +238,6 @@ describe('mutation.incrementShareNumberDocument', () => {
 });
 
 describe('document.__resolveType', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it.each`
     type                                      | expected
     ${OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE} | ${'CustomDashboard'}
@@ -310,10 +290,6 @@ describe('document.__resolveType', () => {
 });
 
 describe('document field resolvers', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('children_documents should load children by document id', async () => {
     const id = uuidv4() as DocumentId;
     const expected = [{ id: uuidv4() }] as never;
@@ -406,10 +382,6 @@ describe('document field resolvers', () => {
 });
 
 describe('query.documentExists', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to checkDocumentExists and return result', async () => {
     vi.spyOn(documentHelper, 'checkDocumentExists').mockResolvedValue(false);
 
@@ -432,10 +404,6 @@ describe('query.documentExists', () => {
 });
 
 describe('query.publicDocuments', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to DocumentApp.loadPublicDocuments and return result', async () => {
     const expected = [] as never;
     vi.spyOn(DocumentApp, 'loadPublicDocuments').mockResolvedValue(expected);
@@ -452,10 +420,6 @@ describe('query.publicDocuments', () => {
 });
 
 describe('query.publicDocumentsByServiceSlug', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to DocumentApp.loadPublicDocumentsByServiceSlug and return result', async () => {
     const expected = [] as never;
     vi.spyOn(DocumentApp, 'loadPublicDocumentsByServiceSlug').mockResolvedValue(
@@ -477,10 +441,6 @@ describe('query.publicDocumentsByServiceSlug', () => {
 });
 
 describe('query.publicDocumentBySlug', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to DocumentApp.loadPublicDocumentBySlug and return result', async () => {
     const expected = { id: uuidv4() } as never;
     vi.spyOn(DocumentApp, 'loadPublicDocumentBySlug').mockResolvedValue(
@@ -503,10 +463,6 @@ describe('query.publicDocumentBySlug', () => {
 });
 
 describe('query.documents', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to DocumentApp.loadDocuments and return result', async () => {
     const expected = [] as never;
     vi.spyOn(DocumentApp, 'loadDocuments').mockResolvedValue(expected);
@@ -523,10 +479,6 @@ describe('query.documents', () => {
 });
 
 describe('query.document', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode documentId and delegate to DocumentApp.loadDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);

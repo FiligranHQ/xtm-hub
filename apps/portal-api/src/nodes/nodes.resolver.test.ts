@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { contextSimpleUserFiligran2, INFO } from '../../tests/tests.const';
 import { ErrorType } from '../utils/error/error.type';
 import nodesResolver from './nodes.resolver';
@@ -12,10 +12,6 @@ vi.mock('../../knexfile', () => ({
 import { db } from '../../knexfile';
 
 describe('query.node', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should throw UNAUTHENTICATED when no user is present in context', async () => {
     const call = nodesResolver.Query!.node!(
       {},

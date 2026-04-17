@@ -236,10 +236,6 @@ describe('deployment resolver', () => {
 });
 
 describe('deployment resolver — unit tests', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   describe('query.deploymentRequests', () => {
     it('should delegate to DeploymentApp.loadPlatformDeploymentRequests and return result', async () => {
       const expected = { edges: [] } as never;

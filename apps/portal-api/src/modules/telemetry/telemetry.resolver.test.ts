@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -22,10 +22,6 @@ const buildInput = (): OneClickDeployInput => ({
 });
 
 describe('mutation.sendTelemetryEvent', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should return empty object as placeholder', () => {
     // Given / When
     const result = telemetryResolver.Mutation!.sendTelemetryEvent!(
@@ -41,10 +37,6 @@ describe('mutation.sendTelemetryEvent', () => {
 });
 
 describe('sendTelemetryMutation.oneClickDeploy', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should call telemetryApp.sendOneClickDeployEvent and return result true on success', async () => {
     // Given
     const input = buildInput();

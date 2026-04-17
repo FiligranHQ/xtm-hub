@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -7,10 +7,6 @@ import { IngestManifestApp } from './ingest-manifest.app';
 import ingestManifestResolver from './ingest-manifest.resolver';
 
 describe('query.updateOpenCTIManifest', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should call IngestManifestApp.updateOpenCTIManifest with tag and return success true', async () => {
     // Given
     const tag = '6.4.0';

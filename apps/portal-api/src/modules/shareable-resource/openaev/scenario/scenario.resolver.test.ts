@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -18,10 +18,6 @@ import { useCaseDomain } from '../../../use-case/use-case.domain';
 import scenarioResolver from './scenario.resolver';
 
 describe('openAEVScenario field resolvers', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   describe('openAEVScenario.use_cases', () => {
     it('should load use cases by document id', async () => {
       // Given

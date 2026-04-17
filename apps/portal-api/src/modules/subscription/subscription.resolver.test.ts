@@ -94,10 +94,6 @@ describe('subscription mutation resolver', () => {
 });
 
 describe('subscription resolver — unit tests', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   describe('subscriptionModel field resolvers', () => {
     it('subscription_capability should call getSubscriptionCapability with subscription id', async () => {
       const id = uuidv4();

@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -39,10 +39,6 @@ describe('serviceInstance.__resolveType', () => {
 });
 
 describe('serviceInstance field resolvers', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('logo_document_id should return global ID when set', () => {
     const rawId = uuidv4();
     const result = (
@@ -171,10 +167,6 @@ describe('serviceInstance field resolvers', () => {
 });
 
 describe('query.serviceInstances', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to loadServiceInstances and return result', async () => {
     const expected = { edges: [] } as never;
     vi.spyOn(serviceInstanceDomain, 'loadServiceInstances').mockResolvedValue(
@@ -193,10 +185,6 @@ describe('query.serviceInstances', () => {
 });
 
 describe('query.publicServiceInstances', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should pass user id and org id to loadPublicServiceInstances', async () => {
     const expected = [] as never;
     vi.spyOn(
@@ -223,10 +211,6 @@ describe('query.publicServiceInstances', () => {
 });
 
 describe('query.serviceInstanceLinksByTags', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to ServiceInstanceApp.loadLinkServiceInstancesByTags', async () => {
     const expected = [] as never;
     vi.spyOn(
@@ -250,10 +234,6 @@ describe('query.serviceInstanceLinksByTags', () => {
 });
 
 describe('query.serviceInstanceById', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should pass user and service_instance_id to ServiceInstanceApp.loadServiceInstanceAndGrantAccess', async () => {
     const id = SERVICES.INSTANCES.VAULT.ID;
     const expected = { id } as never;
@@ -277,10 +257,6 @@ describe('query.serviceInstanceById', () => {
 });
 
 describe('query.serviceInstanceByIdWithSubscriptions', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to loadServiceWithSubscriptions', async () => {
     const id = SERVICES.INSTANCES.VAULT.ID;
     const expected = { id } as never;
@@ -305,10 +281,6 @@ describe('query.serviceInstanceByIdWithSubscriptions', () => {
 });
 
 describe('query.subscribedServiceInstancesByIdentifier', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier', async () => {
     const expected = [] as never;
     vi.spyOn(
@@ -332,10 +304,6 @@ describe('query.subscribedServiceInstancesByIdentifier', () => {
 });
 
 describe('query.seoServiceInstances', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to ServiceInstanceApp.loadSeoServiceInstances', async () => {
     const expected = [] as never;
     vi.spyOn(ServiceInstanceApp, 'loadSeoServiceInstances').mockResolvedValue(
@@ -354,10 +322,6 @@ describe('query.seoServiceInstances', () => {
 });
 
 describe('query.seoServiceInstance', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should return the service when found', async () => {
     const expected = { id: uuidv4() } as never;
     vi.spyOn(ServiceInstanceApp, 'loadSeoServiceInstance').mockResolvedValue(
@@ -408,10 +372,6 @@ describe('query.seoServiceInstance', () => {
 });
 
 describe('mutation.addServicePicture', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to ServiceInstanceApp.addServicePicture and return result', async () => {
     const expected = { id: SERVICES.INSTANCES.VAULT.ID } as never;
     vi.spyOn(ServiceInstanceApp, 'addServicePicture').mockResolvedValue(
@@ -439,10 +399,6 @@ describe('mutation.addServicePicture', () => {
 });
 
 describe('mutation.updatePlatformServiceMetadata', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to ServiceInstanceApp.updatePlatformServiceMetadata with user context', async () => {
     const expected = { id: SERVICES.INSTANCES.VAULT.ID } as never;
     vi.spyOn(

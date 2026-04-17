@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -22,10 +22,6 @@ import { CompetitorDomain } from './competitor.domain';
 import competitorResolver from './competitor.resolver';
 
 describe('query.competitors', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to CompetitorDomain.loadCompetitors and return result', async () => {
     // Given
     const args = {
@@ -95,10 +91,6 @@ describe('query.competitors', () => {
 });
 
 describe('mutation.createCompetitor', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to CompetitorApp.insertCompetitor and return created competitor', async () => {
     // Given
     const input: CreateCompetitorInput = {
@@ -152,10 +144,6 @@ describe('mutation.createCompetitor', () => {
 });
 
 describe('mutation.updateCompetitor', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to CompetitorApp.updateCompetitorById and return updated competitor', async () => {
     // Given
     const input: UpdateCompetitorInput = {
@@ -209,10 +197,6 @@ describe('mutation.updateCompetitor', () => {
 });
 
 describe('mutation.deleteCompetitor', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to CompetitorApp.deleteCompetitorById and return deleted competitor', async () => {
     // Given
     const id = uuidv4() as CompetitorId;

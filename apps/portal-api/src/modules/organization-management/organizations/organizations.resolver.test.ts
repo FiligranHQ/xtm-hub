@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -26,10 +26,6 @@ import * as organizationsDomain from './organizations.domain';
 import organizationsResolver from './organizations.resolver';
 
 describe('query.organization', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should load organization by id and return result', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
@@ -53,10 +49,6 @@ describe('query.organization', () => {
 });
 
 describe('query.organizations', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should load all organizations with opts and return result', async () => {
     // Given
     const opts = {
@@ -104,10 +96,6 @@ describe('query.organizations', () => {
 });
 
 describe('query.userOrganizations', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should load organizations by context user id and return result', async () => {
     // Given
     const expected = [
@@ -134,10 +122,6 @@ describe('query.userOrganizations', () => {
 });
 
 describe('mutation.addOrganization', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to organizationsApp.createOrganization and return created organization', async () => {
     // Given
     const input: OrganizationInput = {
@@ -186,10 +170,6 @@ describe('mutation.addOrganization', () => {
 });
 
 describe('mutation.editOrganization', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to organizationsApp.updateOrganization with typed id and return result', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
@@ -233,10 +213,6 @@ describe('mutation.editOrganization', () => {
 });
 
 describe('mutation.deleteOrganization', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to organizationsApp.deleteOrganization and return deleted organization', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;

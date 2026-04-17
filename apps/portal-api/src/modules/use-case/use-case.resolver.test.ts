@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { contextSimpleUserFiligran2, INFO } from '../../../tests/tests.const';
 import {
   AddUseCaseInput,
@@ -15,10 +15,6 @@ import { useCaseDomain } from './use-case.domain';
 import useCaseResolver from './use-case.resolver';
 
 describe('query.useCases', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to useCaseDomain.loadUseCases and return result', async () => {
     // Given
     const opts = {
@@ -63,10 +59,6 @@ describe('query.useCases', () => {
 });
 
 describe('mutation.addUseCase', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to useCaseDomain.insertUseCase and return result', async () => {
     // Given
     const input: AddUseCaseInput = { name: 'Threat Hunting', color: '#ff0000' };
@@ -92,10 +84,6 @@ describe('mutation.addUseCase', () => {
 });
 
 describe('mutation.editUseCase', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to useCaseDomain.updateUseCase with typed id and return result', async () => {
     // Given
     const id = uuidv4() as UseCaseId;
@@ -118,10 +106,6 @@ describe('mutation.editUseCase', () => {
 });
 
 describe('mutation.deleteUseCase', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to useCaseApp.deleteUseCaseBy with typed id mutator and return result', async () => {
     // Given
     const id = uuidv4() as UseCaseId;

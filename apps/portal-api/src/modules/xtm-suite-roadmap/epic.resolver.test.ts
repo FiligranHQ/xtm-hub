@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { contextSimpleUserFiligran2, INFO } from '../../../tests/tests.const';
 import {
   CreateEpicInput,
@@ -23,10 +23,6 @@ import { EpicApp } from './epic.app';
 import epicResolver from './epic.resolver';
 
 describe('epic.document', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should load document by document_id and return first result', async () => {
     // Given
     const documentId = uuidv4() as DocumentId;
@@ -96,10 +92,6 @@ describe('epic.document', () => {
 });
 
 describe('epic.document_id', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should return global ID when document_id is set', () => {
     // Given
     const rawDocumentId = uuidv4() as DocumentId;
@@ -141,10 +133,6 @@ describe('epic.document_id', () => {
 });
 
 describe('query.epics', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to EpicApp.loadEpics and return result', async () => {
     // Given
     const opts = {
@@ -201,10 +189,6 @@ describe('query.epics', () => {
 });
 
 describe('mutation.createEpic', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to EpicApp.createEpic and return created epic', async () => {
     // Given
     const input: CreateEpicInput = {
@@ -262,10 +246,6 @@ describe('mutation.createEpic', () => {
 });
 
 describe('mutation.updateEpic', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to EpicApp.updateEpic with typed id and return updated epic', async () => {
     // Given
     const id = uuidv4() as EpicId;
@@ -315,10 +295,6 @@ describe('mutation.updateEpic', () => {
 });
 
 describe('mutation.deleteEpic', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should delegate to EpicApp.deleteEpic with typed id and return deleted epic', async () => {
     // Given
     const id = uuidv4() as EpicId;

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -29,10 +29,6 @@ const validInput: AutoRegisterPlatformInput = {
 };
 
 describe('mutation.autoRegisterPlatform', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should throw BadRequestError when neither input nor platform is provided', async () => {
     const call = registrationResolver.Mutation!.autoRegisterPlatform!(
       {},

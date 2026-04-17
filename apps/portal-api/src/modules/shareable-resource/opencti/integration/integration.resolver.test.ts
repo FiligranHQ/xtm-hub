@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -30,10 +30,6 @@ const getResolveType = (): IntegrationResolveTypeFn =>
   ).__resolveType;
 
 describe('integration.__resolveType', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it.each`
     integrationType                          | expectedTypeName
     ${IntegrationType.Connector}             | ${'Connector'}
@@ -81,10 +77,6 @@ describe('integration.__resolveType', () => {
 });
 
 describe('integration field resolvers', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   describe('integration.use_cases', () => {
     it('should load use cases by document id', async () => {
       // Given
