@@ -14,7 +14,6 @@ import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInst
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { useTranslations } from 'next-intl';
 
 export const isExternalService = (
@@ -185,14 +184,7 @@ export const registeredPlatformToServiceInstanceCardData = (
 };
 
 const computeUrl = (
-  instance:
-    | serviceList_fragment$data
-    | seoServiceInstanceFragment$data
-    | NonNullable<
-        NonNullable<
-          userServicesOwned_fragment$data['subscription']
-        >['service_instance']
-      >,
+  instance: serviceList_fragment$data | seoServiceInstanceFragment$data,
   seo?: boolean
 ) => {
   const instanceLink = instance.links?.[0]?.url;
@@ -218,32 +210,6 @@ const computeIllustrationDocumentUrl = (
 export const publicServiceInstanceToInstanceCardData = (
   instance: serviceList_fragment$data
 ): ServiceInstanceCardData => {
-  return {
-    id: instance.id,
-    isLinkDisabled:
-      instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
-    name: instance.name,
-    description: instance.description!,
-    displayLinkArrow: isExternalService(
-      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
-    ),
-    illustrationDocumentUrl: computeIllustrationDocumentUrl(
-      instance.id,
-      instance.illustration_document_id
-    ),
-    logoBackgroundImageUrl: buildDocumentUrl(
-      instance.id,
-      instance.logo_document_id
-    ),
-    url: computeUrl(instance),
-    ordering: instance.ordering,
-  };
-};
-
-export const userServicesOwnedServiceToInstanceCardData = ({
-  subscription,
-}: userServicesOwned_fragment$data): ServiceInstanceCardData => {
-  const instance = subscription!.service_instance!;
   return {
     id: instance.id,
     isLinkDisabled:

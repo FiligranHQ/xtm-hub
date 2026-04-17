@@ -182,43 +182,6 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
   }));
 };
 
-export const loadPublicServiceInstances = (
-  userId: UserId,
-  organizationId: OrganizationId,
-  opts
-) => {
-  const { first, after, orderMode, orderBy } = opts;
-
-  const publicServiceQuery = db<ServiceInstance>('ServiceInstance')
-    .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_instance_id', '=', 'ServiceInstance.id')
-
-        .andOnVal('subscription.organization_id', '=', organizationId);
-    })
-    .leftJoin('User_Service as userService', function () {
-      this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
-        'userService.user_id',
-        '=',
-        userId
-      );
-    })
-    .select('ServiceInstance.*')
-    .where('ServiceInstance.public', '=', true)
-    .andWhereRaw(`("subscription"."id" IS NULL OR "userService"."id" IS NULL)`);
-
-  return paginate<ServiceInstance, ServiceConnection>(
-    'ServiceInstance',
-    {
-      first,
-      after,
-      orderMode,
-      orderBy,
-    },
-    undefined,
-    publicServiceQuery
-  );
-};
-
 export const loadIsSubscribed = async (
   organizationId: OrganizationId,
   id: ServiceInstanceId

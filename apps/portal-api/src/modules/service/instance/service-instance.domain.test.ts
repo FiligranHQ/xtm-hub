@@ -38,7 +38,6 @@ import {
   loadLinks,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
-  loadPublicServiceInstances,
   loadServiceInstanceSubscriptions,
   loadServiceWithSubscriptions,
   loadSubscribedServiceInstancesByIdentifier,
@@ -797,44 +796,6 @@ describe('service instance domain', () => {
 
       // Then
       expect(result).toHaveLength(0);
-    });
-  });
-
-  describe('loadPublicServiceInstances', () => {
-    const publicServiceInstanceId = uuidv4() as ServiceInstanceId;
-    const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
-
-    beforeEach(async () => {
-      await TestHelper.serviceInstance.create({
-        id: publicServiceInstanceId,
-        public: true,
-      });
-      await TestHelper.serviceInstance.create({
-        id: privateServiceInstanceId,
-        public: false,
-      });
-    });
-
-    afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ id: publicServiceInstanceId });
-      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
-    });
-
-    it('should return only public service instances', async () => {
-      const result = await loadPublicServiceInstances(
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        { first: 10, orderBy: 'name', orderMode: 'asc' }
-      );
-
-      expect(result.edges).toHaveLength(10);
-
-      expect(result.edges.map((e) => e.node?.id)).toContain(
-        publicServiceInstanceId
-      );
-      expect(result.edges.map((e) => e.node?.id)).not.toContain(
-        privateServiceInstanceId
-      );
     });
   });
 });

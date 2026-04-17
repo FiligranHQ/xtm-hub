@@ -30,6 +30,7 @@ enum ServiceInstanceTag {
 enum ServiceInstanceFilterKey {
   tags
   service_definition_identifier
+  public
 }
 
 input ServiceInstanceFilter {
@@ -109,12 +110,6 @@ type Mutation {
 }
 
 type Query {
-  publicServiceInstances(
-    first: Int!
-    after: ID
-    orderBy: ServiceInstanceOrdering!
-    orderMode: OrderingMode!
-  ): ServiceConnection! @auth
   serviceInstances(
     first: Int!
     after: ID
@@ -122,7 +117,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     filters: [ServiceInstanceFilter!]
-  ): ServiceConnection! @auth(portalCapa: [BYPASS])
+  ): ServiceConnection! @auth
   serviceInstanceLinksByTags(
     tags: [ServiceInstanceTag!]!
   ): [SeoServiceInstance!]!

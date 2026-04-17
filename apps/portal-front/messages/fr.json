@@ -896,7 +896,6 @@
     "GoToLabel": "Consulter",
     "GoToManagement": "Aller à la gestion des services",
     "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
-    "Join": "Rejoindre",
     "List": {
       "Filter": {
         "Add": "Ajouter un filtre",
@@ -976,7 +975,6 @@
       "FromVersion": "Depuis la version",
       "Share": "Partager"
     },
-    "Subscribe": "Souscrire",
     "SubscribeOrganization": "Souscrire une organisation",
     "SubscribeService": "Souscrire au service {serviceName}",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
