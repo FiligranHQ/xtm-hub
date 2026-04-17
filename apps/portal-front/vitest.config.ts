@@ -17,6 +17,7 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}', 'app/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
+      include: ['./src/**', './app/**'],
       exclude: [
         'node_modules/**',
         'dist/**',
