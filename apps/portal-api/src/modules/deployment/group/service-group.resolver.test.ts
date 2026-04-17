@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   SERVICES,
 } from '../../../../tests/tests.const';
 import { Success } from '../../../__generated__/resolvers-types';
@@ -27,7 +27,7 @@ describe('serviceGroup.users', () => {
       { id: groupId } as unknown as never,
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -48,7 +48,7 @@ describe('query.serviceGroups', () => {
       {},
       { serviceInstanceId },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -70,7 +70,7 @@ describe('query.serviceGroups', () => {
       {},
       { serviceInstanceId },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -98,7 +98,7 @@ describe('mutation.updateServiceGroups', () => {
         },
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -121,7 +121,7 @@ describe('mutation.updateServiceGroups', () => {
       {},
       { input: { groups: [{ id: groupId, userIds: [globalUserId] }] } },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

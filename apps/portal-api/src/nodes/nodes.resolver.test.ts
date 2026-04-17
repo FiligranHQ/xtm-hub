@@ -1,7 +1,10 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
-import { contextSimpleUserFiligran2, INFO } from '../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  GRAPHQL_RESOLVE_INFO,
+} from '../../tests/tests.const';
 import { ErrorType } from '../utils/error/error.type';
 import nodesResolver from './nodes.resolver';
 
@@ -17,7 +20,7 @@ describe('query.node', () => {
       {},
       { id: toGlobalId('Organization', uuidv4()) },
       {} as never,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({
@@ -36,7 +39,7 @@ describe('query.node', () => {
       {},
       { id: toGlobalId('Organization', rawId) },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(db).toHaveBeenCalledWith('Organization');
@@ -56,7 +59,7 @@ describe('node type resolvers', () => {
         node,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
       expect(result).toBe(toGlobalId('Organization', node.id));
     });

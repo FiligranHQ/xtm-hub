@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   SERVICES,
 } from '../../../../../tests/tests.const';
 import {
@@ -32,7 +32,7 @@ describe('customDashboard field resolvers', () => {
         { id: documentId } as unknown as CustomDashboard,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -59,7 +59,7 @@ describe('customDashboard field resolvers', () => {
         { id: documentId } as unknown as CustomDashboard,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -84,7 +84,7 @@ describe('customDashboard field resolvers', () => {
         { id: documentId } as unknown as CustomDashboard,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -108,7 +108,7 @@ describe('customDashboard field resolvers', () => {
         { id: documentId } as unknown as CustomDashboard,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -136,7 +136,7 @@ describe('customDashboard field resolvers', () => {
         } as unknown as CustomDashboard,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -165,7 +165,7 @@ describe('customDashboard field resolvers', () => {
         } as unknown as CustomDashboard,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then

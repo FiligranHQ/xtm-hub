@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
 } from '../../../../../../tests/tests.const';
 import { IngestManifestApp } from './ingest-manifest.app';
 import ingestManifestResolver from './ingest-manifest.resolver';
@@ -20,7 +20,7 @@ describe('query.updateOpenCTIManifest', () => {
       {},
       { tag },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -40,7 +40,7 @@ describe('query.updateOpenCTIManifest', () => {
       {},
       { tag },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

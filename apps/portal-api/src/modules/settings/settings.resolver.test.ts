@@ -1,6 +1,9 @@
 import config from 'config';
 import { describe, expect, it, vi } from 'vitest';
-import { contextSimpleUserFiligran2, INFO } from '../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  GRAPHQL_RESOLVE_INFO,
+} from '../../../tests/tests.const';
 import { FeatureFlag } from '../../__generated__/resolvers-types';
 import settingsResolver from './settings.resolver';
 
@@ -28,7 +31,7 @@ describe('query.settings', () => {
       {},
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -45,7 +48,12 @@ describe('query.settings', () => {
     vi.mocked(config.get).mockReturnValue('mocked');
 
     // When
-    settingsResolver.Query!.settings!({}, {}, contextSimpleUserFiligran2, INFO);
+    settingsResolver.Query!.settings!(
+      {},
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     // Then
     expect(config.get).toHaveBeenCalledWith('login_settings');

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   SERVICES,
 } from '../../../tests/tests.const';
 import {
@@ -39,7 +39,7 @@ describe('mutation.createDocument', () => {
       {},
       { serviceInstanceId, input: {} } as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(result).toEqual(expected);
@@ -54,7 +54,7 @@ describe('mutation.createDocument', () => {
       {},
       { serviceInstanceId: SERVICES.INSTANCES.VAULT.ID, input: {} } as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({ name: ErrorType.AlreadyExists });
@@ -69,7 +69,7 @@ describe('mutation.createDocument', () => {
       {},
       { serviceInstanceId: SERVICES.INSTANCES.VAULT.ID, input: {} } as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
@@ -92,7 +92,7 @@ describe('mutation.updateDocument', () => {
         input: {},
       } as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(DocumentApp.updateDocument).toHaveBeenCalledWith(
@@ -115,7 +115,7 @@ describe('mutation.updateDocument', () => {
         input: {},
       } as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({ name: ErrorType.AlreadyExists });
@@ -135,7 +135,7 @@ describe('mutation.updateDocument', () => {
         input: {},
       } as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
@@ -157,7 +157,7 @@ describe('mutation.deleteDocument', () => {
         forceDelete: false,
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(DocumentApp.deleteDocument).toHaveBeenCalledWith(
@@ -181,7 +181,7 @@ describe('mutation.deleteDocument', () => {
         forceDelete: false,
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
@@ -213,7 +213,7 @@ describe('mutation.incrementShareNumberDocument', () => {
       {},
       { documentId: toGlobalId('Document', rawDocId) },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(result).toEqual(updated);
@@ -228,7 +228,7 @@ describe('mutation.incrementShareNumberDocument', () => {
       {},
       { documentId: toGlobalId('Document', uuidv4()) },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({
@@ -299,7 +299,12 @@ describe('document field resolvers', () => {
 
     const result = await (
       documentResolver.Document as never
-    ).children_documents({ id }, {}, contextSimpleUserFiligran2, INFO);
+    ).children_documents(
+      { id },
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     expect(DocumentChildrenDomain.loadChildrenDocuments).toHaveBeenCalledWith(
       id,
@@ -317,7 +322,7 @@ describe('document field resolvers', () => {
       { id },
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(DocumentDomain.loadUploader).toHaveBeenCalledWith(id);
@@ -333,7 +338,12 @@ describe('document field resolvers', () => {
 
     const result = await (
       documentResolver.Document as never
-    ).uploader_organization({ id }, {}, contextSimpleUserFiligran2, INFO);
+    ).uploader_organization(
+      { id },
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     expect(DocumentDomain.loadUploaderOrganization).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
@@ -350,7 +360,7 @@ describe('document field resolvers', () => {
       { service_instance_id: serviceInstanceId },
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(serviceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
@@ -370,7 +380,7 @@ describe('document field resolvers', () => {
       { service_instance_id: serviceInstanceId },
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(subscriptionDomain.loadSubscriptionBy).toHaveBeenCalledWith({
@@ -392,7 +402,7 @@ describe('query.documentExists', () => {
         service_instance_id: SERVICES.INSTANCES.VAULT.ID,
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(documentHelper.checkDocumentExists).toHaveBeenCalledWith(
@@ -412,7 +422,7 @@ describe('query.publicDocuments', () => {
       {},
       { service_instance_id: SERVICES.INSTANCES.VAULT.ID } as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(result).toEqual(expected);
@@ -430,7 +440,7 @@ describe('query.publicDocumentsByServiceSlug', () => {
       {},
       { serviceInstanceSlug: 'my-service' },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(DocumentApp.loadPublicDocumentsByServiceSlug).toHaveBeenCalledWith(
@@ -451,7 +461,7 @@ describe('query.publicDocumentBySlug', () => {
       {},
       { serviceInstanceId: SERVICES.INSTANCES.VAULT.ID, slug: 'my-slug' },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(DocumentApp.loadPublicDocumentBySlug).toHaveBeenCalledWith(
@@ -471,7 +481,7 @@ describe('query.documents', () => {
       {},
       { service_instance_id: SERVICES.INSTANCES.VAULT.ID } as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(result).toEqual(expected);
@@ -489,7 +499,7 @@ describe('query.document', () => {
       {},
       { documentId: globalDocId },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(DocumentApp.loadDocument).toHaveBeenCalledWith(rawDocId);

@@ -23,7 +23,7 @@ import {
   PLATFORM_ORGANIZATION_UUID,
 } from '../src/portal.const';
 
-export const INFO = {} as GraphQLResolveInfo;
+export const GRAPHQL_RESOLVE_INFO = {} as GraphQLResolveInfo;
 
 export const TEST_ORGANIZATIONS = {
   FILIGRAN: {

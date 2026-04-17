@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
 } from '../../../../../tests/tests.const';
 import {
   AutoRegisterPlatformInput,
@@ -34,7 +34,7 @@ describe('mutation.autoRegisterPlatform', () => {
       {},
       { platform: null, input: null },
       makeContext() as never,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({
@@ -53,7 +53,7 @@ describe('mutation.autoRegisterPlatform', () => {
       {},
       { input: validInput, platform: null },
       makeContext(token) as never,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(registrationApp.autoRegisterPlatform).toHaveBeenCalledWith(
@@ -72,7 +72,7 @@ describe('mutation.autoRegisterPlatform', () => {
       {},
       { platform: validInput.platform, input: null },
       makeContext() as never,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(registrationApp.autoRegisterPlatform).toHaveBeenCalledWith(null, {
@@ -90,7 +90,7 @@ describe('mutation.autoRegisterPlatform', () => {
       {},
       { input: validInput, platform: null },
       makeContext() as never,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });

@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
 } from '../../../../../tests/tests.const';
 import { RefreshUserPlatformTokenResponse } from '../../../../__generated__/resolvers-types';
 import { NotFoundErrorCode } from '../../../../utils/error/error.code';
@@ -23,7 +23,12 @@ describe('mutation.refreshUserPlatformToken', () => {
 
     // When
     const result = await registrationResolver.Mutation!
-      .refreshUserPlatformToken!({}, {}, contextSimpleUserFiligran2, INFO);
+      .refreshUserPlatformToken!(
+      {},
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     // Then
     expect(registrationApp.refreshUserPlatformToken).toHaveBeenCalledWith(
@@ -43,7 +48,7 @@ describe('mutation.refreshUserPlatformToken', () => {
       {},
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

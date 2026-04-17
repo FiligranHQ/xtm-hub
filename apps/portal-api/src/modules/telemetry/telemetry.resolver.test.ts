@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   SERVICES,
 } from '../../../tests/tests.const';
 import {
@@ -28,7 +28,7 @@ describe('mutation.sendTelemetryEvent', () => {
       {},
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -46,7 +46,12 @@ describe('sendTelemetryMutation.oneClickDeploy', () => {
 
     // When
     const result = await telemetryResolver.SendTelemetryMutation!
-      .oneClickDeploy!({}, { input }, contextSimpleUserFiligran2, INFO);
+      .oneClickDeploy!(
+      {},
+      { input },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     // Then
     expect(telemetryApp.sendOneClickDeployEvent).toHaveBeenCalledWith({
@@ -67,7 +72,12 @@ describe('sendTelemetryMutation.oneClickDeploy', () => {
 
     // When
     const result = await telemetryResolver.SendTelemetryMutation!
-      .oneClickDeploy!({}, { input }, contextSimpleUserFiligran2, INFO);
+      .oneClickDeploy!(
+      {},
+      { input },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     // Then
     expect(logApp.error).toHaveBeenCalledWith(
@@ -89,7 +99,12 @@ describe('sendTelemetryMutation.oneClickDeploy', () => {
 
     // When
     const result = await telemetryResolver.SendTelemetryMutation!
-      .oneClickDeploy!({}, { input }, contextSimpleUserFiligran2, INFO);
+      .oneClickDeploy!(
+      {},
+      { input },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     // Then
     expect(result).toMatchObject({

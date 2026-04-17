@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
@@ -43,7 +43,7 @@ describe('userService field resolvers', () => {
         { user_id: userId } as unknown as UserService,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -69,7 +69,7 @@ describe('userService field resolvers', () => {
         { id: userServiceId } as unknown as UserService,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -96,7 +96,7 @@ describe('userService field resolvers', () => {
         { id: userServiceId } as unknown as UserService,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -148,7 +148,7 @@ describe('query.userServiceOwned', () => {
       {},
       paginationArgs,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -203,7 +203,7 @@ describe('query.userServiceFromSubscription', () => {
       {},
       { ...paginationArgs, subscription_id: globalSubscriptionId },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -232,7 +232,7 @@ describe('mutation.addYourselfInUserService', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -260,7 +260,7 @@ describe('mutation.addYourselfInUserService', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -288,7 +288,7 @@ describe('mutation.addUserService', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -320,7 +320,7 @@ describe('mutation.addUserService', () => {
         },
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -350,7 +350,7 @@ describe('mutation.deleteUserService', () => {
       {},
       { input: { email, subscriptionId: globalSubscriptionId } },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -376,7 +376,7 @@ describe('mutation.deleteUserService', () => {
         input: { email: 'user@test.com', subscriptionId: globalSubscriptionId },
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

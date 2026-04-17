@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
 } from '../../../../tests/tests.const';
 import {
   Competitor,
@@ -59,7 +59,7 @@ describe('query.competitors', () => {
       {},
       args,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -82,7 +82,7 @@ describe('query.competitors', () => {
         orderBy: CompetitorOrdering.Name,
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -111,7 +111,7 @@ describe('mutation.createCompetitor', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -135,7 +135,7 @@ describe('mutation.createCompetitor', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -162,7 +162,7 @@ describe('mutation.updateCompetitor', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -188,7 +188,7 @@ describe('mutation.updateCompetitor', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -213,7 +213,7 @@ describe('mutation.deleteCompetitor', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -233,7 +233,7 @@ describe('mutation.deleteCompetitor', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

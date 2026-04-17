@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
-import { contextSimpleUserFiligran2, INFO } from '../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  GRAPHQL_RESOLVE_INFO,
+} from '../../../tests/tests.const';
 import {
   AddUseCaseInput,
   OrderingMode,
@@ -49,7 +52,7 @@ describe('query.useCases', () => {
       {},
       opts,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -74,7 +77,7 @@ describe('mutation.addUseCase', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -96,7 +99,7 @@ describe('mutation.editUseCase', () => {
       {},
       { id, input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -117,7 +120,7 @@ describe('mutation.deleteUseCase', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

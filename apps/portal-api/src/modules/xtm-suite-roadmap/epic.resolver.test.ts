@@ -1,7 +1,10 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
-import { contextSimpleUserFiligran2, INFO } from '../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  GRAPHQL_RESOLVE_INFO,
+} from '../../../tests/tests.const';
 import {
   CreateEpicInput,
   EpicConnection,
@@ -40,7 +43,7 @@ describe('epic.document', () => {
       epicParent,
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -62,7 +65,7 @@ describe('epic.document', () => {
       epicParent,
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -83,7 +86,7 @@ describe('epic.document', () => {
       epicParent,
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -105,7 +108,7 @@ describe('epic.document_id', () => {
       epicParent,
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -124,7 +127,7 @@ describe('epic.document_id', () => {
       epicParent,
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -179,7 +182,7 @@ describe('query.epics', () => {
       {},
       opts,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -211,7 +214,7 @@ describe('mutation.createEpic', () => {
       {},
       { input, document: uploads },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -237,7 +240,7 @@ describe('mutation.createEpic', () => {
       {},
       { input, document: [] },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -262,7 +265,7 @@ describe('mutation.updateEpic', () => {
       {},
       { id, input, document: uploads },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -286,7 +289,7 @@ describe('mutation.updateEpic', () => {
         document: [],
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -306,7 +309,7 @@ describe('mutation.deleteEpic', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -326,7 +329,7 @@ describe('mutation.deleteEpic', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

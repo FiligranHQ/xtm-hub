@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   SERVICES,
 } from '../../../../tests/tests.const';
 import { IntegrationType } from '../../../__generated__/resolvers-types';
@@ -76,7 +76,7 @@ describe('serviceInstance field resolvers', () => {
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as never
-    ).links({ id }, {}, contextSimpleUserFiligran2, INFO);
+    ).links({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
 
     expect(serviceInstanceDomain.loadLinks).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
@@ -92,7 +92,12 @@ describe('serviceInstance field resolvers', () => {
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as never
-    ).service_definition({ id }, {}, contextSimpleUserFiligran2, INFO);
+    ).service_definition(
+      { id },
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     expect(result).toEqual(expected);
   });
@@ -103,7 +108,12 @@ describe('serviceInstance field resolvers', () => {
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as never
-    ).organization_subscribed({ id }, {}, contextSimpleUserFiligran2, INFO);
+    ).organization_subscribed(
+      { id },
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     expect(serviceInstanceDomain.loadIsSubscribed).toHaveBeenCalledWith(
       contextSimpleUserFiligran2.user.selected_organization_id,
@@ -121,7 +131,12 @@ describe('serviceInstance field resolvers', () => {
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as never
-    ).capabilities({ id }, {}, contextSimpleUserFiligran2, INFO);
+    ).capabilities(
+      { id },
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     expect(userServiceCapabilityHelper.loadCapabilities).toHaveBeenCalledWith(
       id,
@@ -137,7 +152,7 @@ describe('serviceInstance field resolvers', () => {
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as never
-    ).user_joined({ id }, {}, contextSimpleUserFiligran2, INFO);
+    ).user_joined({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
 
     expect(serviceInstanceDomain.getUserJoined).toHaveBeenCalledWith(
       contextSimpleUserFiligran2.user.id,
@@ -157,7 +172,12 @@ describe('serviceInstance field resolvers', () => {
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as never
-    ).subscriptions({ id }, {}, contextSimpleUserFiligran2, INFO);
+    ).subscriptions(
+      { id },
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     expect(
       serviceInstanceDomain.loadServiceInstanceSubscriptions
@@ -177,7 +197,7 @@ describe('query.serviceInstances', () => {
       {},
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(result).toEqual(expected);
@@ -196,7 +216,7 @@ describe('query.publicServiceInstances', () => {
       {},
       {} as never,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(
@@ -223,7 +243,7 @@ describe('query.serviceInstanceLinksByTags', () => {
       {},
       { tags: ['tag1'] },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(
@@ -246,7 +266,7 @@ describe('query.serviceInstanceById', () => {
       {},
       { service_instance_id: id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(
@@ -270,7 +290,7 @@ describe('query.serviceInstanceByIdWithSubscriptions', () => {
       {},
       { service_instance_id: id, searchTerm: 'test' },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(
@@ -293,7 +313,7 @@ describe('query.subscribedServiceInstancesByIdentifier', () => {
       {},
       { identifier: 'opencti' as never },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(
@@ -314,7 +334,7 @@ describe('query.seoServiceInstances', () => {
       {},
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(result).toEqual(expected);
@@ -332,7 +352,7 @@ describe('query.seoServiceInstance', () => {
       {},
       { slug: 'my-service' },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(result).toEqual(expected);
@@ -347,7 +367,7 @@ describe('query.seoServiceInstance', () => {
       {},
       { slug: 'unknown' },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
@@ -362,7 +382,7 @@ describe('query.seoServiceInstance', () => {
       {},
       { slug: 'my-service' },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({
@@ -386,7 +406,7 @@ describe('mutation.addServicePicture', () => {
         isLogo: true,
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(ServiceInstanceApp.addServicePicture).toHaveBeenCalledWith(
@@ -412,7 +432,7 @@ describe('mutation.updatePlatformServiceMetadata', () => {
       {},
       { input, document: null },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     expect(
@@ -440,7 +460,7 @@ describe('mutation.updatePlatformServiceMetadata', () => {
         document: null,
       },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     await expect(call).rejects.toMatchObject({

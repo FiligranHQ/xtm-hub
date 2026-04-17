@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
@@ -39,7 +39,7 @@ describe('query.organization', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -86,7 +86,7 @@ describe('query.organizations', () => {
       {},
       opts,
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -110,7 +110,7 @@ describe('query.userOrganizations', () => {
       {},
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -141,7 +141,7 @@ describe('mutation.addOrganization', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -161,7 +161,7 @@ describe('mutation.addOrganization', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -184,7 +184,7 @@ describe('mutation.editOrganization', () => {
       {},
       { id, input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -204,7 +204,7 @@ describe('mutation.editOrganization', () => {
       {},
       { id, input: { name: 'Updated Org' } },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -226,7 +226,7 @@ describe('mutation.deleteOrganization', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -246,7 +246,7 @@ describe('mutation.deleteOrganization', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -267,7 +267,7 @@ describe('mutation.deleteOrganization', () => {
       {},
       { id },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

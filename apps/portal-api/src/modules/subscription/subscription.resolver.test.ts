@@ -5,7 +5,7 @@ import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   contextSimpleUserFiligran2,
   contextSimpleUserSecondOrga,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -105,7 +105,12 @@ describe('subscription resolver — unit tests', () => {
 
       const result = await (
         subscriptionResolver.SubscriptionModel as never
-      ).subscription_capability({ id }, {}, contextSimpleUserFiligran2, INFO);
+      ).subscription_capability(
+        { id },
+        {},
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
 
       expect(subscriptionDomain.getSubscriptionCapability).toHaveBeenCalledWith(
         id
@@ -127,7 +132,7 @@ describe('subscription resolver — unit tests', () => {
         { service_instance_id: serviceInstanceId },
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(serviceInstanceDomain.loadServiceInstanceBy).toHaveBeenCalledWith(
@@ -146,7 +151,12 @@ describe('subscription resolver — unit tests', () => {
 
       const result = await (
         subscriptionResolver.SubscriptionModel as never
-      ).user_service({ id }, {}, contextSimpleUserFiligran2, INFO);
+      ).user_service(
+        { id },
+        {},
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
 
       expect(subscriptionDomain.getUserService).toHaveBeenCalledWith(id);
       expect(result).toEqual(expected);
@@ -163,7 +173,12 @@ describe('subscription resolver — unit tests', () => {
 
       const result = await (
         subscriptionResolver.SubscriptionCapability as never
-      ).service_capability({ id }, {}, contextSimpleUserFiligran2, INFO);
+      ).service_capability(
+        { id },
+        {},
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
 
       expect(subscriptionDomain.getServiceCapability).toHaveBeenCalledWith(id);
       expect(result).toEqual(expected);
@@ -194,7 +209,7 @@ describe('subscription resolver — unit tests', () => {
           end_date: null,
         },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(
@@ -226,7 +241,7 @@ describe('subscription resolver — unit tests', () => {
           end_date: null,
         },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(
@@ -255,7 +270,7 @@ describe('subscription resolver — unit tests', () => {
           end_date: null,
         },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       await expect(call).rejects.toMatchObject({
@@ -282,7 +297,7 @@ describe('subscription resolver — unit tests', () => {
         {},
         { subscription_id: globalId },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(subscriptionApp.deleteSubscription).toHaveBeenCalledWith(rawId);
@@ -298,7 +313,7 @@ describe('subscription resolver — unit tests', () => {
         {},
         { subscription_id: toGlobalId('Subscription', uuidv4()) },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
@@ -319,7 +334,7 @@ describe('subscription resolver — unit tests', () => {
         {},
         { subscription_id: globalId },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(
