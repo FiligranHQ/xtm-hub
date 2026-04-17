@@ -25,7 +25,7 @@ import { organizationsApp } from './organizations.app';
 import * as organizationsDomain from './organizations.domain';
 import organizationsResolver from './organizations.resolver';
 
-describe('query.organization', () => {
+describe('organization GraphQL query', () => {
   it('should load organization by id and return result', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
@@ -50,7 +50,7 @@ describe('query.organization', () => {
   });
 });
 
-describe('query.organizations', () => {
+describe('organizations GraphQL query', () => {
   it('should load all organizations with opts and return result', async () => {
     // Given
     const opts = {
@@ -97,7 +97,7 @@ describe('query.organizations', () => {
   });
 });
 
-describe('query.userOrganizations', () => {
+describe('user organizations GraphQL query', () => {
   it('should load organizations by context user id and return result', async () => {
     // Given
     const expected = [
@@ -125,7 +125,7 @@ describe('query.userOrganizations', () => {
   });
 });
 
-describe('mutation.addOrganization', () => {
+describe('add organization GraphQL mutation', () => {
   it('should delegate to organizationsApp.createOrganization and return created organization', async () => {
     // Given
     const input: OrganizationInput = {
@@ -175,7 +175,7 @@ describe('mutation.addOrganization', () => {
   });
 });
 
-describe('mutation.editOrganization', () => {
+describe('edit organization GraphQL mutation', () => {
   it('should delegate to organizationsApp.updateOrganization with typed id and return result', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
@@ -220,7 +220,7 @@ describe('mutation.editOrganization', () => {
   });
 });
 
-describe('mutation.deleteOrganization', () => {
+describe('delete organization GraphQL mutation', () => {
   it('should delegate to organizationsApp.deleteOrganization and return deleted organization', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;

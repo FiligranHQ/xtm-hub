@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { AppLogsCategory, logApp } from '../../utils/app-logger.util';
 import logResolver from './log.resolver';
 
-describe('mutation.frontendErrorLog', () => {
+describe('frontend error log GraphQL mutation', () => {
   it('should call logApp.error with the message, stacks and FRONTEND category', () => {
     // Given
     const message = 'Something went wrong in the UI';

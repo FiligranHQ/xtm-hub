@@ -37,7 +37,7 @@ import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
-describe('mutation.createDocument', () => {
+describe('create document GraphQL mutation', () => {
   it('should delegate to DocumentApp.createDocument and return result', async () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: uuidv4() as DocumentId } as unknown as Awaited<
@@ -92,7 +92,7 @@ describe('mutation.createDocument', () => {
   });
 });
 
-describe('mutation.updateDocument', () => {
+describe('update document GraphQL mutation', () => {
   it('should decode documentId and delegate to DocumentApp.updateDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);
@@ -160,7 +160,7 @@ describe('mutation.updateDocument', () => {
   });
 });
 
-describe('mutation.deleteDocument', () => {
+describe('delete document GraphQL mutation', () => {
   it('should decode documentId and delegate to DocumentApp.deleteDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);
@@ -208,7 +208,7 @@ describe('mutation.deleteDocument', () => {
   });
 });
 
-describe('mutation.incrementShareNumberDocument', () => {
+describe('increment share number document GraphQL mutation', () => {
   it('should load document, update counters, and return result', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const doc = {
@@ -425,7 +425,7 @@ describe('document field resolvers', () => {
   });
 });
 
-describe('query.documentExists', () => {
+describe('document exists GraphQL query', () => {
   it('should delegate to checkDocumentExists and return result', async () => {
     vi.spyOn(documentHelper, 'checkDocumentExists').mockResolvedValue(false);
 
@@ -447,7 +447,7 @@ describe('query.documentExists', () => {
   });
 });
 
-describe('query.publicDocuments', () => {
+describe('public documents GraphQL query', () => {
   it('should delegate to DocumentApp.loadPublicDocuments and return result', async () => {
     const expected = [] as unknown as Awaited<
       ReturnType<typeof DocumentApp.loadPublicDocuments>
@@ -467,7 +467,7 @@ describe('query.publicDocuments', () => {
   });
 });
 
-describe('query.publicDocumentsByServiceSlug', () => {
+describe('public documents by service slug GraphQL query', () => {
   it('should delegate to DocumentApp.loadPublicDocumentsByServiceSlug and return result', async () => {
     const expected = [] as unknown as Awaited<
       ReturnType<typeof DocumentApp.loadPublicDocumentsByServiceSlug>
@@ -490,7 +490,7 @@ describe('query.publicDocumentsByServiceSlug', () => {
   });
 });
 
-describe('query.publicDocumentBySlug', () => {
+describe('public document by slug GraphQL query', () => {
   it('should delegate to DocumentApp.loadPublicDocumentBySlug and return result', async () => {
     const expected = { id: uuidv4() } as unknown as Awaited<
       ReturnType<typeof DocumentApp.loadPublicDocumentBySlug>
@@ -514,7 +514,7 @@ describe('query.publicDocumentBySlug', () => {
   });
 });
 
-describe('query.documents', () => {
+describe('documents GraphQL query', () => {
   it('should delegate to DocumentApp.loadDocuments and return result', async () => {
     const expected = [] as unknown as Awaited<
       ReturnType<typeof DocumentApp.loadDocuments>
@@ -534,7 +534,7 @@ describe('query.documents', () => {
   });
 });
 
-describe('query.document', () => {
+describe('document GraphQL query', () => {
   it('should decode documentId and delegate to DocumentApp.loadDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);

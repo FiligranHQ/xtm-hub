@@ -243,7 +243,7 @@ describe('deployment resolver', () => {
 });
 
 describe('deployment resolver — unit tests', () => {
-  describe('query.deploymentRequests', () => {
+  describe('deployment requests GraphQL query', () => {
     it('should delegate to DeploymentApp.loadPlatformDeploymentRequests and return result', async () => {
       const expected = {
         edges: [],
@@ -275,7 +275,7 @@ describe('deployment resolver — unit tests', () => {
     });
   });
 
-  describe('query.deploymentRequestsList', () => {
+  describe('deployment requests list GraphQL query', () => {
     it('should delegate to DeploymentRequestDomain.loadDeploymentRequests', async () => {
       const expected = { edges: [] } as unknown as DeploymentRequestConnection;
       vi.spyOn(
@@ -307,7 +307,7 @@ describe('deployment resolver — unit tests', () => {
     });
   });
 
-  describe('query.trialDeployments', () => {
+  describe('trial deployments GraphQL query', () => {
     it('should delegate to DeploymentApp.loadTrialDeployments and return result', async () => {
       const expected = [] as unknown as Awaited<
         ReturnType<typeof DeploymentApp.loadTrialDeployments>
@@ -335,7 +335,7 @@ describe('deployment resolver — unit tests', () => {
     });
   });
 
-  describe('mutation.cancelDeploymentRequest', () => {
+  describe('cancel deployment request GraphQL mutation', () => {
     it('should call DeploymentApp.cancelDeploymentRequest with isAdmin=false', async () => {
       const expected = { id: 'req-1' } as unknown as DeploymentRequest;
       vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockResolvedValue(
@@ -374,7 +374,7 @@ describe('deployment resolver — unit tests', () => {
     });
   });
 
-  describe('mutation.adminCancelDeploymentRequest', () => {
+  describe('admin cancel deployment request GraphQL mutation', () => {
     it('should call DeploymentApp.cancelDeploymentRequest with isAdmin=true', async () => {
       const expected = { id: 'req-1' } as DeploymentRequest;
       vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockResolvedValue(
@@ -406,7 +406,7 @@ describe('deployment resolver — unit tests', () => {
     });
   });
 
-  describe('mutation.reorderDeploymentRequestInQueue', () => {
+  describe('reorder deployment request in queue GraphQL mutation', () => {
     it('should delegate to DeploymentApp.reorderDeploymentRequestInQueue and return result', async () => {
       const expected = { success: true } as unknown as Awaited<
         ReturnType<typeof DeploymentApp.reorderDeploymentRequestInQueue>
@@ -432,7 +432,7 @@ describe('deployment resolver — unit tests', () => {
     });
   });
 
-  describe('mutation.updateDeploymentQuotaCapacity', () => {
+  describe('update deployment quota capacity GraphQL mutation', () => {
     it('should delegate to DeploymentApp.updateDeploymentQuotaCapacity and return result', async () => {
       const expected = { success: true } as unknown as Awaited<
         ReturnType<typeof DeploymentApp.updateDeploymentQuotaCapacity>

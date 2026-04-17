@@ -21,7 +21,7 @@ const buildInput = (): OneClickDeployInput => ({
   platform_identifier: PlatformIdentifier.Opencti,
 });
 
-describe('mutation.sendTelemetryEvent', () => {
+describe('send telemetry event GraphQL mutation', () => {
   it('should return empty object as placeholder', () => {
     // Given / When
     const result = telemetryResolver.Mutation!.sendTelemetryEvent!(
@@ -36,7 +36,7 @@ describe('mutation.sendTelemetryEvent', () => {
   });
 });
 
-describe('sendTelemetryMutation.oneClickDeploy', () => {
+describe('one click deploy GraphQL mutation', () => {
   it('should call telemetryApp.sendOneClickDeployEvent and return result true on success', async () => {
     // Given
     const input = buildInput();

@@ -13,7 +13,7 @@ import { ErrorType } from '../../../utils/error/error.type';
 import { serviceCapabilityApp } from './service-capability.app';
 import serviceCapabilityResolver from './service-capability.resolver';
 
-describe('mutation.editServiceCapability', () => {
+describe('edit service capability GraphQL mutation', () => {
   it('should decode user_service_id from global ID and delegate to serviceCapabilityApp', async () => {
     // Given
     const rawUserServiceId = uuidv4() as UserServiceId;

@@ -21,7 +21,7 @@ import { CompetitorApp } from './competitor.app';
 import { CompetitorDomain } from './competitor.domain';
 import competitorResolver from './competitor.resolver';
 
-describe('query.competitors', () => {
+describe('competitors GraphQL query', () => {
   it('should delegate to CompetitorDomain.loadCompetitors and return result', async () => {
     // Given
     const args = {
@@ -90,7 +90,7 @@ describe('query.competitors', () => {
   });
 });
 
-describe('mutation.createCompetitor', () => {
+describe('create competitor GraphQL mutation', () => {
   it('should delegate to CompetitorApp.insertCompetitor and return created competitor', async () => {
     // Given
     const input: CreateCompetitorInput = {
@@ -143,7 +143,7 @@ describe('mutation.createCompetitor', () => {
   });
 });
 
-describe('mutation.updateCompetitor', () => {
+describe('update competitor GraphQL mutation', () => {
   it('should delegate to CompetitorApp.updateCompetitorById and return updated competitor', async () => {
     // Given
     const input: UpdateCompetitorInput = {
@@ -196,7 +196,7 @@ describe('mutation.updateCompetitor', () => {
   });
 });
 
-describe('mutation.deleteCompetitor', () => {
+describe('delete competitor GraphQL mutation', () => {
   it('should delegate to CompetitorApp.deleteCompetitorById and return deleted competitor', async () => {
     // Given
     const id = uuidv4() as CompetitorId;

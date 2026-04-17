@@ -16,7 +16,7 @@ vi.mock('../../knexfile', () => ({
 
 import { db } from '../../knexfile';
 
-describe('query.node', () => {
+describe('node GraphQL query', () => {
   it('should throw UNAUTHENTICATED when no user is present in context', async () => {
     const call = nodesResolver.Query!.node!(
       {},

@@ -114,7 +114,7 @@ describe('userService field resolvers', () => {
   });
 });
 
-describe('query.userServiceOwned', () => {
+describe('user service owned GraphQL query', () => {
   it('should delegate to UserServiceDomain.loadUserServiceByUser with context user', async () => {
     // Given
     const paginationArgs = {
@@ -166,7 +166,7 @@ describe('query.userServiceOwned', () => {
   });
 });
 
-describe('query.userServiceFromSubscription', () => {
+describe('user service from subscription GraphQL query', () => {
   it('should decode subscription_id from global ID and delegate to UserServiceDomain', async () => {
     // Given
     const rawSubscriptionId = uuidv4() as SubscriptionId;
@@ -220,7 +220,7 @@ describe('query.userServiceFromSubscription', () => {
   });
 });
 
-describe('mutation.addYourselfInUserService', () => {
+describe('add yourself in user service GraphQL mutation', () => {
   it('should delegate to UserServiceApp and return result', async () => {
     // Given
     const input = {
@@ -278,7 +278,7 @@ describe('mutation.addYourselfInUserService', () => {
   });
 });
 
-describe('mutation.addUserService', () => {
+describe('add user service GraphQL mutation', () => {
   it('should decode subscriptionId from global ID and delegate to UserServiceApp', async () => {
     // Given
     const rawSubscriptionId = uuidv4() as SubscriptionId;
@@ -340,7 +340,7 @@ describe('mutation.addUserService', () => {
   });
 });
 
-describe('mutation.deleteUserService', () => {
+describe('delete user service GraphQL mutation', () => {
   it('should decode subscriptionId from global ID and delegate to UserServiceApp', async () => {
     // Given
     const rawSubscriptionId = uuidv4() as SubscriptionId;

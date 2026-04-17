@@ -137,7 +137,7 @@ describe('epic.document_id', () => {
   });
 });
 
-describe('query.epics', () => {
+describe('epics GraphQL query', () => {
   it('should delegate to EpicApp.loadEpics and return result', async () => {
     // Given
     const opts = {
@@ -193,7 +193,7 @@ describe('query.epics', () => {
   });
 });
 
-describe('mutation.createEpic', () => {
+describe('create epic GraphQL mutation', () => {
   it('should delegate to EpicApp.createEpic and return created epic', async () => {
     // Given
     const input: CreateEpicInput = {
@@ -250,7 +250,7 @@ describe('mutation.createEpic', () => {
   });
 });
 
-describe('mutation.updateEpic', () => {
+describe('update epic GraphQL mutation', () => {
   it('should delegate to EpicApp.updateEpic with typed id and return updated epic', async () => {
     // Given
     const id = uuidv4() as EpicId;
@@ -299,7 +299,7 @@ describe('mutation.updateEpic', () => {
   });
 });
 
-describe('mutation.deleteEpic', () => {
+describe('delete epic GraphQL mutation', () => {
   it('should delegate to EpicApp.deleteEpic with typed id and return deleted epic', async () => {
     // Given
     const id = uuidv4() as EpicId;

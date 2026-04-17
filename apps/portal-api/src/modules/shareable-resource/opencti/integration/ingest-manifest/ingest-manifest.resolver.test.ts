@@ -6,7 +6,7 @@ import {
 import { IngestManifestApp } from './ingest-manifest.app';
 import ingestManifestResolver from './ingest-manifest.resolver';
 
-describe('query.updateOpenCTIManifest', () => {
+describe('update open CTI manifest GraphQL query', () => {
   it('should call IngestManifestApp.updateOpenCTIManifest with tag and return success true', async () => {
     // Given
     const tag = '6.4.0';

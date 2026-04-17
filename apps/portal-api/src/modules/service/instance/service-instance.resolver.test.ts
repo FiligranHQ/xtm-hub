@@ -203,7 +203,7 @@ describe('serviceInstance field resolvers', () => {
   });
 });
 
-describe('query.serviceInstances', () => {
+describe('service instances GraphQL query', () => {
   it('should delegate to loadServiceInstances and return result', async () => {
     const expected = { edges: [] } as unknown as Awaited<
       ReturnType<typeof serviceInstanceDomain.loadServiceInstances>
@@ -223,7 +223,7 @@ describe('query.serviceInstances', () => {
   });
 });
 
-describe('query.publicServiceInstances', () => {
+describe('public service instances GraphQL query', () => {
   it('should pass user id and org id to loadPublicServiceInstances', async () => {
     const expected = [] as unknown as Awaited<
       ReturnType<typeof serviceInstanceDomain.loadPublicServiceInstances>
@@ -251,7 +251,7 @@ describe('query.publicServiceInstances', () => {
   });
 });
 
-describe('query.serviceInstanceLinksByTags', () => {
+describe('service instance links by tags GraphQL query', () => {
   it('should delegate to ServiceInstanceApp.loadLinkServiceInstancesByTags', async () => {
     const expected = [] as unknown as Awaited<
       ReturnType<typeof ServiceInstanceApp.loadLinkServiceInstancesByTags>
@@ -276,7 +276,7 @@ describe('query.serviceInstanceLinksByTags', () => {
   });
 });
 
-describe('query.serviceInstanceById', () => {
+describe('service instance by id GraphQL query', () => {
   it('should pass user and service_instance_id to ServiceInstanceApp.loadServiceInstanceAndGrantAccess', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id } as unknown as Awaited<
@@ -301,7 +301,7 @@ describe('query.serviceInstanceById', () => {
   });
 });
 
-describe('query.serviceInstanceByIdWithSubscriptions', () => {
+describe('service instance by id with subscriptions GraphQL query', () => {
   it('should delegate to loadServiceWithSubscriptions', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id } as unknown as Awaited<
@@ -327,7 +327,7 @@ describe('query.serviceInstanceByIdWithSubscriptions', () => {
   });
 });
 
-describe('query.subscribedServiceInstancesByIdentifier', () => {
+describe('subscribed service instances by identifier GraphQL query', () => {
   it('should delegate to ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier', async () => {
     const expected = [] as unknown as Awaited<
       ReturnType<
@@ -354,7 +354,7 @@ describe('query.subscribedServiceInstancesByIdentifier', () => {
   });
 });
 
-describe('query.seoServiceInstances', () => {
+describe('seo service instances GraphQL query', () => {
   it('should delegate to ServiceInstanceApp.loadSeoServiceInstances', async () => {
     const expected = [] as unknown as Awaited<
       ReturnType<typeof ServiceInstanceApp.loadSeoServiceInstances>
@@ -374,7 +374,7 @@ describe('query.seoServiceInstances', () => {
   });
 });
 
-describe('query.seoServiceInstance', () => {
+describe('seo service instance GraphQL query', () => {
   it('should return the service when found', async () => {
     const expected = { id: uuidv4() } as unknown as Awaited<
       ReturnType<typeof ServiceInstanceApp.loadSeoServiceInstance>

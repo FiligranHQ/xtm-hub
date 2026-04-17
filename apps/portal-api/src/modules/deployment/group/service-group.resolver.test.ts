@@ -40,7 +40,7 @@ describe('serviceGroup.users', () => {
   });
 });
 
-describe('query.serviceGroups', () => {
+describe('service groups GraphQL query', () => {
   it('should load groups for given serviceInstanceId and return result', async () => {
     // Given
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
@@ -84,7 +84,7 @@ describe('query.serviceGroups', () => {
   });
 });
 
-describe('mutation.updateServiceGroups', () => {
+describe('update service groups GraphQL mutation', () => {
   it('should decode user IDs from global IDs and delegate to ServiceGroupApp.updateGroups', async () => {
     // Given
     const groupId = uuidv4() as ServiceGroupId;
