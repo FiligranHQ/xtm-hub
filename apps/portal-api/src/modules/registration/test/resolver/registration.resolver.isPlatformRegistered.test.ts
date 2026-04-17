@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
 import {
@@ -10,7 +10,8 @@ import {
   IsPlatformRegisteredResponse,
   PlatformRegistrationStatus,
 } from '../../../../__generated__/resolvers-types';
-import { UnknownErrorCode } from '../../../../utils/error/error.code';
+import { BadRequestErrorCode } from '../../../../utils/error/error.code';
+import { ErrorType } from '../../../../utils/error/error.type';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
@@ -32,7 +33,7 @@ describe('query.isPlatformRegistered', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -44,11 +45,11 @@ describe('query.isPlatformRegistered', () => {
     });
   });
 
-  it('should throw a mapped GraphQL error with IsPlatformRegisteredUnknownError when the app throws', async () => {
+  it('should map to BadRequest for InvalidPlatformId error', async () => {
     // Given
     const input: IsPlatformRegisteredInput = { platformId: uuidv4() };
     vi.spyOn(registrationApp, 'isPlatformRegistered').mockRejectedValue(
-      new Error('UNEXPECTED')
+      new Error(BadRequestErrorCode.InvalidPlatformId)
     );
 
     // When
@@ -56,12 +57,10 @@ describe('query.isPlatformRegistered', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
-    await expect(call).rejects.toThrow(
-      UnknownErrorCode.IsPlatformRegisteredUnknownError
-    );
+    await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
   });
 });

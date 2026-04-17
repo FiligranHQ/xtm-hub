@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
 import Organization from '../../../../model/kanel/public/Organization';
@@ -33,7 +33,7 @@ describe('query.platformAssociatedOrganization', () => {
       {},
       { platformId },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -60,7 +60,7 @@ describe('query.platformAssociatedOrganization', () => {
       {},
       { platformId },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -87,7 +87,7 @@ describe('query.platformAssociatedOrganization', () => {
         {},
         { platformId },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then

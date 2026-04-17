@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
 } from '../../../../../tests/tests.const';
 import { RegisteredPlatform } from '../../../../__generated__/resolvers-types';
 import DeploymentRequest from '../../../../model/kanel/public/DeploymentRequest';
@@ -39,7 +39,7 @@ describe('registeredPlatform type resolvers', () => {
         { id: serviceInstanceId } as unknown as RegisteredPlatform,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -71,7 +71,7 @@ describe('registeredPlatform type resolvers', () => {
         { id: serviceInstanceId } as unknown as RegisteredPlatform,
         {},
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then

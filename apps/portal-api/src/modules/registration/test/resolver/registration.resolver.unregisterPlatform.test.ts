@@ -2,13 +2,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
 } from '../../../../../tests/tests.const';
 import {
   PlatformIdentifier,
   UnregisterPlatformInput,
 } from '../../../../__generated__/resolvers-types';
-import { UnknownErrorCode } from '../../../../utils/error/error.code';
+import { NotFoundErrorCode } from '../../../../utils/error/error.code';
+import { ErrorType } from '../../../../utils/error/error.type';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
@@ -28,7 +29,7 @@ describe('mutation.unregisterPlatform', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -36,14 +37,14 @@ describe('mutation.unregisterPlatform', () => {
     expect(result).toMatchObject({ success: true });
   });
 
-  it('should throw a mapped GraphQL error with UnregisterPlatformUnknownError when the app throws', async () => {
+  it('should map to NotFound for ServiceInstanceNotFound error', async () => {
     // Given
     const input: UnregisterPlatformInput = {
       platformId: uuidv4(),
       identifier: PlatformIdentifier.Opencti,
     };
     vi.spyOn(registrationApp, 'unregisterPlatform').mockRejectedValue(
-      new Error('UNEXPECTED')
+      new Error(NotFoundErrorCode.ServiceInstanceNotFound)
     );
 
     // When
@@ -51,12 +52,10 @@ describe('mutation.unregisterPlatform', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
-    await expect(call).rejects.toThrow(
-      UnknownErrorCode.UnregisterPlatformUnknownError
-    );
+    await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
   });
 });
