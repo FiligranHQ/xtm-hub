@@ -39,7 +39,7 @@ describe('serviceGroup.users', () => {
 describe('query.serviceGroups', () => {
   it('should load groups for given serviceInstanceId and return result', async () => {
     // Given
-    const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const expected = [{ id: uuidv4(), name: 'Group A' }] as never;
     vi.spyOn(ServiceGroupApp, 'loadGroups').mockResolvedValue(expected);
 
@@ -60,7 +60,7 @@ describe('query.serviceGroups', () => {
 
   it('should throw mapped error when ServiceGroupApp throws', async () => {
     // Given
-    const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     vi.spyOn(ServiceGroupApp, 'loadGroups').mockRejectedValue(
       new Error('UNEXPECTED')
     );

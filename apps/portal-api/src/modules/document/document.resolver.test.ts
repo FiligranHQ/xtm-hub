@@ -31,7 +31,7 @@ import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 describe('mutation.createDocument', () => {
   it('should delegate to DocumentApp.createDocument and return result', async () => {
-    const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: uuidv4() as DocumentId } as never;
     vi.spyOn(DocumentApp, 'createDocument').mockResolvedValue(expected);
 
@@ -52,7 +52,7 @@ describe('mutation.createDocument', () => {
 
     const call = documentResolver.Mutation!.createDocument!(
       {},
-      { serviceInstanceId: SERVICES.INSTANCES.VAULT.ID, input: {} } as never,
+      { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID, input: {} } as never,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -67,7 +67,7 @@ describe('mutation.createDocument', () => {
 
     const call = documentResolver.Mutation!.createDocument!(
       {},
-      { serviceInstanceId: SERVICES.INSTANCES.VAULT.ID, input: {} } as never,
+      { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID, input: {} } as never,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -87,7 +87,7 @@ describe('mutation.updateDocument', () => {
       {},
       {
         documentId: globalDocId,
-        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
       } as never,
@@ -110,7 +110,7 @@ describe('mutation.updateDocument', () => {
       {},
       {
         documentId: toGlobalId('Document', uuidv4()),
-        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
       } as never,
@@ -130,7 +130,7 @@ describe('mutation.updateDocument', () => {
       {},
       {
         documentId: toGlobalId('Document', uuidv4()),
-        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
       } as never,
@@ -153,7 +153,7 @@ describe('mutation.deleteDocument', () => {
       {},
       {
         documentId: globalDocId,
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
         forceDelete: false,
       },
       contextSimpleUserFiligran2,
@@ -162,7 +162,7 @@ describe('mutation.deleteDocument', () => {
 
     expect(DocumentApp.deleteDocument).toHaveBeenCalledWith(
       rawDocId,
-      SERVICES.INSTANCES.VAULT.ID,
+      SERVICES.INSTANCES.EPIC.ID,
       false
     );
     expect(result).toEqual(expected);
@@ -177,7 +177,7 @@ describe('mutation.deleteDocument', () => {
       {},
       {
         documentId: toGlobalId('Document', uuidv4()),
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
         forceDelete: false,
       },
       contextSimpleUserFiligran2,
@@ -193,7 +193,7 @@ describe('mutation.incrementShareNumberDocument', () => {
     const rawDocId = uuidv4() as DocumentId;
     const doc = {
       id: rawDocId,
-      service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+      service_instance_id: SERVICES.INSTANCES.EPIC.ID,
       name: 'doc',
     } as never;
     const updated = { ...doc, share_number: 1 } as never;
@@ -350,7 +350,7 @@ describe('document field resolvers', () => {
   });
 
   it('service_instance should load service instance by service_instance_id', async () => {
-    const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: serviceInstanceId } as never;
     vi.spyOn(serviceInstanceDomain, 'getServiceInstance').mockResolvedValue(
       expected
@@ -370,7 +370,7 @@ describe('document field resolvers', () => {
   });
 
   it('subscription should load subscription by service_instance_id and organization_id', async () => {
-    const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: uuidv4() } as unknown as SubscriptionModel;
     vi.spyOn(subscriptionDomain, 'loadSubscriptionBy').mockResolvedValue(
       expected as never
@@ -399,7 +399,7 @@ describe('query.documentExists', () => {
       {},
       {
         documentName: 'test.md',
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
       },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -407,7 +407,7 @@ describe('query.documentExists', () => {
 
     expect(documentHelper.checkDocumentExists).toHaveBeenCalledWith(
       'test.md',
-      SERVICES.INSTANCES.VAULT.ID
+      SERVICES.INSTANCES.EPIC.ID
     );
     expect(result).toBe(false);
   });
@@ -420,7 +420,7 @@ describe('query.publicDocuments', () => {
 
     const result = await documentResolver.Query!.publicDocuments!(
       {},
-      { service_instance_id: SERVICES.INSTANCES.VAULT.ID } as never,
+      { service_instance_id: SERVICES.INSTANCES.EPIC.ID } as never,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -459,13 +459,13 @@ describe('query.publicDocumentBySlug', () => {
 
     const result = await documentResolver.Query!.publicDocumentBySlug!(
       {},
-      { serviceInstanceId: SERVICES.INSTANCES.VAULT.ID, slug: 'my-slug' },
+      { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID, slug: 'my-slug' },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     expect(DocumentApp.loadPublicDocumentBySlug).toHaveBeenCalledWith(
-      SERVICES.INSTANCES.VAULT.ID,
+      SERVICES.INSTANCES.EPIC.ID,
       'my-slug'
     );
     expect(result).toEqual(expected);
@@ -479,7 +479,7 @@ describe('query.documents', () => {
 
     const result = await documentResolver.Query!.documents!(
       {},
-      { service_instance_id: SERVICES.INSTANCES.VAULT.ID } as never,
+      { service_instance_id: SERVICES.INSTANCES.EPIC.ID } as never,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );

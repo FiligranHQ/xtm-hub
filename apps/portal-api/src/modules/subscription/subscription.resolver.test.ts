@@ -84,7 +84,7 @@ describe('subscription mutation resolver', () => {
       await subscriptionResolver.Mutation.addSubscription(
         undefined,
         {
-          service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+          service_instance_id: SERVICES.INSTANCES.EPIC.ID,
         },
         contextSimpleUserSecondOrga
       );
@@ -119,7 +119,7 @@ describe('subscription resolver — unit tests', () => {
     });
 
     it('service_instance should call loadServiceInstanceBy with service_instance_id', async () => {
-      const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+      const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
       const expected = { id: serviceInstanceId } as never;
       vi.spyOn(
         serviceInstanceDomain,
@@ -187,7 +187,7 @@ describe('subscription resolver — unit tests', () => {
 
   describe('mutation.addSubscriptionInService', () => {
     it('should extract capability ids and subscribe organization, then load service with subscriptions', async () => {
-      const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+      const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
       const expected = { id: serviceInstanceId } as never;
       vi.spyOn(
         subscriptionApp,
@@ -221,7 +221,7 @@ describe('subscription resolver — unit tests', () => {
     });
 
     it('should use context organization when organization_id is null', async () => {
-      const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+      const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
       vi.spyOn(
         subscriptionApp,
         'subscribeOrganizationToService'
@@ -263,7 +263,7 @@ describe('subscription resolver — unit tests', () => {
       const call = subscriptionResolver.Mutation!.addSubscriptionInService!(
         {},
         {
-          service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+          service_instance_id: SERVICES.INSTANCES.EPIC.ID,
           organization_id: null,
           capability_ids: [],
           start_date: null,
@@ -283,7 +283,7 @@ describe('subscription resolver — unit tests', () => {
     it('should decode subscription_id and call deleteSubscription app', async () => {
       const rawId = uuidv4() as SubscriptionId;
       const globalId = toGlobalId('Subscription', rawId);
-      const serviceInstanceId = SERVICES.INSTANCES.VAULT.ID;
+      const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
       const expected = { id: serviceInstanceId } as never;
       vi.spyOn(subscriptionApp, 'deleteSubscription').mockResolvedValue({
         service_instance_id: serviceInstanceId,

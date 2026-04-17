@@ -15,7 +15,7 @@ import telemetryResolver from './telemetry.resolver';
 
 const buildInput = (): OneClickDeployInput => ({
   service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-  platform_service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+  platform_service_instance_id: SERVICES.INSTANCES.EPIC.ID,
   resource_id: 'resource-1',
   resource_title: 'My Resource',
   platform_identifier: PlatformIdentifier.Opencti,

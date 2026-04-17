@@ -70,7 +70,7 @@ describe('serviceInstance field resolvers', () => {
   });
 
   it('links should load links by service instance id', async () => {
-    const id = SERVICES.INSTANCES.VAULT.ID;
+    const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = [] as never;
     vi.spyOn(serviceInstanceDomain, 'loadLinks').mockResolvedValue(expected);
 
@@ -83,7 +83,7 @@ describe('serviceInstance field resolvers', () => {
   });
 
   it('service_definition should load service definition by service instance id', async () => {
-    const id = SERVICES.INSTANCES.VAULT.ID;
+    const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: uuidv4() } as never;
     vi.spyOn(
       serviceInstanceDomain,
@@ -103,7 +103,7 @@ describe('serviceInstance field resolvers', () => {
   });
 
   it('organization_subscribed should call loadIsSubscribed with org id and instance id', async () => {
-    const id = SERVICES.INSTANCES.VAULT.ID as ServiceInstanceId;
+    const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
     vi.spyOn(serviceInstanceDomain, 'loadIsSubscribed').mockResolvedValue(true);
 
     const result = await (
@@ -123,7 +123,7 @@ describe('serviceInstance field resolvers', () => {
   });
 
   it('capabilities should load capabilities for user and instance', async () => {
-    const id = SERVICES.INSTANCES.VAULT.ID;
+    const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = [] as never;
     vi.spyOn(userServiceCapabilityHelper, 'loadCapabilities').mockResolvedValue(
       expected
@@ -147,7 +147,7 @@ describe('serviceInstance field resolvers', () => {
   });
 
   it('user_joined should call getUserJoined with user, org, and instance id', async () => {
-    const id = SERVICES.INSTANCES.VAULT.ID as ServiceInstanceId;
+    const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
     vi.spyOn(serviceInstanceDomain, 'getUserJoined').mockResolvedValue(false);
 
     const result = await (
@@ -163,7 +163,7 @@ describe('serviceInstance field resolvers', () => {
   });
 
   it('subscriptions should load subscriptions by service instance id', async () => {
-    const id = SERVICES.INSTANCES.VAULT.ID as ServiceInstanceId;
+    const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
     const expected = [] as never;
     vi.spyOn(
       serviceInstanceDomain,
@@ -255,7 +255,7 @@ describe('query.serviceInstanceLinksByTags', () => {
 
 describe('query.serviceInstanceById', () => {
   it('should pass user and service_instance_id to ServiceInstanceApp.loadServiceInstanceAndGrantAccess', async () => {
-    const id = SERVICES.INSTANCES.VAULT.ID;
+    const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id } as never;
     vi.spyOn(
       ServiceInstanceApp,
@@ -278,7 +278,7 @@ describe('query.serviceInstanceById', () => {
 
 describe('query.serviceInstanceByIdWithSubscriptions', () => {
   it('should delegate to loadServiceWithSubscriptions', async () => {
-    const id = SERVICES.INSTANCES.VAULT.ID;
+    const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id } as never;
     vi.spyOn(
       serviceInstanceDomain,
@@ -393,7 +393,7 @@ describe('query.seoServiceInstance', () => {
 
 describe('mutation.addServicePicture', () => {
   it('should delegate to ServiceInstanceApp.addServicePicture and return result', async () => {
-    const expected = { id: SERVICES.INSTANCES.VAULT.ID } as never;
+    const expected = { id: SERVICES.INSTANCES.EPIC.ID } as never;
     vi.spyOn(ServiceInstanceApp, 'addServicePicture').mockResolvedValue(
       expected
     );
@@ -401,7 +401,7 @@ describe('mutation.addServicePicture', () => {
     const result = await serviceInstanceResolver.Mutation!.addServicePicture!(
       {},
       {
-        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         document: {} as never,
         isLogo: true,
       },
@@ -410,7 +410,7 @@ describe('mutation.addServicePicture', () => {
     );
 
     expect(ServiceInstanceApp.addServicePicture).toHaveBeenCalledWith(
-      SERVICES.INSTANCES.VAULT.ID,
+      SERVICES.INSTANCES.EPIC.ID,
       {},
       true
     );
@@ -420,12 +420,12 @@ describe('mutation.addServicePicture', () => {
 
 describe('mutation.updatePlatformServiceMetadata', () => {
   it('should delegate to ServiceInstanceApp.updatePlatformServiceMetadata with user context', async () => {
-    const expected = { id: SERVICES.INSTANCES.VAULT.ID } as never;
+    const expected = { id: SERVICES.INSTANCES.EPIC.ID } as never;
     vi.spyOn(
       ServiceInstanceApp,
       'updatePlatformServiceMetadata'
     ).mockResolvedValue(expected);
-    const input = { serviceInstanceId: SERVICES.INSTANCES.VAULT.ID } as never;
+    const input = { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID } as never;
 
     const result = await serviceInstanceResolver.Mutation!
       .updatePlatformServiceMetadata!(
@@ -439,7 +439,7 @@ describe('mutation.updatePlatformServiceMetadata', () => {
       ServiceInstanceApp.updatePlatformServiceMetadata
     ).toHaveBeenCalledWith(
       contextSimpleUserFiligran2.user,
-      SERVICES.INSTANCES.VAULT.ID,
+      SERVICES.INSTANCES.EPIC.ID,
       input,
       null
     );
@@ -456,7 +456,7 @@ describe('mutation.updatePlatformServiceMetadata', () => {
       .updatePlatformServiceMetadata!(
       {},
       {
-        input: { serviceInstanceId: SERVICES.INSTANCES.VAULT.ID } as never,
+        input: { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID } as never,
         document: null,
       },
       contextSimpleUserFiligran2,
