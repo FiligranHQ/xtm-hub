@@ -6,7 +6,14 @@ import {
   GRAPHQL_RESOLVE_INFO,
   SERVICES,
 } from '../../../../tests/tests.const';
-import { IntegrationType } from '../../../__generated__/resolvers-types';
+import {
+  IntegrationType,
+  MutationAddServicePictureArgs,
+  MutationUpdatePlatformServiceMetadataArgs,
+  QueryPublicServiceInstancesArgs,
+  ServiceDefinitionIdentifier,
+  ServiceInstanceResolvers,
+} from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { ErrorType } from '../../../utils/error/error.type';
@@ -31,7 +38,7 @@ describe('serviceInstance.__resolveType', () => {
     'should resolve type=$type integration_type=$integration_type to $expected',
     ({ type, integration_type, expected }) => {
       const result = (
-        serviceInstanceResolver.ServiceInstance as never
+        serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
       ).__resolveType({ type, integration_type });
       expect(result).toBe(expected);
     }
@@ -42,14 +49,14 @@ describe('serviceInstance field resolvers', () => {
   it('logo_document_id should return global ID when set', () => {
     const rawId = uuidv4();
     const result = (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).logo_document_id({ logo_document_id: rawId });
     expect(result).toBe(toGlobalId('Document', rawId));
   });
 
   it('logo_document_id should return undefined when not set', () => {
     const result = (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).logo_document_id({ logo_document_id: null });
     expect(result).toBeUndefined();
   });
@@ -57,25 +64,27 @@ describe('serviceInstance field resolvers', () => {
   it('illustration_document_id should return global ID when set', () => {
     const rawId = uuidv4();
     const result = (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).illustration_document_id({ illustration_document_id: rawId });
     expect(result).toBe(toGlobalId('Document', rawId));
   });
 
   it('illustration_document_id should return undefined when not set', () => {
     const result = (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).illustration_document_id({ illustration_document_id: null });
     expect(result).toBeUndefined();
   });
 
   it('links should load links by service instance id', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof serviceInstanceDomain.loadLinks>
+    >;
     vi.spyOn(serviceInstanceDomain, 'loadLinks').mockResolvedValue(expected);
 
     const result = await (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).links({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
 
     expect(serviceInstanceDomain.loadLinks).toHaveBeenCalledWith(id);
@@ -84,14 +93,18 @@ describe('serviceInstance field resolvers', () => {
 
   it('service_definition should load service definition by service instance id', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
-    const expected = { id: uuidv4() } as never;
+    const expected = { id: uuidv4() } as unknown as Awaited<
+      ReturnType<
+        typeof serviceInstanceDomain.loadServiceDefinitionByServiceInstance
+      >
+    >;
     vi.spyOn(
       serviceInstanceDomain,
       'loadServiceDefinitionByServiceInstance'
     ).mockResolvedValue(expected);
 
     const result = await (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).service_definition(
       { id },
       {},
@@ -107,7 +120,7 @@ describe('serviceInstance field resolvers', () => {
     vi.spyOn(serviceInstanceDomain, 'loadIsSubscribed').mockResolvedValue(true);
 
     const result = await (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).organization_subscribed(
       { id },
       {},
@@ -124,13 +137,15 @@ describe('serviceInstance field resolvers', () => {
 
   it('capabilities should load capabilities for user and instance', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof userServiceCapabilityHelper.loadCapabilities>
+    >;
     vi.spyOn(userServiceCapabilityHelper, 'loadCapabilities').mockResolvedValue(
       expected
     );
 
     const result = await (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).capabilities(
       { id },
       {},
@@ -151,7 +166,7 @@ describe('serviceInstance field resolvers', () => {
     vi.spyOn(serviceInstanceDomain, 'getUserJoined').mockResolvedValue(false);
 
     const result = await (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).user_joined({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
 
     expect(serviceInstanceDomain.getUserJoined).toHaveBeenCalledWith(
@@ -164,14 +179,16 @@ describe('serviceInstance field resolvers', () => {
 
   it('subscriptions should load subscriptions by service instance id', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof serviceInstanceDomain.loadServiceInstanceSubscriptions>
+    >;
     vi.spyOn(
       serviceInstanceDomain,
       'loadServiceInstanceSubscriptions'
     ).mockResolvedValue(expected);
 
     const result = await (
-      serviceInstanceResolver.ServiceInstance as never
+      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
     ).subscriptions(
       { id },
       {},
@@ -188,7 +205,9 @@ describe('serviceInstance field resolvers', () => {
 
 describe('query.serviceInstances', () => {
   it('should delegate to loadServiceInstances and return result', async () => {
-    const expected = { edges: [] } as never;
+    const expected = { edges: [] } as unknown as Awaited<
+      ReturnType<typeof serviceInstanceDomain.loadServiceInstances>
+    >;
     vi.spyOn(serviceInstanceDomain, 'loadServiceInstances').mockResolvedValue(
       expected
     );
@@ -206,7 +225,9 @@ describe('query.serviceInstances', () => {
 
 describe('query.publicServiceInstances', () => {
   it('should pass user id and org id to loadPublicServiceInstances', async () => {
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof serviceInstanceDomain.loadPublicServiceInstances>
+    >;
     vi.spyOn(
       serviceInstanceDomain,
       'loadPublicServiceInstances'
@@ -214,7 +235,7 @@ describe('query.publicServiceInstances', () => {
 
     const result = await serviceInstanceResolver.Query!.publicServiceInstances!(
       {},
-      {} as never,
+      {} as unknown as QueryPublicServiceInstancesArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -232,7 +253,9 @@ describe('query.publicServiceInstances', () => {
 
 describe('query.serviceInstanceLinksByTags', () => {
   it('should delegate to ServiceInstanceApp.loadLinkServiceInstancesByTags', async () => {
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof ServiceInstanceApp.loadLinkServiceInstancesByTags>
+    >;
     vi.spyOn(
       ServiceInstanceApp,
       'loadLinkServiceInstancesByTags'
@@ -256,7 +279,9 @@ describe('query.serviceInstanceLinksByTags', () => {
 describe('query.serviceInstanceById', () => {
   it('should pass user and service_instance_id to ServiceInstanceApp.loadServiceInstanceAndGrantAccess', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
-    const expected = { id } as never;
+    const expected = { id } as unknown as Awaited<
+      ReturnType<typeof ServiceInstanceApp.loadServiceInstanceAndGrantAccess>
+    >;
     vi.spyOn(
       ServiceInstanceApp,
       'loadServiceInstanceAndGrantAccess'
@@ -279,7 +304,9 @@ describe('query.serviceInstanceById', () => {
 describe('query.serviceInstanceByIdWithSubscriptions', () => {
   it('should delegate to loadServiceWithSubscriptions', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
-    const expected = { id } as never;
+    const expected = { id } as unknown as Awaited<
+      ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
+    >;
     vi.spyOn(
       serviceInstanceDomain,
       'loadServiceWithSubscriptions'
@@ -302,7 +329,11 @@ describe('query.serviceInstanceByIdWithSubscriptions', () => {
 
 describe('query.subscribedServiceInstancesByIdentifier', () => {
   it('should delegate to ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier', async () => {
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<
+        typeof ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier
+      >
+    >;
     vi.spyOn(
       ServiceInstanceApp,
       'loadSubscribedServiceInstancesByIdentifier'
@@ -311,7 +342,7 @@ describe('query.subscribedServiceInstancesByIdentifier', () => {
     const result = await serviceInstanceResolver.Query!
       .subscribedServiceInstancesByIdentifier!(
       {},
-      { identifier: 'opencti' as never },
+      { identifier: 'opencti' as unknown as ServiceDefinitionIdentifier },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -325,7 +356,9 @@ describe('query.subscribedServiceInstancesByIdentifier', () => {
 
 describe('query.seoServiceInstances', () => {
   it('should delegate to ServiceInstanceApp.loadSeoServiceInstances', async () => {
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof ServiceInstanceApp.loadSeoServiceInstances>
+    >;
     vi.spyOn(ServiceInstanceApp, 'loadSeoServiceInstances').mockResolvedValue(
       expected
     );
@@ -343,7 +376,9 @@ describe('query.seoServiceInstances', () => {
 
 describe('query.seoServiceInstance', () => {
   it('should return the service when found', async () => {
-    const expected = { id: uuidv4() } as never;
+    const expected = { id: uuidv4() } as unknown as Awaited<
+      ReturnType<typeof ServiceInstanceApp.loadSeoServiceInstance>
+    >;
     vi.spyOn(ServiceInstanceApp, 'loadSeoServiceInstance').mockResolvedValue(
       expected
     );
@@ -393,7 +428,9 @@ describe('query.seoServiceInstance', () => {
 
 describe('mutation.addServicePicture', () => {
   it('should delegate to ServiceInstanceApp.addServicePicture and return result', async () => {
-    const expected = { id: SERVICES.INSTANCES.EPIC.ID } as never;
+    const expected = { id: SERVICES.INSTANCES.EPIC.ID } as unknown as Awaited<
+      ReturnType<typeof ServiceInstanceApp.addServicePicture>
+    >;
     vi.spyOn(ServiceInstanceApp, 'addServicePicture').mockResolvedValue(
       expected
     );
@@ -402,7 +439,7 @@ describe('mutation.addServicePicture', () => {
       {},
       {
         serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
-        document: {} as never,
+        document: {} as unknown as MutationAddServicePictureArgs['document'],
         isLogo: true,
       },
       contextSimpleUserFiligran2,
@@ -420,12 +457,16 @@ describe('mutation.addServicePicture', () => {
 
 describe('mutation.updatePlatformServiceMetadata', () => {
   it('should delegate to ServiceInstanceApp.updatePlatformServiceMetadata with user context', async () => {
-    const expected = { id: SERVICES.INSTANCES.EPIC.ID } as never;
+    const expected = { id: SERVICES.INSTANCES.EPIC.ID } as unknown as Awaited<
+      ReturnType<typeof ServiceInstanceApp.updatePlatformServiceMetadata>
+    >;
     vi.spyOn(
       ServiceInstanceApp,
       'updatePlatformServiceMetadata'
     ).mockResolvedValue(expected);
-    const input = { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID } as never;
+    const input = {
+      serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+    } as unknown as MutationUpdatePlatformServiceMetadataArgs['input'];
 
     const result = await serviceInstanceResolver.Mutation!
       .updatePlatformServiceMetadata!(
@@ -456,7 +497,9 @@ describe('mutation.updatePlatformServiceMetadata', () => {
       .updatePlatformServiceMetadata!(
       {},
       {
-        input: { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID } as never,
+        input: {
+          serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+        } as unknown as MutationUpdatePlatformServiceMetadataArgs['input'],
         document: null,
       },
       contextSimpleUserFiligran2,

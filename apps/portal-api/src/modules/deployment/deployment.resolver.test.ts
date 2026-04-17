@@ -5,7 +5,9 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
+  DeploymentRequest,
   DeploymentRequestActivitySector,
+  DeploymentRequestConnection,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestJobTitle,
@@ -13,10 +15,15 @@ import {
   DeploymentRequestPlatformState,
   DeploymentRequestSource,
   DeploymentRequestUseCase,
+  PlatformDeploymentRequestConnection,
   PlatformIdentifier,
+  QueryDeploymentRequestsArgs,
+  QueryDeploymentRequestsListArgs,
   ReorderDeploymentRequestInQueueDirection,
+  TrialDeploymentsInput,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
@@ -238,7 +245,9 @@ describe('deployment resolver', () => {
 describe('deployment resolver — unit tests', () => {
   describe('query.deploymentRequests', () => {
     it('should delegate to DeploymentApp.loadPlatformDeploymentRequests and return result', async () => {
-      const expected = { edges: [] } as never;
+      const expected = {
+        edges: [],
+      } as unknown as PlatformDeploymentRequestConnection;
       vi.spyOn(
         DeploymentApp,
         'loadPlatformDeploymentRequests'
@@ -246,7 +255,7 @@ describe('deployment resolver — unit tests', () => {
 
       const result = await resolver.Query.deploymentRequests(
         undefined,
-        {} as never
+        {} as unknown as QueryDeploymentRequestsArgs
       );
 
       expect(result).toEqual(expected);
@@ -258,14 +267,17 @@ describe('deployment resolver — unit tests', () => {
         'loadPlatformDeploymentRequests'
       ).mockRejectedValue(new Error(ErrorCode.DeploymentRequestNotFound));
 
-      const call = resolver.Query.deploymentRequests(undefined, {} as never);
+      const call = resolver.Query.deploymentRequests(
+        undefined,
+        {} as unknown as QueryDeploymentRequestsArgs
+      );
       await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
     });
   });
 
   describe('query.deploymentRequestsList', () => {
     it('should delegate to DeploymentRequestDomain.loadDeploymentRequests', async () => {
-      const expected = { edges: [] } as never;
+      const expected = { edges: [] } as unknown as DeploymentRequestConnection;
       vi.spyOn(
         DeploymentRequestDomain,
         'loadDeploymentRequests'
@@ -273,7 +285,7 @@ describe('deployment resolver — unit tests', () => {
 
       const result = await resolver.Query.deploymentRequestsList(
         undefined,
-        {} as never
+        {} as unknown as QueryDeploymentRequestsListArgs
       );
 
       expect(result).toEqual(expected);
@@ -289,7 +301,7 @@ describe('deployment resolver — unit tests', () => {
 
       const call = resolver.Query.deploymentRequestsList(
         undefined,
-        {} as never
+        {} as unknown as QueryDeploymentRequestsListArgs
       );
       await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
     });
@@ -297,13 +309,15 @@ describe('deployment resolver — unit tests', () => {
 
   describe('query.trialDeployments', () => {
     it('should delegate to DeploymentApp.loadTrialDeployments and return result', async () => {
-      const expected = [] as never;
+      const expected = [] as unknown as Awaited<
+        ReturnType<typeof DeploymentApp.loadTrialDeployments>
+      >;
       vi.spyOn(DeploymentApp, 'loadTrialDeployments').mockResolvedValue(
         expected
       );
 
       const result = await resolver.Query.trialDeployments(undefined, {
-        input: {} as never,
+        input: {} as unknown as TrialDeploymentsInput,
       });
 
       expect(result).toEqual(expected);
@@ -315,7 +329,7 @@ describe('deployment resolver — unit tests', () => {
       );
 
       const call = resolver.Query.trialDeployments(undefined, {
-        input: {} as never,
+        input: {} as unknown as TrialDeploymentsInput,
       });
       await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
     });
@@ -323,14 +337,17 @@ describe('deployment resolver — unit tests', () => {
 
   describe('mutation.cancelDeploymentRequest', () => {
     it('should call DeploymentApp.cancelDeploymentRequest with isAdmin=false', async () => {
-      const expected = { id: 'req-1' } as never;
+      const expected = { id: 'req-1' } as unknown as DeploymentRequest;
       vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockResolvedValue(
         expected
       );
 
       const result = await resolver.Mutation.cancelDeploymentRequest(
         undefined,
-        { deploymentRequestId: 'req-1' as never, cancellationReason: 'reason' }
+        {
+          deploymentRequestId: 'req-1' as DeploymentRequestId,
+          cancellationReason: 'reason',
+        }
       );
 
       expect(DeploymentApp.cancelDeploymentRequest).toHaveBeenCalledWith(
@@ -347,7 +364,7 @@ describe('deployment resolver — unit tests', () => {
       );
 
       const call = resolver.Mutation.cancelDeploymentRequest(undefined, {
-        deploymentRequestId: 'req-1' as never,
+        deploymentRequestId: 'req-1' as DeploymentRequestId,
         cancellationReason: 'reason',
       });
 
@@ -359,14 +376,14 @@ describe('deployment resolver — unit tests', () => {
 
   describe('mutation.adminCancelDeploymentRequest', () => {
     it('should call DeploymentApp.cancelDeploymentRequest with isAdmin=true', async () => {
-      const expected = { id: 'req-1' } as never;
+      const expected = { id: 'req-1' } as DeploymentRequest;
       vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockResolvedValue(
         expected
       );
 
       const result = await resolver.Mutation.adminCancelDeploymentRequest(
         undefined,
-        { deploymentRequestId: 'req-1' as never }
+        { deploymentRequestId: 'req-1' as DeploymentRequestId }
       );
 
       expect(DeploymentApp.cancelDeploymentRequest).toHaveBeenCalledWith(
@@ -382,7 +399,7 @@ describe('deployment resolver — unit tests', () => {
       );
 
       const call = resolver.Mutation.adminCancelDeploymentRequest(undefined, {
-        deploymentRequestId: 'req-1' as never,
+        deploymentRequestId: 'req-1' as DeploymentRequestId,
       });
 
       await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
@@ -391,13 +408,15 @@ describe('deployment resolver — unit tests', () => {
 
   describe('mutation.reorderDeploymentRequestInQueue', () => {
     it('should delegate to DeploymentApp.reorderDeploymentRequestInQueue and return result', async () => {
-      const expected = { success: true } as never;
+      const expected = { success: true } as unknown as Awaited<
+        ReturnType<typeof DeploymentApp.reorderDeploymentRequestInQueue>
+      >;
       vi.spyOn(
         DeploymentApp,
         'reorderDeploymentRequestInQueue'
       ).mockResolvedValue(expected);
       const input = {
-        id: 'req-1' as never,
+        id: 'req-1' as DeploymentRequestId,
         direction: ReorderDeploymentRequestInQueueDirection.Up,
       };
 
@@ -415,7 +434,9 @@ describe('deployment resolver — unit tests', () => {
 
   describe('mutation.updateDeploymentQuotaCapacity', () => {
     it('should delegate to DeploymentApp.updateDeploymentQuotaCapacity and return result', async () => {
-      const expected = { success: true } as never;
+      const expected = { success: true } as unknown as Awaited<
+        ReturnType<typeof DeploymentApp.updateDeploymentQuotaCapacity>
+      >;
       vi.spyOn(
         DeploymentApp,
         'updateDeploymentQuotaCapacity'

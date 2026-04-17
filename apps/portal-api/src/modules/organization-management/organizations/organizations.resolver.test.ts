@@ -29,7 +29,9 @@ describe('query.organization', () => {
   it('should load organization by id and return result', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
-    const expected = { id, name: 'Filigran' } as never;
+    const expected = { id, name: 'Filigran' } as unknown as Awaited<
+      ReturnType<typeof organizationsDomain.loadOrganizationBy>
+    >;
     vi.spyOn(organizationsDomain, 'loadOrganizationBy').mockResolvedValue(
       expected
     );
@@ -100,7 +102,9 @@ describe('query.userOrganizations', () => {
     // Given
     const expected = [
       { id: TEST_ORGANIZATIONS.FILIGRAN.ID, name: 'Filigran' },
-    ] as never;
+    ] as unknown as Awaited<
+      ReturnType<typeof organizationsDomain.loadOrganizationsByUser>
+    >;
     vi.spyOn(organizationsDomain, 'loadOrganizationsByUser').mockResolvedValue(
       expected
     );
@@ -131,7 +135,9 @@ describe('mutation.addOrganization', () => {
     const expected = {
       id: uuidv4() as OrganizationId,
       name: 'New Org',
-    } as never;
+    } as unknown as Awaited<
+      ReturnType<typeof organizationsApp.createOrganization>
+    >;
     vi.spyOn(organizationsApp, 'createOrganization').mockResolvedValue(
       expected
     );
@@ -174,7 +180,9 @@ describe('mutation.editOrganization', () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
     const input: OrganizationInput = { name: 'Updated Org' };
-    const expected = { id, name: 'Updated Org' } as never;
+    const expected = { id, name: 'Updated Org' } as unknown as Awaited<
+      ReturnType<typeof organizationsApp.updateOrganization>
+    >;
     vi.spyOn(organizationsApp, 'updateOrganization').mockResolvedValue(
       expected
     );
@@ -216,7 +224,9 @@ describe('mutation.deleteOrganization', () => {
   it('should delegate to organizationsApp.deleteOrganization and return deleted organization', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
-    const expected = { id, name: 'Deleted Org' } as never;
+    const expected = { id, name: 'Deleted Org' } as unknown as Awaited<
+      ReturnType<typeof organizationsApp.deleteOrganization>
+    >;
     vi.spyOn(organizationsApp, 'deleteOrganization').mockResolvedValue(
       expected
     );

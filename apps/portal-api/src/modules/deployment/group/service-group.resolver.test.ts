@@ -7,7 +7,9 @@ import {
   SERVICES,
 } from '../../../../tests/tests.const';
 import { Success } from '../../../__generated__/resolvers-types';
-import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
+import ServiceGroupModel, {
+  ServiceGroupId,
+} from '../../../model/kanel/public/ServiceGroup';
 import { UserId } from '../../../model/kanel/public/User';
 import { ErrorType } from '../../../utils/error/error.type';
 import { ServiceGroupApp } from './service-group.app';
@@ -19,12 +21,14 @@ describe('serviceGroup.users', () => {
     const groupId = uuidv4() as ServiceGroupId;
     const expected = [{ id: uuidv4(), email: 'user@test.com' }];
     vi.spyOn(ServiceGroupApp, 'loadGroupUsers').mockResolvedValue(
-      expected as never
+      expected as unknown as Awaited<
+        ReturnType<typeof ServiceGroupApp.loadGroupUsers>
+      >
     );
 
     // When
     const result = await serviceGroupResolver.ServiceGroup!.users!(
-      { id: groupId } as unknown as never,
+      { id: groupId } as unknown as ServiceGroupModel,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -40,7 +44,9 @@ describe('query.serviceGroups', () => {
   it('should load groups for given serviceInstanceId and return result', async () => {
     // Given
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-    const expected = [{ id: uuidv4(), name: 'Group A' }] as never;
+    const expected = [{ id: uuidv4(), name: 'Group A' }] as unknown as Awaited<
+      ReturnType<typeof ServiceGroupApp.loadGroups>
+    >;
     vi.spyOn(ServiceGroupApp, 'loadGroups').mockResolvedValue(expected);
 
     // When

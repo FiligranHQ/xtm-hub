@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { GRAPHQL_RESOLVE_INFO } from '../../../tests/tests.const';
+import { PortalContext } from '../../model/portal-context';
 import * as usersDomain from '../../modules/organization-management/users/user-domain/users.domain';
 import { ErrorType } from '../../utils/error/error.type';
 import { createSecureFieldResolver } from './directive.resolver';
@@ -14,7 +16,12 @@ describe('createSecureFieldResolver', () => {
       });
 
       await expect(
-        resolver({}, {}, { user: null } as never, {} as never)
+        resolver(
+          {},
+          {},
+          { user: null } as unknown as PortalContext,
+          GRAPHQL_RESOLVE_INFO
+        )
       ).rejects.toMatchObject({
         extensions: { code: ErrorType.Unauthenticated },
       });
@@ -32,8 +39,8 @@ describe('createSecureFieldResolver', () => {
         resolver(
           {},
           {},
-          { user: { id: '1', capabilities: [] } } as never,
-          {} as never
+          { user: { id: '1', capabilities: [] } } as unknown as PortalContext,
+          GRAPHQL_RESOLVE_INFO
         )
       ).rejects.toMatchObject({ name: ErrorType.ForbiddenAccess });
     });
@@ -50,8 +57,8 @@ describe('createSecureFieldResolver', () => {
       const result = await resolver(
         {},
         {},
-        { user: { id: '1', capabilities: [] } } as never,
-        {} as never
+        { user: { id: '1', capabilities: [] } } as unknown as PortalContext,
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(originalResolve).toHaveBeenCalledOnce();
@@ -59,7 +66,9 @@ describe('createSecureFieldResolver', () => {
     });
 
     it('should lazily load capabilities when user.capabilities is undefined', async () => {
-      const caps = [{ name: 'BYPASS' }] as never;
+      const caps = [{ name: 'BYPASS' }] as unknown as Awaited<
+        ReturnType<typeof usersDomain.getCapabilities>
+      >;
       vi.spyOn(usersDomain, 'getCapabilities').mockResolvedValue(caps);
       const originalResolve = vi.fn().mockResolvedValue('result');
       const resolver = createSecureFieldResolver(originalResolve, {
@@ -72,8 +81,10 @@ describe('createSecureFieldResolver', () => {
       await resolver(
         {},
         {},
-        { user: { id: 'user-1', capabilities: undefined } } as never,
-        {} as never
+        {
+          user: { id: 'user-1', capabilities: undefined },
+        } as unknown as PortalContext,
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(usersDomain.getCapabilities).toHaveBeenCalledWith('user-1');
@@ -93,8 +104,8 @@ describe('createSecureFieldResolver', () => {
         resolver(
           {},
           {},
-          { user: { id: '1', capabilities: [] } } as never,
-          {} as never
+          { user: { id: '1', capabilities: [] } } as unknown as PortalContext,
+          GRAPHQL_RESOLVE_INFO
         )
       ).rejects.toMatchObject({ name: ErrorType.ForbiddenAccess });
     });
@@ -111,8 +122,8 @@ describe('createSecureFieldResolver', () => {
       const result = await resolver(
         {},
         {},
-        { user: { id: '1', capabilities: [] } } as never,
-        {} as never
+        { user: { id: '1', capabilities: [] } } as unknown as PortalContext,
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(result).toBe('ok');

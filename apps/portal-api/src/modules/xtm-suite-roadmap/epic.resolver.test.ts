@@ -32,11 +32,11 @@ describe('epic.document', () => {
     const epicParent = {
       id: uuidv4() as EpicId,
       document_id: documentId,
-    } as unknown as never;
+    } as unknown as Epic;
     const expectedDocument = { id: documentId, file_name: 'image.png' };
     vi.spyOn(DocumentDomain, 'loadDocumentBy').mockResolvedValue([
       expectedDocument,
-    ] as never);
+    ] as unknown as Awaited<ReturnType<typeof DocumentDomain.loadDocumentBy>>);
 
     // When
     const result = await epicResolver.Epic!.document!(
@@ -58,7 +58,7 @@ describe('epic.document', () => {
     const epicParent = {
       id: uuidv4() as EpicId,
       document_id: null,
-    } as unknown as never;
+    } as unknown as Epic;
 
     // When
     const result = await epicResolver.Epic!.document!(
@@ -78,8 +78,10 @@ describe('epic.document', () => {
     const epicParent = {
       id: uuidv4() as EpicId,
       document_id: documentId,
-    } as unknown as never;
-    vi.spyOn(DocumentDomain, 'loadDocumentBy').mockResolvedValue([] as never);
+    } as unknown as Epic;
+    vi.spyOn(DocumentDomain, 'loadDocumentBy').mockResolvedValue(
+      [] as unknown as Awaited<ReturnType<typeof DocumentDomain.loadDocumentBy>>
+    );
 
     // When
     const result = await epicResolver.Epic!.document!(
@@ -101,7 +103,7 @@ describe('epic.document_id', () => {
     const epicParent = {
       id: uuidv4() as EpicId,
       document_id: rawDocumentId,
-    } as unknown as never;
+    } as unknown as Epic;
 
     // When
     const result = epicResolver.Epic!.document_id!(
@@ -120,7 +122,7 @@ describe('epic.document_id', () => {
     const epicParent = {
       id: uuidv4() as EpicId,
       document_id: null,
-    } as unknown as never;
+    } as unknown as Epic;
 
     // When
     const result = epicResolver.Epic!.document_id!(
@@ -162,7 +164,7 @@ describe('query.epics', () => {
     };
     const edge: EpicEdge = {
       cursor: epicId,
-      node: epic as never,
+      node: epic as unknown as EpicEdge['node'],
     };
     const pageInfo: PageInfo = {
       hasNextPage: false,

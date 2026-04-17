@@ -32,7 +32,7 @@ describe('query.useCases', () => {
         id: useCaseId,
         name: 'Threat Hunting',
         color: '#ff0000',
-      } as never,
+      } as unknown as UseCase,
     };
     const pageInfo: PageInfo = {
       hasNextPage: false,
@@ -45,7 +45,9 @@ describe('query.useCases', () => {
       pageInfo,
       totalCount: 1,
     };
-    vi.spyOn(useCaseDomain, 'loadUseCases').mockReturnValue(expected as never);
+    vi.spyOn(useCaseDomain, 'loadUseCases').mockReturnValue(
+      expected as unknown as Promise<UseCaseConnection>
+    );
 
     // When
     const result = await useCaseResolver.Query!.useCases!(

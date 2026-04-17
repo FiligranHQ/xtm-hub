@@ -5,6 +5,8 @@ import {
   contextSimpleUserFiligran2,
   GRAPHQL_RESOLVE_INFO,
 } from '../../tests/tests.const';
+import { NodeResolvers } from '../__generated__/resolvers-types';
+import { PortalContext } from '../model/portal-context';
 import { ErrorType } from '../utils/error/error.type';
 import nodesResolver from './nodes.resolver';
 
@@ -19,7 +21,7 @@ describe('query.node', () => {
     const call = nodesResolver.Query!.node!(
       {},
       { id: toGlobalId('Organization', uuidv4()) },
-      {} as never,
+      {} as unknown as PortalContext,
       GRAPHQL_RESOLVE_INFO
     );
 
@@ -33,7 +35,9 @@ describe('query.node', () => {
     const expected = { id: rawId, __typename: 'Organization' };
     const firstMock = vi.fn().mockResolvedValue(expected);
     const whereMock = vi.fn().mockReturnValue({ first: firstMock });
-    vi.mocked(db).mockReturnValue({ where: whereMock } as never);
+    vi.mocked(db).mockReturnValue({ where: whereMock } as unknown as ReturnType<
+      typeof db
+    >);
 
     const result = await nodesResolver.Query!.node!(
       {},
@@ -54,7 +58,7 @@ describe('node type resolvers', () => {
       const node = {
         id: uuidv4(),
         __typename: 'Organization',
-      } as never;
+      } as unknown as Parameters<NonNullable<NodeResolvers['id']>>[0];
       const result = nodesResolver.Node!.id!(
         node,
         {},
@@ -67,8 +71,12 @@ describe('node type resolvers', () => {
 
   describe('node.__resolveType', () => {
     it('should return the __typename of the node', () => {
-      const node = { id: uuidv4(), __typename: 'ServiceInstance' } as never;
-      const result = (nodesResolver.Node as never).__resolveType(node);
+      const node = {
+        id: uuidv4(),
+        __typename: 'ServiceInstance',
+      } as unknown as Parameters<NonNullable<NodeResolvers['id']>>[0];
+      const result = (nodesResolver.Node as unknown as NodeResolvers)
+        .__resolveType!(node, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
       expect(result).toBe('ServiceInstance');
     });
   });

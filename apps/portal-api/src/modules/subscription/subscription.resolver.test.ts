@@ -9,7 +9,13 @@ import {
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
+import {
+  SubscriptionCapabilityResolvers,
+  SubscriptionModel,
+  SubscriptionModelResolvers,
+} from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import {
   ForbiddenErrorCode,
@@ -97,16 +103,18 @@ describe('subscription resolver — unit tests', () => {
   describe('subscriptionModel field resolvers', () => {
     it('subscription_capability should call getSubscriptionCapability with subscription id', async () => {
       const id = uuidv4();
-      const expected = [] as never;
+      const expected = [] as unknown as Awaited<
+        ReturnType<typeof subscriptionDomain.getSubscriptionCapability>
+      >;
       vi.spyOn(
         subscriptionDomain,
         'getSubscriptionCapability'
       ).mockResolvedValue(expected);
 
       const result = await (
-        subscriptionResolver.SubscriptionModel as never
-      ).subscription_capability(
-        { id },
+        subscriptionResolver.SubscriptionModel as unknown as SubscriptionModelResolvers
+      ).subscription_capability!(
+        { id } as SubscriptionModel,
         {},
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
@@ -120,16 +128,21 @@ describe('subscription resolver — unit tests', () => {
 
     it('service_instance should call loadServiceInstanceBy with service_instance_id', async () => {
       const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-      const expected = { id: serviceInstanceId } as never;
+      const expected = { id: serviceInstanceId } as unknown as
+        | ServiceInstance
+        | undefined;
       vi.spyOn(
         serviceInstanceDomain,
         'loadServiceInstanceBy'
       ).mockResolvedValue(expected);
 
       const result = await (
-        subscriptionResolver.SubscriptionModel as never
-      ).service_instance(
-        { service_instance_id: serviceInstanceId },
+        subscriptionResolver.SubscriptionModel as unknown as SubscriptionModelResolvers
+      ).service_instance!(
+        {
+          id: uuidv4() as SubscriptionId,
+          service_instance_id: serviceInstanceId,
+        } as unknown as SubscriptionModel,
         {},
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
@@ -144,15 +157,17 @@ describe('subscription resolver — unit tests', () => {
 
     it('user_service should call getUserService with subscription id', async () => {
       const id = uuidv4();
-      const expected = [] as never;
+      const expected = [] as unknown as Awaited<
+        ReturnType<typeof subscriptionDomain.getUserService>
+      >;
       vi.spyOn(subscriptionDomain, 'getUserService').mockResolvedValue(
         expected
       );
 
       const result = await (
-        subscriptionResolver.SubscriptionModel as never
-      ).user_service(
-        { id },
+        subscriptionResolver.SubscriptionModel as unknown as SubscriptionModelResolvers
+      ).user_service!(
+        { id } as SubscriptionModel,
         {},
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
@@ -166,14 +181,16 @@ describe('subscription resolver — unit tests', () => {
   describe('subscriptionCapability field resolvers', () => {
     it('service_capability should call getServiceCapability with subscription capability id', async () => {
       const id = uuidv4();
-      const expected = { id: uuidv4() } as never;
+      const expected = { id: uuidv4() } as unknown as Awaited<
+        ReturnType<typeof subscriptionDomain.getServiceCapability>
+      >;
       vi.spyOn(subscriptionDomain, 'getServiceCapability').mockResolvedValue(
         expected
       );
 
       const result = await (
-        subscriptionResolver.SubscriptionCapability as never
-      ).service_capability(
+        subscriptionResolver.SubscriptionCapability as unknown as SubscriptionCapabilityResolvers
+      ).service_capability!(
         { id },
         {},
         contextSimpleUserFiligran2,
@@ -188,7 +205,9 @@ describe('subscription resolver — unit tests', () => {
   describe('mutation.addSubscriptionInService', () => {
     it('should extract capability ids and subscribe organization, then load service with subscriptions', async () => {
       const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-      const expected = { id: serviceInstanceId } as never;
+      const expected = { id: serviceInstanceId } as unknown as Awaited<
+        ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
+      >;
       vi.spyOn(
         subscriptionApp,
         'subscribeOrganizationToService'
@@ -229,7 +248,11 @@ describe('subscription resolver — unit tests', () => {
       vi.spyOn(
         serviceInstanceDomain,
         'loadServiceWithSubscriptions'
-      ).mockResolvedValue({} as never);
+      ).mockResolvedValue(
+        {} as unknown as Awaited<
+          ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
+        >
+      );
 
       await subscriptionResolver.Mutation!.addSubscriptionInService!(
         {},
@@ -284,10 +307,14 @@ describe('subscription resolver — unit tests', () => {
       const rawId = uuidv4() as SubscriptionId;
       const globalId = toGlobalId('Subscription', rawId);
       const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-      const expected = { id: serviceInstanceId } as never;
+      const expected = { id: serviceInstanceId } as unknown as Awaited<
+        ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
+      >;
       vi.spyOn(subscriptionApp, 'deleteSubscription').mockResolvedValue({
         service_instance_id: serviceInstanceId,
-      } as never);
+      } as unknown as Awaited<
+        ReturnType<typeof subscriptionApp.deleteSubscription>
+      >);
       vi.spyOn(
         serviceInstanceDomain,
         'loadServiceWithSubscriptions'
@@ -324,7 +351,11 @@ describe('subscription resolver — unit tests', () => {
     it('should decode subscription_id and return first subscription', async () => {
       const rawId = uuidv4() as SubscriptionId;
       const globalId = toGlobalId('Subscription', rawId);
-      const expected = { id: rawId } as never;
+      const expected = { id: rawId } as unknown as Awaited<
+        ReturnType<
+          typeof subscriptionHelper.loadSubscriptionWithOrganizationAndCapabilitiesBy
+        >
+      >[number];
       vi.spyOn(
         subscriptionHelper,
         'loadSubscriptionWithOrganizationAndCapabilitiesBy'

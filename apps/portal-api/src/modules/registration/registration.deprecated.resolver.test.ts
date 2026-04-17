@@ -14,6 +14,7 @@ import {
   PlatformRegistrationConnectivityStatus,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { PortalContext } from '../../model/portal-context';
 import { BadRequestErrorCode } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
 import { registrationApp } from './registration.app';
@@ -23,8 +24,8 @@ const PLATFORM_TOKEN = uuidv4();
 
 const contextWithPlatformToken = {
   ...contextSimpleUserSecondOrga,
-  req: { header: (_name: string) => PLATFORM_TOKEN } as never,
-};
+  req: { header: (_name: string) => PLATFORM_TOKEN },
+} as PortalContext;
 
 const platformInput: PlatformInput = {
   id: uuidv4(),

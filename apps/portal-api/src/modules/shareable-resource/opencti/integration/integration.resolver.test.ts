@@ -8,9 +8,14 @@ import {
 import {
   Connector,
   IntegrationType,
+  Organization,
   SubscriptionModel,
 } from '../../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../../../model/kanel/public/ServiceInstance';
+import UseCase from '../../../../model/kanel/public/UseCase';
+import User from '../../../../model/kanel/public/User';
 import { logApp } from '../../../../utils/app-logger.util';
 import { DocumentChildrenDomain } from '../../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../../document/domain/document.domain';
@@ -83,7 +88,7 @@ describe('integration field resolvers', () => {
       const documentId = uuidv4();
       const expected = [{ id: uuidv4(), name: 'Use Case A' }];
       vi.spyOn(useCaseDomain, 'loadUseCasesByDocumentId').mockResolvedValue(
-        expected as never
+        expected as unknown as UseCase[]
       );
 
       // When
@@ -110,7 +115,11 @@ describe('integration field resolvers', () => {
       vi.spyOn(
         DocumentChildrenDomain,
         'loadImagesByDocumentId'
-      ).mockResolvedValue(expected as never);
+      ).mockResolvedValue(
+        expected as unknown as Awaited<
+          ReturnType<typeof DocumentChildrenDomain.loadImagesByDocumentId>
+        >
+      );
 
       // When
       const result = await integrationResolver.Integration!.children_documents!(
@@ -134,7 +143,7 @@ describe('integration field resolvers', () => {
       const documentId = uuidv4();
       const expected = { id: uuidv4(), email: 'user@test.com' };
       vi.spyOn(DocumentDomain, 'loadUploader').mockResolvedValue(
-        expected as never
+        expected as unknown as User | undefined
       );
 
       // When
@@ -157,7 +166,7 @@ describe('integration field resolvers', () => {
       const documentId = uuidv4();
       const expected = { id: uuidv4(), name: 'Org A' };
       vi.spyOn(DocumentDomain, 'loadUploaderOrganization').mockResolvedValue(
-        expected as never
+        expected as unknown as Organization | undefined
       );
 
       // When
@@ -183,7 +192,7 @@ describe('integration field resolvers', () => {
       const serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS.ID;
       const expected = { id: serviceInstanceId, name: 'integrations' };
       vi.spyOn(serviceInstanceDomain, 'getServiceInstance').mockResolvedValue(
-        expected as never
+        expected as unknown as ServiceInstance | undefined
       );
 
       // When

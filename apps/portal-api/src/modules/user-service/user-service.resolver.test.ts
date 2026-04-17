@@ -15,9 +15,11 @@ import {
   UserServiceEdge,
   UserServiceOrdering,
 } from '../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserServiceId } from '../../model/kanel/public/UserService';
+import { UserWithOrganizationsAndRole } from '../../model/user';
 import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
@@ -35,7 +37,7 @@ describe('userService field resolvers', () => {
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID;
       const expected = { id: userId, email: 'user@test.com' };
       vi.spyOn(usersDomain, 'loadUserDetails').mockResolvedValue(
-        expected as never
+        expected as unknown as UserWithOrganizationsAndRole
       );
 
       // When
@@ -88,7 +90,11 @@ describe('userService field resolvers', () => {
       vi.spyOn(
         UserServiceDomain,
         'loadUserServiceCapabilities'
-      ).mockResolvedValue(expected as never);
+      ).mockResolvedValue(
+        expected as unknown as Awaited<
+          ReturnType<typeof UserServiceDomain.loadUserServiceCapabilities>
+        >
+      );
 
       // When
       const result = await userServiceResolver.UserService!
@@ -140,7 +146,7 @@ describe('query.userServiceOwned', () => {
       totalCount: 1,
     };
     vi.spyOn(UserServiceDomain, 'loadUserServiceByUser').mockReturnValue(
-      expected as never
+      expected as unknown as Promise<UserServiceConnection>
     );
 
     // When
@@ -195,7 +201,7 @@ describe('query.userServiceFromSubscription', () => {
     vi.spyOn(
       UserServiceDomain,
       'loadUserServiceBySubscription'
-    ).mockReturnValue(expected as never);
+    ).mockReturnValue(expected as unknown as Promise<UserServiceConnection>);
 
     // When
     const result = await userServiceResolver.Query!
@@ -218,10 +224,12 @@ describe('mutation.addYourselfInUserService', () => {
   it('should delegate to UserServiceApp and return result', async () => {
     // Given
     const input = {
-      serviceInstanceId: 'instance-1' as never,
+      serviceInstanceId: 'instance-1' as unknown as ServiceInstanceId,
       email: ['user@test.com'],
     };
-    const expected = [{ id: uuidv4() }] as never;
+    const expected = [{ id: uuidv4() }] as unknown as Awaited<
+      ReturnType<typeof UserServiceApp.addYourselfInUserService>
+    >;
     vi.spyOn(UserServiceApp, 'addYourselfInUserService').mockResolvedValue(
       expected
     );
@@ -248,7 +256,7 @@ describe('mutation.addYourselfInUserService', () => {
   it('should map to ForbiddenAccess for UserIsNotInOrganization error', async () => {
     // Given
     const input = {
-      serviceInstanceId: 'instance-1' as never,
+      serviceInstanceId: 'instance-1' as unknown as ServiceInstanceId,
       email: ['user@test.com'],
     };
     vi.spyOn(UserServiceApp, 'addYourselfInUserService').mockRejectedValue(
@@ -280,7 +288,9 @@ describe('mutation.addUserService', () => {
       email: ['user@test.com'],
       capabilities: ['MANAGE_ACCESS'],
     };
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof UserServiceApp.addUserService>
+    >;
     vi.spyOn(UserServiceApp, 'addUserService').mockResolvedValue(expected);
 
     // When
@@ -342,7 +352,9 @@ describe('mutation.deleteUserService', () => {
       subscription_id: rawSubscriptionId,
     };
     vi.spyOn(UserServiceApp, 'deleteUserService').mockResolvedValue(
-      expected as never
+      expected as unknown as Awaited<
+        ReturnType<typeof UserServiceApp.deleteUserService>
+      >
     );
 
     // When

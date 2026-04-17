@@ -7,10 +7,18 @@ import {
   SERVICES,
 } from '../../../tests/tests.const';
 import {
+  DocumentResolvers,
   IntegrationType,
+  MutationCreateDocumentArgs,
+  MutationUpdateDocumentArgs,
+  Organization,
+  QueryDocumentsArgs,
+  QueryPublicDocumentsArgs,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
-import { DocumentId } from '../../model/kanel/public/Document';
+import DocumentModel, { DocumentId } from '../../model/kanel/public/Document';
+import ServiceInstance from '../../model/kanel/public/ServiceInstance';
+import User from '../../model/kanel/public/User';
 import {
   BadRequestErrorCode,
   ForbiddenErrorCode,
@@ -32,12 +40,14 @@ import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 describe('mutation.createDocument', () => {
   it('should delegate to DocumentApp.createDocument and return result', async () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-    const expected = { id: uuidv4() as DocumentId } as never;
+    const expected = { id: uuidv4() as DocumentId } as unknown as Awaited<
+      ReturnType<typeof DocumentApp.createDocument>
+    >;
     vi.spyOn(DocumentApp, 'createDocument').mockResolvedValue(expected);
 
     const result = await documentResolver.Mutation!.createDocument!(
       {},
-      { serviceInstanceId, input: {} } as never,
+      { serviceInstanceId, input: {} } as unknown as MutationCreateDocumentArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -52,7 +62,10 @@ describe('mutation.createDocument', () => {
 
     const call = documentResolver.Mutation!.createDocument!(
       {},
-      { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID, input: {} } as never,
+      {
+        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+        input: {},
+      } as unknown as MutationCreateDocumentArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -67,7 +80,10 @@ describe('mutation.createDocument', () => {
 
     const call = documentResolver.Mutation!.createDocument!(
       {},
-      { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID, input: {} } as never,
+      {
+        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+        input: {},
+      } as unknown as MutationCreateDocumentArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -80,7 +96,9 @@ describe('mutation.updateDocument', () => {
   it('should decode documentId and delegate to DocumentApp.updateDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);
-    const expected = { id: rawDocId } as never;
+    const expected = { id: rawDocId } as unknown as Awaited<
+      ReturnType<typeof DocumentApp.updateDocument>
+    >;
     vi.spyOn(DocumentApp, 'updateDocument').mockResolvedValue(expected);
 
     const result = await documentResolver.Mutation!.updateDocument!(
@@ -90,7 +108,7 @@ describe('mutation.updateDocument', () => {
         serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
-      } as never,
+      } as unknown as MutationUpdateDocumentArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -113,7 +131,7 @@ describe('mutation.updateDocument', () => {
         serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
-      } as never,
+      } as unknown as MutationUpdateDocumentArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -133,7 +151,7 @@ describe('mutation.updateDocument', () => {
         serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
-      } as never,
+      } as unknown as MutationUpdateDocumentArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -146,7 +164,9 @@ describe('mutation.deleteDocument', () => {
   it('should decode documentId and delegate to DocumentApp.deleteDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);
-    const expected = { id: rawDocId } as never;
+    const expected = { id: rawDocId } as unknown as Awaited<
+      ReturnType<typeof DocumentApp.deleteDocument>
+    >;
     vi.spyOn(DocumentApp, 'deleteDocument').mockResolvedValue(expected);
 
     const result = await documentResolver.Mutation!.deleteDocument!(
@@ -195,8 +215,12 @@ describe('mutation.incrementShareNumberDocument', () => {
       id: rawDocId,
       service_instance_id: SERVICES.INSTANCES.EPIC.ID,
       name: 'doc',
-    } as never;
-    const updated = { ...doc, share_number: 1 } as never;
+    } as unknown as Awaited<
+      ReturnType<typeof DocumentDomain.loadDocumentWithMetadataById>
+    >;
+    const updated = { ...doc, share_number: 1 } as unknown as Awaited<
+      ReturnType<typeof documentHelper.updateDocumentWithCounters>
+    >;
     vi.spyOn(DocumentDomain, 'loadDocumentWithMetadataById').mockResolvedValue(
       doc
     );
@@ -245,10 +269,10 @@ describe('document.__resolveType', () => {
   `(
     'should resolve $type to $expected without querying metadata',
     async ({ type, expected }) => {
-      const doc = { id: uuidv4(), type } as never;
-      const result = await (documentResolver.Document as never).__resolveType(
-        doc
-      );
+      const doc = { id: uuidv4(), type } as unknown as DocumentModel;
+      const result = await (
+        documentResolver.Document as unknown as DocumentResolvers
+      ).__resolveType(doc);
       expect(result).toBe(expected);
     }
   );
@@ -267,24 +291,27 @@ describe('document.__resolveType', () => {
       const doc = {
         id: uuidv4(),
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-      } as never;
+      } as unknown as DocumentModel;
       vi.spyOn(DocumentMetadataDomain, 'loadIntegrationType').mockResolvedValue(
         integrationType
       );
 
-      const result = await (documentResolver.Document as never).__resolveType(
-        doc
-      );
+      const result = await (
+        documentResolver.Document as unknown as DocumentResolvers
+      ).__resolveType(doc);
 
       expect(result).toBe(expected);
     }
   );
 
   it('should return DefaultDocument for unrecognised type', async () => {
-    const doc = { id: uuidv4(), type: 'unknown_type' } as never;
-    const result = await (documentResolver.Document as never).__resolveType(
-      doc
-    );
+    const doc = {
+      id: uuidv4(),
+      type: 'unknown_type',
+    } as unknown as DocumentModel;
+    const result = await (
+      documentResolver.Document as unknown as DocumentResolvers
+    ).__resolveType(doc);
     expect(result).toBe('DefaultDocument');
   });
 });
@@ -292,14 +319,16 @@ describe('document.__resolveType', () => {
 describe('document field resolvers', () => {
   it('children_documents should load children by document id', async () => {
     const id = uuidv4() as DocumentId;
-    const expected = [{ id: uuidv4() }] as never;
+    const expected = [{ id: uuidv4() }] as unknown as Awaited<
+      ReturnType<typeof DocumentChildrenDomain.loadChildrenDocuments>
+    >;
     vi.spyOn(DocumentChildrenDomain, 'loadChildrenDocuments').mockResolvedValue(
       expected
     );
 
     const result = await (
-      documentResolver.Document as never
-    ).children_documents(
+      documentResolver.Document as unknown as DocumentResolvers
+    ).children_documents!(
       { id },
       {},
       contextSimpleUserFiligran2,
@@ -315,15 +344,12 @@ describe('document field resolvers', () => {
 
   it('uploader should load uploader by document id', async () => {
     const id = uuidv4() as DocumentId;
-    const expected = { id: uuidv4() } as never;
+    const expected = { id: uuidv4() } as unknown as User | undefined;
     vi.spyOn(DocumentDomain, 'loadUploader').mockResolvedValue(expected);
 
-    const result = await (documentResolver.Document as never).uploader(
-      { id },
-      {},
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
+    const result = await (
+      documentResolver.Document as unknown as DocumentResolvers
+    ).uploader!({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
 
     expect(DocumentDomain.loadUploader).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
@@ -331,14 +357,14 @@ describe('document field resolvers', () => {
 
   it('uploader_organization should load uploader organization by document id', async () => {
     const id = uuidv4() as DocumentId;
-    const expected = { id: uuidv4() } as never;
+    const expected = { id: uuidv4() } as unknown as Organization | undefined;
     vi.spyOn(DocumentDomain, 'loadUploaderOrganization').mockResolvedValue(
       expected
     );
 
     const result = await (
-      documentResolver.Document as never
-    ).uploader_organization(
+      documentResolver.Document as unknown as DocumentResolvers
+    ).uploader_organization!(
       { id },
       {},
       contextSimpleUserFiligran2,
@@ -351,12 +377,16 @@ describe('document field resolvers', () => {
 
   it('service_instance should load service instance by service_instance_id', async () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-    const expected = { id: serviceInstanceId } as never;
+    const expected = { id: serviceInstanceId } as unknown as
+      | ServiceInstance
+      | undefined;
     vi.spyOn(serviceInstanceDomain, 'getServiceInstance').mockResolvedValue(
       expected
     );
 
-    const result = await (documentResolver.Document as never).service_instance(
+    const result = await (
+      documentResolver.Document as unknown as DocumentResolvers
+    ).service_instance!(
       { service_instance_id: serviceInstanceId },
       {},
       contextSimpleUserFiligran2,
@@ -373,10 +403,14 @@ describe('document field resolvers', () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: uuidv4() } as unknown as SubscriptionModel;
     vi.spyOn(subscriptionDomain, 'loadSubscriptionBy').mockResolvedValue(
-      expected as never
+      expected as unknown as Awaited<
+        ReturnType<typeof subscriptionDomain.loadSubscriptionBy>
+      >
     );
 
-    const result = await (documentResolver.Document as never).subscription(
+    const result = await (
+      documentResolver.Document as unknown as DocumentResolvers
+    ).subscription!(
       { service_instance_id: serviceInstanceId },
       {},
       contextSimpleUserFiligran2,
@@ -415,12 +449,16 @@ describe('query.documentExists', () => {
 
 describe('query.publicDocuments', () => {
   it('should delegate to DocumentApp.loadPublicDocuments and return result', async () => {
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadPublicDocuments>
+    >;
     vi.spyOn(DocumentApp, 'loadPublicDocuments').mockResolvedValue(expected);
 
     const result = await documentResolver.Query!.publicDocuments!(
       {},
-      { service_instance_id: SERVICES.INSTANCES.EPIC.ID } as never,
+      {
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+      } as unknown as QueryPublicDocumentsArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -431,7 +469,9 @@ describe('query.publicDocuments', () => {
 
 describe('query.publicDocumentsByServiceSlug', () => {
   it('should delegate to DocumentApp.loadPublicDocumentsByServiceSlug and return result', async () => {
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadPublicDocumentsByServiceSlug>
+    >;
     vi.spyOn(DocumentApp, 'loadPublicDocumentsByServiceSlug').mockResolvedValue(
       expected
     );
@@ -452,7 +492,9 @@ describe('query.publicDocumentsByServiceSlug', () => {
 
 describe('query.publicDocumentBySlug', () => {
   it('should delegate to DocumentApp.loadPublicDocumentBySlug and return result', async () => {
-    const expected = { id: uuidv4() } as never;
+    const expected = { id: uuidv4() } as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadPublicDocumentBySlug>
+    >;
     vi.spyOn(DocumentApp, 'loadPublicDocumentBySlug').mockResolvedValue(
       expected
     );
@@ -474,12 +516,16 @@ describe('query.publicDocumentBySlug', () => {
 
 describe('query.documents', () => {
   it('should delegate to DocumentApp.loadDocuments and return result', async () => {
-    const expected = [] as never;
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadDocuments>
+    >;
     vi.spyOn(DocumentApp, 'loadDocuments').mockResolvedValue(expected);
 
     const result = await documentResolver.Query!.documents!(
       {},
-      { service_instance_id: SERVICES.INSTANCES.EPIC.ID } as never,
+      {
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+      } as unknown as QueryDocumentsArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -492,7 +538,9 @@ describe('query.document', () => {
   it('should decode documentId and delegate to DocumentApp.loadDocument', async () => {
     const rawDocId = uuidv4() as DocumentId;
     const globalDocId = toGlobalId('Document', rawDocId);
-    const expected = { id: rawDocId } as never;
+    const expected = { id: rawDocId } as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadDocument>
+    >;
     vi.spyOn(DocumentApp, 'loadDocument').mockResolvedValue(expected);
 
     const result = await documentResolver.Query!.document!(

@@ -31,7 +31,7 @@ describe('mutation.autoRegisterPlatform', () => {
     const call = registrationResolver.Mutation!.autoRegisterPlatform!(
       {},
       { platform: null, input: null },
-      makeContext() as never,
+      makeContext(),
       GRAPHQL_RESOLVE_INFO
     );
 
@@ -50,7 +50,7 @@ describe('mutation.autoRegisterPlatform', () => {
     const result = await registrationResolver.Mutation!.autoRegisterPlatform!(
       {},
       { input: validInput, platform: null },
-      makeContext(token) as never,
+      makeContext(token),
       GRAPHQL_RESOLVE_INFO
     );
 
@@ -87,7 +87,7 @@ describe('mutation.autoRegisterPlatform', () => {
     const call = registrationResolver.Mutation!.autoRegisterPlatform!(
       {},
       { input: validInput, platform: null },
-      makeContext() as never,
+      makeContext(),
       GRAPHQL_RESOLVE_INFO
     );
 
