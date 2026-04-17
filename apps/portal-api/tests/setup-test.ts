@@ -87,13 +87,13 @@ function mockRequestContext() {
 
 beforeEach(() => {
   // Set fresh context for each test
+  mockRequestContext();
+
   const testKey = getCurrentTestKey();
   testRequestStorage.set(testKey, { ...requestContextSimpleUserFiligran2 });
 });
 
 beforeAll(async ({}, suite) => {
-  mockRequestContext();
-
   const currentFile = suite?.file?.name;
   if (isUtilOrHelper(currentFile)) {
     console.log('⚠️ Did not clean', currentFile);
