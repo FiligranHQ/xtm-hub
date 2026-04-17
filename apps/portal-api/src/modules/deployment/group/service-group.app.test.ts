@@ -91,8 +91,6 @@ describe('serviceGroupApp', () => {
 
   describe('updateGroups', () => {
     afterEach(async () => {
-      vi.restoreAllMocks();
-
       for (const groupId of [
         adminGroupId,
         analystGroupId,
@@ -393,7 +391,6 @@ describe('serviceGroupApp', () => {
     });
 
     afterEach(async () => {
-      vi.restoreAllMocks();
       if (trackedServiceInstanceIds.length > 0) {
         for (const serviceInstanceId of trackedServiceInstanceIds) {
           await TestHelper.deploymentRequest.delete({

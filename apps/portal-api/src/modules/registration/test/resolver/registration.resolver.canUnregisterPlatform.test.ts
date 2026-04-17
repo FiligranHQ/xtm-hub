@@ -1,6 +1,6 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -17,10 +17,6 @@ import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.canUnregisterPlatform', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it.each`
     description        | organizationId                                      | expectedOrgGlobalId
     ${'with orgId'}    | ${TEST_ORGANIZATIONS.FILIGRAN.ID as OrganizationId} | ${toGlobalId('Organization', TEST_ORGANIZATIONS.FILIGRAN.ID)}

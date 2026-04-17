@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -18,10 +18,6 @@ vi.mock('../../../deployment/deployment.domain', () => ({
 }));
 
 describe('registeredPlatform type resolvers', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   describe('registeredPlatform.subscription', () => {
     it('should call loadSubscriptionByServiceInstanceAndOrganization with the organization id and instance id from parent', async () => {
       // Given

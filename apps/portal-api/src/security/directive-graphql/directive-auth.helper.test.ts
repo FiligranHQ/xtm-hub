@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   CAPABILITY_MODIFY_TRIALS,
   CAPABILITY_READ_TRIALS,
@@ -85,10 +85,6 @@ describe('auth directives', () => {
   });
 
   describe('hasServiceCapability', () => {
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     it.each`
       description                                             | expected | expectedError                                                                                                | isUserBypass | isUserOrganizationAdmin | areIdsMissing | hasRequiredCapabilities
       ${'allow bypass user'}                                  | ${true}  | ${null}                                                                                                      | ${true}      | ${false}                | ${false}      | ${false}

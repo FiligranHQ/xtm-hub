@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   INFO,
@@ -13,10 +13,6 @@ import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('mutation.unregisterPlatform', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should call registrationApp.unregisterPlatform and return { success: true }', async () => {
     // Given
     const input: UnregisterPlatformInput = {

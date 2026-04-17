@@ -1,4 +1,4 @@
-import { beforeAll } from 'vitest';
+import { afterEach, beforeAll } from 'vitest';
 import { requestContext, RequestContext } from '../src/context/request.context';
 import { closeDbTestConnection, getDbTestConnection } from './config-test';
 import { requestContextSimpleUserFiligran2 } from './tests.const';
@@ -132,6 +132,10 @@ beforeAll(async ({}, suite) => {
     throw error;
   }
 }, 60000);
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 process.on('SIGINT', async () => {
   await closeDbTestConnection();

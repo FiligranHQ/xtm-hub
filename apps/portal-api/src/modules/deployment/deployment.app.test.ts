@@ -89,10 +89,15 @@ import {
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
 describe('deployment app', () => {
-  const telemetrySpy = vi
-    .spyOn(telemetryApp, 'sendTelemetryEvent')
-    .mockResolvedValue();
-  const mockSendMail = vi.spyOn(mailService, 'sendMail');
+  let telemetrySpy: MockInstance;
+  let mockSendMail: MockInstance;
+
+  beforeEach(() => {
+    telemetrySpy = vi
+      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .mockResolvedValue();
+    mockSendMail = vi.spyOn(mailService, 'sendMail');
+  });
 
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
