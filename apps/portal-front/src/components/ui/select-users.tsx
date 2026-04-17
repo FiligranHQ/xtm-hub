@@ -261,17 +261,26 @@ const SelectUsersFormField = React.forwardRef<
                   )}
                 </div>
                 <div className="flex items-center shrink-0">
-                  <button
-                    type="button"
+                  <span
+                    role="button"
+                    tabIndex={0}
                     className="flex items-center justify-center"
                     onClick={(event) => {
+                      event.stopPropagation();
                       setSelectedValues([]);
                       onValueChange('');
-                      event.stopPropagation();
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setSelectedValues([]);
+                        onValueChange('');
+                      }
                     }}
                     aria-label="Clear all selections">
                     <CloseIcon className="mx-s h-3 cursor-pointer text-muted-foreground" />
-                  </button>
+                  </span>
                   <Separator
                     orientation="vertical"
                     className="h-6"
