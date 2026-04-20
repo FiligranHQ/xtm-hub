@@ -63,7 +63,7 @@ describe('user query resolver', () => {
       await insertSubscription({
         id: SUBSCRIPTION_ID,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
       });
     });
 
@@ -273,9 +273,6 @@ describe('user mutation resolver', () => {
   });
 
   describe('adminAddUser', () => {
-    afterEach(async () => {
-      vi.restoreAllMocks();
-    });
     it('should not create an existing user', async () => {
       // Given
       try {

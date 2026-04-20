@@ -1,9 +1,9 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
 import {
@@ -11,15 +11,12 @@ import {
   PlatformIdentifier,
   RegisterPlatformInput,
 } from '../../../../__generated__/resolvers-types';
-import { UnknownErrorCode } from '../../../../utils/error/error.code';
+import { BadRequestErrorCode } from '../../../../utils/error/error.code';
+import { ErrorType } from '../../../../utils/error/error.type';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('mutation.registerPlatform', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode organizationId from global ID before calling registrationApp and return the token', async () => {
     // Given
     const rawOrgId = TEST_ORGANIZATIONS.FILIGRAN.ID;
@@ -46,7 +43,7 @@ describe('mutation.registerPlatform', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -57,7 +54,7 @@ describe('mutation.registerPlatform', () => {
     expect(result).toMatchObject({ token: generatedToken });
   });
 
-  it('should throw a mapped GraphQL error with RegisterPlatformUnknownError when the app throws', async () => {
+  it('should map to BadRequest for InvalidPlatformVersion error', async () => {
     // Given
     const input: RegisterPlatformInput = {
       organizationId: toGlobalId(
@@ -74,7 +71,7 @@ describe('mutation.registerPlatform', () => {
       identifier: PlatformIdentifier.Opencti,
     };
     vi.spyOn(registrationApp, 'registerPlatform').mockRejectedValue(
-      new Error('UNEXPECTED')
+      new Error(BadRequestErrorCode.InvalidPlatformVersion)
     );
 
     // When
@@ -82,12 +79,10 @@ describe('mutation.registerPlatform', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
-    await expect(call).rejects.toThrow(
-      UnknownErrorCode.RegisterPlatformUnknownError
-    );
+    await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
   });
 });

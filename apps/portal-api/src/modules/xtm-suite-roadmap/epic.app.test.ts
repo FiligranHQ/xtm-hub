@@ -47,7 +47,6 @@ describe('epicApp', () => {
     // Clean up the Document and Epic tables before each test
     await TestHelper.epic.delete({});
     await TestHelper.document.delete({ file_name: 'epic-image.png' });
-    vi.restoreAllMocks();
   });
 
   describe('createEpic', () => {

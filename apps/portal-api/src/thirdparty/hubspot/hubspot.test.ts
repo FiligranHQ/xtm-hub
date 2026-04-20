@@ -48,7 +48,6 @@ describe('hubspot', () => {
 
   afterEach(async () => {
     await TestHelper.deploymentRequest.delete({});
-    vi.restoreAllMocks();
   });
 
   describe('reachOutSales (direct sending)', () => {

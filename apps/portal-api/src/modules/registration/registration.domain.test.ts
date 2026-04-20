@@ -187,10 +187,6 @@ describe('registration domain', () => {
       );
     });
 
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     it('should prevent refresh when user is not allowed on target organization', async () => {
       assertUserIsAllowedOnOrganizationSpy.mockReturnValue(
         Promise.reject('ERROR')

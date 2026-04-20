@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { logApp } from './app-logger.util';
 import {
   resolveSessionReferer,
@@ -8,10 +8,6 @@ import {
 describe('toSafeRedirectPath', () => {
   beforeEach(() => {
     vi.spyOn(logApp, 'warn').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   describe('relative paths', () => {
@@ -106,10 +102,6 @@ describe('resolveSessionReferer', () => {
   beforeEach(() => {
     vi.spyOn(logApp, 'warn').mockImplementation(() => {});
     vi.spyOn(logApp, 'error').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   it('returns undefined for empty string', () => {

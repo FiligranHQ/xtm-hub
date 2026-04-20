@@ -1,6 +1,15 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import {
   contextSimpleUserSecondOrga,
   requestContextSimpleUserSecondOrga,
@@ -250,7 +259,7 @@ describe('documents loading', () => {
 
 describe('increment shared counter', () => {
   const documentId = '117804d0-2e0e-42f0-b87c-019de622f605';
-  beforeAll(async () => {
+  beforeEach(async () => {
     const testContext = {
       user: requestContextSimpleUserSecondOrga.user,
       portalContext: {
@@ -287,7 +296,7 @@ describe('increment shared counter', () => {
     );
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await deleteDocuments();
     vi.useRealTimers();
   });
