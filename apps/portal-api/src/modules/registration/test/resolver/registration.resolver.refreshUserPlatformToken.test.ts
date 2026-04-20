@@ -1,19 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
 } from '../../../../../tests/tests.const';
 import { RefreshUserPlatformTokenResponse } from '../../../../__generated__/resolvers-types';
-import { UnknownErrorCode } from '../../../../utils/error/error.code';
+import { NotFoundErrorCode } from '../../../../utils/error/error.code';
+import { ErrorType } from '../../../../utils/error/error.type';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('mutation.refreshUserPlatformToken', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should call registrationApp.refreshUserPlatformToken with the context user id and return the token', async () => {
     // Given
     const newToken = uuidv4();
@@ -26,7 +23,12 @@ describe('mutation.refreshUserPlatformToken', () => {
 
     // When
     const result = await registrationResolver.Mutation!
-      .refreshUserPlatformToken!({}, {}, contextSimpleUserFiligran2, INFO);
+      .refreshUserPlatformToken!(
+      {},
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     // Then
     expect(registrationApp.refreshUserPlatformToken).toHaveBeenCalledWith(
@@ -35,10 +37,10 @@ describe('mutation.refreshUserPlatformToken', () => {
     expect(result).toMatchObject({ token: newToken });
   });
 
-  it('should throw a mapped GraphQL error with RefreshUserPlatformTokenUnknownError when the app throws', async () => {
+  it('should map to NotFound for ServiceContractNotFound error', async () => {
     // Given
     vi.spyOn(registrationApp, 'refreshUserPlatformToken').mockRejectedValue(
-      new Error('UNEXPECTED')
+      new Error(NotFoundErrorCode.ServiceContractNotFound)
     );
 
     // When
@@ -46,12 +48,10 @@ describe('mutation.refreshUserPlatformToken', () => {
       {},
       {},
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
-    await expect(call).rejects.toThrow(
-      UnknownErrorCode.RefreshUserPlatformTokenUnknownError
-    );
+    await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
   });
 });

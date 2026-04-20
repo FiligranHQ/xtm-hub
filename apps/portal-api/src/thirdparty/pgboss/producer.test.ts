@@ -2,7 +2,6 @@ import { PgBoss, type JobSpyInterface } from 'pg-boss';
 import {
   afterAll,
   afterEach,
-  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -22,7 +21,7 @@ describe('pgBossProducer – transactional enqueue (integration)', () => {
   const TEST_SCHEMA = 'pgboss_producer_test';
   const TEST_QUEUE = 'producer_txn_test';
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { host, port, user, password, database } = portalConfig.database;
 
     boss = new PgBoss({
@@ -51,7 +50,6 @@ describe('pgBossProducer – transactional enqueue (integration)', () => {
   });
 
   afterAll(async () => {
-    vi.restoreAllMocks();
     if (boss) {
       await boss.stop({ graceful: true, timeout: 2_000 });
     }

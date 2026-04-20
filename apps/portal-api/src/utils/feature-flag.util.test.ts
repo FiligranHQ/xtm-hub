@@ -1,5 +1,5 @@
 import config from 'config';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { FeatureFlag } from '../__generated__/resolvers-types';
 import { isFeatureEnabled, resolveFeatureFlags } from './feature-flag.util';
 
@@ -53,10 +53,6 @@ describe('resolveFeatureFlags', () => {
 });
 
 describe('isFeatureEnabled', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
-
   describe('when feature is enabled', () => {
     it.each`
       enabledFeatures       | description

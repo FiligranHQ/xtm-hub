@@ -506,6 +506,5 @@ describe('telemetryApp', () => {
 
   afterEach(async () => {
     vi.useRealTimers();
-    vi.restoreAllMocks();
   });
 });

@@ -9,7 +9,7 @@ export default defineConfig({
     fileParallelism: false,
     coverage: {
       provider: 'v8',
-      include: ['./**'],
+      include: ['./**/*.ts'],
       exclude: [
         'builder/**',
         'src/__generated__/**',

@@ -12,7 +12,6 @@ import serviceDefinitionResolver from './service-definition.resolver';
 describe('serviceDefinition resolver fields', () => {
   afterEach(async () => {
     vi.clearAllTimers();
-    vi.restoreAllMocks();
     vi.clearAllMocks();
   });
   describe('service_capability field resolver', () => {

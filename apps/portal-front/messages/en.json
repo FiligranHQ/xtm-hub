@@ -255,6 +255,7 @@
       "SERVICE_NOT_MANAGEABLE": "This service is not manageable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
       "SUBSCRIPTION_NOT_FOUND": "Subscription was not found",
+      "TENANT_ID_MANDATORY": "Tenant id is mandatory",
       "TRANSFER_ME_ERROR": "Error while requesting personal space transfer.",
       "UNKNOWN_ERROR": "An unknown error occurred",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",

@@ -158,7 +158,7 @@ describe('serviceConfigurationDomain', () => {
       const configuration =
         await ServiceConfigurationDomain.loadConfigurationByPlatform(
           platformId,
-          ServiceConfigurationStatus.Active
+          { status: ServiceConfigurationStatus.Active }
         );
 
       expect(configuration).toMatchObject({
@@ -175,7 +175,7 @@ describe('serviceConfigurationDomain', () => {
       const configuration =
         await ServiceConfigurationDomain.loadConfigurationByPlatform(
           platformId,
-          ServiceConfigurationStatus.Inactive
+          { status: ServiceConfigurationStatus.Inactive }
         );
 
       expect(configuration).toBeUndefined();
@@ -184,6 +184,57 @@ describe('serviceConfigurationDomain', () => {
     it('should return undefined when platform is not found', async () => {
       const configuration =
         await ServiceConfigurationDomain.loadConfigurationByPlatform(uuidv4());
+
+      expect(configuration).toBeUndefined();
+    });
+  });
+
+  describe('loadConfigurationByPlatform with tenantId disambiguation', () => {
+    let platformId: string;
+    const tenantId1 = 'tenant-alpha';
+    const tenantId2 = 'tenant-beta';
+
+    beforeEach(async () => {
+      platformId = uuidv4();
+
+      await TestHelper.serviceConfiguration.delete({});
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId, tenant_id: tenantId1 },
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId, tenant_id: tenantId2 },
+      });
+    });
+
+    it.each`
+      tenantId     | description
+      ${tenantId1} | ${'first tenant'}
+      ${tenantId2} | ${'second tenant'}
+    `(
+      'should return the configuration matching $description when tenantId is provided',
+      async ({ tenantId }: { tenantId: string }) => {
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+
+        expect(configuration).toMatchObject({
+          config: { platform_id: platformId, tenant_id: tenantId },
+        });
+      }
+    );
+
+    it('should return undefined when tenantId does not match any configuration', async () => {
+      const configuration =
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          platformId,
+          { tenantId: 'unknown-tenant' }
+        );
 
       expect(configuration).toBeUndefined();
     });

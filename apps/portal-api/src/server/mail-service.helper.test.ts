@@ -192,10 +192,6 @@ describe('renderEmail', () => {
     });
   });
   describe('sendMail', () => {
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     it('should enqueue a job via PgBossProducer when queue processing is enabled', async () => {
       vi.mocked(config.get).mockReturnValue(true);
 

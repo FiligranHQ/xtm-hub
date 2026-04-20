@@ -160,10 +160,6 @@ describe('userServiceDomain', () => {
       vi.spyOn(mailService, 'sendMail').mockResolvedValue(undefined);
     });
 
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     const getSubscription = async () => {
       const allSubscriptions = await TestHelper.subscription.loadAll({
         id: sub.id,
@@ -453,7 +449,6 @@ describe('userServiceDomain', () => {
     });
 
     afterEach(async () => {
-      vi.restoreAllMocks();
       for (const subId of createdSubscriptionIds) {
         await cleanupUserServices(subId);
         await TestHelper.subscription.delete({ id: subId });

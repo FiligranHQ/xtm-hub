@@ -11,7 +11,7 @@ const resolvers: Resolvers = {
       try {
         const user_service_id = extractId<UserServiceId>(input.user_service_id);
 
-        return serviceCapabilityApp.editServiceCapability(
+        return await serviceCapabilityApp.editServiceCapability(
           user_service_id,
           input.capabilities,
           serviceInstanceId
