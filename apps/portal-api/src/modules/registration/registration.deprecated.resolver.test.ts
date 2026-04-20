@@ -74,7 +74,7 @@ describe('registration query resolver', () => {
           url: 'http://example.com',
           contract: PlatformContract.Ee,
           title: 'Fake title',
-          version: 'X.Y.Z',
+          version: '1.0.0',
         },
         identifier: PlatformIdentifier.Opencti,
       });

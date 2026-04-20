@@ -223,6 +223,7 @@ export function buildRegisterEvent(
   platform_version: string,
   platform_url: string,
   existingUsersCount?: number,
+  tenantId?: string,
   timestamp?: Date
 ): RegisterPlatformEvent {
   const baseEvent = buildBaseEvent(organization, user_id, timestamp);
@@ -239,6 +240,7 @@ export function buildRegisterEvent(
     ...(existingUsersCount !== undefined && {
       existing_users_count: existingUsersCount,
     }),
+    ...(tenantId !== undefined && { tenant_id: tenantId }),
   };
 }
 

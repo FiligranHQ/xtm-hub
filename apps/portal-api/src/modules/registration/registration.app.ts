@@ -9,6 +9,7 @@ import {
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
+  PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
@@ -64,6 +65,19 @@ import {
 } from './registration.domain';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from './registration.mapping';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
+
+// Returns true when the platform version meets or exceeds the configured threshold for tenantId.
+// A null threshold means tenantId is never required for that identifier.
+// A missing or invalid version is treated as legacy (no tenantId required).
+const isTenantIdRequired = (
+  identifier: PlatformIdentifier,
+  version?: string | null
+): boolean => {
+  const requiredVersion = RequiredPlatformVersions.TenantIdRequired[identifier];
+  if (!requiredVersion) return false;
+  if (!version || !isValidVersion(version)) return false;
+  return doesVersionSatisfy({ givenVersion: version, requiredVersion });
+};
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
@@ -197,9 +211,22 @@ export const registrationApp = {
   }: RegisterPlatformInput): Promise<string> => {
     const { user } = requestContext.require();
     const token = uuidv4();
+
+    if (platform.version && !isValidVersion(platform.version)) {
+      throw new Error(BadRequestErrorCode.InvalidPlatformVersion);
+    }
+
+    if (
+      isTenantIdRequired(identifier, platform.version) &&
+      !platform.tenantId
+    ) {
+      throw new Error(BadRequestErrorCode.TenantIdMandatory);
+    }
+
     const configuration: PlatformConfiguration = {
       registerer_id: user.id,
       platform_id: platform.id,
+      ...(platform.tenantId ? { tenant_id: platform.tenantId } : {}),
       platform_url: platform.url,
       platform_title: platform.title,
       platform_contract: platform.contract,
@@ -225,7 +252,19 @@ export const registrationApp = {
     }
 
     const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(platform.id);
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        platform.id,
+        {
+          tenantId: platform.tenantId,
+        }
+      );
+
+    const existingConfigTenantId = (
+      serviceConfiguration?.config as PlatformConfiguration | undefined
+    )?.tenant_id;
+    if (existingConfigTenantId && !platform.tenantId) {
+      throw new Error(BadRequestErrorCode.TenantIdMandatory);
+    }
 
     await withTransaction(async () => {
       if (serviceConfiguration) {
@@ -274,7 +313,9 @@ export const registrationApp = {
         platform.id,
         platform.contract,
         platform.version,
-        platform.url
+        platform.url,
+        undefined,
+        platform.tenantId ?? undefined
       );
       await telemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
@@ -289,14 +330,22 @@ export const registrationApp = {
   unregisterPlatform: async ({
     platformId,
     identifier,
+    tenantId,
   }: UnregisterPlatformInput) => {
     const activeServiceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(
-        platformId,
-        ServiceConfigurationStatus.Active
-      );
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId, {
+        tenantId,
+        status: ServiceConfigurationStatus.Active,
+      });
     if (!activeServiceConfiguration) {
       return;
+    }
+
+    const configTenantId = (
+      activeServiceConfiguration.config as PlatformConfiguration
+    )?.tenant_id;
+    if (configTenantId && !tenantId) {
+      throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
     const subscription = await loadSubscriptionBy({
@@ -359,7 +408,8 @@ export const registrationApp = {
   ): Promise<IsPlatformRegisteredResponse> => {
     const serviceConfiguration =
       await ServiceConfigurationDomain.loadConfigurationByPlatform(
-        input.platformId
+        input.platformId,
+        { tenantId: input.tenantId }
       );
     if (!serviceConfiguration) {
       return { status: PlatformRegistrationStatus.NeverRegistered };
@@ -387,16 +437,17 @@ export const registrationApp = {
 
   canUnregisterPlatform: async ({
     platformId,
+    tenantId,
   }: CanUnregisterPlatformInput): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId | null;
     isInOrganization: boolean;
   }> => {
     const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(
-        platformId,
-        ServiceConfigurationStatus.Active
-      );
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId, {
+        tenantId,
+        status: ServiceConfigurationStatus.Active,
+      });
     if (!serviceConfiguration) {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
@@ -450,9 +501,22 @@ export const registrationApp = {
 
     assertValidDeploymentRequest(deploymentRequest, input.platform.id);
 
+    if (
+      isTenantIdRequired(
+        deploymentRequest.platform_identifier,
+        input.platform.version
+      ) &&
+      !input.platform.tenantId
+    ) {
+      throw new Error(BadRequestErrorCode.TenantIdMandatory);
+    }
+
     const configuration: PlatformConfiguration = {
       registerer_id: deploymentRequest.user_requester_id,
       platform_id: input.platform.id,
+      ...(input.platform.tenantId
+        ? { tenant_id: input.platform.tenantId }
+        : {}),
       platform_url: input.platform.url,
       platform_title: input.platform.title,
       platform_contract: input.platform.contract,
@@ -484,7 +548,8 @@ export const registrationApp = {
           input.platform.contract,
           input.platform.version,
           input.platform.url,
-          input.existing_users_count ?? undefined
+          input.existing_users_count ?? undefined,
+          input.platform.tenantId ?? undefined
         );
         await telemetryApp.sendTelemetryEvent(registerEvent);
       } catch (error) {
@@ -514,6 +579,7 @@ const mapDomainRegisteredPlatformToGraphQL = (
     __typename: 'RegisteredPlatform',
     id: platform.id,
     platform_id: platform.config?.platform_id ?? platform.id,
+    tenant_id: platform.config?.tenant_id,
     title: platform.config?.platform_title ?? defaultTitle,
     url: platform.config?.platform_url ?? '',
     contract: platform.config?.platform_contract ?? PlatformContract.Trial,

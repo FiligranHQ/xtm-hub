@@ -40,6 +40,7 @@ export enum BadRequestErrorCode {
   IntegrationTypeNotRecognized = 'INTEGRATION_TYPE_NOT_RECOGNIZED',
   MissingAutoRegisterPlatformArgument = 'MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT',
   DocumentFileMissing = 'DOCUMENT_FILE_MISSING',
+  TenantIdMandatory = 'TENANT_ID_MANDATORY',
 }
 
 export enum UnknownErrorCode {

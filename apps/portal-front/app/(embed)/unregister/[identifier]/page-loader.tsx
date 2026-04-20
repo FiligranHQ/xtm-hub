@@ -27,13 +27,13 @@ export const PageLoader: React.FC = () => {
     );
   }
 
-  const { platform_id: platformId } = useDecodedQuery();
+  const { platform_id: platformId, tenant_id: tenantId } = useDecodedQuery();
 
   const [queryRef, loadQuery] =
     useQueryLoader<registerCanUnregisterPlatformQuery>(
       RegisterCanUnregisterPlatformQueryGraphql
     );
-  useMountingLoader(loadQuery, { input: { platformId } });
+  useMountingLoader(loadQuery, { input: { platformId, tenantId } });
   if (!platformId) {
     return redirect('/');
   }
@@ -43,6 +43,7 @@ export const PageLoader: React.FC = () => {
       <Unregister
         queryRef={queryRef}
         platformId={platformId}
+        tenantId={tenantId}
       />
     </RegistrationContextProvider>
   ) : (

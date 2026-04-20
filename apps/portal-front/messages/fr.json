@@ -234,6 +234,7 @@
       "SERVICE_NOT_MANAGEABLE": "Ce service n'est pas gérable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
       "SUBSCRIPTION_NOT_FOUND": "L'abonnement n'a pas été trouvé",
+      "TENANT_ID_MANDATORY": "L'identifiant du locataire est obligatoire",
       "TRANSFER_ME_ERROR": "Une erreur s'est produite lors de la requête de transfert de personal space.",
       "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",

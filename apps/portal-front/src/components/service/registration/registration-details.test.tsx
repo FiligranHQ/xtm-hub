@@ -69,6 +69,7 @@ const basePlatform: registeredPlatformByServiceInstanceId_fragment$data = {
   ' $fragmentType': 'registeredPlatformByServiceInstanceId_fragment',
   id: 'platform-id',
   platform_id: 'pid',
+  tenant_id: null,
   title: 'My Platform',
   url: 'https://platform.example.com',
   identifier: ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,

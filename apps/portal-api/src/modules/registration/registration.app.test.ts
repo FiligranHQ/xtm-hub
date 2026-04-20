@@ -255,6 +255,55 @@ describe('registration app', () => {
       );
       expect(result.platformTitle).toBe(platformTitle);
     });
+
+    describe('with tenantId', () => {
+      let platformId: string;
+      let tenantId: string;
+
+      beforeEach(async () => {
+        // Given — an OpenAEV platform registered with a specific tenantId
+        requestContext.set(requestContextRegistererUserSecondOrga);
+        platformId = uuidv4();
+        tenantId = uuidv4();
+
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            title: 'My OpenAEV platform',
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            version: '1.0.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+      });
+
+      it.each`
+        description               | getTenantId       | expectedStatus
+        ${'matching tenantId'}    | ${() => tenantId} | ${PlatformRegistrationStatus.Registered}
+        ${'a different tenantId'} | ${() => uuidv4()} | ${PlatformRegistrationStatus.NeverRegistered}
+      `(
+        'should return $expectedStatus when queried with $description',
+        async ({
+          getTenantId,
+          expectedStatus,
+        }: {
+          getTenantId: () => string;
+          expectedStatus: PlatformRegistrationStatus;
+        }) => {
+          // When
+          const result = await registrationApp.isPlatformRegistered({
+            platformId,
+            tenantId: getTenantId(),
+          });
+
+          // Then
+          expect(result).toMatchObject({ status: expectedStatus });
+        }
+      );
+    });
   });
 
   describe('registerPlatform', () => {
@@ -263,11 +312,12 @@ describe('registration app', () => {
       title: 'My OpenCTI platform',
       url: 'http://example.com',
       contract: PlatformContract.Ee,
-      version: 'X.Y.Z',
+      version: '1.0.0',
     };
 
     afterEach(() => {
       vi.useRealTimers();
+      vi.restoreAllMocks();
     });
 
     describe('invalid configuration', async () => {
@@ -298,6 +348,21 @@ describe('registration app', () => {
 
         await expect(call).rejects.toThrow(
           ErrorCode.InvalidServiceConfiguration
+        );
+      });
+
+      it('should throw when platform version is not a valid semantic version', async () => {
+        const call = registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            ...platform,
+            version: '9.Y.Z',
+          },
+          identifier: PlatformIdentifier.Opencti,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.InvalidPlatformVersion
         );
       });
     });
@@ -367,7 +432,7 @@ describe('registration app', () => {
           source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           platform_contract: 'EE',
-          platform_version: 'X.Y.Z',
+          platform_version: '1.0.0',
           platform_id: platform.id,
           platform_url: platform.url,
           target_product: telemetryProduct,
@@ -375,6 +440,340 @@ describe('registration app', () => {
         });
       }
     );
+
+    it('should include tenant_id in register event when tenantId is provided', async () => {
+      vi.useFakeTimers();
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+      vi.setSystemTime(date);
+      const telemetrySpy = vi
+        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .mockResolvedValue();
+
+      const tenantId = uuidv4();
+      await registrationApp.registerPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        platform: { ...platform, tenantId },
+        identifier: PlatformIdentifier.Openaev,
+      });
+
+      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        '@timestamp': '2025-02-03T13:12:15.000Z',
+        event_type: TelemetryEventType.REGISTER,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+        source: TelemetrySource.XTMHUB,
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+        platform_contract: 'EE',
+        platform_version: '1.0.0',
+        platform_id: platform.id,
+        platform_url: platform.url,
+        target_product: TelemetryTargetProduct.OPEN_AEV,
+        organization_type: 'Professional',
+        tenant_id: tenantId,
+      });
+    });
+
+    describe('with tenantId', () => {
+      beforeEach(() => {
+        requestContext.set(requestContextRegistererUserSecondOrga);
+      });
+
+      it('should store tenant_id in the config when tenantId is provided', async () => {
+        // Given
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+
+        // When
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            title: 'My OpenAEV platform',
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            version: '1.0.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        // Then
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+        expect(configuration).toMatchObject({
+          config: { platform_id: platformId, tenant_id: tenantId },
+        });
+      });
+
+      it('should not store tenant_id in the config when tenantId is absent', async () => {
+        // Given
+        const platformId = uuidv4();
+
+        // When
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            title: 'My OpenAEV platform',
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            version: '1.0.0',
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        // Then
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId
+          );
+        expect(configuration?.config).not.toHaveProperty('tenant_id');
+      });
+
+      it('should create separate service instances for the same platform_id with different tenantId values', async () => {
+        // Given
+        const platformId = uuidv4();
+        const tenantId1 = uuidv4();
+        const tenantId2 = uuidv4();
+        const basePlatform = {
+          id: platformId,
+          title: 'My OpenAEV platform',
+          url: 'http://example.com',
+          contract: PlatformContract.Ee,
+          version: '1.0.0',
+        };
+
+        // When
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: { ...basePlatform, tenantId: tenantId1 },
+          identifier: PlatformIdentifier.Openaev,
+        });
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: { ...basePlatform, tenantId: tenantId2 },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        // Then
+        const config1 =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId: tenantId1 }
+          );
+        const config2 =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId: tenantId2 }
+          );
+        expect(config1).toMatchObject({
+          config: { platform_id: platformId, tenant_id: tenantId1 },
+        });
+        expect(config2).toMatchObject({
+          config: { platform_id: platformId, tenant_id: tenantId2 },
+        });
+        expect(config1?.service_instance_id).not.toBe(
+          config2?.service_instance_id
+        );
+      });
+
+      it('should re-register the same service instance when (platform_id, tenantId) already exists', async () => {
+        // Given
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+        const openaevPlatform = {
+          id: platformId,
+          title: 'My OpenAEV platform',
+          url: 'http://example.com',
+          contract: PlatformContract.Ee,
+          version: '1.0.0',
+          tenantId,
+        };
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: openaevPlatform,
+          identifier: PlatformIdentifier.Openaev,
+        });
+        const firstConfig =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+
+        // When — register again with the same (platform_id, tenantId)
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: { ...openaevPlatform, title: 'Updated title' },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        // Then — same service instance is reused, title is updated
+        const secondConfig =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+        expect(secondConfig?.service_instance_id).toBe(
+          firstConfig?.service_instance_id
+        );
+        expect(secondConfig).toMatchObject({
+          config: { platform_title: 'Updated title' },
+        });
+      });
+    });
+
+    describe('tenantId mandatory validation', () => {
+      beforeEach(() => {
+        requestContext.set(requestContextRegistererUserSecondOrga);
+      });
+
+      it.each`
+        version    | description
+        ${'2.4.0'} | ${'exact threshold'}
+        ${'2.4.1'} | ${'just above threshold'}
+        ${'3.0.0'} | ${'major version above threshold'}
+      `(
+        'should throw TENANT_ID_MANDATORY for OpenAEV $description ($version) without tenantId',
+        async ({ version }: { version: string }) => {
+          const call = registrationApp.registerPlatform({
+            organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            platform: {
+              id: uuidv4(),
+              title: 'My OpenAEV platform',
+              url: 'http://example.com',
+              contract: PlatformContract.Ee,
+              version,
+            },
+            identifier: PlatformIdentifier.Openaev,
+          });
+
+          await expect(call).rejects.toThrow(
+            BadRequestErrorCode.TenantIdMandatory
+          );
+        }
+      );
+
+      it.each`
+        version    | description
+        ${'2.3.9'} | ${'just below threshold'}
+        ${'1.0.0'} | ${'old version'}
+      `(
+        'should not throw TENANT_ID_MANDATORY for OpenAEV $description ($version) without tenantId',
+        async ({ version }: { version: string }) => {
+          const call = registrationApp.registerPlatform({
+            organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            platform: {
+              id: uuidv4(),
+              title: 'My OpenAEV platform',
+              url: 'http://example.com',
+              contract: PlatformContract.Ee,
+              version,
+            },
+            identifier: PlatformIdentifier.Openaev,
+          });
+
+          await expect(call).resolves.toBeDefined();
+        }
+      );
+
+      it('should not throw TENANT_ID_MANDATORY for OpenCTI regardless of version', async () => {
+        const call = registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: uuidv4(),
+            title: 'My OpenCTI platform',
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            version: '2.4.0',
+          },
+          identifier: PlatformIdentifier.Opencti,
+        });
+
+        await expect(call).resolves.toBeDefined();
+      });
+
+      it('should throw TENANT_ID_MANDATORY when re-registering a tenanted platform without tenantId', async () => {
+        // Given — platform already registered with a tenantId (new client)
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            title: 'My OpenAEV platform',
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            version: '2.4.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        // When — re-register without tenantId (legacy client below threshold)
+        const call = registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            title: 'My OpenAEV platform',
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            version: '2.2.0',
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.TenantIdMandatory
+        );
+      });
+
+      it('should succeed when upgrading a legacy platform (no tenantId) to a version that requires it, with tenantId provided', async () => {
+        // Given — platform registered with a pre-tenant version (below threshold, no tenantId)
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            title: 'My OpenAEV platform',
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            version: '2.3.9',
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        // When — re-register after upgrade to a version that requires tenantId, with tenantId provided
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            title: 'My OpenAEV platform',
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            version: '2.4.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        // Then — the new configuration has tenant_id stored
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+        expect(configuration).toMatchObject({
+          config: expect.objectContaining({ tenant_id: tenantId }),
+          status: ServiceConfigurationStatus.Active,
+        });
+      });
+    });
   });
 
   describe('unregisterPlatform', () => {
@@ -390,7 +789,7 @@ describe('registration app', () => {
         title: 'My OpenCTI platform',
         url: 'http://example.com',
         contract: PlatformContract.Ee,
-        version: 'X.Y.Z',
+        version: '1.0.0',
       };
     });
 
@@ -474,6 +873,78 @@ describe('registration app', () => {
 
       expect(subscription).toBeDefined();
       expect(subscription?.end_date).toBeDefined();
+    });
+
+    describe('with tenantId', () => {
+      let tenantId: string;
+
+      beforeEach(async () => {
+        // Given — an OpenAEV platform registered with a specific tenantId
+        tenantId = uuidv4();
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: { ...platform, tenantId },
+          identifier: PlatformIdentifier.Openaev,
+        });
+      });
+
+      it('should set the specific tenant configuration to inactive', async () => {
+        // When
+        await registrationApp.unregisterPlatform({
+          platformId,
+          identifier: PlatformIdentifier.Openaev,
+          tenantId,
+        });
+
+        // Then
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+        expect(configuration).toMatchObject({
+          status: ServiceConfigurationStatus.Inactive,
+        });
+      });
+
+      it('should not unregister when tenantId does not match any active configuration', async () => {
+        // When
+        await registrationApp.unregisterPlatform({
+          platformId,
+          identifier: PlatformIdentifier.Openaev,
+          tenantId: uuidv4(),
+        });
+
+        // Then — original tenant configuration is still active
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+        expect(configuration).toMatchObject({
+          status: ServiceConfigurationStatus.Active,
+        });
+      });
+    });
+
+    it('should throw TENANT_ID_MANDATORY when unregistering a tenanted platform without providing tenantId', async () => {
+      // Given — an OpenAEV platform registered with a tenantId
+      const tenantId = uuidv4();
+      await registrationApp.registerPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        platform: { ...platform, tenantId },
+        identifier: PlatformIdentifier.Openaev,
+      });
+
+      // When
+      const call = registrationApp.unregisterPlatform({
+        platformId,
+        identifier: PlatformIdentifier.Openaev,
+        // no tenantId
+      });
+
+      // Then
+      await expect(call).rejects.toThrow(BadRequestErrorCode.TenantIdMandatory);
     });
   });
 
@@ -597,7 +1068,7 @@ describe('registration app', () => {
           url: 'http://example.com',
           contract: PlatformContract.Ee,
           title: 'Fake title',
-          version: 'X.Y.Z',
+          version: '1.0.0',
         },
         identifier: PlatformIdentifier.Opencti,
       });
@@ -671,7 +1142,7 @@ describe('registration app', () => {
             url: 'http://example.com',
             contract: PlatformContract.Ee,
             title: 'Fake title',
-            version: 'X.Y.Z',
+            version: '1.0.0',
           },
           identifier: PlatformIdentifier.Opencti,
         });
@@ -705,7 +1176,7 @@ describe('registration app', () => {
           url: 'http://example.com',
           contract: PlatformContract.Ee,
           title: 'Fake title',
-          version: 'X.Y.Z',
+          version: '1.0.0',
         },
         identifier: PlatformIdentifier.Opencti,
       });
@@ -758,7 +1229,7 @@ describe('registration app', () => {
       title: 'My OpenCTI platform',
       url: 'http://example.com',
       contract: PlatformContract.Trial,
-      version: 'X.Y.Z',
+      version: '1.0.0',
     };
 
     beforeEach(async () => {
@@ -970,6 +1441,100 @@ describe('registration app', () => {
           user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
           existing_users_count: 42,
         });
+      });
+
+      it('should include tenant_id in register event when tenantId is provided', async () => {
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+
+        const serviceInstanceId = await registrationDomain.registerNewPlatform({
+          serviceDefinitionId: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platformIdentifier: PlatformIdentifier.Openaev,
+          serviceInstanceCreationStatus: ServiceInstanceCreationStatus.Pending,
+        });
+
+        deploymentRequest =
+          (await DeploymentRequestDomain.insertDeploymentRequest({
+            activity_sector: DeploymentRequestActivitySector.ComputerGames,
+            id: uuidv4() as DeploymentRequestId,
+            job_title: DeploymentRequestJobTitle.CLevel,
+            organization_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            platform_identifier: PlatformIdentifier.Openaev,
+            platform_token: uuidv4(),
+            region: DeploymentRequestPlatformRegion.UsEast,
+            request_date: new Date(Date.UTC(2025, 1, 3, 13, 12, 15)),
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+            ordering: 1,
+            type: DeploymentRequestDeploymentType.Trial,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+            service_instance_id: serviceInstanceId as ServiceInstanceId,
+            user_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          })) as DeploymentRequest;
+
+        const telemetrySpy = vi
+          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
+
+        const openaevPlatformConfiguration = {
+          id: uuidv4(),
+          title: 'My OpenAEV platform',
+          url: 'http://example.com',
+          contract: PlatformContract.Trial,
+          version: '4.4.2',
+          tenantId: uuidv4(),
+        };
+        await registrationApp.autoRegisterPlatform(
+          deploymentRequest.platform_token as string,
+          { platform: openaevPlatformConfiguration }
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.REGISTER,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          platform_contract: PlatformContract.Trial,
+          platform_id: openaevPlatformConfiguration.id,
+          platform_version: openaevPlatformConfiguration.version,
+          platform_url: openaevPlatformConfiguration.url,
+          source: TelemetrySource.XTMHUB,
+          target_product: TelemetryTargetProduct.OPEN_AEV,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          tenant_id: openaevPlatformConfiguration.tenantId,
+        });
+      });
+    });
+
+    it('should store tenant_id in the config when tenantId is provided', async () => {
+      // Given
+      const tenantId = uuidv4();
+
+      // When
+      await registrationApp.autoRegisterPlatform(
+        deploymentRequest.platform_token as string,
+        { platform: { ...platformConfiguration, tenantId } }
+      );
+
+      // Then
+      const configuration =
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          platformConfiguration.id,
+          { tenantId }
+        );
+      expect(configuration).toMatchObject({
+        config: {
+          platform_id: platformConfiguration.id,
+          tenant_id: tenantId,
+        },
+        service_instance_id: deploymentRequest.service_instance_id,
+        status: ServiceConfigurationStatus.Active,
       });
     });
   });
