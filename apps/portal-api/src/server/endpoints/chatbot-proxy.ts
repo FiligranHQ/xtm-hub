@@ -1,11 +1,7 @@
 import { Express, Request, Response } from 'express';
 import { validate as uuidValidate } from 'uuid';
+import { CopilotService } from '../../thirdparty/copilot/client';
 import { logApp } from '../../utils/app-logger.util';
-import {
-  fetchCopilotAgents,
-  fetchSessionMessages,
-  streamMessage,
-} from '../copilot-service';
 
 export const chatbotProxyEndpoint = (app: Express) => {
   // GET /api/chatbot/chat/agents -> GET /chat/{TOKEN}/config
@@ -14,7 +10,7 @@ export const chatbotProxyEndpoint = (app: Express) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-      const agents = await fetchCopilotAgents();
+      const agents = await CopilotService.fetchAgents();
       return res.json(agents);
     } catch (error) {
       logApp.error('Chatbot proxy: failed to fetch agents', { error });
@@ -34,7 +30,8 @@ export const chatbotProxyEndpoint = (app: Express) => {
         return res.json({ messages: [] });
       }
       try {
-        const messages = await fetchSessionMessages(conversation_id);
+        const messages =
+          await CopilotService.fetchSessionMessages(conversation_id);
         return res.json({ messages });
       } catch (error) {
         logApp.error('Chatbot proxy: failed to fetch session', { error });
@@ -56,7 +53,7 @@ export const chatbotProxyEndpoint = (app: Express) => {
       }
       try {
         const user = req.session.user;
-        const { body } = await streamMessage({
+        const { body } = await CopilotService.streamMessage({
           content,
           conversationId: conversation_id,
           visitorId: user.id,
