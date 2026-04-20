@@ -53,6 +53,7 @@ export const ReachSalesButton = ({
     if ('gradient' === variant) {
       return (
         <GradientButton
+          className="bg-white dark:bg-none"
           onClick={() => setIsConfirmationDialogOpen(true)}
           disabled={isInFlight}>
           {t('Service.Trials.ReachOutToSales')}

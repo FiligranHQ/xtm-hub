@@ -136,7 +136,7 @@ export const StartTrialButton: React.FC<Props> = ({
       open={openSheet}
       trigger={
         availableTrials.length > 0 && (
-          <GradientButton className="flex items-center">
+          <GradientButton className="bg-white dark:bg-none flex items-center">
             {t('Service.Trials.StartTrial')}
           </GradientButton>
         )

@@ -1,8 +1,10 @@
 'use client';
+import { APP_PATH } from '@/utils/path/constant';
 import { Toaster } from '@filigran/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
+import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { geologica, ibmPlexSans } from '../../app/font';
 import GoogleAnalytics from './external/google-analytics';
@@ -13,10 +15,20 @@ interface AppProps {
   children: React.ReactNode;
 }
 
+const THEME_SWITCHABLE_PATHS = [`/${APP_PATH}`, '/login'];
+
+const isThemeSwitchablePath = (pathname: string) => {
+  return THEME_SWITCHABLE_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
+  );
+};
+
 // Component
 const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
   const locale = useLocale();
+  const pathname = usePathname();
   const t = useTranslations();
+  const forcedTheme = isThemeSwitchablePath(pathname) ? undefined : 'dark';
   return (
     <html
       suppressHydrationWarning
@@ -39,6 +51,7 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
+          forcedTheme={forcedTheme}
           enableSystem
           disableTransitionOnChange>
           {children}
