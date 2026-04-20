@@ -94,6 +94,15 @@ input RefreshPlatformRegistrationConnectivityStatusInput {
   platformIdentifier: PlatformIdentifier
 }
 
+input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  url: String!
+  tenantId: String!
+  platformIdentifier: PlatformIdentifier!
+}
+
 type RefreshPlatformRegistrationConnectivityStatusResponse {
   status: PlatformRegistrationConnectivityStatus!
 }
@@ -137,6 +146,10 @@ type Mutation {
   # Warning ! Used by OpenCTI
   refreshPlatformRegistrationConnectivityStatus(
     input: RefreshPlatformRegistrationConnectivityStatusInput!
+  ): RefreshPlatformRegistrationConnectivityStatusResponse!
+  # Warning ! Used by OpenAEV
+  refreshPlatformRegistrationConnectivityStatusSingleTenant(
+    input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!
   ): RefreshPlatformRegistrationConnectivityStatusResponse!
   # Warning ! Used by OpenCTI and OpenAEV (trials)
   autoRegisterPlatform(

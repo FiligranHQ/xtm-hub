@@ -179,6 +179,7 @@ type Mutation {
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  refreshPlatformRegistrationConnectivityStatusSingleTenant(input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
@@ -895,6 +896,15 @@ input RefreshPlatformRegistrationConnectivityStatusInput {
   token: String!
   platformVersion: String!
   platformIdentifier: PlatformIdentifier
+}
+
+input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  url: String!
+  tenantId: String!
+  platformIdentifier: PlatformIdentifier!
 }
 
 type RefreshPlatformRegistrationConnectivityStatusResponse {

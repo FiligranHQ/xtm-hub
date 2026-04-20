@@ -87,7 +87,7 @@ describe('serviceConfigurationDomain', () => {
     it('should return configuration when platform and token is found in its config', async () => {
       const configuration =
         await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-          platformId,
+          platform_id: platformId,
           token,
         });
 
@@ -110,7 +110,7 @@ describe('serviceConfigurationDomain', () => {
       async ({ platformId, token }) => {
         const configuration =
           await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-            platformId: platformId(),
+            platform_id: platformId(),
             token: token(),
           });
 

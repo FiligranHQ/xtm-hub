@@ -13,6 +13,7 @@ import {
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
+  RefreshPlatformRegistrationConnectivityStatusSingleTenantInput,
   RefreshUserPlatformTokenResponse,
   RegisteredPlatform,
   RegisteredPlatformsInput,
@@ -138,9 +139,10 @@ export const registrationApp = {
     input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
-        input
-      );
+      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+        platform_id: input.platformId,
+        token: input.token,
+      });
     return {
       status:
         serviceConfiguration?.status === ServiceConfigurationStatus.Active
@@ -149,59 +151,28 @@ export const registrationApp = {
     };
   },
 
+  refreshPlatformRegistrationConnectivityStatusSingleTenant: async (
+    input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput
+  ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
+    return refreshConnectivityStatus({
+      platform_identifier: input.platformIdentifier,
+      platform_version: input.platformVersion,
+      platform_id: input.platformId,
+      token: input.token,
+      url: input.url,
+      tenant_id: input.tenantId,
+    });
+  },
+
   refreshPlatformRegistrationConnectivityStatus: async (
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-    if (!isValidVersion(input.platformVersion)) {
-      throw new Error(ErrorCode.InvalidPlatformVersion);
-    }
-
-    const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
-        input
-      );
-    if (!serviceConfiguration) {
-      if (!input.platformIdentifier) {
-        return { status: PlatformRegistrationConnectivityStatus.Inactive };
-      }
-
-      const requiredVersionForNotFoundStatus =
-        RequiredPlatformVersions.RefreshConnectivityStatusSendsNotFound[
-          input.platformIdentifier
-        ];
-
-      const shouldSendNotFoundStatus = doesVersionSatisfy({
-        givenVersion: input.platformVersion,
-        requiredVersion: requiredVersionForNotFoundStatus,
-      });
-
-      return {
-        status: shouldSendNotFoundStatus
-          ? PlatformRegistrationConnectivityStatus.NotFound
-          : PlatformRegistrationConnectivityStatus.Inactive,
-      };
-    }
-
-    const shouldUpdatePlatformVersion =
-      serviceConfiguration.config['version'] !== input.platformVersion;
-    if (shouldUpdatePlatformVersion) {
-      await ServiceConfigurationDomain.updateConfiguration(
-        serviceConfiguration.service_instance_id,
-        {
-          config: {
-            ...(serviceConfiguration.config as object),
-            platform_version: input.platformVersion,
-          },
-        }
-      );
-    }
-
-    return {
-      status:
-        serviceConfiguration.status === ServiceConfigurationStatus.Active
-          ? PlatformRegistrationConnectivityStatus.Active
-          : PlatformRegistrationConnectivityStatus.Inactive,
-    };
+    return refreshConnectivityStatus({
+      platform_identifier: input.platformIdentifier,
+      platform_version: input.platformVersion,
+      platform_id: input.platformId,
+      token: input.token,
+    });
   },
 
   registerPlatform: async ({
@@ -614,4 +585,76 @@ const assertValidDeploymentRequest = (
   ) {
     throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
   }
+};
+
+const refreshConnectivityStatus = async ({
+  platform_id,
+  token,
+  platform_version,
+  url,
+  tenant_id,
+  platform_identifier,
+}: {
+  platform_id: string;
+  token: string;
+  platform_version: string;
+  url?: string;
+  tenant_id?: string;
+  platform_identifier?: PlatformIdentifier;
+}): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
+  if (!isValidVersion(platform_version)) {
+    throw new Error(ErrorCode.InvalidPlatformVersion);
+  }
+
+  const serviceConfiguration =
+    await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+      platform_id: platform_id,
+      token,
+      tenant_id,
+    });
+  if (!serviceConfiguration) {
+    if (!platform_identifier) {
+      return { status: PlatformRegistrationConnectivityStatus.Inactive };
+    }
+
+    const requiredVersionForNotFoundStatus =
+      RequiredPlatformVersions.RefreshConnectivityStatusSendsNotFound[
+        platform_identifier
+      ];
+
+    const shouldSendNotFoundStatus = doesVersionSatisfy({
+      givenVersion: platform_version,
+      requiredVersion: requiredVersionForNotFoundStatus,
+    });
+
+    return {
+      status: shouldSendNotFoundStatus
+        ? PlatformRegistrationConnectivityStatus.NotFound
+        : PlatformRegistrationConnectivityStatus.Inactive,
+    };
+  }
+
+  const existingConfig = serviceConfiguration.config;
+  const hasConfigChanged =
+    existingConfig['platform_version'] !== platform_version ||
+    (url && existingConfig['url'] !== url);
+  if (hasConfigChanged) {
+    await ServiceConfigurationDomain.updateConfiguration(
+      serviceConfiguration.service_instance_id,
+      {
+        config: {
+          ...(existingConfig as object),
+          platform_version,
+          ...(url ? { url } : {}),
+        },
+      }
+    );
+  }
+
+  return {
+    status:
+      serviceConfiguration.status === ServiceConfigurationStatus.Active
+        ? PlatformRegistrationConnectivityStatus.Active
+        : PlatformRegistrationConnectivityStatus.Inactive,
+  };
 };

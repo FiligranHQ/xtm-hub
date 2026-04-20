@@ -40,16 +40,23 @@ export const ServiceConfigurationDomain = {
   },
 
   loadConfigurationByPlatformAndToken: async ({
-    platformId,
+    platform_id,
     token,
+    tenant_id,
   }: {
-    platformId: string;
+    platform_id: string;
     token: string;
+    tenant_id?: string;
   }): Promise<ServiceConfiguration | undefined> => {
-    return db('Service_Configuration')
-      .whereRaw("config->>'platform_id' = ?", platformId)
-      .whereRaw("config->>'token' = ?", token)
-      .first();
+    const qb = db('Service_Configuration')
+      .whereRaw("config->>'platform_id' = ?", platform_id)
+      .whereRaw("config->>'token' = ?", token);
+
+    if (tenant_id) {
+      qb.whereRaw("config->>'tenant_id' = ?", tenant_id);
+    }
+
+    return qb.first();
   },
 
   loadConfigurationByPlatform: async (

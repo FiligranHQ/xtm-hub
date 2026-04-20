@@ -1167,6 +1167,157 @@ describe('registration app', () => {
       });
     });
 
+    describe('refreshPlatformRegistrationConnectivityStatusSingleTenant', () => {
+      it('should throw an error when version is not formatted as a semantic version', async () => {
+        const call =
+          registrationApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+            {
+              platformId: uuidv4(),
+              token: uuidv4(),
+              platformVersion: '9.Y.Z',
+              url: 'http://example.com',
+              tenantId: uuidv4(),
+              platformIdentifier: PlatformIdentifier.Openaev,
+            }
+          );
+
+        await expect(call).rejects.toThrow(ErrorCode.InvalidPlatformVersion);
+      });
+
+      it('should return active when platform is registered with tenant_id and correct tenant_id is provided', async () => {
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+        const token = await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+            {
+              platformId,
+              token,
+              platformVersion: '6.7.18',
+              url: 'http://example.com',
+              tenantId,
+              platformIdentifier: PlatformIdentifier.Openaev,
+            }
+          );
+
+        expect(result.status).toBe(
+          PlatformRegistrationConnectivityStatus.Active
+        );
+      });
+
+      it('should update the url in the configuration when url changes', async () => {
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+        const token = await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        const newUrl = 'http://new-url.example.com';
+        await registrationApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+          {
+            platformId,
+            token,
+            platformVersion: '6.7.18',
+            url: newUrl,
+            tenantId,
+            platformIdentifier: PlatformIdentifier.Openaev,
+          }
+        );
+
+        const config =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+        expect(config?.config['url']).toBe(newUrl);
+      });
+
+      it('should return not found when platform is registered with tenant_id but wrong tenant_id is provided', async () => {
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+        const token = await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+            {
+              platformId,
+              token,
+              platformVersion: '6.7.18',
+              url: 'http://example.com',
+              tenantId: uuidv4(),
+              platformIdentifier: PlatformIdentifier.Openaev,
+            }
+          );
+
+        expect(result.status).toBe(
+          PlatformRegistrationConnectivityStatus.NotFound
+        );
+      });
+
+      it('should return not found when platform is registered without tenant_id but a tenant_id is provided', async () => {
+        const platformId = uuidv4();
+        const token = await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+            {
+              platformId,
+              token,
+              platformVersion: '6.7.18',
+              url: 'http://example.com',
+              tenantId: uuidv4(),
+              platformIdentifier: PlatformIdentifier.Openaev,
+            }
+          );
+
+        expect(result.status).toBe(
+          PlatformRegistrationConnectivityStatus.NotFound
+        );
+      });
+    });
+
     it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
       const token = await registrationApp.registerPlatform({

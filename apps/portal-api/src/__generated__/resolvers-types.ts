@@ -831,6 +831,7 @@ export type Mutation = {
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
+  refreshPlatformRegistrationConnectivityStatusSingleTenant: RefreshPlatformRegistrationConnectivityStatusResponse;
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse;
   registerPlatform: RegistrationResponse;
   removePendingUserFromOrganization?: Maybe<User>;
@@ -1060,6 +1061,11 @@ export type MutationLoginArgs = {
 
 export type MutationRefreshPlatformRegistrationConnectivityStatusArgs = {
   input: RefreshPlatformRegistrationConnectivityStatusInput;
+};
+
+
+export type MutationRefreshPlatformRegistrationConnectivityStatusSingleTenantArgs = {
+  input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput;
 };
 
 
@@ -1673,6 +1679,15 @@ export type RefreshPlatformRegistrationConnectivityStatusInput = {
 export type RefreshPlatformRegistrationConnectivityStatusResponse = {
   __typename?: 'RefreshPlatformRegistrationConnectivityStatusResponse';
   status: PlatformRegistrationConnectivityStatus;
+};
+
+export type RefreshPlatformRegistrationConnectivityStatusSingleTenantInput = {
+  platformId: Scalars['String']['input'];
+  platformIdentifier: PlatformIdentifier;
+  platformVersion: Scalars['String']['input'];
+  tenantId: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+  url: Scalars['String']['input'];
 };
 
 export type RefreshUserPlatformTokenResponse = {
@@ -2548,6 +2563,7 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
   RefreshPlatformRegistrationConnectivityStatusResponse: ResolverTypeWrapper<RefreshPlatformRegistrationConnectivityStatusResponse>;
+  RefreshPlatformRegistrationConnectivityStatusSingleTenantInput: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput;
   RefreshUserPlatformTokenResponse: ResolverTypeWrapper<RefreshUserPlatformTokenResponse>;
   RegisterPlatformInput: RegisterPlatformInput;
   RegisteredPlatform: ResolverTypeWrapper<RegisteredPlatform>;
@@ -2709,6 +2725,7 @@ export type ResolversParentTypes = ResolversObject<{
   Query: {};
   RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
   RefreshPlatformRegistrationConnectivityStatusResponse: RefreshPlatformRegistrationConnectivityStatusResponse;
+  RefreshPlatformRegistrationConnectivityStatusSingleTenantInput: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput;
   RefreshUserPlatformTokenResponse: RefreshUserPlatformTokenResponse;
   RegisterPlatformInput: RegisterPlatformInput;
   RegisteredPlatform: RegisteredPlatform;
@@ -3221,6 +3238,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;
+  refreshPlatformRegistrationConnectivityStatusSingleTenant?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusSingleTenantArgs, 'input'>>;
   refreshUserPlatformToken?: Resolver<ResolversTypes['RefreshUserPlatformTokenResponse'], ParentType, ContextType>;
   registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;

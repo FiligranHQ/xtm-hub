@@ -50,7 +50,7 @@ export const validateActivePlatformToken = async (
 
   const serviceConfiguration =
     await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-      platformId: extractPlatformId(req),
+      platform_id: extractPlatformId(req),
       token: extractPlatformToken(req),
     });
 
@@ -96,7 +96,7 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
 
   const serviceConfiguration =
     await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-      platformId: extractPlatformId(req),
+      platform_id: extractPlatformId(req),
       token: extractPlatformToken(req),
     });
   if (serviceConfiguration) {
