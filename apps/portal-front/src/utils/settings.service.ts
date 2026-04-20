@@ -29,7 +29,5 @@ export async function isFeatureEnabled(
     }
   }
 
-  return !!cachedFeatureFlags?.some((flag) =>
-    [flagName as string].includes(flag)
-  );
+  return !!cachedFeatureFlags?.some((flag) => [flagName as string].includes(flag));
 }

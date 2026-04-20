@@ -6,7 +6,9 @@ import UserEventSubscription from '@/components/me/user-event-subscription';
 import { meContext_fragment$key } from '@generated/meContext_fragment.graphql';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
-import ChatbotProvider from '../ariane/chatbot-provider';
+import Copilot from '../external/copilot';
+import { useContext } from 'react';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 
 // Component interface
 interface ContextProps {
@@ -21,11 +23,14 @@ const MeContext: React.FunctionComponent<ContextProps> = ({
 }) => {
   const data = usePreloadedQuery<meLoaderQuery>(MeQuery, queryRef);
   const me = useFragment<meContext_fragment$key>(MeContextFragment, data.me);
-
+  const { settings } = useContext(SettingsContext);
+  const isProductionSetting =
+    settings?.environment && settings.environment === 'production';
   return (
     <AppPortalContext me={me}>
       <UserEventSubscription />
-      <ChatbotProvider>{children}</ChatbotProvider>
+      {isProductionSetting && <Copilot user={me} />}
+      {children}
     </AppPortalContext>
   );
 };

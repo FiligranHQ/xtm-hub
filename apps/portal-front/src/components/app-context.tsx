@@ -5,8 +5,11 @@ import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
 import * as React from 'react';
 import { geologica, ibmPlexSans } from '../../app/font';
+import Copilot from './external/copilot';
 import GoogleAnalytics from './external/google-analytics';
 import Hubspot from './external/hubspot';
+import { useContext } from 'react';
+import { SettingsContext } from '@/components/settings/env-portal-context';
 
 // Component interface
 interface AppProps {
@@ -17,6 +20,9 @@ interface AppProps {
 const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
   const locale = useLocale();
   const t = useTranslations();
+  const { settings } = useContext(SettingsContext);
+  const isProductionSetting =
+    settings?.environment && settings.environment === 'production';
   return (
     <html
       suppressHydrationWarning
@@ -45,6 +51,7 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
           <Toaster />
           <Hubspot />
           <GoogleAnalytics />
+          {isProductionSetting && <Copilot />}
         </ThemeProvider>
       </body>
     </html>

@@ -142,7 +142,7 @@ export const documentItem = graphql`
       blogpost_url
       demo_url
     }
-
+    
     ... on CsvFeed {
       feed_url
     }

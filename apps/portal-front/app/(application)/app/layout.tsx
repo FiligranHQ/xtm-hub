@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 
-import '@filigran/chatbot/styles.css';
 import '@filigran/ui/theme.css';
 import '../../../styles/globals.css';
 
