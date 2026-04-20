@@ -47,7 +47,6 @@ const mockServiceDefinition = (identifier: ServiceDefinitionIdentifier) => ({
 describe('document security', () => {
   describe('isUserRestrictedToActiveDocument', () => {
     beforeEach(() => {
-      vi.restoreAllMocks();
       vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
       vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([]);
       vi.spyOn(

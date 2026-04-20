@@ -1,11 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
 import {
   requestContextRegistererUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
+  DeploymentRequest,
   DeploymentRequestActivitySector,
+  DeploymentRequestConnection,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestJobTitle,
@@ -13,11 +15,18 @@ import {
   DeploymentRequestPlatformState,
   DeploymentRequestSource,
   DeploymentRequestUseCase,
+  PlatformDeploymentRequestConnection,
   PlatformIdentifier,
+  QueryDeploymentRequestsArgs,
+  QueryDeploymentRequestsListArgs,
+  ReorderDeploymentRequestInQueueDirection,
+  TrialDeploymentsInput,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorType } from '../../utils/error/error.type';
 import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { deleteSubscription } from '../subscription/subscription.helper';
 import { DeploymentApp } from './deployment.app';
@@ -171,9 +180,10 @@ describe('deployment resolver', () => {
         input: updates,
       });
 
-      await expect(call).rejects.toThrow(
-        ErrorCode.DeploymentRequestStatusUpdateNotAllowed
-      );
+      await expect(call).rejects.toMatchObject({
+        name: ErrorType.BadRequest,
+        message: ErrorCode.DeploymentRequestStatusUpdateNotAllowed,
+      });
     });
   });
   describe('deploymentRequestsAvailable', () => {
@@ -228,6 +238,224 @@ describe('deployment resolver', () => {
           platform_identifier: PlatformIdentifier.Opencti,
         },
       ]);
+    });
+  });
+});
+
+describe('deployment resolver — unit tests', () => {
+  describe('deployment requests GraphQL query', () => {
+    it('should delegate to DeploymentApp.loadPlatformDeploymentRequests and return result', async () => {
+      const expected = {
+        edges: [],
+      } as unknown as PlatformDeploymentRequestConnection;
+      vi.spyOn(
+        DeploymentApp,
+        'loadPlatformDeploymentRequests'
+      ).mockResolvedValue(expected);
+
+      const result = await resolver.Query.deploymentRequests(
+        undefined,
+        {} as unknown as QueryDeploymentRequestsArgs
+      );
+
+      expect(result).toEqual(expected);
+    });
+
+    it('should map to NotFound for DeploymentRequestNotFound error', async () => {
+      vi.spyOn(
+        DeploymentApp,
+        'loadPlatformDeploymentRequests'
+      ).mockRejectedValue(new Error(ErrorCode.DeploymentRequestNotFound));
+
+      const call = resolver.Query.deploymentRequests(
+        undefined,
+        {} as unknown as QueryDeploymentRequestsArgs
+      );
+      await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
+    });
+  });
+
+  describe('deployment requests list GraphQL query', () => {
+    it('should delegate to DeploymentRequestDomain.loadDeploymentRequests', async () => {
+      const expected = { edges: [] } as unknown as DeploymentRequestConnection;
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequests'
+      ).mockResolvedValue(expected);
+
+      const result = await resolver.Query.deploymentRequestsList(
+        undefined,
+        {} as unknown as QueryDeploymentRequestsListArgs
+      );
+
+      expect(result).toEqual(expected);
+    });
+
+    it('should map to BadRequest for DeploymentRequestHubStatusNotQueued error', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequests'
+      ).mockRejectedValue(
+        new Error(ErrorCode.DeploymentRequestHubStatusNotQueued)
+      );
+
+      const call = resolver.Query.deploymentRequestsList(
+        undefined,
+        {} as unknown as QueryDeploymentRequestsListArgs
+      );
+      await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
+    });
+  });
+
+  describe('trial deployments GraphQL query', () => {
+    it('should delegate to DeploymentApp.loadTrialDeployments and return result', async () => {
+      const expected = [] as unknown as Awaited<
+        ReturnType<typeof DeploymentApp.loadTrialDeployments>
+      >;
+      vi.spyOn(DeploymentApp, 'loadTrialDeployments').mockResolvedValue(
+        expected
+      );
+
+      const result = await resolver.Query.trialDeployments(undefined, {
+        input: {} as unknown as TrialDeploymentsInput,
+      });
+
+      expect(result).toEqual(expected);
+    });
+
+    it('should map to NotFound for DeploymentRequestQuotaNotFound error', async () => {
+      vi.spyOn(DeploymentApp, 'loadTrialDeployments').mockRejectedValue(
+        new Error(ErrorCode.DeploymentRequestQuotaNotFound)
+      );
+
+      const call = resolver.Query.trialDeployments(undefined, {
+        input: {} as unknown as TrialDeploymentsInput,
+      });
+      await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
+    });
+  });
+
+  describe('cancel deployment request GraphQL mutation', () => {
+    it('should call DeploymentApp.cancelDeploymentRequest with isAdmin=false', async () => {
+      const expected = { id: 'req-1' } as unknown as DeploymentRequest;
+      vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockResolvedValue(
+        expected
+      );
+
+      const result = await resolver.Mutation.cancelDeploymentRequest(
+        undefined,
+        {
+          deploymentRequestId: 'req-1' as DeploymentRequestId,
+          cancellationReason: 'reason',
+        }
+      );
+
+      expect(DeploymentApp.cancelDeploymentRequest).toHaveBeenCalledWith(
+        'req-1',
+        false,
+        'reason'
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it('should map to ForbiddenAccess for NotAllowedByDeploymentStatus error', async () => {
+      vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockRejectedValue(
+        new Error(ErrorCode.NotAllowedByDeploymentStatus)
+      );
+
+      const call = resolver.Mutation.cancelDeploymentRequest(undefined, {
+        deploymentRequestId: 'req-1' as DeploymentRequestId,
+        cancellationReason: 'reason',
+      });
+
+      await expect(call).rejects.toMatchObject({
+        name: ErrorType.ForbiddenAccess,
+      });
+    });
+  });
+
+  describe('admin cancel deployment request GraphQL mutation', () => {
+    it('should call DeploymentApp.cancelDeploymentRequest with isAdmin=true', async () => {
+      const expected = { id: 'req-1' } as DeploymentRequest;
+      vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockResolvedValue(
+        expected
+      );
+
+      const result = await resolver.Mutation.adminCancelDeploymentRequest(
+        undefined,
+        { deploymentRequestId: 'req-1' as DeploymentRequestId }
+      );
+
+      expect(DeploymentApp.cancelDeploymentRequest).toHaveBeenCalledWith(
+        'req-1',
+        true
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it('should map to BadRequest for DeploymentRequestStatusUpdateNotAllowed error', async () => {
+      vi.spyOn(DeploymentApp, 'cancelDeploymentRequest').mockRejectedValue(
+        new Error(ErrorCode.DeploymentRequestStatusUpdateNotAllowed)
+      );
+
+      const call = resolver.Mutation.adminCancelDeploymentRequest(undefined, {
+        deploymentRequestId: 'req-1' as DeploymentRequestId,
+      });
+
+      await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
+    });
+  });
+
+  describe('reorder deployment request in queue GraphQL mutation', () => {
+    it('should delegate to DeploymentApp.reorderDeploymentRequestInQueue and return result', async () => {
+      const expected = { success: true } as unknown as Awaited<
+        ReturnType<typeof DeploymentApp.reorderDeploymentRequestInQueue>
+      >;
+      vi.spyOn(
+        DeploymentApp,
+        'reorderDeploymentRequestInQueue'
+      ).mockResolvedValue(expected);
+      const input = {
+        id: 'req-1' as DeploymentRequestId,
+        direction: ReorderDeploymentRequestInQueueDirection.Up,
+      };
+
+      const result = await resolver.Mutation.reorderDeploymentRequestInQueue(
+        undefined,
+        { input }
+      );
+
+      expect(
+        DeploymentApp.reorderDeploymentRequestInQueue
+      ).toHaveBeenCalledWith(input);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('update deployment quota capacity GraphQL mutation', () => {
+    it('should delegate to DeploymentApp.updateDeploymentQuotaCapacity and return result', async () => {
+      const expected = { success: true } as unknown as Awaited<
+        ReturnType<typeof DeploymentApp.updateDeploymentQuotaCapacity>
+      >;
+      vi.spyOn(
+        DeploymentApp,
+        'updateDeploymentQuotaCapacity'
+      ).mockResolvedValue(expected);
+      const input = {
+        region: DeploymentRequestPlatformRegion.UsEast,
+        capacity: 10,
+        platform_identifier: PlatformIdentifier.Opencti,
+      };
+
+      const result = await resolver.Mutation.updateDeploymentQuotaCapacity(
+        undefined,
+        { input }
+      );
+
+      expect(DeploymentApp.updateDeploymentQuotaCapacity).toHaveBeenCalledWith(
+        input
+      );
+      expect(result).toEqual(expected);
     });
   });
 });

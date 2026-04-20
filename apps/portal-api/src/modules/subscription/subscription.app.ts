@@ -125,7 +125,7 @@ export const subscriptionApp = {
     startDate: Date;
     endDate: Date;
     capabilityIds: ServiceCapabilityId[];
-  }): Promise<Subscription> => {
+  }): Promise<Subscription | undefined> => {
     await assertOrganizationIsNotAlreadySubscribed({
       serviceInstanceId,
       organizationId,

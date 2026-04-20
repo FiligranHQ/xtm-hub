@@ -979,10 +979,6 @@ describe('registration app', () => {
       });
     });
 
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     it('should throw an error when configuration for platform does not exist', async () => {
       loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
 

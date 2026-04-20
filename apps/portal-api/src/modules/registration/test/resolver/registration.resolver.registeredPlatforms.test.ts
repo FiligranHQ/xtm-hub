@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
 } from '../../../../../tests/tests.const';
 import {
   PlatformIdentifier,
@@ -14,10 +14,6 @@ import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.registeredPlatform', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should decode the service_instance_id from global ID and pass the raw UUID to registrationApp', async () => {
     // Given
     const rawId = uuidv4() as ServiceInstanceId;
@@ -31,7 +27,7 @@ describe('query.registeredPlatform', () => {
       {},
       { input: { service_instance_id: rawId } },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -41,10 +37,6 @@ describe('query.registeredPlatform', () => {
 });
 
 describe('query.registeredPlatforms', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should pass the input directly to registrationApp and return its result', async () => {
     // Given
     const input: RegisteredPlatformsInput = {
@@ -62,7 +54,7 @@ describe('query.registeredPlatforms', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then

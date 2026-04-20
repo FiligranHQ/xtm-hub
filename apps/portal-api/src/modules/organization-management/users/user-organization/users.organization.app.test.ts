@@ -27,7 +27,6 @@ describe('usersOrganizationApp', () => {
 
     afterEach(async () => {
       portalConfig.enabled_emails = originalEnabledEmails;
-      vi.restoreAllMocks();
     });
 
     const mockLoadOrganizationsWithPendingUsers = (users: User[]) => {

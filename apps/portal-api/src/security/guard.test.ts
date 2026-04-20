@@ -1,5 +1,5 @@
 import { MockInstance } from '@vitest/spy';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
@@ -19,10 +19,6 @@ describe('security Guard', () => {
       authHelper,
       'isUserAllowedOnOrganization'
     );
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   describe('assertUserIsAllowedOnOrganization', () => {

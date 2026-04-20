@@ -45,7 +45,7 @@ const resolvers: Resolvers = {
       try {
         return await organizationsApp.deleteOrganization(id as OrganizationId);
       } catch (error) {
-        if (error.message.contains('STILL_IN_ORGANIZATION')) {
+        if (error.message.includes('STILL_IN_ORGANIZATION')) {
           throw StillReferencedError(error.message);
         }
 

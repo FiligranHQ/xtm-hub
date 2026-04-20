@@ -76,8 +76,6 @@ describe('documentChildrenDomain', () => {
   afterEach(async () => {
     await TestHelper.documentChildren.delete({});
     await TestHelper.document.delete({});
-
-    vi.restoreAllMocks();
   });
 
   describe('deleteExternalImages', () => {

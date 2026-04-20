@@ -56,12 +56,8 @@ describe('service instance domain', () => {
   describe('loadServiceInstancesByServiceDefinitionAndTags', () => {
     // Happy path
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({
-        name: 'ServiceInstance 1',
-      });
-      await TestHelper.serviceInstance.delete({
-        name: 'One serviceInstance',
-      });
+      await TestHelper.serviceInstance.delete({ name: 'ServiceInstance 1' });
+      await TestHelper.serviceInstance.delete({ name: 'One serviceInstance' });
     });
     it('should return service instances linked to service definition and with tags', async () => {
       // When
@@ -246,9 +242,7 @@ describe('service instance domain', () => {
 
     afterAll(async () => {
       await TestHelper.serviceInstance.delete({ name: 'Original Name' });
-      await TestHelper.serviceInstance.delete({
-        name: 'Only Name Updated',
-      });
+      await TestHelper.serviceInstance.delete({ name: 'Only Name Updated' });
     });
 
     it('should update only provided fields', async () => {
@@ -466,8 +460,6 @@ describe('service instance domain', () => {
     });
 
     afterEach(async () => {
-      vi.restoreAllMocks();
-
       await TestHelper.user_Service.delete({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
@@ -824,12 +816,8 @@ describe('service instance domain', () => {
     });
 
     afterAll(async () => {
-      await TestHelper.serviceInstance.delete({
-        id: publicServiceInstanceId,
-      });
-      await TestHelper.serviceInstance.delete({
-        id: privateServiceInstanceId,
-      });
+      await TestHelper.serviceInstance.delete({ id: publicServiceInstanceId });
+      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
     });
 
     it('should return only public service instances', async () => {

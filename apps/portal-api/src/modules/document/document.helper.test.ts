@@ -66,7 +66,6 @@ describe('documentHelper', () => {
   });
 
   afterEach(async () => {
-    vi.restoreAllMocks();
     await TestHelper.document.delete({});
   });
 
@@ -415,7 +414,6 @@ describe('documentHelper', () => {
     } as DocumentModel;
 
     beforeEach(() => {
-      vi.restoreAllMocks();
       vi.spyOn(MinIOClient, 'deleteFile').mockResolvedValue(undefined);
     });
 

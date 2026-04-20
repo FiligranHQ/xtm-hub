@@ -107,10 +107,6 @@ describe('service Instance app', () => {
       );
     });
 
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     it('should load service instance when user already has access', async () => {
       // Given
       loadSubscriptionBySpy.mockResolvedValueOnce(mockSubscription);
@@ -395,15 +391,10 @@ describe('service Instance app', () => {
     });
 
     afterEach(async () => {
-      vi.restoreAllMocks();
       await TestHelper.serviceConfiguration.delete({});
       await TestHelper.subscription.delete({});
-      await TestHelper.serviceInstance.delete({
-        id: serviceInstance.id,
-      });
-      await TestHelper.serviceDefinition.delete({
-        id: serviceDefinition.id,
-      });
+      await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
+      await TestHelper.serviceDefinition.delete({ id: serviceDefinition.id });
     });
 
     it('should update name, sync config title, dispatch, and return RegisteredPlatform', async () => {
@@ -781,9 +772,7 @@ describe('service Instance app', () => {
       await TestHelper.serviceInstance.delete({
         id: secondServiceInstancePublicId,
       });
-      await TestHelper.serviceInstance.delete({
-        id: privateServiceInstanceId,
-      });
+      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
       await TestHelper.document.delete({ id: logoId });
     });
     it('should return public service instances with document IDs converted to global IDs', async () => {
@@ -896,10 +885,6 @@ describe('service Instance app', () => {
       dispatchSpy = vi.spyOn(pub, 'dispatch');
       updateServiceInstanceSpy.mockResolvedValue(mockUpdatedServiceInstance);
       dispatchSpy.mockResolvedValue(undefined);
-    });
-
-    afterEach(() => {
-      vi.restoreAllMocks();
     });
 
     it('should upload a logo, update the service instance, and dispatch an edit event', async () => {

@@ -105,7 +105,6 @@ describe('documentApp', () => {
 
   afterEach(async () => {
     await deleteDocuments();
-    vi.restoreAllMocks();
   });
 
   afterAll(async () => {

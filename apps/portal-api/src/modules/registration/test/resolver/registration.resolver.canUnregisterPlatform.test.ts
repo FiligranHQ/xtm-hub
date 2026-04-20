@@ -1,9 +1,9 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
-  INFO,
+  GRAPHQL_RESOLVE_INFO,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
 import { CanUnregisterPlatformInput } from '../../../../__generated__/resolvers-types';
@@ -11,16 +11,12 @@ import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import {
   ErrorCode,
   NotFoundErrorCode,
-  UnknownErrorCode,
 } from '../../../../utils/error/error.code';
+import { ErrorType } from '../../../../utils/error/error.type';
 import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.canUnregisterPlatform', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it.each`
     description        | organizationId                                      | expectedOrgGlobalId
     ${'with orgId'}    | ${TEST_ORGANIZATIONS.FILIGRAN.ID as OrganizationId} | ${toGlobalId('Organization', TEST_ORGANIZATIONS.FILIGRAN.ID)}
@@ -47,7 +43,7 @@ describe('query.canUnregisterPlatform', () => {
         {},
         { input },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
@@ -70,7 +66,7 @@ describe('query.canUnregisterPlatform', () => {
       {},
       { input },
       contextSimpleUserFiligran2,
-      INFO
+      GRAPHQL_RESOLVE_INFO
     );
 
     // Then
@@ -78,13 +74,19 @@ describe('query.canUnregisterPlatform', () => {
   });
 
   it.each`
-    errorCode                                             | description
-    ${NotFoundErrorCode.ServiceDefinitionNotFound}        | ${'ServiceDefinitionNotFound'}
-    ${ErrorCode.UserIsNotInOrganization}                  | ${'UserIsNotInOrganization'}
-    ${UnknownErrorCode.CanUnregisterPlatformUnknownError} | ${'unknown error'}
+    errorCode                                      | expectedName                 | description
+    ${NotFoundErrorCode.ServiceDefinitionNotFound} | ${ErrorType.NotFound}        | ${'ServiceDefinitionNotFound'}
+    ${ErrorCode.UserIsNotInOrganization}           | ${ErrorType.ForbiddenAccess} | ${'UserIsNotInOrganization'}
+    ${ErrorCode.InvalidPlatformId}                 | ${ErrorType.BadRequest}      | ${'InvalidPlatformId'}
   `(
-    'should throw a mapped GraphQL error with CanUnregisterPlatformUnknownError for $description',
-    async ({ errorCode }: { errorCode: string }) => {
+    'should map to $expectedName for $description error',
+    async ({
+      errorCode,
+      expectedName,
+    }: {
+      errorCode: string;
+      expectedName: ErrorType;
+    }) => {
       // Given
       const input: CanUnregisterPlatformInput = { platformId: uuidv4() };
       vi.spyOn(registrationApp, 'canUnregisterPlatform').mockRejectedValue(
@@ -96,11 +98,11 @@ describe('query.canUnregisterPlatform', () => {
         {},
         { input },
         contextSimpleUserFiligran2,
-        INFO
+        GRAPHQL_RESOLVE_INFO
       );
 
       // Then
-      await expect(call).rejects.toThrow(errorCode);
+      await expect(call).rejects.toMatchObject({ name: expectedName });
     }
   );
 });
