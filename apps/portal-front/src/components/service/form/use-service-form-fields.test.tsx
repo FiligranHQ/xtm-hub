@@ -1,5 +1,5 @@
-import { renderHook } from '@testing-library/react';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { useServiceFormFields } from './use-service-form-fields';
 
@@ -23,9 +23,9 @@ const existingDocument = {
 describe('useServiceFormFields', () => {
   describe('slug field', () => {
     it.each`
-      scenario       | document             | expectedReadOnly | expectedClassName
-      ${'creation'}  | ${undefined}         | ${false}         | ${''}
-      ${'edition'}   | ${existingDocument}  | ${true}          | ${'opacity-50 cursor-not-allowed'}
+      scenario      | document            | expectedReadOnly | expectedClassName
+      ${'creation'} | ${undefined}        | ${false}         | ${''}
+      ${'edition'}  | ${existingDocument} | ${true}          | ${'opacity-50 cursor-not-allowed'}
     `(
       'should have readOnly=$expectedReadOnly in $scenario mode',
       ({ document, expectedReadOnly, expectedClassName }) => {
@@ -38,7 +38,9 @@ describe('useServiceFormFields', () => {
         );
 
         expect(result.current.slug.inputProps.readOnly).toBe(expectedReadOnly);
-        expect(result.current.slug.inputProps.className).toBe(expectedClassName);
+        expect(result.current.slug.inputProps.className).toBe(
+          expectedClassName
+        );
       }
     );
 
@@ -68,9 +70,9 @@ describe('useServiceFormFields', () => {
     );
 
     it.each`
-      scenario                      | disabledFields | expectedDisabled
-      ${'not in disabledFields'}    | ${[]}          | ${false}
-      ${'in disabledFields'}        | ${['slug']}    | ${true}
+      scenario                   | disabledFields | expectedDisabled
+      ${'not in disabledFields'} | ${[]}          | ${false}
+      ${'in disabledFields'}     | ${['slug']}    | ${true}
     `(
       'should be disabled=$expectedDisabled when $scenario',
       ({ disabledFields, expectedDisabled }) => {
