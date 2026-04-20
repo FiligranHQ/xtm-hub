@@ -60,7 +60,7 @@ export const chatbotProxyEndpoint = (app: Express) => {
           context: {
             product: 'XTM Hub',
             username: `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim(),
-            email: user.email,
+            email: user.email ?? '',
           },
         });
 

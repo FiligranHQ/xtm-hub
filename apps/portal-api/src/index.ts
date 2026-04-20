@@ -33,7 +33,6 @@ import {
   sseMessageCounter,
   sseSubscriptionCounter,
 } from './server/apollo-plugins/metrics';
-import { chatbotProxyEndpoint } from './server/endpoints/chatbot-proxy';
 import { healthEndpoint } from './server/endpoints/health';
 import { userPictureEndpoint } from './server/endpoints/user-picture-endpoint';
 import createSchema from './server/graphql-schema';
@@ -41,6 +40,7 @@ import platformInit, { minioInit } from './server/initialize';
 import { seedDevelopmentConnectors } from './server/initialize.helper';
 import { getSessionStoreInstance } from './session-store-manager';
 import { initShutdown, registerShutdownHook } from './shutdown';
+import { chatbotProxyEndpoint } from './thirdparty/copilot/chatbot-proxy';
 import { runESMigrations } from './thirdparty/elasticsearch/migrate';
 import { PgBossApp } from './thirdparty/pgboss/pgboss';
 import { logApp } from './utils/app-logger.util';
