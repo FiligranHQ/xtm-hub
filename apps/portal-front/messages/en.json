@@ -499,6 +499,11 @@
   },
   "ProfilePage": {
     "Picture": "Picture",
+    "Preferences": {
+      "Title": "Preferences",
+      "Language": "Language",
+      "Theme": "Theme"
+    },
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenAEV platforms."
     },

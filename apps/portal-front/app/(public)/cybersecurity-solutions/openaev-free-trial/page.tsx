@@ -29,7 +29,7 @@ const Page: React.FC = async () => {
         <TrialsHeader
           platformIdentifier={PlatformIdentifierEnum.OPENAEV}
           actions={
-            <GradientButton>
+            <GradientButton className="bg-white dark:bg-none">
               <Link href="/redirect/create-openaev-free-trial">
                 {' '}
                 {t('Service.Trials.StartTrial')}

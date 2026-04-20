@@ -520,6 +520,11 @@
   },
   "ProfilePage": {
     "Picture": "Photo de profil",
+    "Preferences": {
+      "Title": "Preferences",
+      "Language": "Langue",
+      "Theme": "Theme"
+    },
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenAEV."
     },

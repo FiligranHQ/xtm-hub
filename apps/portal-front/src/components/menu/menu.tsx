@@ -33,7 +33,7 @@ export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
           className: 'h-9 w-full justify-start rounded-none normal-case px-m',
         }),
         currentPath === href &&
-          'bg-menu-active shadow-[inset_2px_0px] shadow-primary'
+          'shadow-[inset_2px_0px] shadow-primary bg-primary/10'
       )}>
       <span className="flex w-8 shrink-0 justify-center">
         <Icon className="h-4 w-4" />

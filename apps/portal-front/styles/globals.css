@@ -3,7 +3,14 @@
 @import "tw-animate-css";
 @import "tailwindcss";
 
-
+:root {
+  --hover-background: hsl(var(--gray-150));
+}
+.dark,
+body[data-theme="dark"],
+body[data-theme="Dark"] {
+  --hover-background: hsla(0, 0%, 100%, 0.1);
+}
 @source "../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}";
 @source "../../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}";
 
