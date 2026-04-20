@@ -66,11 +66,14 @@ import { ServiceConfigurationDomain } from './service-configuration/service-conf
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
-    platformId: string
+    platformId: string,
+    tenantId?: string | null
   ): Promise<Organization | null> => {
     const { user } = requestContext.require();
     const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId);
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId, {
+        tenantId,
+      });
     if (!serviceConfiguration) {
       return null;
     }

@@ -30,7 +30,9 @@ export const redirectToResource = async (
 ) => {
   const searchParams = request.nextUrl.searchParams;
   const opencti_platform_id = searchParams.get('opencti_platform_id');
+  const oaev_instance_id = searchParams.get('oaev_instance_id');
   const platform_id = searchParams.get('platform_id');
+  const tenant_id = searchParams.get('tenant_id');
   const service_instance_id = searchParams.get('service_instance_id');
   const document_id = searchParams.get('document_id');
   let identifier = params.identifier;
@@ -70,7 +72,8 @@ export const redirectToResource = async (
     }
 
     let organizationId: string | undefined = await loadPlatformOrganizationId(
-      opencti_platform_id ?? platform_id
+      opencti_platform_id ?? oaev_instance_id ?? platform_id,
+      tenant_id
     );
 
     // 2. Load the services instances subscribed by the user's organizations
