@@ -1286,8 +1286,9 @@ describe('registration app', () => {
         );
       });
 
-      it('should return not found when platform is registered without tenant_id but a tenant_id is provided', async () => {
+      it('should return active and update config with tenantId when a legacy platform (registered without tenantId on an old version) upgrades to a version that requires it', async () => {
         const platformId = uuidv4();
+        const tenantId = uuidv4();
         const token = await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
@@ -1305,16 +1306,22 @@ describe('registration app', () => {
             {
               platformId,
               token,
-              platformVersion: '6.7.18',
+              platformVersion: '2.4.0',
               url: 'http://example.com/tenantId',
-              tenantId: uuidv4(),
+              tenantId,
               platformIdentifier: PlatformIdentifier.Openaev,
             }
           );
 
         expect(result.status).toBe(
-          PlatformRegistrationConnectivityStatus.NotFound
+          PlatformRegistrationConnectivityStatus.Active
         );
+        const updatedConfig =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+        expect(updatedConfig?.config).toMatchObject({ tenant_id: tenantId });
       });
     });
 

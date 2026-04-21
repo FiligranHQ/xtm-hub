@@ -44,10 +44,12 @@ export const ServiceConfigurationDomain = {
     platform_id,
     token,
     tenant_id,
+    withoutTenantId,
   }: {
     platform_id: string;
     token: string;
     tenant_id?: string;
+    withoutTenantId?: boolean;
   }): Promise<ServiceConfiguration | undefined> => {
     const qb = db('Service_Configuration')
       .whereRaw("config->>'platform_id' = ?", platform_id)
@@ -55,6 +57,8 @@ export const ServiceConfigurationDomain = {
 
     if (tenant_id) {
       qb.whereRaw("config->>'tenant_id' = ?", tenant_id);
+    } else if (withoutTenantId) {
+      qb.whereRaw("config->>'tenant_id' IS NULL");
     }
 
     return qb.first();

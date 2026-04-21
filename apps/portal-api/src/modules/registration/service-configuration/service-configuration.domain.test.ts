@@ -117,6 +117,41 @@ describe('serviceConfigurationDomain', () => {
         expect(configuration).toBeUndefined();
       }
     );
+
+    describe('withoutTenantId option', () => {
+      it('should return configuration when withoutTenantId is true and config has no tenant_id', async () => {
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+            platform_id: platformId,
+            token,
+            withoutTenantId: true,
+          });
+
+        expect(configuration).toMatchObject({
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          config: { platform_id: platformId, token },
+        });
+      });
+
+      it('should return undefined when withoutTenantId is true but config has a tenant_id', async () => {
+        const tenantId = uuidv4();
+        await TestHelper.serviceConfiguration.delete({});
+        await TestHelper.serviceConfiguration.create({
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          status: ServiceConfigurationStatus.Active,
+          config: { token, platform_id: platformId, tenant_id: tenantId },
+        });
+
+        const configuration =
+          await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+            platform_id: platformId,
+            token,
+            withoutTenantId: true,
+          });
+
+        expect(configuration).toBeUndefined();
+      });
+    });
   });
 
   describe('loadConfigurationByPlatform', () => {

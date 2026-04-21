@@ -661,12 +661,39 @@ const refreshConnectivityStatus = async ({
     throw new Error(ErrorCode.InvalidPlatformVersion);
   }
 
-  const serviceConfiguration =
+  let serviceConfiguration =
     await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id: platform_id,
       token,
       tenant_id,
     });
+
+  // manage upgrades from older platform without tenant to newer platform with tenant
+  if (!serviceConfiguration && tenant_id && platform_identifier) {
+    const configWithoutTenant =
+      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+        platform_id: platform_id,
+        token,
+        withoutTenantId: true,
+      });
+
+    const existingConfig = configWithoutTenant?.config as
+      | PlatformConfiguration
+      | undefined;
+
+    if (
+      configWithoutTenant &&
+      !isTenantIdRequired(platform_identifier, existingConfig?.platform_version)
+    ) {
+      const updatedConfig = { ...existingConfig, tenant_id };
+      await ServiceConfigurationDomain.updateConfiguration(
+        configWithoutTenant.service_instance_id,
+        { config: updatedConfig }
+      );
+      serviceConfiguration = { ...configWithoutTenant, config: updatedConfig };
+    }
+  }
+
   if (!serviceConfiguration) {
     if (!platform_identifier) {
       return { status: PlatformRegistrationConnectivityStatus.Inactive };
