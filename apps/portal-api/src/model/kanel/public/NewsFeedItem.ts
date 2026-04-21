@@ -17,7 +17,7 @@ export default interface NewsFeedItem {
 
   platform_identifier: PlatformIdentifier;
 
-  title: string | null;
+  title: string;
 
   creation_date: Date;
 
@@ -35,7 +35,7 @@ export interface NewsFeedItemInitializer {
 
   platform_identifier: PlatformIdentifier;
 
-  title?: string | null;
+  title: string;
 
   /** Default value: CURRENT_TIMESTAMP */
   creation_date?: Date;
@@ -54,7 +54,7 @@ export interface NewsFeedItemMutator {
 
   platform_identifier?: PlatformIdentifier;
 
-  title?: string | null;
+  title?: string;
 
   creation_date?: Date;
 

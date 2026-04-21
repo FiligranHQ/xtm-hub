@@ -9,6 +9,7 @@ import NewsFeedItem, {
   NewsFeedItemId,
 } from '../../model/kanel/public/NewsFeedItem';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { ErrorCode } from '../../utils/error/error.code';
 import { NEWS_FEED_ITEM_METADATA_KEY_DOCUMENT_ID } from './news-feed.model';
 
 export const NewsFeedDomain = {
@@ -23,6 +24,9 @@ export const NewsFeedDomain = {
     type: NewsFeedItemType;
     platformIdentifier: PlatformIdentifier;
   }): Promise<NewsFeedItem> => {
+    if (!document.name) {
+      throw new Error(ErrorCode.NewsFeedItemMissingTitle);
+    }
     const [newsFeedItem] = await db<NewsFeedItem>('NewsFeedItem')
       .insert({
         id: uuidv4() as NewsFeedItemId,

@@ -1150,7 +1150,7 @@ export type MutationUploadUserPictureArgs = {
 };
 
 export enum NewsFeedItemType {
-  ResourceCustomDashboard = 'resource:custom-dashboard'
+  ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD'
 }
 
 export type Node = {
@@ -2517,7 +2517,7 @@ export type ResolversTypes = ResolversObject<{
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;
-  NewsFeedItemType: null;
+  NewsFeedItemType: NewsFeedItemType;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
@@ -3241,8 +3241,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
 }>;
 
-export type NewsFeedItemTypeResolvers = { RESOURCE_CUSTOM_DASHBOARD: 'resource:custom-dashboard' };
-
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationRef' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -3917,7 +3915,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   MeUserSubscription?: MeUserSubscriptionResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
-  NewsFeedItemType?: NewsFeedItemTypeResolvers;
   Node?: NodeResolvers<ContextType>;
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
   OpenCTIPlatformRegistrationStatusResponse?: OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType>;

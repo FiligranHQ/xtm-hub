@@ -26,13 +26,11 @@ export const NewsFeedApp = {
   }): Promise<void> => {
     const newsFeedConfiguration =
       newsFeedConfigurationMapping[serviceDefinitionIdentifier];
-
     if (!newsFeedConfiguration) {
       return;
     }
 
     const { newsFeedType, platformIdentifier } = newsFeedConfiguration;
-
     const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
       document,
       serviceInstanceId,

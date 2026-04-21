@@ -7,6 +7,7 @@ import {
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
+import { BadRequestErrorCode } from '../../utils/error/error.code';
 import { NewsFeedDomain } from './news-feed.domain';
 import { NEWS_FEED_ITEM_METADATA_KEY_DOCUMENT_ID } from './news-feed.model';
 
@@ -16,8 +17,24 @@ describe('newsFeedDomain', () => {
   });
 
   describe('createResourceNewsFeedItem', () => {
-    it('should create a news feed item with the document name as title', async () => {
+    it('should throw an error when document name is missing', async () => {
       const document = await TestHelper.document.create();
+      document.name = '' as typeof document.name;
+
+      await expect(
+        NewsFeedDomain.createResourceNewsFeedItem({
+          document,
+          serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+          type: NewsFeedItemType.ResourceCustomDashboard,
+          platformIdentifier: PlatformIdentifier.Opencti,
+        })
+      ).rejects.toThrow(BadRequestErrorCode.NewsFeedItemMissingTitle);
+    });
+
+    it('should create a news feed item with the document name as title', async () => {
+      const document = await TestHelper.document.create({
+        name: 'custom dashboard',
+      });
 
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,
@@ -37,7 +54,9 @@ describe('newsFeedDomain', () => {
     });
 
     it('should persist the news feed item in the database', async () => {
-      const document = await TestHelper.document.create();
+      const document = await TestHelper.document.create({
+        name: 'custom dashboard',
+      });
 
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,
@@ -59,7 +78,9 @@ describe('newsFeedDomain', () => {
     });
 
     it('should insert metadata with the document id', async () => {
-      const document = await TestHelper.document.create();
+      const document = await TestHelper.document.create({
+        name: 'custom dashboard',
+      });
 
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,

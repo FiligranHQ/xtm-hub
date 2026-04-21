@@ -9,7 +9,7 @@ export async function up(knex) {
       .inTable('ServiceInstance')
       .onDelete('CASCADE');
     table.string('platform_identifier').notNullable();
-    table.string('title');
+    table.string('title').notNullable();
     table.timestamp('creation_date').notNullable().defaultTo(knex.fn.now());
     table.specificType('tags', 'text[]').defaultTo('{}');
   });
