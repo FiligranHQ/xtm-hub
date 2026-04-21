@@ -3,6 +3,7 @@ import Document from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { organizationDomain } from '../organization-management/organizations/organizations.domain';
 import { registrationDomain } from '../registration/registration.domain';
+import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
 
@@ -31,11 +32,15 @@ export const NewsFeedApp = {
     }
 
     const { newsFeedType, platformIdentifier } = newsFeedConfiguration;
+
+    const useCases = await useCaseDomain.loadUseCasesByDocumentId(document.id);
+    const tags = useCases.map((useCase) => useCase.name);
     const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
       document,
       serviceInstanceId,
       type: newsFeedType,
       platformIdentifier,
+      tags,
     });
 
     const organizations =

@@ -12,6 +12,8 @@ import { NewsFeedDomain } from './news-feed.domain';
 import { NEWS_FEED_ITEM_METADATA_KEY_DOCUMENT_ID } from './news-feed.model';
 
 describe('newsFeedDomain', () => {
+  const tags = ['threat-intel', 'malware'];
+
   beforeEach(async () => {
     await TestHelper.newsFeed.deleteItem();
   });
@@ -27,6 +29,7 @@ describe('newsFeedDomain', () => {
           serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
           type: NewsFeedItemType.ResourceCustomDashboard,
           platformIdentifier: PlatformIdentifier.Opencti,
+          tags: [],
         })
       ).rejects.toThrow(BadRequestErrorCode.NewsFeedItemMissingTitle);
     });
@@ -41,6 +44,7 @@ describe('newsFeedDomain', () => {
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         type: NewsFeedItemType.ResourceCustomDashboard,
         platformIdentifier: PlatformIdentifier.Opencti,
+        tags,
       });
 
       expect(newsFeedItem).toMatchObject({
@@ -48,6 +52,7 @@ describe('newsFeedDomain', () => {
         service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         title: document.name,
+        tags,
       });
       expect(newsFeedItem.id).toBeDefined();
       expect(newsFeedItem.creation_date).toEqual(expect.any(Date));
@@ -63,6 +68,7 @@ describe('newsFeedDomain', () => {
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         type: NewsFeedItemType.ResourceCustomDashboard,
         platformIdentifier: PlatformIdentifier.Opencti,
+        tags,
       });
 
       const dbItem = await TestHelper.newsFeed.loadFirstItem({
@@ -74,6 +80,7 @@ describe('newsFeedDomain', () => {
         id: newsFeedItem.id,
         type: NewsFeedItemType.ResourceCustomDashboard,
         platform_identifier: PlatformIdentifier.Opencti,
+        tags,
       });
     });
 
@@ -87,6 +94,7 @@ describe('newsFeedDomain', () => {
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         type: NewsFeedItemType.ResourceCustomDashboard,
         platformIdentifier: PlatformIdentifier.Opencti,
+        tags: [],
       });
 
       const metadata = await TestHelper.newsFeed.loadFirstMetadata({

@@ -10,7 +10,10 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
+import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
+import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedApp } from './news-feed.app';
 
 describe('newsFeedApp', () => {
@@ -82,6 +85,8 @@ describe('newsFeedApp', () => {
     });
 
     afterEach(async () => {
+      await objectUseCaseDomain.deleteObjectUseCaseBy({});
+      await TestHelper.useCase.delete({});
       await TestHelper.newsFeed.deleteItem();
       await TestHelper.subscription.delete({
         service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
@@ -179,6 +184,39 @@ describe('newsFeedApp', () => {
 
       expect(provisioned).toHaveLength(1);
       expect(provisioned[0]?.platform_id).toBe('valid-platform');
+    });
+
+    it('should populate tags from use cases linked to the document', async () => {
+      // Given
+      await subscribeToCustomDashboards();
+      await createOpenCTIPlatform('platform-001');
+
+      const useCaseA = await useCaseDomain.insertUseCase({
+        name: 'Use Case Alpha',
+        color: '#FF0000',
+      });
+      const useCaseB = await useCaseDomain.insertUseCase({
+        name: 'Use Case Beta',
+        color: '#00FF00',
+      });
+
+      await objectUseCaseDomain.insertObjectUseCase({
+        object_id: document.id as unknown as ObjectUseCaseObjectId,
+        use_case_id: useCaseA.id,
+      });
+      await objectUseCaseDomain.insertObjectUseCase({
+        object_id: document.id as unknown as ObjectUseCaseObjectId,
+        use_case_id: useCaseB.id,
+      });
+
+      // When
+      await createCustomDashboardNewsFeedItem();
+
+      // Then
+      const newsFeedItem = await TestHelper.newsFeed.loadFirstItem();
+      expect(newsFeedItem).toMatchObject({
+        tags: expect.arrayContaining(['Use Case Alpha', 'Use Case Beta']),
+      });
     });
   });
 });

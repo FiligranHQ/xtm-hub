@@ -182,7 +182,7 @@ export const DocumentApp = {
         serviceInstanceId,
         serviceDefinitionIdentifier: serviceDefinition.identifier,
       }).catch((error) =>
-        logApp.error('Unable to create news feed item on dashboard creation', {
+        logApp.error('Unable to create news feed item on document creation', {
           error,
           documentId: createdDocument.id,
         })
@@ -368,7 +368,7 @@ export const DocumentApp = {
         serviceInstanceId,
         serviceDefinitionIdentifier: serviceDefinition.identifier,
       }).catch((error) =>
-        logApp.error('Unable to create news feed item on dashboard update', {
+        logApp.error('Unable to create news feed item on document update', {
           error,
           documentId: updatedDocument.id,
         })

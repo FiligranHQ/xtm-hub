@@ -18,11 +18,13 @@ export const NewsFeedDomain = {
     serviceInstanceId,
     type,
     platformIdentifier,
+    tags,
   }: {
     document: Document;
     serviceInstanceId: ServiceInstanceId;
     type: NewsFeedItemType;
     platformIdentifier: PlatformIdentifier;
+    tags: string[];
   }): Promise<NewsFeedItem> => {
     if (!document.name) {
       throw new Error(ErrorCode.NewsFeedItemMissingTitle);
@@ -35,7 +37,7 @@ export const NewsFeedDomain = {
         platform_identifier: platformIdentifier,
         title: document.name,
         creation_date: new Date(),
-        tags: [],
+        tags,
       })
       .returning('*');
 
