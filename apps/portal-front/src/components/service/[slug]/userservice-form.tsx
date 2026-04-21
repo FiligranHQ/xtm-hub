@@ -146,11 +146,11 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
 
   useEffect(() => {
     form.reset(defaultValues);
-  }, [subscription.subscriptionById?.id, defaultValues]);
+  }, [subscription.subscriptionById?.id, defaultValues, form]);
 
   useEffect(() => {
     setIsDirty(form.formState.isDirty);
-  }, [form.formState.isDirty]);
+  }, [form.formState.isDirty, setIsDirty]);
 
   const onSubmitCapabilitiesSchema = (
     values: z.infer<typeof capabilitiesFormSchema>

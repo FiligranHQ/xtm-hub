@@ -40,10 +40,11 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-const should_redirect_error = 'should_redirect_error';
-
 // Component
 const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
+  let shouldRedirect = false;
+  let hasError = false;
+
   try {
     // @ts-expect-error
     const { data: meData }: { data: meLoaderQuery$data } =
@@ -54,29 +55,9 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
 
     const me = meData.me as unknown as meContext_fragment$data;
     if (!me) {
-      throw new Error(should_redirect_error);
+      shouldRedirect = true;
     }
-
-    return (
-      <RelayProvider>
-        <PageLoader>
-          <div className="flex flex-col items-center justify-center min-h-screen">
-            <div className="w-1/3">
-              <ContentLayout>
-                <LogoXTMDark className="pb-6" />
-
-                <Card className="p-xl bg-page-background">{children}</Card>
-              </ContentLayout>
-            </div>
-          </div>
-        </PageLoader>
-      </RelayProvider>
-    );
   } catch (error) {
-    if ((error as Error).message === should_redirect_error) {
-      redirect(`/`);
-    }
-
     await serverMutateGraphQL<errorFrontendLogMutation>(
       errorFrontendLogMutationNode,
       {
@@ -84,6 +65,14 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
         componentStack: 'app/(embed)/layout.tsx',
       }
     );
+    hasError = true;
+  }
+
+  if (shouldRedirect) {
+    redirect(`/`);
+  }
+
+  if (hasError) {
     return (
       <div className="flex flex-col w-full h-screen">
         <ErrorPage>
@@ -97,6 +86,22 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
       </div>
     );
   }
+
+  return (
+    <RelayProvider>
+      <PageLoader>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <div className="w-1/3">
+            <ContentLayout>
+              <LogoXTMDark className="pb-6" />
+
+              <Card className="p-xl bg-page-background">{children}</Card>
+            </ContentLayout>
+          </div>
+        </div>
+      </PageLoader>
+    </RelayProvider>
+  );
 };
 
 // Component export

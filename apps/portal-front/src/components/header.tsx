@@ -26,7 +26,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
-import AskArianeButton from './ariane/ask-ariane-button';
 
 // Component interface
 interface HeaderComponentProps {
@@ -67,7 +66,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       />
 
       <div className="mobile:hidden flex items-center gap-s">
-        <AskArianeButton />
+        {/* <AskArianeButton /> */}
         <DisplayTrialList />
         {canManageUser && <NotificationButton />}
         <IconActions

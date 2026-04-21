@@ -27,18 +27,22 @@ export type LogicalFiltersParams =
   | IntegrationFiltersParams;
 
 export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
-  return useMemo(() => {
-    if (params.serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS) {
-      const {
-        labels,
-        deployable,
-        verified,
-        integrationTypes,
-        productVersions,
-      } = params;
+  const { serviceInstanceSlug, labels } = params;
+  const deployable = 'deployable' in params ? params.deployable : undefined;
+  const verified =
+    DocumentMetadataKeyCodeEnum.VERIFIED in params
+      ? params.verified
+      : undefined;
+  const integrationTypes =
+    'integrationTypes' in params ? params.integrationTypes : undefined;
+  const productVersions =
+    'productVersions' in params ? params.productVersions : undefined;
 
-      const typeSubtypeFilter =
-        buildTypeSubtypeFilterExpression(integrationTypes);
+  return useMemo(() => {
+    if (serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS) {
+      const typeSubtypeFilter = buildTypeSubtypeFilterExpression(
+        integrationTypes!
+      );
       return {
         operator: LogicalOperatorEnum.AND,
         children: [
@@ -47,16 +51,19 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
           {
             leaf: {
               key: FilterKeyEnum.MANAGER_SUPPORTED,
-              value: Object.keys(deployable),
+              value: Object.keys(deployable!),
             },
           },
           {
-            leaf: { key: FilterKeyEnum.VERIFIED, value: Object.keys(verified) },
+            leaf: {
+              key: FilterKeyEnum.VERIFIED,
+              value: Object.keys(verified!),
+            },
           },
           {
             leaf: {
               key: FilterKeyEnum.PRODUCT_VERSION,
-              value: Object.keys(productVersions),
+              value: Object.keys(productVersions!),
             },
           },
         ],
@@ -66,18 +73,16 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
       operator: LogicalOperatorEnum.AND,
       children: [
         {
-          leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(params.labels) },
+          leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) },
         },
       ],
     };
   }, [
-    params.serviceInstanceSlug,
-    params.labels,
-    'deployable' in params ? params.deployable : undefined,
-    DocumentMetadataKeyCodeEnum.VERIFIED in params
-      ? params.verified
-      : undefined,
-    'integrationTypes' in params ? params.integrationTypes : undefined,
-    'productVersions' in params ? params.productVersions : undefined,
+    serviceInstanceSlug,
+    labels,
+    deployable,
+    verified,
+    integrationTypes,
+    productVersions,
   ]);
 };
