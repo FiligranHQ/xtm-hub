@@ -11,6 +11,7 @@ import React, { createContext, FunctionComponent, useContext } from 'react';
 export interface ServiceContextProps {
   serviceInstance: serviceInstance_fragment$data;
   translationKey: string;
+  currentUserSubscriptionId?: string;
   handleAddSheet: (
     values: ServiceFormValues,
     onSuccess: (serviceName: string) => void,

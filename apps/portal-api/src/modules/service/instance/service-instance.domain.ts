@@ -222,19 +222,34 @@ export const loadServiceInstances = async (opts) => {
 export const loadServiceInstanceSubscriptions = async (
   id: ServiceInstanceId
 ) => {
-  return db<Subscription>('Subscription')
+  const { user } = requestContext.require();
+
+  const queryBuilder = db<Subscription>('Subscription')
     .where('Subscription.service_instance_id', '=', id)
-    .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
-    .select([
-      'Subscription.*',
-      dbRaw(
-        formatRawObject({
-          columnName: 'Organization',
-          typename: 'Organization',
-          as: 'organization',
-        })
-      ),
-    ]);
+    .leftJoin(
+      'Organization',
+      'Organization.id',
+      'Subscription.organization_id'
+    );
+
+  if (!isUserAdminPlatform(user)) {
+    queryBuilder.where(
+      'Subscription.organization_id',
+      '=',
+      user.selected_organization_id
+    );
+  }
+
+  return queryBuilder.select([
+    'Subscription.*',
+    dbRaw(
+      formatRawObject({
+        columnName: 'Organization',
+        typename: 'Organization',
+        as: 'organization',
+      })
+    ),
+  ]);
 };
 export const loadSubscriptionByServiceInstanceAndOrganization = async (
   selectedOrganizationId: OrganizationId,

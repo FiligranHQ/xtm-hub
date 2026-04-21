@@ -14,6 +14,7 @@ import {
   contextRegistererUserSecondOrga,
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
+  requestContextRegistererUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
@@ -705,7 +706,7 @@ describe('service instance domain', () => {
   });
 
   describe('loadServiceInstanceSubscriptions', () => {
-    it('should return a list of subscriptions linked to service instance', async () => {
+    it('should return only selected organization subscription for non bypass user', async () => {
       // Given
       await TestHelper.subscription.create({
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
@@ -720,26 +721,41 @@ describe('service instance domain', () => {
         service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
       });
 
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
       // when
       const result = await loadServiceInstanceSubscriptions(
         SERVICES.INSTANCES.INTEGRATIONS.ID
       );
 
       // Then
-      expect(result).toHaveLength(2);
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+    });
 
-      expect(result).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          }),
-          expect.objectContaining({
-            organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          }),
-        ])
+    it('should return all subscriptions for bypass user', async () => {
+      // Given
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+
+      requestContext.set(requestContextAdminUser);
+
+      // When
+      const result = await loadServiceInstanceSubscriptions(
+        SERVICES.INSTANCES.INTEGRATIONS.ID
       );
+
+      // Then
+      expect(result).toHaveLength(2);
     });
 
     it('should return an empty array when service instance is not found', async () => {
