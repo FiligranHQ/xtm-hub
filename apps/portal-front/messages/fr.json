@@ -171,7 +171,9 @@
       "now": "Maintenant",
       "next": "Après",
       "under_consideration": "En considération",
-      "finished": "Terminé au cours des 3 derniers mois"
+      "finished": "Terminé au cours des 3 derniers mois",
+      "IsLimited": "Limité à {maxChars} charactères",
+      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
     },
     "Form": {
       "Epic": "Epic",
