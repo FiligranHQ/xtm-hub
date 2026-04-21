@@ -180,6 +180,7 @@ type Mutation {
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   refreshPlatformRegistrationConnectivityStatusSingleTenant(input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
@@ -907,8 +908,30 @@ input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
   platformIdentifier: PlatformIdentifier!
 }
 
+input TenantDetails {
+  tenantId: String!
+  token: String!
+  url: String!
+}
+
+input RefreshPlatformRegistrationConnectivityStatusAllTenantsInput {
+  platformId: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier!
+  tenants: [TenantDetails!]!
+}
+
 type RefreshPlatformRegistrationConnectivityStatusResponse {
   status: PlatformRegistrationConnectivityStatus!
+}
+
+type TenantStatus {
+  tenantId: String!
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse {
+  statuses: [TenantStatus!]!
 }
 
 type RefreshUserPlatformTokenResponse {

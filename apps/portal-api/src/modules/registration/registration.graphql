@@ -103,8 +103,30 @@ input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
   platformIdentifier: PlatformIdentifier!
 }
 
+input TenantDetails {
+  tenantId: String!
+  token: String!
+  url: String!
+}
+
+input RefreshPlatformRegistrationConnectivityStatusAllTenantsInput {
+  platformId: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier!
+  tenants: [TenantDetails!]!
+}
+
 type RefreshPlatformRegistrationConnectivityStatusResponse {
   status: PlatformRegistrationConnectivityStatus!
+}
+
+type TenantStatus {
+  tenantId: String!
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse {
+  statuses: [TenantStatus!]!
 }
 
 type RefreshUserPlatformTokenResponse {
@@ -151,6 +173,10 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusSingleTenant(
     input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!
   ): RefreshPlatformRegistrationConnectivityStatusResponse!
+  # Warning ! Used by OpenAEV
+  refreshPlatformRegistrationConnectivityStatusAllTenants(
+    input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!
+  ): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   # Warning ! Used by OpenCTI and OpenAEV (trials)
   autoRegisterPlatform(
     platform: PlatformInput @deprecated(reason: "Use input instead")

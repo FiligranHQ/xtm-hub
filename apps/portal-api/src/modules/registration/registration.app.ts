@@ -12,6 +12,7 @@ import {
   PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
+  RefreshPlatformRegistrationConnectivityStatusAllTenantsInput,
   RefreshPlatformRegistrationConnectivityStatusInput,
   RefreshPlatformRegistrationConnectivityStatusSingleTenantInput,
   RefreshUserPlatformTokenResponse,
@@ -21,6 +22,7 @@ import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
+  TenantStatus,
   UnregisterPlatformInput,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
@@ -162,6 +164,59 @@ export const registrationApp = {
       url: input.url,
       tenant_id: input.tenantId,
     });
+  },
+  refreshPlatformRegistrationConnectivityStatusAllTenants: async (
+    input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput
+  ): Promise<{
+    statuses: TenantStatus[];
+  }> => {
+    const results = await Promise.allSettled(
+      input.tenants.map((tenant) =>
+        refreshConnectivityStatus({
+          platform_identifier: input.platformIdentifier,
+          platform_version: input.platformVersion,
+          platform_id: input.platformId,
+          token: tenant.token,
+          url: tenant.url,
+          tenant_id: tenant.tenantId,
+        }).then(({ status }) => ({ tenantId: tenant.tenantId, status }))
+      )
+    );
+    const statuses = results.map((result, index) => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      }
+      logApp.error(
+        `Failed to refresh connectivity status for tenant ${input.tenants[index].tenantId}`,
+        { error: result.reason }
+      );
+      return {
+        tenantId: input.tenants[index].tenantId,
+        status: PlatformRegistrationConnectivityStatus.Inactive,
+      };
+    });
+
+    const knownTenantIds = input.tenants.map((t) => t.tenantId);
+    const staleConfigurations =
+      await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
+        input.platformId,
+        knownTenantIds
+      );
+
+    await Promise.all(
+      staleConfigurations.map((config) =>
+        ServiceConfigurationDomain.updateConfiguration(
+          config.service_instance_id,
+          { status: ServiceConfigurationStatus.Inactive }
+        ).catch((error) => {
+          logApp.error(
+            `Failed to deactivate stale configuration for service instance ${config.service_instance_id}`,
+            { error }
+          );
+        })
+      )
+    );
+    return { statuses };
   },
 
   refreshPlatformRegistrationConnectivityStatus: async (

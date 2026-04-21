@@ -1,5 +1,6 @@
 import z from 'zod';
 import { db } from '../../../../knexfile';
+import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration, {
   ServiceConfigurationMutator,
 } from '../../../model/kanel/public/ServiceConfiguration';
@@ -112,5 +113,26 @@ export const ServiceConfigurationDomain = {
 
   deleteConfigurationBy: async (conditions: ServiceConfigurationMutator) => {
     await db('Service_Configuration').where(conditions).delete();
+  },
+
+  loadActiveConfigurationsByPlatformExcludingTenants: async (
+    platformId: string,
+    excludedTenantIds: string[]
+  ): Promise<ServiceConfiguration[]> => {
+    const qb = db('Service_Configuration')
+      .whereRaw("config->>'platform_id' = ?", platformId)
+      .where('status', ServiceConfigurationStatus.Active)
+      .whereRaw("config->>'tenant_id' IS NOT NULL")
+      .select('*');
+
+    if (excludedTenantIds.length > 0) {
+      const placeholders = excludedTenantIds.map(() => '?').join(', ');
+      qb.whereRaw(
+        `config->>'tenant_id' NOT IN (${placeholders})`,
+        excludedTenantIds
+      );
+    }
+
+    return qb;
   },
 };

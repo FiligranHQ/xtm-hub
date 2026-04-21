@@ -129,6 +129,13 @@ const resolvers: Resolvers = {
       registrationApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
         input
       ),
+    refreshPlatformRegistrationConnectivityStatusAllTenants: async (
+      _,
+      { input }
+    ) =>
+      registrationApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        input
+      ),
     autoRegisterPlatform: async (
       _,
       { platform, input },

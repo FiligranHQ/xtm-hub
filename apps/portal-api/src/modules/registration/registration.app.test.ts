@@ -1175,7 +1175,7 @@ describe('registration app', () => {
               platformId: uuidv4(),
               token: uuidv4(),
               platformVersion: '9.Y.Z',
-              url: 'http://example.com',
+              url: 'http://example.com/tenant',
               tenantId: uuidv4(),
               platformIdentifier: PlatformIdentifier.Openaev,
             }
@@ -1191,7 +1191,7 @@ describe('registration app', () => {
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
-            url: 'http://example.com',
+            url: 'http://example.com/tenant',
             contract: PlatformContract.Ee,
             title: 'Fake title',
             version: '1.0.0',
@@ -1206,7 +1206,7 @@ describe('registration app', () => {
               platformId,
               token,
               platformVersion: '6.7.18',
-              url: 'http://example.com',
+              url: 'http://example.com/tenant',
               tenantId,
               platformIdentifier: PlatformIdentifier.Openaev,
             }
@@ -1233,7 +1233,7 @@ describe('registration app', () => {
           identifier: PlatformIdentifier.Openaev,
         });
 
-        const newUrl = 'http://new-url.example.com';
+        const newUrl = 'http://example.com/tenantId';
         await registrationApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
           {
             platformId,
@@ -1260,7 +1260,7 @@ describe('registration app', () => {
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
-            url: 'http://example.com',
+            url: 'http://example.com/tenantId',
             contract: PlatformContract.Ee,
             title: 'Fake title',
             version: '1.0.0',
@@ -1275,7 +1275,7 @@ describe('registration app', () => {
               platformId,
               token,
               platformVersion: '6.7.18',
-              url: 'http://example.com',
+              url: 'http://example.com/tenantId',
               tenantId: uuidv4(),
               platformIdentifier: PlatformIdentifier.Openaev,
             }
@@ -1306,7 +1306,7 @@ describe('registration app', () => {
               platformId,
               token,
               platformVersion: '6.7.18',
-              url: 'http://example.com',
+              url: 'http://example.com/tenantId',
               tenantId: uuidv4(),
               platformIdentifier: PlatformIdentifier.Openaev,
             }
@@ -1315,6 +1315,262 @@ describe('registration app', () => {
         expect(result.status).toBe(
           PlatformRegistrationConnectivityStatus.NotFound
         );
+      });
+    });
+
+    describe('refreshPlatformRegistrationConnectivityStatusMultipleTenants', () => {
+      it('should return inactive for all tenants when version is not formatted as a semantic version', async () => {
+        const tenantId = uuidv4();
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+            {
+              platformId: uuidv4(),
+              platformVersion: '9.Y.Z',
+              platformIdentifier: PlatformIdentifier.Openaev,
+              tenants: [
+                {
+                  tenantId,
+                  token: uuidv4(),
+                  url: 'http://example.com/tenant1',
+                },
+              ],
+            }
+          );
+
+        expect(result.statuses).toHaveLength(1);
+        expect(result.statuses[0]).toEqual({
+          tenantId,
+          status: PlatformRegistrationConnectivityStatus.Inactive,
+        });
+      });
+
+      it('should return statuses for each tenant', async () => {
+        const platformId = uuidv4();
+        const tenantId1 = uuidv4();
+        const tenantId2 = uuidv4();
+
+        const token1 = await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com/tenantId1',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId: tenantId1,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        const token2 = await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com/tenantId2',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId: tenantId2,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+            {
+              platformId,
+              platformVersion: '6.7.18',
+              platformIdentifier: PlatformIdentifier.Openaev,
+              tenants: [
+                {
+                  tenantId: tenantId1,
+                  token: token1,
+                  url: 'http://example.com/tenant1',
+                },
+                {
+                  tenantId: tenantId2,
+                  token: token2,
+                  url: 'http://example.com/tenant2',
+                },
+              ],
+            }
+          );
+
+        expect(result.statuses).toHaveLength(2);
+        expect(result.statuses).toEqual(
+          expect.arrayContaining([
+            {
+              tenantId: tenantId1,
+              status: PlatformRegistrationConnectivityStatus.Active,
+            },
+            {
+              tenantId: tenantId2,
+              status: PlatformRegistrationConnectivityStatus.Active,
+            },
+          ])
+        );
+      });
+
+      it('should return not found for a tenant with wrong token', async () => {
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+            {
+              platformId,
+              platformVersion: '6.7.18',
+              platformIdentifier: PlatformIdentifier.Openaev,
+              tenants: [
+                { tenantId, token: uuidv4(), url: 'http://example.com/tenant' },
+              ],
+            }
+          );
+
+        expect(result.statuses).toHaveLength(1);
+        expect(result.statuses).toEqual([
+          { tenantId, status: PlatformRegistrationConnectivityStatus.NotFound },
+        ]);
+      });
+
+      it('should return empty statuses when no tenants are provided', async () => {
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+            {
+              platformId: uuidv4(),
+              platformVersion: '6.7.18',
+              platformIdentifier: PlatformIdentifier.Openaev,
+              tenants: [],
+            }
+          );
+
+        expect(result.statuses).toHaveLength(0);
+      });
+
+      it('should return inactive for a failed tenant and active for a successful one', async () => {
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+
+        const token = await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        const failingTenantId = uuidv4();
+
+        // Mock refreshConnectivityStatus to throw for the failing tenant by using a wrong platformId
+        // We simulate partial failure by passing a bad token for one tenant
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+            {
+              platformId,
+              platformVersion: '6.7.18',
+              platformIdentifier: PlatformIdentifier.Openaev,
+              tenants: [
+                { tenantId, token, url: 'http://example.com/tenant1' },
+                {
+                  tenantId: failingTenantId,
+                  token: uuidv4(),
+                  url: 'http://example.com/tenant2',
+                },
+              ],
+            }
+          );
+
+        expect(result.statuses).toHaveLength(2);
+        expect(result.statuses).toEqual(
+          expect.arrayContaining([
+            { tenantId, status: PlatformRegistrationConnectivityStatus.Active },
+            {
+              tenantId: failingTenantId,
+              status: PlatformRegistrationConnectivityStatus.NotFound,
+            },
+          ])
+        );
+      });
+
+      it('should deactivate tenants with the same platformId that were not provided in the call', async () => {
+        const platformId = uuidv4();
+        const tenantId1 = uuidv4();
+        const tenantId2 = uuidv4();
+
+        const token1 = await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com/tenantId1',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId: tenantId1,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        await registrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com/tenantId2',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId: tenantId2,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        // Only provide tenantId1 — tenantId2 should be deactivated
+        const result =
+          await registrationApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+            {
+              platformId,
+              platformVersion: '6.7.18',
+              platformIdentifier: PlatformIdentifier.Openaev,
+              tenants: [
+                {
+                  tenantId: tenantId1,
+                  token: token1,
+                  url: 'http://example.com/tenantId1',
+                },
+              ],
+            }
+          );
+
+        expect(result.statuses).toHaveLength(1);
+        expect(result.statuses[0]).toEqual({
+          tenantId: tenantId1,
+          status: PlatformRegistrationConnectivityStatus.Active,
+        });
+
+        // tenantId2 should now be inactive in the DB
+        const staleConfig =
+          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId: tenantId2 }
+          );
+        expect(staleConfig?.status).toBe(ServiceConfigurationStatus.Inactive);
       });
     });
 

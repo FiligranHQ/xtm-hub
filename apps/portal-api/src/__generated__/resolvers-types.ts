@@ -831,6 +831,7 @@ export type Mutation = {
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
+  refreshPlatformRegistrationConnectivityStatusAllTenants: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse;
   refreshPlatformRegistrationConnectivityStatusSingleTenant: RefreshPlatformRegistrationConnectivityStatusResponse;
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse;
   registerPlatform: RegistrationResponse;
@@ -1061,6 +1062,11 @@ export type MutationLoginArgs = {
 
 export type MutationRefreshPlatformRegistrationConnectivityStatusArgs = {
   input: RefreshPlatformRegistrationConnectivityStatusInput;
+};
+
+
+export type MutationRefreshPlatformRegistrationConnectivityStatusAllTenantsArgs = {
+  input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
 };
 
 
@@ -1669,6 +1675,18 @@ export type QueryUsersWithCapabilitiesInOrganizationArgs = {
   input: UsersWithCapabilitiesInOrganizationInput;
 };
 
+export type RefreshPlatformRegistrationConnectivityStatusAllTenantsInput = {
+  platformId: Scalars['String']['input'];
+  platformIdentifier: PlatformIdentifier;
+  platformVersion: Scalars['String']['input'];
+  tenants: Array<TenantDetails>;
+};
+
+export type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse = {
+  __typename?: 'RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse';
+  statuses: Array<TenantStatus>;
+};
+
 export type RefreshPlatformRegistrationConnectivityStatusInput = {
   platformId: Scalars['String']['input'];
   platformIdentifier?: InputMaybe<PlatformIdentifier>;
@@ -2106,6 +2124,18 @@ export type TelemetryResponse = {
   __typename?: 'TelemetryResponse';
   message?: Maybe<Scalars['String']['output']>;
   result: Scalars['Boolean']['output'];
+};
+
+export type TenantDetails = {
+  tenantId: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+};
+
+export type TenantStatus = {
+  __typename?: 'TenantStatus';
+  status: PlatformRegistrationConnectivityStatus;
+  tenantId: Scalars['String']['output'];
 };
 
 export type ThirdPartyIntegration = Document & Integration & Node & {
@@ -2561,6 +2591,8 @@ export type ResolversTypes = ResolversObject<{
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   PortalCapability: PortalCapability;
   Query: ResolverTypeWrapper<{}>;
+  RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
+  RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse: ResolverTypeWrapper<RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse>;
   RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
   RefreshPlatformRegistrationConnectivityStatusResponse: ResolverTypeWrapper<RefreshPlatformRegistrationConnectivityStatusResponse>;
   RefreshPlatformRegistrationConnectivityStatusSingleTenantInput: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput;
@@ -2609,6 +2641,8 @@ export type ResolversTypes = ResolversObject<{
   Success: ResolverTypeWrapper<Success>;
   TaxiiFeed: ResolverTypeWrapper<TaxiiFeed>;
   TelemetryResponse: ResolverTypeWrapper<TelemetryResponse>;
+  TenantDetails: TenantDetails;
+  TenantStatus: ResolverTypeWrapper<TenantStatus>;
   ThirdPartyIntegration: ResolverTypeWrapper<ThirdPartyIntegration>;
   Timeline: Timeline;
   TrialDeploymentsInput: TrialDeploymentsInput;
@@ -2723,6 +2757,8 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
   Query: {};
+  RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
+  RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse;
   RefreshPlatformRegistrationConnectivityStatusInput: RefreshPlatformRegistrationConnectivityStatusInput;
   RefreshPlatformRegistrationConnectivityStatusResponse: RefreshPlatformRegistrationConnectivityStatusResponse;
   RefreshPlatformRegistrationConnectivityStatusSingleTenantInput: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput;
@@ -2761,6 +2797,8 @@ export type ResolversParentTypes = ResolversObject<{
   Success: Success;
   TaxiiFeed: TaxiiFeed;
   TelemetryResponse: TelemetryResponse;
+  TenantDetails: TenantDetails;
+  TenantStatus: TenantStatus;
   ThirdPartyIntegration: ThirdPartyIntegration;
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: TrialsDeployments;
@@ -3238,6 +3276,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;
+  refreshPlatformRegistrationConnectivityStatusAllTenants?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusAllTenantsArgs, 'input'>>;
   refreshPlatformRegistrationConnectivityStatusSingleTenant?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusSingleTenantArgs, 'input'>>;
   refreshUserPlatformToken?: Resolver<ResolversTypes['RefreshUserPlatformTokenResponse'], ParentType, ContextType>;
   registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
@@ -3431,6 +3470,11 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   userServiceOwned?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceOwnedArgs, 'first' | 'orderBy' | 'orderMode'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
+}>;
+
+export type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse'] = ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse']> = ResolversObject<{
+  statuses?: Resolver<Array<ResolversTypes['TenantStatus']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusResponse'] = ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusResponse']> = ResolversObject<{
@@ -3750,6 +3794,12 @@ export type TelemetryResponseResolvers<ContextType = PortalContext, ParentType e
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type TenantStatusResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['TenantStatus'] = ResolversParentTypes['TenantStatus']> = ResolversObject<{
+  status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
+  tenantId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ThirdPartyIntegration'] = ResolversParentTypes['ThirdPartyIntegration']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3948,6 +3998,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PlatformDeploymentRequestEdge?: PlatformDeploymentRequestEdgeResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse?: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponseResolvers<ContextType>;
   RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
   RefreshUserPlatformTokenResponse?: RefreshUserPlatformTokenResponseResolvers<ContextType>;
   RegisteredPlatform?: RegisteredPlatformResolvers<ContextType>;
@@ -3978,6 +4029,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Success?: SuccessResolvers<ContextType>;
   TaxiiFeed?: TaxiiFeedResolvers<ContextType>;
   TelemetryResponse?: TelemetryResponseResolvers<ContextType>;
+  TenantStatus?: TenantStatusResolvers<ContextType>;
   ThirdPartyIntegration?: ThirdPartyIntegrationResolvers<ContextType>;
   TrialsDeployments?: TrialsDeploymentsResolvers<ContextType>;
   Upload?: GraphQLScalarType;
