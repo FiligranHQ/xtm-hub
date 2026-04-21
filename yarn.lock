@@ -8344,7 +8344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/scope-manager@npm:8.58.2":
+"@typescript-eslint/scope-manager@npm:8.58.2, @typescript-eslint/scope-manager@npm:^8.58.0":
   version: 8.58.2
   resolution: "@typescript-eslint/scope-manager@npm:8.58.2"
   dependencies:
@@ -8506,7 +8506,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:8.58.2":
+"@typescript-eslint/utils@npm:8.58.2, @typescript-eslint/utils@npm:^8.58.0":
   version: 8.58.2
   resolution: "@typescript-eslint/utils@npm:8.58.2"
   dependencies:
@@ -8796,22 +8796,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/eslint-plugin@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@vitest/eslint-plugin@npm:1.0.1"
+"@vitest/eslint-plugin@npm:1.6.16":
+  version: 1.6.16
+  resolution: "@vitest/eslint-plugin@npm:1.6.16"
+  dependencies:
+    "@typescript-eslint/scope-manager": "npm:^8.58.0"
+    "@typescript-eslint/utils": "npm:^8.58.0"
   peerDependencies:
-    "@typescript-eslint/utils": ">= 8.0"
-    eslint: ">= 8.57.0"
-    typescript: ">= 5.0.0"
+    "@typescript-eslint/eslint-plugin": "*"
+    eslint: ">=8.57.0"
+    typescript: ">=5.0.0"
     vitest: "*"
   peerDependenciesMeta:
-    "@typescript-eslint/utils":
+    "@typescript-eslint/eslint-plugin":
       optional: true
     typescript:
       optional: true
     vitest:
       optional: true
-  checksum: 10/81fccf1dcf772f12d404b95baab8c418e4f9c19c13b3e9a8f74b1a193a28e275b01dbaf3dda40c3f4722112c2623e896eb0f93a3ea47bd12e34b4a5aae720635
+  checksum: 10/422fdc9a80ad88adcd7b1e07fc88866784e57a00e562e1711988264f8912850c5ebf0efec815280b5f6258fcb481133c9fd2c32d04a82ff429e9b976aa2b04db
   languageName: node
   linkType: hard
 
@@ -8966,7 +8969,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:8.58.2"
     "@typescript-eslint/parser": "npm:8.58.2"
     "@vitest/coverage-v8": "npm:4.1.4"
-    "@vitest/eslint-plugin": "npm:1.0.1"
+    "@vitest/eslint-plugin": "npm:1.6.16"
     apollo-errors: "npm:1.9.0"
     auth0: "npm:5.7.0"
     body-parser: "npm:2.2.2"
