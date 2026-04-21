@@ -149,107 +149,94 @@ const Page = async ({
 }) => {
   const awaitedParams = await params;
 
+  let pageData: Awaited<ReturnType<typeof getPageData>> | undefined;
   try {
-    const { baseUrl, serviceInstance, document } = await getPageData(
-      awaitedParams.slug,
-      awaitedParams.docSlug
+    pageData = await getPageData(awaitedParams.slug, awaitedParams.docSlug);
+  } catch (_error) {
+    notFound();
+  }
+
+  if (!pageData) {
+    notFound();
+  }
+
+  const { baseUrl, serviceInstance, document } = pageData;
+  const serviceInformation = getServiceInfo(
+    {
+      id: serviceInstance.id,
+      slug: serviceInstance.slug as ServiceSlug,
+    },
+    document.id
+  );
+
+  const pageUrl = `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`;
+
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: document.name,
+    description: `${document.short_description}${serviceInformation?.description}`,
+    articleBody: document.description,
+    author: document.uploader
+      ? {
+          '@type': 'Person',
+          name: formatPersonNames(document.uploader),
+          image: document.uploader.picture || undefined,
+        }
+      : undefined,
+    datePublished: document.created_at,
+    dateModified: document.updated_at,
+    publisher: {
+      '@type': 'Organization',
+      name: 'Filigran',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/images/filigran-logo.png`,
+      },
+    },
+    isPartOf: {
+      '@type': 'SoftwareApplication',
+      name: serviceInstance.name,
+      applicationCategory: 'SecurityApplication',
+      url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+    },
+    keywords: document.use_cases?.map((useCase) => useCase.name).join(', '),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': pageUrl,
+    },
+    interactionStatistic: {
+      '@type': 'InteractionCounter',
+      interactionType: {
+        '@type': 'DownloadAction',
+      },
+      userInteractionCount: document.download_number,
+    },
+  };
+  const mainChild = document.children_documents?.[0];
+  const logo = findDocumentLogo(document);
+  if (document.children_documents!.length > 0) {
+    jsonLd.image = document.children_documents!.map(
+      (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
     );
-    const serviceInformation = getServiceInfo(
-      {
-        id: serviceInstance.id,
-        slug: serviceInstance.slug as ServiceSlug,
-      },
-      document.id
-    );
+  }
+  const breadcrumbValue = [
+    {
+      label: 'MenuLinks.Home',
+      href: '/',
+    },
+    {
+      label: serviceInstance.name,
+      href: `/cybersecurity-solutions/${serviceInstance.slug}`,
+      original: true,
+    },
+    {
+      label: `${document?.name}`,
+      original: true,
+    },
+  ];
 
-    const pageUrl = `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`;
-
-    const jsonLd: Record<string, unknown> = {
-      '@context': 'https://schema.org',
-      '@type': 'TechArticle',
-      headline: document.name,
-      description: `${document.short_description}${serviceInformation?.description}`,
-      articleBody: document.description,
-      author: document.uploader
-        ? {
-            '@type': 'Person',
-            name: formatPersonNames(document.uploader),
-            image: document.uploader.picture || undefined,
-          }
-        : undefined,
-      datePublished: document.created_at,
-      dateModified: document.updated_at,
-      publisher: {
-        '@type': 'Organization',
-        name: 'Filigran',
-        logo: {
-          '@type': 'ImageObject',
-          url: `${baseUrl}/images/filigran-logo.png`,
-        },
-      },
-      isPartOf: {
-        '@type': 'SoftwareApplication',
-        name: serviceInstance.name,
-        applicationCategory: 'SecurityApplication',
-        url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
-      },
-      keywords: document.use_cases?.map((useCase) => useCase.name).join(', '),
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': pageUrl,
-      },
-      interactionStatistic: {
-        '@type': 'InteractionCounter',
-        interactionType: {
-          '@type': 'DownloadAction',
-        },
-        userInteractionCount: document.download_number,
-      },
-    };
-    const mainChild = document.children_documents?.[0];
-    const logo = findDocumentLogo(document);
-    if (document.children_documents!.length > 0) {
-      jsonLd.image = document.children_documents!.map(
-        (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
-      );
-    }
-    const breadcrumbValue = [
-      {
-        label: 'MenuLinks.Home',
-        href: '/',
-      },
-      {
-        label: serviceInstance.name,
-        href: `/cybersecurity-solutions/${serviceInstance.slug}`,
-        original: true,
-      },
-      {
-        label: `${document?.name}`,
-        original: true,
-      },
-    ];
-
-    if (isConnectorResource(document)) {
-      return (
-        <>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(jsonLd),
-            }}
-          />
-          <BreadcrumbNav value={breadcrumbValue} />
-          <ShareableResourceConnectorSlugPublic
-            documentData={document}
-            pageUrl={pageUrl}
-            serviceInstance={serviceInstance}
-          />
-        </>
-      );
-    }
-
-    const carouselImages = filterDocumentImages(document);
-
+  if (isConnectorResource(document)) {
     return (
       <>
         <script
@@ -259,84 +246,100 @@ const Page = async ({
           }}
         />
         <BreadcrumbNav value={breadcrumbValue} />
-        <div className="flex gap-s pb-l flex-col md:flex-row">
-          {logo ? (
-            <div className="w-24 shrink-0 rounded overflow-hidden">
-              <Image
-                src={`/document/images/${serviceInstance.id}/${logo.id}`}
-                alt={`${document.name} logo`}
-                width={96}
-                height={96}
-                loading="lazy"
-                className="w-full h-full object-contain rounded"
-              />
-            </div>
-          ) : (
-            <div className="w-24 p-m border border-light shrink-0">
-              <LogoFiligranIcon className="size-18" />
-            </div>
-          )}
-          <div className="flex flex-col w-full justify-center">
-            <div className="flex items-start">
-              <h1 className="whitespace-nowrap mb-s">{document.name}</h1>
-              <div className="flex items-center gap-s ml-auto">
-                {
-                  <ShareLinkButton
-                    documentId={document.id}
-                    url={`${pageUrl}`}
-                    tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
-                  />
-                }
-                {isResourceDownloadable(document) && (
-                  <Button
-                    asChild
-                    className="whitespace-nowrap">
-                    <Link href={serviceInformation?.link ?? ''}>Download</Link>
-                  </Button>
-                )}
-              </div>
-            </div>
-            <div>
-              <BadgeOverflowCounter
-                badges={document?.use_cases as BadgeOverflow[]}
-                className="z-[2]"
-              />
-            </div>
-          </div>
-        </div>
-        {mainChild && (
-          <ShareableResourceCarousel
-            serviceInstance={serviceInstance}
-            images={carouselImages}
-          />
-        )}
-        <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
-          <div className="flex-[3_3_0%]">
-            <h3 className="py-s txt-container-title truncate text-muted-foreground">
-              Overview
-            </h3>
-            <section className="border rounded border-border-light bg-page-background">
-              <h2 className="p-l">{document?.short_description}</h2>
-              <div className="p-l !bg-page-background markdown-content">
-                <MarkdownAsync remarkPlugins={[remarkGfm]}>
-                  {document?.description ?? ''}
-                </MarkdownAsync>
-              </div>
-            </section>
-          </div>
-          {document && (
-            <ShareableResourceDetails
-              documentData={document}
-              downloadNumber={document.download_number}
-            />
-          )}
-        </div>
+        <ShareableResourceConnectorSlugPublic
+          documentData={document}
+          pageUrl={pageUrl}
+          serviceInstance={serviceInstance}
+        />
       </>
     );
-  } catch (error) {
-    console.error(error);
-    notFound();
   }
+
+  const carouselImages = filterDocumentImages(document);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
+      <BreadcrumbNav value={breadcrumbValue} />
+      <div className="flex gap-s pb-l flex-col md:flex-row">
+        {logo ? (
+          <div className="w-24 shrink-0 rounded overflow-hidden">
+            <Image
+              src={`/document/images/${serviceInstance.id}/${logo.id}`}
+              alt={`${document.name} logo`}
+              width={96}
+              height={96}
+              loading="lazy"
+              className="w-full h-full object-contain rounded"
+            />
+          </div>
+        ) : (
+          <div className="w-24 p-m border border-light shrink-0">
+            <LogoFiligranIcon className="size-18" />
+          </div>
+        )}
+        <div className="flex flex-col w-full justify-center">
+          <div className="flex items-start">
+            <h1 className="whitespace-nowrap mb-s">{document.name}</h1>
+            <div className="flex items-center gap-s ml-auto">
+              {
+                <ShareLinkButton
+                  documentId={document.id}
+                  url={`${pageUrl}`}
+                  tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
+                />
+              }
+              {isResourceDownloadable(document) && (
+                <Button
+                  asChild
+                  className="whitespace-nowrap">
+                  <Link href={serviceInformation?.link ?? ''}>Download</Link>
+                </Button>
+              )}
+            </div>
+          </div>
+          <div>
+            <BadgeOverflowCounter
+              badges={document?.use_cases as BadgeOverflow[]}
+              className="z-[2]"
+            />
+          </div>
+        </div>
+      </div>
+      {mainChild && (
+        <ShareableResourceCarousel
+          serviceInstance={serviceInstance}
+          images={carouselImages}
+        />
+      )}
+      <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
+        <div className="flex-[3_3_0%]">
+          <h3 className="py-s txt-container-title truncate text-muted-foreground">
+            Overview
+          </h3>
+          <section className="border rounded border-border-light bg-page-background">
+            <h2 className="p-l">{document?.short_description}</h2>
+            <div className="p-l !bg-page-background markdown-content">
+              <MarkdownAsync remarkPlugins={[remarkGfm]}>
+                {document?.description ?? ''}
+              </MarkdownAsync>
+            </div>
+          </section>
+        </div>
+        {document && (
+          <ShareableResourceDetails
+            documentData={document}
+            downloadNumber={document.download_number}
+          />
+        )}
+      </div>
+    </>
+  );
 };
 
 export default Page;
