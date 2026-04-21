@@ -48,7 +48,7 @@ const ServiceInstanceCard: React.FunctionComponent<
   const { reset } = useScrollPosition();
   useEffect(() => {
     reset();
-  }, []);
+  }, [reset]);
   const renderHoverButton = useCallback((action: PlatformHoverAction) => {
     if (!action.href) {
       return null;

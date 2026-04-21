@@ -25,14 +25,14 @@ export const PaginationManageDropdown: React.FC<Props> = ({
 }) => {
   const t = useTranslations();
   const dropdownItems = useMemo(() => {
-    return [50, 100, 200, 300, 500].map((pageSize) => (
+    return [50, 100, 200, 300, 500].map((size) => (
       <DropdownMenuRadioItem
-        value={String(pageSize)}
-        key={pageSize}>
-        {pageSize}
+        value={String(size)}
+        key={size}>
+        {size}
       </DropdownMenuRadioItem>
     ));
-  }, [pageSize]);
+  }, []);
 
   return (
     <DropdownMenu>
