@@ -80,6 +80,7 @@ export type BulkPendingUserFromOrganizationInput = {
 
 export type CanUnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
+  tenantId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CanUnregisterResponse = {
@@ -751,6 +752,7 @@ export enum IntegrationType {
 
 export type IsPlatformRegisteredInput = {
   platformId: Scalars['String']['input'];
+  tenantId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type IsPlatformRegisteredOrganization = Node & {
@@ -1316,6 +1318,7 @@ export enum PlatformIdentifier {
 export type PlatformInput = {
   contract: PlatformContract;
   id: Scalars['ID']['input'];
+  tenantId?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
   version?: InputMaybe<Scalars['String']['input']>;
@@ -1688,6 +1691,7 @@ export type RegisteredPlatform = Node & {
   illustration_document_id?: Maybe<Scalars['String']['output']>;
   platform_id: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
+  tenant_id?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
   version?: Maybe<Scalars['String']['output']>;
@@ -2141,6 +2145,7 @@ export type TrialsDeployments = {
 export type UnregisterPlatformInput = {
   identifier: PlatformIdentifier;
   platformId: Scalars['String']['input'];
+  tenantId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateCompetitorInput = {
@@ -3423,6 +3428,7 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   illustration_document_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
+  tenant_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

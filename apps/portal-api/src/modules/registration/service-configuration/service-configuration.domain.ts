@@ -1,6 +1,5 @@
 import z from 'zod';
 import { db } from '../../../../knexfile';
-import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration, {
   ServiceConfigurationMutator,
 } from '../../../model/kanel/public/ServiceConfiguration';
@@ -55,15 +54,18 @@ export const ServiceConfigurationDomain = {
 
   loadConfigurationByPlatform: async (
     platformId: string,
-    status?: ServiceConfigurationStatus
+    options?: { tenantId?: string | null } & ServiceConfigurationMutator
   ): Promise<ServiceConfiguration | undefined> => {
+    const { tenantId, ...filter } = options ?? {};
+
     const qb = db('Service_Configuration')
       .whereRaw("config->>'platform_id' = ?", platformId)
+      .where(filter)
       .first()
       .select('*');
 
-    if (status) {
-      qb.where({ status });
+    if (tenantId) {
+      qb.whereRaw("config->>'tenant_id' = ?", options?.tenantId);
     }
 
     return qb;

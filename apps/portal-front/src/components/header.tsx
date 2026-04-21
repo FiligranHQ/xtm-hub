@@ -1,12 +1,11 @@
 'use client';
 
-import I18nSelect from '@/components/i18n-select';
 import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/app-portal-context';
 import { NavigationApp } from '@/components/navigation';
 import { DisplayLogo } from '@/components/ui/display-logo';
 import { IconActions, IconActionsItem } from '@/components/ui/icon-actions';
-import { cn, isDevelopment } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
 import { NotificationButton } from '@/components/notification/notification-button';
@@ -67,6 +66,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
       />
 
       <div className="mobile:hidden flex items-center gap-s">
+        {/* <AskArianeButton /> */}
         <DisplayTrialList />
         {canManageUser && <NotificationButton />}
         <IconActions
@@ -98,18 +98,8 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
             {t('LoginPage.Logout')}
           </IconActionsItem>
         </IconActions>
-        {isDevelopment() && (
-          <>
-            <I18nSelect />
-          </>
-        )}
       </div>
       <div className="flex gap-xs items-center sm:hidden">
-        {isDevelopment() && (
-          <>
-            <I18nSelect />
-          </>
-        )}
         <Sheet
           open={open}
           onOpenChange={setOpen}>

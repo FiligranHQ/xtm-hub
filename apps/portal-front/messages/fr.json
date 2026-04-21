@@ -5,6 +5,48 @@
     "CollapseSidebar": "Réduire la sidebar",
     "Title": "XTM Hub"
   },
+  "Ariane": {
+    "AnalyzingResults": "Analyse des résultats…",
+    "Ask": "Demander à Ariane",
+    "AskQuestion": "Poser une question...",
+    "background task": "tâche en arrière-plan",
+    "background tasks": "tâches en arrière-plan",
+    "Browse agents": "Parcourir les agents",
+    "Close": "Fermer",
+    "Collecting results from": "Collecte des résultats de",
+    "ComposingAnswer": "Rédaction de la réponse…",
+    "Consulting": "Consultation de",
+    "Create agent": "Créer un agent",
+    "Delegating": "Délégation",
+    "Delegating task": "Délégation de la tâche",
+    "Disclaimer": "Utilise l'IA. Vérifiez les résultats.",
+    "ErrorOccurred": "Désolé, une erreur est survenue. Veuillez réessayer.",
+    "Floating": "Flottant",
+    "Full screen": "Plein écran",
+    "New chat": "Nouvelle conversation",
+    "PromptSuggestion1": "Qu'est-ce que la plateforme Filigran XTM?",
+    "PromptSuggestion2": "Comment OpenCTI améliore-t-il la cybersécurité?",
+    "PromptSuggestion3": "Pouvez-vous expliquer les principales fonctionnalités d'OpenAEV?",
+    "PromptSuggestion4": "Où puis-je trouver la documentation d'OpenGRC?",
+    "Reasoning details": "Détails du raisonnement",
+    "Sidebar": "Barre latérale",
+    "Stop generating": "Arrêter la génération",
+    "Suggestions": "Suggestions",
+    "Switch to": "Basculer vers",
+    "Switch to another agent": "Basculer vers un autre agent",
+    "Switch view": "Changer de vue",
+    "task": "tâche",
+    "tasks": "tâches",
+    "Thinking": "Réflexion en cours...",
+    "tool call": "appel d'outil",
+    "tool calls": "appels d'outils",
+    "Transferred from": "Transféré depuis",
+    "Transferring to": "Transfert vers",
+    "UnableToConnect": "Connexion impossible. Veuillez vérifier la configuration.",
+    "UsingTools": "Utilisation des outils…",
+    "Waiting for": "En attente de",
+    "WelcomeMessage": "Comment puis-je vous aider, "
+  },
   "Badge": {
     "Disabled": "Désactivé",
     "Draft": "Brouillon",
@@ -129,7 +171,9 @@
       "now": "Maintenant",
       "next": "Après",
       "under_consideration": "En considération",
-      "finished": "Terminé au cours des 3 derniers mois"
+      "finished": "Terminé au cours des 3 derniers mois",
+      "IsLimited": "Limité à {maxChars} charactères",
+      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
     },
     "Form": {
       "Epic": "Epic",
@@ -234,6 +278,7 @@
       "SERVICE_NOT_MANAGEABLE": "Ce service n'est pas gérable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
       "SUBSCRIPTION_NOT_FOUND": "L'abonnement n'a pas été trouvé",
+      "TENANT_ID_MANDATORY": "L'identifiant du locataire est obligatoire",
       "TRANSFER_ME_ERROR": "Une erreur s'est produite lors de la requête de transfert de personal space.",
       "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
@@ -477,6 +522,11 @@
   },
   "ProfilePage": {
     "Picture": "Photo de profil",
+    "Preferences": {
+      "Title": "Preferences",
+      "Language": "Langue",
+      "Theme": "Theme"
+    },
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenAEV."
     },

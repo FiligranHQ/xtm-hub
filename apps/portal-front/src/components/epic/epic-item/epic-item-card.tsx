@@ -45,7 +45,7 @@ export const EpicItemCard = ({
           {epic.title}
         </h2>
         <div className="mt-auto line-clamp-3">
-          <p className="h-full text-gray-300 text-sm">
+          <p className="h-full text-muted-foreground text-sm">
             {epic.short_description}
           </p>
         </div>

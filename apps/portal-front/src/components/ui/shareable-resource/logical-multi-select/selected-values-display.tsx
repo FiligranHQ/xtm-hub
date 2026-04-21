@@ -31,7 +31,7 @@ export const AndSeparator: FunctionComponent<{ className?: string }> = ({
   return (
     <span
       className={cn(
-        'text-sm h-9 leading-9 px-s bg-gray-700/60 text-foreground rounded',
+        'text-sm h-9 leading-9 px-s bg-gray-200/60 dark:bg-gray-700/60 text-foreground rounded',
         className
       )}>
       {t('Utils.And')}
@@ -46,7 +46,7 @@ export const FilterLabel: FunctionComponent<{
   return (
     <span
       className={cn(
-        'inline-block text-foreground whitespace-nowrap',
+        'inline-block text-white dark:text-foreground whitespace-nowrap',
         className
       )}>
       {children}
@@ -60,7 +60,7 @@ export const OrSeparator: FunctionComponent<{ className?: string }> = ({
   return (
     <span
       className={cn(
-        'h-9 leading-9 px-s mx-s bg-gray-50/30 text-foreground inline-block',
+        'h-9 leading-9 px-s mx-s bg-gray-500/30 dark:bg-gray-50/30 text-white dark:text-foreground inline-block',
         className
       )}>
       {t('Utils.Or')}
@@ -83,7 +83,7 @@ export const ChildrenLabels: FunctionComponent<{
   <>
     {items.map((child, index) => (
       <Fragment key={child.value}>
-        {index > 0 && <OrSeparator />}
+        {index > 0 && <OrSeparator className="text-foreground" />}
         {child.label}
       </Fragment>
     ))}
@@ -106,7 +106,7 @@ const RemoveFilterButton: FunctionComponent<{ onRemove?: () => void }> = ({
       aria-label="Remove filter"
       asChild>
       <div>
-        <CancelIcon className="h-6 w-6 text-gray/60 ml-xs pr-xs" />
+        <CancelIcon className="h-6 w-6 text-muted-foreground ml-xs pr-xs" />
       </div>
     </Button>
   );
@@ -141,14 +141,14 @@ export const SelectedValuesDisplay: FunctionComponent<
         <TooltipTrigger
           style={{ cursor: 'unset' }}
           asChild>
-          <div className="flex items-center bg-gray-700/60 text-foreground hover:bg-hover rounded">
+          <div className="flex items-center bg-gray-200/60 dark:bg-gray-700/60 text-foreground hover:bg-hover rounded">
             <SelectionChip className="truncate">
-              <FilterLabel className="pl-s py-s mr-s font-semibold">
+              <FilterLabel className="text-foreground pl-s py-s mr-s font-semibold">
                 {optionLabel} =
               </FilterLabel>
               {groupedSelections.map((group, index) => (
                 <Fragment key={group.parentValue}>
-                  {index > 0 && <OrSeparator />}
+                  {index > 0 && <OrSeparator className="text-foreground" />}
                   {group.children.length > 0 ? (
                     <ChildrenLabels items={group.children} />
                   ) : (

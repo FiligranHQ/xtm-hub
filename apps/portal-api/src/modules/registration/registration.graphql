@@ -10,6 +10,7 @@ type RegisteredPlatform implements Node {
   title: String!
   contract: PlatformContract!
   platform_id: String!
+  tenant_id: String
   identifier: ServiceDefinitionIdentifier!
   version: String
   illustration_document_id: String
@@ -23,6 +24,7 @@ input PlatformInput {
   title: String!
   contract: PlatformContract!
   version: String
+  tenantId: String
 }
 
 enum PlatformIdentifier {
@@ -38,6 +40,7 @@ input RegisterPlatformInput {
 
 input CanUnregisterPlatformInput {
   platformId: String!
+  tenantId: String
 }
 
 type RegistrationResponse {
@@ -52,6 +55,7 @@ enum PlatformRegistrationStatus {
 
 input IsPlatformRegisteredInput {
   platformId: String!
+  tenantId: String
 }
 
 type IsPlatformRegisteredOrganization implements Node {
@@ -74,6 +78,7 @@ type CanUnregisterResponse {
 input UnregisterPlatformInput {
   platformId: String!
   identifier: PlatformIdentifier!
+  tenantId: String
 }
 
 enum PlatformRegistrationConnectivityStatus {

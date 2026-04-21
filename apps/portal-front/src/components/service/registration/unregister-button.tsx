@@ -49,6 +49,7 @@ export const UnregisterButton: React.FC<Props> = ({ platform }) => {
         input: {
           platformId: platform.platform_id,
           identifier,
+          tenantId: platform.tenant_id,
         },
       },
       onCompleted: () => {

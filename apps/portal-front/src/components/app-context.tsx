@@ -1,28 +1,34 @@
 'use client';
+import { APP_PATH } from '@/utils/path/constant';
 import { Toaster } from '@filigran/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
+import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { geologica, ibmPlexSans } from '../../app/font';
-import Copilot from './external/copilot';
 import GoogleAnalytics from './external/google-analytics';
 import Hubspot from './external/hubspot';
-import { useContext } from 'react';
-import { SettingsContext } from '@/components/settings/env-portal-context';
 
 // Component interface
 interface AppProps {
   children: React.ReactNode;
 }
 
+const THEME_SWITCHABLE_PATHS = [`/${APP_PATH}`, '/login'];
+
+const isThemeSwitchablePath = (pathname: string) => {
+  return THEME_SWITCHABLE_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
+  );
+};
+
 // Component
 const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
   const locale = useLocale();
+  const pathname = usePathname();
   const t = useTranslations();
-  const { settings } = useContext(SettingsContext);
-  const isProductionSetting =
-    settings?.environment && settings.environment === 'production';
+  const forcedTheme = isThemeSwitchablePath(pathname) ? undefined : 'dark';
   return (
     <html
       suppressHydrationWarning
@@ -45,13 +51,13 @@ const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
+          forcedTheme={forcedTheme}
           enableSystem
           disableTransitionOnChange>
           {children}
           <Toaster />
           <Hubspot />
           <GoogleAnalytics />
-          {isProductionSetting && <Copilot />}
         </ThemeProvider>
       </body>
     </html>

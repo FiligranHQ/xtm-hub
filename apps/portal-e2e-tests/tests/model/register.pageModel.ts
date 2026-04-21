@@ -18,8 +18,14 @@ export default class RegisterPage {
   constructor(private page: Page) {}
 
   async navigateTo(redirectionKey: string, platformDetails: PlatformDetails) {
-    const url = `/redirect/${redirectionKey}?platform_url=${platformDetails.url}&platform_title=${platformDetails.title}&platform_id=${platformDetails.id}&platform_contract=${platformDetails.contract}&platform_version=${platformDetails.version}`;
-    await this.page.goto(encodeURI(url));
+    const params = new URLSearchParams({
+      platform_url: platformDetails.url,
+      platform_title: platformDetails.title,
+      platform_id: platformDetails.id,
+      platform_contract: platformDetails.contract,
+      ...(platformDetails.version !== undefined && { platform_version: platformDetails.version }),
+    });
+    await this.page.goto(`/redirect/${redirectionKey}?${params.toString()}`);
   }
 
   async navigateToAndRegister(redirectionKey: string) {

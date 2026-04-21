@@ -141,7 +141,7 @@ export const ServiceFormMultipleImagesField = ({
                   </Button>
                   <DeleteIcon
                     focusable={false}
-                    className="size-6 text-gray-300"
+                    className="size-6 text-muted-foreground"
                   />
                 </div>
 

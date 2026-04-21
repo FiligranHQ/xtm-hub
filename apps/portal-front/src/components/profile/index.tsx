@@ -11,6 +11,7 @@ import {
   ProfileFormEditSchema,
 } from '@/components/profile/form/edit';
 import { ProfileFormPicture } from '@/components/profile/form/picture';
+import { ProfileFormPreferences } from '@/components/profile/form/preferences';
 import { RequestTransferPersonalSpace } from '@/components/profile/form/request-transfer-personal-space';
 import { ProfileFormResetPassword } from '@/components/profile/form/reset-password';
 import { AlertDialogComponent } from '@/components/ui/alert-dialog';
@@ -25,7 +26,9 @@ export const Profile: React.FC = () => {
   const { me } = useContext(PortalContext);
   const [commitResetPasswordMutation] = useMutation(MeResetPasswordMutation);
   const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
-  const [commitUploadPictureMutation] = useMutation(MeUploadUserPictureMutation);
+  const [commitUploadPictureMutation] = useMutation(
+    MeUploadUserPictureMutation
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<ProfileFormEditSchema>();
 
@@ -111,6 +114,7 @@ export const Profile: React.FC = () => {
     <>
       <section className="flex flex-col gap-xl w-8/12 m-auto">
         <ProfileFormEdit onSubmit={handleSubmit} />
+        <ProfileFormPreferences />
         <ProfileFormPicture onSubmit={handleUploadPicture} />
         <ProfileFormResetPassword onSubmit={handleResetPassword} />
         <RequestTransferPersonalSpace />

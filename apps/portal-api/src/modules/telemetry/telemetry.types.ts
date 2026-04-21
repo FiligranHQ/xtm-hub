@@ -81,6 +81,7 @@ export interface RegisterPlatformEvent extends BaseTelemetryEvent {
   platform_version: string;
   platform_url: string;
   existing_users_count?: number;
+  tenant_id?: string;
 }
 
 export interface OneClickDeployEvent extends BaseTelemetryEvent {

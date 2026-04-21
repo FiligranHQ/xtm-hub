@@ -48,7 +48,7 @@ const ServiceInstanceCard: React.FunctionComponent<
   const { reset } = useScrollPosition();
   useEffect(() => {
     reset();
-  }, []);
+  }, [reset]);
   const renderHoverButton = useCallback((action: PlatformHoverAction) => {
     if (!action.href) {
       return null;
@@ -70,10 +70,10 @@ const ServiceInstanceCard: React.FunctionComponent<
   return (
     <li className={cn('relative border border-light rounded flex', className)}>
       {serviceInstance.disableCard && (
-        <div className="absolute inset-0 bg-black/60 z-10 rounded pointer-events-none" />
+        <div className="absolute inset-0  bg-white/50 dark:bg-black/60 z-10 rounded pointer-events-none" />
       )}
       {serviceInstance.hoverLinks && (
-        <div className="absolute inset-0 bg-black/80 z-10 opacity-0 hover:opacity-100 flex">
+        <div className="absolute inset-0 bg-white/70 dark:bg-black/80 z-10 opacity-0 hover:opacity-100 flex">
           <div className="flex flex-col gap-s m-auto">
             {serviceInstance.hoverLinks?.map(renderHoverButton)}
           </div>

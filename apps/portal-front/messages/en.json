@@ -5,6 +5,48 @@
     "CollapseSidebar": "Collapse sidebar",
     "Title": "XTM Hub"
   },
+  "Ariane": {
+    "AnalyzingResults": "Analyzing results…",
+    "Ask": "Ask Ariane",
+    "AskQuestion": "Ask a question...",
+    "background task": "background task",
+    "background tasks": "background tasks",
+    "Browse agents": "Browse agents",
+    "Close": "Close",
+    "Collecting results from": "Collecting results from",
+    "ComposingAnswer": "Composing answer…",
+    "Consulting": "Consulting",
+    "Create agent": "Create agent",
+    "Delegating": "Delegating",
+    "Delegating task": "Delegating task",
+    "Disclaimer": "Uses AI. Verify results.",
+    "ErrorOccurred": "Sorry, an error occurred. Please try again.",
+    "Floating": "Floating",
+    "Full screen": "Full screen",
+    "New chat": "New chat",
+    "PromptSuggestion1": "What is the Filigran XTM Platform?",
+    "PromptSuggestion2": "How does OpenCTI enhance cybersecurity?",
+    "PromptSuggestion3": "Can you explain OpenAEV's main features?",
+    "PromptSuggestion4": "Where can I find OpenGRC documentation?",
+    "Reasoning details": "Reasoning details",
+    "Sidebar": "Sidebar",
+    "Stop generating": "Stop generating",
+    "Suggestions": "Suggestions",
+    "Switch to": "Switch to",
+    "Switch to another agent": "Switch to another agent",
+    "Switch view": "Switch view",
+    "task": "task",
+    "tasks": "tasks",
+    "Thinking": "Thinking...",
+    "tool call": "tool call",
+    "tool calls": "tool calls",
+    "Transferred from": "Transferred from",
+    "Transferring to": "Transferring to",
+    "UnableToConnect": "Unable to connect. Please check the configuration.",
+    "UsingTools": "Using tools…",
+    "Waiting for": "Waiting for",
+    "WelcomeMessage": "How can I help you, "
+  },
   "Badge": {
     "Disabled": "Disabled",
     "Draft": "Draft",
@@ -118,8 +160,10 @@
       "FiligranProduct": "Product",
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Timeline",
-      "IsActive": "Is this EPIC published? (By default your EPIC is in draft mode)",
-      "Integration": "Is an integration"
+      "IsActive": "Is this epic published? (By default your epic is in draft mode)",
+      "Integration": "Is an integration",
+      "IsLimited": "Limited to {maxChars} chars",
+      "AutomaticallyAdded": "Added automatically (not editable)"
     },
     "EpicActions": {
       "CreateEpic": "Create a new epic",
@@ -213,6 +257,7 @@
       "SERVICE_NOT_MANAGEABLE": "This service is not manageable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
       "SUBSCRIPTION_NOT_FOUND": "Subscription was not found",
+      "TENANT_ID_MANDATORY": "Tenant id is mandatory",
       "TRANSFER_ME_ERROR": "Error while requesting personal space transfer.",
       "UNKNOWN_ERROR": "An unknown error occurred",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform unregistration",
@@ -456,6 +501,11 @@
   },
   "ProfilePage": {
     "Picture": "Picture",
+    "Preferences": {
+      "Title": "Preferences",
+      "Language": "Language",
+      "Theme": "Theme"
+    },
     "PlatformsEditionDialog": {
       "ConfirmSentence": "Your first name and your last name will potentially be updated in your OpenCTI and OpenAEV platforms."
     },

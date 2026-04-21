@@ -68,7 +68,7 @@ const ShareableResourceCard = ({
           }
           serviceInstanceId={serviceInstance.id}
         />
-        <p className="p-m text-gray-300 text-sm">
+        <p className="p-m text-muted-foreground text-sm">
           {document.short_description}
         </p>
       </Link>
