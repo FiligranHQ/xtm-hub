@@ -92,7 +92,11 @@ export const documentDownloadEndpoint = (app) => {
 
         try {
           const [document] = await DocumentDomain.loadDocumentBy({
-            'Document.id': fromGlobalId(req.params.filename).id as DocumentId,
+            'Document.id': fromGlobalId(
+              Array.isArray(req.params.filename)
+                ? req.params.filename[0]
+                : req.params.filename
+            ).id as DocumentId,
           });
 
           if (!document) {
