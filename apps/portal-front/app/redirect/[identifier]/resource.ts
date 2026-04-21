@@ -85,12 +85,11 @@ export const redirectToResource = async (
       )?.organization_id;
     }
 
-    const personalSpaceGlobalId = user.organizations.find(
-      (o) => o.personal_space
-    )!.id;
-
     // 3. Switch to the found organization
-    await switchOrganization(organizationId ?? personalSpaceGlobalId);
+    // If no organization is associated with the platform/tenant, fall back to the user's
+    // currently selected organization so users stay in their working context when
+    // Import from Hub is triggered from an unregistered platform.
+    await switchOrganization(organizationId ?? user.selected_organization_id);
 
     // No subscribed services for any organization of the user,
     // redirect to the personal space homepage with highlighting the services
