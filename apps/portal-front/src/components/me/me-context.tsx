@@ -6,6 +6,7 @@ import UserEventSubscription from '@/components/me/user-event-subscription';
 import { meContext_fragment$key } from '@generated/meContext_fragment.graphql';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
+import ChatbotProvider from '../ariane/chatbot-provider';
 
 // Component interface
 interface ContextProps {
@@ -24,7 +25,7 @@ const MeContext: React.FunctionComponent<ContextProps> = ({
   return (
     <AppPortalContext me={me}>
       <UserEventSubscription />
-      {children}
+      <ChatbotProvider>{children}</ChatbotProvider>
     </AppPortalContext>
   );
 };
