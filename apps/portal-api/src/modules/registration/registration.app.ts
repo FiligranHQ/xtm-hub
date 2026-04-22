@@ -661,6 +661,14 @@ const refreshConnectivityStatus = async ({
     throw new Error(ErrorCode.InvalidPlatformVersion);
   }
 
+  if (
+    !tenant_id &&
+    platform_identifier &&
+    isTenantIdRequired(platform_identifier, platform_version)
+  ) {
+    throw new Error(BadRequestErrorCode.TenantIdMandatory);
+  }
+
   let serviceConfiguration =
     await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id: platform_id,

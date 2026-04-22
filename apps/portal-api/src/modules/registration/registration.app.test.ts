@@ -1093,6 +1093,20 @@ describe('registration app', () => {
         await expect(call).rejects.toThrow(ErrorCode.InvalidPlatformVersion);
       });
 
+      it('should throw TENANT_ID_MANDATORY when no tenantId is provided but the platform version requires one', async () => {
+        const call =
+          registrationApp.refreshPlatformRegistrationConnectivityStatus({
+            platformId: uuidv4(),
+            token: uuidv4(),
+            platformVersion: '2.4.0',
+            platformIdentifier: PlatformIdentifier.Openaev,
+          });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.TenantIdMandatory
+        );
+      });
+
       it('should return inactive when platform is not registered but identifier is not provided', async () => {
         const result =
           await registrationApp.refreshPlatformRegistrationConnectivityStatus({
@@ -1250,7 +1264,7 @@ describe('registration app', () => {
             platformId,
             { tenantId }
           );
-        expect(config?.config['url']).toBe(newUrl);
+        expect((config?.config as Record<string, unknown>)['url']).toBe(newUrl);
       });
 
       it('should return not found when platform is registered with tenant_id but wrong tenant_id is provided', async () => {
