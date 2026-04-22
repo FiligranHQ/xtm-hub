@@ -155,6 +155,7 @@ type Mutation {
   deleteDocument(documentId: ID, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: ID): Document!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
@@ -631,6 +632,28 @@ type DocumentConnection {
 
 enum NewsFeedItemType {
   RESOURCE_CUSTOM_DASHBOARD
+}
+
+enum NewsFeedItemMetadataKey {
+  url_path
+}
+
+type NewsFeedItemMetadata {
+  key: NewsFeedItemMetadataKey!
+  value: String
+}
+
+type ProvisionedNewsFeedItem {
+  title: String!
+  type: NewsFeedItemType!
+  tags: [String!]!
+  metadata: [NewsFeedItemMetadata!]!
+  creation_date: Date!
+}
+
+type ConsumeProvisionedNewsFeedItemsResponse {
+  news_feed_items: [ProvisionedNewsFeedItem!]!
+  available_news_feed_types: [NewsFeedItemType!]!
 }
 
 enum OrganizationOrdering {
