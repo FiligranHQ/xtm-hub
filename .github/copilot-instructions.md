@@ -122,46 +122,77 @@ src/crons.ts                    # Scheduled jobs (node-cron)
 src/portal.const.ts             # Platform constants (UUIDs, roles, system user)
 src/pub.ts                      # GraphQL PubSub for subscriptions
 src/session-store-manager.ts    # Session store (PostgreSQL or memory)
+src/shutdown.ts                 # Graceful shutdown logic
 src/modules/                    # Feature modules (each has .graphql + .resolver.ts + .service.ts)
   common/                       # Shared GraphQL types (PageInfo, Connection, etc.)
-  organizations/                # Organization management
-  users/                        # User management
-  services/                     # Service instances, definitions, documents, deployments, integrations
-    document/                   # File management (MinIO)
-    integrations/               # OpenCTI connectors, CSV feeds
-    custom-dashboards/          # OpenCTI dashboards
-    openaev-scenarios/          # OpenBAS/AEV scenarios
-    registration/               # Platform registration
-    deployments/                # Service deployment requests
+  organization-management/      # Organization & user management
+    organizations/              # Organization management
+    users/                      # User management
+      user-admin/               # Admin user operations
+      user-domain/              # User domain logic
+      user-organization/        # User-organization relationships
+      user-pending/             # Pending user requests
+      user-profile/             # User profile
+      user-transferRequest/     # User transfer requests
+  service/                      # Service instances and definitions
+    instance/                   # Service instances
     definition/                 # Service definitions
-    group/                      # Service groups
-    instances/service-link/     # Service links
-    contract/                   # Service configuration/contracts
+  service-link/                 # Service links
+  deployment/                   # Deployment requests
+    competitor/                 # Competitor tracking
+    group/                      # Deployment groups
+    quota/                      # Deployment quotas
+  document/                     # File management (MinIO)
+    domain/                     # Document domain logic
+  shareable-resource/           # Shareable resources
+    opencti/                    # OpenCTI resources
+      integration/              # OpenCTI integrations
+      custom-dashboard/         # OpenCTI dashboards
+    openaev/                    # OpenAEV resources
+      scenario/                 # OpenAEV scenarios
+  registration/                 # Platform registration
+    service-configuration/      # Service configuration/contracts
+  security-management/          # Security & capabilities
+    authentication/             # Authentication providers
+      provider/                 # OIDC / local providers
+    capability/                 # Platform capabilities
+    service-capability/         # Service-level capabilities
+    user-organization-capability/ # User-org capabilities
+    user-service-capability/    # User-service capabilities
   settings/                     # Platform settings + labels
-  subcription/                  # Subscription management
-  user_service/                 # User-service relationships + capabilities
+  subscription/                 # Subscription management
+  user-service/                 # User-service relationships
   role-portal/                  # Role management
   telemetry/                    # Telemetry data
   log/                          # Activity logs
-  ingest-manifest/              # Manifest ingestion
-src/auth/                       # Authentication (OIDC provider, local)
+  use-case/                     # Use cases
+    object-use-case/            # Object-linked use cases
+  xtm-suite-roadmap/            # XTM Suite roadmap
 src/security/                   # Authorization (GraphQL directives, access control, guards)
   directive-graphql/            # @auth GraphQL directive
-  layer/                        # Security layers
   restriction/                  # Access restrictions
+  util/                         # Security utilities
 src/context/                    # AsyncLocalStorage contexts (request, database transaction)
 src/model/                      # TypeScript models
   kanel/                        # Auto-generated types from PostgreSQL (via kanel)
   portal-context.ts             # PortalContext type (user, req, res)
   user.ts                       # User type definitions
 src/nodes/                      # GraphQL Node interface (Relay-compatible)
+src/scripts/                    # Utility scripts
+src/server/                     # Server setup
+  apollo-plugins/               # Apollo Server plugins
+  endpoints/                    # Express endpoints
+  mail-template/                # Email templates
 src/stores/                     # Session store (PostgreSQL)
 src/thirdparty/                 # External services
   elasticsearch/                # ES client + migrations
   minio/                        # S3-compatible storage
   auth0/                        # Auth0 integration
   hubspot/                      # HubSpot webhooks
+  copilot/                      # Copilot integration
+  pgboss/                       # Job queue (pg-boss)
 src/utils/                      # Utilities (logger, hashing, formatting, feature flags)
+  error/                        # Error handling utilities
 src/seeds/                      # Production seed data
 src/migrations/                 # Knex database migrations (.js files)
 src/es-migrations/              # Elasticsearch migrations

@@ -144,7 +144,6 @@
     "AllProducts": "All products",
     "ShowFinished": "Show finished",
     "FilterByProduct": "Filter by product",
-    "Search": "Search epics...",
     "Timeline": {
       "draft": "Draft",
       "now": "Now",
@@ -160,8 +159,10 @@
       "FiligranProduct": "Product",
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Timeline",
-      "IsActive": "Is this EPIC published? (By default your EPIC is in draft mode)",
-      "Integration": "Is an integration"
+      "IsActive": "Is this epic published? (By default your epic is in draft mode)",
+      "Integration": "Is an integration",
+      "IsLimited": "Limited to {maxChars} chars",
+      "AutomaticallyAdded": "Added automatically (not editable)"
     },
     "EpicActions": {
       "CreateEpic": "Create a new epic",
