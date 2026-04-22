@@ -17,7 +17,7 @@ test.describe('Streams', () => {
     integrationPage = new IntegrationPage(page);
 
     await loginPage.navigateToAndLogin();
-    await integrationPage.subscribeIntegrationsService();
+    await integrationPage.navigateToIntegrationsService();
     await integrationPage.fillStream(STREAM_TEST);
   });
 

@@ -1,55 +1,54 @@
 'use client';
 
 import Loader from '@/components/loader';
-import { publicServiceListQuery } from '@/components/service/public-service.graphql';
 import ServiceList from '@/components/service/service-list';
-import { UserServiceOwnedQuery } from '@/components/service/user_service.graphql';
 import useMountingLoader from '@/hooks/useMountingLoader';
 import * as React from 'react';
-import { useCallback, useEffect } from 'react';
-import { useQueryLoader } from 'react-relay';
-import { useLocalStorage } from 'usehooks-ts';
+import { useEffect } from 'react';
+import {
+  useLazyLoadQuery,
+  useQueryLoader,
+  useRefetchableFragment,
+} from 'react-relay';
 
 import {
-  OrderingMode,
-  publicServiceQuery,
-  ServiceInstanceOrdering,
-} from '@generated/publicServiceQuery.graphql';
+  ServiceListQuery,
+  servicesListFragment,
+} from '@/components/service/service.graphql';
+import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import RegisterRegisteredPlatformsQueryGraphql, {
   registerRegisteredPlatformsQuery,
 } from '@generated/registerRegisteredPlatformsQuery.graphql';
-import { userServiceOwnedQuery } from '@generated/userServiceOwnedQuery.graphql';
+import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { serviceQuery } from '@generated/serviceQuery.graphql';
+import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 
 export const dynamic = 'force-dynamic';
 
 const Page: React.FunctionComponent = () => {
-  // Owned services
-  const [count] = useLocalStorage('countServiceOwned', 50);
-  const [orderMode] = useLocalStorage('orderModeServiceOwned', 'asc');
-  const [orderBy] = useLocalStorage('orderByServiceOwned', 'ordering');
-  const [queryRefUserServiceOwned, loadQueryUserServiceOwned] =
-    useQueryLoader<userServiceOwnedQuery>(UserServiceOwnedQuery);
-  useMountingLoader(loadQueryUserServiceOwned, { count, orderBy, orderMode });
-
-  // Public services
-  const [countServiceList] = useLocalStorage('countServiceList', 50);
-  const [orderModeServiceList] = useLocalStorage<OrderingMode>(
-    'orderModeServiceList',
-    'asc'
+  // Get services
+  const queryDataServiceInstances = useLazyLoadQuery<serviceQuery>(
+    ServiceListQuery,
+    {
+      count: 50,
+      orderBy: 'name',
+      orderMode: 'asc',
+      searchTerm: '',
+      filters: [
+        {
+          key: ServiceInstanceFilterKeyEnum.PUBLIC,
+          value: ['true'],
+        },
+      ],
+    }
   );
-  const [orderByServiceList] = useLocalStorage<ServiceInstanceOrdering>(
-    'orderByServiceList',
-    'ordering'
+  const [data] = useRefetchableFragment<
+    serviceQuery,
+    servicesList_services$key
+  >(servicesListFragment, queryDataServiceInstances);
+  const serviceData = data?.serviceInstances?.edges.map(
+    (service) => service?.node as serviceList_fragment$data
   );
-
-  const [queryRefPublicServiceList, loadQueryPublicServiceList] =
-    useQueryLoader<publicServiceQuery>(publicServiceListQuery);
-
-  useMountingLoader(loadQueryPublicServiceList, {
-    count: countServiceList,
-    orderBy: orderByServiceList,
-    orderMode: orderModeServiceList,
-  });
 
   // Registered Platforms
   const [queryRefRegisteredPlatforms, loadQueryRegisteredPlatforms] =
@@ -72,44 +71,13 @@ const Page: React.FunctionComponent = () => {
     };
   }, [loadQueryRegisteredPlatforms]);
 
-  const handleUpdate = useCallback(() => {
-    loadQueryUserServiceOwned(
-      {
-        count,
-        orderBy: 'service_name',
-        orderMode: 'asc',
-      },
-      { fetchPolicy: 'network-only' }
-    );
-    loadQueryPublicServiceList(
-      {
-        count,
-        orderBy: 'name',
-        orderMode: 'asc',
-      },
-      { fetchPolicy: 'network-only' }
-    );
-    loadQueryRegisteredPlatforms({}, { fetchPolicy: 'network-only' });
-  }, [
-    count,
-    loadQueryPublicServiceList,
-    loadQueryRegisteredPlatforms,
-    loadQueryUserServiceOwned,
-  ]);
-
-  if (
-    !queryRefUserServiceOwned ||
-    !queryRefPublicServiceList ||
-    !queryRefRegisteredPlatforms
-  )
+  if (!queryRefRegisteredPlatforms || !queryDataServiceInstances)
     return <Loader />;
 
   return (
     <ServiceList
-      queryRefUserServiceOwned={queryRefUserServiceOwned}
-      queryRefServiceList={queryRefPublicServiceList}
       queryRefRegisteredPlatforms={queryRefRegisteredPlatforms}
-      onUpdate={handleUpdate}
+      serviceData={serviceData}
     />
   );
 };

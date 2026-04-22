@@ -1,3 +1,4 @@
+import { PortalContext } from '@/components/me/app-portal-context';
 import { ServiceContextProps } from '@/components/service/components/service-context';
 import {
   ServiceForm,
@@ -34,7 +35,7 @@ import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataK
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 const documentBaseKeys: Array<keyof ServiceFormValues> = [
@@ -65,6 +66,7 @@ export function useDocumentContext({
   connectionId,
   type,
 }: UseDocumentContextProps): ServiceContextProps {
+  const { me } = useContext(PortalContext);
   const [integrationType, setIntegrationType] = useState<IntegrationTypeEnum>(
     IntegrationTypeEnum.CSV_FEED
   );
@@ -259,6 +261,14 @@ export function useDocumentContext({
     return translationKeyMapping[type]();
   }, [type, integrationType]);
 
+  const currentUserSubscriptionId = me?.id
+    ? serviceInstance.subscriptions?.find((subscription) =>
+        subscription?.user_service?.some(
+          (userService) => userService?.user?.id === me.id
+        )
+      )?.id
+    : undefined;
+
   return {
     serviceInstance,
     handleAddSheet,
@@ -266,6 +276,7 @@ export function useDocumentContext({
     handleDeleteSheet,
     ServiceForm: form,
     translationKey,
+    currentUserSubscriptionId,
     type,
     setIntegrationType,
   };

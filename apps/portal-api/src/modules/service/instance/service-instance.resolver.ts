@@ -18,7 +18,6 @@ import {
   getUserJoined,
   loadIsSubscribed,
   loadLinks,
-  loadPublicServiceInstances,
   loadServiceDefinitionByServiceInstance,
   loadServiceInstances,
   loadServiceInstanceSubscriptions,
@@ -83,13 +82,6 @@ const resolvers: Resolvers = {
   Query: {
     serviceInstances: async (_, opt) => {
       return loadServiceInstances(opt);
-    },
-    publicServiceInstances: async (_, opt, context) => {
-      return loadPublicServiceInstances(
-        context.user.id,
-        context.user.selected_organization_id,
-        opt
-      );
     },
     serviceInstanceLinksByTags: async (_, { tags }) => {
       return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);

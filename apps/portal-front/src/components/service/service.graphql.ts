@@ -42,6 +42,14 @@ export const serviceInstanceFragment = graphql`
     description
     slug
     capabilities
+    subscriptions {
+      id
+      user_service {
+        user {
+          id
+        }
+      }
+    }
     service_definition {
       identifier
     }

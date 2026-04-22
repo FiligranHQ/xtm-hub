@@ -29,7 +29,7 @@ test.describe('One Click Deploy', () => {
     await registerPage.navigateToAndRegister('register-opencti');
 
     await homePage.navigateTo();
-    await csvFeedPage.subscribeIntegrationsService();
+    await csvFeedPage.navigateToIntegrationsService();
     await csvFeedPage.fillCsvFeed(CSV_FEED_TEST);
   });
 

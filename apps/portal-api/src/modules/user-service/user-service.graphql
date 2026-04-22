@@ -29,24 +29,9 @@ input UserServiceDeleteInput {
 
 type Mutation {
   addUserService(input: UserServiceAddInput!): [UserService] @auth
-  addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
-    @auth
   deleteUserService(input: UserServiceDeleteInput!): UserService @auth
 }
 type Query {
-  userServiceOwned(
-    first: Int!
-    after: ID
-    orderBy: UserServiceOrdering!
-    orderMode: OrderingMode!
-  ): UserServiceConnection @auth
-  serviceUsers(
-    id: ID!
-    first: Int!
-    after: ID
-    orderBy: UserServiceOrdering!
-    orderMode: OrderingMode!
-  ): UserServiceConnection @auth
   userServiceFromSubscription(
     first: Int!
     after: ID

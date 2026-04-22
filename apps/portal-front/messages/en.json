@@ -902,7 +902,6 @@
     "GoToLabel": "Go to",
     "GoToManagement": "Go to service management",
     "HighlightedServices": "To use this feature, please subscribe to one of the highlighted services first",
-    "Join": "Join",
     "List": {
       "Filter": {
         "Add": "Add filter",
@@ -982,7 +981,6 @@
       "FromVersion": "From version",
       "Share": "Share"
     },
-    "Subscribe": "Subscribe",
     "SubscribeOrganization": "Subscribe organization",
     "SubscribeService": "Subscribe to {serviceName} service",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
