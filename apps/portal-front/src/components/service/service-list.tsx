@@ -15,6 +15,7 @@ import registerRegisteredPlatformListFragmentGraphql, {
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import {
   PreloadedQuery,
   usePreloadedQuery,
@@ -33,24 +34,15 @@ const ServiceList = ({
   const t = useTranslations();
   const { availableTrials } = useOrgaFreeTrial();
 
-  const getRegisteredPlatforms = (
-    queryRef: PreloadedQuery<registerRegisteredPlatformsQuery>
-  ) => {
-    const queryData = usePreloadedQuery<registerRegisteredPlatformsQuery>(
-      RegisterRegisteredPlatformsQuery,
-      queryRef
-    );
-
-    const [data] = useRefetchableFragment<
-      registerRegisteredPlatformsQuery,
-      registerRegisteredPlatformListFragment$key
-    >(registerRegisteredPlatformListFragmentGraphql, queryData);
-    return data.registeredPlatforms ?? [];
-  };
-
-  const registeredPlatforms = getRegisteredPlatforms(
+  const queryData = usePreloadedQuery<registerRegisteredPlatformsQuery>(
+    RegisterRegisteredPlatformsQuery,
     queryRefRegisteredPlatforms
   );
+
+  const [registeredPlatformsData] = useRefetchableFragment<
+    registerRegisteredPlatformsQuery,
+    registerRegisteredPlatformListFragment$key
+  >(registerRegisteredPlatformListFragmentGraphql, queryData);
 
   const freeTrialsSkeletonDataCards = availableTrials.map(
     (platformIdentifier) =>
@@ -60,13 +52,23 @@ const ServiceList = ({
       )
   );
 
-  const sortedServices = [
-    ...freeTrialsSkeletonDataCards,
-    ...registeredPlatforms.map((platform) =>
-      registeredPlatformToServiceInstanceCardData(platform, t)
-    ),
-    ...serviceData.map(publicServiceInstanceToInstanceCardData),
-  ].sort((a, b) => a!.ordering - b!.ordering);
+  const sortedServices = useMemo(() => {
+    const registeredPlatforms =
+      registeredPlatformsData.registeredPlatforms ?? [];
+
+    return [
+      ...freeTrialsSkeletonDataCards,
+      ...registeredPlatforms.map((platform) =>
+        registeredPlatformToServiceInstanceCardData(platform, t)
+      ),
+      ...serviceData.map(publicServiceInstanceToInstanceCardData),
+    ].sort((a, b) => a!.ordering - b!.ordering);
+  }, [
+    freeTrialsSkeletonDataCards,
+    registeredPlatformsData.registeredPlatforms,
+    serviceData,
+    t,
+  ]);
 
   return (
     <>
