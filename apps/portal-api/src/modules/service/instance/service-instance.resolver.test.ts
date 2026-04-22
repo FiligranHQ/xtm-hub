@@ -10,7 +10,6 @@ import {
   IntegrationType,
   MutationAddServicePictureArgs,
   MutationUpdatePlatformServiceMetadataArgs,
-  QueryPublicServiceInstancesArgs,
   ServiceDefinitionIdentifier,
   ServiceInstanceResolvers,
 } from '../../../__generated__/resolvers-types';
@@ -219,34 +218,6 @@ describe('service instances GraphQL query', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(result).toEqual(expected);
-  });
-});
-
-describe('public service instances GraphQL query', () => {
-  it('should pass user id and org id to loadPublicServiceInstances', async () => {
-    const expected = [] as unknown as Awaited<
-      ReturnType<typeof serviceInstanceDomain.loadPublicServiceInstances>
-    >;
-    vi.spyOn(
-      serviceInstanceDomain,
-      'loadPublicServiceInstances'
-    ).mockResolvedValue(expected);
-
-    const result = await serviceInstanceResolver.Query!.publicServiceInstances!(
-      {},
-      {} as unknown as QueryPublicServiceInstancesArgs,
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    expect(
-      serviceInstanceDomain.loadPublicServiceInstances
-    ).toHaveBeenCalledWith(
-      contextSimpleUserFiligran2.user.id,
-      contextSimpleUserFiligran2.user.selected_organization_id,
-      {}
-    );
     expect(result).toEqual(expected);
   });
 });

@@ -31,7 +31,7 @@ test.describe('Custom dashboards', () => {
     dashboardPage = new DashboardPage(page);
 
     await loginPage.navigateToAndLogin();
-    await dashboardPage.subscribeDashboardService();
+    await dashboardPage.navigateToDashboardService();
     await dashboardPage.addCustomDashboard(DASHBOARD_TEST);
   });
 

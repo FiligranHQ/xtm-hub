@@ -182,43 +182,6 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
   }));
 };
 
-export const loadPublicServiceInstances = (
-  userId: UserId,
-  organizationId: OrganizationId,
-  opts
-) => {
-  const { first, after, orderMode, orderBy } = opts;
-
-  const publicServiceQuery = db<ServiceInstance>('ServiceInstance')
-    .leftJoin('Subscription as subscription', function () {
-      this.on('subscription.service_instance_id', '=', 'ServiceInstance.id')
-
-        .andOnVal('subscription.organization_id', '=', organizationId);
-    })
-    .leftJoin('User_Service as userService', function () {
-      this.on('userService.subscription_id', '=', 'subscription.id').andOnVal(
-        'userService.user_id',
-        '=',
-        userId
-      );
-    })
-    .select('ServiceInstance.*')
-    .where('ServiceInstance.public', '=', true)
-    .andWhereRaw(`("subscription"."id" IS NULL OR "userService"."id" IS NULL)`);
-
-  return paginate<ServiceInstance, ServiceConnection>(
-    'ServiceInstance',
-    {
-      first,
-      after,
-      orderMode,
-      orderBy,
-    },
-    undefined,
-    publicServiceQuery
-  );
-};
-
 export const loadIsSubscribed = async (
   organizationId: OrganizationId,
   id: ServiceInstanceId
@@ -259,19 +222,34 @@ export const loadServiceInstances = async (opts) => {
 export const loadServiceInstanceSubscriptions = async (
   id: ServiceInstanceId
 ) => {
-  return db<Subscription>('Subscription')
+  const { user } = requestContext.require();
+
+  const queryBuilder = db<Subscription>('Subscription')
     .where('Subscription.service_instance_id', '=', id)
-    .leftJoin('Organization', 'Organization.id', 'Subscription.organization_id')
-    .select([
-      'Subscription.*',
-      dbRaw(
-        formatRawObject({
-          columnName: 'Organization',
-          typename: 'Organization',
-          as: 'organization',
-        })
-      ),
-    ]);
+    .leftJoin(
+      'Organization',
+      'Organization.id',
+      'Subscription.organization_id'
+    );
+
+  if (!isUserAdminPlatform(user)) {
+    queryBuilder.where(
+      'Subscription.organization_id',
+      '=',
+      user.selected_organization_id
+    );
+  }
+
+  return queryBuilder.select([
+    'Subscription.*',
+    dbRaw(
+      formatRawObject({
+        columnName: 'Organization',
+        typename: 'Organization',
+        as: 'organization',
+      })
+    ),
+  ]);
 };
 export const loadSubscriptionByServiceInstanceAndOrganization = async (
   selectedOrganizationId: OrganizationId,

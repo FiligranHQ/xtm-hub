@@ -240,7 +240,7 @@ export async function seed(knex) {
       },
       {
         id: '3260f536-49b8-4c6f-8e87-61c8be1ae103',
-        name: 'Public Roadmap',
+        name: 'XTM Suite Roadmap',
         description: 'Explore and follow the Filigran XTM Suite roadmap',
         creation_status: 'READY',
         public: true,
