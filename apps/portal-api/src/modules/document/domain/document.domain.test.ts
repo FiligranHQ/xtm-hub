@@ -748,4 +748,49 @@ describe('document domain', () => {
       );
     });
   });
+
+  describe('loadDocumentBy', () => {
+    it('should return a document when it exists', async () => {
+      // Given
+      const doc = await TestHelper.document.create();
+
+      // When
+      const result = await DocumentDomain.loadDocumentBy({ id: doc.id });
+
+      // Then
+      expect(result).toMatchObject({ id: doc.id, type: 'image' });
+    });
+
+    it('should return undefined when document is not found', async () => {
+      // Given
+      const nonExistentId = '00000000-0000-0000-0000-000000000001';
+
+      // When
+      const result = await DocumentDomain.loadDocumentBy({
+        id: nonExistentId as Document['id'],
+      });
+
+      // Then
+      expect(result).toBeUndefined();
+    });
+
+    it('should filter by multiple fields', async () => {
+      // Given
+      const doc = await TestHelper.document.create({ active: true });
+
+      // When
+      const resultFound = await DocumentDomain.loadDocumentBy({
+        id: doc.id,
+        active: true,
+      });
+      const resultNotFound = await DocumentDomain.loadDocumentBy({
+        id: doc.id,
+        active: false,
+      });
+
+      // Then
+      expect(resultFound).toMatchObject({ id: doc.id });
+      expect(resultNotFound).toBeUndefined();
+    });
+  });
 });

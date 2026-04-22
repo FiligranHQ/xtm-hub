@@ -372,6 +372,95 @@ describe('registration domain', () => {
     });
   });
 
+  describe('loadRegisteredPlatformsByOrganizationIds', () => {
+    let serviceInstanceId: ServiceInstanceId;
+
+    beforeEach(async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      serviceInstanceId = await registrationDomain.registerNewPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        serviceDefinitionId,
+        configuration: {
+          registerer_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          platform_id: platformId,
+          platform_url: platformUrl,
+          platform_title: platformTitle,
+          platform_contract: platformContract,
+          platform_version: platformOpenCTI,
+          token,
+        },
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
+    });
+
+    afterEach(async () => {
+      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      await deleteServiceInstanceBy({});
+    });
+
+    it('should return an empty array when organizationIds is empty', async () => {
+      // When
+      const result =
+        await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+          [],
+          PlatformIdentifier.Opencti
+        );
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return platforms for the given organization IDs and platform identifier', async () => {
+      // When
+      const result =
+        await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+          [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID],
+          PlatformIdentifier.Opencti
+        );
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        id: serviceInstanceId,
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+      });
+    });
+
+    it('should return an empty array when no platform matches the given organization ID', async () => {
+      // Given
+      const randomOrgId = uuidv4() as OrganizationId;
+
+      // When
+      const result =
+        await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+          [randomOrgId],
+          PlatformIdentifier.Opencti
+        );
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should not return platforms with inactive configuration', async () => {
+      // Given
+      await ServiceConfigurationDomain.updateConfiguration(serviceInstanceId, {
+        status: ServiceConfigurationStatus.Inactive,
+      });
+
+      // When
+      const result =
+        await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+          [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID],
+          PlatformIdentifier.Opencti
+        );
+
+      // Then
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('loadRegisteredPlatforms', () => {
     const openAEVplatformId = uuidv4();
 

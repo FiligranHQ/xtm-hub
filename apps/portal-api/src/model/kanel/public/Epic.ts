@@ -11,8 +11,6 @@ export type EpicId = string & { __brand: 'public.Epic' };
 export default interface Epic {
   id: EpicId;
 
-  epic: string;
-
   title: string;
 
   active: boolean | null;
@@ -42,8 +40,6 @@ export default interface Epic {
 export interface EpicInitializer {
   /** Default value: gen_random_uuid() */
   id?: EpicId;
-
-  epic: string;
 
   title: string;
 
@@ -75,8 +71,6 @@ export interface EpicInitializer {
 /** Represents the mutator for the table public.Epic */
 export interface EpicMutator {
   id?: EpicId;
-
-  epic?: string;
 
   title?: string;
 
