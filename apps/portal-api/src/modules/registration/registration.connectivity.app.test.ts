@@ -287,7 +287,7 @@ describe('registration connectivity app', () => {
     });
   });
 
-  describe('refreshPlatformRegistrationConnectivityStatusMultipleTenants', () => {
+  describe('refreshPlatformRegistrationConnectivityStatusAllTenants', () => {
     it('should return inactive for all tenants when version is not formatted as a semantic version', async () => {
       const tenantId = uuidv4();
       const result =
