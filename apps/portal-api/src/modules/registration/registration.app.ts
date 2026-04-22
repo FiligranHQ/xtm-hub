@@ -9,12 +9,8 @@ import {
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
-  PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
-  RefreshPlatformRegistrationConnectivityStatusAllTenantsInput,
-  RefreshPlatformRegistrationConnectivityStatusInput,
-  RefreshPlatformRegistrationConnectivityStatusSingleTenantInput,
   RefreshUserPlatformTokenResponse,
   RegisteredPlatform,
   RegisteredPlatformsInput,
@@ -22,7 +18,6 @@ import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
-  TenantStatus,
   UnregisterPlatformInput,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
@@ -43,8 +38,7 @@ import {
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
-import { RequiredPlatformVersions } from '../../utils/required-platform-version';
-import { doesVersionSatisfy, isValidVersion } from '../../utils/versioning';
+import { isValidVersion } from '../../utils/versioning';
 import { loadUserOrganization } from '../common/user-organization.domain';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
@@ -66,21 +60,9 @@ import {
   PlatformConfiguration,
   registrationDomain,
 } from './registration.domain';
+import { isTenantIdRequired } from './registration.helper';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from './registration.mapping';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
-
-// Returns true when the platform version meets or exceeds the configured threshold for tenantId.
-// A null threshold means tenantId is never required for that identifier.
-// A missing or invalid version is treated as legacy (no tenantId required).
-const isTenantIdRequired = (
-  identifier: PlatformIdentifier,
-  version?: string | null
-): boolean => {
-  const requiredVersion = RequiredPlatformVersions.TenantIdRequired[identifier];
-  if (!requiredVersion) return false;
-  if (!version || !isValidVersion(version)) return false;
-  return doesVersionSatisfy({ givenVersion: version, requiredVersion });
-};
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
@@ -151,83 +133,6 @@ export const registrationApp = {
           ? PlatformRegistrationConnectivityStatus.Active
           : PlatformRegistrationConnectivityStatus.Inactive,
     };
-  },
-
-  refreshPlatformRegistrationConnectivityStatusSingleTenant: async (
-    input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput
-  ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-    return refreshConnectivityStatus({
-      platform_identifier: input.platformIdentifier,
-      platform_version: input.platformVersion,
-      platform_id: input.platformId,
-      token: input.token,
-      url: input.url,
-      tenant_id: input.tenantId,
-    });
-  },
-  refreshPlatformRegistrationConnectivityStatusAllTenants: async (
-    input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput
-  ): Promise<{
-    statuses: TenantStatus[];
-  }> => {
-    const results = await Promise.allSettled(
-      input.tenants.map((tenant) =>
-        refreshConnectivityStatus({
-          platform_identifier: input.platformIdentifier,
-          platform_version: input.platformVersion,
-          platform_id: input.platformId,
-          token: tenant.token,
-          url: tenant.url,
-          tenant_id: tenant.tenantId,
-        }).then(({ status }) => ({ tenantId: tenant.tenantId, status }))
-      )
-    );
-    const statuses = results.map((result, index) => {
-      if (result.status === 'fulfilled') {
-        return result.value;
-      }
-      logApp.error(
-        `Failed to refresh connectivity status for tenant ${input.tenants[index].tenantId}`,
-        { error: result.reason }
-      );
-      return {
-        tenantId: input.tenants[index].tenantId,
-        status: PlatformRegistrationConnectivityStatus.Inactive,
-      };
-    });
-
-    const knownTenantIds = input.tenants.map((t) => t.tenantId);
-    const staleConfigurations =
-      await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
-        input.platformId,
-        knownTenantIds
-      );
-
-    await Promise.all(
-      staleConfigurations.map((config) =>
-        ServiceConfigurationDomain.updateConfiguration(
-          config.service_instance_id,
-          { status: ServiceConfigurationStatus.Inactive }
-        ).catch((error) => {
-          logApp.error(
-            `Failed to deactivate stale configuration for service instance ${config.service_instance_id}`,
-            { error }
-          );
-        })
-      )
-    );
-    return { statuses };
-  },
-
-  refreshPlatformRegistrationConnectivityStatus: async (
-    input: RefreshPlatformRegistrationConnectivityStatusInput
-  ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-    return refreshConnectivityStatus({
-      platform_identifier: input.platformIdentifier,
-      platform_version: input.platformVersion,
-      platform_id: input.platformId,
-      token: input.token,
-    });
   },
 
   registerPlatform: async ({
@@ -640,111 +545,4 @@ const assertValidDeploymentRequest = (
   ) {
     throw new Error(ForbiddenErrorCode.NotAllowedByDeploymentStatus);
   }
-};
-
-const refreshConnectivityStatus = async ({
-  platform_id,
-  token,
-  platform_version,
-  url,
-  tenant_id,
-  platform_identifier,
-}: {
-  platform_id: string;
-  token: string;
-  platform_version: string;
-  url?: string;
-  tenant_id?: string;
-  platform_identifier?: PlatformIdentifier;
-}): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-  if (!isValidVersion(platform_version)) {
-    throw new Error(ErrorCode.InvalidPlatformVersion);
-  }
-
-  if (
-    !tenant_id &&
-    platform_identifier &&
-    isTenantIdRequired(platform_identifier, platform_version)
-  ) {
-    throw new Error(BadRequestErrorCode.TenantIdMandatory);
-  }
-
-  let serviceConfiguration =
-    await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-      platform_id: platform_id,
-      token,
-      tenant_id,
-    });
-
-  // manage upgrades from older platform without tenant to newer platform with tenant
-  if (!serviceConfiguration && tenant_id && platform_identifier) {
-    const configWithoutTenant =
-      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-        platform_id: platform_id,
-        token,
-        withoutTenantId: true,
-      });
-
-    const existingConfig = configWithoutTenant?.config as
-      | PlatformConfiguration
-      | undefined;
-
-    if (
-      configWithoutTenant &&
-      !isTenantIdRequired(platform_identifier, existingConfig?.platform_version)
-    ) {
-      const updatedConfig = { ...existingConfig, tenant_id };
-      await ServiceConfigurationDomain.updateConfiguration(
-        configWithoutTenant.service_instance_id,
-        { config: updatedConfig }
-      );
-      serviceConfiguration = { ...configWithoutTenant, config: updatedConfig };
-    }
-  }
-
-  if (!serviceConfiguration) {
-    if (!platform_identifier) {
-      return { status: PlatformRegistrationConnectivityStatus.Inactive };
-    }
-
-    const requiredVersionForNotFoundStatus =
-      RequiredPlatformVersions.RefreshConnectivityStatusSendsNotFound[
-        platform_identifier
-      ];
-
-    const shouldSendNotFoundStatus = doesVersionSatisfy({
-      givenVersion: platform_version,
-      requiredVersion: requiredVersionForNotFoundStatus,
-    });
-
-    return {
-      status: shouldSendNotFoundStatus
-        ? PlatformRegistrationConnectivityStatus.NotFound
-        : PlatformRegistrationConnectivityStatus.Inactive,
-    };
-  }
-
-  const existingConfig = serviceConfiguration.config;
-  const hasConfigChanged =
-    existingConfig['platform_version'] !== platform_version ||
-    (url && existingConfig['url'] !== url);
-  if (hasConfigChanged) {
-    await ServiceConfigurationDomain.updateConfiguration(
-      serviceConfiguration.service_instance_id,
-      {
-        config: {
-          ...(existingConfig as object),
-          platform_version,
-          ...(url ? { url } : {}),
-        },
-      }
-    );
-  }
-
-  return {
-    status:
-      serviceConfiguration.status === ServiceConfigurationStatus.Active
-        ? PlatformRegistrationConnectivityStatus.Active
-        : PlatformRegistrationConnectivityStatus.Inactive,
-  };
 };
