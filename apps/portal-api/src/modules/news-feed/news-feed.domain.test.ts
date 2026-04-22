@@ -1,21 +1,150 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES } from '../../../tests/tests.const';
 import {
+  NewsFeedItemMetadataKey,
   NewsFeedItemType,
   PlatformIdentifier,
+  ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
+import { ProvisionedNewsFeedItemPlatformId } from '../../model/kanel/public/ProvisionedNewsFeedItem';
 import { BadRequestErrorCode } from '../../utils/error/error.code';
 import { NewsFeedDomain } from './news-feed.domain';
-import { NEWS_FEED_ITEM_METADATA_KEY_DOCUMENT_ID } from './news-feed.model';
 
 describe('newsFeedDomain', () => {
   const tags = ['threat-intel', 'malware'];
 
   beforeEach(async () => {
     await TestHelper.newsFeed.deleteItem();
+  });
+
+  describe('loadAvailableNewsFeedTypes', () => {
+    it('should return news feed types for OpenCTI platform', () => {
+      const result = NewsFeedDomain.loadAvailableNewsFeedTypes(
+        PlatformIdentifier.Opencti
+      );
+
+      expect(result).toContain(NewsFeedItemType.ResourceCustomDashboard);
+    });
+
+    it('should return empty array for a platform with no configured news feed types', () => {
+      const result = NewsFeedDomain.loadAvailableNewsFeedTypes(
+        'UnknownIdentifier' as PlatformIdentifier
+      );
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('loadAndConsumeProvisionedNewsFeedItems', () => {
+    it('should return provisioned items with their metadata and remove them from the provisioned table', async () => {
+      // Given
+      const platformId = uuidv4();
+      const item = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Test dashboard',
+        creation_date: new Date(),
+        tags: [],
+      });
+
+      await NewsFeedDomain.provisionNewsFeedItem(item.id, [platformId]);
+
+      // When
+      const result =
+        await NewsFeedDomain.loadAndConsumeProvisionedNewsFeedItems(platformId);
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        id: item.id,
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        title: 'Test dashboard',
+      });
+      expect(result[0]?.metadata).toBeDefined();
+
+      const remainingProvisioned = await TestHelper.newsFeed.loadProvisioned({
+        platform_id: platformId as ProvisionedNewsFeedItemPlatformId,
+      });
+      expect(remainingProvisioned).toHaveLength(0);
+    });
+
+    it('should return empty array when no items are provisioned for the platform', async () => {
+      const result =
+        await NewsFeedDomain.loadAndConsumeProvisionedNewsFeedItems(uuidv4());
+
+      expect(result).toEqual([]);
+    });
+
+    it('should not consume items provisioned for a different platform', async () => {
+      // Given
+      const platformId = uuidv4();
+      const otherPlatformId = uuidv4();
+
+      const item = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Test dashboard',
+        creation_date: new Date(),
+        tags: [],
+      });
+
+      await NewsFeedDomain.provisionNewsFeedItem(item.id, [otherPlatformId]);
+
+      // When
+      const result =
+        await NewsFeedDomain.loadAndConsumeProvisionedNewsFeedItems(platformId);
+
+      // Then
+      expect(result).toEqual([]);
+
+      const remainingProvisioned = await TestHelper.newsFeed.loadProvisioned({
+        platform_id: otherPlatformId as ProvisionedNewsFeedItemPlatformId,
+      });
+      expect(remainingProvisioned).toHaveLength(1);
+    });
+
+    it('should return multiple items with their respective metadata', async () => {
+      // Given
+      const platformId = uuidv4();
+
+      const item1 = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Dashboard 1',
+        creation_date: new Date(),
+        tags: [],
+      });
+
+      const item2 = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Dashboard 2',
+        creation_date: new Date(),
+        tags: [],
+      });
+
+      await NewsFeedDomain.provisionNewsFeedItem(item1.id, [platformId]);
+      await NewsFeedDomain.provisionNewsFeedItem(item2.id, [platformId]);
+
+      // When
+      const result =
+        await NewsFeedDomain.loadAndConsumeProvisionedNewsFeedItems(platformId);
+
+      // Then
+      expect(result).toHaveLength(2);
+      expect(result.map((r) => r.id)).toEqual(
+        expect.arrayContaining([item1.id, item2.id])
+      );
+
+      const remainingProvisioned = await TestHelper.newsFeed.loadProvisioned({
+        platform_id: platformId as ProvisionedNewsFeedItemPlatformId,
+      });
+      expect(remainingProvisioned).toHaveLength(0);
+    });
   });
 
   describe('createResourceNewsFeedItem', () => {
@@ -27,6 +156,8 @@ describe('newsFeedDomain', () => {
         NewsFeedDomain.createResourceNewsFeedItem({
           document,
           serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
           type: NewsFeedItemType.ResourceCustomDashboard,
           platformIdentifier: PlatformIdentifier.Opencti,
           tags: [],
@@ -42,6 +173,8 @@ describe('newsFeedDomain', () => {
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        serviceDefinitionIdentifier:
+          ServiceDefinitionIdentifier.OpenctiCustomDashboards,
         type: NewsFeedItemType.ResourceCustomDashboard,
         platformIdentifier: PlatformIdentifier.Opencti,
         tags,
@@ -49,7 +182,6 @@ describe('newsFeedDomain', () => {
 
       expect(newsFeedItem).toMatchObject({
         type: NewsFeedItemType.ResourceCustomDashboard,
-        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         title: document.name,
         tags,
@@ -66,6 +198,8 @@ describe('newsFeedDomain', () => {
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        serviceDefinitionIdentifier:
+          ServiceDefinitionIdentifier.OpenctiCustomDashboards,
         type: NewsFeedItemType.ResourceCustomDashboard,
         platformIdentifier: PlatformIdentifier.Opencti,
         tags,
@@ -84,7 +218,7 @@ describe('newsFeedDomain', () => {
       });
     });
 
-    it('should insert metadata with the document id', async () => {
+    it('should insert metadata with the url_path', async () => {
       const document = await TestHelper.document.create({
         name: 'custom dashboard',
       });
@@ -92,6 +226,8 @@ describe('newsFeedDomain', () => {
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        serviceDefinitionIdentifier:
+          ServiceDefinitionIdentifier.OpenctiCustomDashboards,
         type: NewsFeedItemType.ResourceCustomDashboard,
         platformIdentifier: PlatformIdentifier.Opencti,
         tags: [],
@@ -101,11 +237,17 @@ describe('newsFeedDomain', () => {
         news_feed_item_id: newsFeedItem.id,
       });
 
+      const expectedGlobalServiceInstanceId = toGlobalId(
+        'ServiceInstance',
+        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
+      );
+      const expectedGlobalDocumentId = toGlobalId('Document', document.id);
+
       expect(metadata).toBeDefined();
       expect(metadata).toMatchObject({
         news_feed_item_id: newsFeedItem.id,
-        key: NEWS_FEED_ITEM_METADATA_KEY_DOCUMENT_ID,
-        value: document.id,
+        key: NewsFeedItemMetadataKey.UrlPath,
+        value: `app/service/${ServiceDefinitionIdentifier.OpenctiCustomDashboards}/${expectedGlobalServiceInstanceId}/${expectedGlobalDocumentId}`,
       });
     });
   });
@@ -117,7 +259,6 @@ describe('newsFeedDomain', () => {
       const item = await TestHelper.newsFeed.createItem({
         id: uuidv4() as NewsFeedItemId,
         type: NewsFeedItemType.ResourceCustomDashboard,
-        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         platform_identifier: PlatformIdentifier.Opencti,
         title: 'Test Feed Item',
         creation_date: new Date(),

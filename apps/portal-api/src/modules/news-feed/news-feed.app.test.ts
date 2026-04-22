@@ -11,12 +11,192 @@ import {
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
+import { ProvisionedNewsFeedItemPlatformId } from '../../model/kanel/public/ProvisionedNewsFeedItem';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { ErrorCode } from '../../utils/error/error.code';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedApp } from './news-feed.app';
+import { NewsFeedDomain } from './news-feed.domain';
 
 describe('newsFeedApp', () => {
+  describe('consumeProvisionedNewsFeedItems', () => {
+    const platformId = 'consume-test-platform-id';
+    const token = 'consume-test-token';
+    let registrationServiceInstanceId: ServiceInstanceId;
+
+    beforeEach(async () => {
+      const serviceInstance = await TestHelper.serviceInstance.create({
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+      registrationServiceInstanceId = serviceInstance.id;
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: registrationServiceInstanceId,
+        config: JSON.stringify({
+          ...mockPlatformConfig,
+          platform_id: platformId,
+          token,
+        }),
+      });
+    });
+
+    afterEach(async () => {
+      await TestHelper.newsFeed.deleteItem();
+      await TestHelper.serviceConfiguration.delete({
+        service_instance_id: registrationServiceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({
+        id: registrationServiceInstanceId,
+      });
+    });
+
+    it('should throw when platformId is null', async () => {
+      await expect(
+        NewsFeedApp.consumeProvisionedNewsFeedItems({
+          platformId: null,
+          token,
+        })
+      ).rejects.toThrow(ErrorCode.InvalidPlatformId);
+    });
+
+    it('should throw when token is null', async () => {
+      await expect(
+        NewsFeedApp.consumeProvisionedNewsFeedItems({
+          platformId,
+          token: null,
+        })
+      ).rejects.toThrow(ErrorCode.InvalidPlatformId);
+    });
+
+    it('should throw when no service configuration matches platformId and token', async () => {
+      await expect(
+        NewsFeedApp.consumeProvisionedNewsFeedItems({
+          platformId: 'unknown-platform',
+          token: 'unknown-token',
+        })
+      ).rejects.toThrow(ErrorCode.PlatformNotRegistered);
+    });
+
+    it('should return empty news feed items and available types when nothing is provisioned', async () => {
+      const result = await NewsFeedApp.consumeProvisionedNewsFeedItems({
+        platformId,
+        token,
+      });
+
+      expect(result.news_feed_items).toHaveLength(0);
+      expect(result.available_news_feed_types).toContain(
+        NewsFeedItemType.ResourceCustomDashboard
+      );
+    });
+
+    it('should return provisioned items and consume them (remove from provisioned table)', async () => {
+      const item = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Dashboard A',
+        creation_date: new Date(),
+        tags: ['tag1'],
+      });
+      const item2 = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Dashboard B',
+        creation_date: new Date(),
+        tags: [],
+      });
+
+      await NewsFeedDomain.provisionNewsFeedItem(item.id, [platformId]);
+      await NewsFeedDomain.provisionNewsFeedItem(item2.id, [platformId]);
+
+      const result = await NewsFeedApp.consumeProvisionedNewsFeedItems({
+        platformId,
+        token,
+      });
+
+      expect(result.news_feed_items).toHaveLength(2);
+      expect(result.news_feed_items.map((i) => i.title)).toEqual(
+        expect.arrayContaining(['Dashboard A', 'Dashboard B'])
+      );
+
+      const remaining = await TestHelper.newsFeed.loadProvisioned({});
+      expect(remaining).toHaveLength(0);
+    });
+
+    it('should return correct tags and metadata for provisioned items', async () => {
+      const item = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Tagged Dashboard',
+        creation_date: new Date(),
+        tags: ['threat-intel', 'malware'],
+      });
+      await NewsFeedDomain.provisionNewsFeedItem(item.id, [platformId]);
+
+      const result = await NewsFeedApp.consumeProvisionedNewsFeedItems({
+        platformId,
+        token,
+      });
+
+      expect(result.news_feed_items).toHaveLength(1);
+      expect(result.news_feed_items[0]).toMatchObject({
+        title: 'Tagged Dashboard',
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        tags: expect.arrayContaining(['threat-intel', 'malware']),
+        metadata: [],
+      });
+    });
+
+    it('should only return items provisioned for the requesting platform', async () => {
+      const otherPlatformId = 'other-platform-id';
+      const itemForOther = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Other Platform Dashboard',
+        creation_date: new Date(),
+        tags: [],
+      });
+      const itemForCurrent = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'Current Platform Dashboard',
+        creation_date: new Date(),
+        tags: [],
+      });
+      await NewsFeedDomain.provisionNewsFeedItem(itemForOther.id, [
+        otherPlatformId,
+      ]);
+      await NewsFeedDomain.provisionNewsFeedItem(itemForCurrent.id, [
+        platformId,
+      ]);
+
+      const result = await NewsFeedApp.consumeProvisionedNewsFeedItems({
+        platformId,
+        token,
+      });
+
+      expect(result.news_feed_items).toHaveLength(1);
+      expect(result.news_feed_items[0]?.title).toBe(
+        'Current Platform Dashboard'
+      );
+
+      const remainingOther = await TestHelper.newsFeed.loadProvisioned({
+        platform_id: otherPlatformId as ProvisionedNewsFeedItemPlatformId,
+      });
+      expect(remainingOther).toHaveLength(1);
+    });
+
+    it('should return available_news_feed_types for the OpenCTI platform', async () => {
+      const result = await NewsFeedApp.consumeProvisionedNewsFeedItems({
+        platformId,
+        token,
+      });
+
+      expect(result.available_news_feed_types).toEqual(
+        expect.arrayContaining([NewsFeedItemType.ResourceCustomDashboard])
+      );
+    });
+  });
+
   describe('isNewsFeedConfigured', () => {
     it.each`
       identifier                                             | expected | description
@@ -125,7 +305,6 @@ describe('newsFeedApp', () => {
       expect(items[0]).toMatchObject({
         type: NewsFeedItemType.ResourceCustomDashboard,
         platform_identifier: PlatformIdentifier.Opencti,
-        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         title: document.name,
       });
     });
