@@ -1,22 +1,22 @@
-@reference '@filigran/ui/index.css';
-@import "@filigran/ui/theme.css";
-@import "tw-animate-css";
-@import "tailwindcss";
+@import '@filigran/chatbot/styles.css';
+@import '@filigran/ui/theme.css';
+@import 'tw-animate-css';
+@import 'tailwindcss';
 
+@reference '@filigran/ui/index.css';
 :root {
   --hover-background: hsl(var(--gray-150));
 }
 .dark,
-body[data-theme="dark"],
-body[data-theme="Dark"] {
+body[data-theme='dark'],
+body[data-theme='Dark'] {
   --hover-background: hsla(0, 0%, 100%, 0.1);
 }
-@source "../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}";
-@source "../../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}";
+@source '../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
+@source '../../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
 
 @variant dark (.dark &);
 @variant mobile (@media screen and (max-width: 40rem));
-
 
 @layer base {
   * {
@@ -64,18 +64,18 @@ body[data-theme="Dark"] {
   word-wrap: break-word;
 
   h1 {
-    @apply mb-4 mt-6 border-b border-border pb-2 text-2xl font-semibold;
+    @apply border-border mt-6 mb-4 border-b pb-2 text-2xl font-semibold;
   }
   h2 {
-    @apply mb-3 mt-5 border-b border-border pb-2 text-xl font-semibold;
+    @apply border-border mt-5 mb-3 border-b pb-2 text-xl font-semibold;
   }
   h3 {
-    @apply mb-2 mt-4 text-lg font-semibold;
+    @apply mt-4 mb-2 text-lg font-semibold;
   }
   h4,
   h5,
   h6 {
-    @apply mb-2 mt-3 text-base font-semibold;
+    @apply mt-3 mb-2 text-base font-semibold;
   }
 
   p {
@@ -105,22 +105,22 @@ body[data-theme="Dark"] {
   }
 
   blockquote {
-    @apply my-3 border-l-4 border-border pl-4 italic text-muted-foreground;
+    @apply border-border text-muted-foreground my-3 border-l-4 pl-4 italic;
   }
 
   code:not(pre code) {
-    @apply rounded bg-muted px-1.5 py-0.5 font-mono text-sm;
+    @apply bg-muted rounded px-1.5 py-0.5 font-mono text-sm;
   }
 
   pre {
-    @apply my-3 overflow-x-auto rounded-md bg-muted p-4;
+    @apply bg-muted my-3 overflow-x-auto rounded-md p-4;
   }
   pre code {
     @apply bg-transparent p-0 font-mono text-sm;
   }
 
   hr {
-    @apply my-6 border-t border-border;
+    @apply border-border my-6 border-t;
   }
 
   table {
@@ -128,7 +128,7 @@ body[data-theme="Dark"] {
   }
   th,
   td {
-    @apply border border-border px-3 py-2 text-left;
+    @apply border-border border px-3 py-2 text-left;
   }
   th {
     @apply bg-muted font-semibold;
@@ -150,4 +150,3 @@ body[data-theme="Dark"] {
 .w-md-editor-text {
   min-height: 100% !important;
 }
-

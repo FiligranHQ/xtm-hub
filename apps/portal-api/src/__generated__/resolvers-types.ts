@@ -1149,6 +1149,10 @@ export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
 };
 
+export enum NewsFeedItemType {
+  ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD'
+}
+
 export type Node = {
   id: Scalars['ID']['output'];
 };
@@ -2513,6 +2517,7 @@ export type ResolversTypes = ResolversObject<{
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;
+  NewsFeedItemType: NewsFeedItemType;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;

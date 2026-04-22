@@ -235,6 +235,7 @@
       "MISSING_CAPABILITY_ON_SERVICE": "Missing permissions",
       "MISSING_METADATA_MAPPING": "Missing metadata mapping",
       "MISSING_START_OR_END_DATE": "An unknown error occurred",
+      "NEWS_FEED_ITEM_MISSING_TITLE": "News feed item is missing title",
       "NO_ASYNC_CONTEXT_AVAILABLE": "An unknown error occurred",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "An unknown error occurred",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "An organization with the same domain already exists",

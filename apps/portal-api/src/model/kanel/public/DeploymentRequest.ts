@@ -59,7 +59,7 @@ export default interface DeploymentRequest {
 
   cancellation_reason: string | null;
 
-  source: DeploymentRequestSource | null;
+  source: DeploymentRequestSource;
 }
 
 /** Represents the initializer for the table public.DeploymentRequest */
@@ -115,7 +115,7 @@ export interface DeploymentRequestInitializer {
 
   cancellation_reason?: string | null;
 
-  source?: DeploymentRequestSource | null;
+  source?: DeploymentRequestSource;
 }
 
 /** Represents the mutator for the table public.DeploymentRequest */
@@ -168,5 +168,5 @@ export interface DeploymentRequestMutator {
 
   cancellation_reason?: string | null;
 
-  source?: DeploymentRequestSource | null;
+  source?: DeploymentRequestSource;
 }

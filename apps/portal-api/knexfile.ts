@@ -83,7 +83,10 @@ type BaseDatabaseType =
   | 'ServiceGroup'
   | 'ServiceGroup_User'
   | 'SSOGroup_RolePortal'
-  | 'Competitor';
+  | 'Competitor'
+  | 'NewsFeedItem'
+  | 'NewsFeedItemMetadata'
+  | 'ProvisionedNewsFeedItem';
 
 export type DatabaseType =
   | BaseDatabaseType

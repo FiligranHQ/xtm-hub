@@ -30,8 +30,8 @@ export const documentVisualizeEndpoint = (app) => {
           res,
         };
         requestContext.update({ portalContext: context });
-        const [document] = await DocumentDomain.loadDocumentBy({
-          'Document.id': fromGlobalId(req.params.filename).id,
+        const document = await DocumentDomain.loadDocumentBy({
+          id: extractId<DocumentId>(req.params.filename),
         });
         if (!document) {
           logApp.error(
@@ -89,8 +89,8 @@ export const documentVisualizeEndpoint = (app) => {
             .json({ message: 'Service definition not found' });
         }
         const documentId = extractId<DocumentId>(req.params.documentId);
-        const [document] = await DocumentDomain.loadDocumentBy({
-          'Document.id': documentId,
+        const document = await DocumentDomain.loadDocumentBy({
+          id: documentId,
         });
 
         if (!document || !document.mime_type.startsWith('image/')) {
