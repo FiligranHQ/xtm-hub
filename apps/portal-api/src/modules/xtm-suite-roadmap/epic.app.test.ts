@@ -290,7 +290,7 @@ describe('epicApp', () => {
       });
       expect(mockDeleteFileInMinio).toHaveBeenCalledTimes(1);
 
-      expect(documentFromDB).toStrictEqual([]);
+      expect(documentFromDB).toBeUndefined();
     });
   });
 

@@ -128,27 +128,6 @@
     "utilities": "Services publics",
     "wireless": "Sans fil"
   },
-  "DeploymentRequestJobTitle": {
-    "ceo": "PDG",
-    "ciso_cso_cio": "RSSI/DSI/Directeur de la sécurité",
-    "c_level": "Niveau C (direction)",
-    "general_manager_vp": "Directeur général/Vice-président",
-    "director_head_cybersecurity": "Directeur/Responsable cybersécurité",
-    "cybersecurity_team_lead": "Chef d'équipe cybersécurité",
-    "application_security_specialist": "Spécialiste sécurité applicative",
-    "cloud_security_specialist": "Spécialiste sécurité cloud",
-    "cybersecurity_architect": "Architecte cybersécurité",
-    "cybersecurity_engineer": "Ingénieur cybersécurité",
-    "dfir_specialist": "Spécialiste investigation numérique et réponse aux incidents",
-    "grc_specialist": "Spécialiste gouvernance, risques et conformité",
-    "iam_specialist": "Spécialiste gestion des identités et des accès",
-    "penetration_tester": "Testeur d'intrusion",
-    "soc_analyst": "Analyste SOC (Centre des opérations de sécurité)",
-    "threat_intelligence_analyst": "Analyste renseignement sur les menaces",
-    "vulnerability_analyst": "Analyste en vulnérabilités",
-    "consultant": "Consultant",
-    "other": "Autre"
-  },
   "DeleteUseCaseDialog": {
     "TextDeleteUseCase": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
   },
@@ -256,6 +235,7 @@
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
+      "NEWS_FEED_ITEM_MISSING_TITLE": "Le titre de l'article du fil d'actualité est manquant",
       "NO_ASYNC_CONTEXT_AVAILABLE": "Une erreur inconnue s'est produite",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "Une erreur inconnue s'est produite",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "Une organisation ayant le même domaine existe déjà",
@@ -1385,5 +1365,26 @@
     "DocumentUpdated": "{file_name} a été modifié",
     "UpdateDocument": "Modifier le document"
   },
-  "entitie(s)": "entité(s)"
+  "entitie(s)": "entité(s)",
+  "DeploymentRequestJobTitle": {
+    "ceo": "PDG",
+    "ciso_cso_cio": "RSSI/DSI/Directeur de la sécurité",
+    "c_level": "Niveau C (direction)",
+    "general_manager_vp": "Directeur général/Vice-président",
+    "director_head_cybersecurity": "Directeur/Responsable cybersécurité",
+    "cybersecurity_team_lead": "Chef d'équipe cybersécurité",
+    "application_security_specialist": "Spécialiste sécurité applicative",
+    "cloud_security_specialist": "Spécialiste sécurité cloud",
+    "cybersecurity_architect": "Architecte cybersécurité",
+    "cybersecurity_engineer": "Ingénieur cybersécurité",
+    "dfir_specialist": "Spécialiste investigation numérique et réponse aux incidents",
+    "grc_specialist": "Spécialiste gouvernance, risques et conformité",
+    "iam_specialist": "Spécialiste gestion des identités et des accès",
+    "penetration_tester": "Testeur d'intrusion",
+    "soc_analyst": "Analyste SOC (Centre des opérations de sécurité)",
+    "threat_intelligence_analyst": "Analyste renseignement sur les menaces",
+    "vulnerability_analyst": "Analyste en vulnérabilités",
+    "consultant": "Consultant",
+    "other": "Autre"
+  }
 }

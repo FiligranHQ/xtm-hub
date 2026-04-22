@@ -21,6 +21,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
+import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildCreateEvent } from '../telemetry/telemetry.helper';
@@ -172,6 +173,22 @@ export const DocumentApp = {
       });
     }
 
+    if (
+      createdDocument.active === true &&
+      NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)
+    ) {
+      NewsFeedApp.createResourceNewsFeedItem({
+        document: createdDocument,
+        serviceInstanceId,
+        serviceDefinitionIdentifier: serviceDefinition.identifier,
+      }).catch((error) =>
+        logApp.error('Unable to create news feed item on document creation', {
+          error,
+          documentId: createdDocument.id,
+        })
+      );
+    }
+
     return createdDocument;
   },
 
@@ -200,6 +217,18 @@ export const DocumentApp = {
       );
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const documentBeforeUpdate = await DocumentDomain.loadDocumentBy({
+      id: parentDocumentId,
+    });
+
+    if (!documentBeforeUpdate) {
+      throw new Error(ErrorCode.DocumentNotFound);
+    }
+
+    if (documentBeforeUpdate.service_instance_id !== serviceInstanceId) {
+      throw new Error(ErrorCode.DocumentNotFound);
     }
 
     const documentType =
@@ -243,7 +272,7 @@ export const DocumentApp = {
       documentMetadata
     );
 
-    return withTransaction(async () => {
+    const updatedDocument = await withTransaction(async () => {
       const { user } = requestContext.require();
       const uploader_organization_id = input.uploader_organization_id ?? null;
 
@@ -260,7 +289,7 @@ export const DocumentApp = {
         ? sourceDocumentFile
         : undefined;
 
-      const updatedDocument = await DocumentDomain.updateDocument({
+      const doc = await DocumentDomain.updateDocument({
         parentDocumentId,
         document: {
           data: input,
@@ -290,12 +319,12 @@ export const DocumentApp = {
       if (documentMetadata.length) {
         await DocumentMetadataDomain.deleteMetadata({ id: parentDocumentId });
         await DocumentMetadataDomain.insertMetadataFromKeyValue(
-          updatedDocument.id,
+          doc.id,
           documentMetadata
         );
 
         for (const meta of documentMetadata) {
-          updatedDocument[meta.key] = BOOLEAN_METADATA.includes(meta.key)
+          doc[meta.key] = BOOLEAN_METADATA.includes(meta.key)
             ? meta.value === 'true'
             : meta.value;
         }
@@ -326,8 +355,27 @@ export const DocumentApp = {
         );
       }
 
-      return updatedDocument;
+      return doc;
     });
+
+    if (
+      documentBeforeUpdate.active === false &&
+      updatedDocument.active === true &&
+      NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)
+    ) {
+      NewsFeedApp.createResourceNewsFeedItem({
+        document: updatedDocument,
+        serviceInstanceId,
+        serviceDefinitionIdentifier: serviceDefinition.identifier,
+      }).catch((error) =>
+        logApp.error('Unable to create news feed item on document update', {
+          error,
+          documentId: updatedDocument.id,
+        })
+      );
+    }
+
+    return updatedDocument;
   },
 
   createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(
@@ -392,9 +440,9 @@ export const DocumentApp = {
     serviceInstanceId: ServiceInstanceId,
     hardDelete: boolean
   ): Promise<T> => {
-    const [documentFromDb] = await DocumentDomain.loadDocumentBy({
-      'Document.id': documentId,
-      'Document.service_instance_id': serviceInstanceId,
+    const documentFromDb = await DocumentDomain.loadDocumentBy({
+      id: documentId,
+      service_instance_id: serviceInstanceId,
     });
 
     if (!documentFromDb) {
@@ -408,7 +456,10 @@ export const DocumentApp = {
         await Promise.all(
           childIds.map((id) => DocumentDomain.loadDocumentBy({ id }))
         )
-      ).flat();
+      ).filter(
+        (childDocument): childDocument is DocumentModel =>
+          childDocument !== undefined
+      );
       await withTransaction(async () => {
         await DocumentChildrenDomain.deleteChildrenByParent(documentId);
 

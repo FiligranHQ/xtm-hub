@@ -26,7 +26,7 @@ import { EpicApp } from './epic.app';
 import epicResolver from './epic.resolver';
 
 describe('epic.document', () => {
-  it('should load document by document_id and return first result', async () => {
+  it('should load document by document_id', async () => {
     // Given
     const documentId = uuidv4() as DocumentId;
     const epicParent = {
@@ -34,9 +34,11 @@ describe('epic.document', () => {
       document_id: documentId,
     } as unknown as Epic;
     const expectedDocument = { id: documentId, file_name: 'image.png' };
-    vi.spyOn(DocumentDomain, 'loadDocumentBy').mockResolvedValue([
-      expectedDocument,
-    ] as unknown as Awaited<ReturnType<typeof DocumentDomain.loadDocumentBy>>);
+    vi.spyOn(DocumentDomain, 'loadDocumentBy').mockResolvedValue(
+      expectedDocument as unknown as Awaited<
+        ReturnType<typeof DocumentDomain.loadDocumentBy>
+      >
+    );
 
     // When
     const result = await epicResolver.Epic!.document!(
@@ -72,16 +74,14 @@ describe('epic.document', () => {
     expect(result).toBeNull();
   });
 
-  it('should return null when DocumentDomain returns an empty array', async () => {
+  it('should return null when DocumentDomain returns undefined', async () => {
     // Given
     const documentId = uuidv4() as DocumentId;
     const epicParent = {
       id: uuidv4() as EpicId,
       document_id: documentId,
     } as unknown as Epic;
-    vi.spyOn(DocumentDomain, 'loadDocumentBy').mockResolvedValue(
-      [] as unknown as Awaited<ReturnType<typeof DocumentDomain.loadDocumentBy>>
-    );
+    vi.spyOn(DocumentDomain, 'loadDocumentBy').mockResolvedValue(undefined);
 
     // When
     const result = await epicResolver.Epic!.document!(

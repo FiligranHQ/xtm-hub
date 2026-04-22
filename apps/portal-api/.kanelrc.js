@@ -41,7 +41,11 @@ const COLUMN_ENUM_MAP = {
     creation_status: 'ServiceInstanceCreationStatus',
     join_type: 'ServiceInstanceJoinType',
     tags: 'ServiceInstanceTag',
-  }
+  },
+  NewsFeedItem: {
+    type: 'NewsFeedItemType',
+    platform_identifier: 'PlatformIdentifier',
+  },
 };
 
 /** @type {import('kanel').Config} */

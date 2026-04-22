@@ -629,6 +629,10 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
+enum NewsFeedItemType {
+  RESOURCE_CUSTOM_DASHBOARD
+}
+
 enum OrganizationOrdering {
   name
 }
