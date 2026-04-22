@@ -2791,7 +2791,7 @@ export type Service_CapaDirectiveArgs = {
 export type Service_CapaDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = Service_CapaDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type System_TokenDirectiveArgs = {
-  required?: Maybe<Array<PortalCapability>>;
+  portalCapa?: Maybe<Array<PortalCapability>>;
 };
 
 export type System_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = System_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;

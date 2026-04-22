@@ -14,7 +14,7 @@ export const SYSTEM_TOKEN_SALT = config.get<string>('system_token_salt');
 export const SYSTEM_TOKEN_DIRECTIVE_NAME = 'system_token';
 
 export type SystemTokenDirectiveArgs = {
-  required?: PortalCapability[];
+  portalCapa?: PortalCapability[];
 };
 
 const buildScopedSystemUser = (
@@ -68,7 +68,7 @@ export const createSystemTokenResolver = (
     validateSystemToken(portalContext);
 
     const scopedSystemUser = buildScopedSystemUser(
-      directiveArgs.required ?? []
+      directiveArgs.portalCapa ?? []
     );
 
     const enhancedContext: PortalContext = {

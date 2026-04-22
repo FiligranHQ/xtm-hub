@@ -1,5 +1,5 @@
 directive @system_token(
-  required: [PortalCapability!] = []
+  portalCapa: [PortalCapability!] = []
 ) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION

@@ -74,7 +74,10 @@ describe('system Token Validation', () => {
       );
 
       const wrappedResolver = createSystemTokenResolver(resolverSpy, {
-        required: [PortalCapability.ModifyTrials, PortalCapability.ReadTrials],
+        portalCapa: [
+          PortalCapability.ModifyTrials,
+          PortalCapability.ReadTrials,
+        ],
       });
 
       const context = {
