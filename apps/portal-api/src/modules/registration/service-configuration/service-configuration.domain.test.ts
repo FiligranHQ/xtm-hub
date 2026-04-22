@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
@@ -133,23 +133,66 @@ describe('serviceConfigurationDomain', () => {
         });
       });
 
-      it('should return undefined when withoutTenantId is true but config has a tenant_id', async () => {
-        const tenantId = uuidv4();
-        await TestHelper.serviceConfiguration.delete({});
-        await TestHelper.serviceConfiguration.create({
-          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          status: ServiceConfigurationStatus.Active,
-          config: { token, platform_id: platformId, tenant_id: tenantId },
+      describe('when config has a tenant_id', () => {
+        let tenantId: string;
+
+        beforeEach(async () => {
+          tenantId = uuidv4();
+          await TestHelper.serviceConfiguration.delete({});
+          await TestHelper.serviceConfiguration.create({
+            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+            status: ServiceConfigurationStatus.Active,
+            config: { token, platform_id: platformId, tenant_id: tenantId },
+          });
         });
 
-        const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-            platform_id: platformId,
-            token,
-            withoutTenantId: true,
-          });
+        afterEach(async () => {
+          await TestHelper.serviceConfiguration.delete({});
+        });
 
-        expect(configuration).toBeUndefined();
+        it('should return undefined when withoutTenantId is true', async () => {
+          const configuration =
+            await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
+              {
+                platform_id: platformId,
+                token,
+                withoutTenantId: true,
+              }
+            );
+
+          expect(configuration).toBeUndefined();
+        });
+
+        it('should return configuration when withoutTenantId is false', async () => {
+          const configuration =
+            await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
+              {
+                platform_id: platformId,
+                token,
+                withoutTenantId: false,
+              }
+            );
+
+          expect(configuration).toMatchObject({
+            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+            config: { platform_id: platformId, token, tenant_id: tenantId },
+          });
+        });
+
+        it('should return configuration when withoutTenantId is not provided', async () => {
+          const configuration =
+            await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
+              {
+                platform_id: platformId,
+                token,
+              }
+            );
+
+          expect(configuration).toMatchObject({
+            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+            config: { platform_id: platformId, token, tenant_id: tenantId },
+          });
+        });
       });
     });
   });

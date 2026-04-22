@@ -7,6 +7,7 @@ import {
   ServiceConfigurationStatus,
   TenantStatus,
 } from '../../__generated__/resolvers-types';
+import ServiceConfiguration from '../../model/kanel/public/ServiceConfiguration';
 import { logApp } from '../../utils/app-logger.util';
 import { BadRequestErrorCode, ErrorCode } from '../../utils/error/error.code';
 import { RequiredPlatformVersions } from '../../utils/required-platform-version';
@@ -14,6 +15,99 @@ import { doesVersionSatisfy, isValidVersion } from '../../utils/versioning';
 import { PlatformConfiguration } from './registration.domain';
 import { isTenantIdRequired } from './registration.helper';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
+
+const handleTenantUpgrade = async ({
+  platform_id,
+  token,
+  tenant_id,
+  platform_identifier,
+}: {
+  platform_id: string;
+  token: string;
+  tenant_id: string;
+  platform_identifier: PlatformIdentifier;
+}): Promise<ServiceConfiguration | null> => {
+  const configWithoutTenant =
+    await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+      platform_id,
+      token,
+      withoutTenantId: true,
+    });
+
+  const existingConfig = configWithoutTenant?.config as
+    | PlatformConfiguration
+    | undefined;
+
+  if (
+    configWithoutTenant &&
+    !isTenantIdRequired(platform_identifier, existingConfig?.platform_version)
+  ) {
+    const updatedConfig = { ...existingConfig, tenant_id };
+    await ServiceConfigurationDomain.updateConfiguration(
+      configWithoutTenant.service_instance_id,
+      { config: updatedConfig }
+    );
+    return { ...configWithoutTenant, config: updatedConfig };
+  }
+
+  return null;
+};
+
+const resolveStatusWhenNoConfiguration = ({
+  platform_identifier,
+  platform_version,
+}: {
+  platform_identifier?: PlatformIdentifier;
+  platform_version: string;
+}): { status: PlatformRegistrationConnectivityStatus } => {
+  if (!platform_identifier) {
+    return { status: PlatformRegistrationConnectivityStatus.Inactive };
+  }
+
+  const requiredVersionForNotFoundStatus =
+    RequiredPlatformVersions.RefreshConnectivityStatusSendsNotFound[
+      platform_identifier
+    ];
+
+  const shouldSendNotFoundStatus = doesVersionSatisfy({
+    givenVersion: platform_version,
+    requiredVersion: requiredVersionForNotFoundStatus,
+  });
+
+  return {
+    status: shouldSendNotFoundStatus
+      ? PlatformRegistrationConnectivityStatus.NotFound
+      : PlatformRegistrationConnectivityStatus.Inactive,
+  };
+};
+
+const saveConfigIfChanged = async ({
+  serviceConfiguration,
+  platform_version,
+  url,
+}: {
+  serviceConfiguration: ServiceConfiguration;
+  platform_version: string;
+  url?: string;
+}): Promise<void> => {
+  const existingConfig = serviceConfiguration.config;
+  const hasConfigChanged =
+    existingConfig['platform_version'] !== platform_version ||
+    (url && existingConfig['url'] !== url);
+
+  if (hasConfigChanged) {
+    await ServiceConfigurationDomain.updateConfiguration(
+      serviceConfiguration.service_instance_id,
+      {
+        config: {
+          ...(existingConfig as object),
+          platform_version,
+          ...(url ? { url } : {}),
+        },
+      }
+    );
+  }
+};
 
 const refreshConnectivityStatus = async ({
   platform_id,
@@ -44,75 +138,30 @@ const refreshConnectivityStatus = async ({
 
   let serviceConfiguration =
     await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-      platform_id: platform_id,
+      platform_id,
       token,
       tenant_id,
     });
 
-  // manage upgrades from older platform without tenant to newer platform with tenant
-  if (!serviceConfiguration && tenant_id && platform_identifier) {
-    const configWithoutTenant =
-      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-        platform_id: platform_id,
-        token,
-        withoutTenantId: true,
-      });
-
-    const existingConfig = configWithoutTenant?.config as
-      | PlatformConfiguration
-      | undefined;
-
-    if (
-      configWithoutTenant &&
-      !isTenantIdRequired(platform_identifier, existingConfig?.platform_version)
-    ) {
-      const updatedConfig = { ...existingConfig, tenant_id };
-      await ServiceConfigurationDomain.updateConfiguration(
-        configWithoutTenant.service_instance_id,
-        { config: updatedConfig }
-      );
-      serviceConfiguration = { ...configWithoutTenant, config: updatedConfig };
-    }
+  const canAttemptTenantUpgrade =
+    !serviceConfiguration && tenant_id && platform_identifier;
+  if (canAttemptTenantUpgrade) {
+    serviceConfiguration = await handleTenantUpgrade({
+      platform_id,
+      token,
+      tenant_id,
+      platform_identifier,
+    });
   }
 
   if (!serviceConfiguration) {
-    if (!platform_identifier) {
-      return { status: PlatformRegistrationConnectivityStatus.Inactive };
-    }
-
-    const requiredVersionForNotFoundStatus =
-      RequiredPlatformVersions.RefreshConnectivityStatusSendsNotFound[
-        platform_identifier
-      ];
-
-    const shouldSendNotFoundStatus = doesVersionSatisfy({
-      givenVersion: platform_version,
-      requiredVersion: requiredVersionForNotFoundStatus,
+    return resolveStatusWhenNoConfiguration({
+      platform_identifier,
+      platform_version,
     });
-
-    return {
-      status: shouldSendNotFoundStatus
-        ? PlatformRegistrationConnectivityStatus.NotFound
-        : PlatformRegistrationConnectivityStatus.Inactive,
-    };
   }
 
-  const existingConfig = serviceConfiguration.config;
-  const hasConfigChanged =
-    existingConfig['platform_version'] !== platform_version ||
-    (url && existingConfig['url'] !== url);
-  if (hasConfigChanged) {
-    await ServiceConfigurationDomain.updateConfiguration(
-      serviceConfiguration.service_instance_id,
-      {
-        config: {
-          ...(existingConfig as object),
-          platform_version,
-          ...(url ? { url } : {}),
-        },
-      }
-    );
-  }
+  await saveConfigIfChanged({ serviceConfiguration, platform_version, url });
 
   return {
     status:
