@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 
-import '@filigran/chatbot/styles.css';
 import '../../../styles/globals.css';
 
 import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
