@@ -95,7 +95,7 @@ describe('telemetryApp', () => {
   });
 
   describe('sendOneClickDeployEvent', () => {
-    it('should send a OneClickDeployEvent with version', async () => {
+    it('should send a OneClickDeployEvent with version and with tenant_id', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -181,7 +181,7 @@ describe('telemetryApp', () => {
         tenant_id: 'c4a88438-abf8-4a76-8594-6df800434865',
       });
     });
-    it('should send a OneClickDeployEvent without version', async () => {
+    it('should send a OneClickDeployEvent without version and without tenant_id', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
