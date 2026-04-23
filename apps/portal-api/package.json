@@ -96,7 +96,7 @@
     "@graphql-codegen/cli": "5.0.7",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-resolvers": "4.5.2",
-    "@types/config": "3.3.5",
+    "@types/config": "4.4.0",
     "@types/cors": "2.8.19",
     "@types/express-session": "1.19.0",
     "@types/graphql-upload": "17.0.0",
