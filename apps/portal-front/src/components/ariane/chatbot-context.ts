@@ -15,3 +15,5 @@ export interface ChatbotContextType {
 }
 
 export const ChatbotContext = createContext<ChatbotContextType | null>(null);
+
+export const SIDEBAR_GAP = 6;
