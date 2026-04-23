@@ -1,6 +1,7 @@
 import { db } from '../../knexfile';
 import {
   OrganizationCapability,
+  PortalCapability,
   ServiceDefinitionIdentifier,
 } from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
@@ -107,6 +108,25 @@ export const securityGuard = {
       .first();
 
     if (!userCapabilities) {
+      throw ForbiddenAccess(ErrorCode.MissingCapabilityOnOrganization);
+    }
+  },
+
+  assertUserPortalCapabilities: async (
+    user: UserLoadUserBy,
+    requiredCapabilities: PortalCapability[]
+  ) => {
+
+    if (isUserAdminPlatform(user)) return;
+
+    const requiredCapabilityNames = new Set<string>(requiredCapabilities);
+    const hasRequiredPortalCapability = user.capabilities.some(
+      (capability) =>
+        capability.name !== null &&
+        requiredCapabilityNames.has(capability.name)
+    );
+
+    if (!hasRequiredPortalCapability) {
       throw ForbiddenAccess(ErrorCode.MissingCapabilityOnOrganization);
     }
   },

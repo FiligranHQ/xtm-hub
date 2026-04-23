@@ -13,6 +13,9 @@ export const PLATFORM_USER_EMAIL = 'platform_user@filigran.io';
 export const SYSTEM_USER_EMAIL = 'system_user@filigran.io';
 export const SYSTEM_USER_UUID: UserId =
   'f0587688-ef35-466a-9f71-a8807ba460b8' as UserId;
+export const CRONS_USER_EMAIL = 'crons_user@filigran.io';
+export const CRONS_USER_UUID: UserId =
+  'a9f49a67-8b37-4f7d-a8bb-c4c0d3c8c7f1' as UserId;
 export const PLATFORM_NAME = 'Filigran';
 export const PLATFORM_DOMAIN = ['filigran.io'];
 export const PLATFORM_ORGANIZATION_UUID: OrganizationId =
@@ -59,11 +62,32 @@ export const SYSTEM_USER_CONTEXT: PortalContext = {
         domains: [],
       },
     ],
-    capabilities: [CAPABILITY_BYPASS],
-    roles_portal: [
-      {
-        ...ROLE_ADMIN,
-      },
-    ],
+    capabilities: [],
+    roles_portal: [],
   },
 } as PortalContext;
+
+export const CRONS_USER_CONTEXT: PortalContext = {
+  user: {
+    id: CRONS_USER_UUID,
+    email: CRONS_USER_EMAIL,
+    selected_organization_id: PLATFORM_ORGANIZATION_UUID,
+    organizations: [
+      {
+        id: PLATFORM_ORGANIZATION_UUID,
+        name: PLATFORM_NAME,
+        personal_space: false,
+        domains: PLATFORM_DOMAIN,
+      },
+      {
+        id: CRONS_USER_UUID,
+        name: CRONS_USER_EMAIL,
+        personal_space: true,
+        domains: [],
+      },
+    ],
+    capabilities: [],
+    roles_portal: [],
+  },
+} as PortalContext;
+
