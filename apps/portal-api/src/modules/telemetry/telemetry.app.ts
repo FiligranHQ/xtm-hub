@@ -113,7 +113,8 @@ export const telemetryApp = {
         ? (config.platform_version as string)
         : undefined,
       extractId<DocumentId>(input.resource_id),
-      input.resource_title
+      input.resource_title,
+      'tenant_id' in config ? (config.tenant_id as string) : undefined
     );
     await telemetryApp.sendTelemetryEvent(event);
   },

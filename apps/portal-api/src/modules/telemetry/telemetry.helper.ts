@@ -253,6 +253,7 @@ export async function buildOneClickDeployEvent(
   platform_version: string,
   resource_id: string,
   resource_title: string,
+  tenant_id?: string,
   timestamp?: Date
 ): Promise<OneClickDeployEvent> {
   const baseEvent = buildBaseEvent(organization, user_id, timestamp);
@@ -268,6 +269,7 @@ export async function buildOneClickDeployEvent(
     resource_title,
     platform_id,
     platform_version,
+    tenant_id,
   };
 }
 
