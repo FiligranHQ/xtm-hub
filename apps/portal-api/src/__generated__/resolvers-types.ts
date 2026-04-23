@@ -1361,6 +1361,8 @@ export enum PlatformRegistrationStatus {
 
 export enum PortalCapability {
   Bypass = 'BYPASS',
+  ManageConnectorsIngestions = 'MANAGE_CONNECTORS_INGESTIONS',
+  ManageDeployment = 'MANAGE_DEPLOYMENT',
   ModifyCompetitors = 'MODIFY_COMPETITORS',
   ModifyTrials = 'MODIFY_TRIALS',
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
@@ -2848,7 +2850,9 @@ export type Service_CapaDirectiveArgs = {
 
 export type Service_CapaDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = Service_CapaDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type System_TokenDirectiveArgs = { };
+export type System_TokenDirectiveArgs = {
+  portalCapa?: Maybe<Array<PortalCapability>>;
+};
 
 export type System_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = System_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
