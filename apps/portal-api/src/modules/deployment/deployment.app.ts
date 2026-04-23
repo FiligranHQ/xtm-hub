@@ -247,6 +247,7 @@ export const DeploymentApp = {
   ): Promise<PlatformDeploymentRequest> => {
     await securityGuard.assertUserPortalCapabilities([
       PortalCapability.ManageDeployment,
+      PortalCapability.ModifyTrials,
     ]);
 
     const deploymentRequestId = input.id;
