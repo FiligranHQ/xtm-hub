@@ -15,6 +15,7 @@ import { BadRequestError } from '../../utils/error/error.util';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { loadSubscriptionByServiceInstanceAndOrganization } from '../service/instance/service-instance.domain';
 import { registrationApp } from './registration.app';
+import { registrationConnectivityApp } from './registration.connectivity.app';
 
 const resolvers: Resolvers = {
   RegisteredPlatform: {
@@ -121,7 +122,23 @@ const resolvers: Resolvers = {
       }
     },
     refreshPlatformRegistrationConnectivityStatus: async (_, { input }) =>
-      registrationApp.refreshPlatformRegistrationConnectivityStatus(input),
+      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+        input
+      ),
+    refreshPlatformRegistrationConnectivityStatusSingleTenant: async (
+      _,
+      { input }
+    ) =>
+      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+        input
+      ),
+    refreshPlatformRegistrationConnectivityStatusAllTenants: async (
+      _,
+      { input }
+    ) =>
+      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        input
+      ),
     autoRegisterPlatform: async (
       _,
       { platform, input },
