@@ -114,6 +114,7 @@ describe('telemetryApp', () => {
           platform_title: 'Open AEV Instance',
           platform_version: '1.0.0',
           platform_contract: 'EE',
+          tenant_id: 'c4a88438-abf8-4a76-8594-6df800434865',
         },
         status: ServiceConfigurationStatus.Active,
       });
@@ -177,6 +178,7 @@ describe('telemetryApp', () => {
         platform_id: platform_id,
         platform_version: '1.0.0',
         target_product: TelemetryTargetProduct.OPEN_CTI,
+        tenant_id: 'c4a88438-abf8-4a76-8594-6df800434865',
       });
     });
     it('should send a OneClickDeployEvent without version', async () => {
