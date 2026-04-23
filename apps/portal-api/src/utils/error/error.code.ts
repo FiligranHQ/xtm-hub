@@ -41,6 +41,7 @@ export enum BadRequestErrorCode {
   MissingAutoRegisterPlatformArgument = 'MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT',
   DocumentFileMissing = 'DOCUMENT_FILE_MISSING',
   TenantIdMandatory = 'TENANT_ID_MANDATORY',
+  NewsFeedItemMissingTitle = 'NEWS_FEED_ITEM_MISSING_TITLE',
 }
 
 export enum UnknownErrorCode {

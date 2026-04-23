@@ -97,8 +97,8 @@ export const EpicApp = {
       createdDocument?.id !== oldEpic.document_id
     ) {
       // Remove old document from MinIO and DB
-      const [document] = await DocumentDomain.loadDocumentBy({
-        'Document.id': oldEpic.document_id,
+      const document = await DocumentDomain.loadDocumentBy({
+        id: oldEpic.document_id,
       });
       await MinIOClient.deleteFile(document.minio_name);
       await DocumentDomain.deleteDocuments([oldEpic.document_id]);
@@ -110,7 +110,7 @@ export const EpicApp = {
     const [epic] = await EpicDomain.loadEpicsBy({ id: id });
     await EpicDomain.deleteEpicBy({ id });
     if (epic.document_id) {
-      const [document] = await DocumentDomain.loadDocumentBy({
+      const document = await DocumentDomain.loadDocumentBy({
         id: epic.document_id,
       });
       await MinIOClient.deleteFile(document.minio_name);

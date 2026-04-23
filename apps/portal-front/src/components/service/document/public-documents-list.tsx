@@ -73,7 +73,7 @@ const PublicDocumentsList: React.FC<Props> = ({
 
   useLayoutEffect(() => {
     restore();
-  }, []);
+  }, [restore]);
 
   const handleRefetchData = (
     args?: Partial<publicDocumentsQuery$variables>

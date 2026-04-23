@@ -65,7 +65,7 @@ const ServiceList = ({
   const { restore } = useScrollPosition();
   useLayoutEffect(() => {
     restore();
-  }, []);
+  }, [restore]);
 
   const activeByIntegrationType = active.reduce<
     Record<string, documentItem_fragment$data[]>

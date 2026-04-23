@@ -1,0 +1,56 @@
+import { v4 as uuidv4 } from 'uuid';
+import { db } from '../../knexfile';
+import NewsFeedItem, {
+  NewsFeedItemId,
+  NewsFeedItemInitializer,
+  NewsFeedItemMutator,
+} from '../../src/model/kanel/public/NewsFeedItem';
+import NewsFeedItemMetadata, {
+  NewsFeedItemMetadataMutator,
+} from '../../src/model/kanel/public/NewsFeedItemMetadata';
+import ProvisionedNewsFeedItem, {
+  ProvisionedNewsFeedItemMutator,
+} from '../../src/model/kanel/public/ProvisionedNewsFeedItem';
+
+export const TestNewsfeedHelper = {
+  newsFeed: {
+    createItem: async (
+      data: Omit<NewsFeedItemInitializer, 'id'> & { id?: NewsFeedItemId }
+    ): Promise<NewsFeedItem> => {
+      const [item] = await db<NewsFeedItem>('NewsFeedItem')
+        .insert({
+          id: uuidv4() as NewsFeedItemId,
+          ...data,
+        })
+        .returning('*');
+      return item;
+    },
+    loadItems: async (
+      field: NewsFeedItemMutator = {}
+    ): Promise<NewsFeedItem[]> => {
+      return db<NewsFeedItem[]>('NewsFeedItem').where(field).select('*');
+    },
+    loadFirstItem: async (
+      field: NewsFeedItemMutator = {}
+    ): Promise<NewsFeedItem | undefined> => {
+      return db<NewsFeedItem>('NewsFeedItem').where(field).first();
+    },
+    loadFirstMetadata: async (
+      field: NewsFeedItemMetadataMutator
+    ): Promise<NewsFeedItemMetadata | undefined> => {
+      return db<NewsFeedItemMetadata>('NewsFeedItemMetadata')
+        .where(field)
+        .first();
+    },
+    loadProvisioned: async (
+      field: ProvisionedNewsFeedItemMutator
+    ): Promise<ProvisionedNewsFeedItem[]> => {
+      return db<ProvisionedNewsFeedItem[]>('ProvisionedNewsFeedItem')
+        .where(field)
+        .select('*');
+    },
+    deleteItem: async (field: NewsFeedItemMutator = {}) => {
+      await db<NewsFeedItem>('NewsFeedItem').where(field).del();
+    },
+  },
+};

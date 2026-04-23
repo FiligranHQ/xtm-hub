@@ -101,6 +101,7 @@ const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
         </IconActions>
       </div>
       <div className="flex gap-xs items-center sm:hidden">
+        <AskArianeButton />
         <Sheet
           open={open}
           onOpenChange={setOpen}>

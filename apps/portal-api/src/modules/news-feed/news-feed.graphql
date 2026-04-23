@@ -1,0 +1,3 @@
+enum NewsFeedItemType {
+  RESOURCE_CUSTOM_DASHBOARD
+}
