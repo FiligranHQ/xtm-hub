@@ -245,7 +245,9 @@ export const DeploymentApp = {
   updateDeploymentRequest: async (
     input: UpdateDeploymentRequestInput
   ): Promise<PlatformDeploymentRequest> => {
-    await securityGuard.assertUserPortalCapabilities([
+    const { user } = requestContext.require();
+
+    await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageDeployment,
       PortalCapability.ModifyTrials,
     ]);
@@ -296,7 +298,9 @@ export const DeploymentApp = {
   loadPlatformDeploymentRequests: async (
     args: QueryDeploymentRequestsArgs
   ): Promise<PlatformDeploymentRequestConnection> => {
-    await securityGuard.assertUserPortalCapabilities([
+    const { user } = requestContext.require();
+
+    await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageDeployment,
     ]);
 

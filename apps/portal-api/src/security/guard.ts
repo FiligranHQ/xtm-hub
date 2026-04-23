@@ -113,9 +113,9 @@ export const securityGuard = {
   },
 
   assertUserPortalCapabilities: async (
+    user: UserLoadUserBy,
     requiredCapabilities: PortalCapability[]
   ) => {
-    const { user } = requestContext.require();
 
     if (isUserAdminPlatform(user)) return;
 

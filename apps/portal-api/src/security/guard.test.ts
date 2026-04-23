@@ -103,24 +103,18 @@ describe('security Guard', () => {
     });
 
     it('should not throw when user has bypass capability for portal capability checks', async () => {
-      requestContext.set({
-        user: contextBypassUser.user,
-        portalContext: contextBypassUser,
-      });
-
       await expect(
-        securityGuard.assertUserPortalCapabilities([
+        securityGuard.assertUserPortalCapabilities(contextBypassUser.user, [
           PortalCapability.ManageDeployment,
         ])
       ).resolves.not.toThrow();
     });
 
     it('should throw when user does not have required portal capability', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
-
-      const call = securityGuard.assertUserPortalCapabilities([
-        PortalCapability.ManageDeployment,
-      ]);
+      const call = securityGuard.assertUserPortalCapabilities(
+        requestContextAdminSecondOrga.user,
+        [PortalCapability.ManageDeployment]
+      );
 
       await expect(call).rejects.toThrow(
         ErrorCode.MissingCapabilityOnOrganization
@@ -128,16 +122,13 @@ describe('security Guard', () => {
     });
 
     it('should not throw when user has one required portal capability', async () => {
-      requestContext.set({
-        ...requestContextAdminSecondOrga,
-        user: {
-          ...requestContextAdminSecondOrga.user,
-          capabilities: [CAPABILITY_MODIFY_TRIALS],
-        },
-      });
+      const userWithModifyTrials = {
+        ...requestContextAdminSecondOrga.user,
+        capabilities: [CAPABILITY_MODIFY_TRIALS],
+      };
 
       await expect(
-        securityGuard.assertUserPortalCapabilities([
+        securityGuard.assertUserPortalCapabilities(userWithModifyTrials, [
           PortalCapability.ModifyTrials,
           PortalCapability.ManageDeployment,
         ])

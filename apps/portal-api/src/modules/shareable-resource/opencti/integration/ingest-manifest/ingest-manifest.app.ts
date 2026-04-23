@@ -1,4 +1,5 @@
 import { PortalCapability } from '../../../../../__generated__/resolvers-types';
+import { requestContext } from '../../../../../context/request.context';
 import { securityGuard } from '../../../../../security/guard';
 import { BadRequestError } from '../../../../../utils/error/error.util';
 import { upsertConnectors } from './ingest-manifest.domain';
@@ -13,7 +14,9 @@ const getOpenCTIConnectorsManifest = (tag: string) =>
 
 export const IngestManifestApp = {
   async updateOpenCTIManifest(tag: string): Promise<ManifestExtractionResult> {
-    await securityGuard.assertUserPortalCapabilities([
+    const { user } = requestContext.require();
+
+    await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageConnectorsIngestions,
     ]);
 
