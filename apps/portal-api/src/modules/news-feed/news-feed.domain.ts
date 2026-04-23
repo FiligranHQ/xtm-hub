@@ -58,9 +58,18 @@ export const NewsFeedDomain = {
         .whereIn('news_feed_item_id', newsFeedItemIds)
         .select('*');
 
+      const metadataByItemId = allMetadata.reduce((acc, current) => {
+        const existingMetadata = acc.get(current.news_feed_item_id);
+        acc.set(current.news_feed_item_id, [
+          ...(existingMetadata ?? []),
+          current,
+        ]);
+        return acc;
+      }, new Map<NewsFeedItemId, NewsFeedItemMetadata[]>());
+
       return newsFeedItems.map((item) => ({
         ...item,
-        metadata: allMetadata.filter((m) => m.news_feed_item_id === item.id),
+        metadata: metadataByItemId.get(item.id) ?? [],
       }));
     });
   },
