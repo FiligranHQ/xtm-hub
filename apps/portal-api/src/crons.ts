@@ -4,14 +4,14 @@ import { DeploymentApp } from './modules/deployment/deployment.app';
 import { ServiceGroupApp } from './modules/deployment/group/service-group.app';
 import { UsersOrganizationApp } from './modules/organization-management/users/user-organization/users.organization.app';
 import { EpicApp } from './modules/xtm-suite-roadmap/epic.app';
-import { SYSTEM_USER_CONTEXT } from './portal.const';
+import { CRONS_USER_CONTEXT } from './portal.const';
 import { logApp } from './utils/app-logger.util';
 
 const scheduledTasks: ScheduledTask[] = [];
 
 const expireTrials = async (): Promise<void> => {
   logApp.info('Running expireTrials job');
-  requestContext.set(SYSTEM_USER_CONTEXT);
+  requestContext.set(CRONS_USER_CONTEXT);
   try {
     await DeploymentApp.expireTrials();
   } catch (error) {
@@ -21,7 +21,7 @@ const expireTrials = async (): Promise<void> => {
 
 const sendPendingUserDigest = async (): Promise<void> => {
   logApp.info('Running sendPendingUserDigest job');
-  requestContext.set(SYSTEM_USER_CONTEXT);
+  requestContext.set(CRONS_USER_CONTEXT);
   try {
     await UsersOrganizationApp.sendPendingUsersDigest();
   } catch (error) {
@@ -31,7 +31,7 @@ const sendPendingUserDigest = async (): Promise<void> => {
 
 const sendPublicRoadmapMonthlyReminder = async (): Promise<void> => {
   logApp.info('Running sendPublicRoadmapMonthlyReminder job');
-  requestContext.set(SYSTEM_USER_CONTEXT);
+  requestContext.set(CRONS_USER_CONTEXT);
   try {
     await EpicApp.sendPublicRoadmapMonthlyReminder();
   } catch (error) {
@@ -41,7 +41,7 @@ const sendPublicRoadmapMonthlyReminder = async (): Promise<void> => {
 
 const cleanExpiredTrialGroups = async (): Promise<void> => {
   logApp.info('Running cleanExpiredTrialGroups job');
-  requestContext.set(SYSTEM_USER_CONTEXT);
+  requestContext.set(CRONS_USER_CONTEXT);
   try {
     await ServiceGroupApp.removeExpiredGroups();
   } catch (error) {

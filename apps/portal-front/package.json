@@ -73,7 +73,7 @@
     "eslint-config-prettier": "10.1.8",
     "husky": "9.1.7",
     "i18n-auto-translation": "2.2.3",
-    "jsdom": "27.4.0",
+    "jsdom": "29.0.1",
     "lint-staged": "16.4.0",
     "monocart-reporter": "2.10.1",
     "prettier": "3.8.3",

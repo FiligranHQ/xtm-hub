@@ -21,6 +21,7 @@ import { PortalContext } from '../src/model/portal-context';
 import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
+  SYSTEM_USER_CONTEXT,
 } from '../src/portal.const';
 
 export const GRAPHQL_RESOLVE_INFO = {} as GraphQLResolveInfo;
@@ -140,6 +141,11 @@ export const CAPABILITY_MODIFY_TRIALS: CapabilityPortal = {
   name: PortalCapability.ModifyTrials,
 };
 
+export const CAPABILITY_MANAGE_DEPLOYMENT: CapabilityPortal = {
+  id: 'system-token-MANAGE_DEPLOYMENT' as CapabilityPortalId,
+  name: PortalCapability.ManageDeployment,
+};
+
 export const TEST_DEPLOYMENT = {
   activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
   job_title: DeploymentRequestJobTitle.CLevel,
@@ -175,6 +181,19 @@ export const contextBypassUser: PortalContext = {
 export const requestContextAdminUser = {
   user: contextBypassUser.user,
   portalContext: contextBypassUser,
+};
+
+export const contextSystemUserManageDeployment: PortalContext = {
+  ...SYSTEM_USER_CONTEXT,
+  user: {
+    ...SYSTEM_USER_CONTEXT.user,
+    capabilities: [CAPABILITY_MANAGE_DEPLOYMENT],
+  },
+};
+
+export const requestContextSystemUserManageDeployment = {
+  user: contextSystemUserManageDeployment.user,
+  portalContext: contextSystemUserManageDeployment,
 };
 
 export const contextAdminSecondOrga: PortalContext = {
