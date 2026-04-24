@@ -95,7 +95,7 @@ describe('telemetryApp', () => {
   });
 
   describe('sendOneClickDeployEvent', () => {
-    it('should send a OneClickDeployEvent with version', async () => {
+    it('should send a OneClickDeployEvent with version and with tenant_id', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -114,6 +114,7 @@ describe('telemetryApp', () => {
           platform_title: 'Open AEV Instance',
           platform_version: '1.0.0',
           platform_contract: 'EE',
+          tenant_id: 'c4a88438-abf8-4a76-8594-6df800434865',
         },
         status: ServiceConfigurationStatus.Active,
       });
@@ -177,9 +178,10 @@ describe('telemetryApp', () => {
         platform_id: platform_id,
         platform_version: '1.0.0',
         target_product: TelemetryTargetProduct.OPEN_CTI,
+        tenant_id: 'c4a88438-abf8-4a76-8594-6df800434865',
       });
     });
-    it('should send a OneClickDeployEvent without version', async () => {
+    it('should send a OneClickDeployEvent without version and without tenant_id', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);

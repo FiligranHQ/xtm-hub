@@ -1,4 +1,6 @@
-directive @system_token repeatable on OBJECT | FIELD_DEFINITION
+directive @system_token(
+  portalCapa: [PortalCapability!] = []
+) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 
@@ -13,6 +15,8 @@ enum PortalCapability {
   MODIFY_TRIALS
   MODIFY_TRIALS_QUOTA
   MODIFY_COMPETITORS
+  MANAGE_DEPLOYMENT
+  MANAGE_CONNECTORS_INGESTIONS
 }
 
 enum OrganizationCapability {

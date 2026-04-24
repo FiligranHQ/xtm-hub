@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
 import {
   requestContextRegistererUserSecondOrga,
+  requestContextSystemUserManageDeployment,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
@@ -75,11 +76,11 @@ describe('deployment resolver', () => {
   });
 
   describe('updateDeploymentRequest', () => {
-    beforeEach(() => {
+    let initialDeployment: DeploymentRequest;
+
+    beforeEach(async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
-    });
-    it('should return the updated deployment request', async () => {
-      const initialDeployment = await DeploymentApp.createDeploymentRequest({
+      initialDeployment = await DeploymentApp.createDeploymentRequest({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
@@ -89,7 +90,9 @@ describe('deployment resolver', () => {
         type: DeploymentRequestDeploymentType.Trial,
         source: DeploymentRequestSource.Xtmhub,
       });
-
+      requestContext.set(requestContextSystemUserManageDeployment);
+    });
+    it('should return the updated deployment request', async () => {
       expect(initialDeployment).toMatchObject({
         platform_identifier: PlatformIdentifier.Opencti,
         region: DeploymentRequestPlatformRegion.UsEast,
@@ -161,16 +164,6 @@ describe('deployment resolver', () => {
       });
     });
     it('should return an error when status transition is not allowed', async () => {
-      const initialDeployment = await DeploymentApp.createDeploymentRequest({
-        activity_sector:
-          DeploymentRequestActivitySector.ComputerNetworkSecurity,
-        job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
-        platform_identifier: PlatformIdentifier.Opencti,
-        region: DeploymentRequestPlatformRegion.UsEast,
-        type: DeploymentRequestDeploymentType.Trial,
-        source: DeploymentRequestSource.Xtmhub,
-      });
       const updates = {
         id: initialDeployment.id,
         actual_state: DeploymentRequestPlatformState.Removed,

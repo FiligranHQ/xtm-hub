@@ -1,5 +1,6 @@
 import z from 'zod';
 import { db } from '../../../../knexfile';
+import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
 import ServiceConfiguration, {
   ServiceConfigurationMutator,
 } from '../../../model/kanel/public/ServiceConfiguration';
@@ -40,16 +41,27 @@ export const ServiceConfigurationDomain = {
   },
 
   loadConfigurationByPlatformAndToken: async ({
-    platformId,
+    platform_id,
     token,
+    tenant_id,
+    withoutTenantId,
   }: {
-    platformId: string;
+    platform_id: string;
     token: string;
+    tenant_id?: string;
+    withoutTenantId?: boolean;
   }): Promise<ServiceConfiguration | undefined> => {
-    return db('Service_Configuration')
-      .whereRaw("config->>'platform_id' = ?", platformId)
-      .whereRaw("config->>'token' = ?", token)
-      .first();
+    const qb = db('Service_Configuration')
+      .whereRaw("config->>'platform_id' = ?", platform_id)
+      .whereRaw("config->>'token' = ?", token);
+
+    if (tenant_id) {
+      qb.whereRaw("config->>'tenant_id' = ?", tenant_id);
+    } else if (withoutTenantId) {
+      qb.whereRaw("config->>'tenant_id' IS NULL");
+    }
+
+    return qb.first();
   },
 
   loadConfigurationByPlatform: async (
@@ -105,5 +117,26 @@ export const ServiceConfigurationDomain = {
 
   deleteConfigurationBy: async (conditions: ServiceConfigurationMutator) => {
     await db('Service_Configuration').where(conditions).delete();
+  },
+
+  loadActiveConfigurationsByPlatformExcludingTenants: async (
+    platformId: string,
+    excludedTenantIds: string[]
+  ): Promise<ServiceConfiguration[]> => {
+    const qb = db('Service_Configuration')
+      .whereRaw("config->>'platform_id' = ?", platformId)
+      .where('status', ServiceConfigurationStatus.Active)
+      .whereRaw("config->>'tenant_id' IS NOT NULL")
+      .select('*');
+
+    if (excludedTenantIds.length > 0) {
+      const placeholders = excludedTenantIds.map(() => '?').join(', ');
+      qb.whereRaw(
+        `config->>'tenant_id' NOT IN (${placeholders})`,
+        excludedTenantIds
+      );
+    }
+
+    return qb;
   },
 };

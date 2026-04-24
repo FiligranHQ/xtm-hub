@@ -18,6 +18,22 @@ import { DocumentApp } from '../document/document.app';
 import * as DocumentUploadsHelper from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import * as ServiceInstanceDomain from '../service/instance/service-instance.domain';
+
+const guardMock = vi.hoisted(() => ({
+  assertUserHasCapaOnService: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('../../security/guard', async () => {
+  const actual = await vi.importActual<typeof import('../../security/guard')>(
+    '../../security/guard'
+  );
+
+  return {
+    ...actual,
+    assertUserHasCapaOnService: guardMock.assertUserHasCapaOnService,
+  };
+});
+
 import { EpicApp } from './epic.app';
 import { EpicDomain } from './epic.domain';
 
@@ -38,6 +54,8 @@ describe('epicApp', () => {
   };
 
   beforeEach(async () => {
+    guardMock.assertUserHasCapaOnService.mockResolvedValue(undefined);
+
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);

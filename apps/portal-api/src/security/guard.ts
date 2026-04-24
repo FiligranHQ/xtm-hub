@@ -1,7 +1,9 @@
 import { db } from '../../knexfile';
 import {
   OrganizationCapability,
+  PortalCapability,
   ServiceDefinitionIdentifier,
+  ServiceRestriction,
 } from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
 import { OrganizationId } from '../model/kanel/public/Organization';
@@ -110,6 +112,23 @@ export const securityGuard = {
       throw ForbiddenAccess(ErrorCode.MissingCapabilityOnOrganization);
     }
   },
+
+  assertUserPortalCapabilities: async (
+    user: UserLoadUserBy,
+    requiredCapabilities: PortalCapability[]
+  ) => {
+    if (isUserAdminPlatform(user)) return;
+
+    const requiredCapabilityNames = new Set<string>(requiredCapabilities);
+    const hasRequiredPortalCapability = user.capabilities.some(
+      (capability) =>
+        capability.name !== null && requiredCapabilityNames.has(capability.name)
+    );
+
+    if (!hasRequiredPortalCapability) {
+      throw ForbiddenAccess(ErrorCode.MissingCapabilityOnOrganization);
+    }
+  },
 };
 
 export const assertUserCanManageService = async (
@@ -124,13 +143,41 @@ export const assertUserCanManageService = async (
   });
 
   const userServiceCapability =
-    await UserServiceDomain.loadUserServiceCapability(
+    await UserServiceDomain.loadUserServiceGenericCapability(
       user.id,
       subscription.id,
       GenericServiceCapabilityName.MANAGE_ACCESS
     );
 
   if (!userServiceCapability) {
+    throw ForbiddenAccess(ErrorCode.MissingCapabilityOnService);
+  }
+};
+export const assertUserHasCapaOnService = async (
+  user: UserLoadUserBy,
+  serviceInstanceId: ServiceInstanceId,
+  capabilities: ServiceRestriction[]
+) => {
+  if (isUserGranted(user)) return;
+
+  const subscription = await loadSubscriptionBy({
+    service_instance_id: serviceInstanceId,
+    organization_id: user.selected_organization_id,
+  });
+  const [existingUserService] =
+    await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
+      user_id: user.id,
+      subscription_id: subscription.id,
+    });
+
+  if (
+    !existingUserService.user_service_capability.some((c) =>
+      capabilities.includes(
+        c?.subscription_capability?.service_capability
+          ?.name as ServiceRestriction
+      )
+    )
+  ) {
     throw ForbiddenAccess(ErrorCode.MissingCapabilityOnService);
   }
 };

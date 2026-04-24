@@ -5,6 +5,7 @@ export const ListUserOrganizationsQuery = graphql`
     userOrganizations {
       id
       name
+      personal_space
     }
   }
 `;

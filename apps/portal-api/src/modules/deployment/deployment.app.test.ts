@@ -18,6 +18,7 @@ import {
   requestContextAdminUser,
   requestContextRegistererUserSecondOrga,
   requestContextSimpleUserSecondOrga,
+  requestContextSystemUserManageDeployment,
   TEST_DEPLOYMENT,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -504,6 +505,10 @@ describe('deployment app', () => {
     });
   });
   describe('loadDeploymentRequests', () => {
+    beforeEach(() => {
+      requestContext.set(requestContextSystemUserManageDeployment);
+    });
+
     it('should return created deployment requests', async () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
@@ -703,6 +708,8 @@ describe('deployment app', () => {
   describe('updateDeploymentRequest', () => {
     let initialDeployment: DeploymentRequest;
     beforeEach(async () => {
+      requestContext.set(requestContextSystemUserManageDeployment);
+
       initialDeployment = (await insertDeploymentRequest({
         hub_status: DeploymentRequestHubStatus.Pending,
         target_state: DeploymentRequestPlatformState.Active,

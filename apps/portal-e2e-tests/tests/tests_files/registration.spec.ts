@@ -39,10 +39,16 @@ test.describe('Registration', () => {
         })
       ).toBeVisible();
       await expect(
-        page.getByRole('radio', { name: 'Filigran', exact: true })
+        page.getByRole('radio', {
+          name: 'Filigran (Organizational workspace) - Recommended',
+          exact: true,
+        })
       ).toBeVisible();
       await expect(
-        page.getByRole('radio', { name: 'admin@filigran.io', exact: true })
+        page.getByRole('radio', {
+          name: 'admin@filigran.io (Personal workspace)',
+          exact: true,
+        })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();
     });
@@ -79,10 +85,16 @@ test.describe('Registration', () => {
         })
       ).toBeVisible();
       await expect(
-        page.getByRole('radio', { name: 'Filigran', exact: true })
+        page.getByRole('radio', {
+          name: 'Filigran (Organizational workspace) - Recommended',
+          exact: true,
+        })
       ).toBeVisible();
       await expect(
-        page.getByRole('radio', { name: 'admin@filigran.io', exact: true })
+        page.getByRole('radio', {
+          name: 'admin@filigran.io (Personal workspace)',
+          exact: true,
+        })
       ).toBeVisible();
     });
     await test.step('register platform', async () => {
