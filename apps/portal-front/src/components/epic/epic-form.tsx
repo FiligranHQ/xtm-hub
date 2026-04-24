@@ -111,7 +111,10 @@ const EpicForm = ({
   );
   const [selectedProduct, setSelectedProduct] = useState<
     FiligranProductEnum | undefined
-  >(epic?.product as FiligranProductEnum | undefined);
+  >(
+    (epic?.product as FiligranProductEnum | undefined) ??
+      FiligranProductEnum.OPENCTI
+  );
 
   return (
     <AutoForm
@@ -123,15 +126,19 @@ const EpicForm = ({
       }
       onValuesChange={(values) => {
         setIsIntegration(values.is_integration ?? false);
-        setSelectedProduct(values.product as FiligranProductEnum | undefined);
+        setSelectedProduct(
+          (values.product as FiligranProductEnum | undefined) ??
+            FiligranProductEnum.OPENCTI
+        );
       }}
       formSchema={epicFormSchema}
       values={{
         title: epic?.title ?? '',
         short_description: epic?.short_description ?? '',
         description: epic?.description ?? descriptionValue,
-        product: epic?.product as FiligranProductEnum,
-        timeline: epic?.timeline as TimelineEnum,
+        product:
+          (epic?.product as FiligranProductEnum) ?? FiligranProductEnum.OPENCTI,
+        timeline: (epic?.timeline as TimelineEnum) ?? TimelineEnum.NOW,
         active: epic?.active ?? false,
         is_integration: epic?.epic_type === EpicTypeEnum.INTEGRATION,
         illustration_document: undefined,
@@ -158,6 +165,7 @@ const EpicForm = ({
               <ServiceFormDescriptionField
                 field={field}
                 documentType={'Epic'}
+                required
               />
               <p className="font-semibold txt-default mb-xs">
                 {t('Epic.Form.AutomaticallyAdded')}
@@ -177,14 +185,16 @@ const EpicForm = ({
             field: ControllerRenderProps<FieldValues, string>;
           }) => (
             <FormItem>
-              <FormLabel>{t('Epic.Form.FiligranProduct')}</FormLabel>
+              <FormLabel>
+                {t('Epic.Form.FiligranProduct')}
+                <span className="text-sm text-destructive"> *</span>
+              </FormLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
                   setSelectedProduct(value as FiligranProductEnum);
                 }}
-                value={field.value}
-                defaultValue={epic?.product}>
+                value={field.value ?? FiligranProductEnum.OPENCTI}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
@@ -215,10 +225,13 @@ const EpicForm = ({
             field: ControllerRenderProps<FieldValues, string>;
           }) => (
             <FormItem>
-              <FormLabel>{t('Epic.Form.Timeline')}</FormLabel>
+              <FormLabel>
+                {t('Epic.Form.Timeline')}
+                <span className="text-sm text-destructive"> *</span>
+              </FormLabel>
               <Select
                 onValueChange={field.onChange}
-                defaultValue={epic?.timeline}>
+                defaultValue={epic?.timeline ?? TimelineEnum.NOW}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder={t('Epic.Timeline.now')} />

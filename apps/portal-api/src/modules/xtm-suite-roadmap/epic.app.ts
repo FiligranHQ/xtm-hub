@@ -5,18 +5,23 @@ import {
   EpicType,
   QueryEpicsArgs,
   ServiceDefinitionIdentifier,
+  ServiceRestriction,
   UpdateEpicInput,
 } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import Epic, { EpicId } from '../../model/kanel/public/Epic';
 import User from '../../model/kanel/public/User';
+import { assertUserHasCapaOnService } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { processUploads, Upload } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
-import { loadSubscribedServiceInstancesByIdentifier } from '../service/instance/service-instance.domain';
+import {
+  loadServiceInstanceBy,
+  loadSubscribedServiceInstancesByIdentifier,
+} from '../service/instance/service-instance.domain';
 import { EpicDomain } from './epic.domain';
 
 const addImage = async (user: User, uploads: Upload[]) => {
@@ -59,6 +64,15 @@ export const EpicApp = {
   ): Promise<Epic> => {
     const { user } = requestContext.require();
 
+    const serviceInstance = await loadServiceInstanceBy(
+      'slug',
+      'xtm-suite-roadmap'
+    );
+
+    await assertUserHasCapaOnService(user, serviceInstance.id, [
+      ServiceRestriction.Upsert,
+    ]);
+
     const { is_integration, ...restInput } = input;
     const createdDocument = await addImage(user, uploads);
 
@@ -74,6 +88,14 @@ export const EpicApp = {
   },
   updateEpic: async (id: EpicId, input: UpdateEpicInput, uploads: Upload[]) => {
     const { user } = requestContext.require();
+
+    const serviceInstance = await loadServiceInstanceBy(
+      'slug',
+      'xtm-suite-roadmap'
+    );
+    await assertUserHasCapaOnService(user, serviceInstance.id, [
+      ServiceRestriction.Upsert,
+    ]);
 
     const { is_integration, ...restInput } = input;
 
@@ -107,6 +129,17 @@ export const EpicApp = {
   },
 
   deleteEpic: async (id: EpicId) => {
+    const { user } = requestContext.require();
+
+    const serviceInstance = await loadServiceInstanceBy(
+      'slug',
+      'xtm-suite-roadmap'
+    );
+
+    await assertUserHasCapaOnService(user, serviceInstance.id, [
+      ServiceRestriction.Delete,
+    ]);
+
     const [epic] = await EpicDomain.loadEpicsBy({ id: id });
     await EpicDomain.deleteEpicBy({ id });
     if (epic.document_id) {

@@ -5,16 +5,21 @@ import {
   // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
   requestContextAdminSecondOrga,
+  SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../tests/tests.const';
 import {
   OrganizationCapability,
   PortalCapability,
+  ServiceRestriction,
 } from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
 import * as authHelper from '../modules/security-management/capability/auth.helper';
+import * as subscriptionDomain from '../modules/subscription/subscription.domain';
+import { UserServiceDomain } from '../modules/user-service/user-service.domain';
 import { ErrorCode } from '../utils/error/error.code';
-import { securityGuard } from './guard';
+import * as access from './access';
+import { assertUserHasCapaOnService, securityGuard } from './guard';
 
 describe('security Guard', () => {
   let isUserAllowedOnOrganizationSpy: MockInstance;
@@ -133,6 +138,165 @@ describe('security Guard', () => {
           PortalCapability.ManageDeployment,
         ])
       ).resolves.not.toThrow();
+    });
+  });
+
+  describe('assertUserHasCapaOnService', () => {
+    let isUserGrantedSpy: MockInstance;
+    let loadSubscriptionBySpy: MockInstance;
+    let loadUserServiceWithCapabilitiesBySpy: MockInstance;
+
+    beforeEach(() => {
+      isUserGrantedSpy = vi.spyOn(access, 'isUserGranted');
+      loadSubscriptionBySpy = vi.spyOn(
+        subscriptionDomain,
+        'loadSubscriptionBy'
+      );
+      loadUserServiceWithCapabilitiesBySpy = vi.spyOn(
+        UserServiceDomain,
+        'loadUserServiceWithCapabilitiesBy'
+      );
+
+      isUserGrantedSpy.mockReturnValue(false);
+      loadSubscriptionBySpy.mockResolvedValue({ id: 'subscription-id' });
+      loadUserServiceWithCapabilitiesBySpy.mockResolvedValue([
+        {
+          user_service_capability: [],
+        },
+      ]);
+    });
+
+    it('should bypass checks when user is granted', async () => {
+      // Given
+      isUserGrantedSpy.mockReturnValue(true);
+
+      // When
+      await assertUserHasCapaOnService(
+        contextBypassUser.user,
+        SERVICES.INSTANCES.EPIC.ID,
+        [ServiceRestriction.Upsert]
+      );
+
+      // Then
+      expect(loadSubscriptionBySpy).not.toHaveBeenCalled();
+      expect(loadUserServiceWithCapabilitiesBySpy).not.toHaveBeenCalled();
+    });
+
+    it('should allow access when one required capability is present', async () => {
+      // Given
+      loadUserServiceWithCapabilitiesBySpy.mockResolvedValue([
+        {
+          user_service_capability: [
+            {
+              subscription_capability: {
+                service_capability: {
+                  name: ServiceRestriction.Upsert,
+                },
+              },
+            },
+          ],
+        },
+      ]);
+
+      // When
+      const call = assertUserHasCapaOnService(
+        requestContextAdminSecondOrga.user,
+        SERVICES.INSTANCES.EPIC.ID,
+        [ServiceRestriction.Upsert]
+      );
+
+      // Then
+      await expect(call).resolves.toBeUndefined();
+      expect(loadSubscriptionBySpy).toHaveBeenCalledWith({
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      expect(loadUserServiceWithCapabilitiesBySpy).toHaveBeenCalledWith({
+        user_id: requestContextAdminSecondOrga.user.id,
+        subscription_id: 'subscription-id',
+      });
+    });
+
+    it('should throw MissingCapabilityOnService when no required capability is present', async () => {
+      // Given
+      loadUserServiceWithCapabilitiesBySpy.mockResolvedValue([
+        {
+          user_service_capability: [
+            {
+              subscription_capability: {
+                service_capability: {
+                  name: ServiceRestriction.Upload,
+                },
+              },
+            },
+          ],
+        },
+      ]);
+
+      // When
+      const call = assertUserHasCapaOnService(
+        requestContextAdminSecondOrga.user,
+        SERVICES.INSTANCES.EPIC.ID,
+        [ServiceRestriction.Upsert]
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.MissingCapabilityOnService);
+    });
+
+    it.each`
+      capabilities
+      ${[null, {}, { subscription_capability: null }, { subscription_capability: { service_capability: null } }, { subscription_capability: { service_capability: { name: null } } }]}
+      ${[{ subscription_capability: { service_capability: { name: undefined } } }]}
+    `(
+      'should ignore nullish capability entries and throw when no valid capability matches ($capabilities)',
+      async ({ capabilities }) => {
+        // Given
+        loadUserServiceWithCapabilitiesBySpy.mockResolvedValue([
+          {
+            user_service_capability: capabilities,
+          },
+        ]);
+
+        // When
+        const call = assertUserHasCapaOnService(
+          requestContextAdminSecondOrga.user,
+          SERVICES.INSTANCES.EPIC.ID,
+          [ServiceRestriction.Upsert]
+        );
+
+        // Then
+        await expect(call).rejects.toThrow(
+          ErrorCode.MissingCapabilityOnService
+        );
+      }
+    );
+
+    it('should allow access when one of multiple required capabilities is present', async () => {
+      // Given
+      loadUserServiceWithCapabilitiesBySpy.mockResolvedValue([
+        {
+          user_service_capability: [
+            {
+              subscription_capability: {
+                service_capability: {
+                  name: ServiceRestriction.Delete,
+                },
+              },
+            },
+          ],
+        },
+      ]);
+
+      // When
+      const call = assertUserHasCapaOnService(
+        requestContextAdminSecondOrga.user,
+        SERVICES.INSTANCES.EPIC.ID,
+        [ServiceRestriction.Upsert, ServiceRestriction.Delete]
+      );
+
+      // Then
+      await expect(call).resolves.toBeUndefined();
     });
   });
 });
