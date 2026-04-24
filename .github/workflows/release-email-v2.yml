@@ -67,7 +67,6 @@ jobs:
           release_url = os.environ.get("RELEASE_URL", "")
           release_body = os.environ.get("RELEASE_BODY", "")
 
-          # ✅ NEW: proper Markdown → HTML conversion
           release_body_html = markdown.markdown(
             release_body,
             extensions=["fenced_code", "tables", "nl2br"]
