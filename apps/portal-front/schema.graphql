@@ -149,7 +149,7 @@ type Mutation {
   cancelDeploymentRequest(deploymentRequestId: DeploymentRequestId!, cancellationReason: String): DeploymentRequest
   adminCancelDeploymentRequest(deploymentRequestId: DeploymentRequestId): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
-  updateServiceGroups(input: UpdateServiceGroupsInput!): Success
+  updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
   updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
   deleteDocument(documentId: ID, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!

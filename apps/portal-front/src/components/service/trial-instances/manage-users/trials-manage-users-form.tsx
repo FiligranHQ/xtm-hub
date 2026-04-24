@@ -73,16 +73,6 @@ export const TrialsManageUsersForm: React.FC<Props> = ({
           groups: input.groups.map(({ id, userIds }) => ({ id, userIds })),
         },
       },
-      updater: (store) => {
-        input.groups.forEach(({ id: groupId, userIds }) => {
-          const group = store.get(groupId);
-          if (!group) return;
-          const userRecords = userIds
-            .map((uid) => store.get(uid))
-            .filter((record): record is NonNullable<typeof record> => record != null);
-          group.setLinkedRecords(userRecords, 'users');
-        });
-      },
       onError(error) {
         toast({
           variant: 'destructive',
