@@ -1527,6 +1527,7 @@ export type QueryPendingUsersArgs = {
 
 export type QueryPlatformAssociatedOrganizationArgs = {
   platformId: Scalars['String']['input'];
+  tenantId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
