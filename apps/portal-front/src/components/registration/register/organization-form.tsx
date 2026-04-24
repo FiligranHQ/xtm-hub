@@ -31,6 +31,11 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
   const { displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
 
+  const organizationalWorkspace = organizations.find(
+    (organization) => !organization.personal_space
+  );
+  const defaultOrganization = organizationalWorkspace ?? organizations[0];
+
   return (
     <div className="flex items-center justify-center">
       <div className="flex flex-col justify-between gap-m">
@@ -44,7 +49,7 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
         </div>
         <AutoForm
           formSchema={selectOrganizationFormSchema}
-          values={{ organizationId: organizations[0]?.id ?? '' }}
+          values={{ organizationId: defaultOrganization?.id ?? '' }}
           onSubmit={({ organizationId }) => {
             confirm(organizationId);
           }}
@@ -53,6 +58,13 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
               fieldType: ({ field }) => (
                 <div className="flex flex-col gap-2">
                   {organizations.map((organization) => {
+                    const isPersonal = organization.personal_space;
+                    const typeLabelKey = isPersonal
+                      ? 'Register.OrganizationForm.PersonalWorkspace'
+                      : 'Register.OrganizationForm.OrganizationalWorkspace';
+                    const descriptionKey = isPersonal
+                      ? 'Register.OrganizationForm.PersonalDescription'
+                      : 'Register.OrganizationForm.OrganizationalDescription';
                     return (
                       <FormItem
                         key={organization.id}
@@ -70,11 +82,22 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
                           />
                         </FormControl>
 
-                        <FormLabel
-                          id={`register-form-organization-${organization.name}`}
-                          className="!mt-0">
-                          {organization.name}
-                        </FormLabel>
+                        <div className="flex flex-col gap-xs">
+                          <FormLabel
+                            id={`register-form-organization-${organization.name}`}
+                            className="!mt-0">
+                            {organization.name} ({t(typeLabelKey)})
+                            {!isPersonal && (
+                              <span className="italic">
+                                {' - '}
+                                {t('Register.OrganizationForm.Recommended')}
+                              </span>
+                            )}
+                          </FormLabel>
+                          <p className="text-sm text-muted-foreground">
+                            {t(descriptionKey)}
+                          </p>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     );

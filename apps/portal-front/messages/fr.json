@@ -622,7 +622,12 @@
       }
     },
     "OrganizationForm": {
-      "Description": "Choisir l'espace organisationnel auquel s'inscrire",
+      "Description": "Choisissez votre espace de travail",
+      "OrganizationalDescription": "Partagez les ressources et l'activité avec votre équipe.",
+      "OrganizationalWorkspace": "Espace de travail organisationnel",
+      "PersonalDescription": "Gardez les ressources et l'activité privées à votre compte.",
+      "PersonalWorkspace": "Espace de travail personnel",
+      "Recommended": "Recommandé",
       "Title": "Vous êtes sur le point d'enregistrer votre plateforme {platformIdentifier} dans XTM Hub"
     },
     "SameOrganization": {
