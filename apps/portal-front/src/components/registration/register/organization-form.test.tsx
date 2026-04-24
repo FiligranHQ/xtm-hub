@@ -83,8 +83,8 @@ vi.mock('@filigran/ui', async (importOriginal) => ({
 
 const twoOrgs: organizationListUserOrganizationsQuery$data = {
   userOrganizations: [
-    { id: 'org-1', name: 'Org One' },
-    { id: 'org-2', name: 'Org Two' },
+    { id: 'org-1', name: 'Org One', personal_space: false },
+    { id: 'org-2', name: 'Org Two', personal_space: true },
   ],
 };
 
@@ -110,8 +110,8 @@ const renderForm = (
 describe('RegisterOrganizationForm', () => {
   it('renders the whole component properly', () => {
     renderForm();
-    expect(screen.getByText('Org One')).toBeInTheDocument();
-    expect(screen.getByText('Org Two')).toBeInTheDocument();
+    expect(screen.getByText('Org One', { exact: false })).toBeInTheDocument();
+    expect(screen.getByText('Org Two', { exact: false })).toBeInTheDocument();
     expect(screen.getAllByRole('radio')).toHaveLength(2);
     expect(
       screen.getByText('Register.OrganizationForm.Title')
