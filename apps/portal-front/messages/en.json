@@ -622,7 +622,12 @@
       }
     },
     "OrganizationForm": {
-      "Description": "Choose which organization space to register to",
+      "Description": "Choose your workspace",
+      "OrganizationalDescription": "Share resources and activity with your team.",
+      "OrganizationalWorkspace": "Organizational workspace",
+      "PersonalDescription": "Keep resources and activity private to your account.",
+      "PersonalWorkspace": "Personal workspace",
+      "Recommended": "Recommended",
       "Title": "You're about to register your {platformIdentifier} platform into XTM Hub"
     },
     "SameOrganization": {
