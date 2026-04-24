@@ -163,7 +163,7 @@ export const ServiceSlugAddOrgaForm: FunctionComponent<
                 control={form.control}
                 name="capability_ids"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2">
+                  <FormItem className="flex flex-row items-center">
                     <Checkbox
                       className="mt-xs"
                       checked={field.value.includes(id)}
