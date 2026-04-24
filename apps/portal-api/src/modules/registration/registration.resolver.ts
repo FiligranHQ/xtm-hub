@@ -74,10 +74,11 @@ const resolvers: Resolvers = {
      */
     openCTIPlatformRegistrationStatus: async (_, { input }) =>
       registrationApp.loadPlatformRegistrationStatus(input),
-    platformAssociatedOrganization: async (_, { platformId }) => {
+    platformAssociatedOrganization: async (_, { platformId, tenantId }) => {
       try {
         return await registrationApp.loadPlatformAssociatedOrganization(
-          platformId
+          platformId,
+          tenantId
         );
       } catch (error) {
         throw mapToGraphQLError(error);

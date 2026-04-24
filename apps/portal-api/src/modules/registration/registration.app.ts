@@ -66,13 +66,37 @@ import { ServiceConfigurationDomain } from './service-configuration/service-conf
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
-    platformId: string
+    platformId: string,
+    tenantId?: string | null
   ): Promise<Organization | null> => {
     const { user } = requestContext.require();
     const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId);
+      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId, {
+        tenantId,
+      });
     if (!serviceConfiguration) {
       return null;
+    }
+
+    if (!tenantId) {
+      const serviceDefinition = await loadServiceDefinitionByServiceInstance(
+        serviceConfiguration.service_instance_id
+      );
+      if (!serviceDefinition) {
+        throw new Error(ErrorCode.ServiceDefinitionNotFound);
+      }
+      const platformIdentifier = serviceDefinition.identifier
+        ? platformIdentifierMappedByServiceDefinitionIdentifier[
+          serviceDefinition.identifier as ServiceDefinitionIdentifier
+          ]
+        : undefined;
+      if (!platformIdentifier) {
+        throw new Error(ErrorCode.InvalidPlatformIdentifier);
+      }
+      const config = serviceConfiguration.config as PlatformConfiguration;
+      if (isTenantIdRequired(platformIdentifier, config.platform_version)) {
+        throw new Error(BadRequestErrorCode.TenantIdMandatory);
+      }
     }
 
     const subscription = await loadSubscriptionBy({

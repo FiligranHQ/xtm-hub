@@ -94,6 +94,9 @@ export const SERVICES = {
     OPENCTI_INTEGRATIONS: {
       ID: '42007953-4dbc-480a-8693-8c05f1123460' as ServiceDefinitionId,
     },
+    OPENAEV_REGISTRATION: {
+      ID: 'e66a6b50-1f92-4f62-b84c-88ed6b871790' as ServiceDefinitionId,
+    },
     OPENCTI_REGISTRATION: {
       ID: '5f769173-5ace-4ef3-b04f-2c95609c5b59' as ServiceDefinitionId,
     },
