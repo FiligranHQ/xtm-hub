@@ -35,13 +35,6 @@ export const platformIdentifierMappedByShareableResourceType: Record<
   [ShareableResourceType.OPENAEV_SCENARIO]: PlatformIdentifierEnum.OPENAEV,
 };
 
-export const isAutomaticSubscriptionService = (
-  service_definition_identifier: ServiceDefinitionIdentifierEnum
-) =>
-  [ServiceDefinitionIdentifierEnum.XTM_SUITE_ROADMAP].includes(
-    service_definition_identifier
-  );
-
 export const isExpired = (endDate: Date | undefined | null): boolean => {
   return endDate ? new Date(endDate) < new Date() : false;
 };

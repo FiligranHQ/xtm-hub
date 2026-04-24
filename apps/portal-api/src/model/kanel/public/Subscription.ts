@@ -15,14 +15,6 @@ export default interface Subscription {
 
   service_instance_id: ServiceInstanceId | null;
 
-  status: string | null;
-
-  joining: string | null;
-
-  billing: number | null;
-
-  justification: string | null;
-
   start_date: Date | null;
 
   end_date: Date | null;
@@ -36,17 +28,6 @@ export interface SubscriptionInitializer {
 
   service_instance_id?: ServiceInstanceId | null;
 
-  /** Default value: 'ACCEPTED'::text */
-  status?: string | null;
-
-  /** Default value: 'AUTO_JOIN'::text */
-  joining?: string | null;
-
-  /** Default value: 100 */
-  billing?: number | null;
-
-  justification?: string | null;
-
   start_date?: Date | null;
 
   end_date?: Date | null;
@@ -59,14 +40,6 @@ export interface SubscriptionMutator {
   organization_id?: OrganizationId | null;
 
   service_instance_id?: ServiceInstanceId | null;
-
-  status?: string | null;
-
-  joining?: string | null;
-
-  billing?: number | null;
-
-  justification?: string | null;
 
   start_date?: Date | null;
 

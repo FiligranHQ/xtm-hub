@@ -1034,13 +1034,6 @@ enum ServiceInstanceCreationStatus {
   READY
 }
 
-enum ServiceInstanceJoinType {
-  JOIN_INVITE
-  JOIN_ASK
-  JOIN_AUTO
-  JOIN_SELF
-}
-
 enum ServiceInstanceTag {
   openCTI
   openAEV
@@ -1072,7 +1065,6 @@ type ServiceInstance implements Node {
   subscriptions: [SubscriptionModel]
   capabilities: [String]!
   public: Boolean
-  join_type: ServiceInstanceJoinType
   tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition
   logo_document_id: ID
@@ -1495,7 +1487,6 @@ enum SubscriptionOrdering {
   organization_name
   start_date
   end_date
-  status
   service_name
   service_provider
   service_type
@@ -1508,7 +1499,6 @@ type SubscriptionModel implements Node {
   service_instance_id: ID!
   start_date: Date
   end_date: Date
-  status: String
   organization: Organization!
   service_url: String!
   service_instance: ServiceInstance

@@ -23,7 +23,6 @@ import {
 import {
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
-  ServiceInstanceJoinType,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../../__generated__/resolvers-types';
@@ -137,13 +136,9 @@ describe('service Instance app', () => {
       expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should auto-join user when subscription has AUTO_JOIN mode and user has no access', async () => {
+    it('should auto-join user when user has no access', async () => {
       // Given
-      const autoJoinSubscription = {
-        ...mockSubscription,
-        joining: 'AUTO_JOIN',
-      };
-      loadSubscriptionBySpy.mockResolvedValue(autoJoinSubscription);
+      loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
       loadUserServiceBySpy.mockResolvedValue([]);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
       grantServiceAccessSpy.mockResolvedValue(undefined);
@@ -156,44 +151,6 @@ describe('service Instance app', () => {
 
       // Then
       expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
-      expect(grantServiceAccessSpy).toHaveBeenCalledWith(
-        [GenericServiceCapabilityIds.AccessId],
-        [mockUserId],
-        mockSubscriptionId
-      );
-    });
-
-    it('should auto-join organization and user when service has JOIN_AUTO and user has no access', async () => {
-      // Given
-      loadSubscriptionBySpy.mockResolvedValue(null);
-      loadUserServiceBySpy.mockResolvedValue([]);
-      loadServiceInstanceBySpy.mockResolvedValue({
-        ...mockServiceInstance,
-        join_type: ServiceInstanceJoinType.JoinAuto,
-      });
-      subscribeOrganizationToServiceSpy.mockResolvedValue({
-        ...mockSubscription,
-        joining: 'AUTO_JOIN',
-      });
-      grantServiceAccessSpy.mockResolvedValue(undefined);
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date('2024-01-01'));
-
-      // When
-      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        contextSimpleUserSecondOrga.user,
-        mockServiceInstanceId
-      );
-
-      // Then
-      expect(subscribeOrganizationToServiceSpy).toHaveBeenCalledWith({
-        organizationId:
-          contextSimpleUserSecondOrga.user.selected_organization_id,
-        serviceInstanceId: mockServiceInstanceId,
-        startDate: new Date('2024-01-01'),
-        endDate: null,
-        capabilityIds: [],
-      });
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
@@ -214,7 +171,6 @@ describe('service Instance app', () => {
         id: userOrgSubscriptionId,
         service_instance_id: mockServiceInstanceId,
         organization_id: userOrganizationId,
-        joining: 'AUTO_JOIN',
         start_date: new Date(),
         end_date: null,
       };
@@ -223,7 +179,6 @@ describe('service Instance app', () => {
         id: otherOrgSubscriptionId,
         service_instance_id: mockServiceInstanceId,
         organization_id: otherOrganizationId,
-        joining: 'AUTO_JOIN',
         start_date: new Date(),
         end_date: null,
       };
@@ -262,27 +217,6 @@ describe('service Instance app', () => {
       expect(loadServiceInstanceBySpy).toHaveBeenCalledBefore(
         loadSubscriptionBySpy
       );
-    });
-
-    it('should not auto-join user when subscription has INVITE_ONLY mode', async () => {
-      // Given
-      const inviteOnlySubscription = {
-        ...mockSubscription,
-        joining: 'INVITE_ONLY',
-      };
-      loadSubscriptionBySpy.mockResolvedValue(inviteOnlySubscription);
-      loadUserServiceBySpy.mockResolvedValue([]);
-      loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
-
-      // When
-      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        contextSimpleUserSecondOrga.user,
-        mockServiceInstanceId
-      );
-
-      // Then
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
-      expect(grantServiceAccessSpy).not.toHaveBeenCalled();
     });
 
     it('should handle multiple user services', async () => {
@@ -331,12 +265,8 @@ describe('service Instance app', () => {
 
     it('should propagate errors from grantServiceAccess', async () => {
       // Given
-      const autoJoinSubscription = {
-        ...mockSubscription,
-        joining: 'AUTO_JOIN',
-      };
       const error = new Error('Other error');
-      loadSubscriptionBySpy.mockResolvedValue(autoJoinSubscription);
+      loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
       loadUserServiceBySpy.mockResolvedValue([]);
       grantServiceAccessSpy.mockRejectedValue(error);
 
@@ -400,7 +330,10 @@ describe('service Instance app', () => {
     it('should update name, sync config title, dispatch, and return RegisteredPlatform', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
+          serviceInstance.id
+        ) as ServiceInstanceId,
         name: 'Updated Platform Name',
       };
 
@@ -438,7 +371,10 @@ describe('service Instance app', () => {
         mime_type: 'image/png',
       });
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
+          serviceInstance.id
+        ) as ServiceInstanceId,
         name: 'Updated Platform Name',
       };
 
@@ -463,7 +399,10 @@ describe('service Instance app', () => {
     it('should not update service instance or config when no fields to update', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
+          serviceInstance.id
+        ) as ServiceInstanceId,
       };
 
       // When
@@ -486,7 +425,10 @@ describe('service Instance app', () => {
     it('should return null illustration_document_id when service instance has none', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
+          serviceInstance.id
+        ) as ServiceInstanceId,
         name: 'Updated Name',
       };
 
@@ -512,7 +454,10 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           nonExistentId,
           {
-            serviceInstanceId: toGlobalId('ServiceInstance', nonExistentId),
+            serviceInstanceId: toGlobalId(
+              'ServiceInstance',
+              nonExistentId
+            ) as ServiceInstanceId,
             name: 'Name',
           },
           null
@@ -542,7 +487,10 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId('ServiceInstance', mockId),
+            serviceInstanceId: toGlobalId(
+              'ServiceInstance',
+              mockId
+            ) as ServiceInstanceId,
             name: 'Name',
           },
           null
@@ -576,7 +524,10 @@ describe('service Instance app', () => {
           contextSimpleUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId('ServiceInstance', mockId),
+            serviceInstanceId: toGlobalId(
+              'ServiceInstance',
+              mockId
+            ) as ServiceInstanceId,
             name: 'Name',
           },
           null
@@ -588,7 +539,10 @@ describe('service Instance app', () => {
       // Given
       uploadNewFileSpy.mockRejectedValue(new Error('Upload failed'));
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId('ServiceInstance', serviceInstance.id),
+        serviceInstanceId: toGlobalId(
+          'ServiceInstance',
+          serviceInstance.id
+        ) as ServiceInstanceId,
         name: 'Updated Name',
       };
 
@@ -664,7 +618,10 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId('ServiceInstance', mockId),
+            serviceInstanceId: toGlobalId(
+              'ServiceInstance',
+              mockId
+            ) as ServiceInstanceId,
             name: 'Updated',
           },
           null

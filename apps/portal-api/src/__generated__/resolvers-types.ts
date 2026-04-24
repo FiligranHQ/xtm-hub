@@ -1844,7 +1844,6 @@ export type ServiceInstance = Node & {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   illustration_document_id?: Maybe<Scalars['ID']['output']>;
-  join_type?: Maybe<ServiceInstanceJoinType>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   logo_document_id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
@@ -1881,13 +1880,6 @@ export enum ServiceInstanceFilterKey {
   Public = 'public',
   ServiceDefinitionIdentifier = 'service_definition_identifier',
   Tags = 'tags'
-}
-
-export enum ServiceInstanceJoinType {
-  JoinAsk = 'JOIN_ASK',
-  JoinAuto = 'JOIN_AUTO',
-  JoinInvite = 'JOIN_INVITE',
-  JoinSelf = 'JOIN_SELF'
 }
 
 export enum ServiceInstanceOrdering {
@@ -2037,7 +2029,6 @@ export type SubscriptionModel = Node & {
   service_instance_id: Scalars['ID']['output'];
   service_url: Scalars['String']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
   subscription_capability?: Maybe<Array<Maybe<SubscriptionCapability>>>;
   user_service: Array<Maybe<UserService>>;
 };
@@ -2049,8 +2040,7 @@ export enum SubscriptionOrdering {
   ServiceName = 'service_name',
   ServiceProvider = 'service_provider',
   ServiceType = 'service_type',
-  StartDate = 'start_date',
-  Status = 'status'
+  StartDate = 'start_date'
 }
 
 export type Success = {
@@ -2591,7 +2581,6 @@ export type ResolversTypes = ResolversObject<{
   ServiceInstanceFilter: ServiceInstanceFilter;
   ServiceInstanceFilterKey: ServiceInstanceFilterKey;
   ServiceInstanceId: ResolverTypeWrapper<Scalars['ServiceInstanceId']['output']>;
-  ServiceInstanceJoinType: ServiceInstanceJoinType;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
   ServiceInstanceTag: ServiceInstanceTag;
@@ -3573,7 +3562,6 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   illustration_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  join_type?: Resolver<Maybe<ResolversTypes['ServiceInstanceJoinType']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3713,7 +3701,6 @@ export type SubscriptionModelResolvers<ContextType = PortalContext, ParentType e
   service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   service_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscription_capability?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionCapability']>>>, ParentType, ContextType>;
   user_service?: Resolver<Array<Maybe<ResolversTypes['UserService']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

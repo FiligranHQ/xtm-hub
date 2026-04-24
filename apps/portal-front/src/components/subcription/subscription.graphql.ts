@@ -35,7 +35,6 @@ export const subscriptionFragment = graphql`
     }
     start_date
     end_date
-    status
   }
 `;
 
