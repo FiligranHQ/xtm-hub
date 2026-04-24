@@ -72,7 +72,7 @@
     "eslint-config-prettier": "10.1.8",
     "husky": "9.1.7",
     "i18n-auto-translation": "2.2.3",
-    "jsdom": "29.0.1",
+    "jsdom": "29.0.2",
     "lint-staged": "16.4.0",
     "monocart-reporter": "2.10.1",
     "prettier": "3.8.3",
@@ -82,7 +82,7 @@
     "relay-compiler": "20.1.1",
     "relay-test-utils": "20.1.1",
     "typescript": "5.9.3",
-    "vite": "8.0.8",
+    "vite": "8.0.9",
     "vite-plugin-relay": "2.1.0",
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.4"
