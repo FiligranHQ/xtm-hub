@@ -27,14 +27,13 @@ export const RegisterOrganizationForm: React.FC<Props> = ({
   confirm,
   userOrganizationsQueryData,
 }) => {
-  const organizations = userOrganizationsQueryData.userOrganizations;
+  const organizations = [...userOrganizationsQueryData.userOrganizations].sort(
+    (a, b) => Number(a.personal_space) - Number(b.personal_space)
+  );
   const { displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
 
-  const organizationalWorkspace = organizations.find(
-    (organization) => !organization.personal_space
-  );
-  const defaultOrganization = organizationalWorkspace ?? organizations[0];
+  const defaultOrganization = organizations[0];
 
   return (
     <div className="flex items-center justify-center">

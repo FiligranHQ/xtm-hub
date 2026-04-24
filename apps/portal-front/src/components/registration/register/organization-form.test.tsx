@@ -88,6 +88,14 @@ const twoOrgs: organizationListUserOrganizationsQuery$data = {
   ],
 };
 
+const mixedOrgs: organizationListUserOrganizationsQuery$data = {
+  userOrganizations: [
+    { id: 'org-personal', name: 'Personal', personal_space: true },
+    { id: 'org-pro-1', name: 'Pro One', personal_space: false },
+    { id: 'org-pro-2', name: 'Pro Two', personal_space: false },
+  ],
+};
+
 const renderForm = (
   orgs: organizationListUserOrganizationsQuery$data = twoOrgs,
   cancel: () => void = vi.fn(),
@@ -140,5 +148,24 @@ describe('RegisterOrganizationForm', () => {
   it('renders no radio buttons when there are no organizations', () => {
     renderForm({ userOrganizations: [] });
     expect(screen.queryAllByRole('radio')).toHaveLength(0);
+  });
+
+  it('renders professional organizations before the personal one', () => {
+    renderForm(mixedOrgs);
+    const radios = screen.getAllByRole('radio') as HTMLInputElement[];
+    expect(radios.map((radio) => radio.value)).toEqual([
+      'Pro One',
+      'Pro Two',
+      'Personal',
+    ]);
+  });
+
+  it('defaults to the first professional organization when submitted', () => {
+    const confirm = vi.fn();
+    renderForm(mixedOrgs, vi.fn(), confirm);
+    fireEvent.submit(
+      screen.getByRole('button', { name: 'Register.Confirm' }).closest('form')!
+    );
+    expect(confirm).toHaveBeenCalledWith('org-pro-1');
   });
 });
