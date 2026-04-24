@@ -42,6 +42,9 @@ jobs:
           TOKEN=$(az account get-access-token --resource-type ms-graph --query accessToken -o tsv)
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
 
+      - name: Install Python dependencies
+        run: pip install markdown
+
       - name: Send Email via Microsoft Graph
         shell: bash
         env:
@@ -54,23 +57,27 @@ jobs:
         run: |
           python - <<'PY'
           import json
-          import html
           import os
           import urllib.error
           import urllib.request
+          import markdown
 
           token = os.environ["GRAPH_TOKEN"]
           release_tag = os.environ.get("RELEASE_TAG", "")
           release_url = os.environ.get("RELEASE_URL", "")
           release_body = os.environ.get("RELEASE_BODY", "")
 
-          safe_release_body = html.escape(release_body).replace("\n", "<br/>")
+          # ✅ NEW: proper Markdown → HTML conversion
+          release_body_html = markdown.markdown(
+            release_body,
+            extensions=["fenced_code", "tables", "nl2br"]
+          )
 
           html_body = f"""🔔 DING DING 🔔<br/><br/>
           Dear Filigran team,<br/><br/>
           The Engineering team is glad to inform you that <a href=\"{release_url}\" target=\"_blank\">XTM Hub {release_tag}</a> has been released 🥳!<br/><br/>
           <h2>Release Note</h2>
-          {safe_release_body}
+          {release_body_html}
           <br/><br/>
           Feel free to reach out to the <a href=\"mailto:engineering-product-management@filigran.io\">product management team</a> to get more information 🚀<br/><br/>
           Thank you all for your efforts in serving our community and our customers 🎀
