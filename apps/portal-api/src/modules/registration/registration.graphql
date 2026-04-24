@@ -158,7 +158,7 @@ type Query {
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform @auth
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
     @auth
-  platformAssociatedOrganization(platformId: String!): Organization @auth
+  platformAssociatedOrganization(platformId: String!, tenantId: String): Organization @auth
 }
 
 type Mutation {
