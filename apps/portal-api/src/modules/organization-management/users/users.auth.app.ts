@@ -1,12 +1,20 @@
+import config from 'config';
 import { MutationLoginArgs } from '../../../__generated__/resolvers-types';
 import portalConfig from '../../../config';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { validatePassword } from '../../../security/util/user';
+import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { loadUserBy, updateUserAtLogin } from './user-domain/users.domain';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   return validatePassword(user.salt, password, user.password);
+};
+
+const isLocalAuthEnabled = (): boolean => {
+  const loginSettings =
+    config.get<{ provider: string }[]>('login_settings') ?? [];
+  return loginSettings.some((entry) => entry.provider === 'local');
 };
 
 export const UsersAuthApp = {
@@ -14,6 +22,10 @@ export const UsersAuthApp = {
     context: PortalContext,
     { email, password }: MutationLoginArgs
   ) => {
+    if (!isLocalAuthEnabled()) {
+      throw ForbiddenAccess('Local authentication is not enabled');
+    }
+
     const { req } = context;
     const loggedUser = await loadUserBy({ email });
     if (loggedUser && validPassword(loggedUser, password)) {
