@@ -83,8 +83,16 @@ vi.mock('@filigran/ui', async (importOriginal) => ({
 
 const twoOrgs: organizationListUserOrganizationsQuery$data = {
   userOrganizations: [
-    { id: 'org-1', name: 'Org One' },
-    { id: 'org-2', name: 'Org Two' },
+    { id: 'org-1', name: 'Org One', personal_space: false },
+    { id: 'org-2', name: 'Org Two', personal_space: true },
+  ],
+};
+
+const mixedOrgs: organizationListUserOrganizationsQuery$data = {
+  userOrganizations: [
+    { id: 'org-personal', name: 'Personal', personal_space: true },
+    { id: 'org-pro-1', name: 'Pro One', personal_space: false },
+    { id: 'org-pro-2', name: 'Pro Two', personal_space: false },
   ],
 };
 
@@ -110,8 +118,8 @@ const renderForm = (
 describe('RegisterOrganizationForm', () => {
   it('renders the whole component properly', () => {
     renderForm();
-    expect(screen.getByText('Org One')).toBeInTheDocument();
-    expect(screen.getByText('Org Two')).toBeInTheDocument();
+    expect(screen.getByText('Org One', { exact: false })).toBeInTheDocument();
+    expect(screen.getByText('Org Two', { exact: false })).toBeInTheDocument();
     expect(screen.getAllByRole('radio')).toHaveLength(2);
     expect(
       screen.getByText('Register.OrganizationForm.Title')
@@ -140,5 +148,24 @@ describe('RegisterOrganizationForm', () => {
   it('renders no radio buttons when there are no organizations', () => {
     renderForm({ userOrganizations: [] });
     expect(screen.queryAllByRole('radio')).toHaveLength(0);
+  });
+
+  it('renders professional organizations before the personal one', () => {
+    renderForm(mixedOrgs);
+    const radios = screen.getAllByRole('radio') as HTMLInputElement[];
+    expect(radios.map((radio) => radio.value)).toEqual([
+      'Pro One',
+      'Pro Two',
+      'Personal',
+    ]);
+  });
+
+  it('defaults to the first professional organization when submitted', () => {
+    const confirm = vi.fn();
+    renderForm(mixedOrgs, vi.fn(), confirm);
+    fireEvent.submit(
+      screen.getByRole('button', { name: 'Register.Confirm' }).closest('form')!
+    );
+    expect(confirm).toHaveBeenCalledWith('org-pro-1');
   });
 });

@@ -358,7 +358,7 @@ export const UserServiceDomain = {
       .first();
   },
 
-  loadUserServiceCapability: async (
+  loadUserServiceGenericCapability: async (
     userId: UserId,
     subscriptionId: SubscriptionId,
     capability: GenericServiceCapabilityName
