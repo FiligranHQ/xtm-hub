@@ -24,7 +24,7 @@ export const ServiceGroupsByServiceInstanceId = graphql`
 export const UpdateServiceGroupsMutation = graphql`
   mutation serviceGroupsUpdateMutation($input: UpdateServiceGroupsInput!) {
     updateServiceGroups(input: $input) {
-      success
+      ...serviceGroup_fragment
     }
   }
 `;

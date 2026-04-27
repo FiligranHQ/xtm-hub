@@ -849,7 +849,7 @@ export type Mutation = {
   updateDocument: Document;
   updateEpic: Epic;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
-  updateServiceGroups?: Maybe<Success>;
+  updateServiceGroups: Array<ServiceGroup>;
   uploadUserPicture: User;
 };
 
@@ -3299,7 +3299,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'documentId' | 'input' | 'metadata'>>;
   updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
-  updateServiceGroups?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
+  updateServiceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
   uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
 }>;
 
