@@ -299,8 +299,7 @@ extend type Mutation {
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   updateDeploymentRequest(
     input: UpdateDeploymentRequestInput!
-  ): PlatformDeploymentRequest!
-    @system_token(portalCapa: [MANAGE_DEPLOYMENT])
+  ): PlatformDeploymentRequest! @system_token(portalCapa: [MANAGE_DEPLOYMENT])
   reorderDeploymentRequestInQueue(
     input: ReorderDeploymentRequestInQueueInput!
   ): Success! @auth(portalCapa: [BYPASS, MODIFY_TRIALS])

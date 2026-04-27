@@ -29,7 +29,7 @@ export const NewsFeedApp = {
 
     const serviceConfiguration =
       await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-        platformId,
+        platform_id: platformId,
         token,
       });
     if (!serviceConfiguration) {
