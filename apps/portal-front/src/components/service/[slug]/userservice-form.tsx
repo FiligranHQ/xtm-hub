@@ -325,7 +325,7 @@ export const UserServiceForm: FunctionComponent<UserServiceFormProps> = ({
               control={(form as typeof capabilitiesForm).control}
               name="capabilities"
               render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
+                <FormItem className="flex flex-row items-center">
                   <FormControl>
                     <Checkbox
                       {...field}
