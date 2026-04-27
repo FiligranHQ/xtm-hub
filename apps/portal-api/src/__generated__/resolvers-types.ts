@@ -1353,6 +1353,7 @@ export type PlatformInput = {
   contract: PlatformContract;
   id: Scalars['ID']['input'];
   tenantId?: InputMaybe<Scalars['String']['input']>;
+  tenantName?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
   version?: InputMaybe<Scalars['String']['input']>;

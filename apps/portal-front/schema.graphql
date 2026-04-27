@@ -856,6 +856,7 @@ input PlatformInput {
   contract: PlatformContract!
   version: String
   tenantId: String
+  tenantName: String
 }
 
 enum PlatformIdentifier {
