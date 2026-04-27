@@ -143,6 +143,7 @@ describe('registration connectivity app', () => {
             platformVersion: '9.Y.Z',
             url: 'http://example.com/tenant',
             tenantId: uuidv4(),
+            tenantName: 'My tenant',
             platformIdentifier: PlatformIdentifier.Openaev,
           }
         );
@@ -153,6 +154,7 @@ describe('registration connectivity app', () => {
     it('should return active when platform is registered with tenant_id and correct tenant_id is provided', async () => {
       const platformId = uuidv4();
       const tenantId = uuidv4();
+      const tenantName = 'My tenant';
       const token = await registrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
@@ -162,6 +164,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId,
+          tenantName,
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -174,6 +177,7 @@ describe('registration connectivity app', () => {
             platformVersion: '6.7.18',
             url: 'http://example.com/tenant',
             tenantId,
+            tenantName,
             platformIdentifier: PlatformIdentifier.Openaev,
           }
         );
@@ -184,6 +188,7 @@ describe('registration connectivity app', () => {
     it('should update the url in the configuration when url changes', async () => {
       const platformId = uuidv4();
       const tenantId = uuidv4();
+      const tenantName = 'My tenant';
       const token = await registrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
@@ -193,6 +198,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId,
+          tenantName,
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -205,6 +211,7 @@ describe('registration connectivity app', () => {
           platformVersion: '6.7.18',
           url: newUrl,
           tenantId,
+          tenantName,
           platformIdentifier: PlatformIdentifier.Openaev,
         }
       );
@@ -215,6 +222,46 @@ describe('registration connectivity app', () => {
           { tenantId }
         );
       expect((config?.config as Record<string, unknown>)['url']).toBe(newUrl);
+    });
+
+    it('should update the tenant_name in the configuration when tenant_name changes', async () => {
+      const platformId = uuidv4();
+      const tenantId = uuidv4();
+      const token = await registrationApp.registerPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        platform: {
+          id: platformId,
+          url: 'http://example.com',
+          contract: PlatformContract.Ee,
+          title: 'Fake title',
+          version: '1.0.0',
+          tenantId,
+          tenantName: 'Old tenant name',
+        },
+        identifier: PlatformIdentifier.Openaev,
+      });
+
+      const updatedTenantName = 'Updated tenant name';
+      await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+        {
+          platformId,
+          token,
+          platformVersion: '1.0.0',
+          url: 'http://example.com',
+          tenantId,
+          tenantName: updatedTenantName,
+          platformIdentifier: PlatformIdentifier.Openaev,
+        }
+      );
+
+      const config =
+        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          platformId,
+          { tenantId }
+        );
+      expect((config?.config as Record<string, unknown>)['tenant_name']).toBe(
+        updatedTenantName
+      );
     });
 
     it('should return not found when platform is registered with tenant_id but wrong tenant_id is provided', async () => {
@@ -229,6 +276,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId,
+          tenantName: 'My tenant',
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -241,6 +289,7 @@ describe('registration connectivity app', () => {
             platformVersion: '6.7.18',
             url: 'http://example.com/tenantId',
             tenantId: uuidv4(),
+            tenantName: 'Other tenant',
             platformIdentifier: PlatformIdentifier.Openaev,
           }
         );
@@ -253,6 +302,7 @@ describe('registration connectivity app', () => {
     it('should return active and update config with tenantId when a legacy platform (registered without tenantId on an old version) upgrades to a version that requires it', async () => {
       const platformId = uuidv4();
       const tenantId = uuidv4();
+      const tenantName = 'My tenant';
       const token = await registrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
@@ -273,6 +323,7 @@ describe('registration connectivity app', () => {
             platformVersion: '2.4.0',
             url: 'http://example.com/tenantId',
             tenantId,
+            tenantName,
             platformIdentifier: PlatformIdentifier.Openaev,
           }
         );
@@ -283,7 +334,10 @@ describe('registration connectivity app', () => {
           platformId,
           { tenantId }
         );
-      expect(updatedConfig?.config).toMatchObject({ tenant_id: tenantId });
+      expect(updatedConfig?.config).toMatchObject({
+        tenant_id: tenantId,
+        tenant_name: tenantName,
+      });
     });
   });
 
@@ -299,6 +353,7 @@ describe('registration connectivity app', () => {
             tenants: [
               {
                 tenantId,
+                tenantName: 'My tenant',
                 token: uuidv4(),
                 url: 'http://example.com/tenant1',
               },
@@ -317,6 +372,8 @@ describe('registration connectivity app', () => {
       const platformId = uuidv4();
       const tenantId1 = uuidv4();
       const tenantId2 = uuidv4();
+      const tenantName1 = 'Tenant One';
+      const tenantName2 = 'Tenant Two';
 
       const token1 = await registrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
@@ -327,6 +384,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId: tenantId1,
+          tenantName: tenantName1,
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -340,6 +398,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId: tenantId2,
+          tenantName: tenantName2,
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -353,11 +412,13 @@ describe('registration connectivity app', () => {
             tenants: [
               {
                 tenantId: tenantId1,
+                tenantName: tenantName1,
                 token: token1,
                 url: 'http://example.com/tenant1',
               },
               {
                 tenantId: tenantId2,
+                tenantName: tenantName2,
                 token: token2,
                 url: 'http://example.com/tenant2',
               },
@@ -393,6 +454,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId,
+          tenantName: 'My tenant',
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -404,7 +466,12 @@ describe('registration connectivity app', () => {
             platformVersion: '6.7.18',
             platformIdentifier: PlatformIdentifier.Openaev,
             tenants: [
-              { tenantId, token: uuidv4(), url: 'http://example.com/tenant' },
+              {
+                tenantId,
+                tenantName: 'My tenant',
+                token: uuidv4(),
+                url: 'http://example.com/tenant',
+              },
             ],
           }
         );
@@ -442,6 +509,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId,
+          tenantName: 'My tenant',
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -455,9 +523,15 @@ describe('registration connectivity app', () => {
             platformVersion: '6.7.18',
             platformIdentifier: PlatformIdentifier.Openaev,
             tenants: [
-              { tenantId, token, url: 'http://example.com/tenant1' },
+              {
+                tenantId,
+                tenantName: 'My tenant',
+                token,
+                url: 'http://example.com/tenant1',
+              },
               {
                 tenantId: failingTenantId,
+                tenantName: 'Failing tenant',
                 token: uuidv4(),
                 url: 'http://example.com/tenant2',
               },
@@ -491,6 +565,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId: tenantId1,
+          tenantName: 'Tenant One',
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -504,6 +579,7 @@ describe('registration connectivity app', () => {
           title: 'Fake title',
           version: '1.0.0',
           tenantId: tenantId2,
+          tenantName: 'Tenant Two',
         },
         identifier: PlatformIdentifier.Openaev,
       });
@@ -517,6 +593,7 @@ describe('registration connectivity app', () => {
             tenants: [
               {
                 tenantId: tenantId1,
+                tenantName: 'Tenant One',
                 token: token1,
                 url: 'http://example.com/tenantId1',
               },

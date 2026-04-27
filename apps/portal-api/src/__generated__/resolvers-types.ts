@@ -1701,6 +1701,7 @@ export type RefreshPlatformRegistrationConnectivityStatusSingleTenantInput = {
   platformIdentifier: PlatformIdentifier;
   platformVersion: Scalars['String']['input'];
   tenantId: Scalars['String']['input'];
+  tenantName: Scalars['String']['input'];
   token: Scalars['String']['input'];
   url: Scalars['String']['input'];
 };
@@ -2109,6 +2110,7 @@ export type TelemetryResponse = {
 
 export type TenantDetails = {
   tenantId: Scalars['String']['input'];
+  tenantName: Scalars['String']['input'];
   token: Scalars['String']['input'];
   url: Scalars['String']['input'];
 };

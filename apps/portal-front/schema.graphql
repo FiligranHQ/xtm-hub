@@ -933,11 +933,13 @@ input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
   platformVersion: String!
   url: String!
   tenantId: String!
+  tenantName: String!
   platformIdentifier: PlatformIdentifier!
 }
 
 input TenantDetails {
   tenantId: String!
+  tenantName: String!
   token: String!
   url: String!
 }
