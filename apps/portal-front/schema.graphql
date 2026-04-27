@@ -842,6 +842,7 @@ type RegisteredPlatform implements Node {
   contract: PlatformContract!
   platform_id: String!
   tenant_id: String
+  tenant_name: String
   identifier: ServiceDefinitionIdentifier!
   version: String
   illustration_document_id: DocumentId

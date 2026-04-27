@@ -535,6 +535,7 @@ const mapDomainRegisteredPlatformToGraphQL = (
     id: platform.id,
     platform_id: platform.config?.platform_id ?? platform.id,
     tenant_id: platform.config?.tenant_id,
+    tenant_name: platform.config?.tenant_name,
     title: platform.config?.platform_title ?? defaultTitle,
     url: platform.config?.platform_url ?? '',
     contract: platform.config?.platform_contract ?? PlatformContract.Trial,
