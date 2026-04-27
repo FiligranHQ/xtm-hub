@@ -663,7 +663,8 @@
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_registration": "OpenCTI Registration",
-      "vault": "Vault"
+      "vault": "Vault",
+      "xtm_suite_roadmap": "XTM Suite Roadmap"
     },
     "Capabilities": {
       "AccessServiceDescription": "Vous avez uniquement accès à un service",

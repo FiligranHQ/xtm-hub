@@ -1,7 +1,4 @@
-import {
-  DeploymentRequestDeploymentType,
-  Success,
-} from '../../../__generated__/resolvers-types';
+import { DeploymentRequestDeploymentType } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
 import ServiceGroup, {
@@ -41,7 +38,9 @@ export const ServiceGroupApp = {
     return ServiceGroupDomain.loadGroupUsers(groupId);
   },
 
-  updateGroups: async (groups: UpdateGroupsPayload): Promise<Success> => {
+  updateGroups: async (
+    groups: UpdateGroupsPayload
+  ): Promise<ServiceGroup[]> => {
     const { user } = requestContext.require();
     const groupIds = groups.map(({ id }) => id);
 
@@ -132,9 +131,9 @@ export const ServiceGroupApp = {
       }
     }
 
-    return {
-      success: true,
-    };
+    return ServiceGroupDomain.loadServiceGroups({
+      service_instance_id: serviceInstanceIds[0],
+    });
   },
   removeExpiredGroups: async (): Promise<void> => {
     const rows = await ServiceGroupDomain.loadGroupsForExpiredTrials();

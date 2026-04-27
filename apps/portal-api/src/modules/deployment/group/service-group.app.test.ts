@@ -189,7 +189,8 @@ describe('serviceGroupApp', () => {
 
       const result = await ServiceGroupApp.updateGroups(bypassPayload);
 
-      expect(result.success).toBeTruthy();
+      expect(result).toBeInstanceOf(Array);
+      expect(result).toHaveLength(2);
     });
 
     it('should update groups with new user list and remove old ones', async () => {
@@ -207,7 +208,8 @@ describe('serviceGroupApp', () => {
 
       const result = await ServiceGroupApp.updateGroups(payload);
 
-      expect(result.success).toBeTruthy();
+      expect(result).toBeInstanceOf(Array);
+      expect(result).toHaveLength(2);
 
       const admins = await TestHelper.serviceGroupUser.load({
         group_id: adminGroupId,
