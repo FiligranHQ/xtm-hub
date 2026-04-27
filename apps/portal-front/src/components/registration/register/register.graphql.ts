@@ -136,7 +136,6 @@ export const registerRegisteredPlatformFragment = graphql`
       counts_in_orga_quota
     }
     subscription {
-      status
       end_date
       start_date
       service_instance {

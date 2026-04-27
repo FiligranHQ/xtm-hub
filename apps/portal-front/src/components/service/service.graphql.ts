@@ -65,7 +65,6 @@ export const serviceListFragment = graphql`
     user_joined
     capabilities
     public
-    join_type
     tags
     subscriptions {
       organization {

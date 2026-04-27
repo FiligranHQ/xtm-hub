@@ -2,7 +2,6 @@ enum SubscriptionOrdering {
   organization_name
   start_date
   end_date
-  status
   service_name
   service_provider
   service_type
@@ -14,7 +13,6 @@ type SubscriptionModel implements Node {
   service_instance_id: ID!
   start_date: Date
   end_date: Date
-  status: String
   organization: Organization!
   service_url: String!
   service_instance: ServiceInstance

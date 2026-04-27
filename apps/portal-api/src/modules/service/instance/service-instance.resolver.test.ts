@@ -10,7 +10,6 @@ import {
   IntegrationType,
   MutationAddServicePictureArgs,
   MutationUpdatePlatformServiceMetadataArgs,
-  ServiceDefinitionIdentifier,
   ServiceInstanceResolvers,
 } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -294,33 +293,6 @@ describe('service instance by id with subscriptions GraphQL query', () => {
     expect(
       serviceInstanceDomain.loadServiceWithSubscriptions
     ).toHaveBeenCalledWith(id, 'test');
-    expect(result).toEqual(expected);
-  });
-});
-
-describe('subscribed service instances by identifier GraphQL query', () => {
-  it('should delegate to ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier', async () => {
-    const expected = [] as unknown as Awaited<
-      ReturnType<
-        typeof ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier
-      >
-    >;
-    vi.spyOn(
-      ServiceInstanceApp,
-      'loadSubscribedServiceInstancesByIdentifier'
-    ).mockResolvedValue(expected);
-
-    const result = await serviceInstanceResolver.Query!
-      .subscribedServiceInstancesByIdentifier!(
-      {},
-      { identifier: 'opencti' as unknown as ServiceDefinitionIdentifier },
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    expect(
-      ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier
-    ).toHaveBeenCalledWith(contextSimpleUserFiligran2.user.id, 'opencti');
     expect(result).toEqual(expected);
   });
 });

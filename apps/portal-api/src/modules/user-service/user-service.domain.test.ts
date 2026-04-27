@@ -28,7 +28,6 @@ import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,
 } from '../security-management/service-capability/generic-service-capability.const';
-import { SubscriptionStatus } from '../subscription.const';
 import { createSubscription } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user-service.domain';
 
@@ -76,8 +75,6 @@ const makeSubscription = (overrides?: {
   organization_id: overrides?.organization_id ?? SECOND_ORG_ID,
   start_date: overrides?.start_date ?? new Date(),
   end_date: overrides?.end_date !== undefined ? overrides.end_date : undefined,
-  billing: 0,
-  status: overrides?.status ?? SubscriptionStatus.ACCEPTED,
 });
 
 /** Creates a subscription and returns its id. */

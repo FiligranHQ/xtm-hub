@@ -7,7 +7,6 @@ import {
   ServiceDefinition,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
-  ServiceInstanceJoinType,
   ServiceInstanceTag,
   ServiceLink,
 } from '../../../__generated__/resolvers-types';
@@ -58,7 +57,6 @@ export const ServiceInstanceDomain = {
         description: '',
         creation_status,
         public: false,
-        join_type: ServiceInstanceJoinType.JoinAuto,
         tags: [
           serviceInstanceTagMappedByPlatformIdentifier[platformIdentifier],
         ],

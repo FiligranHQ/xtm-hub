@@ -4,7 +4,6 @@ import {
   SeoServiceInstance,
   ServiceDefinitionIdentifier,
   ServiceInstance,
-  ServiceInstanceJoinType,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../../__generated__/resolvers-types';
@@ -13,11 +12,9 @@ import {
   ServiceInstanceId,
   ServiceInstanceMutator,
 } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
 import { dispatch } from '../../../pub';
 import { securityGuard } from '../../../security/guard';
-import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { uploadNewFile } from '../../document/document.helper';
@@ -35,7 +32,6 @@ import {
   loadSeoServiceInstances,
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
-  loadSubscribedServiceInstancesByIdentifier,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
@@ -52,10 +48,7 @@ export const ServiceInstanceApp = {
       organization_id: user.selected_organization_id,
     });
 
-    if (
-      !subscription &&
-      service.join_type == ServiceInstanceJoinType.JoinAuto
-    ) {
+    if (!subscription) {
       subscription = await subscriptionApp.subscribeOrganizationToService({
         organizationId: user.selected_organization_id,
         serviceInstanceId: serviceInstanceId,
@@ -69,18 +62,11 @@ export const ServiceInstanceApp = {
       user_id: user.id,
     });
     if (userService.length === 0) {
-      if (subscription.joining === 'AUTO_JOIN') {
-        await grantServiceAccess(
-          [GenericServiceCapabilityIds.AccessId],
-          [user.id],
-          subscription.id
-        );
-      } else {
-        logApp.warn('USER_MUST_JOIN_SERVICE_BEFORE_ACCESSING_IT', {
-          userId: user.id,
-          serviceInstanceId,
-        });
-      }
+      await grantServiceAccess(
+        [GenericServiceCapabilityIds.AccessId],
+        [user.id],
+        subscription.id
+      );
     }
     return service;
   },
@@ -228,21 +214,6 @@ export const ServiceInstanceApp = {
 
     return serviceInstances.map((serviceInstance) => ({
       ...withServiceInstanceGlobalIDs(serviceInstance),
-    }));
-  },
-
-  loadSubscribedServiceInstancesByIdentifier: async (
-    userId: UserId,
-    identifier: string
-  ) => {
-    const results = await loadSubscribedServiceInstancesByIdentifier(
-      userId,
-      identifier
-    );
-    return results.map((sub) => ({
-      ...sub,
-      organization_id: toGlobalId('Organization', sub.organization_id),
-      service_instance_id: sub.service_instance_id,
     }));
   },
 };

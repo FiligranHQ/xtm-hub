@@ -21,7 +21,6 @@ import {
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceInstanceCreationStatus,
-  ServiceInstanceJoinType,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
@@ -52,7 +51,6 @@ describe('serviceGroupApp', () => {
       description: '',
       creation_status: ServiceInstanceCreationStatus.Ready,
       public: false,
-      join_type: ServiceInstanceJoinType.JoinAuto,
       tags: [],
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });
@@ -62,7 +60,6 @@ describe('serviceGroupApp', () => {
       description: '',
       creation_status: ServiceInstanceCreationStatus.Ready,
       public: false,
-      join_type: ServiceInstanceJoinType.JoinAuto,
       tags: [],
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });

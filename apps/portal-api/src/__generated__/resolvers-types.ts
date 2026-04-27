@@ -1396,7 +1396,6 @@ export type Query = {
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
-  subscribedServiceInstancesByIdentifier: Array<SubscribedServiceInstance>;
   subscriptionById?: Maybe<SubscriptionModel>;
   trialDeployments: TrialsDeployments;
   updateOpenCTIManifest: Success;
@@ -1588,11 +1587,6 @@ export type QueryServiceInstancesArgs = {
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerySubscribedServiceInstancesByIdentifierArgs = {
-  identifier: ServiceDefinitionIdentifier;
 };
 
 
@@ -1844,7 +1838,6 @@ export type ServiceInstance = Node & {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   illustration_document_id?: Maybe<Scalars['ID']['output']>;
-  join_type?: Maybe<ServiceInstanceJoinType>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
   logo_document_id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
@@ -1881,13 +1874,6 @@ export enum ServiceInstanceFilterKey {
   Public = 'public',
   ServiceDefinitionIdentifier = 'service_definition_identifier',
   Tags = 'tags'
-}
-
-export enum ServiceInstanceJoinType {
-  JoinAsk = 'JOIN_ASK',
-  JoinAuto = 'JOIN_AUTO',
-  JoinInvite = 'JOIN_INVITE',
-  JoinSelf = 'JOIN_SELF'
 }
 
 export enum ServiceInstanceOrdering {
@@ -1979,14 +1965,6 @@ export type Stream = Document & Integration & Node & {
   use_cases?: Maybe<Array<UseCase>>;
 };
 
-export type SubscribedServiceInstance = {
-  __typename?: 'SubscribedServiceInstance';
-  configurations?: Maybe<Array<Maybe<SubscribedServiceInstanceConfiguration>>>;
-  is_personal_space: Scalars['Boolean']['output'];
-  organization_id: Scalars['ID']['output'];
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
-};
-
 export type SubscribedServiceInstanceConfiguration = {
   __typename?: 'SubscribedServiceInstanceConfiguration';
   platform_contract: PlatformContract;
@@ -2037,7 +2015,6 @@ export type SubscriptionModel = Node & {
   service_instance_id: Scalars['ID']['output'];
   service_url: Scalars['String']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
   subscription_capability?: Maybe<Array<Maybe<SubscriptionCapability>>>;
   user_service: Array<Maybe<UserService>>;
 };
@@ -2049,8 +2026,7 @@ export enum SubscriptionOrdering {
   ServiceName = 'service_name',
   ServiceProvider = 'service_provider',
   ServiceType = 'service_type',
-  StartDate = 'start_date',
-  Status = 'status'
+  StartDate = 'start_date'
 }
 
 export type Success = {
@@ -2591,7 +2567,6 @@ export type ResolversTypes = ResolversObject<{
   ServiceInstanceFilter: ServiceInstanceFilter;
   ServiceInstanceFilterKey: ServiceInstanceFilterKey;
   ServiceInstanceId: ResolverTypeWrapper<Scalars['ServiceInstanceId']['output']>;
-  ServiceInstanceJoinType: ServiceInstanceJoinType;
   ServiceInstanceOrdering: ServiceInstanceOrdering;
   ServiceInstanceSubscription: ResolverTypeWrapper<ServiceInstanceSubscription>;
   ServiceInstanceTag: ServiceInstanceTag;
@@ -2601,7 +2576,6 @@ export type ResolversTypes = ResolversObject<{
   ShareableResource: ResolverTypeWrapper<ShareableResource>;
   Stream: ResolverTypeWrapper<Stream>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-  SubscribedServiceInstance: ResolverTypeWrapper<SubscribedServiceInstance>;
   SubscribedServiceInstanceConfiguration: ResolverTypeWrapper<SubscribedServiceInstanceConfiguration>;
   Subscription: ResolverTypeWrapper<{}>;
   SubscriptionCapability: ResolverTypeWrapper<SubscriptionCapability>;
@@ -2758,7 +2732,6 @@ export type ResolversParentTypes = ResolversObject<{
   ShareableResource: ShareableResource;
   Stream: Stream;
   String: Scalars['String']['output'];
-  SubscribedServiceInstance: SubscribedServiceInstance;
   SubscribedServiceInstanceConfiguration: SubscribedServiceInstanceConfiguration;
   Subscription: {};
   SubscriptionCapability: SubscriptionCapability;
@@ -3428,7 +3401,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
-  subscribedServiceInstancesByIdentifier?: Resolver<Array<ResolversTypes['SubscribedServiceInstance']>, ParentType, ContextType, RequireFields<QuerySubscribedServiceInstancesByIdentifierArgs, 'identifier'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
   trialDeployments?: Resolver<ResolversTypes['TrialsDeployments'], ParentType, ContextType, Partial<QueryTrialDeploymentsArgs>>;
   updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
@@ -3573,7 +3545,6 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   illustration_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  join_type?: Resolver<Maybe<ResolversTypes['ServiceInstanceJoinType']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
   logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3667,14 +3638,6 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SubscribedServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscribedServiceInstance'] = ResolversParentTypes['SubscribedServiceInstance']> = ResolversObject<{
-  configurations?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscribedServiceInstanceConfiguration']>>>, ParentType, ContextType>;
-  is_personal_space?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type SubscribedServiceInstanceConfigurationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscribedServiceInstanceConfiguration'] = ResolversParentTypes['SubscribedServiceInstanceConfiguration']> = ResolversObject<{
   platform_contract?: Resolver<ResolversTypes['PlatformContract'], ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3713,7 +3676,6 @@ export type SubscriptionModelResolvers<ContextType = PortalContext, ParentType e
   service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   service_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscription_capability?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionCapability']>>>, ParentType, ContextType>;
   user_service?: Resolver<Array<Maybe<ResolversTypes['UserService']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -3988,7 +3950,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Settings?: SettingsResolvers<ContextType>;
   ShareableResource?: ShareableResourceResolvers<ContextType>;
   Stream?: StreamResolvers<ContextType>;
-  SubscribedServiceInstance?: SubscribedServiceInstanceResolvers<ContextType>;
   SubscribedServiceInstanceConfiguration?: SubscribedServiceInstanceConfigurationResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SubscriptionCapability?: SubscriptionCapabilityResolvers<ContextType>;
