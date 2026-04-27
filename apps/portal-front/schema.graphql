@@ -1,4 +1,4 @@
-directive @system_token repeatable on OBJECT | FIELD_DEFINITION
+directive @system_token(portalCapa: [PortalCapability!] = []) repeatable on OBJECT | FIELD_DEFINITION
 
 directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
 
@@ -119,7 +119,7 @@ type Query {
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
-  platformAssociatedOrganization(platformId: String!): Organization
+  platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
   publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
@@ -180,6 +180,8 @@ type Mutation {
   unregisterPlatform(input: UnregisterPlatformInput): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  refreshPlatformRegistrationConnectivityStatusSingleTenant(input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
@@ -920,8 +922,39 @@ input RefreshPlatformRegistrationConnectivityStatusInput {
   platformIdentifier: PlatformIdentifier
 }
 
+input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  url: String!
+  tenantId: String!
+  platformIdentifier: PlatformIdentifier!
+}
+
+input TenantDetails {
+  tenantId: String!
+  token: String!
+  url: String!
+}
+
+input RefreshPlatformRegistrationConnectivityStatusAllTenantsInput {
+  platformId: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier!
+  tenants: [TenantDetails!]!
+}
+
 type RefreshPlatformRegistrationConnectivityStatusResponse {
   status: PlatformRegistrationConnectivityStatus!
+}
+
+type TenantStatus {
+  tenantId: String!
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse {
+  statuses: [TenantStatus!]!
 }
 
 type RefreshUserPlatformTokenResponse {
@@ -1698,6 +1731,8 @@ enum PortalCapability {
   MODIFY_TRIALS
   MODIFY_TRIALS_QUOTA
   MODIFY_COMPETITORS
+  MANAGE_DEPLOYMENT
+  MANAGE_CONNECTORS_INGESTIONS
 }
 
 enum OrganizationCapability {

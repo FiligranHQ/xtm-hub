@@ -7,17 +7,22 @@ interface Props {
   field: ControllerRenderProps<FieldValues, string>;
   documentType: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 export const ServiceFormDescriptionField = ({
   field,
   documentType,
   disabled,
+  required,
 }: Props) => {
   const t = useTranslations();
   return (
     <FormItem>
-      <FormLabel>{t('Service.Form.DescriptionLabel')}</FormLabel>
+      <FormLabel>
+        {t('Service.Form.DescriptionLabel')}
+        {required ? <span className="text-sm text-destructive"> *</span> : null}
+      </FormLabel>
       <FormControl>
         <MarkdownInput
           disabled={disabled}

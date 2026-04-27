@@ -9,7 +9,9 @@ import {
   it,
   vi,
 } from 'vitest';
-import { TestHelper } from '../../../tests/helper/test.helper';
+import {
+  TestHelper,
+} from '../../../tests/helper/test.helper';
 import {
   // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
@@ -91,6 +93,7 @@ describe('registration app', () => {
       await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
       await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
@@ -111,6 +114,7 @@ describe('registration app', () => {
       await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
       await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
@@ -129,6 +133,27 @@ describe('registration app', () => {
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
 
+    it('should throw TenantIdMandatory when platform requires tenantId and none is provided', async () => {
+      const platformId = uuidv4();
+      const serviceInstanceId = uuidv4() as ServiceInstanceId;
+
+      // Use OpenAEV service definition (OpenAEV requires tenantId from v2.4.0)
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        name: 'test',
+        service_definition_id: SERVICES.DEFINITIONS.OPENAEV_REGISTRATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        config: { platform_id: platformId, platform_version: '2.5.0' },
+        status: ServiceConfigurationStatus.Active,
+      });
+
+      const call =
+        registrationApp.loadPlatformAssociatedOrganization(platformId);
+      await expect(call).rejects.toThrow(BadRequestErrorCode.TenantIdMandatory);
+    });
+
     it('should return an organization when platform is found and user is allowed', async () => {
       const platformId = uuidv4();
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
@@ -136,6 +161,7 @@ describe('registration app', () => {
       await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         name: 'test',
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
       await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstanceId,
@@ -1078,92 +1104,6 @@ describe('registration app', () => {
       });
 
       expect(result.status).toBe(PlatformRegistrationConnectivityStatus.Active);
-    });
-
-    describe('refreshPlatformRegistrationConnectivityStatus', () => {
-      it('should throw an error when version is not formatted as a semantic version', async () => {
-        const call =
-          registrationApp.refreshPlatformRegistrationConnectivityStatus({
-            platformId: uuidv4(),
-            token: uuidv4(),
-            platformVersion: '9.Y.Z',
-          });
-
-        await expect(call).rejects.toThrow(ErrorCode.InvalidPlatformVersion);
-      });
-
-      it('should return inactive when platform is not registered but identifier is not provided', async () => {
-        const result =
-          await registrationApp.refreshPlatformRegistrationConnectivityStatus({
-            platformId: uuidv4(),
-            token: uuidv4(),
-            platformVersion: '7.0.0',
-          });
-
-        expect(result.status).toBe(
-          PlatformRegistrationConnectivityStatus.Inactive
-        );
-      });
-
-      it('should return not found when platform is not registered and has version below compatibility version', async () => {
-        const result =
-          await registrationApp.refreshPlatformRegistrationConnectivityStatus({
-            platformId: uuidv4(),
-            token: uuidv4(),
-            platformVersion: '7.0.0',
-            platformIdentifier: PlatformIdentifier.Opencti,
-          });
-
-        expect(result.status).toBe(
-          PlatformRegistrationConnectivityStatus.NotFound
-        );
-      });
-
-      it('should return inactive when platform is not registered and has version above compatibility version', async () => {
-        const result =
-          await registrationApp.refreshPlatformRegistrationConnectivityStatus({
-            platformId: uuidv4(),
-            token: uuidv4(),
-            platformVersion: '6.0.0',
-          });
-
-        expect(result.status).toBe(
-          PlatformRegistrationConnectivityStatus.Inactive
-        );
-      });
-
-      it('should return active when platform is registered and update version', async () => {
-        const platformId = uuidv4();
-        const token = await registrationApp.registerPlatform({
-          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-          platform: {
-            id: platformId,
-            url: 'http://example.com',
-            contract: PlatformContract.Ee,
-            title: 'Fake title',
-            version: '1.0.0',
-          },
-          identifier: PlatformIdentifier.Opencti,
-        });
-
-        const result =
-          await registrationApp.refreshPlatformRegistrationConnectivityStatus({
-            platformId,
-            token,
-            platformVersion: '6.7.18',
-          });
-
-        const getPlatforms = await registrationApp.loadRegisteredPlatforms({
-          identifier: PlatformIdentifier.Opencti,
-        });
-        const currentPlatform = getPlatforms.find(
-          (registeredPlatform) => platformId === registeredPlatform.platform_id
-        );
-        expect(currentPlatform?.version).toBe('6.7.18');
-        expect(result.status).toBe(
-          PlatformRegistrationConnectivityStatus.Active
-        );
-      });
     });
 
     it('should return inactive when platform is unregistered', async () => {

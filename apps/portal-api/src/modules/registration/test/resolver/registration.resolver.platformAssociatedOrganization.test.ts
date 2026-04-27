@@ -39,11 +39,38 @@ describe('query.platformAssociatedOrganization', () => {
     // Then
     expect(
       registrationApp.loadPlatformAssociatedOrganization
-    ).toHaveBeenCalledWith(platformId);
+    ).toHaveBeenCalledWith(platformId, undefined);
     expect(result).toMatchObject({
       id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
     });
+  });
+
+  it('should forward tenantId to the app when provided', async () => {
+    // Given
+    const platformId = uuidv4();
+    const tenantId = uuidv4();
+    const organization = {
+      id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+    };
+    vi.spyOn(
+      registrationApp,
+      'loadPlatformAssociatedOrganization'
+    ).mockResolvedValue(organization as unknown as Organization);
+
+    // When
+    await registrationResolver.Query!.platformAssociatedOrganization!(
+      {},
+      { platformId, tenantId },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(
+      registrationApp.loadPlatformAssociatedOrganization
+    ).toHaveBeenCalledWith(platformId, tenantId);
   });
 
   it('should return null when the platform has no associated organization', async () => {

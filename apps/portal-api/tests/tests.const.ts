@@ -21,6 +21,7 @@ import { PortalContext } from '../src/model/portal-context';
 import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
+  SYSTEM_USER_CONTEXT,
 } from '../src/portal.const';
 
 export const GRAPHQL_RESOLVE_INFO = {} as GraphQLResolveInfo;
@@ -93,6 +94,9 @@ export const SERVICES = {
     OPENCTI_INTEGRATIONS: {
       ID: '42007953-4dbc-480a-8693-8c05f1123460' as ServiceDefinitionId,
     },
+    OPENAEV_REGISTRATION: {
+      ID: 'e66a6b50-1f92-4f62-b84c-88ed6b871790' as ServiceDefinitionId,
+    },
     OPENCTI_REGISTRATION: {
       ID: '5f769173-5ace-4ef3-b04f-2c95609c5b59' as ServiceDefinitionId,
     },
@@ -140,6 +144,11 @@ export const CAPABILITY_MODIFY_TRIALS: CapabilityPortal = {
   name: PortalCapability.ModifyTrials,
 };
 
+export const CAPABILITY_MANAGE_DEPLOYMENT: CapabilityPortal = {
+  id: 'system-token-MANAGE_DEPLOYMENT' as CapabilityPortalId,
+  name: PortalCapability.ManageDeployment,
+};
+
 export const TEST_DEPLOYMENT = {
   activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
   job_title: DeploymentRequestJobTitle.CLevel,
@@ -175,6 +184,19 @@ export const contextBypassUser: PortalContext = {
 export const requestContextAdminUser = {
   user: contextBypassUser.user,
   portalContext: contextBypassUser,
+};
+
+export const contextSystemUserManageDeployment: PortalContext = {
+  ...SYSTEM_USER_CONTEXT,
+  user: {
+    ...SYSTEM_USER_CONTEXT.user,
+    capabilities: [CAPABILITY_MANAGE_DEPLOYMENT],
+  },
+};
+
+export const requestContextSystemUserManageDeployment = {
+  user: contextSystemUserManageDeployment.user,
+  portalContext: contextSystemUserManageDeployment,
 };
 
 export const contextAdminSecondOrga: PortalContext = {

@@ -51,7 +51,8 @@ interface PlatformAssociatedOrganizationResponse {
 }
 
 export const loadPlatformOrganizationId = async (
-  platformId?: string | null
+  platformId?: string | null,
+  tenantId?: string | null,
 ): Promise<string | undefined> => {
   if (!platformId) {
     return;
@@ -63,6 +64,7 @@ export const loadPlatformOrganizationId = async (
       platformAssociatedOrganizationQuery
     >(PlatformAssociatedOrganizationQueryGraphql, {
       platformId,
+      tenantId,
     })) as PlatformAssociatedOrganizationResponse;
 
     return associatedOrganization.data.platformAssociatedOrganization?.id;
