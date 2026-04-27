@@ -120,12 +120,10 @@ type Query {
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
-  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ServiceInstanceId, searchTerm: String): ServiceInstance
-  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
@@ -1116,13 +1114,6 @@ type SubscribedServiceInstanceConfiguration {
   registerer_id: String!
   platform_title: String!
   platform_contract: PlatformContract!
-}
-
-type SubscribedServiceInstance {
-  service_instance_id: ServiceInstanceId!
-  organization_id: ID!
-  is_personal_space: Boolean!
-  configurations: [SubscribedServiceInstanceConfiguration]
 }
 
 type ServiceInstanceSubscription {

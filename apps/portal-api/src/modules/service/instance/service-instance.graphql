@@ -119,9 +119,6 @@ type Query {
     service_instance_id: ServiceInstanceId
     searchTerm: String
   ): ServiceInstance @auth @service_capa(requires: [MANAGE_ACCESS])
-  subscribedServiceInstancesByIdentifier(
-    identifier: ServiceDefinitionIdentifier!
-  ): [SubscribedServiceInstance!]! @auth
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
 }
@@ -133,13 +130,6 @@ type SubscribedServiceInstanceConfiguration {
   registerer_id: String!
   platform_title: String!
   platform_contract: PlatformContract!
-}
-
-type SubscribedServiceInstance {
-  service_instance_id: ServiceInstanceId!
-  organization_id: ID!
-  is_personal_space: Boolean!
-  configurations: [SubscribedServiceInstanceConfiguration]
 }
 
 type ServiceInstanceSubscription {

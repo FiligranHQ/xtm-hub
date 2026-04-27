@@ -12,7 +12,6 @@ import {
   ServiceInstanceId,
   ServiceInstanceMutator,
 } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
 import { dispatch } from '../../../pub';
 import { securityGuard } from '../../../security/guard';
@@ -33,7 +32,6 @@ import {
   loadSeoServiceInstances,
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
-  loadSubscribedServiceInstancesByIdentifier,
   ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
@@ -216,21 +214,6 @@ export const ServiceInstanceApp = {
 
     return serviceInstances.map((serviceInstance) => ({
       ...withServiceInstanceGlobalIDs(serviceInstance),
-    }));
-  },
-
-  loadSubscribedServiceInstancesByIdentifier: async (
-    userId: UserId,
-    identifier: string
-  ) => {
-    const results = await loadSubscribedServiceInstancesByIdentifier(
-      userId,
-      identifier
-    );
-    return results.map((sub) => ({
-      ...sub,
-      organization_id: toGlobalId('Organization', sub.organization_id),
-      service_instance_id: sub.service_instance_id,
     }));
   },
 };

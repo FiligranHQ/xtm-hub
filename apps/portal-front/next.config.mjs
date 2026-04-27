@@ -52,6 +52,11 @@ const nextConfig = {
         destination: '/app/service/opencti_custom_dashboards/:path*',
         permanent: true,
       },
+      {
+        source: '/redirect/octi_custom_dashboards/:path*',
+        destination: '/redirect/opencti_custom_dashboards/:path*',
+        permanent: true,
+      },
 
       // -------------------------
       // Cybersecurity solutions

@@ -98,16 +98,6 @@ const resolvers: Resolvers = {
     ) => {
       return loadServiceWithSubscriptions(service_instance_id, searchTerm);
     },
-    subscribedServiceInstancesByIdentifier: async (
-      _,
-      { identifier },
-      context
-    ) => {
-      return ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier(
-        context.user.id,
-        identifier
-      );
-    },
     seoServiceInstances: async () => {
       return ServiceInstanceApp.loadSeoServiceInstances();
     },
