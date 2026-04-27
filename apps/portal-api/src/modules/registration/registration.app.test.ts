@@ -317,7 +317,6 @@ describe('registration app', () => {
 
     afterEach(() => {
       vi.useRealTimers();
-      vi.restoreAllMocks();
     });
 
     describe('invalid configuration', async () => {

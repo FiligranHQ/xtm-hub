@@ -32,11 +32,11 @@ describe('newsFeedApp', () => {
       registrationServiceInstanceId = serviceInstance.id;
       await TestHelper.serviceConfiguration.create({
         service_instance_id: registrationServiceInstanceId,
-        config: JSON.stringify({
+        config: {
           ...mockPlatformConfig,
           platform_id: platformId,
           token,
-        }),
+        },
       });
     });
 
@@ -237,10 +237,10 @@ describe('newsFeedApp', () => {
       createdServiceInstanceIds.push(serviceInstance.id);
       await TestHelper.serviceConfiguration.create({
         service_instance_id: serviceInstance.id,
-        config: JSON.stringify({
+        config: {
           ...mockPlatformConfig,
           platform_id: platformId,
-        }),
+        },
       });
       await TestHelper.subscription.create({
         service_instance_id: serviceInstance.id,
@@ -347,7 +347,7 @@ describe('newsFeedApp', () => {
       createdServiceInstanceIds.push(platformWithoutId.id);
       await TestHelper.serviceConfiguration.create({
         service_instance_id: platformWithoutId.id,
-        config: JSON.stringify({ token: 'some-token' }),
+        config: { token: 'some-token' },
       });
       await TestHelper.subscription.create({
         service_instance_id: platformWithoutId.id,

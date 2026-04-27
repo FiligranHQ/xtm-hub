@@ -1,5 +1,5 @@
 import express from 'express';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { GRAPHQL_RESOLVE_INFO } from '../../../tests/tests.const';
 import { UserLoadUserBy } from '../../model/user';
 import { UnknownErrorCode } from '../../utils/error/error.code';
@@ -18,10 +18,6 @@ const makeMockContext = (platformId: string | null, token: string | null) => ({
 });
 
 describe('consume provisioned news feed items GraphQL mutation', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should consume provisioned news feed items with extracted platformId and token and return the result', async () => {
     // Given
     const platformId = 'platform-abc';
