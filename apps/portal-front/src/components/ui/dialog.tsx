@@ -29,7 +29,7 @@ export const DialogInformative: FunctionComponent<DialogInformativeProps> = ({
     <Dialog
       open={isOpen}
       onOpenChange={onClose}>
-      <DialogContent className="max-w-xl">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
