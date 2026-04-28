@@ -1,5 +1,6 @@
 import type { CompetitorId } from '../model/kanel/public/Competitor.js';
 import type { DeploymentRequestId } from '../model/kanel/public/DeploymentRequest.js';
+import type { DocumentId } from '../model/kanel/public/Document.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
@@ -23,6 +24,7 @@ export type Scalars = {
   CompetitorId: { input: CompetitorId; output: CompetitorId; }
   Date: { input: any; output: any; }
   DeploymentRequestId: { input: DeploymentRequestId; output: DeploymentRequestId; }
+  DocumentId: { input: DocumentId; output: DocumentId; }
   JSON: { input: any; output: any; }
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
   ServiceGroupId: { input: any; output: any; }
@@ -594,7 +596,7 @@ export type Epic = Node & {
   created_at: Scalars['Date']['output'];
   description: Scalars['String']['output'];
   document?: Maybe<Document>;
-  document_id?: Maybe<Scalars['ID']['output']>;
+  document_id?: Maybe<Scalars['DocumentId']['output']>;
   epic_type: EpicType;
   id: Scalars['ID']['output'];
   product: FiligranProduct;
@@ -983,7 +985,7 @@ export type MutationDeleteCompetitorArgs = {
 
 
 export type MutationDeleteDocumentArgs = {
-  documentId?: InputMaybe<Scalars['ID']['input']>;
+  documentId?: InputMaybe<Scalars['DocumentId']['input']>;
   forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
   service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
@@ -1051,7 +1053,7 @@ export type MutationFrontendErrorLogArgs = {
 
 
 export type MutationIncrementShareNumberDocumentArgs = {
-  documentId?: InputMaybe<Scalars['ID']['input']>;
+  documentId?: InputMaybe<Scalars['DocumentId']['input']>;
 };
 
 
@@ -1129,8 +1131,8 @@ export type MutationUpdateDeploymentRequestArgs = {
 
 
 export type MutationUpdateDocumentArgs = {
-  documentId: Scalars['ID']['input'];
-  existingImageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  documentId: Scalars['DocumentId']['input'];
+  existingImageIds?: InputMaybe<Array<Scalars['DocumentId']['input']>>;
   images?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: UpdateDocumentInput;
   logo?: InputMaybe<Scalars['Upload']['input']>;
@@ -1183,7 +1185,7 @@ export type Node = {
 export type OneClickDeployInput = {
   platform_identifier: PlatformIdentifier;
   platform_service_instance_id: Scalars['ID']['input'];
-  resource_id: Scalars['ID']['input'];
+  resource_id: Scalars['DocumentId']['input'];
   resource_title: Scalars['String']['input'];
   service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
@@ -1470,7 +1472,7 @@ export type QueryDeploymentRequestsListArgs = {
 
 
 export type QueryDocumentArgs = {
-  documentId?: InputMaybe<Scalars['ID']['input']>;
+  documentId?: InputMaybe<Scalars['DocumentId']['input']>;
   serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
@@ -1714,7 +1716,7 @@ export type RegisteredPlatform = Node & {
   deployment_request?: Maybe<DeploymentRequest>;
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
-  illustration_document_id?: Maybe<Scalars['String']['output']>;
+  illustration_document_id?: Maybe<Scalars['DocumentId']['output']>;
   platform_id: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
   tenant_id?: Maybe<Scalars['String']['output']>;
@@ -1800,9 +1802,9 @@ export type SeoServiceInstance = Node & {
   __typename?: 'SeoServiceInstance';
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  illustration_document_id?: Maybe<Scalars['ID']['output']>;
+  illustration_document_id?: Maybe<Scalars['DocumentId']['output']>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
-  logo_document_id?: Maybe<Scalars['ID']['output']>;
+  logo_document_id?: Maybe<Scalars['DocumentId']['output']>;
   name: Scalars['String']['output'];
   service_definition: ServiceDefinition;
   slug?: Maybe<Scalars['String']['output']>;
@@ -1863,9 +1865,9 @@ export type ServiceInstance = Node & {
   creation_status?: Maybe<ServiceInstanceCreationStatus>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  illustration_document_id?: Maybe<Scalars['ID']['output']>;
+  illustration_document_id?: Maybe<Scalars['DocumentId']['output']>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
-  logo_document_id?: Maybe<Scalars['ID']['output']>;
+  logo_document_id?: Maybe<Scalars['DocumentId']['output']>;
   name: Scalars['String']['output'];
   ordering: Scalars['Int']['output'];
   organization?: Maybe<Array<Maybe<Organization>>>;
@@ -2501,6 +2503,7 @@ export type ResolversTypes = ResolversObject<{
   Document: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Document']>;
   DocumentConnection: ResolverTypeWrapper<Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversTypes['DocumentEdge']> }>;
   DocumentEdge: ResolverTypeWrapper<Omit<DocumentEdge, 'node'> & { node: ResolversTypes['Document'] }>;
+  DocumentId: ResolverTypeWrapper<Scalars['DocumentId']['output']>;
   DocumentImageType: DocumentImageType;
   DocumentMetadata: DocumentMetadata;
   DocumentMetadataKeyCode: DocumentMetadataKeyCode;
@@ -2690,6 +2693,7 @@ export type ResolversParentTypes = ResolversObject<{
   Document: ResolversInterfaceTypes<ResolversParentTypes>['Document'];
   DocumentConnection: Omit<DocumentConnection, 'edges'> & { edges: Array<ResolversParentTypes['DocumentEdge']> };
   DocumentEdge: Omit<DocumentEdge, 'node'> & { node: ResolversParentTypes['Document'] };
+  DocumentId: Scalars['DocumentId']['output'];
   DocumentMetadata: DocumentMetadata;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
@@ -3095,12 +3099,16 @@ export type DocumentEdgeResolvers<ContextType = PortalContext, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface DocumentIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DocumentId'], any> {
+  name: 'DocumentId';
+}
+
 export type EpicResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Epic'] = ResolversParentTypes['Epic']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
-  document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
   epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
@@ -3487,7 +3495,7 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   deployment_request?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   identifier?: Resolver<ResolversTypes['ServiceDefinitionIdentifier'], ParentType, ContextType>;
-  illustration_document_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  illustration_document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   tenant_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3548,9 +3556,9 @@ export type SendTelemetryMutationResolvers<ContextType = PortalContext, ParentTy
 export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoServiceInstance'] = ResolversParentTypes['SeoServiceInstance']> = ResolversObject<{
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  illustration_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  illustration_document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
-  logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  logo_document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   service_definition?: Resolver<ResolversTypes['ServiceDefinition'], ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3599,9 +3607,9 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   creation_status?: Resolver<Maybe<ResolversTypes['ServiceInstanceCreationStatus']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  illustration_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  illustration_document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;
-  logo_document_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  logo_document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organization']>>>, ParentType, ContextType>;
@@ -3957,6 +3965,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Document?: DocumentResolvers<ContextType>;
   DocumentConnection?: DocumentConnectionResolvers<ContextType>;
   DocumentEdge?: DocumentEdgeResolvers<ContextType>;
+  DocumentId?: GraphQLScalarType;
   Epic?: EpicResolvers<ContextType>;
   EpicConnection?: EpicConnectionResolvers<ContextType>;
   EpicEdge?: EpicEdgeResolvers<ContextType>;

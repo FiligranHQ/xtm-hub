@@ -134,7 +134,7 @@ export const DocumentChildrenDomain = {
     const images = await query;
 
     for (const image of images) {
-      image.id = toGlobalId('ShareableResourceImage', image.id);
+      image.id = toGlobalId('Document', image.id);
     }
     return images;
   },

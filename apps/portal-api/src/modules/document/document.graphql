@@ -1,3 +1,5 @@
+scalar DocumentId
+
 enum DocumentSourceType {
   external
   internal
@@ -147,21 +149,21 @@ type Mutation {
     images: [Upload!]
   ): Document! @auth @service_capa(requires: [UPLOAD])
   updateDocument(
-    documentId: ID!
+    documentId: DocumentId!
     input: UpdateDocumentInput!
     metadata: [DocumentMetadata!]!
     serviceInstanceId: ServiceInstanceId
     sourceDocument: Upload
     logo: Upload
     images: [Upload!]
-    existingImageIds: [ID!]
+    existingImageIds: [DocumentId!]
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
-    documentId: ID
+    documentId: DocumentId
     service_instance_id: ServiceInstanceId
     forceDelete: Boolean
   ): Document! @auth @service_capa(requires: [DELETE])
-  incrementShareNumberDocument(documentId: ID): Document!
+  incrementShareNumberDocument(documentId: DocumentId): Document!
 }
 
 type Query {
@@ -194,5 +196,8 @@ type Query {
     serviceInstanceId: ServiceInstanceId
     parentsOnly: Boolean
   ): DocumentConnection! @auth
-  document(documentId: ID, serviceInstanceId: ServiceInstanceId): Document @auth
+  document(
+    documentId: DocumentId
+    serviceInstanceId: ServiceInstanceId
+  ): Document @auth
 }

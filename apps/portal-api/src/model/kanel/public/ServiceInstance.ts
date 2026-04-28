@@ -26,7 +26,7 @@ export default interface ServiceInstance {
 
   logo_document_id: DocumentId | null;
 
-  illustration_document_id: string | null;
+  illustration_document_id: DocumentId | null;
 
   slug: string | null;
 
@@ -52,7 +52,7 @@ export interface ServiceInstanceInitializer {
 
   logo_document_id?: DocumentId | null;
 
-  illustration_document_id?: string | null;
+  illustration_document_id?: DocumentId | null;
 
   slug?: string | null;
 
@@ -78,7 +78,7 @@ export interface ServiceInstanceMutator {
 
   logo_document_id?: DocumentId | null;
 
-  illustration_document_id?: string | null;
+  illustration_document_id?: DocumentId | null;
 
   slug?: string | null;
 

@@ -312,7 +312,7 @@ describe('increment shared counter', () => {
     await documentResolver.Mutation.incrementShareNumberDocument(
       {},
       {
-        documentId: toGlobalId('DocumentId', documentId),
+        documentId,
       },
       contextSimpleUserSecondOrga
     );
@@ -342,7 +342,7 @@ describe('increment shared counter', () => {
     await documentResolver.Mutation.incrementShareNumberDocument(
       {},
       {
-        documentId: toGlobalId('DocumentId', documentId),
+        documentId,
       },
       {}
     );

@@ -43,10 +43,7 @@ import { GenericServiceCapabilityIds } from '../../security-management/service-c
 import { subscriptionApp } from '../../subscription/subscription.app';
 import * as subscriptionDomain from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
-import {
-  ServiceInstanceApp,
-  withServiceInstanceGlobalIDs,
-} from './service-instance.app';
+import { ServiceInstanceApp } from './service-instance.app';
 import * as serviceInstanceDomain from './service-instance.domain';
 
 describe('service Instance app', () => {
@@ -391,9 +388,7 @@ describe('service Instance app', () => {
         mockUpload,
         serviceInstance.id
       );
-      expect(result.illustration_document_id).toBe(
-        toGlobalId('Document', illustrationId)
-      );
+      expect(result.illustration_document_id).toBe(illustrationId);
     });
 
     it('should not update service instance or config when no fields to update', async () => {
@@ -687,8 +682,8 @@ describe('service Instance app', () => {
       // Then
       expect(result).toMatchObject({
         name: 'Test SEO Service',
-        logo_document_id: toGlobalId('Document', logoId),
-        illustration_document_id: toGlobalId('Document', illustrationId),
+        logo_document_id: logoId,
+        illustration_document_id: illustrationId,
         tags: [ServiceInstanceTag.OpenCti],
       });
     });
@@ -732,30 +727,6 @@ describe('service Instance app', () => {
       await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
       await TestHelper.document.delete({ id: logoId });
     });
-    it('should return public service instances with document IDs converted to global IDs', async () => {
-      // Given
-      await TestHelper.document.create({ id: logoId, type: 'logo' });
-      await TestHelper.serviceInstance.create({
-        id: firstServiceInstancePublicId,
-        name: 'Test Public SEO Service',
-        public: true,
-        ordering: 100,
-        logo_document_id: logoId,
-        illustration_document_id: illustrationId,
-      });
-
-      // When
-      const results = await ServiceInstanceApp.loadSeoServiceInstances();
-      const result = results.find(
-        ({ id }) => id === firstServiceInstancePublicId
-      );
-
-      // Then
-      expect(result).toMatchObject({
-        logo_document_id: toGlobalId('Document', logoId),
-        illustration_document_id: toGlobalId('Document', illustrationId),
-      });
-    });
 
     it('should not include non-public service instances', async () => {
       // Given
@@ -776,6 +747,15 @@ describe('service Instance app', () => {
 
     it('should return instances ordered by ordering field ascending', async () => {
       // Given
+      await TestHelper.document.create({ id: logoId, type: 'logo' });
+      await TestHelper.serviceInstance.create({
+        id: firstServiceInstancePublicId,
+        name: 'Test Public SEO Service',
+        public: true,
+        ordering: 100,
+        logo_document_id: logoId,
+        illustration_document_id: illustrationId,
+      });
       await TestHelper.serviceInstance.create({
         id: secondServiceInstancePublicId,
         name: 'Test Public SEO Service',
@@ -915,39 +895,5 @@ describe('service Instance app', () => {
       expect(updateServiceInstanceSpy).not.toHaveBeenCalled();
       expect(dispatchSpy).not.toHaveBeenCalled();
     });
-  });
-
-  describe('withServiceInstanceGlobalIDs', () => {
-    it.each`
-      logoId      | illustrationId
-      ${uuidv4()} | ${uuidv4()}
-      ${uuidv4()} | ${null}
-      ${null}     | ${uuidv4()}
-      ${null}     | ${null}
-    `(
-      'should return convert logoId if $logoId and illustrationId if $illustrationId',
-      ({ logoId, illustrationId }) => {
-        const service = {
-          logo_document_id: logoId,
-          illustration_document_id: illustrationId,
-          name: 'Test Service',
-          slug: 'test-service',
-        };
-
-        // When
-        const result = withServiceInstanceGlobalIDs(service);
-
-        // Then
-        expect(result).toMatchObject({
-          logo_document_id: logoId ? toGlobalId('Document', logoId) : null,
-          illustration_document_id: illustrationId
-            ? toGlobalId('Document', illustrationId)
-            : null,
-          // And preserve original fields
-          name: service.name,
-          slug: service.slug,
-        });
-      }
-    );
   });
 });

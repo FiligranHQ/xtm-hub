@@ -1,4 +1,6 @@
 'use client';
+import { updateShareNumber } from '@/components/ui/share-link/ShareLinkActions';
+import usePublicPath from '@/hooks/use-public-path';
 import { ShareIcon } from '@filigran/icon';
 import {
   toast,
@@ -12,8 +14,6 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { graphql, useMutation } from 'react-relay';
 import { useCopyToClipboard } from 'usehooks-ts';
-import usePublicPath from '@/hooks/use-public-path';
-import { updateShareNumber } from '@/components/ui/share-link/ShareLinkActions';
 
 export interface ShareLinkButtonProps {
   url: string;
@@ -22,7 +22,7 @@ export interface ShareLinkButtonProps {
 }
 
 export const shareLinkMutation = graphql`
-  mutation ShareLinkButtonMutation($documentId: ID!) {
+  mutation ShareLinkButtonMutation($documentId: DocumentId!) {
     incrementShareNumberDocument(documentId: $documentId) {
       share_number
     }

@@ -13,7 +13,7 @@ type RegisteredPlatform implements Node {
   tenant_id: String
   identifier: ServiceDefinitionIdentifier!
   version: String
-  illustration_document_id: String
+  illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
   subscription: SubscriptionModel
 }

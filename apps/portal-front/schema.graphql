@@ -105,7 +105,7 @@ type Query {
   publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
   publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
-  document(documentId: ID, serviceInstanceId: ServiceInstanceId): Document
+  document(documentId: DocumentId, serviceInstanceId: ServiceInstanceId): Document
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
@@ -147,9 +147,9 @@ type Mutation {
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
-  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
-  deleteDocument(documentId: ID, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!
-  incrementShareNumberDocument(documentId: ID): Document!
+  updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
+  deleteDocument(documentId: DocumentId, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!
+  incrementShareNumberDocument(documentId: DocumentId): Document!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
   addOrganization(input: OrganizationInput!): Organization
@@ -487,6 +487,11 @@ input UpdateServiceGroupsInputGroup {
 input UpdateServiceGroupsInput {
   groups: [UpdateServiceGroupsInputGroup!]!
 }
+
+"""
+A Relay global ID for Document, extracted to a branded DocumentId string
+"""
+scalar DocumentId
 
 enum DocumentSourceType {
   external
@@ -836,7 +841,7 @@ type RegisteredPlatform implements Node {
   tenant_id: String
   identifier: ServiceDefinitionIdentifier!
   version: String
-  illustration_document_id: String
+  illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
   subscription: SubscriptionModel
 }
@@ -1088,8 +1093,8 @@ type ServiceInstance implements Node {
   public: Boolean
   tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition
-  logo_document_id: ID
-  illustration_document_id: ID
+  logo_document_id: DocumentId
+  illustration_document_id: DocumentId
   ordering: Int!
 }
 
@@ -1112,8 +1117,8 @@ type SeoServiceInstance implements Node {
   links: [ServiceLink]
   tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition!
-  logo_document_id: ID
-  illustration_document_id: ID
+  logo_document_id: DocumentId
+  illustration_document_id: DocumentId
 }
 
 input AddServiceInput {
@@ -1533,7 +1538,7 @@ type TelemetryResponse {
 input OneClickDeployInput {
   platform_identifier: PlatformIdentifier!
   service_instance_id: ServiceInstanceId!
-  resource_id: ID!
+  resource_id: DocumentId!
   resource_title: String!
   platform_service_instance_id: ID!
 }
@@ -1660,7 +1665,7 @@ type Epic implements Node {
   timeline: Timeline!
   epic_type: EpicType!
   document: Document
-  document_id: ID
+  document_id: DocumentId
   uploader_id: String!
   updater_id: String
   created_at: Date!
