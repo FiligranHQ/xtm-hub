@@ -21,7 +21,6 @@ import {
   PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceInstanceCreationStatus,
-  ServiceInstanceJoinType,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
@@ -52,7 +51,6 @@ describe('serviceGroupApp', () => {
       description: '',
       creation_status: ServiceInstanceCreationStatus.Ready,
       public: false,
-      join_type: ServiceInstanceJoinType.JoinAuto,
       tags: [],
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });
@@ -62,7 +60,6 @@ describe('serviceGroupApp', () => {
       description: '',
       creation_status: ServiceInstanceCreationStatus.Ready,
       public: false,
-      join_type: ServiceInstanceJoinType.JoinAuto,
       tags: [],
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });
@@ -189,7 +186,8 @@ describe('serviceGroupApp', () => {
 
       const result = await ServiceGroupApp.updateGroups(bypassPayload);
 
-      expect(result.success).toBeTruthy();
+      expect(result).toBeInstanceOf(Array);
+      expect(result).toHaveLength(2);
     });
 
     it('should update groups with new user list and remove old ones', async () => {
@@ -207,7 +205,8 @@ describe('serviceGroupApp', () => {
 
       const result = await ServiceGroupApp.updateGroups(payload);
 
-      expect(result.success).toBeTruthy();
+      expect(result).toBeInstanceOf(Array);
+      expect(result).toHaveLength(2);
 
       const admins = await TestHelper.serviceGroupUser.load({
         group_id: adminGroupId,

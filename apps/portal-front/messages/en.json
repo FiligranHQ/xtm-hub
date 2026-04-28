@@ -663,7 +663,8 @@
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_registration": "OpenCTI Registration",
-      "vault": "Vault"
+      "vault": "Vault",
+      "xtm_suite_roadmap": "XTM Suite Roadmap"
     },
     "Capabilities": {
       "AccessServiceDescription": "You just have access to a service",
@@ -901,7 +902,6 @@
     "GoToLabel": "Go to",
     "GoToManagement": "Go to service management",
     "HighlightedServices": "To use this feature, please subscribe to one of the highlighted services first",
-    "Join": "Join",
     "List": {
       "Filter": {
         "Add": "Add filter",
@@ -981,7 +981,6 @@
       "FromVersion": "From version",
       "Share": "Share"
     },
-    "Subscribe": "Subscribe",
     "SubscribeOrganization": "Subscribe organization",
     "SubscribeService": "Subscribe to {serviceName} service",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",

@@ -18,14 +18,6 @@ const resolvers: Resolvers = {
       UserServiceDomain.loadUserServiceCapabilities(id as UserServiceId),
   },
   Query: {
-    userServiceOwned: (_, { first, after, orderMode, orderBy }, context) => {
-      return UserServiceDomain.loadUserServiceByUser(context.user, {
-        first,
-        after,
-        orderMode,
-        orderBy,
-      });
-    },
     userServiceFromSubscription: async (
       _,
       { first, after, orderMode, orderBy, subscription_id }
@@ -42,19 +34,6 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    addYourselfInUserService: async (_, { input }, context) => {
-      try {
-        const user = context.user;
-        return await UserServiceApp.addYourselfInUserService(
-          user.selected_organization_id,
-          input.serviceInstanceId,
-          input.email,
-          []
-        );
-      } catch (error) {
-        throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
-      }
-    },
     addUserService: async (_, { input }, context) => {
       try {
         const user = context.user;

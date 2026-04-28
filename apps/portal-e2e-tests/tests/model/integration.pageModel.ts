@@ -13,13 +13,11 @@ const TEST_IMAGE_FILE = {
 export default class IntegrationPage {
   constructor(private page: Page) {}
 
-  async subscribeIntegrationsService() {
+  async navigateToIntegrationsService() {
     await this.page
       .locator('li')
       .filter({ hasText: 'OpenCTI Integrations Library' })
-      .getByRole('button')
       .click();
-    await this.page.getByRole('button', { name: 'Continue' }).click();
   }
   async uploadJsonDocument(filePath: string) {
     const fileInput = this.page.locator(

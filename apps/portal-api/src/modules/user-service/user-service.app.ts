@@ -1,5 +1,3 @@
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -13,29 +11,6 @@ import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscripti
 import { UserServiceDomain } from './user-service.domain';
 
 export const UserServiceApp = {
-  addYourselfInUserService: async (
-    organizationId: OrganizationId,
-    serviceInstanceId: ServiceInstanceId,
-    emails: string[],
-    capabilities: string[]
-  ): Promise<UserService[]> => {
-    const [subscription] =
-      await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-        'Subscription.organization_id': organizationId,
-        'Subscription.service_instance_id': serviceInstanceId,
-      } as SubscriptionMutator);
-
-    if (!subscription) {
-      throw new Error(ErrorCode.SubscriptionNotFound);
-    }
-
-    return UserServiceDomain.addServiceToUsers(
-      subscription,
-      emails,
-      capabilities
-    );
-  },
-
   addUserService: async (
     user: User,
     subscriptionId: SubscriptionId,

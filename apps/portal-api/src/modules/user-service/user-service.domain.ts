@@ -21,7 +21,6 @@ import {
   UserServiceCapabilityId,
   UserServiceCapabilityInitializer,
 } from '../../model/kanel/public/UserServiceCapability';
-import { UserLoadUserBy } from '../../model/user';
 import { isUserAdminPlatform } from '../../security/access';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
@@ -458,59 +457,6 @@ export const UserServiceDomain = {
       ),
     ];
     return userServiceCapability.length > 0 ? userServiceCapability : undefined;
-  },
-
-  loadUserServiceByUser: (user: UserLoadUserBy, opts: QueryOpts) => {
-    const userSelectedOrganization = user.selected_organization_id;
-    const userId = user.id;
-
-    const userServiceQuery = db<UserService>('User_Service')
-      .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')
-      .leftJoin(
-        'Subscription as sub',
-        'User_Service.subscription_id',
-        '=',
-        'sub.id'
-      )
-      .leftJoin(
-        'ServiceInstance as service',
-        'sub.service_instance_id',
-        '=',
-        'service.id'
-      )
-      .leftJoin(
-        'Service_Link as service_link',
-        'service.id',
-        '=',
-        'service_link.service_instance_id'
-      )
-      .where('sub.status', 'ACCEPTED')
-      .where((qb) =>
-        qb
-          .where('sub.end_date', '>=', new Date())
-          .where('sub.start_date', '<=', new Date())
-          .orWhereNull('sub.end_date')
-      )
-      .where('user.id', userId)
-      .where('sub.organization_id', userSelectedOrganization)
-      .select([
-        'User_Service.*',
-        'service.name as service_name',
-        'service.ordering as ordering',
-      ])
-      .groupBy([
-        'User_Service.id',
-        'service.name',
-        'service.ordering',
-        'sub.id',
-      ]);
-
-    return paginate<UserService, UserServiceConnection>(
-      'User_Service',
-      opts,
-      undefined,
-      userServiceQuery
-    );
   },
 
   loadUserServiceBySubscription: (

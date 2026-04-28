@@ -6,7 +6,6 @@ import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DeploymentRequestHubStatus,
   ServiceInstanceCreationStatus,
-  ServiceInstanceJoinType,
 } from '../../../__generated__/resolvers-types';
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -29,7 +28,6 @@ describe('serviceGroupDomain', () => {
       description: '',
       creation_status: ServiceInstanceCreationStatus.Ready,
       public: false,
-      join_type: ServiceInstanceJoinType.JoinAuto,
       tags: [],
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });
@@ -39,7 +37,6 @@ describe('serviceGroupDomain', () => {
       description: '',
       creation_status: ServiceInstanceCreationStatus.Ready,
       public: false,
-      join_type: ServiceInstanceJoinType.JoinAuto,
       tags: [],
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });
