@@ -61,7 +61,9 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
     <RelayProvider>
       <div className="flex min-h-screen">
         <PageLoader>
-          <div className="flex flex-col w-full h-screen min-h-0">
+          <div
+            id="app-shell"
+            className="flex flex-col w-full h-screen min-h-0">
             <TestEnvBanner />
             <AdminBanner />
             <TryFiligranProductsBanner />
