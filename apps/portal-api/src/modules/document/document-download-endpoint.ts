@@ -14,8 +14,8 @@ import {
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
-import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
-import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
+import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {

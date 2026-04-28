@@ -9,10 +9,10 @@ import { FilterKey } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import User from '../../../../model/kanel/public/User';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import * as UsersHelper from '../users.helper';
-import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
-import { usersAdminApp } from './users.admin.app';
+import { loadOrganizationBy } from '../../organization/organization.domain';
+import * as UsersHelper from '../user.helper';
+import { createNewUserWithPendingOrga, removeUser } from '../user.helper';
+import { userAdminApp } from './user.admin.app';
 
 describe('users admin app', () => {
   describe('bulkAcceptPendingUserInOrganization', () => {
@@ -74,7 +74,7 @@ describe('users admin app', () => {
       requestContext.set(requestContextAdminSecondOrga);
       const userToRemove = createdUsers[0];
 
-      const call = usersAdminApp.bulkAcceptPendingUserInOrganization(
+      const call = userAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.FILIGRAN.ID,
         [userToRemove!.id],
         undefined,
@@ -88,7 +88,7 @@ describe('users admin app', () => {
     it('should accept users by id', async () => {
       requestContext.set(requestContextAdminSecondOrga);
       const userToRemove = createdUsers[0];
-      await usersAdminApp.bulkAcceptPendingUserInOrganization(
+      await userAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [userToRemove!.id],
         undefined,
@@ -105,7 +105,7 @@ describe('users admin app', () => {
 
     it('should accept users by filter', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      await usersAdminApp.bulkAcceptPendingUserInOrganization(
+      await userAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
@@ -138,7 +138,7 @@ describe('users admin app', () => {
       requestContext.set(requestContextAdminSecondOrga);
       const excludedUser = createdUsers[0];
 
-      await usersAdminApp.bulkAcceptPendingUserInOrganization(
+      await userAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
@@ -168,7 +168,7 @@ describe('users admin app', () => {
         (user) => user.email === 'testOne@second-orga.com'
       );
 
-      await usersAdminApp.bulkAcceptPendingUserInOrganization(
+      await userAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'One',
@@ -192,7 +192,7 @@ describe('users admin app', () => {
         (user) => user.email === 'testOne@second-orga.com'
       );
 
-      await usersAdminApp.bulkAcceptPendingUserInOrganization(
+      await userAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'test',
@@ -215,7 +215,7 @@ describe('users admin app', () => {
       const nonAcceptedUser = createdUsers.find(
         (user) => user.email === 'testOne@second-orga.com'
       );
-      await usersAdminApp.bulkAcceptPendingUserInOrganization(
+      await userAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'test',
@@ -244,7 +244,7 @@ describe('users admin app', () => {
         (user) => user.email === 'testFiligran@filigran.io'
       );
 
-      await usersAdminApp.bulkAcceptPendingUserInOrganization(
+      await userAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.FILIGRAN.ID,
         [],
         undefined,
@@ -298,7 +298,7 @@ describe('users admin app', () => {
         filigranOrga
       );
 
-      const call = usersAdminApp.bulkRemovePendingUserFromOrganization(
+      const call = userAdminApp.bulkRemovePendingUserFromOrganization(
         TEST_ORGANIZATIONS.FILIGRAN.ID,
         [filigranUser!.id],
         undefined,

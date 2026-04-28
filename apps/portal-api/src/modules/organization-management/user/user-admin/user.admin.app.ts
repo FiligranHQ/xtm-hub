@@ -21,13 +21,13 @@ import {
   loadUserOrganization,
   updateMultipleUserOrgWithCapabilities,
 } from '../../../common/user-organization.domain';
-import { loadOrganizationsFromEmail } from '../../organizations/organizations.helper';
+import { loadOrganizationsFromEmail } from '../../organization/organization.helper';
 import {
   loadUser,
   loadUserBy,
   loadUserDetails,
   updateUser,
-} from '../user-domain/users.domain';
+} from '../user-domain/user.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import {
   acceptPendingUserWithCapabilities,
@@ -36,9 +36,9 @@ import {
   preventAdministratorRemovalOfAllOrganizations,
   preventAdministratorRemovalOfOneOrganization,
   updateUserOrgCapabilitiesAndDispatch,
-} from '../users.helper';
+} from '../user.helper';
 
-export const usersAdminApp = {
+export const userAdminApp = {
   addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {
     const { user: contextUser } = requestContext.require();
     const [organizationFromEmail] = await loadOrganizationsFromEmail(

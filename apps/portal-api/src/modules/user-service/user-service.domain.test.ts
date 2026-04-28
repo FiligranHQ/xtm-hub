@@ -22,8 +22,8 @@ import UserServiceCapability, {
   UserServiceCapabilityId,
 } from '../../model/kanel/public/UserServiceCapability';
 import * as mailService from '../../server/mail-service';
-import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
-import { removeUser } from '../organization-management/users/users.helper';
+import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
+import { removeUser } from '../organization-management/user/user.helper';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,

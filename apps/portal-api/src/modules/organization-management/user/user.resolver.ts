@@ -15,7 +15,7 @@ import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { extractId } from '../../../utils/utils';
-import { usersAdminApp } from './user-admin/users.admin.app';
+import { userAdminApp } from './user-admin/user.admin.app';
 import {
   getCapabilities,
   getOrganizations,
@@ -24,12 +24,12 @@ import {
   loadUsersByCapabilitiesInOrganization,
   resetPassword,
   userHasOrganizationWithSubscription,
-} from './user-domain/users.domain';
-import { UsersOrganizationApp } from './user-organization/users.organization.app';
+} from './user-domain/user.domain';
+import { UserOrganizationApp } from './user-organization/user.organization.app';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
-import { usersProfileApp } from './user-profile/users.profile.app';
-import { UsersAuthApp } from './users.auth.app';
-import { mapUserToGraphqlUser } from './users.helper';
+import { userProfileApp } from './user-profile/user.profile.app';
+import { UserAuthApp } from './user.auth.app';
+import { mapUserToGraphqlUser } from './user.helper';
 
 const resolvers: Resolvers = {
   User: {
@@ -86,7 +86,7 @@ const resolvers: Resolvers = {
     // Management
     addUser: async (_, { input }) => {
       try {
-        const user = await UsersOrganizationApp.addUserToOrganization(input);
+        const user = await UserOrganizationApp.addUserToOrganization(input);
 
         await dispatch('User', 'add', user);
 
@@ -99,7 +99,7 @@ const resolvers: Resolvers = {
     // Admin
     adminAddUser: async (_, { input }) => {
       try {
-        const user = await usersAdminApp.addUser(input);
+        const user = await userAdminApp.addUser(input);
         return mapUserToGraphqlUser(user);
       } catch (error) {
         if (error.message.includes(ErrorCode.UserDisabled)) {
@@ -112,7 +112,7 @@ const resolvers: Resolvers = {
     },
     editUserCapabilities: async (_, { id, input }) => {
       try {
-        return await usersAdminApp.editUserCapabilities({
+        return await userAdminApp.editUserCapabilities({
           userId: id as UserId,
           input,
         });
@@ -122,7 +122,7 @@ const resolvers: Resolvers = {
     },
     adminEditUser: async (_, { id, input }) => {
       try {
-        return await usersAdminApp.editUser({
+        return await userAdminApp.editUser({
           userId: id as UserId,
           input,
         });
@@ -133,14 +133,14 @@ const resolvers: Resolvers = {
 
     editMeUser: async (_, { input }, context) => {
       try {
-        return await usersProfileApp.editMeUser(context.user, input);
+        return await userProfileApp.editMeUser(context.user, input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EditMeUserError);
       }
     },
     uploadUserPicture: async (_, { document }, context) => {
       try {
-        return await usersProfileApp.uploadUserPicture(context.user, document);
+        return await userProfileApp.uploadUserPicture(context.user, document);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.UploadUserPictureError);
       }
@@ -151,7 +151,7 @@ const resolvers: Resolvers = {
     },
     requestTransferPersonalSpace: async (_, { new_email }, context) => {
       try {
-        await usersProfileApp.requestTransferPersonalSpace(
+        await userProfileApp.requestTransferPersonalSpace(
           context.user,
           new_email
         );
@@ -163,7 +163,7 @@ const resolvers: Resolvers = {
     },
     transferPersonalSpace: async (_, { requestId }) => {
       try {
-        await usersProfileApp.transferPersonalSpace(
+        await userProfileApp.transferPersonalSpace(
           requestId as UserTransferRequestId
         );
 
@@ -175,9 +175,7 @@ const resolvers: Resolvers = {
     changeSelectedOrganization: async (_, { organization_id }) => {
       try {
         const user =
-          await UsersOrganizationApp.changeSelectedOrganization(
-            organization_id
-          );
+          await UserOrganizationApp.changeSelectedOrganization(organization_id);
 
         return mapUserToGraphqlUser(user);
       } catch (error) {
@@ -186,7 +184,7 @@ const resolvers: Resolvers = {
     },
     removeUserFromOrganization: async (_, { user_id, organization_id }) => {
       try {
-        const user = await UsersOrganizationApp.removeUserFromOrganization({
+        const user = await UserOrganizationApp.removeUserFromOrganization({
           userId: extractId<UserId>(user_id),
           organizationId: organization_id,
         });
@@ -207,7 +205,7 @@ const resolvers: Resolvers = {
         const { ids, searchTerm, filters, excludedIds } = input;
         const extractedIds = ids.map(extractId<UserId>);
         const extractedExcludedIds = excludedIds.map(extractId<UserId>);
-        await usersAdminApp.bulkRemovePendingUserFromOrganization(
+        await userAdminApp.bulkRemovePendingUserFromOrganization(
           context.user.selected_organization_id,
           extractedIds,
           searchTerm,
@@ -233,7 +231,7 @@ const resolvers: Resolvers = {
         const extractedIds = ids.map(extractId<UserId>);
         const extractedExcludedIds = excludedIds.map(extractId<UserId>);
 
-        await usersAdminApp.bulkAcceptPendingUserInOrganization(
+        await userAdminApp.bulkAcceptPendingUserInOrganization(
           context.user.selected_organization_id,
           extractedIds,
           searchTerm,
@@ -254,7 +252,7 @@ const resolvers: Resolvers = {
     ) => {
       try {
         const user =
-          await UsersOrganizationApp.removePendingUserFromOrganization({
+          await UserOrganizationApp.removePendingUserFromOrganization({
             userId: extractId<UserId>(user_id),
             organizationId: organization_id,
           });
@@ -280,7 +278,7 @@ const resolvers: Resolvers = {
     },
     login: async (_, args, context) => {
       try {
-        const loggedUser = await UsersAuthApp.login(context, args);
+        const loggedUser = await UserAuthApp.login(context, args);
         if (loggedUser) {
           return mapUserToGraphqlUser(loggedUser);
         }
@@ -295,7 +293,7 @@ const resolvers: Resolvers = {
       }
     },
     logout: async (_, __, context) => {
-      return UsersAuthApp.logout(context);
+      return UserAuthApp.logout(context);
     },
     contactUs: async (
       _,

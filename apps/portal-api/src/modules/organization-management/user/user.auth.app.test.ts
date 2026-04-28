@@ -2,14 +2,14 @@ import config from 'config';
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserLoadUserBy } from '../../../model/user';
 import * as UserSecurity from '../../../security/util/user';
-import * as UserDomain from './user-domain/users.domain';
-import { UsersAuthApp } from './users.auth.app';
+import * as UserDomain from './user-domain/user.domain';
+import { UserAuthApp } from './user.auth.app';
 
 vi.mock('config', () => ({
   default: { get: vi.fn() },
 }));
 
-vi.mock('./user-domain/users.domain', () => ({
+vi.mock('./user-domain/user.domain', () => ({
   loadUserBy: vi.fn(),
   updateUserAtLogin: vi.fn(),
 }));
@@ -43,7 +43,7 @@ describe('usersAuthApp', () => {
         (config.get as Mock).mockReturnValue(SSO_ONLY_SETTINGS);
 
         await expect(
-          UsersAuthApp.login(mockContext, {
+          UserAuthApp.login(mockContext, {
             email: 'user@company.com',
             password: '',
           })
@@ -54,7 +54,7 @@ describe('usersAuthApp', () => {
         (config.get as Mock).mockReturnValue([]);
 
         await expect(
-          UsersAuthApp.login(mockContext, {
+          UserAuthApp.login(mockContext, {
             email: 'user@company.com',
             password: 'somepassword',
           })
@@ -72,7 +72,7 @@ describe('usersAuthApp', () => {
         vi.mocked(UserDomain.updateUserAtLogin).mockResolvedValue(mockUser);
         vi.mocked(UserSecurity.validatePassword).mockReturnValue(true);
 
-        const result = await UsersAuthApp.login(mockContext, {
+        const result = await UserAuthApp.login(mockContext, {
           email: 'user@company.com',
           password: 'correctpassword',
         });
@@ -93,7 +93,7 @@ describe('usersAuthApp', () => {
             passwordValid
           );
 
-          const result = await UsersAuthApp.login(mockContext, {
+          const result = await UserAuthApp.login(mockContext, {
             email: 'user@company.com',
             password: 'wrongpassword',
           });

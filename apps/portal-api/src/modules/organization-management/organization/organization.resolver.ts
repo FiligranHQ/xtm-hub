@@ -4,12 +4,12 @@ import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { StillReferencedError } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
-import { organizationsApp } from './organizations.app';
+import { organizationApp } from './organization.app';
 import {
   loadOrganizationBy,
   loadOrganizations,
   loadOrganizationsByUser,
-} from './organizations.domain';
+} from './organization.domain';
 
 const resolvers: Resolvers = {
   OrganizationId: createRelayIdScalar<OrganizationId>('Organization'),
@@ -26,14 +26,14 @@ const resolvers: Resolvers = {
   Mutation: {
     addOrganization: async (_, { input }) => {
       try {
-        return await organizationsApp.createOrganization(input);
+        return await organizationApp.createOrganization(input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }
     },
     editOrganization: async (_, { id, input }) => {
       try {
-        return await organizationsApp.updateOrganization(
+        return await organizationApp.updateOrganization(
           id as OrganizationId,
           input
         );
@@ -43,7 +43,7 @@ const resolvers: Resolvers = {
     },
     deleteOrganization: async (_, { id }) => {
       try {
-        return await organizationsApp.deleteOrganization(id as OrganizationId);
+        return await organizationApp.deleteOrganization(id as OrganizationId);
       } catch (error) {
         if (error.message.includes('STILL_IN_ORGANIZATION')) {
           throw StillReferencedError(error.message);

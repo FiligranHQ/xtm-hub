@@ -46,13 +46,13 @@ import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
 import {
   deleteOrganizationBy,
   insertNewOrganization,
-} from '../organizations/organizations.domain';
-import { loadOrganizationsFromEmail } from '../organizations/organizations.helper';
+} from '../organization/organization.domain';
+import { loadOrganizationsFromEmail } from '../organization/organization.helper';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
   loadUserDetails,
-} from './user-domain/users.domain';
+} from './user-domain/user.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 
 export const createUserWithPersonalSpace = async (

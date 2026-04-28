@@ -10,8 +10,8 @@ import { isEmptyField } from '../../../utils/utils';
 import {
   loadUserBy,
   updateUserAtLogin,
-} from '../../organization-management/users/user-domain/users.domain';
-import { getOrCreateUser } from '../../organization-management/users/users.helper';
+} from '../../organization-management/user/user-domain/user.domain';
+import { getOrCreateUser } from '../../organization-management/user/user.helper';
 import { removeAllUserRolePortal } from '../../role-portal/role-portal.domain';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {

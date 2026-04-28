@@ -21,9 +21,9 @@ import {
   ForbiddenErrorCode,
 } from '../../../utils/error/error.code';
 import { ErrorType } from '../../../utils/error/error.type';
-import { organizationsApp } from './organizations.app';
-import * as organizationsDomain from './organizations.domain';
-import organizationsResolver from './organizations.resolver';
+import { organizationApp } from './organization.app';
+import * as organizationsDomain from './organization.domain';
+import organizationsResolver from './organization.resolver';
 
 describe('organization GraphQL query', () => {
   it('should load organization by id and return result', async () => {
@@ -126,7 +126,7 @@ describe('user organizations GraphQL query', () => {
 });
 
 describe('add organization GraphQL mutation', () => {
-  it('should delegate to organizationsApp.createOrganization and return created organization', async () => {
+  it('should delegate to organizationApp.createOrganization and return created organization', async () => {
     // Given
     const input: OrganizationInput = {
       name: 'New Org',
@@ -136,11 +136,9 @@ describe('add organization GraphQL mutation', () => {
       id: uuidv4() as OrganizationId,
       name: 'New Org',
     } as unknown as Awaited<
-      ReturnType<typeof organizationsApp.createOrganization>
+      ReturnType<typeof organizationApp.createOrganization>
     >;
-    vi.spyOn(organizationsApp, 'createOrganization').mockResolvedValue(
-      expected
-    );
+    vi.spyOn(organizationApp, 'createOrganization').mockResolvedValue(expected);
 
     // When
     const result = await organizationsResolver.Mutation!.addOrganization!(
@@ -151,14 +149,14 @@ describe('add organization GraphQL mutation', () => {
     );
 
     // Then
-    expect(organizationsApp.createOrganization).toHaveBeenCalledWith(input);
+    expect(organizationApp.createOrganization).toHaveBeenCalledWith(input);
     expect(result).toMatchObject({ name: 'New Org' });
   });
 
   it('should map to AlreadyExists for OrganizationSameNameExists error', async () => {
     // Given
     const input: OrganizationInput = { name: 'New Org' };
-    vi.spyOn(organizationsApp, 'createOrganization').mockRejectedValue(
+    vi.spyOn(organizationApp, 'createOrganization').mockRejectedValue(
       new Error(AlreadyExistsErrorCode.OrganizationSameNameExists)
     );
 
@@ -176,16 +174,14 @@ describe('add organization GraphQL mutation', () => {
 });
 
 describe('edit organization GraphQL mutation', () => {
-  it('should delegate to organizationsApp.updateOrganization with typed id and return result', async () => {
+  it('should delegate to organizationApp.updateOrganization with typed id and return result', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
     const input: OrganizationInput = { name: 'Updated Org' };
     const expected = { id, name: 'Updated Org' } as unknown as Awaited<
-      ReturnType<typeof organizationsApp.updateOrganization>
+      ReturnType<typeof organizationApp.updateOrganization>
     >;
-    vi.spyOn(organizationsApp, 'updateOrganization').mockResolvedValue(
-      expected
-    );
+    vi.spyOn(organizationApp, 'updateOrganization').mockResolvedValue(expected);
 
     // When
     const result = await organizationsResolver.Mutation!.editOrganization!(
@@ -196,14 +192,14 @@ describe('edit organization GraphQL mutation', () => {
     );
 
     // Then
-    expect(organizationsApp.updateOrganization).toHaveBeenCalledWith(id, input);
+    expect(organizationApp.updateOrganization).toHaveBeenCalledWith(id, input);
     expect(result).toMatchObject({ id, name: 'Updated Org' });
   });
 
   it('should map to BadRequest for InvalidEmail error', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
-    vi.spyOn(organizationsApp, 'updateOrganization').mockRejectedValue(
+    vi.spyOn(organizationApp, 'updateOrganization').mockRejectedValue(
       new Error(BadRequestErrorCode.InvalidEmail)
     );
 
@@ -221,15 +217,13 @@ describe('edit organization GraphQL mutation', () => {
 });
 
 describe('delete organization GraphQL mutation', () => {
-  it('should delegate to organizationsApp.deleteOrganization and return deleted organization', async () => {
+  it('should delegate to organizationApp.deleteOrganization and return deleted organization', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
     const expected = { id, name: 'Deleted Org' } as unknown as Awaited<
-      ReturnType<typeof organizationsApp.deleteOrganization>
+      ReturnType<typeof organizationApp.deleteOrganization>
     >;
-    vi.spyOn(organizationsApp, 'deleteOrganization').mockResolvedValue(
-      expected
-    );
+    vi.spyOn(organizationApp, 'deleteOrganization').mockResolvedValue(expected);
 
     // When
     const result = await organizationsResolver.Mutation!.deleteOrganization!(
@@ -240,14 +234,14 @@ describe('delete organization GraphQL mutation', () => {
     );
 
     // Then
-    expect(organizationsApp.deleteOrganization).toHaveBeenCalledWith(id);
+    expect(organizationApp.deleteOrganization).toHaveBeenCalledWith(id);
     expect(result).toMatchObject({ id });
   });
 
   it('should map to ForbiddenAccess for CantRemoveLastAdministrator error', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
-    vi.spyOn(organizationsApp, 'deleteOrganization').mockRejectedValue(
+    vi.spyOn(organizationApp, 'deleteOrganization').mockRejectedValue(
       new Error(ForbiddenErrorCode.CantRemoveLastAdministrator)
     );
 
@@ -268,7 +262,7 @@ describe('delete organization GraphQL mutation', () => {
   it('should throw StillReferencedError when error message includes STILL_IN_ORGANIZATION', async () => {
     // Given
     const id = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
-    vi.spyOn(organizationsApp, 'deleteOrganization').mockRejectedValue(
+    vi.spyOn(organizationApp, 'deleteOrganization').mockRejectedValue(
       new Error('STILL_IN_ORGANIZATION')
     );
 

@@ -19,13 +19,13 @@ import UserTransferRequest, {
 } from '../../../../model/kanel/public/UserTransferRequest';
 import * as mailService from '../../../../server/mail-service';
 import { deleteSubscription } from '../../../subscription/subscription.helper';
-import { updateUser } from '../user-domain/users.domain';
-import { usersProfileApp } from '../user-profile/users.profile.app';
+import { updateUser } from '../user-domain/user.domain';
 import * as UserTransferRequestDomain from '../user-transferRequest/user-transfer-request.domain';
 import {
   deleteUserTransferRequest,
   insertNewUserTransfer,
 } from '../user-transferRequest/user-transfer-request.domain';
+import { userProfileApp } from './user.profile.app';
 
 describe('user profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [
@@ -47,7 +47,7 @@ describe('user profile app', () => {
       });
     });
     it('should update one field and return user', async () => {
-      const userReturned = await usersProfileApp.editMeUser(
+      const userReturned = await userProfileApp.editMeUser(
         contextSimpleUserSecondOrga.user,
         {
           first_name: 'anotherFirstName',
@@ -56,7 +56,7 @@ describe('user profile app', () => {
       expect(userReturned.first_name).toStrictEqual('anotherFirstName');
     });
     it('should update multiple fields and return user', async () => {
-      const userReturned = await usersProfileApp.editMeUser(
+      const userReturned = await userProfileApp.editMeUser(
         contextSimpleUserSecondOrga.user,
         {
           last_name: 'anotherLastName',
@@ -71,7 +71,7 @@ describe('user profile app', () => {
   describe('requestTransferPersonalSpace', () => {
     it('should send error if email is not valid format', async () => {
       await expect(
-        usersProfileApp.requestTransferPersonalSpace(
+        userProfileApp.requestTransferPersonalSpace(
           contextSimpleUserSecondOrga.user,
           'emailNotValid'
         )
@@ -79,7 +79,7 @@ describe('user profile app', () => {
     });
     it('should not send error if email does not already exist (for vilain users)', async () => {
       await expect(
-        usersProfileApp.requestTransferPersonalSpace(
+        userProfileApp.requestTransferPersonalSpace(
           contextSimpleUserSecondOrga.user,
           'emailNotExists@filigran.io'
         )
@@ -92,7 +92,7 @@ describe('user profile app', () => {
         UserTransferRequestDomain,
         'insertNewUserTransfer'
       ).mockResolvedValue(mockTransferRequestData);
-      await usersProfileApp.requestTransferPersonalSpace(
+      await userProfileApp.requestTransferPersonalSpace(
         contextSimpleUserSecondOrga.user,
         'user15@test.fr'
       );
@@ -143,7 +143,7 @@ describe('user profile app', () => {
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA
           .ID as unknown as OrganizationId,
       });
-      await usersProfileApp.transferPersonalSpace(
+      await userProfileApp.transferPersonalSpace(
         mockTransferRequestData[0]?.id as UserTransferRequestId
       );
       const subsFromAfter = await TestHelper.subscription.loadAll({
@@ -163,7 +163,7 @@ describe('user profile app', () => {
 
     it('should reject transfer if caller is not the intended recipient', async () => {
       await expect(
-        usersProfileApp.transferPersonalSpace(
+        userProfileApp.transferPersonalSpace(
           mockTransferRequestData[0]?.id as UserTransferRequestId
         )
       ).rejects.toThrow();
@@ -171,7 +171,7 @@ describe('user profile app', () => {
 
     it('should throw error if no request found', async () => {
       await expect(
-        usersProfileApp.transferPersonalSpace('noId' as UserTransferRequestId)
+        userProfileApp.transferPersonalSpace('noId' as UserTransferRequestId)
       ).rejects.toThrow();
     });
   });
@@ -216,7 +216,7 @@ describe('user profile app', () => {
       const { insertFile } = await mockMinIOClient();
 
       const mockUpload = createMockUpload();
-      const result = await usersProfileApp.uploadUserPicture(
+      const result = await userProfileApp.uploadUserPicture(
         contextSimpleUserSecondOrga.user,
         mockUpload
       );
@@ -230,7 +230,7 @@ describe('user profile app', () => {
       const { insertFile, deleteFile } = await mockMinIOClient();
 
       const mockUpload1 = createMockUpload('first.png');
-      await usersProfileApp.uploadUserPicture(
+      await userProfileApp.uploadUserPicture(
         contextSimpleUserSecondOrga.user,
         mockUpload1
       );
@@ -241,7 +241,7 @@ describe('user profile app', () => {
       };
 
       const mockUpload2 = createMockUpload('second.png');
-      await usersProfileApp.uploadUserPicture(userWithPicture, mockUpload2);
+      await userProfileApp.uploadUserPicture(userWithPicture, mockUpload2);
 
       expect(deleteFile).toHaveBeenCalledWith('picture/first_123.png');
       expect(insertFile).toHaveBeenCalledTimes(2);
@@ -257,7 +257,7 @@ describe('user profile app', () => {
       };
 
       const mockUpload = createMockUpload();
-      const result = await usersProfileApp.uploadUserPicture(
+      const result = await userProfileApp.uploadUserPicture(
         userWithPicture,
         mockUpload
       );

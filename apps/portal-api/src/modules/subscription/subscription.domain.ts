@@ -11,8 +11,8 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserMutator } from '../../model/kanel/public/User';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
-import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
-import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
+import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
 import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { UserServiceDomain } from '../user-service/user-service.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';

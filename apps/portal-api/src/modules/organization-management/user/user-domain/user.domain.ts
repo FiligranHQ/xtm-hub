@@ -31,7 +31,7 @@ import { isAdmin } from '../../../role-portal/role-portal.domain';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { buildLoginEvent } from '../../../telemetry/telemetry.helper';
 
-export const UsersDomain = {
+export const UserDomain = {
   loadUsers: async (userIds: UserId[]): Promise<User[]> => {
     return db<User[]>('User').whereIn('id', userIds);
   },

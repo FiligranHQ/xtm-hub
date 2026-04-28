@@ -27,17 +27,17 @@ import { updateSubscriptionBy } from '../../../subscription/subscription.domain'
 import {
   loadOrganizationBy,
   loadUserByOrganization,
-} from '../../organizations/organizations.domain';
+} from '../../organization/organization.domain';
 import {
   loadSimpleUserBy,
   loadUserDetails,
   updateUser,
-} from '../user-domain/users.domain';
+} from '../user-domain/user.domain';
 import {
   insertNewUserTransfer,
   loadUserTransfer,
 } from '../user-transferRequest/user-transfer-request.domain';
-import { updateAndDispatchUser } from '../users.helper';
+import { updateAndDispatchUser } from '../user.helper';
 
 const deletePicture = async (pictureMinio: string) => {
   try {
@@ -61,7 +61,7 @@ const buildPictureUrl = (userId: string) => {
   return `${baseUrlFront}/user/picture/${userId}?t=${Date.now()}`;
 };
 
-export const usersProfileApp = {
+export const userProfileApp = {
   editMeUser: async (meUser, input: EditMeUserInput) => {
     const updatedUser = await updateUser(meUser.id, input);
 

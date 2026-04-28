@@ -21,7 +21,7 @@ import {
   loadUserConnection,
   updateUser,
   updateUserAtLogin,
-} from '../user-domain/users.domain';
+} from './user.domain';
 
 //Issue with test
 describe('users domain', () => {

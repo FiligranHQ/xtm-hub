@@ -41,11 +41,11 @@ import { formatName } from '../../utils/format';
 import { isValidVersion } from '../../utils/versioning';
 import { loadUserOrganization } from '../common/user-organization.domain';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
 import {
   loadUsersByCapabilitiesInOrganization,
   updateUser,
-} from '../organization-management/users/user-domain/users.domain';
+} from '../organization-management/user/user-domain/user.domain';
 import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import {

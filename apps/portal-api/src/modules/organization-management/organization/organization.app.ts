@@ -15,10 +15,10 @@ import {
   insertNewOrganization,
   organizationDomain,
   updateOrganizationBy,
-} from './organizations.domain';
-import { hasDomainOverlap } from './organizations.helper';
+} from './organization.domain';
+import { hasDomainOverlap } from './organization.helper';
 
-export const organizationsApp = {
+export const organizationApp = {
   async updateOrganization(id: OrganizationId, input: OrganizationInput) {
     const updatedOrganization = await updateOrganizationBy(
       { id },

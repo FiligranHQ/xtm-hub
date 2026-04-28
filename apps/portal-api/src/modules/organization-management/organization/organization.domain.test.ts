@@ -12,7 +12,7 @@ import {
   loadOrganizationsByUser,
   loadUserByOrganization,
   organizationDomain,
-} from './organizations.domain';
+} from './organization.domain';
 
 describe('organizationsDomain', () => {
   describe('loadOrganizationsByUser', () => {

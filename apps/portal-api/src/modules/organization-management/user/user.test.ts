@@ -18,18 +18,18 @@ import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import {
   deleteOrganizationBy,
   loadOrganizationBy,
-} from '../organizations/organizations.domain';
+} from '../organization/organization.domain';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
-} from './user-domain/users.domain';
+} from './user-domain/user.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import {
   createNewUserFromInvitation,
   preventAdministratorRemovalOfAllOrganizations,
   preventAdministratorRemovalOfOneOrganization,
   removeUser,
-} from './users.helper';
+} from './user.helper';
 
 describe('user helpers', async () => {
   afterEach(async () => {

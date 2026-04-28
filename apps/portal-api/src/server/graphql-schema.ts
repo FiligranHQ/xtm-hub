@@ -8,8 +8,8 @@ import serviceGroupResolver from '../modules/deployment/group/service-group.reso
 import vaultResolver from '../modules/document/document.resolver';
 import logResolver from '../modules/log/log.resolver';
 import newsFeedResolver from '../modules/news-feed/news-feed.resolver';
-import organizationsResolver from '../modules/organization-management/organizations/organizations.resolver';
-import usersResolver from '../modules/organization-management/users/users.resolver';
+import organizationsResolver from '../modules/organization-management/organization/organization.resolver';
+import usersResolver from '../modules/organization-management/user/user.resolver';
 import registrationResolver from '../modules/registration/registration.resolver';
 import serviceCapabilityResolver from '../modules/security-management/service-capability/service-capability.resolver';
 import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';

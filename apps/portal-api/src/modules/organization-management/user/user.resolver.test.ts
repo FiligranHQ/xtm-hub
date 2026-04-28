@@ -49,10 +49,10 @@ import {
   deleteUserById,
   loadUser,
   loadUserBy,
-} from './user-domain/users.domain';
+} from './user-domain/user.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
-import { removeUser } from './users.helper';
-import usersResolver from './users.resolver';
+import { removeUser } from './user.helper';
+import usersResolver from './user.resolver';
 
 const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
 const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';

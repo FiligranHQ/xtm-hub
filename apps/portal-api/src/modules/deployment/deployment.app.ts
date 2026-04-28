@@ -45,8 +45,8 @@ import {
 } from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
 import { ucfirst } from '../../utils/utils';
-import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
-import { loadUser } from '../organization-management/users/user-domain/users.domain';
+import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { loadUser } from '../organization-management/user/user-domain/user.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';

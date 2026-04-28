@@ -22,18 +22,18 @@ import {
   removeUserFromOrganization,
   removeUserFromPendingList,
 } from '../../../common/user-organization.domain';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import { loadOrganizationsFromEmail } from '../../organizations/organizations.helper';
+import { loadOrganizationBy } from '../../organization/organization.domain';
+import { loadOrganizationsFromEmail } from '../../organization/organization.helper';
 import {
   loadUser,
   loadUserBy,
   loadUsersByCapabilitiesInOrganization,
   updateUser,
-} from '../user-domain/users.domain';
+} from '../user-domain/user.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
-import { createUserWithPersonalSpace } from '../users.helper';
+import { createUserWithPersonalSpace } from '../user.helper';
 
-export const UsersOrganizationApp = {
+export const UserOrganizationApp = {
   addUserToOrganization: async (
     input: AddUserInput
   ): Promise<UserLoadUserBy> => {

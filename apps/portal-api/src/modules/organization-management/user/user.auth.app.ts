@@ -5,7 +5,7 @@ import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { validatePassword } from '../../../security/util/user';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
-import { loadUserBy, updateUserAtLogin } from './user-domain/users.domain';
+import { loadUserBy, updateUserAtLogin } from './user-domain/user.domain';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   return validatePassword(user.salt, password, user.password);
@@ -17,7 +17,7 @@ const isLocalAuthEnabled = (): boolean => {
   return loginSettings.some((entry) => entry.provider === 'local');
 };
 
-export const UsersAuthApp = {
+export const UserAuthApp = {
   login: async (
     context: PortalContext,
     { email, password }: MutationLoginArgs

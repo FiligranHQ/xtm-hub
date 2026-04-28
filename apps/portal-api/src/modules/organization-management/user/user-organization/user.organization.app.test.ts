@@ -14,8 +14,8 @@ import * as MailService from '../../../../server/mail-service';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { loadUserOrganization } from '../../../common/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
-import { insertUser } from '../users.test.utils';
-import { UsersOrganizationApp } from './users.organization.app';
+import { insertUser } from '../user.test.utils';
+import { UserOrganizationApp } from './user.organization.app';
 
 describe('usersOrganizationApp', () => {
   describe('sendPendingUsersDigest', () => {
@@ -68,7 +68,7 @@ describe('usersOrganizationApp', () => {
       ]);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
-      await UsersOrganizationApp.sendPendingUsersDigest();
+      await UserOrganizationApp.sendPendingUsersDigest();
 
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
@@ -116,7 +116,7 @@ describe('usersOrganizationApp', () => {
       >);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
-      await UsersOrganizationApp.sendPendingUsersDigest();
+      await UserOrganizationApp.sendPendingUsersDigest();
 
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
@@ -150,7 +150,7 @@ describe('usersOrganizationApp', () => {
       ]);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
-      await UsersOrganizationApp.sendPendingUsersDigest();
+      await UserOrganizationApp.sendPendingUsersDigest();
 
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
@@ -184,7 +184,7 @@ describe('usersOrganizationApp', () => {
       ]);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
-      await UsersOrganizationApp.sendPendingUsersDigest();
+      await UserOrganizationApp.sendPendingUsersDigest();
 
       expect(sendMailSpy).toHaveBeenCalledTimes(1);
       expect(sendMailSpy).toHaveBeenCalledWith({
@@ -218,7 +218,7 @@ describe('usersOrganizationApp', () => {
       ]);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
-      await UsersOrganizationApp.sendPendingUsersDigest();
+      await UserOrganizationApp.sendPendingUsersDigest();
 
       expect(sendMailSpy).not.toHaveBeenCalled();
     });
@@ -250,7 +250,7 @@ describe('usersOrganizationApp', () => {
       expect(userPendingExisted).toHaveLength(1);
 
       const sendMailSpy = vi.spyOn(MailService, 'sendMail');
-      await UsersOrganizationApp.sendPendingUsersDigest();
+      await UserOrganizationApp.sendPendingUsersDigest();
       expect(sendMailSpy).not.toHaveBeenCalled();
 
       const userPendingShouldExistAnymore =
@@ -286,7 +286,7 @@ describe('usersOrganizationApp', () => {
         });
 
       expect(userPendingExisted).toHaveLength(1);
-      await UsersOrganizationApp.addUserToOrganization({
+      await UserOrganizationApp.addUserToOrganization({
         email: 'testAddingPendingUser@filigran.io',
       });
 
@@ -318,7 +318,7 @@ describe('usersOrganizationApp', () => {
         portalContext: testContext,
       });
 
-      const updatedUser = await UsersOrganizationApp.changeSelectedOrganization(
+      const updatedUser = await UserOrganizationApp.changeSelectedOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
@@ -334,7 +334,7 @@ describe('usersOrganizationApp', () => {
       });
 
       await expect(
-        UsersOrganizationApp.changeSelectedOrganization(
+        UserOrganizationApp.changeSelectedOrganization(
           TEST_ORGANIZATIONS.FILIGRAN.ID
         )
       ).rejects.toThrow(ErrorCode.UserIsNotInOrganization);

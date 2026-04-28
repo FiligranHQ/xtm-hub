@@ -10,9 +10,9 @@ import { FilterKey } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import User from '../../../../model/kanel/public/User';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import { loadOrganizationBy } from '../../organizations/organizations.domain';
-import { createNewUserWithPendingOrga, removeUser } from '../users.helper';
-import { insertUser, linkUsersToOrganization } from '../users.test.utils';
+import { loadOrganizationBy } from '../../organization/organization.domain';
+import { createNewUserWithPendingOrga, removeUser } from '../user.helper';
+import { insertUser, linkUsersToOrganization } from '../user.test.utils';
 import { UserOrganizationPendingDomain } from './user-organization-pending.domain';
 
 describe('userOrganizationPendingDomain', () => {

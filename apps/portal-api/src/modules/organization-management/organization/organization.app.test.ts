@@ -6,13 +6,13 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { organizationsApp } from './organizations.app';
+import { organizationApp } from './organization.app';
 import {
   insertNewOrganization,
   loadOrganizationBy,
-} from './organizations.domain';
+} from './organization.domain';
 
-describe('organizationsApp', () => {
+describe('organizationApp', () => {
   afterEach(async () => {
     vi.useRealTimers();
   });
@@ -25,7 +25,7 @@ describe('organizationsApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationsApp.updateOrganization(
+      await organizationApp.updateOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         {
           domains: [
@@ -61,7 +61,7 @@ describe('organizationsApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationsApp.createOrganization({
+      await organizationApp.createOrganization({
         domains: ['test.com', 'test.fr'],
         name: 'test.com',
       });
@@ -85,7 +85,7 @@ describe('organizationsApp', () => {
         domains: ['domain1.io', 'domain2.io'],
       });
 
-      const call = organizationsApp.createOrganization({
+      const call = organizationApp.createOrganization({
         domains: ['domain1.io'],
         name: 'otherDomain.io',
       });
@@ -102,7 +102,7 @@ describe('organizationsApp', () => {
         domains: ['alreadyExistingOrga.io'],
       });
 
-      const call = organizationsApp.createOrganization({
+      const call = organizationApp.createOrganization({
         domains: ['whatever.io'],
         name: 'alreadyExistingOrga',
       });
@@ -123,7 +123,7 @@ describe('organizationsApp', () => {
       const newOrganization = await loadOrganizationBy({ id: organizationId });
       expect(newOrganization).toBeDefined();
 
-      await organizationsApp.deleteOrganization(organizationId);
+      await organizationApp.deleteOrganization(organizationId);
 
       const deletedOrganization = await loadOrganizationBy({
         id: organizationId,
