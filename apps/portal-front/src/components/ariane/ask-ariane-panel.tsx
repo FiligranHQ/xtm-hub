@@ -70,7 +70,7 @@ const AskArianePanel = ({
   }, [isDarkMode]);
 
   useEffect(() => {
-    const header = document.querySelector('header');
+    const header = document.getElementById('app-header');
     const appShell = document.getElementById('app-shell');
     if (!header || !appShell) return;
 
