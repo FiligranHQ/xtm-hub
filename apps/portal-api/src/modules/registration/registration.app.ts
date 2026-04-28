@@ -87,7 +87,7 @@ export const registrationApp = {
       }
       const platformIdentifier = serviceDefinition.identifier
         ? platformIdentifierMappedByServiceDefinitionIdentifier[
-          serviceDefinition.identifier as ServiceDefinitionIdentifier
+            serviceDefinition.identifier as ServiceDefinitionIdentifier
           ]
         : undefined;
       if (!platformIdentifier) {

@@ -9,9 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import {
-  TestHelper,
-} from '../../../tests/helper/test.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   // eslint-disable-next-line no-restricted-imports
   contextBypassUser,
@@ -343,7 +341,6 @@ describe('registration app', () => {
 
     afterEach(() => {
       vi.useRealTimers();
-      vi.restoreAllMocks();
     });
 
     describe('invalid configuration', async () => {

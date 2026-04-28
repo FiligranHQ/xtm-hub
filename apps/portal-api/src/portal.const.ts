@@ -90,4 +90,3 @@ export const CRONS_USER_CONTEXT: PortalContext = {
     roles_portal: [],
   },
 } as PortalContext;
-
