@@ -1,4 +1,3 @@
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import { SettingsResponse } from '@/utils/settings.service';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
@@ -15,6 +14,7 @@ import ServiceInstancesListQueryGraphql, {
   serviceInstancesListQuery$data,
 } from '@generated/serviceInstancesListQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
+import serverPortalApiFetch from '../../../../src/relay/server-portal-api-fetch';
 
 interface MeResponse {
   data: {

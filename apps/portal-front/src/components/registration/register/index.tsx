@@ -1,8 +1,3 @@
-import Loader from '@/components/loader';
-import { RegistrationContext } from '@/components/registration/context';
-import { RegistrationLayout } from '@/components/registration/layout';
-import { RegisterStateMissingCapability } from '@/components/registration/register/missing-capability';
-import { RegisterOrganizationForm } from '@/components/registration/register/organization-form';
 import { RegisterPlatform } from '@/components/registration/register/register.graphql';
 import { toast } from '@filigran/ui/clients';
 import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
@@ -37,6 +32,11 @@ import {
   useMutation,
   usePreloadedQuery,
 } from 'react-relay';
+import Loader from '../../Loader';
+import { RegistrationContext } from '../Context';
+import { RegistrationLayout } from '../Layout';
+import { RegisterStateMissingCapability } from './MissingCapability';
+import { RegisterOrganizationForm } from './OrganizationForm';
 
 interface Props {
   platform: PlatformInput;

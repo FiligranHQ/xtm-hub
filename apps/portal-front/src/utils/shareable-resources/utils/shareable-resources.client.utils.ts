@@ -1,7 +1,7 @@
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
-import { hasProperty } from '../../hasProperty';
+import { hasProperty } from '../../has-property';
 import { serviceConfigMap } from '../shareable-resources.consts';
 import { ServiceInfo, ServiceSlug } from '../shareable-resources.types';
 

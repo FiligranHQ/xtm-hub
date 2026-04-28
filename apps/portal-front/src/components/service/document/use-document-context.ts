@@ -1,25 +1,14 @@
-import { PortalContext } from '@/components/me/app-portal-context';
-import { ServiceContextProps } from '@/components/service/components/service-context';
 import {
   ServiceForm,
   ServiceFormValues,
 } from '@/components/service/components/subscribable-services.types';
-import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import {
   DocumentCreateMutation,
   DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
-import { ConnectorForm } from '@/components/service/integrations/forms/connector-form';
-import { CsvFeedForm } from '@/components/service/integrations/forms/csv-feed-form';
-import { RssFeedForm } from '@/components/service/integrations/forms/rss-feed-form';
-import { StreamForm } from '@/components/service/integrations/forms/stream-form';
-import { TaxiiFeedForm } from '@/components/service/integrations/forms/taxii-feed-form';
-import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/third-party-integration-form';
-import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
-import { splitFileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import {
   docIsExistingFile,
   isFile,
@@ -37,6 +26,17 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
+import { splitFileListToUploadableMap } from '../../../relay/environment/fetch-form-data';
+import { PortalContext } from '../../me/AppPortalContext';
+import { ServiceContextProps } from '../components/ServiceContext';
+import { CustomDashboardForm } from '../custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
+import { ConnectorForm } from '../integrations/forms/ConnectorForm';
+import { CsvFeedForm } from '../integrations/forms/CsvFeedForm';
+import { RssFeedForm } from '../integrations/forms/RssFeedForm';
+import { StreamForm } from '../integrations/forms/StreamForm';
+import { TaxiiFeedForm } from '../integrations/forms/TaxiiFeedForm';
+import { ThirdPartyIntegrationForm } from '../integrations/forms/ThirdPartyIntegrationForm';
+import { OpenaevScenarioForm } from '../openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
 
 const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'name',

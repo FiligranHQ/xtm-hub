@@ -1,4 +1,3 @@
-import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/public-try-filigran-products-banner';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { Button } from '@filigran/ui/servers';
 import '@filigran/ui/theme.css';
@@ -6,6 +5,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import * as React from 'react';
 import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
+import { PublicTryFiligranProductsBanner } from '../../src/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 import '../../styles/globals.css';
 
 export async function generateMetadata(): Promise<Metadata> {

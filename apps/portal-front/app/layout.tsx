@@ -1,8 +1,8 @@
-import AppContext from '@/components/app-context';
 import I18nContext from '@/i18n/i18n-context';
 import { getMetadataBase } from '@/utils/metadata';
 import { Metadata } from 'next';
 import * as React from 'react';
+import AppContext from '../src/components/AppContext';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return {

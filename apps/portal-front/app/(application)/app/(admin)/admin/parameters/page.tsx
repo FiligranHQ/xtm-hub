@@ -1,9 +1,9 @@
 'use client';
-import GuardCapacityComponent from '@/components/admin-guard';
-import { Parameters } from '@/components/admin/parameters/parameters';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
+import { Parameters } from '../../../../../../src/components/admin/parameters/Parameters';
+import GuardCapacityComponent from '../../../../../../src/components/AdminGuard';
+import { BreadcrumbNav } from '../../../../../../src/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {

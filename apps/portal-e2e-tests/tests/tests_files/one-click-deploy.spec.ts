@@ -76,7 +76,7 @@ test.describe('One Click Deploy', () => {
             const body = res.request().postDataJSON();
             return (
               typeof body.query === 'string' &&
-              body.query.includes('mutation oneClickDeployMutation')
+              body.query.includes('mutation OneClickDeployMutation')
             );
           } catch {
             return false;

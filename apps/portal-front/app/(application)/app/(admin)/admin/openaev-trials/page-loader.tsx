@@ -1,7 +1,7 @@
-import TrialsList from '@/components/trials/trials-list';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
+import TrialsList from '../../../../../../src/components/trials/TrialsList';
+import { BreadcrumbNav } from '../../../../../../src/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {

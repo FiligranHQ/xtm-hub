@@ -1,0 +1,101 @@
+'use client';
+import { DocumentCreateMutation } from '@/components/service/document/document.graphql';
+import { Button, useToast } from '@filigran/ui';
+import { useTranslations } from 'next-intl';
+import * as React from 'react';
+import { useContext, useState } from 'react';
+import { newDocumentSchema, VaultNewFileForm } from './VaultNewFileForm';
+
+import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
+import DocumentItem_fragmentGraphql, {
+  documentItem_fragment$key,
+} from '@generated/documentItem_fragment.graphql';
+import { readInlineData, useMutation } from 'react-relay';
+import slugify from 'slugify';
+import { z } from 'zod';
+import useDecodedParams from '../../../hooks/use-decoded-params';
+import { splitFileListToUploadableMap } from '../../../relay/environment/fetch-form-data';
+import { PortalContext } from '../../me/AppPortalContext';
+import { SheetWithPreventingDialog } from '../../ui/SheetWithPreventingDialog';
+interface VaultFormProps {
+  connectionId: string;
+  userCanUpdate: boolean;
+}
+export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
+  connectionId,
+  userCanUpdate,
+}) => {
+  const { toast } = useToast();
+  const t = useTranslations();
+  const [createMutation] = useMutation<documentCreateMutation>(
+    DocumentCreateMutation
+  );
+  const [openSheet, setOpenSheet] = useState(false);
+  const { me } = useContext(PortalContext);
+
+  const { slug } = useDecodedParams();
+  if (!slug) {
+    return null;
+  }
+
+  const createDocument = (values: z.infer<typeof newDocumentSchema>) => {
+    if (!values.document[0]) {
+      return;
+    }
+
+    const key = `${values.document[0].name}:${me?.id}`;
+    createMutation({
+      variables: {
+        input: {
+          name: key,
+          slug: slugify(key),
+          short_description: 'Vault Document Default Short Description',
+          description: values.description ?? 'Vault Document Description',
+          active: true,
+          uploader_id: me?.id ?? '',
+        },
+        metadata: [],
+        serviceInstanceId: slug,
+        connections: connectionId ? [connectionId] : [],
+        sourceDocument: [values.document],
+      },
+      uploadables: splitFileListToUploadableMap({
+        sourceDocument: values.document,
+      }),
+      onCompleted: (response) => {
+        setOpenSheet(false);
+        const createdDocument = readInlineData<documentItem_fragment$key>(
+          DocumentItem_fragmentGraphql,
+          response.createDocument
+        );
+        toast({
+          title: t('Utils.Success'),
+          description: t('VaultActions.DocumentAdded', {
+            file_name: createdDocument.file_name ?? '',
+          }),
+        });
+      },
+      onError: (error) => {
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${error.message}`),
+        });
+      },
+    });
+  };
+
+  return (
+    <>
+      {userCanUpdate && (
+        <SheetWithPreventingDialog
+          open={openSheet}
+          setOpen={setOpenSheet}
+          trigger={<Button>{t('Service.Vault.FileForm.AddFile')}</Button>}
+          title={t('Service.Vault.FileForm.AddFile')}>
+          <VaultNewFileForm handleSubmit={createDocument} />
+        </SheetWithPreventingDialog>
+      )}
+    </>
+  );
+};

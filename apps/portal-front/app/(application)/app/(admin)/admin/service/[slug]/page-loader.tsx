@@ -1,13 +1,13 @@
 'use client';
 
-import Loader from '@/components/loader';
-import ServiceSlug from '@/components/service/[slug]/service-slug';
+import Loader from '../../../../../../../src/components/Loader';
+import ServiceSlug from '../../../../../../../src/components/service/[slug]/ServiceSlug';
 
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
+import useMountingLoader from '../../../../../../../src/hooks/use-mounting-loader';
 
 // Component interface
 interface PreloaderProps {

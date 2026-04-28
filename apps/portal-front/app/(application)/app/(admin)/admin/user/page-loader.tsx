@@ -1,9 +1,9 @@
 'use client';
 
-import UserListPage from '@/components/admin/user/user-list-page';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
+import UserListPage from '../../../../../../src/components/admin/user/UserListPage';
+import { BreadcrumbNav } from '../../../../../../src/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {

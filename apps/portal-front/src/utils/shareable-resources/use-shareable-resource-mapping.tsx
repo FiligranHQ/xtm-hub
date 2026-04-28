@@ -1,20 +1,20 @@
 'use client';
-import { ServiceListFilterLabel } from '@/components/service/components/header/filter/service-list-filter-label';
-import {
-  ServiceListFilterKey,
-  ServiceListFilterMap,
-} from '@/components/service/components/header/service-list-header';
-import {
-  ServiceListLocalStorageKey,
-  useServiceListLocalStorage,
-} from '@/components/service/components/use-service-list-local-storage';
-import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/integration-deployable-filter';
-import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/integration-filters';
-import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/integration-verified-filter';
 import {
   ServiceSlug,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { ServiceListFilterLabel } from '../../components/service/components/header/filter/ServiceListFilterLabel';
+import {
+  ServiceListFilterKey,
+  ServiceListFilterMap,
+} from '../../components/service/components/header/ServiceListHeader';
+import { IntegrationDeployableFilter } from '../../components/ui/shareable-resource/integration/IntegrationDeployableFilter';
+import { IntegrationFilters } from '../../components/ui/shareable-resource/integration/IntegrationFilters';
+import { IntegrationVerifiedFilter } from '../../components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '../../hooks/use-service-list-local-storage';
 
 export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const localStorageKeyMapping: Record<

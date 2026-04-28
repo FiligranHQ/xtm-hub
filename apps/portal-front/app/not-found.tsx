@@ -1,8 +1,8 @@
 'use client';
-import PublicPathError from '@/components/public-path-error';
-import { RelayProvider } from '@/relay/RelayProvider';
 import '@filigran/ui/theme.css';
 import { usePathname } from 'next/navigation';
+import PublicPathError from '../src/components/PublicPathError';
+import { RelayProvider } from '../src/relay/relay-provider';
 import '../styles/globals.css';
 
 export default function NotFound() {

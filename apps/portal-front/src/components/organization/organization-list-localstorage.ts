@@ -1,8 +1,8 @@
-import { isValueInEnum } from '@/utils/isValueInEnum';
 import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
 import { OrderingMode } from '@generated/organizationSelectQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
+import { isValueInEnum } from '../../utils/is-value-in-enum';
 
 export const useOrganizationListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
   const [count, setCount, removeCount] = useLocalStorage(

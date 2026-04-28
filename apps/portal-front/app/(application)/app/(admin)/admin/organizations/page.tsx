@@ -1,6 +1,6 @@
 'use client';
-import GuardCapacityComponent from '@/components/admin-guard';
 import * as React from 'react';
+import GuardCapacityComponent from '../../../../../../src/components/AdminGuard';
 import PageLoader from './page-loader';
 
 // Component

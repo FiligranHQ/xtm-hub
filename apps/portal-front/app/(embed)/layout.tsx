@@ -6,11 +6,8 @@ import '../../styles/globals.css';
 
 import serverPortalApiFetch, {
   serverMutateGraphQL,
-} from '@/relay/serverPortalApiFetch';
+} from '../../src/relay/server-portal-api-fetch';
 
-import { ContentLayout } from '@/components/content-layout';
-import { ErrorPage } from '@/components/ui/error-page';
-import { RelayProvider } from '@/relay/RelayProvider';
 import { getMetadataBase } from '@/utils/metadata';
 import { Card } from '@filigran/ui/servers';
 import errorFrontendLogMutationNode, {
@@ -25,6 +22,9 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
 import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
+import { ContentLayout } from '../../src/components/ContentLayout';
+import { ErrorPage } from '../../src/components/ui/ErrorPage';
+import { RelayProvider } from '../../src/relay/relay-provider';
 import PageLoader from './page-loader';
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -62,7 +62,7 @@ const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
       errorFrontendLogMutationNode,
       {
         message: `EmbedLayout: unexpected ${(error as Error).name} error ${(error as Error).message}`,
-        componentStack: 'app/(embed)/layout.tsx',
+        componentStack: 'app/(embed)/Layout.tsx',
       }
     );
     hasError = true;

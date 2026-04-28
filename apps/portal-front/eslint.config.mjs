@@ -54,22 +54,23 @@ const eslintConfig = [
       ],
     },
   },
-  // 🔹 Default → kebab-case (utils, hooks, etc.)
+
+  // Default → kebab-case (utils, hooks, etc.)
   {
     files: ['**/*.{ts,tsx}'],
-    ignores: ['**/components/**'],
+    ignores: ['**/components/**', '**/__generated__/**'],
     rules: {
       'unicorn/filename-case': ['error', { case: 'kebabCase' }],
     },
   },
-
-  // 🔹 Components → PascalCase
+  // Components → PascalCase
   {
     files: ['**/components/**/*.tsx'],
     rules: {
       'unicorn/filename-case': ['error', { case: 'pascalCase' }],
     },
   },
+
   {
     files: ['scripts/**/*.ts'],
     rules: {

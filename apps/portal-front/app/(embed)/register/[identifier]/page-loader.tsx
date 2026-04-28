@@ -1,10 +1,6 @@
 'use client';
 
-import Loader from '@/components/loader';
-import { RegistrationContextProvider } from '@/components/registration/context';
 import { Register } from '@/components/registration/register';
-import useDecodedQuery from '@/hooks/useDecodedQuery';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import RegisterIsPlatformRegisteredQueryGraphql, {
   registerIsPlatformRegisteredQuery,
@@ -16,6 +12,10 @@ import {
 import { redirect, useParams } from 'next/navigation';
 import React from 'react';
 import { useQueryLoader } from 'react-relay';
+import Loader from '../../../../src/components/Loader';
+import { RegistrationContextProvider } from '../../../../src/components/registration/Context';
+import useDecodedQuery from '../../../../src/hooks/use-decoded-query';
+import useMountingLoader from '../../../../src/hooks/use-mounting-loader';
 
 export const PageLoader: React.FC = () => {
   const { identifier } = useParams<{ identifier: PlatformIdentifierEnum }>();

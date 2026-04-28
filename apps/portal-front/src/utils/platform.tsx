@@ -1,4 +1,3 @@
-import { PlatformHoverAction } from '@/components/service/service-instance-card';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
@@ -6,6 +5,7 @@ import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequ
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { useTranslations } from 'next-intl';
+import { PlatformHoverAction } from '../components/service/ServiceInstanceCard';
 
 export const getPlatformIdentifier = (type: string): PlatformIdentifierEnum => {
   return type === ShareableResourceType.OPENAEV_SCENARIO

@@ -1,7 +1,7 @@
 'use client';
-import GuardCapacityComponent from '@/components/admin-guard';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import * as React from 'react';
+import GuardCapacityComponent from '../../../../../../src/components/AdminGuard';
 import PageLoader from './page-loader';
 
 // Component

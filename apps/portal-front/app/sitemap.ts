@@ -1,4 +1,3 @@
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
@@ -8,6 +7,7 @@ import SeoServiceInstancesQuery, {
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import type { MetadataRoute } from 'next';
+import { serverFetchGraphQL } from '../src/relay/server-portal-api-fetch';
 
 export const dynamic = 'force-dynamic';
 

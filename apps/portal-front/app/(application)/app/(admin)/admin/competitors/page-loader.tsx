@@ -1,6 +1,6 @@
-import CompetitorList from '@/components/competitor/competitor-list';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { useTranslations } from 'next-intl';
+import CompetitorList from '../../../../../../src/components/competitor/CompetitorList';
+import { BreadcrumbNav } from '../../../../../../src/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {

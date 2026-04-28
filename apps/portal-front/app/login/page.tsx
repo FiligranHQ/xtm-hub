@@ -3,9 +3,6 @@ import * as React from 'react';
 import '@filigran/ui/theme.css';
 import '../../styles/globals.css';
 
-import Login from '@/components/login/login';
-import { RelayProvider } from '@/relay/RelayProvider';
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
@@ -15,6 +12,9 @@ import meLoaderQueryNode, {
 } from '@generated/meLoaderQuery.graphql';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import Login from '../../src/components/login/Login';
+import { RelayProvider } from '../../src/relay/relay-provider';
+import serverPortalApiFetch from '../../src/relay/server-portal-api-fetch';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return {

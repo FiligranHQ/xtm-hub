@@ -1,4 +1,3 @@
-import { fetchOrSubscribe } from '@/relay/environment/fetchFn';
 import {
   Environment,
   FetchFunction,
@@ -8,7 +7,7 @@ import {
   RecordSource,
   Store,
 } from 'relay-runtime';
-import { networkFetch } from './fetchFn';
+import { fetchOrSubscribe, networkFetch } from './fetch-fn';
 import { buildQueryId, fieldLogger, isRelayObservable } from './helpers';
 
 export type QueryResponsePayload = {

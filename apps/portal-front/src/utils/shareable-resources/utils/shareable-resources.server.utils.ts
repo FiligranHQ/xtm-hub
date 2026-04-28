@@ -1,4 +1,4 @@
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
+import { serverFetchGraphQL } from '../../../relay/server-portal-api-fetch';
 
 import publicDocumentBySlugQueryGraphql from '@generated/publicDocumentBySlugQuery.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';

@@ -1,6 +1,4 @@
 import { isEmpty, isNil } from '@/lib/utils';
-import { fetchOrSubscribe } from '@/relay/environment/fetchFn';
-import { fetchFormData } from '@/relay/environment/fetchFormData';
 import { buildLoginRedirect } from '@/utils/redirect';
 import {
   Environment,
@@ -13,7 +11,12 @@ import {
   Store,
 } from 'relay-runtime';
 import RelayModernEnvironment from 'relay-runtime/lib/store/RelayModernEnvironment';
-import { networkFetch, UnauthenticatedError } from './fetchFn';
+import {
+  fetchOrSubscribe,
+  networkFetch,
+  UnauthenticatedError,
+} from './fetch-fn';
+import { fetchFormData } from './fetch-form-data';
 import {
   buildQueryId,
   fieldLogger,

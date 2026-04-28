@@ -1,10 +1,8 @@
 'use client';
-import { EpicPage } from '@/components/epic/epic-page';
 import {
   EpicListQuery,
   epicsListFragment,
 } from '@/components/epic/epic.graphql';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { epicsList_epics$key } from '@generated/epicsList_epics.graphql';
@@ -12,6 +10,8 @@ import { epicsQuery } from '@generated/epicsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+import { EpicPage } from '../../../../../../../src/components/epic/EpicPage';
+import { BreadcrumbNav } from '../../../../../../../src/components/ui/BreadcrumbNav';
 interface PreloaderProps {
   serviceInstance: serviceInstance_fragment$data;
 }

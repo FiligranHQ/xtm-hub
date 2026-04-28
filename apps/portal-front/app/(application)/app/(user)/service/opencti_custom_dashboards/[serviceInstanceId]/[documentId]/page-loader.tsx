@@ -1,12 +1,12 @@
 'use client';
 
-import Loader from '@/components/loader';
-import DashboardDetails from '@/components/service/custom-dashboards/[slug]/custom-dashboard-details';
 import { DocumentsItemQuery } from '@/components/service/document/document.graphql';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
+import Loader from '../../../../../../../../src/components/Loader';
+import DashboardDetails from '../../../../../../../../src/components/service/custom-dashboards/[slug]/CustomDashboardDetails';
+import useMountingLoader from '../../../../../../../../src/hooks/use-mounting-loader';
 
 // Component interface
 interface PreloaderProps {

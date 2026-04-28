@@ -1,11 +1,11 @@
 'use client';
 import { EpicListQuery } from '@/components/epic/epic.graphql';
-import PublicEpicList from '@/components/epic/public-epic-list';
 import { Skeleton } from '@filigran/ui';
 import { epicsQuery } from '@generated/epicsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
+import PublicEpicList from '../../../../src/components/epic/PublicEpicList';
 interface PreloaderProps {
   serviceInstance: seoServiceInstanceFragment$data;
 }

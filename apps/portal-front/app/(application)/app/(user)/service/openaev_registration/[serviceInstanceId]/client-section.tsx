@@ -1,12 +1,6 @@
 'use client';
 
 import { registeredPlatformByServiceInstanceId } from '@/components/registration/register/register.graphql';
-import { RegistrationDetails } from '@/components/service/registration/registration-details';
-import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/reach-sales-button';
-import { SlackSupportButton } from '@/components/service/trial-instances/slack-support';
-import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
-import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
 import { APP_PATH } from '@/utils/path/constant';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
@@ -14,6 +8,12 @@ import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registere
 import { notFound } from 'next/navigation';
 import { use } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
+import { RegistrationDetails } from '../../../../../../../src/components/service/registration/RegistrationDetails';
+import { ReachSalesButton } from '../../../../../../../src/components/service/trial-instances/reach-sales/ReachSalesButton';
+import { SlackSupportButton } from '../../../../../../../src/components/service/trial-instances/SlackSupport';
+import { TrialsHeader } from '../../../../../../../src/components/service/trial-instances/TrialsHeader';
+import { TrialsLearnMore } from '../../../../../../../src/components/service/trial-instances/TrialsLearnMore';
+import { BreadcrumbNav } from '../../../../../../../src/components/ui/BreadcrumbNav';
 import { ServiceOpenAEVRegistrationPageProps } from './page';
 
 const ClientSection = ({ params }: ServiceOpenAEVRegistrationPageProps) => {

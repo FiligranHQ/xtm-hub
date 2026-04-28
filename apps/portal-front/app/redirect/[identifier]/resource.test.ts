@@ -1,7 +1,7 @@
-import { serverMutateGraphQL } from '@/relay/serverPortalApiFetch';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { serverMutateGraphQL } from '../../../src/relay/server-portal-api-fetch';
 import { redirectToResource } from './resource';
 import {
   loadBaseUrlFront,
@@ -10,7 +10,7 @@ import {
   loadServiceInstances,
 } from './utils/load';
 
-vi.mock('@/relay/serverPortalApiFetch', () => ({
+vi.mock('../../../src/relay/server-portal-api-fetch', () => ({
   serverMutateGraphQL: vi.fn(),
 }));
 vi.mock('./utils/load');

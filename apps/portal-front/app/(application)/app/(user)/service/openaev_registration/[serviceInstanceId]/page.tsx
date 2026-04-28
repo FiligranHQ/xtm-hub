@@ -1,5 +1,5 @@
-import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
+import { RegistrationLearnMore } from '../../../../../../../src/components/service/registration/RegistrationLearnMore';
 import ClientSection from './client-section';
 
 export interface ServiceOpenAEVRegistrationPageProps {
