@@ -115,7 +115,7 @@ input CreateDocumentInput {
   description: String!
   active: Boolean!
   use_cases: [String!]
-  uploader_id: String!
+  uploader_id: UserId!
 }
 
 input UpdateDocumentInput {
@@ -125,7 +125,7 @@ input UpdateDocumentInput {
   active: Boolean
   use_cases: [String!]
   uploader_organization_id: OrganizationId
-  uploader_id: String
+  uploader_id: UserId
 }
 
 type DocumentEdge {

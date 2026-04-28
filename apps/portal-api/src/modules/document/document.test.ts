@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import {
   afterAll,
@@ -96,10 +95,7 @@ describe('should modify document', () => {
     await DocumentApp.createDocumentWithChildrenAndMetadata(
       {
         id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
-        uploader_id: toGlobalId(
-          'User',
-          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
-        ),
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         description: 'description',
         minio_name: 'minioName',
         file_name: 'filename',

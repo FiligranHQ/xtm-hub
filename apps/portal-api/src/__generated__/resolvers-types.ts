@@ -3,6 +3,7 @@ import type { DeploymentRequestId } from '../model/kanel/public/DeploymentReques
 import type { DocumentId } from '../model/kanel/public/Document.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
+import type { UserId } from '../model/kanel/public/User.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { PortalContext } from '../model/portal-context.js';
 export type Maybe<T> = T | null | undefined;
@@ -30,6 +31,7 @@ export type Scalars = {
   ServiceGroupId: { input: any; output: any; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
   Upload: { input: any; output: any; }
+  UserId: { input: UserId; output: UserId; }
 };
 
 export type AddServiceInput = {
@@ -74,9 +76,9 @@ export type AutoRegisterPlatformInput = {
 };
 
 export type BulkPendingUserFromOrganizationInput = {
-  excludedIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  excludedIds?: InputMaybe<Array<Scalars['UserId']['input']>>;
   filters?: InputMaybe<Array<Filter>>;
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  ids?: InputMaybe<Array<Scalars['UserId']['input']>>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -199,7 +201,7 @@ export type CreateDocumentInput = {
   name: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
-  uploader_id: Scalars['String']['input'];
+  uploader_id: Scalars['UserId']['input'];
   use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
@@ -1085,13 +1087,13 @@ export type MutationRegisterPlatformArgs = {
 
 export type MutationRemovePendingUserFromOrganizationArgs = {
   organization_id: Scalars['OrganizationId']['input'];
-  user_id: Scalars['ID']['input'];
+  user_id: Scalars['UserId']['input'];
 };
 
 
 export type MutationRemoveUserFromOrganizationArgs = {
   organization_id: Scalars['OrganizationId']['input'];
-  user_id: Scalars['ID']['input'];
+  user_id: Scalars['UserId']['input'];
 };
 
 
@@ -2199,7 +2201,7 @@ export type UpdateDocumentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
-  uploader_id?: InputMaybe<Scalars['String']['input']>;
+  uploader_id?: InputMaybe<Scalars['UserId']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['OrganizationId']['input']>;
   use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
 };
@@ -2226,7 +2228,7 @@ export type UpdateServiceGroupsInput = {
 
 export type UpdateServiceGroupsInputGroup = {
   id: Scalars['ServiceGroupId']['input'];
-  userIds: Array<Scalars['ID']['input']>;
+  userIds: Array<Scalars['UserId']['input']>;
 };
 
 export type UseCase = Node & {
@@ -2641,6 +2643,7 @@ export type ResolversTypes = ResolversObject<{
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
   UserEdge: ResolverTypeWrapper<UserEdge>;
+  UserId: ResolverTypeWrapper<Scalars['UserId']['output']>;
   UserOrdering: UserOrdering;
   UserPendingSubscription: ResolverTypeWrapper<UserPendingSubscription>;
   UserService: ResolverTypeWrapper<UserService>;
@@ -2798,6 +2801,7 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
+  UserId: Scalars['UserId']['output'];
   UserPendingSubscription: UserPendingSubscription;
   UserService: UserService;
   UserServiceAddInput: UserServiceAddInput;
@@ -3890,6 +3894,10 @@ export type UserEdgeResolvers<ContextType = PortalContext, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface UserIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UserId'], any> {
+  name: 'UserId';
+}
+
 export type UserPendingSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserPendingSubscription'] = ResolversParentTypes['UserPendingSubscription']> = ResolversObject<{
   delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   invalidate?: Resolver<Maybe<ResolversTypes['OrganizationRef']>, ParentType, ContextType>;
@@ -4035,6 +4043,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;
+  UserId?: GraphQLScalarType;
   UserPendingSubscription?: UserPendingSubscriptionResolvers<ContextType>;
   UserService?: UserServiceResolvers<ContextType>;
   UserServiceCapability?: UserServiceCapabilityResolvers<ContextType>;

@@ -19,3 +19,4 @@ generates:
         CompetitorId: "../model/kanel/public/Competitor.js#CompetitorId"
         DeploymentRequestId: "../model/kanel/public/DeploymentRequest.js#DeploymentRequestId"
         DocumentId: "../model/kanel/public/Document.js#DocumentId"
+        UserId: "../model/kanel/public/User.js#UserId"

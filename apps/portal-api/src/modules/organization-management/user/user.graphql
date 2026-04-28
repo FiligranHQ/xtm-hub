@@ -1,3 +1,5 @@
+scalar UserId
+
 enum UserOrdering {
   email
   first_name
@@ -113,10 +115,10 @@ input AdminAddUserInput {
 }
 
 input BulkPendingUserFromOrganizationInput {
-  ids: [ID!]
+  ids: [UserId!]
   searchTerm: String
   filters: [Filter!]
-  excludedIds: [ID!]
+  excludedIds: [UserId!]
 }
 
 type Mutation {
@@ -138,11 +140,11 @@ type Mutation {
     input: BulkPendingUserFromOrganizationInput
   ): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   removePendingUserFromOrganization(
-    user_id: ID!
+    user_id: UserId!
     organization_id: OrganizationId!
   ): User @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   removeUserFromOrganization(
-    user_id: ID!
+    user_id: UserId!
     organization_id: OrganizationId!
   ): User @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
 

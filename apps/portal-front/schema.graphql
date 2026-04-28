@@ -162,8 +162,8 @@ type Mutation {
   changeSelectedOrganization(organization_id: OrganizationId!): User
   bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
   bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
-  removePendingUserFromOrganization(user_id: ID!, organization_id: OrganizationId!): User
-  removeUserFromOrganization(user_id: ID!, organization_id: OrganizationId!): User
+  removePendingUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
+  removeUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   editMeUser(input: EditMeUserInput!): User!
   uploadUserPicture(document: Upload!): User!
   resetPassword: Success!
@@ -481,7 +481,7 @@ type ServiceGroup implements Node {
 
 input UpdateServiceGroupsInputGroup {
   id: ServiceGroupId!
-  userIds: [ID!]!
+  userIds: [UserId!]!
 }
 
 input UpdateServiceGroupsInput {
@@ -608,7 +608,7 @@ input CreateDocumentInput {
   description: String!
   active: Boolean!
   use_cases: [String!]
-  uploader_id: String!
+  uploader_id: UserId!
 }
 
 input UpdateDocumentInput {
@@ -618,7 +618,7 @@ input UpdateDocumentInput {
   active: Boolean
   use_cases: [String!]
   uploader_organization_id: OrganizationId
-  uploader_id: String
+  uploader_id: UserId
 }
 
 type DocumentEdge {
@@ -694,6 +694,9 @@ input OrganizationInput {
   name: String!
   domains: [String!]
 }
+
+"""A Relay global ID for User, extracted to a branded UserId string"""
+scalar UserId
 
 enum UserOrdering {
   email
@@ -787,10 +790,10 @@ input AdminAddUserInput {
 }
 
 input BulkPendingUserFromOrganizationInput {
-  ids: [ID!]
+  ids: [UserId!]
   searchTerm: String
   filters: [Filter!]
-  excludedIds: [ID!]
+  excludedIds: [UserId!]
 }
 
 type UserSubscription {
