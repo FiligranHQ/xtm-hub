@@ -15,7 +15,6 @@ import {
   UserServiceEdge,
   UserServiceOrdering,
 } from '../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserServiceId } from '../../model/kanel/public/UserService';
@@ -114,58 +113,6 @@ describe('userService field resolvers', () => {
   });
 });
 
-describe('user service owned GraphQL query', () => {
-  it('should delegate to UserServiceDomain.loadUserServiceByUser with context user', async () => {
-    // Given
-    const paginationArgs = {
-      first: 10,
-      after: null,
-      orderMode: OrderingMode.Asc,
-      orderBy: UserServiceOrdering.Email,
-    };
-    const userServiceId = uuidv4() as UserServiceId;
-    const subscriptionId = uuidv4() as SubscriptionId;
-    const userService: UserService = {
-      id: userServiceId,
-      subscription_id: subscriptionId,
-      user_id: uuidv4(),
-    };
-    const edge: UserServiceEdge = {
-      cursor: userServiceId,
-      node: userService,
-    };
-    const pageInfo: PageInfo = {
-      hasNextPage: false,
-      hasPreviousPage: false,
-      startCursor: userServiceId,
-      endCursor: userServiceId,
-    };
-    const expected: UserServiceConnection = {
-      edges: [edge],
-      pageInfo,
-      totalCount: 1,
-    };
-    vi.spyOn(UserServiceDomain, 'loadUserServiceByUser').mockReturnValue(
-      expected as unknown as Promise<UserServiceConnection>
-    );
-
-    // When
-    const result = await userServiceResolver.Query!.userServiceOwned!(
-      {},
-      paginationArgs,
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    // Then
-    expect(UserServiceDomain.loadUserServiceByUser).toHaveBeenCalledWith(
-      contextSimpleUserFiligran2.user,
-      paginationArgs
-    );
-    expect(result).toEqual(expected);
-  });
-});
-
 describe('user service from subscription GraphQL query', () => {
   it('should decode subscription_id from global ID and delegate to UserServiceDomain', async () => {
     // Given
@@ -217,64 +164,6 @@ describe('user service from subscription GraphQL query', () => {
       UserServiceDomain.loadUserServiceBySubscription
     ).toHaveBeenCalledWith(paginationArgs, rawSubscriptionId);
     expect(result).toEqual(expected);
-  });
-});
-
-describe('add yourself in user service GraphQL mutation', () => {
-  it('should delegate to UserServiceApp and return result', async () => {
-    // Given
-    const input = {
-      serviceInstanceId: 'instance-1' as unknown as ServiceInstanceId,
-      email: ['user@test.com'],
-    };
-    const expected = [{ id: uuidv4() }] as unknown as Awaited<
-      ReturnType<typeof UserServiceApp.addYourselfInUserService>
-    >;
-    vi.spyOn(UserServiceApp, 'addYourselfInUserService').mockResolvedValue(
-      expected
-    );
-
-    // When
-    const result = await userServiceResolver.Mutation!
-      .addYourselfInUserService!(
-      {},
-      { input },
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    // Then
-    expect(UserServiceApp.addYourselfInUserService).toHaveBeenCalledWith(
-      contextSimpleUserFiligran2.user.selected_organization_id,
-      input.serviceInstanceId,
-      input.email,
-      []
-    );
-    expect(result).toEqual(expected);
-  });
-
-  it('should map to ForbiddenAccess for UserIsNotInOrganization error', async () => {
-    // Given
-    const input = {
-      serviceInstanceId: 'instance-1' as unknown as ServiceInstanceId,
-      email: ['user@test.com'],
-    };
-    vi.spyOn(UserServiceApp, 'addYourselfInUserService').mockRejectedValue(
-      new Error(ForbiddenErrorCode.UserIsNotInOrganization)
-    );
-
-    // When
-    const call = userServiceResolver.Mutation!.addYourselfInUserService!(
-      {},
-      { input },
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    // Then
-    await expect(call).rejects.toMatchObject({
-      name: ErrorType.ForbiddenAccess,
-    });
   });
 });
 

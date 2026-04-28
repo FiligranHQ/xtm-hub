@@ -17,7 +17,7 @@ test.describe('RSS Feeds', () => {
     integrationPage = new IntegrationPage(page);
 
     await loginPage.navigateToAndLogin();
-    await integrationPage.subscribeIntegrationsService();
+    await integrationPage.navigateToIntegrationsService();
     await integrationPage.fillRssFeed(RSS_FEED_TEST);
   });
 

@@ -1,15 +1,31 @@
 import { graphql } from 'react-relay';
 
-export const ServiceInstancesSubscribedByIdentifierQuery = graphql`
-  query serviceInstancesSubscribedByIdentifierQuery(
-    $identifier: ServiceDefinitionIdentifier!
+export const ServiceInstancesListQuery = graphql`
+  query serviceInstancesListQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: ServiceInstanceOrdering!
+    $orderMode: OrderingMode!
+    $filters: [ServiceInstanceFilter!]
+    $searchTerm: String
   ) {
-    subscribedServiceInstancesByIdentifier(identifier: $identifier) {
-      service_instance_id
-      organization_id
-      is_personal_space
-      configurations {
-        platform_id
+    serviceInstances(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+      filters: $filters
+      searchTerm: $searchTerm
+    ) {
+      edges {
+        node {
+          id
+          slug
+          service_definition {
+            id
+            identifier
+          }
+        }
       }
     }
   }

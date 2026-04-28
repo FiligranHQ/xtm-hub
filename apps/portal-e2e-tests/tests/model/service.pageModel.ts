@@ -12,10 +12,10 @@ export default class ServicePage {
     await expect(this.page).toHaveScreenshot();
   }
 
-  async navigateToServiceItemAdmin() {
+  async navigateToServiceItemAdmin(serviceName: string = 'Vault') {
     await clickRowAction(
       this.page,
-      this.page.getByRole('row', { name: 'Vault' }),
+      this.page.getByRole('row', { name: serviceName }),
       'Manage'
     );
     await expect(this.page).toHaveScreenshot();
@@ -36,8 +36,8 @@ export default class ServicePage {
       .click();
     await this.page.getByLabel('Organization', { exact: true }).click();
     await this.page.getByLabel(organizationName).click();
-    await this.page.getByText('DELETE access:', { exact: true }).click();
-    await this.page.getByLabel('UPLOAD access:', { exact: true }).click();
+    await this.page.getByText('DELETE access:').click();
+    await this.page.getByLabel('UPLOAD access:').click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
     await waitForDrawerToClose(this.page);
   }

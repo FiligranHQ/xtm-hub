@@ -10,8 +10,6 @@ import {
   IntegrationType,
   MutationAddServicePictureArgs,
   MutationUpdatePlatformServiceMetadataArgs,
-  QueryPublicServiceInstancesArgs,
-  ServiceDefinitionIdentifier,
   ServiceInstanceResolvers,
 } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -223,34 +221,6 @@ describe('service instances GraphQL query', () => {
   });
 });
 
-describe('public service instances GraphQL query', () => {
-  it('should pass user id and org id to loadPublicServiceInstances', async () => {
-    const expected = [] as unknown as Awaited<
-      ReturnType<typeof serviceInstanceDomain.loadPublicServiceInstances>
-    >;
-    vi.spyOn(
-      serviceInstanceDomain,
-      'loadPublicServiceInstances'
-    ).mockResolvedValue(expected);
-
-    const result = await serviceInstanceResolver.Query!.publicServiceInstances!(
-      {},
-      {} as unknown as QueryPublicServiceInstancesArgs,
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    expect(
-      serviceInstanceDomain.loadPublicServiceInstances
-    ).toHaveBeenCalledWith(
-      contextSimpleUserFiligran2.user.id,
-      contextSimpleUserFiligran2.user.selected_organization_id,
-      {}
-    );
-    expect(result).toEqual(expected);
-  });
-});
-
 describe('service instance links by tags GraphQL query', () => {
   it('should delegate to ServiceInstanceApp.loadLinkServiceInstancesByTags', async () => {
     const expected = [] as unknown as Awaited<
@@ -323,33 +293,6 @@ describe('service instance by id with subscriptions GraphQL query', () => {
     expect(
       serviceInstanceDomain.loadServiceWithSubscriptions
     ).toHaveBeenCalledWith(id, 'test');
-    expect(result).toEqual(expected);
-  });
-});
-
-describe('subscribed service instances by identifier GraphQL query', () => {
-  it('should delegate to ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier', async () => {
-    const expected = [] as unknown as Awaited<
-      ReturnType<
-        typeof ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier
-      >
-    >;
-    vi.spyOn(
-      ServiceInstanceApp,
-      'loadSubscribedServiceInstancesByIdentifier'
-    ).mockResolvedValue(expected);
-
-    const result = await serviceInstanceResolver.Query!
-      .subscribedServiceInstancesByIdentifier!(
-      {},
-      { identifier: 'opencti' as unknown as ServiceDefinitionIdentifier },
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    expect(
-      ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier
-    ).toHaveBeenCalledWith(contextSimpleUserFiligran2.user.id, 'opencti');
     expect(result).toEqual(expected);
   });
 });
