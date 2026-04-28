@@ -61,9 +61,7 @@ export const organizationDomain = {
       )
       .where({
         'ServiceInstance.id': serviceInstanceId,
-        'Subscription.status': 'ACCEPTED',
       })
-      .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .distinct('Organization.id')
       .select('Organization.*');
   },

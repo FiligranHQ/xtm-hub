@@ -3750,7 +3750,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:9.1.8, @graphql-tools/merge@npm:^9.0.0, @graphql-tools/merge@npm:^9.1.8":
+"@graphql-tools/merge@npm:9.1.9, @graphql-tools/merge@npm:^9.1.9":
+  version: 9.1.9
+  resolution: "@graphql-tools/merge@npm:9.1.9"
+  dependencies:
+    "@graphql-tools/utils": "npm:^11.1.0"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10/848c4e976a49d2105e2aca0101c5c08e10b16a10acde39b1e22578831d879dafbdc3d285b9e9ab72e323cd75fcc17cc393d7a7ba127b0a25a7514e3d86c421a3
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/merge@npm:^9.0.0, @graphql-tools/merge@npm:^9.1.8":
   version: 9.1.8
   resolution: "@graphql-tools/merge@npm:9.1.8"
   dependencies:
@@ -3812,7 +3824,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:10.0.32, @graphql-tools/schema@npm:^10.0.0, @graphql-tools/schema@npm:^10.0.25, @graphql-tools/schema@npm:^10.0.29, @graphql-tools/schema@npm:^10.0.32":
+"@graphql-tools/schema@npm:10.0.33":
+  version: 10.0.33
+  resolution: "@graphql-tools/schema@npm:10.0.33"
+  dependencies:
+    "@graphql-tools/merge": "npm:^9.1.9"
+    "@graphql-tools/utils": "npm:^11.1.0"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10/51d150646348902810512e4401a970ae1316775c32641dd3799d5ae2aeedc42a76523730839c5f8add3a45bc6d22e719c3089ec385817799e51494478c70311a
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/schema@npm:^10.0.0, @graphql-tools/schema@npm:^10.0.25, @graphql-tools/schema@npm:^10.0.29, @graphql-tools/schema@npm:^10.0.32":
   version: 10.0.32
   resolution: "@graphql-tools/schema@npm:10.0.32"
   dependencies:
@@ -3869,9 +3894,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:11.0.1, @graphql-tools/utils@npm:^11.0.0, @graphql-tools/utils@npm:^11.0.1":
-  version: 11.0.1
-  resolution: "@graphql-tools/utils@npm:11.0.1"
+"@graphql-tools/utils@npm:11.1.0, @graphql-tools/utils@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "@graphql-tools/utils@npm:11.1.0"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
     "@whatwg-node/promise-helpers": "npm:^1.0.0"
@@ -3879,7 +3904,7 @@ __metadata:
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/ac4eb0c927e85adef0a71b17666d46a01a469cb105272e6b95eb2313949b89d5417e466b0190601fb8c0c6597fb6a9c20e7d232be4321256743ff3a6d8f7e260
+  checksum: 10/d0bcccc1e2f72ed54a9e017896b80f3a03bbb00bb336b82fac1d0ead65a3b89a3c33ae8c74ae1c82fe34ea7e045c71d8a1ca87fa720abc0d83dd55d16dfcbfa9
   languageName: node
   linkType: hard
 
@@ -3894,6 +3919,20 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 10/4ed9ce0645aab5afc63a675f2953102646c4fdf58c3d51aa08adbf48123bd3d2e1c20770de411b3c062e7507eb034b332a2b369499c36123a3638852b2d1d1e6
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/utils@npm:^11.0.0, @graphql-tools/utils@npm:^11.0.1":
+  version: 11.0.1
+  resolution: "@graphql-tools/utils@npm:11.0.1"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.1.1"
+    "@whatwg-node/promise-helpers": "npm:^1.0.0"
+    cross-inspect: "npm:1.0.1"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10/ac4eb0c927e85adef0a71b17666d46a01a469cb105272e6b95eb2313949b89d5417e466b0190601fb8c0c6597fb6a9c20e7d232be4321256743ff3a6d8f7e260
   languageName: node
   linkType: hard
 
@@ -8469,9 +8508,9 @@ __metadata:
     "@graphql-codegen/typescript": "npm:4.1.6"
     "@graphql-codegen/typescript-resolvers": "npm:4.5.2"
     "@graphql-tools/load-files": "npm:7.0.1"
-    "@graphql-tools/merge": "npm:9.1.8"
-    "@graphql-tools/schema": "npm:10.0.32"
-    "@graphql-tools/utils": "npm:11.0.1"
+    "@graphql-tools/merge": "npm:9.1.9"
+    "@graphql-tools/schema": "npm:10.0.33"
+    "@graphql-tools/utils": "npm:11.1.0"
     "@types/cors": "npm:2.8.19"
     "@types/express-session": "npm:1.19.0"
     "@types/graphql-upload": "npm:17.0.0"
@@ -8482,7 +8521,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:4.1.5"
     "@vitest/eslint-plugin": "npm:1.6.16"
     apollo-errors: "npm:1.9.0"
-    auth0: "npm:5.7.0"
+    auth0: "npm:5.8.0"
     body-parser: "npm:2.2.2"
     chokidar: "npm:5.0.0"
     concurrently: "npm:9.2.1"
@@ -9088,14 +9127,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0@npm:5.7.0":
-  version: 5.7.0
-  resolution: "auth0@npm:5.7.0"
+"auth0@npm:5.8.0":
+  version: 5.8.0
+  resolution: "auth0@npm:5.8.0"
   dependencies:
     auth0-legacy: "npm:auth0@^4.27.0"
     jose: "npm:^4.13.2"
     uuid: "npm:^11.1.0"
-  checksum: 10/52220052282b092fbd56d6e87a62f68e3f2f34bb9fb747c0646e019ba4871c346e3518d28f3c77bc028d2d1729bfbb08831568bdf94e4b860c78ff4d95fdaa89
+  checksum: 10/ddc6babedb55e4e78eb6f02f2900676a48721728c509e9545de5c4058a84fda12d58fe53f03422d3df8901c71a4bb86d1e9332d0bb03c143583e71727a96d1c6
   languageName: node
   linkType: hard
 

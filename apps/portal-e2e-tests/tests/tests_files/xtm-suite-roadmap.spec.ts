@@ -89,8 +89,6 @@ test.describe('XTM Suite Roadmap', () => {
       await loginPage.navigateToPublicPages();
     }
 
-    await xtmSuiteRoadmapPage.navigateToService();
-
     await addEpic({
       title: 'TitleDraft1',
       short_description: 'Short description for a draft',
@@ -118,6 +116,8 @@ test.describe('XTM Suite Roadmap', () => {
       timeline: 'next',
       uploader_id: ADMIN_USER.ID,
     });
+
+    await page.goto('/cybersecurity-solutions/xtm-suite-roadmap');
 
     await test.step("It should display the epics' page correctly", async () => {
       await expect(

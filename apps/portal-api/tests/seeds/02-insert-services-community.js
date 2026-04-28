@@ -7,7 +7,6 @@ export async function seed(knex) {
         service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
         start_date: '2024-08-08',
         end_date: null,
-        status: 'ACCEPTED',
       },
     ])
     .onConflict('id')

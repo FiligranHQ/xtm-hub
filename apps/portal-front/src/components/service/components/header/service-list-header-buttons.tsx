@@ -13,16 +13,15 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
 
-interface ServiceButtonsProps {
-  firstServiceSubscriptionId: string;
-}
-
-const ServiceListHeaderButtons = ({
-  firstServiceSubscriptionId,
-}: ServiceButtonsProps) => {
+const ServiceListHeaderButtons = ({}) => {
   const t = useTranslations();
-  const { serviceInstance, translationKey, type, setIntegrationType } =
-    useServiceContext();
+  const {
+    serviceInstance,
+    translationKey,
+    type,
+    setIntegrationType,
+    currentUserSubscriptionId,
+  } = useServiceContext();
   const [openSheet, setOpenSheet] = useState(false);
 
   const canManageService = serviceInstance.capabilities.includes(
@@ -42,7 +41,7 @@ const ServiceListHeaderButtons = ({
             asChild
             variant="outline">
             <Link
-              href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${firstServiceSubscriptionId}`}>
+              href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentUserSubscriptionId}`}>
               {t('Service.Capabilities.ManageAccessName')}
             </Link>
           </Button>

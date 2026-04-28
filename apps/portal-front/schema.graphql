@@ -120,20 +120,16 @@ type Query {
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
-  publicServiceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!): ServiceConnection!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
   serviceInstanceByIdWithSubscriptions(service_instance_id: ServiceInstanceId, searchTerm: String): ServiceInstance
-  subscribedServiceInstancesByIdentifier(identifier: ServiceDefinitionIdentifier!): [SubscribedServiceInstance!]!
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
   updateOpenCTIManifest(tag: String): Success!
   subscriptionById(subscription_id: ID): SubscriptionModel
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
-  userServiceOwned(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
-  serviceUsers(id: ID!, first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!): UserServiceConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
   node(id: ID!): Node
@@ -193,7 +189,6 @@ type Mutation {
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
   deleteUseCase(id: ID!): UseCase!
   addUserService(input: UserServiceAddInput!): [UserService]
-  addYourselfInUserService(input: UserServiceAddYourselfInput!): [UserService]
   deleteUserService(input: UserServiceDeleteInput!): UserService
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
@@ -1037,13 +1032,6 @@ enum ServiceInstanceCreationStatus {
   READY
 }
 
-enum ServiceInstanceJoinType {
-  JOIN_INVITE
-  JOIN_ASK
-  JOIN_AUTO
-  JOIN_SELF
-}
-
 enum ServiceInstanceTag {
   openCTI
   openAEV
@@ -1054,6 +1042,7 @@ enum ServiceInstanceTag {
 enum ServiceInstanceFilterKey {
   tags
   service_definition_identifier
+  public
 }
 
 input ServiceInstanceFilter {
@@ -1074,7 +1063,6 @@ type ServiceInstance implements Node {
   subscriptions: [SubscriptionModel]
   capabilities: [String]!
   public: Boolean
-  join_type: ServiceInstanceJoinType
   tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition
   logo_document_id: ID
@@ -1126,13 +1114,6 @@ type SubscribedServiceInstanceConfiguration {
   registerer_id: String!
   platform_title: String!
   platform_contract: PlatformContract!
-}
-
-type SubscribedServiceInstance {
-  service_instance_id: ServiceInstanceId!
-  organization_id: ID!
-  is_personal_space: Boolean!
-  configurations: [SubscribedServiceInstanceConfiguration]
 }
 
 type ServiceInstanceSubscription {
@@ -1497,7 +1478,6 @@ enum SubscriptionOrdering {
   organization_name
   start_date
   end_date
-  status
   service_name
   service_provider
   service_type
@@ -1510,7 +1490,6 @@ type SubscriptionModel implements Node {
   service_instance_id: ID!
   start_date: Date
   end_date: Date
-  status: String
   organization: Organization!
   service_url: String!
   service_instance: ServiceInstance

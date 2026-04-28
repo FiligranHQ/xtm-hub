@@ -7,7 +7,6 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { ErrorCode } from '../../utils/error/error.code';
 import { loadSubscriptionCapabilities } from '../security-management/service-capability/subscription-capability.domain';
-import { SubscriptionStatus } from '../subscription.const';
 import { subscriptionApp } from './subscription.app';
 import { createSubscription } from './subscription.domain';
 
@@ -30,8 +29,6 @@ describe('subscription app', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         start_date: new Date(),
         end_date: new Date(),
-        billing: 0,
-        status: SubscriptionStatus.ACCEPTED,
       };
       await createSubscription(subscriptionData);
 
@@ -119,10 +116,6 @@ describe('subscription app', () => {
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
         start_date: new Date(),
         end_date: null,
-        status: 'ACCEPTED',
-        joining: 'AUTO_JOIN',
-        billing: 0,
-        justification: null,
       });
 
       expect(subscription).toBeDefined();

@@ -52,8 +52,6 @@ const ServiceList = ({
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { removeLabels } = useServiceListLocalStorage(localStorageKey);
 
-  const firstResource = draft.length > 0 ? draft[0] : active[0];
-
   const filters = {
     ...additionalFilters,
     [ServiceListFilterKey.Label]: {
@@ -89,11 +87,7 @@ const ServiceList = ({
         search={search}
         onSearchChange={onSearchChange}
         filters={filters}
-        actions={
-          <ServiceListHeaderButtons
-            firstServiceSubscriptionId={firstResource?.subscription?.id ?? ''}
-          />
-        }
+        actions={<ServiceListHeaderButtons />}
         paginationControls={paginationControls}
       />
       {userCanUpdate && draft.length > 0 && (
