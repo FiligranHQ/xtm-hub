@@ -21,11 +21,11 @@ import * as mailService from '../../../../server/mail-service';
 import { deleteSubscription } from '../../../subscription/subscription.helper';
 import { updateUser } from '../user-domain/users.domain';
 import { usersProfileApp } from '../user-profile/users.profile.app';
-import * as UserTransferRequestDomain from '../user-transferRequest/user_transferRequest.domain';
+import * as UserTransferRequestDomain from '../user-transferRequest/user-transfer-request.domain';
 import {
   deleteUserTransferRequest,
   insertNewUserTransfer,
-} from '../user-transferRequest/user_transferRequest.domain';
+} from '../user-transferRequest/user-transfer-request.domain';
 
 describe('user profile app', () => {
   const mockTransferRequestData: UserTransferRequest[] = [

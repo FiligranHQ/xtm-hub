@@ -24,7 +24,7 @@ import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import { formatRawAggObject } from '../../../../utils/queryRaw.util';
+import { formatRawAggObject } from '../../../../utils/query-raw.util';
 import { addPrefixToObject } from '../../../../utils/typescript';
 import { isEmpty } from '../../../../utils/utils';
 import { isAdmin } from '../../../role-portal/role-portal.domain';

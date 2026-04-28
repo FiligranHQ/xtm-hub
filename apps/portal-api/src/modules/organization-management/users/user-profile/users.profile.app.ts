@@ -36,7 +36,7 @@ import {
 import {
   insertNewUserTransfer,
   loadUserTransfer,
-} from '../user-transferRequest/user_transferRequest.domain';
+} from '../user-transferRequest/user-transfer-request.domain';
 import { updateAndDispatchUser } from '../users.helper';
 
 const deletePicture = async (pictureMinio: string) => {

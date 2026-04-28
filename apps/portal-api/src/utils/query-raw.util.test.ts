@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatRawAggObject } from './queryRaw.util';
+import { formatRawAggObject } from './query-raw.util';
 
 describe('formatRawAggObject', () => {
   it('should format the query correctly with properties', () => {
