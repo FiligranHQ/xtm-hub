@@ -7,7 +7,7 @@ import { withTransaction } from '../context/database.context';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { RolePortalId } from '../model/kanel/public/RolePortal';
 import User, { UserId, UserInitializer } from '../model/kanel/public/User';
-import { loadOrganizationBy } from '../modules/organization-management/organizations/organizations.domain';
+import { loadOrganizationBy } from '../modules/organization-management/organization/organization.domain';
 import { CAPABILITY_BYPASS, ROLE_ADMIN, ROLE_USER } from '../portal.const';
 import { DevUser } from '../utils/config-validation.util';
 import {

@@ -29,7 +29,7 @@ test.describe('One Click Deploy', () => {
     await registerPage.navigateToAndRegister('register-opencti');
 
     await homePage.navigateTo();
-    await csvFeedPage.subscribeIntegrationsService();
+    await csvFeedPage.navigateToIntegrationsService();
     await csvFeedPage.fillCsvFeed(CSV_FEED_TEST);
   });
 
@@ -76,7 +76,7 @@ test.describe('One Click Deploy', () => {
             const body = res.request().postDataJSON();
             return (
               typeof body.query === 'string' &&
-              body.query.includes('mutation oneClickDeployMutation')
+              body.query.includes('mutation OneClickDeployMutation')
             );
           } catch {
             return false;

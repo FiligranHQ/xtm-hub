@@ -8,7 +8,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { UserId } from '../../model/kanel/public/User';
-import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
 
 import { requestContext } from '../../context/request.context';
 import { DocumentMetadataDomain } from '../document/domain/document.metadata.domain';

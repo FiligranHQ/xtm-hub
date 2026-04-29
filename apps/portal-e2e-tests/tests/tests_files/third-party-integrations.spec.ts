@@ -18,7 +18,7 @@ test.describe('Third Party Integrations', () => {
     integrationPage = new IntegrationPage(page);
 
     await loginPage.navigateToAndLogin();
-    await integrationPage.subscribeIntegrationsService();
+    await integrationPage.navigateToIntegrationsService();
     await integrationPage.fillThirdPartyIntegration(ThirdPartyIntegration_TEST);
   });
 

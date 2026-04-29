@@ -18,7 +18,6 @@ import {
   getUserJoined,
   loadIsSubscribed,
   loadLinks,
-  loadPublicServiceInstances,
   loadServiceDefinitionByServiceInstance,
   loadServiceInstances,
   loadServiceInstanceSubscriptions,
@@ -84,13 +83,6 @@ const resolvers: Resolvers = {
     serviceInstances: async (_, opt) => {
       return loadServiceInstances(opt);
     },
-    publicServiceInstances: async (_, opt, context) => {
-      return loadPublicServiceInstances(
-        context.user.id,
-        context.user.selected_organization_id,
-        opt
-      );
-    },
     serviceInstanceLinksByTags: async (_, { tags }) => {
       return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);
     },
@@ -105,16 +97,6 @@ const resolvers: Resolvers = {
       { service_instance_id, searchTerm }
     ) => {
       return loadServiceWithSubscriptions(service_instance_id, searchTerm);
-    },
-    subscribedServiceInstancesByIdentifier: async (
-      _,
-      { identifier },
-      context
-    ) => {
-      return ServiceInstanceApp.loadSubscribedServiceInstancesByIdentifier(
-        context.user.id,
-        identifier
-      );
     },
     seoServiceInstances: async () => {
       return ServiceInstanceApp.loadSeoServiceInstances();

@@ -11,7 +11,6 @@ import { requestContext } from '../../../context/request.context';
 import Subscription, {
   SubscriptionId,
 } from '../../../model/kanel/public/Subscription';
-import { SubscriptionStatus } from '../../subscription.const';
 import { createSubscription } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { loadCapabilities } from '../user-service-capability/user-service-capability.helper';
@@ -28,8 +27,6 @@ describe('editServiceCapability', () => {
         requestContextSimpleUserSecondOrga.user.selected_organization_id,
       start_date: new Date(),
       end_date: undefined,
-      billing: 100,
-      status: SubscriptionStatus.ACCEPTED,
     });
   });
   afterEach(async () => {

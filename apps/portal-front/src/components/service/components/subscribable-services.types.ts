@@ -1,31 +1,28 @@
 import {
   CustomDashboardForm,
   CustomDashboardFormValues,
-} from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
+} from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
 import {
   ConnectorForm,
   ConnectorFormValues,
-} from '@/components/service/integrations/forms/connector-form';
+} from '@/components/service/integrations/forms/ConnectorForm';
 import {
   CsvFeedForm,
   CsvFeedFormValues,
-} from '@/components/service/integrations/forms/csv-feed-form';
-import {
-  StreamForm,
-  StreamFormValues,
-} from '@/components/service/integrations/forms/stream-form';
+} from '@/components/service/integrations/forms/CsvFeedForm';
+import { StreamForm, StreamFormValues } from '@/components/service/integrations/forms/StreamForm';
 import {
   TaxiiFeedForm,
   TaxiiFeedFormValues,
-} from '@/components/service/integrations/forms/taxii-feed-form';
+} from '@/components/service/integrations/forms/TaxiiFeedForm';
 import {
   ThirdPartyIntegrationForm,
   ThirdPartyIntegrationFormValues,
-} from '@/components/service/integrations/forms/third-party-integration-form';
+} from '@/components/service/integrations/forms/ThirdPartyIntegrationForm';
 import {
   OpenaevScenarioForm,
   OpenAEVScenarioFormValues,
-} from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
+} from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
 
 export type ServiceFormValues =
   | CsvFeedFormValues

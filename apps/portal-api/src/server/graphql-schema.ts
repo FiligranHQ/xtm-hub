@@ -7,8 +7,9 @@ import deploymentResolver from '../modules/deployment/deployment.resolver';
 import serviceGroupResolver from '../modules/deployment/group/service-group.resolver';
 import vaultResolver from '../modules/document/document.resolver';
 import logResolver from '../modules/log/log.resolver';
-import organizationsResolver from '../modules/organization-management/organizations/organizations.resolver';
-import usersResolver from '../modules/organization-management/users/users.resolver';
+import newsFeedResolver from '../modules/news-feed/news-feed.resolver';
+import organizationResolver from '../modules/organization-management/organization/organization.resolver';
+import userResolver from '../modules/organization-management/user/user.resolver';
 import registrationResolver from '../modules/registration/registration.resolver';
 import serviceCapabilityResolver from '../modules/security-management/service-capability/service-capability.resolver';
 import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';
@@ -38,8 +39,8 @@ const resolvers = mergeResolvers([
   nodesResolver,
   ServiceInstanceResolver,
   ServiceDefinitionResolver,
-  organizationsResolver,
-  usersResolver,
+  organizationResolver,
+  userResolver,
   settingsResolver,
   vaultResolver,
   subscriptionsResolver,
@@ -57,6 +58,7 @@ const resolvers = mergeResolvers([
   serviceGroupResolver,
   competitorResolver,
   xtmSuiteRoadmapResolver,
+  newsFeedResolver,
 ]);
 
 const createSchema = () => {

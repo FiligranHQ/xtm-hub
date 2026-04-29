@@ -19,7 +19,6 @@ FROM base AS builder
 ARG APP_VERSION=0.0.0-dev
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/portal-front/node_modules ./apps/portal-front/node_modules
 COPY .yarnrc.yml package.json yarn.lock ./
 COPY apps/portal-front/. ./apps/portal-front/
 

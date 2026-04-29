@@ -38,5 +38,3 @@ export async function down(knex) {
     })
     .delete();
 }
-
-

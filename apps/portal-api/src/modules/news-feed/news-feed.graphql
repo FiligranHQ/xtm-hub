@@ -1,3 +1,30 @@
 enum NewsFeedItemType {
   RESOURCE_CUSTOM_DASHBOARD
 }
+
+enum NewsFeedItemMetadataKey {
+  url_path
+}
+
+type NewsFeedItemMetadata {
+  key: NewsFeedItemMetadataKey!
+  value: String
+}
+
+type ProvisionedNewsFeedItem {
+  title: String!
+  type: NewsFeedItemType!
+  tags: [String!]!
+  metadata: [NewsFeedItemMetadata!]!
+  creation_date: Date!
+}
+
+type ConsumeProvisionedNewsFeedItemsResponse {
+  news_feed_items: [ProvisionedNewsFeedItem!]!
+  available_news_feed_types: [NewsFeedItemType!]!
+}
+
+type Mutation {
+  consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
+    @platform_token
+}

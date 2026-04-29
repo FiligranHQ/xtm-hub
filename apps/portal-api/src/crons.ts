@@ -2,7 +2,7 @@ import cron, { ScheduledTask } from 'node-cron';
 import { requestContext } from './context/request.context';
 import { DeploymentApp } from './modules/deployment/deployment.app';
 import { ServiceGroupApp } from './modules/deployment/group/service-group.app';
-import { UsersOrganizationApp } from './modules/organization-management/users/user-organization/users.organization.app';
+import { UserOrganizationApp } from './modules/organization-management/user/user-organization/user.organization.app';
 import { EpicApp } from './modules/xtm-suite-roadmap/epic.app';
 import { CRONS_USER_CONTEXT } from './portal.const';
 import { logApp } from './utils/app-logger.util';
@@ -23,7 +23,7 @@ const sendPendingUserDigest = async (): Promise<void> => {
   logApp.info('Running sendPendingUserDigest job');
   requestContext.set(CRONS_USER_CONTEXT);
   try {
-    await UsersOrganizationApp.sendPendingUsersDigest();
+    await UserOrganizationApp.sendPendingUsersDigest();
   } catch (error) {
     logApp.error('SendPendingUserDigest job failed:', { error });
   }

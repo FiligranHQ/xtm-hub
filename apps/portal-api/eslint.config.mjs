@@ -2,6 +2,7 @@ import pluginJs from '@eslint/js';
 import vitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import jest from 'eslint-plugin-jest';
+import unicorn from 'eslint-plugin-unicorn';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -12,6 +13,7 @@ export default defineConfig([
       prettier: eslintConfigPrettier,
       vitest,
       jest,
+      unicorn,
     },
   },
   pluginJs.configs.recommended,
@@ -42,7 +44,6 @@ export default defineConfig([
       'vitest/prefer-hooks-in-order': 'error',
       'vitest/prefer-each': 'error',
       'vitest/prefer-lowercase-title': 'error',
-
       'no-restricted-imports': [
         'error',
         {
@@ -96,6 +97,13 @@ export default defineConfig([
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+    },
+  },
+  {
+    files: ['**/*'],
+    ignores: ['**/kanel/public/**', '**/*.js', '**/es-migrations/**'],
+    rules: {
+      'unicorn/filename-case': ['error', { case: 'kebabCase' }],
     },
   },
 ]);

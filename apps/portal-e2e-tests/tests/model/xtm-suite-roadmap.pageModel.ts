@@ -115,6 +115,8 @@ export default class XTMSuiteRoadmapPage {
   }
 
   async navigateToService() {
-    await this.page.getByRole('link', { name: 'Public Roadmap' }).click();
+    const link = this.page.getByRole('link', { name: 'XTM Suite Roadmap' });
+    await link.first().scrollIntoViewIfNeeded();
+    await link.first().click();
   }
 }

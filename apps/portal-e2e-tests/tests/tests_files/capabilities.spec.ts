@@ -1,15 +1,14 @@
-import { expect, test } from '../fixtures/baseFixtures.js';
+import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
-import DocumentPage from '../model/document.pageModel';
+import IntegrationPage from '../model/integration.pageModel';
 import { addServiceCapability } from '../db-utils/service.helper';
 import ServicePage from '../model/service.pageModel';
-import { addDocumentInVault } from '../db-utils/document.helper';
-import { clickRowAction } from '../model/common.js';
+import { clickRowAction } from '../model/common';
 
-const TEST_FILE = {
-  path: './tests/tests_files/assets/teste2e.pdf',
-  name: 'teste2e.pdf',
-  description: 'Test document description',
+const TEST_INTEGRATION = {
+  name: 'e2e integration capability',
+  shortDescription: 'e2e integration capability short description',
+  description: 'e2e integration capability markdown description',
 };
 
 const SERVICE_CAPABILITY = {
@@ -20,8 +19,8 @@ const SERVICE_CAPABILITY = {
 };
 
 const TEST_CAPABILITY = {
-  vaultServiceDefId: '2634d52b-f061-4ebc-bed2-c6cc94297ad1',
-  vaultServiceInstanceId: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
+  integrationServiceDefId: '2634d52b-f061-4ebc-bed2-c6cc94297ad2',
+  serviceName: 'OpenCTI Integrations Library',
   adminThalesEmail: 'admin@second-orga.com',
   userThalesEmail: 'user@second-orga.com',
   thalesOrgaId: '681fb117-e2c3-46d3-945a-0e921b5d4b6c',
@@ -29,32 +28,23 @@ const TEST_CAPABILITY = {
 };
 test.describe('Capabilities', () => {
   let loginPage: LoginPage;
-  let documentPage: DocumentPage;
+  let integrationPage: IntegrationPage;
   let servicePage: ServicePage;
 
   test.beforeEach(async ({ page }) => {
     await addServiceCapability({
       id: SERVICE_CAPABILITY.idUpload,
       name: SERVICE_CAPABILITY.nameUpload,
-      service_definition_id: TEST_CAPABILITY.vaultServiceDefId,
+      service_definition_id: TEST_CAPABILITY.integrationServiceDefId,
     });
     await addServiceCapability({
       id: SERVICE_CAPABILITY.idDelete,
       name: SERVICE_CAPABILITY.nameDelete,
-      service_definition_id: TEST_CAPABILITY.vaultServiceDefId,
-    });
-    await addDocumentInVault({
-      id: '312a4ce7-cac6-4d98-a8b2-2351dbc23bf5',
-      uploader_id: 'ba091095-418f-4b4f-b150-6c9295e232c3',
-      service_instance_id: 'e88e8f80-ba9e-480b-ab27-8613a1565eff',
-      description: 'description',
-      file_name: 'fileName.pdf',
-      minio_name: 'fileName',
-      active: true,
+      service_definition_id: TEST_CAPABILITY.integrationServiceDefId,
     });
 
     loginPage = new LoginPage(page);
-    documentPage = new DocumentPage(page);
+    integrationPage = new IntegrationPage(page);
     servicePage = new ServicePage(page);
 
     await loginPage.navigateToAndLogin();
@@ -63,7 +53,7 @@ test.describe('Capabilities', () => {
     await test.step("Add orga's sub + user with manage access", async () => {
       await servicePage.navigateToServiceListAdmin();
       await expect(page).toHaveScreenshot();
-      await servicePage.navigateToServiceItemAdmin();
+      await servicePage.navigateToServiceItemAdmin(TEST_CAPABILITY.serviceName);
       await expect(page).toHaveScreenshot();
       await servicePage.addOrganizationIntoServiceWithCapabilities(
         TEST_CAPABILITY.organizationName
@@ -83,9 +73,8 @@ test.describe('Capabilities', () => {
     await test.step('Add simple user access + upload capa', async () => {
       await loginPage.navigateToAndLogin(TEST_CAPABILITY.adminThalesEmail);
 
-      await documentPage.navigateToVault();
-
-      await page.getByRole('link', { name: 'Manage Vault' }).click();
+      await integrationPage.navigateToIntegrationsService();
+      await page.getByRole('link', { name: /Manage access/i }).click();
       await expect(page).toHaveScreenshot();
       await servicePage.addUserIntoServiceWithCapability(
         TEST_CAPABILITY.userThalesEmail,
@@ -94,26 +83,20 @@ test.describe('Capabilities', () => {
       await loginPage.logout();
     });
 
-    await test.step('Simple user upload new doc', async () => {
+    await test.step('Simple user create a new integration', async () => {
       await loginPage.navigateToAndLogin(TEST_CAPABILITY.userThalesEmail);
-      await documentPage.navigateToVault();
-      // Upload new document
-      await documentPage.uploadDocument(TEST_FILE.path, TEST_FILE.description);
+      await integrationPage.navigateToIntegrationsService();
+      await integrationPage.fillCsvFeed(TEST_INTEGRATION);
       await expect(
-        page.getByRole('cell', { name: TEST_FILE.name })
+        page.getByText(TEST_INTEGRATION.name, { exact: true })
       ).toBeVisible();
-    });
-    await expect(page).toHaveScreenshot();
-    await test.step('Simple user edit document', async () => {
-      await documentPage.editDocument('DescriptionModified');
-
       await loginPage.logout();
     });
 
     await test.step('Admin user change simple user capa to delete', async () => {
       await loginPage.navigateToAndLogin(TEST_CAPABILITY.adminThalesEmail);
-      await documentPage.navigateToVault();
-      await page.getByRole('link', { name: 'Manage vault' }).click();
+      await integrationPage.navigateToIntegrationsService();
+      await page.getByRole('link', { name: /Manage access/i }).click();
 
       await servicePage.editUsersRightsForService(
         TEST_CAPABILITY.userThalesEmail,
@@ -121,13 +104,16 @@ test.describe('Capabilities', () => {
       );
       await loginPage.logout();
     });
-    await test.step('Simple user can delete document', async () => {
+    await test.step('Simple user can delete integration', async () => {
       await loginPage.navigateToAndLogin(TEST_CAPABILITY.userThalesEmail);
-      await documentPage.navigateToVault();
+      await integrationPage.navigateToIntegrationsService();
 
-      await documentPage.deleteDocument(TEST_FILE.name);
+      await page
+        .getByRole('button', { name: 'Open menu', exact: true })
+        .click();
+      await integrationPage.deleteIntegration('menuitem');
       await expect(
-        page.getByRole('cell', { name: TEST_FILE.name })
+        page.getByText(TEST_INTEGRATION.name, { exact: true })
       ).not.toBeVisible();
     });
   });

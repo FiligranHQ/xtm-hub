@@ -39,13 +39,8 @@ export default class DashboardPage {
     await fileInput.setInputFiles(filePath);
   }
 
-  async subscribeDashboardService() {
-    await this.page
-      .locator('li')
-      .filter({ hasText: SERVICE_NAME })
-      .getByRole('button')
-      .click();
-    await this.page.getByRole('button', { name: 'Continue' }).click();
+  async navigateToDashboardService() {
+    await this.page.locator('li').filter({ hasText: SERVICE_NAME }).click();
   }
 
   async addCustomDashboard({

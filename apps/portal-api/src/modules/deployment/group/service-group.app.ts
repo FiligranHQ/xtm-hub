@@ -12,8 +12,8 @@ import { auth0Client } from '../../../thirdparty/auth0/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
-import { organizationDomain } from '../../organization-management/organizations/organizations.domain';
-import { UsersDomain } from '../../organization-management/users/user-domain/users.domain';
+import { organizationDomain } from '../../organization-management/organization/organization.domain';
+import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { PlatformConfiguration } from '../../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
 import { userHasBypassCapability } from '../../security-management/capability/auth.helper';
@@ -100,7 +100,7 @@ export const ServiceGroupApp = {
           ) {
             const parsedConfig =
               serviceConfiguration.config as PlatformConfiguration;
-            const addedUsers = await UsersDomain.loadUsers(addedUserIds);
+            const addedUsers = await UserDomain.loadUsers(addedUserIds);
             const trialEndDate = deploymentRequest.end_date.toLocaleDateString(
               'en-US',
               {
@@ -188,7 +188,7 @@ const updateAuth0Groups = async (
     newUsers
   );
 
-  const users = await UsersDomain.loadUsers(
+  const users = await UserDomain.loadUsers(
     updatedUsers.map(({ user_id }) => user_id)
   );
   const userEmailMap: Map<UserId, string> = users.reduce(

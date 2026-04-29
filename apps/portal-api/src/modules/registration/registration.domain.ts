@@ -20,7 +20,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { FullyQualifiedDeploymentRequest } from '../deployment/deployment.domain';
-import { loadOrganizationsByUser } from '../organization-management/organizations/organizations.domain';
+import { loadOrganizationsByUser } from '../organization-management/organization/organization.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
@@ -82,10 +82,6 @@ export const registrationDomain = {
       service_instance_id: serviceInstanceId,
       start_date: new Date(),
       end_date: null,
-      status: 'ACCEPTED',
-      joining: 'AUTO_JOIN',
-      billing: 0,
-      justification: null,
     });
 
     if (configuration) {
@@ -181,8 +177,6 @@ export const registrationDomain = {
       )
       .where('ServiceInstance.creation_status', '!=', 'DISABLED')
       .whereIn('Subscription.organization_id', organizationIds)
-      .where('Subscription.status', '=', 'ACCEPTED')
-      .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
       .where(
         'Service_Configuration.status',
@@ -283,8 +277,6 @@ const getRegisteredPlatformsDataQuery =
       )
       .where('ServiceInstance.creation_status', '!=', 'DISABLED')
       .where('Subscription.organization_id', '=', userSelectedOrganization)
-      .where('Subscription.status', '=', 'ACCEPTED')
-      .whereIn('Subscription.joining', ['SELF_JOIN', 'AUTO_JOIN'])
       .select([
         'Service_Configuration.config',
         'ServiceDefinition.identifier',

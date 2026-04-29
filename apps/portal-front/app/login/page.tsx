@@ -1,11 +1,11 @@
 import * as React from 'react';
 
 import '@filigran/ui/theme.css';
-import '../../styles/globals.css';
+import '@styles/globals.css';
 
-import Login from '@/components/login/login';
-import { RelayProvider } from '@/relay/RelayProvider';
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
+import Login from '@/components/login/Login';
+import { RelayProvider } from '@/relay/relay-provider';
+import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';

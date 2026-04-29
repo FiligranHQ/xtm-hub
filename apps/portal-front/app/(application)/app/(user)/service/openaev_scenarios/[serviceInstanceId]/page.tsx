@@ -1,10 +1,10 @@
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { APP_PATH } from '@/utils/path/constant';
 import ServiceByIdQuery, {
   serviceByIdQuery,
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import PageLoader from './page-loader';
 
 interface ServiceCustomDashboardsPageProps {

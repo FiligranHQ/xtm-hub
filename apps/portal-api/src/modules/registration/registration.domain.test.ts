@@ -28,7 +28,7 @@ import { PortalContext } from '../../model/portal-context';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import * as organizationDomain from '../organization-management/organizations/organizations.domain';
+import * as organizationDomain from '../organization-management/organization/organization.domain';
 import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
 import * as subscriptionDomain from '../subscription/subscription.domain';
 import {

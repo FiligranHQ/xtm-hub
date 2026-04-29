@@ -1,14 +1,14 @@
-import { RegistrationLearnMore } from '@/components/service/registration/registration-learn-more';
-import { TrialsHeader } from '@/components/service/trial-instances/trials-header';
-import { TrialsLearnMore } from '@/components/service/trial-instances/trials-learn-more';
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { RelayProvider } from '@/relay/RelayProvider';
 import { GradientButton } from '@filigran/ui/servers';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import React from 'react';
+import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
+import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader';
+import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { RelayProvider } from '@/relay/relay-provider';
 
 const Page: React.FC = async () => {
   const breadcrumbs = [

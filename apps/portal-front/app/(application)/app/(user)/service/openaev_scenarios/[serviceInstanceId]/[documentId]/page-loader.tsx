@@ -1,12 +1,12 @@
 'use client';
 
-import Loader from '@/components/loader';
 import { DocumentsItemQuery } from '@/components/service/document/document.graphql';
-import OpenaevScenarioSlug from '@/components/service/openaev-scenarios/[slug]/openaev-scenario-slug';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
+import Loader from '@/components/Loader';
+import OpenaevScenarioSlug from '@/components/service/openaev-scenarios/[slug]/OpenaevScenarioSlug';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 // Component interface
 interface PreloaderProps {

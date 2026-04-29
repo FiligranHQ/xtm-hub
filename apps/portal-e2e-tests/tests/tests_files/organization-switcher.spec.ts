@@ -40,14 +40,11 @@ test.describe('Organization switcher', async () => {
     });
     // Have subscription
     await loginPage.navigateToAndLogin();
-    await integrationPage.subscribeIntegrationsService();
+    await integrationPage.navigateToIntegrationsService();
     // Have registered platform (OpenCTI)
     await registerPage.navigateToAndRegister('register-opencti');
     await loginPage.navigateTo();
     await test.step("Should see his organization's items", async () => {
-      await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
-        2
-      );
       await expect(
         page.getByText('Open CTI Instance - Private platform')
       ).toBeVisible();
@@ -60,10 +57,7 @@ test.describe('Organization switcher', async () => {
         .getByRole('combobox', { name: 'Select an organization' })
         .click();
       await page.getByText('Personal space').click();
-      // Then he should not see his subscriptions, registrations and trials
-      await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
-        3
-      );
+      // Then he should not see his registrations and trials
       await expect(
         page.getByText('Open CTI Instance - Private platform')
       ).not.toBeVisible();
@@ -77,9 +71,6 @@ test.describe('Organization switcher', async () => {
         .click();
       await page.getByText('Filigran', { exact: true }).click();
       // Then he should see again its subscriptions, registrations and trials
-      await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
-        2
-      );
       await expect(
         page.getByText('Open CTI Instance - Private platform')
       ).toBeVisible();

@@ -1,24 +1,14 @@
-import { ServiceContextProps } from '@/components/service/components/service-context';
 import {
   ServiceForm,
   ServiceFormValues,
 } from '@/components/service/components/subscribable-services.types';
-import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/custom-dashboard-form';
 import {
   DocumentCreateMutation,
   DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
-import { ConnectorForm } from '@/components/service/integrations/forms/connector-form';
-import { CsvFeedForm } from '@/components/service/integrations/forms/csv-feed-form';
-import { RssFeedForm } from '@/components/service/integrations/forms/rss-feed-form';
-import { StreamForm } from '@/components/service/integrations/forms/stream-form';
-import { TaxiiFeedForm } from '@/components/service/integrations/forms/taxii-feed-form';
-import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/third-party-integration-form';
-import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/openaev-scenario-form';
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
-import { splitFileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import {
   docIsExistingFile,
   isFile,
@@ -34,8 +24,19 @@ import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataK
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { ServiceContextProps } from '@/components/service/components/ServiceContext';
+import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
+import { ConnectorForm } from '@/components/service/integrations/forms/ConnectorForm';
+import { CsvFeedForm } from '@/components/service/integrations/forms/CsvFeedForm';
+import { RssFeedForm } from '@/components/service/integrations/forms/RssFeedForm';
+import { StreamForm } from '@/components/service/integrations/forms/StreamForm';
+import { TaxiiFeedForm } from '@/components/service/integrations/forms/TaxiiFeedForm';
+import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/ThirdPartyIntegrationForm';
+import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
 
 const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'name',
@@ -65,6 +66,7 @@ export function useDocumentContext({
   connectionId,
   type,
 }: UseDocumentContextProps): ServiceContextProps {
+  const { me } = useContext(PortalContext);
   const [integrationType, setIntegrationType] = useState<IntegrationTypeEnum>(
     IntegrationTypeEnum.CSV_FEED
   );
@@ -259,6 +261,14 @@ export function useDocumentContext({
     return translationKeyMapping[type]();
   }, [type, integrationType]);
 
+  const currentUserSubscriptionId = me?.id
+    ? serviceInstance.subscriptions?.find((subscription) =>
+        subscription?.user_service?.some(
+          (userService) => userService?.user?.id === me.id
+        )
+      )?.id
+    : undefined;
+
   return {
     serviceInstance,
     handleAddSheet,
@@ -266,6 +276,7 @@ export function useDocumentContext({
     handleDeleteSheet,
     ServiceForm: form,
     translationKey,
+    currentUserSubscriptionId,
     type,
     setIntegrationType,
   };

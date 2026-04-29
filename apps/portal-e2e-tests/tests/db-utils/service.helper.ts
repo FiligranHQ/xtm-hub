@@ -35,7 +35,6 @@ export const addServiceInstance = async (serviceDefinitionId: string) => {
       description: '',
       creation_status: 'READY',
       public: false,
-      join_type: 'JOIN_AUTO',
       tags: ['openCTI'],
       service_definition_id: serviceDefinitionId,
     },

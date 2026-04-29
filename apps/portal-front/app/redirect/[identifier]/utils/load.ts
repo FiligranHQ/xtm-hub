@@ -1,18 +1,20 @@
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
 import { SettingsResponse } from '@/utils/settings.service';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
+import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
+import { ServiceInstanceOrderingEnum } from '@generated/models/ServiceInstanceOrdering.enum';
 import PlatformAssociatedOrganizationQueryGraphql, {
   platformAssociatedOrganizationQuery,
   platformAssociatedOrganizationQuery$data,
 } from '@generated/platformAssociatedOrganizationQuery.graphql';
-import ServiceInstancesSubscribedByIdentifierQuery, {
-  serviceInstancesSubscribedByIdentifierQuery,
-  serviceInstancesSubscribedByIdentifierQuery$data,
-} from '@generated/serviceInstancesSubscribedByIdentifierQuery.graphql';
+import ServiceInstancesListQueryGraphql, {
+  serviceInstancesListQuery,
+  serviceInstancesListQuery$data,
+} from '@generated/serviceInstancesListQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
+import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 
 interface MeResponse {
   data: {
@@ -45,14 +47,12 @@ export const loadBaseUrlFront = async () => {
   >(SettingsQuery)) as SettingsResponse;
   return settingsResponse.data.settings.base_url_front;
 };
-
 interface PlatformAssociatedOrganizationResponse {
   data: platformAssociatedOrganizationQuery$data;
 }
-
 export const loadPlatformOrganizationId = async (
   platformId?: string | null,
-  tenantId?: string | null,
+  tenantId?: string | null
 ): Promise<string | undefined> => {
   if (!platformId) {
     return;
@@ -71,21 +71,29 @@ export const loadPlatformOrganizationId = async (
   } catch (_) {}
 };
 
-interface UserServiceOwnedResponse {
-  data: serviceInstancesSubscribedByIdentifierQuery$data;
+interface ServiceInstancesListResponse {
+  data: serviceInstancesListQuery$data;
 }
 
-export const loadOwnedUserServices = async (
-  identifier: ServiceDefinitionIdentifierEnum
-) => {
-  const userServiceOwnedResponse = (await serverPortalApiFetch<
-    typeof ServiceInstancesSubscribedByIdentifierQuery,
-    serviceInstancesSubscribedByIdentifierQuery
-  >(ServiceInstancesSubscribedByIdentifierQuery, {
-    identifier,
-  })) as UserServiceOwnedResponse;
+export const loadServiceInstances = async (identifier: string) => {
+  const response = (await serverPortalApiFetch<
+    typeof ServiceInstancesListQueryGraphql,
+    serviceInstancesListQuery
+  >(ServiceInstancesListQueryGraphql, {
+    count: 50,
+    orderBy: ServiceInstanceOrderingEnum.ORDERING,
+    orderMode: OrderingModeEnum.ASC,
+    filters: [
+      {
+        key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
+        value: [identifier],
+      },
+    ],
+  })) as ServiceInstancesListResponse;
 
-  return Array.from(
-    userServiceOwnedResponse.data.subscribedServiceInstancesByIdentifier
+  return (
+    response.data.serviceInstances?.edges
+      .map((edge) => edge?.node)
+      .filter((node) => node != null) ?? []
   );
 };

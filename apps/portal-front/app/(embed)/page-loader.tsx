@@ -1,14 +1,14 @@
 'use client';
 
 import { SettingsContextQuery } from '@/components/login/settings.graphql';
-import Context from '@/components/me/me-context';
 import { MeQuery } from '@/components/me/me.graphql';
-import SettingsContext from '@/components/settings/settings-context';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
+import Context from '@/components/me/MeContext';
+import SettingsContext from '@/components/settings/SettingsContext';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 interface LayoutPreloaderProps {
   children: React.ReactNode;

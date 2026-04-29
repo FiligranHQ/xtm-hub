@@ -21,10 +21,6 @@ export const insertDeploymentRequest = async (
     service_instance_id: serviceInstanceId,
     start_date: new Date(),
     end_date: null,
-    status: 'ACCEPTED',
-    joining: 'AUTO_JOIN',
-    billing: 0,
-    justification: null,
   });
 
   await db('DeploymentRequest')

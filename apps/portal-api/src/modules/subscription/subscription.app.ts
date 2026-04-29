@@ -19,13 +19,12 @@ import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
 import { addCapabilitiesToSubscription } from '../security-management/service-capability/subscription-capability.domain';
 import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceById,
 } from '../service/instance/service-instance.domain';
-import { SubscriptionStatus } from '../subscription.const';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildSubscribeEvent,
@@ -90,15 +89,6 @@ export const subscriptionApp = {
         serviceName: serviceInstance.name,
       },
     });
-
-    // TODO If Service is AUTO_JOIN
-    // await grantServiceAccessUsers(
-    //   context,
-    //   context.user.selected_organization_id as OrganizationId,
-    //   context.user.id,
-    //   filledSubscription.id
-    // );
-
     await sendSubscriptionTelemetryEvent({
       selectedOrganization,
       serviceDefinitionIdentifier: serviceDefinition.identifier,
@@ -108,7 +98,6 @@ export const subscriptionApp = {
       ...serviceInstance,
       tags: serviceInstance.tags,
       creation_status: serviceInstance.creation_status,
-      join_type: serviceInstance.join_type,
       capabilities: ['ACCESS_SERVICE', 'MANAGE_ACCESS'],
     };
   },
@@ -137,8 +126,6 @@ export const subscriptionApp = {
       organization_id: organizationId,
       start_date: startDate,
       end_date: endDate,
-      billing: 0,
-      status: SubscriptionStatus.ACCEPTED,
     };
 
     const createdSubscription = await createSubscription(subscriptionData);
@@ -147,18 +134,6 @@ export const subscriptionApp = {
   },
 
   deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
-    // TODO: to be rethought when billing is used in XTM
-    // const [subscription] =
-    //   await loadSubscriptionWithOrganizationAndCapabilitiesBy(portalContext, {
-    //     'Subscription.id': id,
-    //   } as SubscriptionMutator);
-    // if (subscription.billing !== 0) {
-    //     logApp.warn(
-    //       'Forbidden access while deleting subscription: you can not delete a subscription with billing.'
-    //     );
-    //   throw ForbiddenAccess('ERROR_SUBSCRIPTION_WITH_BILLING');
-    // }
-
     return SubscriptionDomain.deleteSubscription(id);
   },
 };
@@ -198,8 +173,6 @@ const createSubscriptionWithAdminAccess = async ({
     organization_id: user.selected_organization_id,
     start_date: new Date(),
     end_date: undefined,
-    billing: 100,
-    status: SubscriptionStatus.ACCEPTED,
   };
 
   const createdSubscription = await createSubscription(

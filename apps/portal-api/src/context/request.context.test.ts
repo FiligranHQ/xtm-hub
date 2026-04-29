@@ -1,4 +1,4 @@
-// lib/context.test.ts
+// lib/Context.test.ts
 import { Knex } from 'knex';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { PortalContext } from '../model/portal-context';

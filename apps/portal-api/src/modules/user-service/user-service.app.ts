@@ -1,5 +1,3 @@
-import { OrganizationId } from '../../model/kanel/public/Organization';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -7,35 +5,12 @@ import {
 import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { ErrorCode } from '../../utils/error/error.code';
-import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
+import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
 import { UserServiceDomain } from './user-service.domain';
 
 export const UserServiceApp = {
-  addYourselfInUserService: async (
-    organizationId: OrganizationId,
-    serviceInstanceId: ServiceInstanceId,
-    emails: string[],
-    capabilities: string[]
-  ): Promise<UserService[]> => {
-    const [subscription] =
-      await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-        'Subscription.organization_id': organizationId,
-        'Subscription.service_instance_id': serviceInstanceId,
-      } as SubscriptionMutator);
-
-    if (!subscription) {
-      throw new Error(ErrorCode.SubscriptionNotFound);
-    }
-
-    return UserServiceDomain.addServiceToUsers(
-      subscription,
-      emails,
-      capabilities
-    );
-  },
-
   addUserService: async (
     user: User,
     subscriptionId: SubscriptionId,

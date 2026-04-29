@@ -1,5 +1,4 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
-import { ServiceInstanceCardData } from '@/components/service/service-instance-card';
 import { daysUntil } from '@/utils/date';
 import {
   APP_PATH,
@@ -14,8 +13,8 @@ import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInst
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { userServicesOwned_fragment$data } from '@generated/userServicesOwned_fragment.graphql';
 import { useTranslations } from 'next-intl';
+import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
 
 export const isExternalService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum
@@ -35,13 +34,6 @@ export const platformIdentifierMappedByShareableResourceType: Record<
   [ShareableResourceType.OPENCTI_INTEGRATION]: PlatformIdentifierEnum.OPENCTI,
   [ShareableResourceType.OPENAEV_SCENARIO]: PlatformIdentifierEnum.OPENAEV,
 };
-
-export const isAutomaticSubscriptionService = (
-  service_definition_identifier: ServiceDefinitionIdentifierEnum
-) =>
-  [ServiceDefinitionIdentifierEnum.XTM_SUITE_ROADMAP].includes(
-    service_definition_identifier
-  );
 
 export const isExpired = (endDate: Date | undefined | null): boolean => {
   return endDate ? new Date(endDate) < new Date() : false;
@@ -185,14 +177,7 @@ export const registeredPlatformToServiceInstanceCardData = (
 };
 
 const computeUrl = (
-  instance:
-    | serviceList_fragment$data
-    | seoServiceInstanceFragment$data
-    | NonNullable<
-        NonNullable<
-          userServicesOwned_fragment$data['subscription']
-        >['service_instance']
-      >,
+  instance: serviceList_fragment$data | seoServiceInstanceFragment$data,
   seo?: boolean
 ) => {
   const instanceLink = instance.links?.[0]?.url;
@@ -218,32 +203,6 @@ const computeIllustrationDocumentUrl = (
 export const publicServiceInstanceToInstanceCardData = (
   instance: serviceList_fragment$data
 ): ServiceInstanceCardData => {
-  return {
-    id: instance.id,
-    isLinkDisabled:
-      instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
-    name: instance.name,
-    description: instance.description!,
-    displayLinkArrow: isExternalService(
-      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
-    ),
-    illustrationDocumentUrl: computeIllustrationDocumentUrl(
-      instance.id,
-      instance.illustration_document_id
-    ),
-    logoBackgroundImageUrl: buildDocumentUrl(
-      instance.id,
-      instance.logo_document_id
-    ),
-    url: computeUrl(instance),
-    ordering: instance.ordering,
-  };
-};
-
-export const userServicesOwnedServiceToInstanceCardData = ({
-  subscription,
-}: userServicesOwned_fragment$data): ServiceInstanceCardData => {
-  const instance = subscription!.service_instance!;
   return {
     id: instance.id,
     isLinkDisabled:

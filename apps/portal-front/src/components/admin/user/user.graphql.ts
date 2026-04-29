@@ -4,7 +4,7 @@ export const UserListCreateMutation = graphql`
   mutation userListCreateMutation($input: AddUserInput!, $connections: [ID!]!) {
     addUser(input: $input)
       @prependNode(connections: $connections, edgeTypeName: "UserEdge") {
-      ...userList_fragment
+      ...UserList_fragment
     }
   }
 `;
@@ -20,7 +20,7 @@ export const UserSlugEditMutation = graphql`
         connections: $userListConnections
         edgeTypeName: "UserEdge"
       ) {
-      ...userList_fragment
+      ...UserList_fragment
     }
   }
 `;
@@ -48,7 +48,7 @@ export const userSlugSubscription = graphql`
   subscription userSlugSubscription {
     User {
       edit {
-        ...userList_fragment
+        ...UserList_fragment
       }
       delete {
         id @deleteRecord
@@ -111,7 +111,7 @@ export const UserPendingListFragment = graphql`
       totalCount
       edges {
         node {
-          ...userList_fragment
+          ...UserList_fragment
         }
       }
     }

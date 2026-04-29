@@ -222,10 +222,10 @@ describe('createAuthDirectiveTransformer', () => {
   });
 
   it.each`
-    description                                                       | fieldDirectives                                                                                                                                  | expectedResolverFactory
+    description                                                       | fieldDirectives                                                                                                                                    | expectedResolverFactory
     ${'uses createSystemTokenResolver with highest priority'}         | ${{ [directiveNames.systemToken]: { portalCapa: ['ManagePlatformRegistration'] }, [directiveNames.platformToken]: {}, [AUTH_DIRECTIVE_NAME]: {} }} | ${createSystemTokenResolverMock}
-    ${'uses createPlatformTokenResolver when system_token is absent'} | ${{ [directiveNames.platformToken]: {}, [AUTH_DIRECTIVE_NAME]: {} }}                                                                             | ${createPlatformTokenResolverMock}
-    ${'uses createSecureFieldResolver otherwise'}                     | ${{ [AUTH_DIRECTIVE_NAME]: { portalCapa: ['READ'] } }}                                                                                           | ${createSecureFieldResolverMock}
+    ${'uses createPlatformTokenResolver when system_token is absent'} | ${{ [directiveNames.platformToken]: {}, [AUTH_DIRECTIVE_NAME]: {} }}                                                                               | ${createPlatformTokenResolverMock}
+    ${'uses createSecureFieldResolver otherwise'}                     | ${{ [AUTH_DIRECTIVE_NAME]: { portalCapa: ['READ'] } }}                                                                                             | ${createSecureFieldResolverMock}
   `(
     'selects the right resolver: $description',
     ({ fieldDirectives, expectedResolverFactory }) => {
