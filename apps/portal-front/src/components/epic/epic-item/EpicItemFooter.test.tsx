@@ -5,7 +5,7 @@ import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it } from 'vitest';
-import { EpicItemFooter } from './EpicItemFooter';
+import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 
 describe('EpicItemFooter', () => {
   const epic = {

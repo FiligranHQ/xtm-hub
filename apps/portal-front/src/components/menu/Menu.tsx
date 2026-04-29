@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ElementType, FunctionComponent, useCallback } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
-import { NavigationApp } from '../Navigation';
-import { CollapseMenuButton } from './CollapseMenuButton';
-import { MenuLogo } from './MenuLogo';
+import { NavigationApp } from '@/components/Navigation';
+import { CollapseMenuButton } from '@/components/menu/CollapseMenuButton';
+import { MenuLogo } from '@/components/menu/MenuLogo';
 
 interface LinkMenuProps {
   open: boolean;

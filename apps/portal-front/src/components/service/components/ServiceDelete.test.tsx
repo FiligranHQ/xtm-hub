@@ -4,7 +4,7 @@ import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { screen, within } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { ServiceDelete } from './ServiceDelete';
+import { ServiceDelete } from '@/components/service/components/ServiceDelete';
 
 describe('ServiceDelete', () => {
   it.each`

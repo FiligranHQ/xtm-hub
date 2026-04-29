@@ -24,15 +24,15 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import ShareableResourceConnectorSlugPublic from '../../../../../src/components/service/document/connector/ShareableResourceConnectorSlugPublic';
-import ShareableResourceDetails from '../../../../../src/components/service/document/ShareableResouceDetails';
-import ShareableResourceCarousel from '../../../../../src/components/service/document/ui/ShareableResourceCarouselView';
+import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/ShareableResourceConnectorSlugPublic';
+import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
+import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
 import BadgeOverflowCounter, {
   BadgeOverflow,
-} from '../../../../../src/components/ui/BadgeOverflowCounter';
-import { BreadcrumbNav } from '../../../../../src/components/ui/BreadcrumbNav';
-import { ShareLinkButton } from '../../../../../src/components/ui/share-link/ShareLinkButton';
-import { serverFetchGraphQL } from '../../../../../src/relay/server-portal-api-fetch';
+} from '@/components/ui/BadgeOverflowCounter';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests

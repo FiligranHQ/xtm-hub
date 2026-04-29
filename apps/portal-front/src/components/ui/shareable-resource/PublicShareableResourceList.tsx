@@ -5,7 +5,7 @@ import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFr
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useTranslations } from 'next-intl';
 import React, { Fragment, useMemo } from 'react';
-import ShareableResourceCard from './ShareableResourceCard';
+import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
 
 interface Props {
   documents: publicDocumentItemFragment$data[];

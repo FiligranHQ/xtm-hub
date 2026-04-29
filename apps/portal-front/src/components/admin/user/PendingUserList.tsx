@@ -51,12 +51,12 @@ import {
   useSubscription,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { useExecuteAfterAnimation } from '../../../hooks/use-execute-after-animation';
-import { PortalContext } from '../../me/AppPortalContext';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
-import { SearchInput } from '../../ui/SearchInput';
-import { UserFragment } from './UserList';
-import { EditUser } from './forms/UserUpdate';
+import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { UserFragment } from '@/components/admin/user/UserList';
+import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 
 // Configuration or Preloader Query
 const removePendingUser = graphql`

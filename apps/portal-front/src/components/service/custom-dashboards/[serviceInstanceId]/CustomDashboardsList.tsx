@@ -18,10 +18,10 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { ServiceListLocalStorageKey } from '../../../../hooks/use-service-list-local-storage';
-import { AppServiceContext } from '../../components/ServiceContext';
-import ServiceList from '../../components/ServiceList';
-import { AppServiceListLocalStorageKeyContext } from '../../components/ServiceListLocalStorageKeyContext';
+import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
+import { AppServiceContext } from '@/components/service/components/ServiceContext';
+import ServiceList from '@/components/service/components/ServiceList';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 
 interface CustomDashboardsListProps {
   queryRef: PreloadedQuery<documentsQuery>;

@@ -4,14 +4,14 @@ import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
-import useServiceCapability from '../../../../hooks/use-service-capability';
+import useServiceCapability from '@/hooks/use-service-capability';
 import {
   GenericCapabilityName,
   ServiceCapabilityName,
-} from '../../[slug]/capabilities/Capability.helper';
-import { useServiceContext } from '../ServiceContext';
-import { ServiceManageSheet } from '../ServiceManageSheet';
-import { ServiceListIntegrationDropdown } from './ServiceListIntegrationDropdown';
+} from '@/components/service/[slug]/capabilities/Capability.helper';
+import { useServiceContext } from '@/components/service/components/ServiceContext';
+import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
+import { ServiceListIntegrationDropdown } from '@/components/service/components/header/ServiceListIntegrationDropdown';
 
 const ServiceListHeaderButtons = ({}) => {
   const t = useTranslations();

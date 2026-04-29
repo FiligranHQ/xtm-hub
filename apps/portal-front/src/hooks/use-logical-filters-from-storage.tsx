@@ -3,8 +3,8 @@ import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataK
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { useMemo } from 'react';
-import { buildTypeSubtypeFilterExpression } from '../components/service/integrations/Integration.utils';
-import { LogicalMultiSelectSelection } from '../components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
+import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/Integration.utils';
+import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 
 type SimpleFiltersParams = {
   serviceInstanceSlug:

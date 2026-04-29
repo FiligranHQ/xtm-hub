@@ -5,9 +5,9 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { SheetWithPreventingDialog } from '../ui/SheetWithPreventingDialog';
-import { OrganizationForm } from './OrganizationForm';
-import { organizationFormSchema } from './OrganizationForm.schema';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { OrganizationForm } from '@/components/organization/OrganizationForm';
+import { organizationFormSchema } from '@/components/organization/OrganizationForm.schema';
 
 interface CreateOrganizationProps {
   connectionId: string;

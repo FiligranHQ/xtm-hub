@@ -1,7 +1,7 @@
 import { Combobox } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
-import countryData from './data.json';
+import countryData from '@/components/ui/country/data.json';
 
 interface CountryComboboxProps {
   value?: { name: string } | undefined;

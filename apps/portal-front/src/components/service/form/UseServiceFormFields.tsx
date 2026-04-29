@@ -6,17 +6,17 @@ import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-import { useDialogContext } from '../../ui/SheetWithPreventingDialog';
-import { ServiceFormDescriptionField } from './DescriptionField';
-import { ServiceFormIntegrationSubtypeField } from './IntegrationSubtypeField';
-import { ServiceFormLogoField } from './LogoField';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
+import { ServiceFormIntegrationSubtypeField } from '@/components/service/form/IntegrationSubtypeField';
+import { ServiceFormLogoField } from '@/components/service/form/LogoField';
 import {
   ServiceFormMultipleImagesField,
   ServiceFormMultipleImagesFieldImages,
-} from './MultipleImagesField';
-import { ServiceFormUploaderIdField } from './UploaderIdField';
-import { ServiceFormUploaderOrganizationIdField } from './UploaderOrganizationIdField';
-import { ServiceFormUseCasesField } from './UseCasesField';
+} from '@/components/service/form/MultipleImagesField';
+import { ServiceFormUploaderIdField } from '@/components/service/form/UploaderIdField';
+import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/UploaderOrganizationIdField';
+import { ServiceFormUseCasesField } from '@/components/service/form/UseCasesField';
 
 type DocumentType =
   | 'CSV Feed'

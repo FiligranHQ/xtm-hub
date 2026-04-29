@@ -5,8 +5,8 @@ import { LogoXtmOneIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { type FunctionComponent } from 'react';
-import AskArianePanel from './AskArianePanel';
-import { useChatbot } from './use-chatbot-hooks';
+import AskArianePanel from '@/components/ariane/AskArianePanel';
+import { useChatbot } from '@/components/ariane/use-chatbot-hooks';
 
 const AskArianeButton: FunctionComponent = () => {
   const t = useTranslations();

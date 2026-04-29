@@ -6,7 +6,7 @@ import {
   RequestParameters,
   Variables,
 } from 'relay-runtime';
-import { buildCookieHeader, scrubSensitiveVariables } from './fetch-fn.utils';
+import { buildCookieHeader, scrubSensitiveVariables } from '@/relay/environment/fetch-fn.utils';
 
 function prepareUri(uri: string | undefined) {
   if (uri) {

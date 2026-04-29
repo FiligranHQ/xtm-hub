@@ -2,8 +2,8 @@ import { DocumentUpdateMutation } from '@/components/service/document/document.g
 import { useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
-import { IconActionContext } from '../../ui/IconActions';
-import { newDocumentSchema, VaultNewFileForm } from './VaultNewFileForm';
+import { IconActionContext } from '@/components/ui/IconActions';
+import { newDocumentSchema, VaultNewFileForm } from '@/components/service/vault/VaultNewFileForm';
 
 import DocumentItem_fragmentGraphql, {
   documentItem_fragment$data,
@@ -12,8 +12,8 @@ import DocumentItem_fragmentGraphql, {
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { readInlineData, useMutation } from 'react-relay';
 import { z } from 'zod';
-import useDecodedParams from '../../../hooks/use-decoded-params';
-import { SheetWithPreventingDialog } from '../../ui/SheetWithPreventingDialog';
+import useDecodedParams from '@/hooks/use-decoded-params';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 
 interface EditDocumentProps {
   documentData: documentItem_fragment$data;

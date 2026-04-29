@@ -24,16 +24,16 @@ import {
 } from 'react';
 import { graphql, readInlineData, useSubscription } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import useAdminPath from '../../../hooks/use-admin-path';
-import { useExecuteAfterAnimation } from '../../../hooks/use-execute-after-animation';
-import { useUsersList } from '../../../hooks/use-users-list';
-import { PortalContext } from '../../me/AppPortalContext';
+import useAdminPath from '@/hooks/use-admin-path';
+import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { useUsersList } from '@/hooks/use-users-list';
+import { PortalContext } from '@/components/me/AppPortalContext';
 import BadgeOverflowCounter, {
   BadgeOverflow,
-} from '../../ui/BadgeOverflowCounter';
-import { SearchInput } from '../../ui/SearchInput';
-import { EditUser } from './forms/UserUpdate';
-import { getUserListContext } from './UserListPage';
+} from '@/components/ui/BadgeOverflowCounter';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { EditUser } from '@/components/admin/user/forms/UserUpdate';
+import { getUserListContext } from '@/components/admin/user/UserListPage';
 
 // Configuration or Preloader Query
 export const UserListQuery = graphql`

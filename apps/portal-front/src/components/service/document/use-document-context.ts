@@ -26,17 +26,17 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
-import { splitFileListToUploadableMap } from '../../../relay/environment/fetch-form-data';
-import { PortalContext } from '../../me/AppPortalContext';
-import { ServiceContextProps } from '../components/ServiceContext';
-import { CustomDashboardForm } from '../custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
-import { ConnectorForm } from '../integrations/forms/ConnectorForm';
-import { CsvFeedForm } from '../integrations/forms/CsvFeedForm';
-import { RssFeedForm } from '../integrations/forms/RssFeedForm';
-import { StreamForm } from '../integrations/forms/StreamForm';
-import { TaxiiFeedForm } from '../integrations/forms/TaxiiFeedForm';
-import { ThirdPartyIntegrationForm } from '../integrations/forms/ThirdPartyIntegrationForm';
-import { OpenaevScenarioForm } from '../openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { ServiceContextProps } from '@/components/service/components/ServiceContext';
+import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
+import { ConnectorForm } from '@/components/service/integrations/forms/ConnectorForm';
+import { CsvFeedForm } from '@/components/service/integrations/forms/CsvFeedForm';
+import { RssFeedForm } from '@/components/service/integrations/forms/RssFeedForm';
+import { StreamForm } from '@/components/service/integrations/forms/StreamForm';
+import { TaxiiFeedForm } from '@/components/service/integrations/forms/TaxiiFeedForm';
+import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/ThirdPartyIntegrationForm';
+import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
 
 const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'name',

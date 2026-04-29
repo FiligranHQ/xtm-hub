@@ -1,8 +1,8 @@
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { MouseEvent } from 'react';
-import { EpicAdminMenu } from './EpicAdminMenu';
-import { EpicItemFooter } from './EpicItemFooter';
+import { EpicAdminMenu } from '@/components/epic/epic-item/EpicAdminMenu';
+import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 
 interface EpicItemCardProps {
   epic: epic_fragment$data;

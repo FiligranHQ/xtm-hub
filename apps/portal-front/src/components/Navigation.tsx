@@ -4,11 +4,11 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
-import GuardCapacityComponent from './AdminGuard';
-import { PortalContext } from './me/AppPortalContext';
-import { LinkMenu } from './menu/Menu';
-import MenuAdmin from './menu/MenuAdmin';
-import { OrganizationSwitcher } from './menu/OrganizationSwitcher';
+import GuardCapacityComponent from '@/components/AdminGuard';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { LinkMenu } from '@/components/menu/Menu';
+import MenuAdmin from '@/components/menu/MenuAdmin';
+import { OrganizationSwitcher } from '@/components/menu/OrganizationSwitcher';
 
 interface NavigationAppProps {
   open: boolean;

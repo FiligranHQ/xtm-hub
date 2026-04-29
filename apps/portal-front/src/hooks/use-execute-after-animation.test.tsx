@@ -1,6 +1,6 @@
 import { ANIMATION_TIME } from '@/utils/constant';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useExecuteAfterAnimation } from './use-execute-after-animation';
+import { useExecuteAfterAnimation } from './useExecuteAfterAnimation';
 
 describe('useExecuteAfterAnimation', () => {
   beforeEach(() => {

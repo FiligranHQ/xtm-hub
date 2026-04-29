@@ -17,12 +17,12 @@ import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, Suspense, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
-import { IconActions, IconActionsItem } from '../ui/IconActions';
-import { SearchInput } from '../ui/SearchInput';
-import { CreateOrganization } from './CreateOrganization';
-import { DeleteOrganization } from './DeleteOrganization';
-import { EditOrganization } from './EditOrganization';
-import { getOrganizations } from './Organization.service';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { CreateOrganization } from '@/components/organization/CreateOrganization';
+import { DeleteOrganization } from '@/components/organization/DeleteOrganization';
+import { EditOrganization } from '@/components/organization/EditOrganization';
+import { getOrganizations } from '@/components/organization/Organization.service';
 const OrganizationList: FunctionComponent = () => {
   const t = useTranslations();
   const [editOrganization, setEditOrganization] = useState<

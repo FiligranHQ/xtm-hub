@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { UserFragment } from '../../admin/user/UserList';
+import { UserFragment } from '@/components/admin/user/UserList';
 
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
@@ -41,10 +41,10 @@ import { useForm } from 'react-hook-form';
 import { readInlineData, useMutation } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
-import { useUsersList } from '../../../hooks/use-users-list';
-import { PortalContext } from '../../me/AppPortalContext';
-import { useDialogContext } from '../../ui/SheetWithPreventingDialog';
-import { GenericCapabilityName } from './capabilities/Capability.helper';
+import { useUsersList } from '@/hooks/use-users-list';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
 
 interface UserServiceFormProps {
   connectionId: string;

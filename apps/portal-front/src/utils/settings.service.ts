@@ -3,7 +3,7 @@ import SettingsQuery, {
   settingsQuery,
   settingsQuery$data,
 } from '@generated/settingsQuery.graphql';
-import serverPortalApiFetch from '../relay/server-portal-api-fetch';
+import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 
 let cachedFeatureFlags: string[];
 

@@ -4,9 +4,9 @@ import { FunctionComponent } from 'react';
 import { SettingsContextQuery } from '@/components/login/settings.graphql';
 import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import { useQueryLoader } from 'react-relay';
-import useMountingLoader from '../../hooks/use-mounting-loader';
-import SettingsContext from '../settings/SettingsContext';
-import { LoginLayout } from './LoginLayout';
+import useMountingLoader from '@/hooks/use-mounting-loader';
+import SettingsContext from '@/components/settings/SettingsContext';
+import { LoginLayout } from '@/components/login/LoginLayout';
 
 // Component
 const Login: FunctionComponent = () => {

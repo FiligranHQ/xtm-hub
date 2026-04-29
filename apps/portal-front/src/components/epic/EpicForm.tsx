@@ -23,8 +23,8 @@ import { useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 import Markdown from 'react-markdown';
 import { z } from 'zod';
-import { ServiceFormDescriptionField } from '../service/form/DescriptionField';
-import { FiligranProductMapping } from './epic-item/FiligranProductMapping';
+import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
+import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 
 export const descriptionValue =
   ' [Long Description] - no limit of chars\n' +

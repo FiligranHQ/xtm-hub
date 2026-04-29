@@ -4,7 +4,7 @@ import {
   fetchFormData,
   fileListToUploadableMap,
   splitFileListToUploadableMap,
-} from './fetch-form-data';
+} from './fetchFormData';
 
 const FILE_PREFIX_SEPARATOR = 'prefix-';
 

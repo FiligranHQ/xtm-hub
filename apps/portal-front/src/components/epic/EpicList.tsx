@@ -12,12 +12,12 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
-import useServiceCapability from '../../hooks/use-service-capability';
-import { ServiceCapabilityName } from '../service/[slug]/capabilities/Capability.helper';
-import { EpicFilter, EpicFilterType } from './EpicFilter';
-import { EpicFormSheet } from './EpicFormSheet';
-import { EpicItem } from './epic-item/EpicItem';
-import { FiligranTimelineMapping } from './epic-item/TimelineMapping';
+import useServiceCapability from '@/hooks/use-service-capability';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
+import { EpicFilter, EpicFilterType } from '@/components/epic/EpicFilter';
+import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
+import { EpicItem } from '@/components/epic/epic-item/EpicItem';
+import { FiligranTimelineMapping } from '@/components/epic/epic-item/TimelineMapping';
 
 interface EpicListProps {
   epics: epic_fragment$data[];

@@ -9,13 +9,13 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { createContext, FunctionComponent, useContext, useState } from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-import useAdminPath from '../../../hooks/use-admin-path';
-import { PortalContext } from '../../me/AppPortalContext';
-import { notificationPendingUserQueryFilters } from '../../notification/NotificationButton';
-import { AddUser } from './forms/AddUser';
-import { AdminAddUser } from './forms/admin/AdminAddUser';
-import PendingUserList from './PendingUserList';
-import UserList from './UserList';
+import useAdminPath from '@/hooks/use-admin-path';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { notificationPendingUserQueryFilters } from '@/components/notification/NotificationButton';
+import { AddUser } from '@/components/admin/user/forms/AddUser';
+import { AdminAddUser } from '@/components/admin/user/forms/admin/AdminAddUser';
+import PendingUserList from '@/components/admin/user/PendingUserList';
+import UserList from '@/components/admin/user/UserList';
 
 interface UserListPageProps {
   organization?: string;

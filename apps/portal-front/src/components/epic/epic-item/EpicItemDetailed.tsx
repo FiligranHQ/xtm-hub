@@ -1,7 +1,7 @@
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import Markdown from 'react-markdown';
-import { EpicItemFooter } from './EpicItemFooter';
+import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 
 interface EpicItemDetailedProps {
   epic: epic_fragment$data;

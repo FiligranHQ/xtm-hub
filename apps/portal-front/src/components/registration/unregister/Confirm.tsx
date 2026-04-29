@@ -1,8 +1,8 @@
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
-import { getOrganization } from '../../organization/Organization.service';
-import { RegistrationContext } from '../Context';
-import { RegistrationLayout } from '../Layout';
+import { getOrganization } from '@/components/organization/Organization.service';
+import { RegistrationContext } from '@/components/registration/Context';
+import { RegistrationLayout } from '@/components/registration/Layout';
 
 interface Props {
   confirm: () => void;

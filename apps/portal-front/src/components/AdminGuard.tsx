@@ -5,9 +5,9 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
-import useGranted from '../hooks/use-granted';
-import { useAdminByPass } from '../hooks/use-portal-capability';
-import { PortalContext } from './me/AppPortalContext';
+import useGranted from '@/hooks/use-granted';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
+import { PortalContext } from '@/components/me/AppPortalContext';
 
 // Component interface
 interface GuardComponentProps {

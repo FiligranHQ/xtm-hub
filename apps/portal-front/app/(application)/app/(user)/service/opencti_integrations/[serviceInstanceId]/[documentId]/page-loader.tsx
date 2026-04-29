@@ -4,9 +4,9 @@ import { DocumentsItemQuery } from '@/components/service/document/document.graph
 import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
-import Loader from '../../../../../../../../src/components/Loader';
-import IntegrationSlug from '../../../../../../../../src/components/service/integrations/[slug]/IntegrationSlug';
-import useMountingLoader from '../../../../../../../../src/hooks/use-mounting-loader';
+import Loader from '@/components/Loader';
+import IntegrationSlug from '@/components/service/integrations/[slug]/IntegrationSlug';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 // Component interface
 interface PreloaderProps {

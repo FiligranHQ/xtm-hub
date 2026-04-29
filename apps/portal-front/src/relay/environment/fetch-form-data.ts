@@ -1,6 +1,6 @@
 import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
-import { UnauthenticatedError } from './fetch-fn';
-import { buildCookieHeader } from './fetch-fn.utils';
+import { UnauthenticatedError } from '@/relay/environment/fetch-fn';
+import { buildCookieHeader } from '@/relay/environment/fetch-fn.utils';
 
 const FILE_PREFIX_SEPARATOR = 'prefix-';
 

@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { useParams } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
-import useDecodedParams from './use-decoded-params';
+import useDecodedParams from './useDecodedParams';
 
 vi.mock('next/navigation');
 

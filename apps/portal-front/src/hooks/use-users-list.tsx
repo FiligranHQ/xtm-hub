@@ -9,7 +9,7 @@ import { FetchPolicy } from 'relay-runtime';
 import {
   userListFragment,
   UserListQuery,
-} from '../components/admin/user/UserList';
+} from '@/components/admin/user/UserList';
 
 interface Props {
   pageSize: number;

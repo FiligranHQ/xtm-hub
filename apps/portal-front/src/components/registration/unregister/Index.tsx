@@ -16,12 +16,12 @@ import {
   useMutation,
   usePreloadedQuery,
 } from 'react-relay';
-import Loader from '../../Loader';
-import { RegistrationContext } from '../Context';
-import { RegistrationLayout } from '../Layout';
-import { UnregisterConfirm } from './Confirm';
-import { UnregisterMissingCapability } from './MissingCapability';
-import { UnregisterPlatformNotRegistered } from './PlatformNotRegistered';
+import Loader from '@/components/Loader';
+import { RegistrationContext } from '@/components/registration/Context';
+import { RegistrationLayout } from '@/components/registration/Layout';
+import { UnregisterConfirm } from '@/components/registration/unregister/Confirm';
+import { UnregisterMissingCapability } from '@/components/registration/unregister/MissingCapability';
+import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/PlatformNotRegistered';
 
 interface Props {
   platformId: string;

@@ -1,5 +1,5 @@
 import React, { createContext, FunctionComponent, useContext } from 'react';
-import { ServiceListLocalStorageKey } from '../../../hooks/use-service-list-local-storage';
+import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 
 export interface ServiceListLocalStorageKeyContextProps {
   localStorageKey: ServiceListLocalStorageKey;

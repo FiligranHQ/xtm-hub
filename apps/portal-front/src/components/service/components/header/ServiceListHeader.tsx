@@ -3,12 +3,12 @@ import { debounceHandleInput } from '@/utils/debounce';
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { useServiceListLocalStorage } from '../../../../hooks/use-service-list-local-storage';
-import { SearchInput } from '../../../ui/SearchInput';
-import { SortControls } from '../../../ui/SortControls';
-import { useServiceListLocalStorageKeyContext } from '../ServiceListLocalStorageKeyContext';
-import { ServiceListAddFilterCombobox } from './filter/ServiceListAddFilterCombobox';
-import { ServiceListFilterSection } from './filter/ServiceListFilterSection';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { SortControls } from '@/components/ui/SortControls';
+import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
+import { ServiceListAddFilterCombobox } from '@/components/service/components/header/filter/ServiceListAddFilterCombobox';
+import { ServiceListFilterSection } from '@/components/service/components/header/filter/ServiceListFilterSection';
 
 export enum ServiceListFilterKey {
   Label = 'label',

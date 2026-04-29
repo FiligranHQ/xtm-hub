@@ -1,9 +1,9 @@
-import { serverFetchGraphQL } from '../../../relay/server-portal-api-fetch';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 
 import publicDocumentBySlugQueryGraphql from '@generated/publicDocumentBySlugQuery.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import publicDocumentsByServiceSlugQueryGraphql from '@generated/publicDocumentsByServiceSlugQuery.graphql';
-import { ServiceSlug } from '../shareable-resources.types';
+import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 
 export async function fetchAllDocuments(
   serviceInstanceSlug: ServiceSlug

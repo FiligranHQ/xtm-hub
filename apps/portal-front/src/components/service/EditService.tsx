@@ -6,9 +6,9 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { fileListToUploadableMap } from '../../relay/environment/fetch-form-data';
-import { SheetWithPreventingDialog } from '../ui/SheetWithPreventingDialog';
-import { newPicturesSchema, ServiceForm } from './ServiceForm';
+import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { newPicturesSchema, ServiceForm } from '@/components/service/ServiceForm';
 
 interface EditServiceProps {
   service: serviceList_fragment$data;

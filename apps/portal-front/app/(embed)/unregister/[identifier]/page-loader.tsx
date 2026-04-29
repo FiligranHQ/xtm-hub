@@ -7,12 +7,12 @@ import RegisterCanUnregisterPlatformQueryGraphql, {
 import { redirect, useParams } from 'next/navigation';
 import React from 'react';
 import { useQueryLoader } from 'react-relay';
-import Loader from '../../../../src/components/Loader';
-import PublicPathError from '../../../../src/components/PublicPathError';
-import { RegistrationContextProvider } from '../../../../src/components/registration/Context';
-import { Unregister } from '../../../../src/components/registration/unregister/Index';
-import useDecodedQuery from '../../../../src/hooks/use-decoded-query';
-import useMountingLoader from '../../../../src/hooks/use-mounting-loader';
+import Loader from '@/components/Loader';
+import PublicPathError from '@/components/PublicPathError';
+import { RegistrationContextProvider } from '@/components/registration/Context';
+import { Unregister } from '@/components/registration/unregister/Index';
+import useDecodedQuery from '@/hooks/use-decoded-query';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 export const PageLoader: React.FC = () => {
   const { identifier } = useParams<{ identifier: PlatformIdentifierEnum }>();

@@ -4,9 +4,9 @@ import { DocumentsItemQuery } from '@/components/service/document/document.graph
 import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
-import Loader from '../../../../../../../../src/components/Loader';
-import DashboardDetails from '../../../../../../../../src/components/service/custom-dashboards/[slug]/CustomDashboardDetails';
-import useMountingLoader from '../../../../../../../../src/hooks/use-mounting-loader';
+import Loader from '@/components/Loader';
+import DashboardDetails from '@/components/service/custom-dashboards/[slug]/CustomDashboardDetails';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 // Component interface
 interface PreloaderProps {

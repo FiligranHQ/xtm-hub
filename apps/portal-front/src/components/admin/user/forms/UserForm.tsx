@@ -16,9 +16,9 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CapabilityMultiSelect } from '../../../ui/capability/MultiSelect';
-import { useDialogContext } from '../../../ui/SheetWithPreventingDialog';
-import { CapabilityDescription } from '../CapabilityDescription';
+import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 
 interface UserFormProps {
   handleSubmit: (values: z.infer<typeof userFormSchema>) => void;

@@ -16,7 +16,7 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import React, { useContext } from 'react';
-import { SettingsContext } from '../../settings/EnvPortalContext';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 
 export const ProfileFormPreferences: React.FC = () => {
   const t = useTranslations();

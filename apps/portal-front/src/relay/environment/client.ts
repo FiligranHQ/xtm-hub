@@ -15,15 +15,15 @@ import {
   fetchOrSubscribe,
   networkFetch,
   UnauthenticatedError,
-} from './fetch-fn';
-import { fetchFormData } from './fetch-form-data';
+} from '@/relay/environment/fetch-fn';
+import { fetchFormData } from '@/relay/environment/fetch-form-data';
 import {
   buildQueryId,
   fieldLogger,
   hasHydrationResponses,
   RELAY_WINDOW_KEY,
-} from './helpers';
-import { registerClientEnvironment } from './registry';
+} from '@/relay/environment/helpers';
+import { registerClientEnvironment } from '@/relay/environment/registry';
 
 // A singleton helper that is shared on the client.
 let clientSideRelayEnvironment: RelayModernEnvironment | null = null;

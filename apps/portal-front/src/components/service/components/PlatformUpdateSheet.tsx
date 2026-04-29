@@ -23,8 +23,8 @@ import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { fileListToUploadableMap } from '../../../relay/environment/fetch-form-data';
-import { SheetWithPreventingDialog } from '../../ui/SheetWithPreventingDialog';
+import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 
 const platformUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required'),

@@ -2,8 +2,8 @@ import { ShareableResourceType } from '@/utils/shareable-resources/shareable-res
 import { Button } from '@filigran/ui';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
-import { IconActionsItem } from '../../ui/IconActions';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { IconActionsItem } from '@/components/ui/IconActions';
 
 interface ServiceDeleteProps {
   userCanDelete?: boolean;

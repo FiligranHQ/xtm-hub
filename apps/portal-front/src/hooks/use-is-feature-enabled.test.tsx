@@ -6,8 +6,8 @@ import {
   Settings,
   SettingsContext,
   SettingsProps,
-} from '../components/settings/EnvPortalContext';
-import { useIsFeatureEnabled } from './use-is-feature-enabled';
+} from '@/components/settings/EnvPortalContext';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 
 describe('useIsFeatureEnabled', () => {
   const createWrapper = (contextValue: Settings) => {

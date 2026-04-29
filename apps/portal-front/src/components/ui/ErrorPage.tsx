@@ -1,6 +1,6 @@
 'use client';
 import { FunctionComponent, ReactNode } from 'react';
-import { DisplayLogo } from './DisplayLogo';
+import { DisplayLogo } from '@/components/ui/DisplayLogo';
 
 interface ErrorPageProps {
   children: ReactNode;

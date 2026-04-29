@@ -1,12 +1,12 @@
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { useLocalStorage } from 'usehooks-ts';
-import { ServiceListFilterKey } from '../components/service/components/header/ServiceListHeader';
+import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import {
   isLogicalMultiSelectSelection,
   LogicalMultiSelectSelection,
-} from '../components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
-import usePublicPath from './use-public-path';
+} from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
+import usePublicPath from '@/hooks/use-public-path';
 
 export enum ServiceListLocalStorageKey {
   OpenCTICustomDashboards = 'OpenCTICustomDashboards',

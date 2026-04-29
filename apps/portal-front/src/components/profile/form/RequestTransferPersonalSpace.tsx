@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 const formSchema = z.object({
   new_email: z.string().email('This is not a valid email.'),

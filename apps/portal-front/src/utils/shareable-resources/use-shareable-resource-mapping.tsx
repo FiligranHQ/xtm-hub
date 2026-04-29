@@ -3,18 +3,18 @@ import {
   ServiceSlug,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { ServiceListFilterLabel } from '../../components/service/components/header/filter/ServiceListFilterLabel';
+import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
   ServiceListFilterKey,
   ServiceListFilterMap,
-} from '../../components/service/components/header/ServiceListHeader';
-import { IntegrationDeployableFilter } from '../../components/ui/shareable-resource/integration/IntegrationDeployableFilter';
-import { IntegrationFilters } from '../../components/ui/shareable-resource/integration/IntegrationFilters';
-import { IntegrationVerifiedFilter } from '../../components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
+} from '@/components/service/components/header/ServiceListHeader';
+import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
+import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/IntegrationFilters';
+import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
-} from '../../hooks/use-service-list-local-storage';
+} from '@/hooks/use-service-list-local-storage';
 
 export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const localStorageKeyMapping: Record<

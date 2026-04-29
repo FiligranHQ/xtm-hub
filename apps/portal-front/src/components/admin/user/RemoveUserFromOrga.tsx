@@ -4,10 +4,10 @@ import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { graphql, useMutation } from 'react-relay';
-import { PortalContext } from '../../me/AppPortalContext';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
-import { useDialogContext } from '../../ui/SheetWithPreventingDialog';
-import { getUserListContext } from './UserListPage';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { getUserListContext } from '@/components/admin/user/UserListPage';
 
 interface RemoveUserFromOrgaProps {
   user: UserList_fragment$data;

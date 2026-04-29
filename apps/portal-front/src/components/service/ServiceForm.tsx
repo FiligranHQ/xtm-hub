@@ -16,7 +16,7 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useDialogContext } from '../ui/SheetWithPreventingDialog';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 
 export const newPicturesSchema = z.object({
   illustration_document: z.custom<FileList>(),

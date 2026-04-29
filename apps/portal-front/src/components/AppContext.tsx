@@ -1,14 +1,14 @@
 'use client';
+import GoogleAnalytics from '@/components/external/GoogleAnalytics';
+import Hubspot from '@/components/external/Hubspot';
 import { APP_PATH } from '@/utils/path/constant';
+import { geologica, ibmPlexSans } from '@app/font';
 import { Toaster } from '@filigran/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
-import { geologica, ibmPlexSans } from '../../app/font';
-import GoogleAnalytics from './external/GoogleAnalytics';
-import Hubspot from './external/Hubspot';
 
 // Component interface
 interface AppProps {

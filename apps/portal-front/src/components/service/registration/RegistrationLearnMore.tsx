@@ -8,8 +8,8 @@ import ServiceLinksByTagsQueryGraphql, {
 } from '@generated/serviceLinksByTagsQuery.graphql';
 import Image from 'next/image';
 import React from 'react';
-import { serverFetchGraphQL } from '../../../relay/server-portal-api-fetch';
-import ServiceInstanceCard from '../ServiceInstanceCard';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
   <h2 className="text-blue text-2xl mb-l">{children}</h2>

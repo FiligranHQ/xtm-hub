@@ -1,7 +1,7 @@
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import { describe, it, vi } from 'vitest';
-import { NavigationApp } from './Navigation';
+import { NavigationApp } from '@/components/Navigation';
 
 // Mock next/navigation properly for App Router
 vi.mock('next/navigation', () => ({

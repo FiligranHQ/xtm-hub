@@ -7,9 +7,9 @@ import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubs
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 import { useLocalStorage } from 'usehooks-ts';
-import Loader from '../../../../../../../../src/components/Loader';
-import SubscriptionSlug from '../../../../../../../../src/components/subcription/[slug]/SubscriptionSlug';
-import useMountingLoader from '../../../../../../../../src/hooks/use-mounting-loader';
+import Loader from '@/components/Loader';
+import SubscriptionSlug from '@/components/subcription/[slug]/SubscriptionSlug';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 // Component interface
 interface PreloaderProps {

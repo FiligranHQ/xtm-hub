@@ -3,10 +3,10 @@
 import { LogoutMutation } from '@/components/logout.graphql';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
-import { PortalContext } from './me/AppPortalContext';
-import { NavigationApp } from './Navigation';
-import { DisplayLogo } from './ui/DisplayLogo';
-import { IconActions, IconActionsItem } from './ui/IconActions';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { NavigationApp } from '@/components/Navigation';
+import { DisplayLogo } from '@/components/ui/DisplayLogo';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 
 import { MenuIcon } from '@filigran/icon';
 import { Avatar } from '@filigran/ui';
@@ -24,9 +24,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
-import AskArianeButton from './ariane/AskArianeButton';
-import { NotificationButton } from './notification/NotificationButton';
-import { DisplayTrialList } from './service/trial-instances/display-trial-header/DisplayTrialList';
+import AskArianeButton from '@/components/ariane/AskArianeButton';
+import { NotificationButton } from '@/components/notification/NotificationButton';
+import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 
 // Component interface
 interface HeaderComponentProps {

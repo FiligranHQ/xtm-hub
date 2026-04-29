@@ -7,7 +7,7 @@ import {
   getGraphqlApi,
   networkFetch,
   UnauthenticatedError,
-} from './environment/fetch-fn';
+} from '@/relay/environment/fetch-fn';
 
 // Call into raw network fetch to get serializable GraphQL query response
 // This response will be sent to the client to "warm" the QueryResponseCache

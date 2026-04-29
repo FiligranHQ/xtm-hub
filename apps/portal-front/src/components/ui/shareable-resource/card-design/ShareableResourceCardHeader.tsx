@@ -4,9 +4,9 @@ import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFr
 import { FunctionComponent } from 'react';
 import BadgeOverflowCounter, {
   BadgeOverflow,
-} from '../../BadgeOverflowCounter';
-import { ShareableResourceCardIcon } from './ShareableResourceCardIcon';
-import { ShareableResourceCardImage } from './ShareableResourceCardImage';
+} from '@/components/ui/BadgeOverflowCounter';
+import { ShareableResourceCardIcon } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardIcon';
+import { ShareableResourceCardImage } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardImage';
 
 interface ShareableResourceCardHeaderProps {
   document: documentItem_fragment$data | publicDocumentItemFragment$data;

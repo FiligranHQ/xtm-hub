@@ -1,11 +1,11 @@
 import { useTranslations } from 'next-intl';
-import { useServiceListFilters } from '../../../../hooks/use-service-list-filters';
+import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
-} from '../../../../hooks/use-service-list-local-storage';
-import { ServiceListFilterKey } from '../../../service/components/header/ServiceListHeader';
-import { LogicalMultiSelectFormField } from '../logical-multi-select/LogicalMultiSelectFormField';
+} from '@/hooks/use-service-list-local-storage';
+import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
+import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 
 export const IntegrationVerifiedFilter = () => {
   const { verified, setVerified, removeVerified } = useServiceListLocalStorage(

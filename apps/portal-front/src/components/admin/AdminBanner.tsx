@@ -2,7 +2,7 @@
 
 import { Callout } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import useAdminPath from '../../hooks/use-admin-path';
+import useAdminPath from '@/hooks/use-admin-path';
 
 export function AdminBanner() {
   const t = useTranslations();

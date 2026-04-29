@@ -15,8 +15,8 @@ import {
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
 import { z } from 'zod';
-import { PortalContext } from '../../me/AppPortalContext';
-import { CountryCombobox } from '../../ui/country/Combobox';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { CountryCombobox } from '@/components/ui/country/Combobox';
 
 const formSchema = z.object({
   first_name: z.string().optional(),

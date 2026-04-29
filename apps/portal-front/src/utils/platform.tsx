@@ -5,7 +5,7 @@ import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequ
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { useTranslations } from 'next-intl';
-import { PlatformHoverAction } from '../components/service/ServiceInstanceCard';
+import { PlatformHoverAction } from '@/components/service/ServiceInstanceCard';
 
 export const getPlatformIdentifier = (type: string): PlatformIdentifierEnum => {
   return type === ShareableResourceType.OPENAEV_SCENARIO

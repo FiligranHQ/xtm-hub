@@ -14,7 +14,7 @@ import { registerRegisteredPlatformListFragment$data } from '@generated/register
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { ServiceInstanceCardData } from '../components/service/ServiceInstanceCard';
+import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
 
 export const isExternalService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum

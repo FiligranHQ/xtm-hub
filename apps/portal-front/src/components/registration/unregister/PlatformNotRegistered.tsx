@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import React, { useEffect } from 'react';
-import { RegistrationLayout } from '../Layout';
+import { RegistrationLayout } from '@/components/registration/Layout';
 
 interface Props {
   confirm: () => void;

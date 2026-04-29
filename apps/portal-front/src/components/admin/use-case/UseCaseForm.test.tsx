@@ -1,7 +1,7 @@
 import testRender from '@/utils/test/test-render';
 import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';
 import { screen } from '@testing-library/react';
-import UseCaseForm from './UseCaseForm';
+import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
 
 describe('UseCaseForm', () => {
   describe('form validation', () => {

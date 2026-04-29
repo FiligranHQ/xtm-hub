@@ -9,7 +9,7 @@ import {
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import { Fragment, FunctionComponent, ReactNode } from 'react';
-import { FilterTooltip } from './FilterTooltip';
+import { FilterTooltip } from '@/components/ui/shareable-resource/logical-multi-select/FilterTooltip';
 
 export interface GroupedSelection {
   parentValue: string;

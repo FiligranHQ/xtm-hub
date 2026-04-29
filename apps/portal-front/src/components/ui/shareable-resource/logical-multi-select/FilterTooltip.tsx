@@ -4,7 +4,7 @@ import {
   GroupedSelection,
   OrSeparator,
   SelectionChip,
-} from './SelectedValuesDisplay';
+} from '@/components/ui/shareable-resource/logical-multi-select/SelectedValuesDisplay';
 
 export const FilterTooltip: FunctionComponent<{
   groupedSelections: GroupedSelection[];

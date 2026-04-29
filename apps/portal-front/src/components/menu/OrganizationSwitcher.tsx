@@ -7,8 +7,8 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { FunctionComponent, useContext, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
-import useIsMobile from '../../hooks/use-is-mobile';
-import { PortalContext } from '../me/AppPortalContext';
+import useIsMobile from '@/hooks/use-is-mobile';
+import { PortalContext } from '@/components/me/AppPortalContext';
 
 interface TeamSwitcherProps {
   open: boolean;

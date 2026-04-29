@@ -1,7 +1,7 @@
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { serverMutateGraphQL } from '../../../src/relay/server-portal-api-fetch';
+import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
 import { redirectToResource } from './resource';
 import {
   loadBaseUrlFront,

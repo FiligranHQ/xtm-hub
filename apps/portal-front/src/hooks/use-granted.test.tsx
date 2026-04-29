@@ -1,7 +1,7 @@
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { renderHook } from '@testing-library/react';
-import useGranted from './use-granted';
+import useGranted from '@/hooks/use-granted';
 
 describe('useGranted', () => {
   it('should return true when user has the required capability', () => {

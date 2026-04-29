@@ -1,6 +1,6 @@
 import { TimelineEnum } from '@generated/models/Timeline.enum';
 import { describe, expect, it } from 'vitest';
-import { FiligranTimelineMapping } from './TimelineMapping';
+import { FiligranTimelineMapping } from '@/components/epic/epic-item/TimelineMapping';
 
 describe('FiligranTimelineMapping', () => {
   it('contains all Timeline items from enum', () => {

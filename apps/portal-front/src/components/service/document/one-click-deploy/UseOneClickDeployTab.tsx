@@ -13,7 +13,7 @@ import {
 } from '@generated/registerRefreshUserPlatformTokenMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
-import useExternalTab from '../../../../hooks/use-external-tab';
+import useExternalTab from '@/hooks/use-external-tab';
 
 const OPENCTI_URL_CONFIGS = {
   opencti_custom_dashboard: 'deploy-custom-dashboard',

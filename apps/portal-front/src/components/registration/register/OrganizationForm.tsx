@@ -10,7 +10,7 @@ import { organizationListUserOrganizationsQuery$data } from '@generated/organiza
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
 import { z } from 'zod';
-import { RegistrationContext } from '../Context';
+import { RegistrationContext } from '@/components/registration/Context';
 
 interface Props {
   userOrganizationsQueryData: organizationListUserOrganizationsQuery$data;

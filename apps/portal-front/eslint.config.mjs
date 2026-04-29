@@ -52,6 +52,13 @@ const eslintConfig = [
           allow: ['warn', 'error'],
         },
       ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ImportDeclaration[source.value=/^(\\.\\.\\/){2,}/]',
+          message: "Avoid deep relative imports. Use '@/...'.",
+        },
+      ],
     },
   },
 

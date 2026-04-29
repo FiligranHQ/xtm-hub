@@ -3,7 +3,7 @@
 import { InfoIcon } from '@filigran/icon';
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
-import { PortalContext } from '../../../me/AppPortalContext';
+import { PortalContext } from '@/components/me/AppPortalContext';
 
 const PersonalSpaceInfo: React.FC = () => {
   const { isPersonalSpace } = useContext(PortalContext);

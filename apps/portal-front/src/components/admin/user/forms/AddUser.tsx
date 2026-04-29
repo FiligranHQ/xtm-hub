@@ -6,9 +6,9 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { SheetWithPreventingDialog } from '../../../ui/SheetWithPreventingDialog';
-import { getUserListContext } from '../UserListPage';
-import { UserForm } from './UserForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { getUserListContext } from '@/components/admin/user/UserListPage';
+import { UserForm } from '@/components/admin/user/forms/UserForm';
 
 export const AddUser: FunctionComponent = () => {
   const t = useTranslations();

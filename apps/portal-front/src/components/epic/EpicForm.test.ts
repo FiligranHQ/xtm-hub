@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DESCRIPTION_END_VALUE_BY_PRODUCT,
   getEndDescription,
-} from './EpicForm';
+} from './epic-form';
 
 describe('getEndDescription', () => {
   it.each`

@@ -8,7 +8,7 @@ import { DataTable } from '@filigran/ui';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
-import DocumentList from '../../../../../../../src/components/service/vault/[slug]/DocumentList';
+import DocumentList from '@/components/service/vault/[slug]/DocumentList';
 
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';

@@ -3,7 +3,7 @@ import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useEffect } from 'react';
 import { useRelayEnvironment } from 'react-relay';
-import { SettingsContext } from './settings/EnvPortalContext';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 
 const AppError: FunctionComponent<{
   error: Error & { digest?: string; componentStack?: string };

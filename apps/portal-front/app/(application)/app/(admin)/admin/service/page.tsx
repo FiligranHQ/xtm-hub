@@ -11,8 +11,8 @@ import { useTranslations } from 'next-intl';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 import AdminServiceTab, {
   ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS,
-} from '../../../../../../src/components/service/AdminServiceTab';
-import { BreadcrumbNav } from '../../../../../../src/components/ui/BreadcrumbNav';
+} from '@/components/service/AdminServiceTab';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {

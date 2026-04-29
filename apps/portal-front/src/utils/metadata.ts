@@ -1,4 +1,4 @@
-import { loadBaseUrlFront } from '../../app/redirect/[identifier]/utils/load';
+import { loadBaseUrlFront } from '@app/redirect/[identifier]/utils/load';
 
 export const getMetadataBase = async (): Promise<URL> => {
   const appUrl = await loadBaseUrlFront();

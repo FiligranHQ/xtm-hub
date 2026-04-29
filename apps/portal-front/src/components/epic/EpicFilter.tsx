@@ -10,8 +10,8 @@ import {
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { SearchInput } from '../ui/SearchInput';
-import { FiligranProductMapping } from './epic-item/FiligranProductMapping';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 
 export type EpicFilterType = 'all' | FiligranProductEnum;
 

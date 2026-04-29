@@ -1,7 +1,7 @@
 import { VpnKeyIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { FunctionComponent } from 'react';
-import useDecodedQuery from '../../hooks/use-decoded-query';
+import useDecodedQuery from '@/hooks/use-decoded-query';
 
 interface LoginButtonProviderProps {
   platformProvider: {

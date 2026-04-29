@@ -8,10 +8,10 @@ import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFr
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
 import Link from 'next/link';
 import { ReactNode } from 'react';
-import useScrollPosition from '../../../hooks/use-scroll-position';
-import { ShareableResourceCardFooterAuthor } from './card-design/ShareableResourceCardFooterAuthor';
-import { ShareableResourceCardFooterVersion } from './card-design/ShareableResourceCardFooterVersions';
-import { ShareableResourceCardHeader } from './card-design/ShareableResourceCardHeader';
+import useScrollPosition from '@/hooks/use-scroll-position';
+import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor';
+import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
+import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
 
 interface ShareableServiceInstance {
   id: string;

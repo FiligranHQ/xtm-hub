@@ -1,7 +1,7 @@
 import { PaginationState } from '@tanstack/react-table';
 import React from 'react';
-import { PaginationArrowButtons } from './PaginationArrowButtons';
-import { PaginationManageDropdown } from './PaginationManageDropdown';
+import { PaginationArrowButtons } from '@/components/ui/pagination/PaginationArrowButtons';
+import { PaginationManageDropdown } from '@/components/ui/pagination/PaginationManageDropdown';
 
 interface Props {
   pageSize: number;

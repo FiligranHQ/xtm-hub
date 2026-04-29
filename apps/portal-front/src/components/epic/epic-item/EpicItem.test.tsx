@@ -5,7 +5,7 @@ import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { screen, within } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { EpicItem } from './EpicItem';
+import { EpicItem } from '@/components/epic/epic-item/EpicItem';
 
 const useEpicListContextMock = vi.fn();
 

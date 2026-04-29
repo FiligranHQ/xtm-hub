@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildTypeSubtypeFilterExpression,
   getIntegrationSubTypeMetadata,
-} from './Integration.utils';
+} from '@/components/service/integrations/Integration.utils';
 
 describe('integration.utils', () => {
   describe('getIntegrationSubTypeMetadata', () => {

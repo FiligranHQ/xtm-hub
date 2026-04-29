@@ -8,12 +8,12 @@ import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registere
 import { notFound } from 'next/navigation';
 import { use } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
-import { RegistrationDetails } from '../../../../../../../src/components/service/registration/RegistrationDetails';
-import { ReachSalesButton } from '../../../../../../../src/components/service/trial-instances/reach-sales/ReachSalesButton';
-import { SlackSupportButton } from '../../../../../../../src/components/service/trial-instances/SlackSupport';
-import { TrialsHeader } from '../../../../../../../src/components/service/trial-instances/TrialsHeader';
-import { TrialsLearnMore } from '../../../../../../../src/components/service/trial-instances/TrialsLearnMore';
-import { BreadcrumbNav } from '../../../../../../../src/components/ui/BreadcrumbNav';
+import { RegistrationDetails } from '@/components/service/registration/RegistrationDetails';
+import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/ReachSalesButton';
+import { SlackSupportButton } from '@/components/service/trial-instances/SlackSupport';
+import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader';
+import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { ServiceOpenAEVRegistrationPageProps } from './page';
 
 const ClientSection = ({ params }: ServiceOpenAEVRegistrationPageProps) => {

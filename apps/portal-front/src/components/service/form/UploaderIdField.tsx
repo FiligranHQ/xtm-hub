@@ -3,8 +3,8 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-import { PortalContext } from '../../me/AppPortalContext';
-import SelectUsersFormField from '../../ui/SelectUsers';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import SelectUsersFormField from '@/components/ui/SelectUsers';
 
 interface Props {
   field: ControllerRenderProps<FieldValues, string>;

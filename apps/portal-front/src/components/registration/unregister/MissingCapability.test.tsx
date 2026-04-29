@@ -4,8 +4,8 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrationContext } from '../Context';
-import { UnregisterMissingCapability } from './MissingCapability';
+import { RegistrationContext } from '@/components/registration/Context';
+import { UnregisterMissingCapability } from '@/components/registration/unregister/MissingCapability';
 
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next-intl')>()),

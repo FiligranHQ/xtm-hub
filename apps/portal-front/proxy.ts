@@ -1,5 +1,5 @@
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
-import { manageRequest } from './src/utils/middleware/graphql-request.util';
+import { manageRequest } from '@/utils/middleware/graphql-request.util';
 
 export async function proxy(request: NextRequest, _: NextFetchEvent) {
   const proxyResponse = await manageRequest(request);

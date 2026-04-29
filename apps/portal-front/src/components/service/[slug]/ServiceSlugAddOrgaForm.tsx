@@ -1,7 +1,7 @@
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
-import { getOrganizations } from '../../organization/Organization.service';
-import { useDialogContext } from '../../ui/SheetWithPreventingDialog';
+import { getOrganizations } from '@/components/organization/Organization.service';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 
 import {
   Button,

@@ -1,7 +1,7 @@
 import { Combobox } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
-import { getOrganizations } from '../../organization/Organization.service';
+import { getOrganizations } from '@/components/organization/Organization.service';
 
 export interface UserOrganizationFormProps {
   id: string;

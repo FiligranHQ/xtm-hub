@@ -7,7 +7,7 @@ import {
 } from '@filigran/icon';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { describe, expect, it } from 'vitest';
-import { FiligranProductMapping } from './FiligranProductMapping';
+import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 
 describe('FiligranProductMapping', () => {
   it('contains all Filigran products from enum', () => {

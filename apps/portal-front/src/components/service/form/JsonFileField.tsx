@@ -2,7 +2,7 @@ import { FormControl, FormItem, FormLabel, FormMessage } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-import FileInputWithPrevent from '../../ui/FileInputWithPrevent';
+import FileInputWithPrevent from '@/components/ui/FileInputWithPrevent';
 
 interface Props {
   field: ControllerRenderProps<FieldValues, string>;

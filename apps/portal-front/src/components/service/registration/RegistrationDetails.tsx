@@ -14,12 +14,12 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useContext, useState } from 'react';
 import { useFragment } from 'react-relay';
-import GuardCapacityComponent from '../../AdminGuard';
-import { PortalContext } from '../../me/AppPortalContext';
-import { PlatformUpdateSheet } from '../components/PlatformUpdateSheet';
-import { TrialsManageUsersDialog } from '../trial-instances/manage-users/TrialsManageUsersDialog';
-import { TrialCancelSheet } from '../trial-instances/TrialCancelSheet';
-import { UnregisterButton } from './UnregisterButton';
+import GuardCapacityComponent from '@/components/AdminGuard';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
+import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
+import { TrialCancelSheet } from '@/components/service/trial-instances/TrialCancelSheet';
+import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
 
 interface Props {
   registeredPlatform: registeredPlatformByServiceInstanceId_fragment$key;

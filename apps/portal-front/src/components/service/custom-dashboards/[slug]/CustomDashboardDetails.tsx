@@ -9,10 +9,10 @@ import { documentItem_fragment$key } from '@generated/documentItem_fragment.grap
 import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
-import { AppServiceContext } from '../../components/ServiceContext';
-import { ServiceManageSheet } from '../../components/ServiceManageSheet';
-import ShareableResourceSlug from '../../document/ShareableResourceSlug';
-import DeleteIntegrationSlug from '../../integrations/[slug]/DeleteIntegrationSlug';
+import { AppServiceContext } from '@/components/service/components/ServiceContext';
+import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
+import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
 
 // Component interface
 interface DashboardSlugProps {

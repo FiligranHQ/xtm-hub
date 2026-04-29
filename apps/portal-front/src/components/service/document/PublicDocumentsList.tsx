@@ -21,12 +21,12 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import useScrollPosition from '../../../hooks/use-scroll-position';
-import { useServiceListLocalStorage } from '../../../hooks/use-service-list-local-storage';
-import { PaginationControls } from '../../ui/pagination/PaginationControls';
-import { PublicShareableResourceList } from '../../ui/shareable-resource/PublicShareableResourceList';
-import { ServiceListHeader } from '../components/header/ServiceListHeader';
-import { AppServiceListLocalStorageKeyContext } from '../components/ServiceListLocalStorageKeyContext';
+import useScrollPosition from '@/hooks/use-scroll-position';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
+import { PublicShareableResourceList } from '@/components/ui/shareable-resource/PublicShareableResourceList';
+import { ServiceListHeader } from '@/components/service/components/header/ServiceListHeader';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;

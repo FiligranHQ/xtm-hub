@@ -5,7 +5,7 @@ import {
 } from '@/components/service/trial-instances/display-trial-header/display-trial.utils';
 import * as Date from '@/utils/date';
 import { vi } from 'vitest';
-import { RegisteredPlatformWithDaysLeft } from './DisplayTrialList';
+import { RegisteredPlatformWithDaysLeft } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 
 jest.mock('@/utils/date', () => ({
   daysUntil: jest.fn(),

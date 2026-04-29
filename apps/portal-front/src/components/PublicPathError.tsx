@@ -3,7 +3,7 @@ import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { isProduction } from '@/lib/utils';
 import { useEffect } from 'react';
 import { useRelayEnvironment } from 'react-relay';
-import { ErrorPage } from './ui/ErrorPage';
+import { ErrorPage } from '@/components/ui/ErrorPage';
 
 export default function PublicPathError({
   error,

@@ -9,7 +9,7 @@ import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrationDetails } from './RegistrationDetails';
+import { RegistrationDetails } from '@/components/service/registration/RegistrationDetails';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 

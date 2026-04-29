@@ -2,8 +2,8 @@
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
-import { SheetWithPreventingDialog } from '../../../ui/SheetWithPreventingDialog';
-import { TrialsManageUsersForm } from './TrialsManageUsersForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { TrialsManageUsersForm } from '@/components/service/trial-instances/manage-users/TrialsManageUsersForm';
 
 interface Props {
   serviceInstanceId: string;

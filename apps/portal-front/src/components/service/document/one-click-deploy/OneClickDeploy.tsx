@@ -12,12 +12,12 @@ import { OneClickDeployMutation as OneClickDeployMutationType } from '@generated
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
-import { useBuildCompatibilityTranslationKey } from '../../../../hooks/use-build-compatibility-translation-key';
-import { useRegisteredPlatforms } from '../../../../hooks/use-registered-platforms';
-import ChoosePlatformForm from './ChoosePlatformForm';
-import NoPlatformDisplay from './NoPlatformDisplay';
-import OnePlatformDisplay from './OnePlatformDisplay';
-import { useOneClickDeployTab } from './UseOneClickDeployTab';
+import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
+import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
+import ChoosePlatformForm from '@/components/service/document/one-click-deploy/ChoosePlatformForm';
+import NoPlatformDisplay from '@/components/service/document/one-click-deploy/NoPlatformDisplay';
+import OnePlatformDisplay from '@/components/service/document/one-click-deploy/OnePlatformDisplay';
+import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
 
 interface OneClickDeployProps {
   documentData: documentItem_fragment$data;

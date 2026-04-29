@@ -17,7 +17,7 @@ import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 import {
   getIntegrationSubTypeMetadata,
   SubTypesPerIntegrationType,
-} from '../integrations/Integration.utils';
+} from '@/components/service/integrations/Integration.utils';
 
 interface Props {
   field: ControllerRenderProps<FieldValues, string>;

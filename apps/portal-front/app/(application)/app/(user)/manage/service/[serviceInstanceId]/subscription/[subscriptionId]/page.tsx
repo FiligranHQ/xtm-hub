@@ -3,7 +3,7 @@ import ServiceByIdQuery, {
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { FunctionComponent } from 'react';
-import { serverFetchGraphQL } from '../../../../../../../../../src/relay/server-portal-api-fetch';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';

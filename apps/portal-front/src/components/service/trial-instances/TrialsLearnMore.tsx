@@ -9,7 +9,7 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
-import { TrialsStorageLimitation } from './TrialsStorageLimitation';
+import { TrialsStorageLimitation } from '@/components/service/trial-instances/TrialsStorageLimitation';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
   <h2 className="text-blue text-2xl mb-l">{children}</h2>

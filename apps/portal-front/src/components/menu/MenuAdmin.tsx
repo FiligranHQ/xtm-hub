@@ -20,7 +20,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FunctionComponent, useEffect, useMemo } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
-import GuardCapacityComponent from '../AdminGuard';
+import GuardCapacityComponent from '@/components/AdminGuard';
 
 export interface MenuAdminProps {
   open: boolean;

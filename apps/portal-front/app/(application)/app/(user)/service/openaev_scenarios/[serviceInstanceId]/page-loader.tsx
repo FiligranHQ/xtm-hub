@@ -7,12 +7,12 @@ import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
-import OpenaevScenariosList from '../../../../../../../src/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenariosList';
-import { useLogicalFiltersFromStorage } from '../../../../../../../src/hooks/use-logical-filters-from-storage';
+import OpenaevScenariosList from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenariosList';
+import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
-} from '../../../../../../../src/hooks/use-service-list-local-storage';
+} from '@/hooks/use-service-list-local-storage';
 
 interface PageLoaderProps {
   serviceInstance: serviceInstance_fragment$data;

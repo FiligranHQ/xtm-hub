@@ -5,8 +5,8 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { screen } from '@testing-library/react';
 import { ComponentPropsWithoutRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { SettingsContext } from '../../settings/EnvPortalContext';
-import ShareableResourceSlug from './ShareableResourceSlug';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////// Mock hooks /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

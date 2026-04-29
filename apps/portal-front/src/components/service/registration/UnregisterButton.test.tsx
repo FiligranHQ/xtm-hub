@@ -5,7 +5,7 @@ import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefini
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { createMockEnvironment } from 'relay-test-utils';
 import { vi } from 'vitest';
-import { UnregisterButton } from './UnregisterButton';
+import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({

@@ -2,7 +2,7 @@ import { OrderingMode } from '@/components/ui/handle-sorting.utils';
 import { CompetitorOrderingEnum } from '@generated/models/CompetitorOrdering.enum';
 import { useEffect } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
-import { isValueInEnum } from '../../utils/is-value-in-enum';
+import { isValueInEnum } from '@/utils/is-value-in-enum';
 
 export const useCompetitorListLocalstorage = () => {
   const [orderMode, setOrderMode, removeOrderMode] =

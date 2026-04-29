@@ -1,6 +1,6 @@
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
-import CompetitorForm from './CompetitorForm';
+import CompetitorForm from '@/components/competitor/CompetitorForm';
 
 describe('CompetitorForm', () => {
   describe('domain field validation', () => {

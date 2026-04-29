@@ -2,13 +2,13 @@ import { useToast } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { FunctionComponent, useContext, useEffect } from 'react';
-import useDecodedQuery from '../../hooks/use-decoded-query';
-import { TestEnvBanner } from '../admin/TestEnvBanner';
-import { SettingsContext } from '../settings/EnvPortalContext';
-import LoginForm from './LoginForm';
-import LoginMessage from './LoginMessage';
-import LoginTitleForm from './LoginTitle';
-import { PlatformProviderButton } from './PlatformProviderButton';
+import useDecodedQuery from '@/hooks/use-decoded-query';
+import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import LoginForm from '@/components/login/LoginForm';
+import LoginMessage from '@/components/login/LoginMessage';
+import LoginTitleForm from '@/components/login/LoginTitle';
+import { PlatformProviderButton } from '@/components/login/PlatformProviderButton';
 
 export const LoginLayout: FunctionComponent = ({}) => {
   const { settings } = useContext(SettingsContext);

@@ -12,10 +12,10 @@ import {
 import { redirect, useParams } from 'next/navigation';
 import React from 'react';
 import { useQueryLoader } from 'react-relay';
-import Loader from '../../../../src/components/Loader';
-import { RegistrationContextProvider } from '../../../../src/components/registration/Context';
-import useDecodedQuery from '../../../../src/hooks/use-decoded-query';
-import useMountingLoader from '../../../../src/hooks/use-mounting-loader';
+import Loader from '@/components/Loader';
+import { RegistrationContextProvider } from '@/components/registration/Context';
+import useDecodedQuery from '@/hooks/use-decoded-query';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 export const PageLoader: React.FC = () => {
   const { identifier } = useParams<{ identifier: PlatformIdentifierEnum }>();

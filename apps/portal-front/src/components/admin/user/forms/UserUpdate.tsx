@@ -1,10 +1,10 @@
+import { AdminUserUpdateForm } from '@/components/admin/user/forms/admin/AdminUserUpdateForm';
+import { UserUpdateForm } from '@/components/admin/user/forms/UserUpdateForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import useAdminPath from '@/hooks/use-admin-path';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, ReactNode, useState } from 'react';
-import useAdminPath from '../../../../hooks/use-admin-path';
-import { SheetWithPreventingDialog } from '../../../ui/SheetWithPreventingDialog';
-import { AdminUserUpdateForm } from './admin/AdminUserUpdateForm';
-import { UserUpdateForm } from './UserUpdateForm';
 
 interface EditUserProps {
   user: UserList_fragment$data;

@@ -5,7 +5,7 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { NextRequest, NextResponse } from 'next/server';
-import { serverFetchGraphQL } from '../../../src/relay/server-portal-api-fetch';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { loadBaseUrlFront, loadMeUser } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
 

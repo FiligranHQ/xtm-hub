@@ -32,11 +32,11 @@ import {
   useMutation,
   usePreloadedQuery,
 } from 'react-relay';
-import Loader from '../../Loader';
-import { RegistrationContext } from '../Context';
-import { RegistrationLayout } from '../Layout';
-import { RegisterStateMissingCapability } from './MissingCapability';
-import { RegisterOrganizationForm } from './OrganizationForm';
+import Loader from '@/components/Loader';
+import { RegistrationContext } from '@/components/registration/Context';
+import { RegistrationLayout } from '@/components/registration/Layout';
+import { RegisterStateMissingCapability } from '@/components/registration/register/MissingCapability';
+import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 
 interface Props {
   platform: PlatformInput;

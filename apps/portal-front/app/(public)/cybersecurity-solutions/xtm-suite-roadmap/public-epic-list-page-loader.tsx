@@ -5,7 +5,7 @@ import { epicsQuery } from '@generated/epicsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
-import PublicEpicList from '../../../../src/components/epic/PublicEpicList';
+import PublicEpicList from '@/components/epic/PublicEpicList';
 interface PreloaderProps {
   serviceInstance: seoServiceInstanceFragment$data;
 }

@@ -16,11 +16,11 @@ import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-import { PortalContext } from '../../../me/AppPortalContext';
-import FileInputWithPrevent from '../../../ui/FileInputWithPrevent';
-import { useDialogContext } from '../../../ui/SheetWithPreventingDialog';
-import { ServiceFormSheetFooter } from '../../form/SheetFooter';
-import { useServiceFormFields } from '../../form/UseServiceFormFields';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import FileInputWithPrevent from '@/components/ui/FileInputWithPrevent';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { ServiceFormSheetFooter } from '@/components/service/form/SheetFooter';
+import { useServiceFormFields } from '@/components/service/form/UseServiceFormFields';
 
 const openAEVScenarioFormSchema = z.object({
   name: z.string().min(1, 'Required'),

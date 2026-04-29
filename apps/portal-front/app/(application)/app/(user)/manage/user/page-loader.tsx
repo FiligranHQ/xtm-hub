@@ -3,9 +3,9 @@
 import { APP_PATH } from '@/utils/path/constant';
 import * as React from 'react';
 import { useContext } from 'react';
-import UserListPage from '../../../../../../src/components/admin/user/UserListPage';
-import { PortalContext } from '../../../../../../src/components/me/AppPortalContext';
-import { BreadcrumbNav } from '../../../../../../src/components/ui/BreadcrumbNav';
+import UserListPage from '@/components/admin/user/UserListPage';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {

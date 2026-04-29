@@ -69,10 +69,10 @@ import { useDebounceCallback } from 'usehooks-ts';
 import {
   useAdminByPass,
   useUserHasPortalCapability,
-} from '../../../hooks/use-portal-capability';
-import { TrialsManageUsersDialog } from '../../service/trial-instances/manage-users/TrialsManageUsersDialog';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
-import { SearchInput } from '../../ui/SearchInput';
+} from '@/hooks/use-portal-capability';
+import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { SearchInput } from '@/components/ui/SearchInput';
 
 interface Props {
   type: TrialsTabType;

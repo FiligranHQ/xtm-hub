@@ -4,11 +4,11 @@ import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enu
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import React from 'react';
-import { RegistrationLearnMore } from '../../../../src/components/service/registration/RegistrationLearnMore';
-import { TrialsHeader } from '../../../../src/components/service/trial-instances/TrialsHeader';
-import { TrialsLearnMore } from '../../../../src/components/service/trial-instances/TrialsLearnMore';
-import { BreadcrumbNav } from '../../../../src/components/ui/BreadcrumbNav';
-import { RelayProvider } from '../../../../src/relay/relay-provider';
+import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
+import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader';
+import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { RelayProvider } from '@/relay/relay-provider';
 
 const Page: React.FC = async () => {
   const breadcrumbs = [

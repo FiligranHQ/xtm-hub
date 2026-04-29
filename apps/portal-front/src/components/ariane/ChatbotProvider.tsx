@@ -2,7 +2,7 @@
 
 import type { ChatMode } from '@filigran/chatbot';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { ChatbotContext } from './chatbot-context';
+import { ChatbotContext } from '@/components/ariane/chatbot-context';
 
 const SIDEBAR_WIDTH_KEY = 'arianeChatSidebarWidth';
 const CHAT_MODE_KEY = 'arianeChatMode';

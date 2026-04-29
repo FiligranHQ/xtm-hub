@@ -3,12 +3,12 @@ import { useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext } from 'react';
 import { useMutation } from 'react-relay';
-import { IconActionContext } from '../../ui/IconActions';
+import { IconActionContext } from '@/components/ui/IconActions';
 
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import useDecodedParams from '../../../hooks/use-decoded-params';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
+import useDecodedParams from '@/hooks/use-decoded-params';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 interface DeleteDocumentProps {
   documentData: documentItem_fragment$data;
   connectionId: string;

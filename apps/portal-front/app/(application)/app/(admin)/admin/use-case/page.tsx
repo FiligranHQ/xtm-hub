@@ -1,9 +1,9 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
-import UseCases from '../../../../../../src/components/admin/use-case/UseCases';
-import GuardCapacityComponent from '../../../../../../src/components/AdminGuard';
-import { BreadcrumbNav } from '../../../../../../src/components/ui/BreadcrumbNav';
+import UseCases from '@/components/admin/use-case/UseCases';
+import GuardCapacityComponent from '@/components/AdminGuard';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 
 export const dynamic = 'force-dynamic';
 

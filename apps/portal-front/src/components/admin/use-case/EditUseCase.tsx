@@ -7,8 +7,8 @@ import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
-import { SheetWithPreventingDialog } from '../../ui/SheetWithPreventingDialog';
-import UseCaseForm from './UseCaseForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
 
 const EditUseCase = ({
   open,

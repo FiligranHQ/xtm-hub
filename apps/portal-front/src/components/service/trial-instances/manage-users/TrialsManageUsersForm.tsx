@@ -22,8 +22,8 @@ import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { readInlineData, useLazyLoadQuery, useMutation } from 'react-relay';
 import { z } from 'zod';
-import { useUsersList } from '../../../../hooks/use-users-list';
-import { UserFragment } from '../../../admin/user/UserList';
+import { useUsersList } from '@/hooks/use-users-list';
+import { UserFragment } from '@/components/admin/user/UserList';
 
 const formSchema = z.object({
   groups: z.array(

@@ -5,7 +5,7 @@ import { organizationItem_fragment$data } from '@generated/organizationItem_frag
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
-import { AlertDialogComponent } from '../ui/AlertDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 interface DeleteOrganizationProps {
   organization: organizationItem_fragment$data;

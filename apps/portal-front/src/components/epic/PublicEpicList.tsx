@@ -12,9 +12,9 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { useEpicFilter } from '../../hooks/use-epic-filter';
-import { EpicListContext } from '../../hooks/use-epic-list-context';
-import { EpicList } from './EpicList';
+import { useEpicFilter } from '@/hooks/use-epic-filter';
+import { EpicListContext } from '@/hooks/use-epic-list-context';
+import { EpicList } from '@/components/epic/EpicList';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;

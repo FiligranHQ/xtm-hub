@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { BreadcrumbNav, BreadcrumbNavLink } from '../../../ui/BreadcrumbNav';
+import { BreadcrumbNav, BreadcrumbNavLink } from '@/components/ui/BreadcrumbNav';
 
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
@@ -15,13 +15,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import BadgeOverflowCounter, {
   BadgeOverflow,
-} from '../../../ui/BadgeOverflowCounter';
-import { ShareLinkButton } from '../../../ui/share-link/ShareLinkButton';
-import { ServiceManageSheet } from '../../components/ServiceManageSheet';
-import OneClickDeploy from '../one-click-deploy/OneClickDeploy';
-import ShareableResourceDescription from '../ShareableResourceDescription';
-import ShareableResourceCarousel from '../ui/ShareableResourceCarouselView';
-import { ShareableResourceConnectorPrivateDetails } from './ShareableResourceConnectorPrivateDetails';
+} from '@/components/ui/BadgeOverflowCounter';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
+import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
+import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';
+import ShareableResourceDescription from '@/components/service/document/ShareableResourceDescription';
+import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
+import { ShareableResourceConnectorPrivateDetails } from '@/components/service/document/connector/ShareableResourceConnectorPrivateDetails';
 
 // Component interface
 interface Props {

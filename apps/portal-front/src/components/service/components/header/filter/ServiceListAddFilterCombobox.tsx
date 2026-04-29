@@ -1,8 +1,8 @@
 import { Combobox } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
-import { useServiceListFilters } from '../../../../../hooks/use-service-list-filters';
-import { ServiceListFilterKey } from '../ServiceListHeader';
+import { useServiceListFilters } from '@/hooks/use-service-list-filters';
+import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 
 interface Props {
   filterKeys: ServiceListFilterKey[];

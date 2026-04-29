@@ -1,7 +1,7 @@
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { useServiceFormFields } from './UseServiceFormFields';
+import { useServiceFormFields } from './use-service-form-fields';
 
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,

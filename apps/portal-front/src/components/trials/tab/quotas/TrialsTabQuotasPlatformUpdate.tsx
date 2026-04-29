@@ -1,8 +1,8 @@
 import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
 import { useTranslations } from 'next-intl';
 import React, { ReactNode, useState } from 'react';
-import { SheetWithPreventingDialog } from '../../../ui/SheetWithPreventingDialog';
-import { TrialsTabQuotasPlatformUpdateForm } from './TrialsTabQuotasPlatformUpdateForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { TrialsTabQuotasPlatformUpdateForm } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdateForm';
 
 interface Props {
   quota: trialsDeploymentAvailabilityFragment$data;

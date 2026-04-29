@@ -3,8 +3,8 @@ import ServiceByIdQuery, {
   serviceByIdQuery,
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { BreadcrumbNav } from '../../../../../../../src/components/ui/BreadcrumbNav';
-import { serverFetchGraphQL } from '../../../../../../../src/relay/server-portal-api-fetch';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import PageLoader from './page-loader';
 
 interface ServiceCustomDashboardsPageProps {

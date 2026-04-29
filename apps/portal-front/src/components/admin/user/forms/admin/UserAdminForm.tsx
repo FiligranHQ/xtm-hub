@@ -17,14 +17,14 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { SettingsContext } from '../../../../settings/EnvPortalContext';
-import { CapabilityMultiSelect } from '../../../../ui/capability/MultiSelect';
-import { useDialogContext } from '../../../../ui/SheetWithPreventingDialog';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import {
   AutocompleteOrganization,
   UserOrganizationFormProps,
-} from '../../AutocompleteOrganization';
-import { CapabilityDescription } from '../../CapabilityDescription';
+} from '@/components/admin/user/AutocompleteOrganization';
+import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 
 interface UserAdminFormProps {
   handleSubmit: (values: z.infer<typeof userAdminFormSchema>) => void;

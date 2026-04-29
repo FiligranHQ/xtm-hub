@@ -2,7 +2,7 @@
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
-import { EpicFilterType } from '../components/epic/EpicFilter';
+import { EpicFilterType } from '@/components/epic/EpicFilter';
 
 const PRODUCT_PARAM = 'product';
 

@@ -1,7 +1,7 @@
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
-import { RegistrationContext } from './Context';
+import { RegistrationContext } from '@/components/registration/Context';
 
 interface Props {
   children: React.ReactNode;

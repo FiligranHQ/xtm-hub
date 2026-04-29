@@ -15,14 +15,14 @@ import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import useServiceCapability from '../../../hooks/use-service-capability';
-import revalidatePathActions from '../../../utils/actions/revalidate-path.actions';
-import { IconActions, IconActionsItem } from '../../ui/IconActions';
-import ShareableResourceCard from '../../ui/shareable-resource/ShareableResourceCard';
-import { ServiceCapabilityName } from '../[slug]/capabilities/Capability.helper';
-import { useServiceContext } from './ServiceContext';
-import { CardTypeEnum, ServiceDelete } from './ServiceDelete';
-import { ServiceManageSheet } from './ServiceManageSheet';
+import useServiceCapability from '@/hooks/use-service-capability';
+import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
+import { useServiceContext } from '@/components/service/components/ServiceContext';
+import { CardTypeEnum, ServiceDelete } from '@/components/service/components/ServiceDelete';
+import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
 
 interface ServiceCardProps {
   document: documentItem_fragment$data;

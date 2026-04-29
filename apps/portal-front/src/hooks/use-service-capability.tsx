@@ -1,7 +1,7 @@
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useMemo } from 'react';
-import { ServiceCapabilityName } from '../components/service/[slug]/capabilities/Capability.helper';
-import { useAdminByPass } from './use-portal-capability';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 
 const useServiceCapability = (
   capability: ServiceCapabilityName,

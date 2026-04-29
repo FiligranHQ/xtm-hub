@@ -5,8 +5,8 @@ import { organizationListUserOrganizationsQuery$data } from '@generated/organiza
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrationContext } from '../Context';
-import { RegisterOrganizationForm } from './OrganizationForm';
+import { RegistrationContext } from '@/components/registration/Context';
+import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next-intl')>()),

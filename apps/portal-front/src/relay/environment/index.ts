@@ -1,2 +1,2 @@
-export { createClientSideRelayEnvironment } from './client';
-export { createServerSideRelayEnvironment } from './server';
+export { createClientSideRelayEnvironment } from '@/relay/environment/client';
+export { createServerSideRelayEnvironment } from '@/relay/environment/server';

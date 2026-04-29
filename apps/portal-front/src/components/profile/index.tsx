@@ -9,14 +9,14 @@ import { toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
-import { fileListToUploadableMap } from '../../relay/environment/fetch-form-data';
-import { PortalContext } from '../me/AppPortalContext';
-import { AlertDialogComponent } from '../ui/AlertDialog';
-import { ProfileFormEdit, ProfileFormEditSchema } from './form/Edit';
-import { ProfileFormPicture } from './form/Picture';
-import { ProfileFormPreferences } from './form/Preferences';
-import { RequestTransferPersonalSpace } from './form/RequestTransferPersonalSpace';
-import { ProfileFormResetPassword } from './form/ResetPassword';
+import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { ProfileFormEdit, ProfileFormEditSchema } from '@/components/profile/form/Edit';
+import { ProfileFormPicture } from '@/components/profile/form/Picture';
+import { ProfileFormPreferences } from '@/components/profile/form/Preferences';
+import { RequestTransferPersonalSpace } from '@/components/profile/form/RequestTransferPersonalSpace';
+import { ProfileFormResetPassword } from '@/components/profile/form/ResetPassword';
 
 export const Profile: React.FC = () => {
   const t = useTranslations();

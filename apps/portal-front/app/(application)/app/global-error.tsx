@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@filigran/ui/servers';
-import AppError from '../../../src/components/AppError';
+import AppError from '@/components/AppError';
 
 export default function GlobalError({
   error,

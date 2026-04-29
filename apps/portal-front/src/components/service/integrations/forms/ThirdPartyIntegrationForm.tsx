@@ -11,10 +11,10 @@ import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-import { PortalContext } from '../../../me/AppPortalContext';
-import { useDialogContext } from '../../../ui/SheetWithPreventingDialog';
-import { ServiceFormSheetFooter } from '../../form/SheetFooter';
-import { useServiceFormFields } from '../../form/UseServiceFormFields';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { ServiceFormSheetFooter } from '@/components/service/form/SheetFooter';
+import { useServiceFormFields } from '@/components/service/form/UseServiceFormFields';
 
 const thirdPartyIntegrationFormSchema = z.object({
   name: z.string().min(1, 'Required'),

@@ -13,7 +13,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { IconActionContext } from '../../../ui/IconActions';
+import { IconActionContext } from '@/components/ui/IconActions';
 
 export function PublicTryFiligranProductsBanner() {
   const t = useTranslations();

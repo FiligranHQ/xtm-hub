@@ -2,8 +2,8 @@
 import { Dialog, DialogContent } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { useState } from 'react';
-import { EpicItemCard } from './EpicItemCard';
-import { EpicItemDetailed } from './EpicItemDetailed';
+import { EpicItemCard } from '@/components/epic/epic-item/EpicItemCard';
+import { EpicItemDetailed } from '@/components/epic/epic-item/EpicItemDetailed';
 
 interface EpicItemProps {
   epic: epic_fragment$data;

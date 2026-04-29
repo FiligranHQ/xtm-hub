@@ -4,9 +4,9 @@ import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
-import { BreadcrumbNav } from '../../../../src/components/ui/BreadcrumbNav';
-import { RelayProvider } from '../../../../src/relay/relay-provider';
-import { serverFetchGraphQL } from '../../../../src/relay/server-portal-api-fetch';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { RelayProvider } from '@/relay/relay-provider';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PublicEpicListPageLoader } from './public-epic-list-page-loader';
 
 const Page = async () => {

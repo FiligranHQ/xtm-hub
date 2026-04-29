@@ -3,7 +3,7 @@ import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { DeleteEpic } from './DeleteEpic';
+import { DeleteEpic } from '@/components/epic/epic-item/DeleteEpic';
 const commitDeleteEpicMutationMock = vi.fn();
 vi.mock('react-relay', async () => {
   const actual =

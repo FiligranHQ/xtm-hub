@@ -17,10 +17,10 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import Image from 'next/image'; // Component
 import Link from 'next/link';
 import { ReactNode, useContext, useState } from 'react';
-import GuardCapacityComponent from '../../../AdminGuard';
-import { SettingsContext } from '../../../settings/EnvPortalContext';
-import { IconActionContext } from '../../../ui/IconActions';
-import { StartTrialBannerButton } from './StartTrialBannerButton';
+import GuardCapacityComponent from '@/components/AdminGuard';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { IconActionContext } from '@/components/ui/IconActions';
+import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 
 export const PRODUCTS_AVAILABLE_ON_TRIAL = 2;
 type BannerConfig = {

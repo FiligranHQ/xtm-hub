@@ -1,5 +1,5 @@
 import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
-import { isValueInEnum } from './is-value-in-enum';
+import { isValueInEnum } from '@/utils/is-value-in-enum';
 
 export interface FreeTrialSearchParams {
   openTrialForm: boolean;

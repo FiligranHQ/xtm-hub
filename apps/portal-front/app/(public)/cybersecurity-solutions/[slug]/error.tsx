@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import PublicPathError from '../../../../src/components/PublicPathError';
-import { RelayProvider } from '../../../../src/relay/relay-provider';
+import PublicPathError from '@/components/PublicPathError';
+import { RelayProvider } from '@/relay/relay-provider';
 export default function Error({
   error,
 }: {

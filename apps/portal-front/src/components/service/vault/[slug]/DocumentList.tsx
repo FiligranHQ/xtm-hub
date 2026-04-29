@@ -46,20 +46,20 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import useServiceCapability from '../../../../hooks/use-service-capability';
-import GuardCapacityComponent from '../../../AdminGuard';
-import { BreadcrumbNav } from '../../../ui/BreadcrumbNav';
-import { IconActions, IconActionsItem } from '../../../ui/IconActions';
-import { SearchInput } from '../../../ui/SearchInput';
+import useServiceCapability from '@/hooks/use-service-capability';
+import GuardCapacityComponent from '@/components/AdminGuard';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { SearchInput } from '@/components/ui/SearchInput';
 import {
   GenericCapabilityName,
   ServiceCapabilityName,
-} from '../../[slug]/capabilities/Capability.helper';
-import DeleteDocument from '../DeleteDocument';
-import DownloadDocument from '../DownloadDocument';
-import EditDocument from '../EditDocument';
-import { VaultForm } from '../VaultForm';
-import VisualizeDocument from '../VisualizeDocument';
+} from '@/components/service/[slug]/capabilities/Capability.helper';
+import DeleteDocument from '@/components/service/vault/DeleteDocument';
+import DownloadDocument from '@/components/service/vault/DownloadDocument';
+import EditDocument from '@/components/service/vault/EditDocument';
+import { VaultForm } from '@/components/service/vault/VaultForm';
+import VisualizeDocument from '@/components/service/vault/VisualizeDocument';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;

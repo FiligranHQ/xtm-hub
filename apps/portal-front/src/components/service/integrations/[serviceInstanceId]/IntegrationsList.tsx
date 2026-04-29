@@ -2,18 +2,18 @@ import { useActiveAndDraftSplit } from '@/components/service/components/service-
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
-} from '../../../../hooks/use-service-list-local-storage';
-import { PaginationControls } from '../../../ui/pagination/PaginationControls';
-import { IntegrationDeployableFilter } from '../../../ui/shareable-resource/integration/IntegrationDeployableFilter';
-import { IntegrationFilters } from '../../../ui/shareable-resource/integration/IntegrationFilters';
-import { ProductVersionFilter } from '../../../ui/shareable-resource/ProductVersionFilter';
+} from '@/hooks/use-service-list-local-storage';
+import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
+import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
+import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/IntegrationFilters';
+import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
 import {
   ServiceListFilterKey,
   ServiceListFilterMap,
-} from '../../components/header/ServiceListHeader';
-import { AppServiceContext } from '../../components/ServiceContext';
-import ServiceList from '../../components/ServiceList';
-import { AppServiceListLocalStorageKeyContext } from '../../components/ServiceListLocalStorageKeyContext';
+} from '@/components/service/components/header/ServiceListHeader';
+import { AppServiceContext } from '@/components/service/components/ServiceContext';
+import ServiceList from '@/components/service/components/ServiceList';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 
 import {
   documentItem,
@@ -40,7 +40,7 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { IntegrationVerifiedFilter } from '../../../ui/shareable-resource/integration/IntegrationVerifiedFilter';
+import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
 
 interface IntegrationsListProps {
   queryRef: PreloadedQuery<documentsQuery>;

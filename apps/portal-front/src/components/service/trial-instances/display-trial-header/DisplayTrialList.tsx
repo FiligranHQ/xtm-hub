@@ -14,7 +14,7 @@ import {
 import { registerRegisteredPlatformFragment$data } from '@generated/registerRegisteredPlatformFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
-import { DisplayTrialItem } from './DisplayTrialItem';
+import { DisplayTrialItem } from '@/components/service/trial-instances/display-trial-header/DisplayTrialItem';
 
 export type RegisteredPlatformWithDaysLeft =
   registerRegisteredPlatformFragment$data & {

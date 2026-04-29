@@ -22,11 +22,11 @@ import { Badge, Button } from '@filigran/ui/servers';
 import { UserList_fragment$key } from '@generated/UserList_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { UserFragment } from '../admin/user/UserList';
+import { UserFragment } from '@/components/admin/user/UserList';
 
 import { readInlineData } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { useUsersList } from '../../hooks/use-users-list';
+import { useUsersList } from '@/hooks/use-users-list';
 
 interface SelectUsersFormFieldProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   defaultValue?: string;

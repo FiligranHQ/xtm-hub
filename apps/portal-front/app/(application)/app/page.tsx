@@ -7,9 +7,9 @@ import {
   useQueryLoader,
   useRefetchableFragment,
 } from 'react-relay';
-import Loader from '../../../src/components/Loader';
-import ServiceList from '../../../src/components/service/ServiceList';
-import useMountingLoader from '../../../src/hooks/use-mounting-loader';
+import Loader from '@/components/Loader';
+import ServiceList from '@/components/service/ServiceList';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 import {
   ServiceListQuery,

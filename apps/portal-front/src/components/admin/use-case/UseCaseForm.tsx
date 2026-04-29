@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 export const useCaseFormSchema = z.object({
   name: z.string().min(2, {

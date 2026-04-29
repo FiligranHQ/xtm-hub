@@ -2,13 +2,13 @@ import { CheckIndeterminateIcon } from '@filigran/icon';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { useBuildCompatibilityTranslationKey } from '../../../../hooks/use-build-compatibility-translation-key';
-import { useRegisteredPlatforms } from '../../../../hooks/use-registered-platforms';
-import { ShareableResourceIncompatibleWarning } from '../ShareableResourceIncompatibleWarning';
+import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
+import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
+import { ShareableResourceIncompatibleWarning } from '@/components/service/document/ShareableResourceIncompatibleWarning';
 import {
   ShareableResourceConnectorDetails,
   ShareableResourceConnectorDetailsProps,
-} from './ShareableResourceConnectorDetails';
+} from '@/components/service/document/connector/ShareableResourceConnectorDetails';
 
 interface Props {
   connectorDetails: ShareableResourceConnectorDetailsProps['connectorDetails'];

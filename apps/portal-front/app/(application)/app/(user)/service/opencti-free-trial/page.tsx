@@ -1,7 +1,7 @@
 import { parseFreeTrialSearchParams } from '@/utils/free-trial-search-params';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import React from 'react';
-import FreeTrialPage from '../../../../../../src/components/service/trial-instances/page/FreeTrialPage';
+import FreeTrialPage from '@/components/service/trial-instances/page/FreeTrialPage';
 
 interface Props {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

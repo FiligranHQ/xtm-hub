@@ -13,7 +13,7 @@ import {
   userMeSubscription as userMeSubscriptionType,
 } from '@generated/userMeSubscription.graphql';
 import { useMutation, useSubscription } from 'react-relay';
-import { AlertDialogComponent } from '../ui/AlertDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 // Component
 const UserEventSubscription: React.FunctionComponent = () => {

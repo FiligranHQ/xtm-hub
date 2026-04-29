@@ -6,8 +6,8 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { FunctionComponent, ReactNode } from 'react';
-import { getIntegrationSubTypeMetadata } from '../../../service/integrations/Integration.utils';
-import { ShareLinkButton } from '../../share-link/ShareLinkButton';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 
 interface ShareableResourceCardFooterAuthorProps {
   document: documentItem_fragment$data | publicDocumentItemFragment$data;

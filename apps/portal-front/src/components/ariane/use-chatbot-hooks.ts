@@ -3,7 +3,7 @@ import {
   ChatbotContext,
   SIDEBAR_GAP,
   type ChatbotContextType,
-} from './chatbot-context';
+} from '@/components/ariane/chatbot-context';
 
 export const useChatbot = (): ChatbotContextType => {
   const context = useContext(ChatbotContext);

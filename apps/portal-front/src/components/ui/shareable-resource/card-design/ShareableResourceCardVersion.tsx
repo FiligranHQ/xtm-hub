@@ -9,8 +9,8 @@ import {
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
-import { useBuildCompatibilityTranslationKey } from '../../../../hooks/use-build-compatibility-translation-key';
-import { useRegisteredPlatforms } from '../../../../hooks/use-registered-platforms';
+import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
+import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 
 interface ShareableResourceCardVersionProps {
   requiredProductVersion?: string | null;

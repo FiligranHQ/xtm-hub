@@ -1,13 +1,16 @@
 import * as React from 'react';
 
 import '@filigran/ui/theme.css';
-import '../../styles/embed.css';
-import '../../styles/globals.css';
+import '@styles/embed.css';
+import '@styles/globals.css';
 
 import serverPortalApiFetch, {
   serverMutateGraphQL,
-} from '../../src/relay/server-portal-api-fetch';
+} from '@/relay/server-portal-api-fetch';
 
+import { ContentLayout } from '@/components/ContentLayout';
+import { ErrorPage } from '@/components/ui/ErrorPage';
+import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
 import { Card } from '@filigran/ui/servers';
 import errorFrontendLogMutationNode, {
@@ -18,13 +21,10 @@ import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
+import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { FunctionComponent } from 'react';
-import LogoXTMDark from '../../public/logo_xtm_hub_dark.svg';
-import { ContentLayout } from '../../src/components/ContentLayout';
-import { ErrorPage } from '../../src/components/ui/ErrorPage';
-import { RelayProvider } from '../../src/relay/relay-provider';
 import PageLoader from './page-loader';
 
 export const generateMetadata = async (): Promise<Metadata> => {

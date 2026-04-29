@@ -5,7 +5,7 @@ import { epicDeleteMutation } from '@generated/epicDeleteMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 interface DeleteEpicProps {
   epic: epic_fragment$data;

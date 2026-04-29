@@ -14,7 +14,7 @@ import ServiceInstancesListQueryGraphql, {
   serviceInstancesListQuery$data,
 } from '@generated/serviceInstancesListQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
-import serverPortalApiFetch from '../../../../src/relay/server-portal-api-fetch';
+import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 
 interface MeResponse {
   data: {

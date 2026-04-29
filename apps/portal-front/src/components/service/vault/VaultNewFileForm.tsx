@@ -1,7 +1,7 @@
 import { DocumentExistsQuery } from '@/components/service/document/document.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
-import useDecodedParams from '../../../hooks/use-decoded-params';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
+import useDecodedParams from '@/hooks/use-decoded-params';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 import {
   Button,
@@ -23,7 +23,7 @@ import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLazyLoadQuery } from 'react-relay';
 import { z } from 'zod';
-import { useDialogContext } from '../../ui/SheetWithPreventingDialog';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 
 export const newDocumentSchema = z.object({
   description: z.string().optional(),

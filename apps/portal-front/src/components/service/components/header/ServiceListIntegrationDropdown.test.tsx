@@ -3,7 +3,7 @@ import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { screen, waitFor } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { ServiceListIntegrationDropdown } from './ServiceListIntegrationDropdown';
+import { ServiceListIntegrationDropdown } from '@/components/service/components/header/ServiceListIntegrationDropdown';
 
 describe('Button with dropdown to add any kind of integration in the lib', () => {
   it('renders the trigger button', async () => {

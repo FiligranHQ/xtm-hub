@@ -12,7 +12,7 @@ import {
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useRef, useState } from 'react';
-import { PortalContext } from '../../me/AppPortalContext';
+import { PortalContext } from '@/components/me/AppPortalContext';
 
 interface ProfileFormPictureProps {
   onSubmit: (files: (File | null)[]) => void;

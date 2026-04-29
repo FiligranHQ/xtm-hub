@@ -22,7 +22,7 @@ import {
   competitorFragment,
   competitorListFragment,
   CompetitorListQuery,
-} from './competitor.graphql';
+} from '@/components/competitor/competitor.graphql';
 
 import { useCompetitorListLocalstorage } from '@/components/competitor/competitor-localstorage';
 import { formatTier } from '@/components/competitor/competitor.utils';
@@ -41,8 +41,8 @@ import {
 } from '@generated/competitor_fragment.graphql';
 import { competitor_list_fragment$key } from '@generated/competitor_list_fragment.graphql';
 import { CompetitorTierEnum } from '@generated/models/CompetitorTier.enum';
-import { AlertDialogComponent } from '../ui/AlertDialog';
-import ManageCompetitor from './ManageCompetitor';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import ManageCompetitor from '@/components/competitor/ManageCompetitor';
 
 const CompetitorList = () => {
   const t = useTranslations();

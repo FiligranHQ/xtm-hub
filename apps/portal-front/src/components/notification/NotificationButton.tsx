@@ -37,8 +37,8 @@ import {
   useRelayEnvironment,
   useSubscription,
 } from 'react-relay';
-import { UserFragment } from '../admin/user/UserList';
-import { PortalContext } from '../me/AppPortalContext';
+import { UserFragment } from '@/components/admin/user/UserList';
+import { PortalContext } from '@/components/me/AppPortalContext';
 
 export function notificationPendingUserQueryFilters(
   organization_id: string

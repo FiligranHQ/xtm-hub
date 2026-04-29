@@ -1,5 +1,5 @@
 import React from 'react';
-import { IntegrationTypeFilter } from './IntegrationTypeFilter';
+import { IntegrationTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationTypeFilter';
 
 export const IntegrationFilters: React.FC = () => {
   return (

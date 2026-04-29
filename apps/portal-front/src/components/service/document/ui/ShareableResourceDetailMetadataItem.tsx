@@ -3,8 +3,8 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { ReactNode, useMemo } from 'react';
-import { ShareableResourceDetailsLink } from '../ShareableResourceDetailsLink';
-import { ShareableResourceDetailItem } from './ShareableResourceDetailItem';
+import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
+import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
 
 type Variant = 'text' | 'link';
 

@@ -20,9 +20,9 @@ import {
   useLazyLoadQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { useExecuteAfterAnimation } from '../../../../hooks/use-execute-after-animation';
-import { useUserHasPortalCapability } from '../../../../hooks/use-portal-capability';
-import { TrialsTabQuotasPlatformUpdate } from './TrialsTabQuotasPlatformUpdate';
+import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
+import { TrialsTabQuotasPlatformUpdate } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdate';
 
 interface Props {
   platformIdentifier: PlatformIdentifier;

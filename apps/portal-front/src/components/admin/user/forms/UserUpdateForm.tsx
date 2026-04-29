@@ -19,13 +19,13 @@ import { FunctionComponent, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import useAdminPath from '../../../../hooks/use-admin-path';
-import { PortalContext } from '../../../me/AppPortalContext';
-import { CapabilityMultiSelect } from '../../../ui/capability/MultiSelect';
-import { useDialogContext } from '../../../ui/SheetWithPreventingDialog';
-import { CapabilityDescription } from '../CapabilityDescription';
-import { RemoveUserFromOrga } from '../RemoveUserFromOrga';
-import { getUserListContext } from '../UserListPage';
+import useAdminPath from '@/hooks/use-admin-path';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
+import { RemoveUserFromOrga } from '@/components/admin/user/RemoveUserFromOrga';
+import { getUserListContext } from '@/components/admin/user/UserListPage';
 
 interface UserUpdateFormProps {
   user: UserList_fragment$data;

@@ -18,10 +18,10 @@ import {
 } from '@generated/userServices_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { GenericCapabilityName } from '../../service/[slug]/capabilities/Capability.helper';
+import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
 import BadgeOverflowCounter, {
   BadgeOverflow,
-} from '../../ui/BadgeOverflowCounter';
+} from '@/components/ui/BadgeOverflowCounter';
 
 import {
   FunctionComponent,
@@ -40,12 +40,12 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import {
   IconActionContext,
   IconActions,
   IconActionsItem,
-} from '../../ui/IconActions';
+} from '@/components/ui/IconActions';
 
 import { SubscriptionById } from '@/components/subcription/subscription.graphql';
 import { APP_PATH } from '@/utils/path/constant';
@@ -53,11 +53,11 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
-import { PortalContext } from '../../me/AppPortalContext';
-import { UserServiceForm } from '../../service/[slug]/UserServiceForm';
-import { BreadcrumbNav, BreadcrumbNavLink } from '../../ui/BreadcrumbNav';
-import { SheetWithPreventingDialog } from '../../ui/SheetWithPreventingDialog';
-import { EditUserService } from './EditUserService';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { UserServiceForm } from '@/components/service/[slug]/UserServiceForm';
+import { BreadcrumbNav, BreadcrumbNavLink } from '@/components/ui/BreadcrumbNav';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { EditUserService } from '@/components/subcription/[slug]/EditUserService';
 
 interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;

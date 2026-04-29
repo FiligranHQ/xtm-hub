@@ -3,7 +3,7 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
-import { TryFiligranProductsBanner } from './TryFiligranProductsBanner';
+import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 
 vi.mock('next/navigation', (importOriginal) => ({
   ...importOriginal(),

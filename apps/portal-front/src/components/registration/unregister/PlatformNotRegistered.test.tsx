@@ -1,7 +1,7 @@
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { UnregisterPlatformNotRegistered } from './PlatformNotRegistered';
+import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/PlatformNotRegistered';
 
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next-intl')>()),

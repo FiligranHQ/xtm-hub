@@ -6,7 +6,7 @@ import { AspectRatio, Button } from '@filigran/ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useCallback, useEffect } from 'react';
-import useScrollPosition from '../../hooks/use-scroll-position';
+import useScrollPosition from '@/hooks/use-scroll-position';
 
 export type PlatformHoverAction = {
   id: string;

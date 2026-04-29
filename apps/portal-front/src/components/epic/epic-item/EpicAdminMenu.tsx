@@ -3,10 +3,10 @@ import { Badge } from '@filigran/ui/servers';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
-import { useEpicListContext } from '../../../hooks/use-epic-list-context';
-import { IconActions, IconActionsItem } from '../../ui/IconActions';
-import { EpicFormSheet } from '../EpicFormSheet';
-import { DeleteEpic } from './DeleteEpic';
+import { useEpicListContext } from '@/hooks/use-epic-list-context';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
+import { DeleteEpic } from '@/components/epic/epic-item/DeleteEpic';
 
 interface EpicAdminMenuProps {
   epic: epic_fragment$data;

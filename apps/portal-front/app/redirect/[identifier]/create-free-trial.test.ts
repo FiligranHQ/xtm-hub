@@ -4,7 +4,7 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { serverFetchGraphQL } from '../../../src/relay/server-portal-api-fetch';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { redirectToCreateFreeTrial } from './create-free-trial';
 import { loadBaseUrlFront, loadMeUser } from './utils/load';
 

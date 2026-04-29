@@ -9,10 +9,10 @@ import { MarkdownAsync } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import BadgeOverflowCounter, {
   BadgeOverflow,
-} from '../../../ui/BadgeOverflowCounter';
-import { ShareLinkButton } from '../../../ui/share-link/ShareLinkButton';
-import ShareableResourceCarousel from '../ui/ShareableResourceCarouselView';
-import { ShareableResourceConnectorDetails } from './ShareableResourceConnectorDetails';
+} from '@/components/ui/BadgeOverflowCounter';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
+import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
+import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/ShareableResourceConnectorDetails';
 
 interface Props {
   documentData: documentItem_fragment$data | publicDocumentItemFragment$data;

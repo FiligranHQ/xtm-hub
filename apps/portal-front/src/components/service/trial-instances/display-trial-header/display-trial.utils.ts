@@ -1,6 +1,6 @@
 import { daysUntil } from '@/utils/date';
 import { registerRegisteredPlatformFragment$data } from '@generated/registerRegisteredPlatformFragment.graphql';
-import { RegisteredPlatformWithDaysLeft } from './DisplayTrialList';
+import { RegisteredPlatformWithDaysLeft } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 
 export const getDotColor = (daysLeft: number) => {
   if (daysLeft <= 8) return 'bg-red';

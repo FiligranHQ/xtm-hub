@@ -7,8 +7,8 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
-import { DialogInformative } from '../../../ui/Dialog';
-import { ReachSalesDialogForm } from './ReachSalesDialogForm';
+import { DialogInformative } from '@/components/ui/Dialog';
+import { ReachSalesDialogForm } from '@/components/service/trial-instances/reach-sales/ReachSalesDialogForm';
 
 interface ReachSalesButtonProps {
   variant: 'default' | 'gradient' | 'outline-primary';

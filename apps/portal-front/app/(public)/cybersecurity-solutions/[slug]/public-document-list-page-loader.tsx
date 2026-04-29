@@ -7,12 +7,12 @@ import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import React, { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
-import PublicDocumentsList from '../../../../src/components/service/document/PublicDocumentsList';
+import PublicDocumentsList from '@/components/service/document/PublicDocumentsList';
 import {
   LogicalFiltersParams,
   useLogicalFiltersFromStorage,
-} from '../../../../src/hooks/use-logical-filters-from-storage';
-import { useServiceListLocalStorage } from '../../../../src/hooks/use-service-list-local-storage';
+} from '@/hooks/use-logical-filters-from-storage';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 
 interface Props {
   serviceInstance: seoServiceInstanceFragment$data;

@@ -5,9 +5,9 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
-import { SheetWithPreventingDialog } from '../../../../ui/SheetWithPreventingDialog';
-import { getUserListContext } from '../../UserListPage';
-import { UserAdminForm } from './UserAdminForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { getUserListContext } from '@/components/admin/user/UserListPage';
+import { UserAdminForm } from '@/components/admin/user/forms/admin/UserAdminForm';
 
 export const AdminAddUserMutation = graphql`
   mutation AdminAddUserMutation(

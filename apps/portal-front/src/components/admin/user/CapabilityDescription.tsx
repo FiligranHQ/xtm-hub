@@ -8,7 +8,7 @@ import {
 } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
-import { useOrganizationCapabilities } from '../../../hooks/use-organization-capabilities';
+import { useOrganizationCapabilities } from '@/hooks/use-organization-capabilities';
 
 export const CapabilityDescription: React.FC = () => {
   const t = useTranslations();

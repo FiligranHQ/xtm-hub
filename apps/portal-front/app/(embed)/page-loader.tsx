@@ -6,9 +6,9 @@ import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
-import Context from '../../src/components/me/MeContext';
-import SettingsContext from '../../src/components/settings/SettingsContext';
-import useMountingLoader from '../../src/hooks/use-mounting-loader';
+import Context from '@/components/me/MeContext';
+import SettingsContext from '@/components/settings/SettingsContext';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 interface LayoutPreloaderProps {
   children: React.ReactNode;

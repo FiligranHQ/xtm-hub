@@ -1,6 +1,6 @@
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import * as React from 'react';
-import GuardCapacityComponent from '../../../../../../src/components/AdminGuard';
+import GuardCapacityComponent from '@/components/AdminGuard';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';

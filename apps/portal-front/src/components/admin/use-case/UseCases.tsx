@@ -20,9 +20,9 @@ import {
   useLazyLoadQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { useExecuteAfterAnimation } from '../../../hooks/use-execute-after-animation';
-import AddUseCase from './AddUseCase';
-import EditUseCase from './EditUseCase';
+import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import AddUseCase from '@/components/admin/use-case/AddUseCase';
+import EditUseCase from '@/components/admin/use-case/EditUseCase';
 
 const UseCases = () => {
   const t = useTranslations();

@@ -3,7 +3,7 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
-import { StartTrialBannerButton } from './StartTrialBannerButton';
+import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 
 vi.mock('next/navigation', (importOriginal) => ({
   ...importOriginal(),

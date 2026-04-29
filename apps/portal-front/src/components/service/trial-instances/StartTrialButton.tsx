@@ -17,11 +17,11 @@ import { toast } from '@filigran/ui/clients';
 import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
-import { SheetWithPreventingDialog } from '../../ui/SheetWithPreventingDialog';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import {
   TryFiligranProductForm,
   tryFiligranProductFormSchema,
-} from './TryFiligranProductForm';
+} from '@/components/service/trial-instances/TryFiligranProductForm';
 
 import {
   fetchQuery,

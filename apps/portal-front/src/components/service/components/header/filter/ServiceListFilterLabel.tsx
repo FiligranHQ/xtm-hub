@@ -1,11 +1,11 @@
 import { getUseCases } from '@/components/admin/use-case/use-case.utils';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent } from 'react';
-import { useServiceListFilters } from '../../../../../hooks/use-service-list-filters';
-import { useServiceListLocalStorage } from '../../../../../hooks/use-service-list-local-storage';
-import { LogicalMultiSelectFormField } from '../../../../ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
-import { useServiceListLocalStorageKeyContext } from '../../ServiceListLocalStorageKeyContext';
-import { ServiceListFilterKey } from '../ServiceListHeader';
+import { useServiceListFilters } from '@/hooks/use-service-list-filters';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
+import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
+import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 
 interface ServiceListFilterLabelProps {
   type: string;

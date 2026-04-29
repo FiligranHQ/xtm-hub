@@ -14,7 +14,7 @@ import {
   useContext,
   useState,
 } from 'react';
-import { AlertDialogComponent } from './AlertDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 interface UserFormSheetProps {
   open: boolean;

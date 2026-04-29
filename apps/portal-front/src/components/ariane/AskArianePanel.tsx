@@ -5,7 +5,7 @@ import { useMessages } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { PortalContext } from '../me/AppPortalContext';
+import { PortalContext } from '@/components/me/AppPortalContext';
 
 interface AskArianePanelProps {
   mode: ChatMode;

@@ -1,6 +1,6 @@
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
-import { serverFetchGraphQL } from '../relay/server-portal-api-fetch';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 
 export const getDefaultMetadata = async (): Promise<Metadata> => {
   const settingsResponse = await serverFetchGraphQL<settingsQuery>(

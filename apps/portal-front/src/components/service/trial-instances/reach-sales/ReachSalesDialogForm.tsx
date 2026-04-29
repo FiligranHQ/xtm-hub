@@ -13,7 +13,7 @@ import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { AlertDialogComponent } from '../../../ui/AlertDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 interface Props {
   isDialogOpen: boolean;

@@ -7,7 +7,7 @@ import SeoServiceInstancesQuery, {
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import type { MetadataRoute } from 'next';
-import { serverFetchGraphQL } from '../src/relay/server-portal-api-fetch';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 
 export const dynamic = 'force-dynamic';
 

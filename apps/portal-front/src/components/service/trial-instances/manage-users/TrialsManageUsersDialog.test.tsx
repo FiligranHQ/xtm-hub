@@ -2,7 +2,7 @@ import testRender from '@/utils/test/test-render';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
 import { describe, expect, it } from 'vitest';
-import { TrialsManageUsersDialog } from './TrialsManageUsersDialog';
+import { TrialsManageUsersDialog } from './trials-manage-users-dialog';
 
 describe('TrialsManageUsersDialog', () => {
   it('should render the trigger button and not trigger any GraphQL query on mount', () => {

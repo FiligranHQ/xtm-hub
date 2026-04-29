@@ -4,7 +4,7 @@ import { FunctionComponent, ReactNode } from 'react';
 import {
   useChatbotContentMargin,
   useChatbotContentTransition,
-} from './ariane/use-chatbot-hooks';
+} from '@/components/ariane/use-chatbot-hooks';
 interface ContentLayoutProps {
   children: ReactNode;
 }

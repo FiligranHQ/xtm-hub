@@ -2,7 +2,7 @@ import ServiceByIdQuery, {
   serviceByIdQuery,
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { serverFetchGraphQL } from '../../../../../../../src/relay/server-portal-api-fetch';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import PageLoader from './page-loader';
 interface ServiceRoadmapPageProps {
   params: Promise<{ serviceInstanceId: string }>;

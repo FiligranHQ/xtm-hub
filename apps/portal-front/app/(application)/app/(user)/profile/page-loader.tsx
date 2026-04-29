@@ -3,7 +3,7 @@
 import { Profile } from '@/components/profile';
 import { APP_PATH } from '@/utils/path/constant';
 import * as React from 'react';
-import { BreadcrumbNav } from '../../../../../src/components/ui/BreadcrumbNav';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {

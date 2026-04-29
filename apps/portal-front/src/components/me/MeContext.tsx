@@ -4,9 +4,9 @@ import { MeContextFragment, MeQuery } from '@/components/me/me.graphql';
 import { meContext_fragment$key } from '@generated/meContext_fragment.graphql';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
-import ChatbotProvider from '../ariane/ChatbotProvider';
-import { AppPortalContext } from './AppPortalContext';
-import UserEventSubscription from './UserEventSubscription';
+import ChatbotProvider from '@/components/ariane/ChatbotProvider';
+import { AppPortalContext } from '@/components/me/AppPortalContext';
+import UserEventSubscription from '@/components/me/UserEventSubscription';
 
 // Component interface
 interface ContextProps {

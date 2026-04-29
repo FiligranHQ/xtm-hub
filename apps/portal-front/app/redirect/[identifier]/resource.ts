@@ -4,8 +4,8 @@ import OrganizationSwitcherMutation, {
   OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
 } from '@generated/OrganizationSwitcherMutation.graphql';
 import { NextRequest, NextResponse } from 'next/server';
-import { serverMutateGraphQL } from '../../../src/relay/server-portal-api-fetch';
-import { isValueInEnum } from '../../../src/utils/is-value-in-enum';
+import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
+import { isValueInEnum } from '@/utils/is-value-in-enum';
 import {
   loadBaseUrlFront,
   loadMeUser,

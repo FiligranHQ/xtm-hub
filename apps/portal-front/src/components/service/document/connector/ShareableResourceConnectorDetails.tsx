@@ -7,10 +7,10 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
-import { getIntegrationSubTypeMetadata } from '../../integrations/Integration.utils';
-import { ShareableResourceDetailsLink } from '../ShareableResourceDetailsLink';
-import { ShareableResourceBasicInformation } from '../ui/ShareableResourceBasicInformation';
-import { ShareableResourceDetailItem } from '../ui/ShareableResourceDetailItem';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
+import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
+import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
+import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
 
 export interface ShareableResourceConnectorDetailsProps {
   connectorDetails: {

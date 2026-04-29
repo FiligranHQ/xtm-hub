@@ -3,7 +3,7 @@ import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 import { OpenInNewIcon } from '@filigran/icon';
 import Link from 'next/link';
-import { RegisteredPlatformWithDaysLeft } from './DisplayTrialList';
+import { RegisteredPlatformWithDaysLeft } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 
 interface DisplayTrialItemProps {
   freeTrial: RegisteredPlatformWithDaysLeft;

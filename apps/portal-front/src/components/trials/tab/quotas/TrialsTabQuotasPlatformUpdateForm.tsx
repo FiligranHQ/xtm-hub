@@ -18,8 +18,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { AlertDialogComponent } from '../../../ui/AlertDialog';
-import { useDialogContext } from '../../../ui/SheetWithPreventingDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 
 interface Props {
   quota: trialsDeploymentAvailabilityFragment$data;

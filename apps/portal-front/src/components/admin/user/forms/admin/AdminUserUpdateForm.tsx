@@ -21,14 +21,14 @@ import { FunctionComponent, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
-import { AlertDialogComponent } from '../../../../ui/AlertDialog';
-import { CapabilityMultiSelect } from '../../../../ui/capability/MultiSelect';
-import { useDialogContext } from '../../../../ui/SheetWithPreventingDialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import {
   AutocompleteOrganization,
   UserOrganizationFormProps,
-} from '../../AutocompleteOrganization';
-import { CapabilityDescription } from '../../CapabilityDescription';
+} from '@/components/admin/user/AutocompleteOrganization';
+import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 
 interface AdminUserUpdateFormProps {
   user: UserList_fragment$data;

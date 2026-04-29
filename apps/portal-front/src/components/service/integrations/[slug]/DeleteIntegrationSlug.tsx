@@ -1,4 +1,4 @@
-import { useServiceContext } from '../../components/ServiceContext';
+import { useServiceContext } from '@/components/service/components/ServiceContext';
 
 import {
   APP_PATH,
@@ -14,10 +14,10 @@ import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import useServiceCapability from '../../../../hooks/use-service-capability';
-import revalidatePathActions from '../../../../utils/actions/revalidate-path.actions';
-import { ServiceCapabilityName } from '../../[slug]/capabilities/Capability.helper';
-import { CardTypeEnum, ServiceDelete } from '../../components/ServiceDelete';
+import useServiceCapability from '@/hooks/use-service-capability';
+import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
+import { CardTypeEnum, ServiceDelete } from '@/components/service/components/ServiceDelete';
 
 // Component interface
 interface DeleteIntegrationSlugProps {

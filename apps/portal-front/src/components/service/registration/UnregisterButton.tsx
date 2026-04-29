@@ -15,8 +15,8 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useMutation } from 'react-relay';
-import GuardCapacityComponent from '../../AdminGuard';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
+import GuardCapacityComponent from '@/components/AdminGuard';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 interface Props {
   platform: registeredPlatformByServiceInstanceId_fragment$data;

@@ -6,12 +6,12 @@ import {
   isConnectorResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { SettingsContext } from '../../../settings/EnvPortalContext';
-import { AppServiceContext } from '../../components/ServiceContext';
-import { ServiceManageSheet } from '../../components/ServiceManageSheet';
-import ShareableResourceConnectorSlug from '../../document/connector/ShareableResourceConnectorSlug';
-import ShareableResourceSlug from '../../document/ShareableResourceSlug';
-import DeleteIntegrationSlug from './DeleteIntegrationSlug';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { AppServiceContext } from '@/components/service/components/ServiceContext';
+import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
+import ShareableResourceConnectorSlug from '@/components/service/document/connector/ShareableResourceConnectorSlug';
+import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
 
 import {
   documentItem,

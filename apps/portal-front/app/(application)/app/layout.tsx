@@ -1,10 +1,17 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 
-import '../../../styles/globals.css';
+import '@styles/globals.css';
 
-import serverPortalApiFetch from '../../../src/relay/server-portal-api-fetch';
+import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 
+import { AdminBanner } from '@/components/admin/AdminBanner';
+import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
+import { ContentLayout } from '@/components/ContentLayout';
+import HeaderComponent from '@/components/Header';
+import Menu from '@/components/menu/Menu';
+import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
+import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { buildLoginRedirect } from '@/utils/redirect';
@@ -16,13 +23,6 @@ import meLoaderQueryNode, {
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { AdminBanner } from '../../../src/components/admin/AdminBanner';
-import { TestEnvBanner } from '../../../src/components/admin/TestEnvBanner';
-import { ContentLayout } from '../../../src/components/ContentLayout';
-import HeaderComponent from '../../../src/components/Header';
-import Menu from '../../../src/components/menu/Menu';
-import { TryFiligranProductsBanner } from '../../../src/components/service/trial-instances/banner/TryFiligranProductsBanner';
-import { RelayProvider } from '../../../src/relay/relay-provider';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';

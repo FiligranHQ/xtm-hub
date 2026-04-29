@@ -1,4 +1,4 @@
-import { DisplayLogo } from '../ui/DisplayLogo';
+import { DisplayLogo } from '@/components/ui/DisplayLogo';
 
 export const MenuLogo = () => {
   return (

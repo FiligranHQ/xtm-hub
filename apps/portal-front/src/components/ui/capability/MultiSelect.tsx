@@ -1,7 +1,7 @@
 import { MultiSelectFormField } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
-import { useOrganizationCapabilities } from '../../../hooks/use-organization-capabilities';
+import { useOrganizationCapabilities } from '@/hooks/use-organization-capabilities';
 
 interface Props {
   value: string[];

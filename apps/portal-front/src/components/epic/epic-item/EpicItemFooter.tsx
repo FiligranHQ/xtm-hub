@@ -2,7 +2,7 @@ import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
 import Image from 'next/image';
 import { FunctionComponent } from 'react';
-import { FiligranProductMapping } from './FiligranProductMapping';
+import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 
 interface EpicItemFooterProps {
   epic: epic_fragment$data;

@@ -11,11 +11,11 @@ import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
-import { useEpicFilter } from '../../hooks/use-epic-filter';
-import { useEpicListContext } from '../../hooks/use-epic-list-context';
-import { fileListToUploadableMap } from '../../relay/environment/fetch-form-data';
-import { SheetWithPreventingDialog } from '../ui/SheetWithPreventingDialog';
-import EpicForm, { epicFormSchema } from './EpicForm';
+import { useEpicFilter } from '@/hooks/use-epic-filter';
+import { useEpicListContext } from '@/hooks/use-epic-list-context';
+import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import EpicForm, { epicFormSchema } from '@/components/epic/EpicForm';
 
 interface EpicFormSheetProps {
   epic?: epic_fragment$data;

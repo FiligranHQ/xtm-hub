@@ -3,7 +3,7 @@ import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import TrialsTab from './TrialsTab';
+import TrialsTab from '@/components/trials/tab/TrialsTab';
 
 // Mocks
 vi.mock('next-intl', async (importOriginal) => ({

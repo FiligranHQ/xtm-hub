@@ -7,15 +7,15 @@ import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequest
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import React from 'react';
-import GuardCapacityComponent from '../../../AdminGuard';
-import { BreadcrumbNav } from '../../../ui/BreadcrumbNav';
-import { RegistrationLearnMore } from '../../registration/RegistrationLearnMore';
-import { ReachSalesButton } from '../reach-sales/ReachSalesButton';
-import { SlackSupportButton } from '../SlackSupport';
-import { StartTrialButton } from '../StartTrialButton';
-import { TrialsHeader } from '../TrialsHeader';
-import { TrialsLearnMore } from '../TrialsLearnMore';
-import PersonalSpaceInfo from './PersonalSpaceInfo';
+import GuardCapacityComponent from '@/components/AdminGuard';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
+import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/ReachSalesButton';
+import { SlackSupportButton } from '@/components/service/trial-instances/SlackSupport';
+import { StartTrialButton } from '@/components/service/trial-instances/StartTrialButton';
+import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader';
+import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
+import PersonalSpaceInfo from '@/components/service/trial-instances/page/PersonalSpaceInfo';
 
 interface Props {
   platformIdentifier: PlatformIdentifierEnum;

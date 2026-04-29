@@ -2,7 +2,7 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { ShareableResourceDetailMetadataItem } from './ShareableResourceDetailMetadataItem';
+import { ShareableResourceDetailMetadataItem } from './shareable-resource-detail-metadata-item';
 
 // Mock useTranslations from next-intl
 vi.mock('next-intl', () => ({

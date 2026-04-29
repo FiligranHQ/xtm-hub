@@ -9,8 +9,8 @@ import { competitor_fragment$data } from '@generated/competitor_fragment.graphql
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { SheetWithPreventingDialog } from '../ui/SheetWithPreventingDialog';
-import CompetitorForm, { competitorFormSchema } from './CompetitorForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import CompetitorForm, { competitorFormSchema } from '@/components/competitor/CompetitorForm';
 
 interface ManageCompetitorProps {
   competitor?: competitor_fragment$data;

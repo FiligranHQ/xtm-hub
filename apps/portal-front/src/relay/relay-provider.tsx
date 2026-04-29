@@ -8,7 +8,7 @@ import {
 import { useServerInsertedHTML } from 'next/navigation';
 import { ReactNode, useMemo, useRef } from 'react';
 import { RelayEnvironmentProvider } from 'react-relay';
-import { useStream } from './use-stream';
+import { useStream } from '@/relay/use-stream';
 
 interface RelayProviderProps {
   children: ReactNode;

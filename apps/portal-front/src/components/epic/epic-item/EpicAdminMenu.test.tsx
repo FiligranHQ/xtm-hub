@@ -3,7 +3,7 @@ import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { EpicAdminMenu } from './EpicAdminMenu';
+import { EpicAdminMenu } from '@/components/epic/epic-item/EpicAdminMenu';
 
 const useEpicListContextMock = vi.fn();
 const useEpicFilterMock = vi.fn();

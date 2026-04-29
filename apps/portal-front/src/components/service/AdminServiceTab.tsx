@@ -20,9 +20,9 @@ import {
   IconActions,
   IconActionsItem,
   IconActionsLink,
-} from '../ui/IconActions';
-import { SearchInput } from '../ui/SearchInput';
-import { EditService } from './EditService';
+} from '@/components/ui/IconActions';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { EditService } from '@/components/service/EditService';
 
 interface AdminServiceTabProps {
   serviceData: serviceList_fragment$data[];

@@ -10,7 +10,7 @@ import {
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
-import { BreadcrumbNav, BreadcrumbNavLink } from '../../ui/BreadcrumbNav';
+import { BreadcrumbNav, BreadcrumbNavLink } from '@/components/ui/BreadcrumbNav';
 
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -19,17 +19,17 @@ import { isResourceDownloadable } from '@/utils/shareable-resources/utils/sharea
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
-import useDecodedParams from '../../../hooks/use-decoded-params';
-import { SettingsContext } from '../../settings/EnvPortalContext';
+import useDecodedParams from '@/hooks/use-decoded-params';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import BadgeOverflowCounter, {
   BadgeOverflow,
-} from '../../ui/BadgeOverflowCounter';
-import { ShareLinkButton } from '../../ui/share-link/ShareLinkButton';
-import OneClickDeploy from './one-click-deploy/OneClickDeploy';
-import { OPENCTI_INTEGRATION_URL_CONFIGS } from './one-click-deploy/UseOneClickDeployTab';
-import ShareableResourceDetails from './ShareableResouceDetails';
-import ShareableResourceDescription from './ShareableResourceDescription';
-import ShareableResourceCarousel from './ui/ShareableResourceCarouselView';
+} from '@/components/ui/BadgeOverflowCounter';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
+import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';
+import { OPENCTI_INTEGRATION_URL_CONFIGS } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
+import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
+import ShareableResourceDescription from '@/components/service/document/ShareableResourceDescription';
+import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
 
 // Component interface
 interface ShareableResourceSlugProps {

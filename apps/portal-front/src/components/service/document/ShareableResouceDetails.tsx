@@ -20,11 +20,11 @@ import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataK
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
-import { getIntegrationSubTypeMetadata } from '../integrations/Integration.utils';
-import { ShareableResourceDetailsLink } from './ShareableResourceDetailsLink';
-import { ShareableResourceBasicInformation } from './ui/ShareableResourceBasicInformation';
-import { ShareableResourceDetailItem } from './ui/ShareableResourceDetailItem';
-import { ShareableResourceDetailMetadataItem } from './ui/ShareableResourceDetailMetadataItem';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
+import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
+import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
+import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
+import { ShareableResourceDetailMetadataItem } from '@/components/service/document/ui/ShareableResourceDetailMetadataItem';
 
 // Component interface
 interface ShareableResourceDetailsProps {

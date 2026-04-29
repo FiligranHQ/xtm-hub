@@ -4,7 +4,7 @@ import { Button, useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext, useState } from 'react';
-import { newDocumentSchema, VaultNewFileForm } from './VaultNewFileForm';
+import { newDocumentSchema, VaultNewFileForm } from '@/components/service/vault/VaultNewFileForm';
 
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
 import DocumentItem_fragmentGraphql, {
@@ -13,10 +13,10 @@ import DocumentItem_fragmentGraphql, {
 import { readInlineData, useMutation } from 'react-relay';
 import slugify from 'slugify';
 import { z } from 'zod';
-import useDecodedParams from '../../../hooks/use-decoded-params';
-import { splitFileListToUploadableMap } from '../../../relay/environment/fetch-form-data';
-import { PortalContext } from '../../me/AppPortalContext';
-import { SheetWithPreventingDialog } from '../../ui/SheetWithPreventingDialog';
+import useDecodedParams from '@/hooks/use-decoded-params';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 interface VaultFormProps {
   connectionId: string;
   userCanUpdate: boolean;

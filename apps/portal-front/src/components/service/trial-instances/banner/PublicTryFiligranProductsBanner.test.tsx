@@ -1,6 +1,6 @@
 import testRender from '@/utils/test/test-render';
 import { createMockEnvironment } from 'relay-test-utils';
-import { PublicTryFiligranProductsBanner } from './PublicTryFiligranProductsBanner';
+import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 
 describe('Filigran product banner text on public pages', () => {
   it('should render the correct text on the banner', async () => {

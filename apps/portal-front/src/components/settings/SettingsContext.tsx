@@ -8,7 +8,7 @@ import { settingsContext_fragment$key } from '@generated/settingsContext_fragmen
 import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import * as React from 'react';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
-import { SettingsPortalContext } from './EnvPortalContext';
+import { SettingsPortalContext } from '@/components/settings/EnvPortalContext';
 
 // Component interface
 interface ContextProps {

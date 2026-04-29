@@ -3,8 +3,8 @@ import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrationContext } from './Context';
-import { RegistrationLayout } from './Layout';
+import { RegistrationContext } from '@/components/registration/Context';
+import { RegistrationLayout } from '@/components/registration/Layout';
 
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next-intl')>()),

@@ -17,8 +17,8 @@ import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useDialogContext } from '../ui/SheetWithPreventingDialog';
-import { organizationFormSchema } from './OrganizationForm.schema';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { organizationFormSchema } from '@/components/organization/OrganizationForm.schema';
 
 interface OrganizationFormSheetProps {
   organization?: organizationItem_fragment$data;

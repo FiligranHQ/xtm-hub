@@ -20,7 +20,7 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import ServiceInstanceCard from './ServiceInstanceCard';
+import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
 
 interface ServiceProps {
   queryRefRegisteredPlatforms: PreloadedQuery<registerRegisteredPlatformsQuery>;

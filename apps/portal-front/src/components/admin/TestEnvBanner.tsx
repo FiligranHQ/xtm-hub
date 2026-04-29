@@ -4,7 +4,7 @@ import { Callout } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { SettingsContext } from '../settings/EnvPortalContext';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 
 export function TestEnvBanner() {
   const t = useTranslations();

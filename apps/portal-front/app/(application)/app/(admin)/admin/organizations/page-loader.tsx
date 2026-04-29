@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
-import OrganizationList from '../../../../../../src/components/organization/OrganizationList';
-import { BreadcrumbNav } from '../../../../../../src/components/ui/BreadcrumbNav';
+import OrganizationList from '@/components/organization/OrganizationList';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {

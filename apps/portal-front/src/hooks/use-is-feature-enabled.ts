@@ -1,6 +1,6 @@
 import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { useContext } from 'react';
-import { SettingsContext } from '../components/settings/EnvPortalContext';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 
 export const useIsFeatureEnabled = (requiredFlag: FeatureFlagEnum) => {
   const { settings } = useContext(SettingsContext);

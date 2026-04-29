@@ -2,7 +2,7 @@ import {
   REGIONS,
   REGIONS_VALUES,
 } from '@/components/service/trial-instances/form-constants';
-import { PortalContext } from '../../me/AppPortalContext';
+import { PortalContext } from '@/components/me/AppPortalContext';
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import {
@@ -27,8 +27,8 @@ import Link from 'next/link';
 import React, { FunctionComponent, useContext, useState } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
-import { AlertDialogComponent } from '../../ui/AlertDialog';
-import { TranslatableEnumSelectField } from '../../ui/TranslatableEnumSelectField';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
 
 export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),

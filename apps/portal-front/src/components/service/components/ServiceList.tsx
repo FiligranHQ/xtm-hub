@@ -7,21 +7,21 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { Fragment, useContext, useLayoutEffect } from 'react';
-import useScrollPosition from '../../../hooks/use-scroll-position';
-import useServiceCapability from '../../../hooks/use-service-capability';
-import { useServiceListLocalStorage } from '../../../hooks/use-service-list-local-storage';
-import { SettingsContext } from '../../settings/EnvPortalContext';
-import { ServiceCapabilityName } from '../[slug]/capabilities/Capability.helper';
-import { ServiceListFilterLabel } from './header/filter/ServiceListFilterLabel';
+import useScrollPosition from '@/hooks/use-scroll-position';
+import useServiceCapability from '@/hooks/use-service-capability';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
+import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
   ServiceListFilterKey,
   ServiceListFilterMap,
   ServiceListHeader,
-} from './header/ServiceListHeader';
-import ServiceListHeaderButtons from './header/ServiceListHeaderButtons';
-import ServiceCard from './ServiceCard';
-import { useServiceContext } from './ServiceContext';
-import { useServiceListLocalStorageKeyContext } from './ServiceListLocalStorageKeyContext';
+} from '@/components/service/components/header/ServiceListHeader';
+import ServiceListHeaderButtons from '@/components/service/components/header/ServiceListHeaderButtons';
+import ServiceCard from '@/components/service/components/ServiceCard';
+import { useServiceContext } from '@/components/service/components/ServiceContext';
+import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 
 export interface ServiceListProps {
   active: documentItem_fragment$data[];
