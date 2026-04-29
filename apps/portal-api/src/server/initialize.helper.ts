@@ -27,8 +27,8 @@ import {
   insertNewOrganization,
   loadOrganizationBy,
   updateOrganizationBy,
-} from '../modules/organization-management/organizations/organizations.domain';
-import { loadUserBy } from '../modules/organization-management/users/user-domain/users.domain';
+} from '../modules/organization-management/organization/organization.domain';
+import { loadUserBy } from '../modules/organization-management/user/user-domain/user.domain';
 import { IngestManifestApp } from '../modules/shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.app';
 import {
   ADMIN_UUID,

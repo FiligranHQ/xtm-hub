@@ -22,7 +22,11 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@generated/*": ["./__generated__/*"]
+      "@generated/*": ["./__generated__/*"],
+      "@styles/*": ["./styles/*"],
+      "@public/*": ["./public/*"],
+      "@app/*": ["./app/*"],
+      "@messages/*": ["./messages/*"]
     },
     "types": ["vitest/globals"]
   },

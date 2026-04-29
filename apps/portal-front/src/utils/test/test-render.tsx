@@ -1,7 +1,8 @@
-import { AppPortalContext } from '@/components/me/app-portal-context';
-import { SettingsPortalContext } from '@/components/settings/env-portal-context';
+import { AppPortalContext } from '@/components/me/AppPortalContext';
+import { SettingsPortalContext } from '@/components/settings/EnvPortalContext';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import { settingsContext_fragment$data } from '@generated/settingsContext_fragment.graphql';
+import messages from '@messages/en.json';
 import { render, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
@@ -9,7 +10,6 @@ import { FunctionComponent, ReactNode } from 'react';
 import { RelayEnvironmentProvider } from 'react-relay/hooks';
 import { createMockEnvironment } from 'relay-test-utils';
 import { RelayMockEnvironment } from 'relay-test-utils/lib/RelayModernMockEnvironment';
-import messages from '../../../messages/en.json';
 
 export interface ProvidersWrapperProps {
   children: ReactNode;

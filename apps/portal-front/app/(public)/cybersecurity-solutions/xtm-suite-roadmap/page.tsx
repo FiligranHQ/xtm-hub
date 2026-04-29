@@ -1,12 +1,12 @@
-import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav';
-import { RelayProvider } from '@/relay/RelayProvider';
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { RelayProvider } from '@/relay/relay-provider';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PublicEpicListPageLoader } from './public-epic-list-page-loader';
 
 const Page = async () => {

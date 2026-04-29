@@ -31,8 +31,8 @@ import { isUserAdminPlatform } from '../../../security/access';
 import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
-import { formatRawObject } from '../../../utils/queryRaw.util';
-import { loadUserBy } from '../../organization-management/users/user-domain/users.domain';
+import { formatRawObject } from '../../../utils/query-raw.util';
+import { loadUserBy } from '../../organization-management/user/user-domain/user.domain';
 import { PlatformConfiguration } from '../../registration/registration.domain';
 import {
   serviceInstanceNameMappedByPlatformIdentifier,

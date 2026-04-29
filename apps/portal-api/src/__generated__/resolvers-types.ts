@@ -169,6 +169,12 @@ export type Connector = Document & Integration & Node & {
   verified: Scalars['Boolean']['output'];
 };
 
+export type ConsumeProvisionedNewsFeedItemsResponse = {
+  __typename?: 'ConsumeProvisionedNewsFeedItemsResponse';
+  available_news_feed_types: Array<NewsFeedItemType>;
+  news_feed_items: Array<ProvisionedNewsFeedItem>;
+};
+
 export type CreateCompetitorInput = {
   domain: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -808,6 +814,7 @@ export type Mutation = {
   bulkRemovePendingUserFromOrganization?: Maybe<Success>;
   cancelDeploymentRequest?: Maybe<DeploymentRequest>;
   changeSelectedOrganization?: Maybe<User>;
+  consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse;
   contactUs: Success;
   createCompetitor: Competitor;
   createDeploymentRequest: DeploymentRequest;
@@ -1155,6 +1162,16 @@ export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
 };
 
+export type NewsFeedItemMetadata = {
+  __typename?: 'NewsFeedItemMetadata';
+  key: NewsFeedItemMetadataKey;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export enum NewsFeedItemMetadataKey {
+  UrlPath = 'url_path'
+}
+
 export enum NewsFeedItemType {
   ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD'
 }
@@ -1362,6 +1379,15 @@ export enum PortalCapability {
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
 }
+
+export type ProvisionedNewsFeedItem = {
+  __typename?: 'ProvisionedNewsFeedItem';
+  creation_date: Scalars['Date']['output'];
+  metadata: Array<NewsFeedItemMetadata>;
+  tags: Array<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  type: NewsFeedItemType;
+};
 
 export type Query = {
   __typename?: 'Query';
@@ -2446,6 +2472,7 @@ export type ResolversTypes = ResolversObject<{
   CompetitorOrdering: CompetitorOrdering;
   CompetitorTier: CompetitorTier;
   Connector: ResolverTypeWrapper<Connector>;
+  ConsumeProvisionedNewsFeedItemsResponse: ResolverTypeWrapper<ConsumeProvisionedNewsFeedItemsResponse>;
   CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
@@ -2508,6 +2535,8 @@ export type ResolversTypes = ResolversObject<{
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;
+  NewsFeedItemMetadata: ResolverTypeWrapper<NewsFeedItemMetadata>;
+  NewsFeedItemMetadataKey: NewsFeedItemMetadataKey;
   NewsFeedItemType: NewsFeedItemType;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OneClickDeployInput: OneClickDeployInput;
@@ -2536,6 +2565,7 @@ export type ResolversTypes = ResolversObject<{
   PlatformRegistrationConnectivityStatus: PlatformRegistrationConnectivityStatus;
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   PortalCapability: PortalCapability;
+  ProvisionedNewsFeedItem: ResolverTypeWrapper<ProvisionedNewsFeedItem>;
   Query: ResolverTypeWrapper<{}>;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse: ResolverTypeWrapper<RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse>;
@@ -2641,6 +2671,7 @@ export type ResolversParentTypes = ResolversObject<{
   CompetitorEdge: CompetitorEdge;
   CompetitorId: Scalars['CompetitorId']['output'];
   Connector: Connector;
+  ConsumeProvisionedNewsFeedItemsResponse: ConsumeProvisionedNewsFeedItemsResponse;
   CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
@@ -2681,6 +2712,7 @@ export type ResolversParentTypes = ResolversObject<{
   MeUserSubscription: MeUserSubscription;
   MergeEvent: MergeEvent;
   Mutation: {};
+  NewsFeedItemMetadata: NewsFeedItemMetadata;
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: OpenAevScenario;
@@ -2700,6 +2732,7 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformDeploymentRequestEdge: PlatformDeploymentRequestEdge;
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
+  ProvisionedNewsFeedItem: ProvisionedNewsFeedItem;
   Query: {};
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse;
@@ -2872,6 +2905,12 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   use_cases?: Resolver<Maybe<Array<ResolversTypes['UseCase']>>, ParentType, ContextType>;
   verified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ConsumeProvisionedNewsFeedItemsResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ConsumeProvisionedNewsFeedItemsResponse'] = ResolversParentTypes['ConsumeProvisionedNewsFeedItemsResponse']> = ResolversObject<{
+  available_news_feed_types?: Resolver<Array<ResolversTypes['NewsFeedItemType']>, ParentType, ContextType>;
+  news_feed_items?: Resolver<Array<ResolversTypes['ProvisionedNewsFeedItem']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3198,6 +3237,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   bulkRemovePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkRemovePendingUserFromOrganizationArgs>>;
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
+  consumeProvisionedNewsFeedItems?: Resolver<ResolversTypes['ConsumeProvisionedNewsFeedItemsResponse'], ParentType, ContextType>;
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
   createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
@@ -3240,6 +3280,12 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
   uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
+}>;
+
+export type NewsFeedItemMetadataResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['NewsFeedItemMetadata'] = ResolversParentTypes['NewsFeedItemMetadata']> = ResolversObject<{
+  key?: Resolver<ResolversTypes['NewsFeedItemMetadataKey'], ParentType, ContextType>;
+  value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
@@ -3367,6 +3413,15 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   provider?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProvisionedNewsFeedItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ProvisionedNewsFeedItem'] = ResolversParentTypes['ProvisionedNewsFeedItem']> = ResolversObject<{
+  creation_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  metadata?: Resolver<Array<ResolversTypes['NewsFeedItemMetadata']>, ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['NewsFeedItemType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3888,6 +3943,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CompetitorEdge?: CompetitorEdgeResolvers<ContextType>;
   CompetitorId?: GraphQLScalarType;
   Connector?: ConnectorResolvers<ContextType>;
+  ConsumeProvisionedNewsFeedItemsResponse?: ConsumeProvisionedNewsFeedItemsResponseResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CustomDashboard?: CustomDashboardResolvers<ContextType>;
   Date?: GraphQLScalarType;
@@ -3913,6 +3969,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   MeUserSubscription?: MeUserSubscriptionResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  NewsFeedItemMetadata?: NewsFeedItemMetadataResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
   OpenCTIPlatformRegistrationStatusResponse?: OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType>;
@@ -3927,6 +3984,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PlatformDeploymentRequestConnection?: PlatformDeploymentRequestConnectionResolvers<ContextType>;
   PlatformDeploymentRequestEdge?: PlatformDeploymentRequestEdgeResolvers<ContextType>;
   PlatformProvider?: PlatformProviderResolvers<ContextType>;
+  ProvisionedNewsFeedItem?: ProvisionedNewsFeedItemResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse?: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponseResolvers<ContextType>;
   RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;

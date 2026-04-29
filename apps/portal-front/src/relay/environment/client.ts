@@ -1,6 +1,4 @@
 import { isEmpty, isNil } from '@/lib/utils';
-import { fetchOrSubscribe } from '@/relay/environment/fetchFn';
-import { fetchFormData } from '@/relay/environment/fetchFormData';
 import { buildLoginRedirect } from '@/utils/redirect';
 import {
   Environment,
@@ -13,14 +11,19 @@ import {
   Store,
 } from 'relay-runtime';
 import RelayModernEnvironment from 'relay-runtime/lib/store/RelayModernEnvironment';
-import { networkFetch, UnauthenticatedError } from './fetchFn';
+import {
+  fetchOrSubscribe,
+  networkFetch,
+  UnauthenticatedError,
+} from '@/relay/environment/fetch-fn';
+import { fetchFormData } from '@/relay/environment/fetch-form-data';
 import {
   buildQueryId,
   fieldLogger,
   hasHydrationResponses,
   RELAY_WINDOW_KEY,
-} from './helpers';
-import { registerClientEnvironment } from './registry';
+} from '@/relay/environment/helpers';
+import { registerClientEnvironment } from '@/relay/environment/registry';
 
 // A singleton helper that is shared on the client.
 let clientSideRelayEnvironment: RelayModernEnvironment | null = null;

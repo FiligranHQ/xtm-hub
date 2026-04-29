@@ -2,7 +2,7 @@ import { db, dbRaw } from '../../../knexfile';
 import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import { formatRawObject } from '../../utils/queryRaw.util';
+import { formatRawObject } from '../../utils/query-raw.util';
 
 export const deleteSubscription = async (field: SubscriptionMutator) => {
   return db<Subscription>('Subscription')

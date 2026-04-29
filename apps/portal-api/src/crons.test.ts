@@ -35,11 +35,14 @@ vi.mock('./modules/deployment/deployment.app', () => ({
   },
 }));
 
-vi.mock('./modules/organization-management/users/user-organization/users.organization.app', () => ({
-  UsersOrganizationApp: {
-    sendPendingUsersDigest: cronMocks.sendPendingUsersDigestMock,
-  },
-}));
+vi.mock(
+  './modules/organization-management/user/user-organization/user.organization.app',
+  () => ({
+    UserOrganizationApp: {
+      sendPendingUsersDigest: cronMocks.sendPendingUsersDigestMock,
+    },
+  })
+);
 
 vi.mock('./modules/xtm-suite-roadmap/epic.app', () => ({
   EpicApp: {
@@ -57,12 +60,13 @@ vi.mock('./modules/deployment/group/service-group.app', () => ({
 vi.mock('./utils/app-logger.util', () => ({
   logApp: {
     info: vi.fn(),
+    warn: vi.fn(),
     error: vi.fn(),
   },
 }));
 
-import { CRONS_USER_CONTEXT } from './portal.const';
 import { initCronJobs, stopCronJobs } from './crons';
+import { CRONS_USER_CONTEXT } from './portal.const';
 
 describe('crons', () => {
   beforeEach(() => {
@@ -101,9 +105,9 @@ describe('crons', () => {
 
     expect(cronMocks.expireTrialsMock).toHaveBeenCalledTimes(1);
     expect(cronMocks.sendPendingUsersDigestMock).toHaveBeenCalledTimes(1);
-    expect(cronMocks.sendPublicRoadmapMonthlyReminderMock).toHaveBeenCalledTimes(
-      1
-    );
+    expect(
+      cronMocks.sendPublicRoadmapMonthlyReminderMock
+    ).toHaveBeenCalledTimes(1);
     expect(cronMocks.removeExpiredGroupsMock).toHaveBeenCalledTimes(1);
   });
 
@@ -118,4 +122,3 @@ describe('crons', () => {
     }
   });
 });
-

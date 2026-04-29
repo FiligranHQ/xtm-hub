@@ -217,7 +217,7 @@ Dockerfile                      # Production Docker image
 
 ```
 app/                            # Next.js 15 App Router
-  layout.tsx                    # Root layout
+  Layout.tsx                    # Root layout
   (application)/app/            # Authenticated app routes
     (admin)/admin/              # Admin panel (users, orgs, labels, services, trials, parameters)
     (user)/                     # User-facing routes
@@ -241,8 +241,8 @@ src/
   hooks/                        # Custom React hooks (useGranted, useDecodedParams, useIsMobile, etc.)
   relay/                        # Relay client setup
     environment/                # Client + server Relay environments
-    RelayProvider.tsx            # SSR-compatible Relay provider with streaming
-    serverPortalApiFetch.ts     # Server-side GraphQL fetch (uses Next.js cookies)
+    relay-provider.tsx            # SSR-compatible Relay provider with streaming
+    server-portal-api-fetch.ts     # Server-side GraphQL fetch (uses Next.js cookies)
   i18n/                         # Internationalization (next-intl)
     config.ts                   # i18n configuration
     locale.ts                   # Supported locales
@@ -462,7 +462,7 @@ it.each`
 Avoid testing complex component internals directly. Prefer extracting logic into a **pure utility function** in a `*.utils.ts` file alongside the component, then unit-test the utility in isolation. The component simply calls the utility.
 
 ```
-trials-tab.tsx           ← calls formatCancellationReason()
+TrialsTab.tsx           ← calls formatCancellationReason()
 trials-tab.utils.ts      ← pure function, no React/Relay deps
 trials-tab.utils.test.ts ← fast, isolated unit tests
 ```

@@ -1,10 +1,10 @@
-import ServiceInstanceCard from '@/components/service/service-instance-card';
-import { serverFetchGraphQL } from '@/relay/serverPortalApiFetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
 } from '@generated/seoServiceInstancesQuery.graphql';
+import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 
 const Page = async () => {
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(

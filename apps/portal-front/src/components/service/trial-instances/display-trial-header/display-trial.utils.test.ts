@@ -1,4 +1,3 @@
-import { RegisteredPlatformWithDaysLeft } from '@/components/service/trial-instances/display-trial-header/display-trial-list';
 import {
   addDaysUntil,
   getDotColor,
@@ -6,6 +5,7 @@ import {
 } from '@/components/service/trial-instances/display-trial-header/display-trial.utils';
 import * as Date from '@/utils/date';
 import { vi } from 'vitest';
+import { RegisteredPlatformWithDaysLeft } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 
 jest.mock('@/utils/date', () => ({
   daysUntil: jest.fn(),

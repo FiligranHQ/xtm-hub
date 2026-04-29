@@ -1,12 +1,12 @@
 'use client';
 
-import Loader from '@/components/loader';
 import { DocumentsItemQuery } from '@/components/service/document/document.graphql';
-import IntegrationSlug from '@/components/service/integrations/[slug]/integration-slug';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
+import Loader from '@/components/Loader';
+import IntegrationSlug from '@/components/service/integrations/[slug]/IntegrationSlug';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 // Component interface
 interface PreloaderProps {

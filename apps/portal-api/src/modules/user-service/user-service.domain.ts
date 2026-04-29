@@ -26,14 +26,14 @@ import { restrictSubscriptionToUserOrganization } from '../../security/restricti
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { ErrorCode } from '../../utils/error/error.code';
-import { formatRawObject } from '../../utils/queryRaw.util';
+import { formatRawObject } from '../../utils/query-raw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { loadUserOrganization } from '../common/user-organization.domain';
-import { loadUserBy } from '../organization-management/users/user-domain/users.domain';
+import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
 import {
   getOrCreateUser,
   insertUserIntoOrganization,
-} from '../organization-management/users/users.helper';
+} from '../organization-management/user/user.helper';
 import {
   GenericServiceCapabilityIds,
   GenericServiceCapabilityName,

@@ -1,6 +1,7 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 import nextTypescript from 'eslint-config-next/typescript';
+import unicorn from 'eslint-plugin-unicorn';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -12,6 +13,11 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    plugins: {
+      unicorn,
+    },
+  },
   ...nextCoreWebVitals,
   ...nextTypescript,
   ...compat.extends('prettier'),
@@ -46,8 +52,32 @@ const eslintConfig = [
           allow: ['warn', 'error'],
         },
       ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ImportDeclaration[source.value=/^(\\.\\.\\/){2,}/]',
+          message: "Avoid deep relative imports. Use '@/...'.",
+        },
+      ],
     },
   },
+
+  // Default → kebab-case (utils, hooks, etc.)
+  {
+    files: ['**/*.{ts,tsx}'],
+    ignores: ['**/components/**', '**/__generated__/**'],
+    rules: {
+      'unicorn/filename-case': ['error', { case: 'kebabCase' }],
+    },
+  },
+  // Components → PascalCase
+  {
+    files: ['**/components/**/*.tsx'],
+    rules: {
+      'unicorn/filename-case': ['error', { case: 'pascalCase' }],
+    },
+  },
+
   {
     files: ['scripts/**/*.ts'],
     rules: {

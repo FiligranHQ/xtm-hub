@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 
-import '../../../styles/globals.css';
+import '@styles/globals.css';
 
-import serverPortalApiFetch from '@/relay/serverPortalApiFetch';
+import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 
-import { AdminBanner } from '@/components/admin/admin-banner';
-import { TestEnvBanner } from '@/components/admin/test-env-banner';
-import { ContentLayout } from '@/components/content-layout';
-import HeaderComponent from '@/components/header';
-import Menu from '@/components/menu/menu';
-import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/try-filigran-products-banner';
-import { RelayProvider } from '@/relay/RelayProvider';
+import { AdminBanner } from '@/components/admin/AdminBanner';
+import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
+import { ContentLayout } from '@/components/ContentLayout';
+import HeaderComponent from '@/components/Header';
+import Menu from '@/components/menu/Menu';
+import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
+import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { buildLoginRedirect } from '@/utils/redirect';

@@ -1,0 +1,106 @@
+import { cn } from '@/lib/utils';
+import {
+  AnalyticsIcon,
+  ArrowRightAltIcon,
+  ArrowsInputIcon,
+  ArrowsOutputIcon,
+} from '@filigran/icon';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import React from 'react';
+import { TrialsStorageLimitation } from '@/components/service/trial-instances/TrialsStorageLimitation';
+
+const H2 = ({ children }: { children: React.ReactNode }) => (
+  <h2 className="text-blue text-2xl mb-l">{children}</h2>
+);
+
+const P = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => <p className={cn('text-sm', className)}>{children}</p>;
+
+interface Props {
+  platformIdentifier: PlatformIdentifierEnum;
+}
+
+export const TrialsLearnMore = ({ platformIdentifier }: Props) => {
+  const t = useTranslations();
+  const baseTranslationKey = `Service.Trials.LearnMore.${platformIdentifier}`;
+  return (
+    <>
+      <section className="flex flex-col gap-xxl py-20 pt-0">
+        <div className="flex flex-col gap-xl items-center lg:flex-row">
+          <div className="w-[413px]">
+            <iframe
+              width="413"
+              height="232"
+              allowFullScreen
+              src={
+                platformIdentifier === PlatformIdentifierEnum.OPENCTI
+                  ? 'https://www.youtube.com/embed/KwF22zye3iI'
+                  : 'https://www.youtube.com/embed/wb_v7sa7y8w'
+              }
+            />
+          </div>
+          <article className="p-xl w-full md-w-[60%]">
+            <H2>{t(`${baseTranslationKey}.WhatCanYouDo.Title`)}</H2>
+            <P className="mb-l">
+              {t(`${baseTranslationKey}.WhatCanYouDo.FirstParagraph`)}
+            </P>
+            <P className="mb-l">
+              {t(`${baseTranslationKey}.WhatCanYouDo.SecondParagraph`)}
+            </P>
+            <P>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href={
+                  platformIdentifier === PlatformIdentifierEnum.OPENCTI
+                    ? 'https://filigran.io/offerings/opencti-enterprise-edition/'
+                    : 'https://filigran.io/offerings/openaev-enterprise-edition/'
+                }
+                className="underline flex gap-s items-center">
+                <ArrowRightAltIcon className="size-3" />
+                {t(`${baseTranslationKey}.WhatCanYouDo.Link`)}
+              </Link>
+            </P>
+          </article>
+        </div>
+        <div className="flex flex-col md:flex-row justify-between gap-l">
+          <article className="border border-solid border-b rounded p-6 basis-full">
+            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+              <span className="p-2 bg-blue/5 rounded">
+                <ArrowsInputIcon className="size-4" />
+              </span>
+              {t(`${baseTranslationKey}.Blocks.First.Title`)}
+            </h3>
+            <P>{t(`${baseTranslationKey}.Blocks.First.Description`)}</P>
+          </article>
+          <article className="border border-solid border-b rounded p-6 basis-full">
+            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+              <span className="p-2 bg-blue/5 rounded">
+                <AnalyticsIcon className="size-4" />
+              </span>
+              {t(`${baseTranslationKey}.Blocks.Second.Title`)}
+            </h3>
+            <P>{t(`${baseTranslationKey}.Blocks.Second.Description`)}</P>
+          </article>
+          <article className="border border-solid border-b rounded p-6 basis-full">
+            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+              <span className="p-2 bg-blue/5 rounded">
+                <ArrowsOutputIcon className="size-4" />
+              </span>
+              {t(`${baseTranslationKey}.Blocks.Third.Title`)}
+            </h3>
+            <P>{t(`${baseTranslationKey}.Blocks.Third.Description`)}</P>
+          </article>
+        </div>
+        <TrialsStorageLimitation platformIdentifier={platformIdentifier} />
+      </section>
+    </>
+  );
+};

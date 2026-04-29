@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { getMetadataBase } from './metadata';
 
-vi.mock('../../app/redirect/[identifier]/utils/load', () => ({
+vi.mock('@app/redirect/[identifier]/utils/load', () => ({
   loadBaseUrlFront: vi.fn(),
 }));
 
-import { loadBaseUrlFront } from '../../app/redirect/[identifier]/utils/load';
+import { loadBaseUrlFront } from '@app/redirect/[identifier]/utils/load';
 
 describe('getMetadataBase', () => {
   it.each`

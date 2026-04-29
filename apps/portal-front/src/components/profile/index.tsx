@@ -1,25 +1,22 @@
 'use client';
 
-import { PortalContext } from '@/components/me/app-portal-context';
 import {
   MeEditUserMutation,
   MeResetPasswordMutation,
   MeUploadUserPictureMutation,
 } from '@/components/me/me.graphql';
-import {
-  ProfileFormEdit,
-  ProfileFormEditSchema,
-} from '@/components/profile/form/edit';
-import { ProfileFormPicture } from '@/components/profile/form/picture';
-import { ProfileFormPreferences } from '@/components/profile/form/preferences';
-import { RequestTransferPersonalSpace } from '@/components/profile/form/request-transfer-personal-space';
-import { ProfileFormResetPassword } from '@/components/profile/form/reset-password';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
-import { fileListToUploadableMap } from '@/relay/environment/fetchFormData';
 import { toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
+import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { ProfileFormEdit, ProfileFormEditSchema } from '@/components/profile/form/Edit';
+import { ProfileFormPicture } from '@/components/profile/form/Picture';
+import { ProfileFormPreferences } from '@/components/profile/form/Preferences';
+import { RequestTransferPersonalSpace } from '@/components/profile/form/RequestTransferPersonalSpace';
+import { ProfileFormResetPassword } from '@/components/profile/form/ResetPassword';
 
 export const Profile: React.FC = () => {
   const t = useTranslations();
