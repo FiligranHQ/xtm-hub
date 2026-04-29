@@ -36,9 +36,9 @@ vi.mock('./modules/deployment/deployment.app', () => ({
 }));
 
 vi.mock(
-  './modules/organization-management/users/user-organization/users.organization.app',
+  './modules/organization-management/user/user-organization/user.organization.app',
   () => ({
-    UsersOrganizationApp: {
+    UserOrganizationApp: {
       sendPendingUsersDigest: cronMocks.sendPendingUsersDigestMock,
     },
   })
@@ -60,6 +60,7 @@ vi.mock('./modules/deployment/group/service-group.app', () => ({
 vi.mock('./utils/app-logger.util', () => ({
   logApp: {
     info: vi.fn(),
+    warn: vi.fn(),
     error: vi.fn(),
   },
 }));

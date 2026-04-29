@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@types/node": "24.12.2",
+    "eslint-plugin-unicorn": "64.0.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3"
   },

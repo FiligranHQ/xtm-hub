@@ -19,7 +19,7 @@ import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
 import { addCapabilitiesToSubscription } from '../security-management/service-capability/subscription-capability.domain';
 import {
   loadServiceDefinitionByServiceInstance,

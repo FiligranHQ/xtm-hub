@@ -14,7 +14,7 @@ import {
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
-import { formatRawObject } from '../../../utils/queryRaw.util';
+import { formatRawObject } from '../../../utils/query-raw.util';
 import { extractId, omit } from '../../../utils/utils';
 import { Document } from '../document.helper';
 

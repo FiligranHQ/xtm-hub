@@ -1,8 +1,5 @@
 'use client';
 
-import Loader from '@/components/loader';
-import ServiceList from '@/components/service/service-list';
-import useMountingLoader from '@/hooks/useMountingLoader';
 import * as React from 'react';
 import { useEffect } from 'react';
 import {
@@ -10,6 +7,9 @@ import {
   useQueryLoader,
   useRefetchableFragment,
 } from 'react-relay';
+import Loader from '@/components/Loader';
+import ServiceList from '@/components/service/ServiceList';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 
 import {
   ServiceListQuery,

@@ -1,6 +1,6 @@
 'use client';
-import { TransferPersonalSpace } from '@/components/profile/form/transfer-personal-space';
 import { useSearchParams } from 'next/navigation';
+import { TransferPersonalSpace } from '@/components/profile/form/TransferPersonalSpace';
 
 const PageLoader = () => {
   const searchParams = useSearchParams();

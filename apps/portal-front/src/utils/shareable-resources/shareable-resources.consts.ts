@@ -1,4 +1,4 @@
-import { ServiceSlug } from './shareable-resources.types';
+import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 
 export interface ServiceConfig {
   redirectPath: string;

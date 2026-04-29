@@ -1,5 +1,5 @@
 'use client';
-import AppError from '@/components/app-error';
+import AppError from '@/components/AppError';
 
 export default function Error({
   error,

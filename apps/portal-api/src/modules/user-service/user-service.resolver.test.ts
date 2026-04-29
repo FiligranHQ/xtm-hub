@@ -24,7 +24,7 @@ import {
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
-import * as usersDomain from '../organization-management/users/user-domain/users.domain';
+import * as usersDomain from '../organization-management/user/user-domain/user.domain';
 import { UserServiceApp } from './user-service.app';
 import { UserServiceDomain } from './user-service.domain';
 import userServiceResolver from './user-service.resolver';

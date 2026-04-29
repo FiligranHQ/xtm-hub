@@ -20,7 +20,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { FullyQualifiedDeploymentRequest } from '../deployment/deployment.domain';
-import { loadOrganizationsByUser } from '../organization-management/organizations/organizations.domain';
+import { loadOrganizationsByUser } from '../organization-management/organization/organization.domain';
 import {
   createSubscription,
   loadSubscriptionBy,

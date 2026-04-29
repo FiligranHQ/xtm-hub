@@ -1,7 +1,6 @@
 'use client';
 
 import { DocumentsListQuery } from '@/components/service/document/document.graphql';
-import DocumentList from '@/components/service/vault/[slug]/document-list';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
@@ -9,6 +8,7 @@ import { DataTable } from '@filigran/ui';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
+import DocumentList from '@/components/service/vault/[slug]/DocumentList';
 
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';

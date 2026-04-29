@@ -1,11 +1,11 @@
-import { serverMutateGraphQL } from '@/relay/serverPortalApiFetch';
-import { isValueInEnum } from '@/utils/isValueInEnum';
 import { APP_PATH } from '@/utils/path/constant';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import OrganizationSwitcherMutation, {
-  organizationSwitcherMutation,
-} from '@generated/organizationSwitcherMutation.graphql';
+  OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
+} from '@generated/OrganizationSwitcherMutation.graphql';
 import { NextRequest, NextResponse } from 'next/server';
+import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
+import { isValueInEnum } from '@/utils/is-value-in-enum';
 import {
   loadBaseUrlFront,
   loadMeUser,
@@ -15,7 +15,7 @@ import {
 import { getLoginRedirectionURL } from './utils/url';
 
 async function switchOrganization(organization_id: string) {
-  await serverMutateGraphQL<organizationSwitcherMutation>(
+  await serverMutateGraphQL<OrganizationSwitcherMutationType>(
     OrganizationSwitcherMutation,
     {
       organization_id,
