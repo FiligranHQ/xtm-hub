@@ -21,6 +21,7 @@ enum ServiceInstanceTag {
 }
 
 enum ServiceInstanceFilterKey {
+  id
   tags
   service_definition_identifier
   public
@@ -115,10 +116,6 @@ type Query {
   ): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
     @auth
-  serviceInstanceByIdWithSubscriptions(
-    service_instance_id: ServiceInstanceId
-    searchTerm: String
-  ): ServiceInstance @auth @service_capa(requires: [MANAGE_ACCESS])
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
 }

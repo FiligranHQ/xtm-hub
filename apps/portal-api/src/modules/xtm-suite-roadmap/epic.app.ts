@@ -64,10 +64,9 @@ export const EpicApp = {
   ): Promise<Epic> => {
     const { user } = requestContext.require();
 
-    const serviceInstance = await loadServiceInstanceBy(
-      'slug',
-      'xtm-suite-roadmap'
-    );
+    const serviceInstance = await loadServiceInstanceBy({
+      slug: 'xtm-suite-roadmap',
+    });
 
     await assertUserHasCapaOnService(user, serviceInstance.id, [
       ServiceRestriction.Upsert,
@@ -89,10 +88,9 @@ export const EpicApp = {
   updateEpic: async (id: EpicId, input: UpdateEpicInput, uploads: Upload[]) => {
     const { user } = requestContext.require();
 
-    const serviceInstance = await loadServiceInstanceBy(
-      'slug',
-      'xtm-suite-roadmap'
-    );
+    const serviceInstance = await loadServiceInstanceBy({
+      slug: 'xtm-suite-roadmap',
+    });
     await assertUserHasCapaOnService(user, serviceInstance.id, [
       ServiceRestriction.Upsert,
     ]);
@@ -131,10 +129,9 @@ export const EpicApp = {
   deleteEpic: async (id: EpicId) => {
     const { user } = requestContext.require();
 
-    const serviceInstance = await loadServiceInstanceBy(
-      'slug',
-      'xtm-suite-roadmap'
-    );
+    const serviceInstance = await loadServiceInstanceBy({
+      slug: 'xtm-suite-roadmap',
+    });
 
     await assertUserHasCapaOnService(user, serviceInstance.id, [
       ServiceRestriction.Delete,

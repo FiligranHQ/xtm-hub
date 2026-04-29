@@ -46,11 +46,15 @@ interface ServiceSlugProps {
 
 const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const queryData = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
+  const queryDataRequest = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
     ServiceByIdWithSubscriptions,
     queryRef
   );
 
+  const [queryData] =
+    queryDataRequest.serviceInstances?.edges
+      .map((edge) => edge?.node)
+      .filter((node) => node != null) ?? [];
   const [commitSubscriptionMutation] = useMutation<subscriptionDeleteMutation>(
     SubscriptionDeleteMutation
   );
@@ -81,7 +85,7 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
         ]
       : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
     {
-      label: queryData.serviceInstanceByIdWithSubscriptions!.name,
+      label: queryData?.name ?? '',
       original: true,
     },
   ];
@@ -201,22 +205,18 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
             title={
               t('OrganizationInServiceAction.AddOrganization') +
               ' ' +
-              queryData?.serviceInstanceByIdWithSubscriptions?.name
+              queryData?.name
             }>
             <ServiceSlugAddOrgaForm
               subscriptions={
-                queryData?.serviceInstanceByIdWithSubscriptions
-                  ?.subscriptions as subscriptionWithUserService_fragment$data[]
+                queryData?.subscriptions as subscriptionWithUserService_fragment$data[]
               }
               capabilities={
-                queryData?.serviceInstanceByIdWithSubscriptions
-                  ?.service_definition
+                queryData?.service_definition
                   ?.service_capability as unknown as serviceCapability_fragment$data[]
               }
               serviceId={serviceId}
-              serviceName={
-                queryData.serviceInstanceByIdWithSubscriptions?.name ?? ''
-              }
+              serviceName={queryData?.name ?? ''}
             />
           </SheetWithPreventingDialog>
         )}
@@ -225,10 +225,8 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
     </div>
   );
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const filteredAndSortedData = useMemo(() => {
-    const subscriptions =
-      queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? [];
+    const subscriptions = queryData?.subscriptions ?? [];
 
     const filteredBySpace = subscriptions.filter(
       (subscription) =>
@@ -250,21 +248,13 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
     });
 
     return sorted as subscriptionWithUserService_fragment$data[];
-  }, [
-    queryData.serviceInstanceByIdWithSubscriptions?.subscriptions,
-    shouldDisplayPersonalSpaces,
-    searchTerm,
-  ]);
+  }, [queryData?.subscriptions, shouldDisplayPersonalSpaces, searchTerm]);
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">
-        {queryData.serviceInstanceByIdWithSubscriptions?.name}
-      </h1>
-      <div className="pb-s italic">
-        {queryData.serviceInstanceByIdWithSubscriptions?.description}
-      </div>
+      <h1 className="pb-s">{queryData?.name}</h1>
+      <div className="pb-s italic">{queryData?.description}</div>
       <div className="pb-s">{t('Service.Management.Description') + ':'}</div>
 
       <DataTable

@@ -337,11 +337,19 @@ export const loadServiceInstanceById = async (
     .first();
 };
 
-export const loadServiceInstanceBy = async (field: string, value: string) => {
-  return db<ServiceInstance>('ServiceInstance')
-    .where({ [field]: value })
-    .select('ServiceInstance.*')
-    .first();
+export const loadServiceInstanceBy = async (
+  field: ServiceInstanceMutator,
+  searchTerm?: string
+) => {
+  const query = db<ServiceInstance>('ServiceInstance')
+    .where(field)
+    .modify((queryBuilder) => {
+      if (searchTerm) {
+        queryBuilder.where('org.name', 'ILIKE', `%${searchTerm}%`);
+      }
+    });
+
+  return query.select('ServiceInstance.*').first();
 };
 
 export const loadServiceWithSubscriptions = async (
@@ -548,10 +556,9 @@ export const grantServiceAccess = async (
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
-  const serviceInstance = await loadServiceInstanceBy(
-    'ServiceInstance.id',
-    subscription.service_instance_id
-  );
+  const serviceInstance = await loadServiceInstanceBy({
+    id: subscription.service_instance_id,
+  });
 
   const service_definition = await loadServiceDefinitionByServiceInstance(
     serviceInstance.id

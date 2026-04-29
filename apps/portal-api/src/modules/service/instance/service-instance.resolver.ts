@@ -20,7 +20,6 @@ import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstances,
   loadServiceInstanceSubscriptions,
-  loadServiceWithSubscriptions,
 } from './service-instance.domain';
 
 const resolvers: Resolvers = {
@@ -80,12 +79,6 @@ const resolvers: Resolvers = {
         context.user,
         service_instance_id
       );
-    },
-    serviceInstanceByIdWithSubscriptions: async (
-      _,
-      { service_instance_id, searchTerm }
-    ) => {
-      return loadServiceWithSubscriptions(service_instance_id, searchTerm);
     },
     seoServiceInstances: async () => {
       return ServiceInstanceApp.loadSeoServiceInstances();

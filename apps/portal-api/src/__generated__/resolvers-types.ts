@@ -1425,7 +1425,6 @@ export type Query = {
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById?: Maybe<ServiceInstance>;
-  serviceInstanceByIdWithSubscriptions?: Maybe<ServiceInstance>;
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
@@ -1598,12 +1597,6 @@ export type QueryServiceGroupsArgs = {
 
 
 export type QueryServiceInstanceByIdArgs = {
-  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
-};
-
-
-export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
-  searchTerm?: InputMaybe<Scalars['String']['input']>;
   service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
@@ -1904,6 +1897,7 @@ export type ServiceInstanceFilter = {
 };
 
 export enum ServiceInstanceFilterKey {
+  Id = 'id',
   Public = 'public',
   ServiceDefinitionIdentifier = 'service_definition_identifier',
   Tags = 'tags'
@@ -3471,7 +3465,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
-  serviceInstanceByIdWithSubscriptions?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdWithSubscriptionsArgs>>;
   serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;

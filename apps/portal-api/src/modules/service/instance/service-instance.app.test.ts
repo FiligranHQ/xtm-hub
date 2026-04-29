@@ -410,10 +410,9 @@ describe('service Instance app', () => {
 
       // Then
       const unchangedInstance =
-        await serviceInstanceDomain.loadServiceInstanceBy(
-          'id',
-          serviceInstance.id
-        );
+        await serviceInstanceDomain.loadServiceInstanceBy({
+          id: serviceInstance.id,
+        });
       expect(unchangedInstance.name).toBe('Default name serviceInstance');
     });
 

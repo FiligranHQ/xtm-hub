@@ -123,7 +123,6 @@ type Query {
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
-  serviceInstanceByIdWithSubscriptions(service_instance_id: ServiceInstanceId, searchTerm: String): ServiceInstance
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
@@ -1071,6 +1070,7 @@ enum ServiceInstanceTag {
 }
 
 enum ServiceInstanceFilterKey {
+  id
   tags
   service_definition_identifier
   public

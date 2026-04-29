@@ -153,10 +153,9 @@ export const UserServiceDomain = {
     });
 
     const user = await loadUserBy({ 'User.id': user_id });
-    const serviceInstance = await loadServiceInstanceBy(
-      'ServiceInstance.id',
-      subscription.service_instance_id
-    );
+    const serviceInstance = await loadServiceInstanceBy({
+      id: subscription.service_instance_id,
+    });
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       serviceInstance.id
     );
