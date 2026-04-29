@@ -128,9 +128,9 @@ type Query {
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
   updateOpenCTIManifest(tag: String): Success!
-  subscriptionById(subscription_id: ID): SubscriptionModel
+  subscriptionById(subscription_id: SubscriptionId): SubscriptionModel
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
-  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
+  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: SubscriptionId!): UserServiceConnection
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
   node(id: ID!): Node
 }
@@ -184,7 +184,7 @@ type Mutation {
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
   addSubscriptionInService(service_instance_id: ServiceInstanceId, organization_id: OrganizationId, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
-  deleteSubscription(subscription_id: ID!): ServiceInstance
+  deleteSubscription(subscription_id: SubscriptionId!): ServiceInstance
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
@@ -1505,6 +1505,11 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   demo_url: String
 }
 
+"""
+A Relay global ID for Subscription, extracted to a branded SubscriptionId string
+"""
+scalar SubscriptionId
+
 enum SubscriptionOrdering {
   organization_name
   start_date
@@ -1600,7 +1605,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
-  subscriptionId: ID
+  subscriptionId: SubscriptionId
 }
 
 input UserServiceAddYourselfInput {
@@ -1611,7 +1616,7 @@ input UserServiceAddYourselfInput {
 input UserServiceDeleteInput {
   email: String!
   capabilities: [String]
-  subscriptionId: String!
+  subscriptionId: SubscriptionId!
 }
 
 type UserServiceConnection {

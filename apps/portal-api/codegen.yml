@@ -21,3 +21,4 @@ generates:
         DocumentId: "../model/kanel/public/Document.js#DocumentId"
         UserId: "../model/kanel/public/User.js#UserId"
         UseCaseId: "../model/kanel/public/UseCase.js#UseCaseId"
+        SubscriptionId: "../model/kanel/public/Subscription.js#SubscriptionId"

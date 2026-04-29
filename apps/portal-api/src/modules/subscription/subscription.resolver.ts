@@ -7,6 +7,7 @@ import {
 } from '../../model/kanel/public/Subscription';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { createRelayIdScalar } from '../../utils/scalar.util';
 import { extractId } from '../../utils/utils';
 import {
   loadServiceInstanceBy,
@@ -21,6 +22,7 @@ import {
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
+  SubscriptionId: createRelayIdScalar<SubscriptionId>('Subscription'),
   SubscriptionModel: {
     subscription_capability: ({ id }, _) => getSubscriptionCapability(id),
     service_instance: ({ service_instance_id }, _) =>
@@ -78,9 +80,7 @@ const resolvers: Resolvers = {
     deleteSubscription: async (_, { subscription_id }) => {
       try {
         const { service_instance_id } =
-          await subscriptionApp.deleteSubscription(
-            extractId<SubscriptionId>(subscription_id)
-          );
+          await subscriptionApp.deleteSubscription(subscription_id);
 
         return loadServiceWithSubscriptions(service_instance_id);
       } catch (error) {
@@ -95,7 +95,7 @@ const resolvers: Resolvers = {
     subscriptionById: async (_, { subscription_id }) => {
       const subscriptions =
         await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-          'Subscription.id': extractId<SubscriptionId>(subscription_id),
+          'Subscription.id': subscription_id,
         } as SubscriptionMutator);
 
       return subscriptions[0];

@@ -3,6 +3,7 @@ import type { DeploymentRequestId } from '../model/kanel/public/DeploymentReques
 import type { DocumentId } from '../model/kanel/public/Document.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
+import type { SubscriptionId } from '../model/kanel/public/Subscription.js';
 import type { UseCaseId } from '../model/kanel/public/UseCase.js';
 import type { UserId } from '../model/kanel/public/User.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
@@ -31,6 +32,7 @@ export type Scalars = {
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
   ServiceGroupId: { input: any; output: any; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
+  SubscriptionId: { input: SubscriptionId; output: SubscriptionId; }
   Upload: { input: any; output: any; }
   UseCaseId: { input: UseCaseId; output: UseCaseId; }
   UserId: { input: UserId; output: UserId; }
@@ -1006,7 +1008,7 @@ export type MutationDeleteOrganizationArgs = {
 
 
 export type MutationDeleteSubscriptionArgs = {
-  subscription_id: Scalars['ID']['input'];
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 
@@ -1623,7 +1625,7 @@ export type QueryServiceInstancesArgs = {
 
 
 export type QuerySubscriptionByIdArgs = {
-  subscription_id?: InputMaybe<Scalars['ID']['input']>;
+  subscription_id?: InputMaybe<Scalars['SubscriptionId']['input']>;
 };
 
 
@@ -1652,7 +1654,7 @@ export type QueryUserServiceFromSubscriptionArgs = {
   first: Scalars['Int']['input'];
   orderBy: UserServiceOrdering;
   orderMode: OrderingMode;
-  subscription_id: Scalars['ID']['input'];
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 
@@ -2319,7 +2321,7 @@ export type UserService = Node & {
 export type UserServiceAddInput = {
   capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Array<Scalars['String']['input']>;
-  subscriptionId?: InputMaybe<Scalars['ID']['input']>;
+  subscriptionId?: InputMaybe<Scalars['SubscriptionId']['input']>;
 };
 
 export type UserServiceAddYourselfInput = {
@@ -2345,7 +2347,7 @@ export type UserServiceConnection = {
 export type UserServiceDeleteInput = {
   capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Scalars['String']['input'];
-  subscriptionId: Scalars['String']['input'];
+  subscriptionId: Scalars['SubscriptionId']['input'];
 };
 
 export type UserServiceDeleted = Node & {
@@ -2617,6 +2619,7 @@ export type ResolversTypes = ResolversObject<{
   Subscription: ResolverTypeWrapper<{}>;
   SubscriptionCapability: ResolverTypeWrapper<SubscriptionCapability>;
   SubscriptionEdge: ResolverTypeWrapper<SubscriptionEdge>;
+  SubscriptionId: ResolverTypeWrapper<Scalars['SubscriptionId']['output']>;
   SubscriptionModel: ResolverTypeWrapper<SubscriptionModel>;
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
@@ -2779,6 +2782,7 @@ export type ResolversParentTypes = ResolversObject<{
   Subscription: {};
   SubscriptionCapability: SubscriptionCapability;
   SubscriptionEdge: SubscriptionEdge;
+  SubscriptionId: Scalars['SubscriptionId']['output'];
   SubscriptionModel: SubscriptionModel;
   Success: Success;
   TaxiiFeed: TaxiiFeed;
@@ -3738,6 +3742,10 @@ export type SubscriptionEdgeResolvers<ContextType = PortalContext, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface SubscriptionIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['SubscriptionId'], any> {
+  name: 'SubscriptionId';
+}
+
 export type SubscriptionModelResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscriptionModel'] = ResolversParentTypes['SubscriptionModel']> = ResolversObject<{
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4037,6 +4045,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Subscription?: SubscriptionResolvers<ContextType>;
   SubscriptionCapability?: SubscriptionCapabilityResolvers<ContextType>;
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
+  SubscriptionId?: GraphQLScalarType;
   SubscriptionModel?: SubscriptionModelResolvers<ContextType>;
   Success?: SuccessResolvers<ContextType>;
   TaxiiFeed?: TaxiiFeedResolvers<ContextType>;

@@ -6,7 +6,7 @@ export const UserServiceFromSubscription = graphql`
     $cursor: ID
     $orderBy: UserServiceOrdering!
     $orderMode: OrderingMode!
-    $subscriptionId: ID!
+    $subscriptionId: SubscriptionId!
   ) {
     ...userServiceFromSubscription
   }

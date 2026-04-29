@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -114,10 +113,9 @@ describe('userService field resolvers', () => {
 });
 
 describe('user service from subscription GraphQL query', () => {
-  it('should decode subscription_id from global ID and delegate to UserServiceDomain', async () => {
+  it('should delegate to UserServiceDomain', async () => {
     // Given
-    const rawSubscriptionId = uuidv4() as SubscriptionId;
-    const globalSubscriptionId = toGlobalId('Subscription', rawSubscriptionId);
+    const subscriptionId = uuidv4() as SubscriptionId;
     const paginationArgs = {
       first: 10,
       after: null,
@@ -127,7 +125,7 @@ describe('user service from subscription GraphQL query', () => {
     const userServiceId = uuidv4() as UserServiceId;
     const userService: UserService = {
       id: userServiceId,
-      subscription_id: rawSubscriptionId,
+      subscription_id: subscriptionId,
       user_id: uuidv4(),
     };
     const edge: UserServiceEdge = {
@@ -154,7 +152,7 @@ describe('user service from subscription GraphQL query', () => {
     const result = await userServiceResolver.Query!
       .userServiceFromSubscription!(
       {},
-      { ...paginationArgs, subscription_id: globalSubscriptionId },
+      { ...paginationArgs, subscription_id: subscriptionId },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -162,18 +160,17 @@ describe('user service from subscription GraphQL query', () => {
     // Then
     expect(
       UserServiceDomain.loadUserServiceBySubscription
-    ).toHaveBeenCalledWith(paginationArgs, rawSubscriptionId);
+    ).toHaveBeenCalledWith(paginationArgs, subscriptionId);
     expect(result).toEqual(expected);
   });
 });
 
 describe('add user service GraphQL mutation', () => {
-  it('should decode subscriptionId from global ID and delegate to UserServiceApp', async () => {
+  it('should delegate to UserServiceApp', async () => {
     // Given
-    const rawSubscriptionId = uuidv4() as SubscriptionId;
-    const globalSubscriptionId = toGlobalId('Subscription', rawSubscriptionId);
+    const subscriptionId = uuidv4() as SubscriptionId;
     const input = {
-      subscriptionId: globalSubscriptionId,
+      subscriptionId: subscriptionId,
       email: ['user@test.com'],
       capabilities: ['MANAGE_ACCESS'],
     };
@@ -193,7 +190,7 @@ describe('add user service GraphQL mutation', () => {
     // Then
     expect(UserServiceApp.addUserService).toHaveBeenCalledWith(
       contextSimpleUserFiligran2.user,
-      rawSubscriptionId,
+      subscriptionId,
       input.email,
       input.capabilities
     );
@@ -202,8 +199,7 @@ describe('add user service GraphQL mutation', () => {
 
   it('should map to ForbiddenAccess for EditCapabilitiesCantRemoveLastManageAccess error', async () => {
     // Given
-    const rawSubscriptionId = uuidv4() as SubscriptionId;
-    const globalSubscriptionId = toGlobalId('Subscription', rawSubscriptionId);
+    const subscriptionId = uuidv4() as SubscriptionId;
     vi.spyOn(UserServiceApp, 'addUserService').mockRejectedValue(
       new Error(ForbiddenErrorCode.EditCapabilitiesCantRemoveLastManageAccess)
     );
@@ -213,7 +209,7 @@ describe('add user service GraphQL mutation', () => {
       {},
       {
         input: {
-          subscriptionId: globalSubscriptionId,
+          subscriptionId: subscriptionId,
           email: ['user@test.com'],
           capabilities: [],
         },
@@ -230,15 +226,14 @@ describe('add user service GraphQL mutation', () => {
 });
 
 describe('delete user service GraphQL mutation', () => {
-  it('should decode subscriptionId from global ID and delegate to UserServiceApp', async () => {
+  it('should delegate to UserServiceApp', async () => {
     // Given
-    const rawSubscriptionId = uuidv4() as SubscriptionId;
-    const globalSubscriptionId = toGlobalId('Subscription', rawSubscriptionId);
+    const subscriptionId = uuidv4() as SubscriptionId;
     const email = 'user@test.com';
     const expected = {
       id: uuidv4(),
       user_id: 'some-user-id' as UserId,
-      subscription_id: rawSubscriptionId,
+      subscription_id: subscriptionId,
     };
     vi.spyOn(UserServiceApp, 'deleteUserService').mockResolvedValue(
       expected as unknown as Awaited<
@@ -249,7 +244,7 @@ describe('delete user service GraphQL mutation', () => {
     // When
     const result = await userServiceResolver.Mutation!.deleteUserService!(
       {},
-      { input: { email, subscriptionId: globalSubscriptionId } },
+      { input: { email, subscriptionId: subscriptionId } },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -257,15 +252,14 @@ describe('delete user service GraphQL mutation', () => {
     // Then
     expect(UserServiceApp.deleteUserService).toHaveBeenCalledWith(
       email,
-      rawSubscriptionId
+      subscriptionId
     );
-    expect(result).toMatchObject({ subscription_id: rawSubscriptionId });
+    expect(result).toMatchObject({ subscription_id: subscriptionId });
   });
 
   it('should map to NotFound for SubscriptionNotFound error', async () => {
     // Given
-    const rawSubscriptionId = uuidv4() as SubscriptionId;
-    const globalSubscriptionId = toGlobalId('Subscription', rawSubscriptionId);
+    const subscriptionId = uuidv4() as SubscriptionId;
     vi.spyOn(UserServiceApp, 'deleteUserService').mockRejectedValue(
       new Error(NotFoundErrorCode.SubscriptionNotFound)
     );
@@ -274,7 +268,7 @@ describe('delete user service GraphQL mutation', () => {
     const call = userServiceResolver.Mutation!.deleteUserService!(
       {},
       {
-        input: { email: 'user@test.com', subscriptionId: globalSubscriptionId },
+        input: { email: 'user@test.com', subscriptionId: subscriptionId },
       },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
