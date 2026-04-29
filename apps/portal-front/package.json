@@ -30,7 +30,6 @@
     "autoprefixer": "10.5.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
-    "eslint-plugin-unicorn": "64.0.0",
     "extract-files": "13.0.0",
     "graphql": "16.13.2",
     "graphql-sse": "2.6.0",
