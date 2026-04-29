@@ -1,3 +1,5 @@
+scalar UseCaseId
+
 type UseCase implements Node {
   id: ID!
   name: String!

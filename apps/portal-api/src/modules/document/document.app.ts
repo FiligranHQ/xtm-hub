@@ -16,10 +16,8 @@ import Document, {
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { UseCaseId } from '../../model/kanel/public/UseCase';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { extractId } from '../../utils/utils';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -154,7 +152,7 @@ export const DocumentApp = {
         await objectUseCaseDomain.insertObjectUseCase(
           documentData.use_cases.map((id) => ({
             object_id: document.id as unknown as ObjectUseCaseObjectId,
-            use_case_id: extractId(id) as UseCaseId,
+            use_case_id: id,
           }))
         );
       }
@@ -304,7 +302,7 @@ export const DocumentApp = {
           await objectUseCaseDomain.insertObjectUseCase(
             input.use_cases.map((id) => ({
               object_id: parentDocumentId as unknown as ObjectUseCaseObjectId,
-              use_case_id: extractId(id) as UseCaseId,
+              use_case_id: id,
             }))
           );
         }

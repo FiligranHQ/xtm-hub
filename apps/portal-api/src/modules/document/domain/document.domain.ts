@@ -20,6 +20,7 @@ import { Document } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { UseCaseId } from '../../../model/kanel/public/UseCase';
 import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
@@ -35,7 +36,7 @@ export type DocumentData<T extends DocumentModel> = Omit<
   Partial<T>,
   'use_cases'
 > & {
-  use_cases?: string[];
+  use_cases?: UseCaseId[];
   parent_document_id?: DocumentId;
 };
 

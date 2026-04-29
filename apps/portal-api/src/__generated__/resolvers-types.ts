@@ -3,6 +3,7 @@ import type { DeploymentRequestId } from '../model/kanel/public/DeploymentReques
 import type { DocumentId } from '../model/kanel/public/Document.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
+import type { UseCaseId } from '../model/kanel/public/UseCase.js';
 import type { UserId } from '../model/kanel/public/User.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { PortalContext } from '../model/portal-context.js';
@@ -31,6 +32,7 @@ export type Scalars = {
   ServiceGroupId: { input: any; output: any; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
   Upload: { input: any; output: any; }
+  UseCaseId: { input: UseCaseId; output: UseCaseId; }
   UserId: { input: UserId; output: UserId; }
 };
 
@@ -202,7 +204,7 @@ export type CreateDocumentInput = {
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
   uploader_id: Scalars['UserId']['input'];
-  use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
+  use_cases?: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
 };
 
 export type CreateEpicInput = {
@@ -2203,7 +2205,7 @@ export type UpdateDocumentInput = {
   short_description?: InputMaybe<Scalars['String']['input']>;
   uploader_id?: InputMaybe<Scalars['UserId']['input']>;
   uploader_organization_id?: InputMaybe<Scalars['OrganizationId']['input']>;
-  use_cases?: InputMaybe<Array<Scalars['String']['input']>>;
+  use_cases?: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
 };
 
 export type UpdateEpicInput = {
@@ -2639,6 +2641,7 @@ export type ResolversTypes = ResolversObject<{
   UseCase: ResolverTypeWrapper<UseCase>;
   UseCaseConnection: ResolverTypeWrapper<UseCaseConnection>;
   UseCaseEdge: ResolverTypeWrapper<UseCaseEdge>;
+  UseCaseId: ResolverTypeWrapper<Scalars['UseCaseId']['output']>;
   UseCaseOrdering: UseCaseOrdering;
   User: ResolverTypeWrapper<User>;
   UserConnection: ResolverTypeWrapper<UserConnection>;
@@ -2798,6 +2801,7 @@ export type ResolversParentTypes = ResolversObject<{
   UseCase: UseCase;
   UseCaseConnection: UseCaseConnection;
   UseCaseEdge: UseCaseEdge;
+  UseCaseId: Scalars['UseCaseId']['output'];
   User: User;
   UserConnection: UserConnection;
   UserEdge: UserEdge;
@@ -3862,6 +3866,10 @@ export type UseCaseEdgeResolvers<ContextType = PortalContext, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface UseCaseIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UseCaseId'], any> {
+  name: 'UseCaseId';
+}
+
 export type UserResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   capabilities?: Resolver<Maybe<Array<ResolversTypes['Capability']>>, ParentType, ContextType>;
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -4040,6 +4048,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UseCase?: UseCaseResolvers<ContextType>;
   UseCaseConnection?: UseCaseConnectionResolvers<ContextType>;
   UseCaseEdge?: UseCaseEdgeResolvers<ContextType>;
+  UseCaseId?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
   UserEdge?: UserEdgeResolvers<ContextType>;

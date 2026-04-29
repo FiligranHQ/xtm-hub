@@ -607,7 +607,7 @@ input CreateDocumentInput {
   short_description: String!
   description: String!
   active: Boolean!
-  use_cases: [String!]
+  use_cases: [UseCaseId!]
   uploader_id: UserId!
 }
 
@@ -616,7 +616,7 @@ input UpdateDocumentInput {
   short_description: String
   description: String
   active: Boolean
-  use_cases: [String!]
+  use_cases: [UseCaseId!]
   uploader_organization_id: OrganizationId
   uploader_id: UserId
 }
@@ -1549,6 +1549,9 @@ input OneClickDeployInput {
 type SendTelemetryMutation {
   oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
 }
+
+"""A Relay global ID for UseCase, extracted to a branded UseCaseId string"""
+scalar UseCaseId
 
 type UseCase implements Node {
   id: ID!
