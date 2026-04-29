@@ -8534,7 +8534,7 @@ __metadata:
     eslint-plugin-jest: "npm:29.15.2"
     express: "npm:5.2.1"
     express-prom-bundle: "npm:8.0.0"
-    express-rate-limit: "npm:8.3.2"
+    express-rate-limit: "npm:8.4.1"
     express-session: "npm:1.19.0"
     glob: "npm:13.0.6"
     globals: "npm:17.5.0"
@@ -11707,14 +11707,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-rate-limit@npm:8.3.2":
-  version: 8.3.2
-  resolution: "express-rate-limit@npm:8.3.2"
+"express-rate-limit@npm:8.4.1":
+  version: 8.4.1
+  resolution: "express-rate-limit@npm:8.4.1"
   dependencies:
     ip-address: "npm:10.1.0"
   peerDependencies:
     express: ">= 4.11"
-  checksum: 10/71afac0fff29bf03117a89902953e7feafc67402332910cfb601b27da079b98f04ba551a1ef4f0ad5cf2538d9599c2649450af6d3f7505bcc7d24f7eaf765a4e
+  checksum: 10/2f979a261e6c95e31a62f2ce1cb9621566b0061706d0337091c8399617d6f09b28402ba4383aa3d72518374a7eec35be24f9703de59e563cc127ba14e2748a4d
   languageName: node
   linkType: hard
 

@@ -67,7 +67,7 @@
     "eslint-plugin-jest": "29.15.2",
     "express": "5.2.1",
     "express-prom-bundle": "8.0.0",
-    "express-rate-limit": "8.3.2",
+    "express-rate-limit": "8.4.1",
     "express-session": "1.19.0",
     "glob": "13.0.6",
     "graphql": "16.13.2",
