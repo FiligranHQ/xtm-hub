@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isValueInEnum } from './isValueInEnum';
+import { isValueInEnum } from './is-value-in-enum';
 
 describe('isValueInEnum', () => {
   // Test with string enum

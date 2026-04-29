@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hasProperty } from './hasProperty';
+import { hasProperty } from './has-property';
 
 describe('hasProperty', () => {
   it('should return true when object has the property', () => {

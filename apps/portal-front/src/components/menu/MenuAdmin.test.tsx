@@ -2,7 +2,7 @@ import testRender from '@/utils/test/test-render';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it } from 'vitest';
-import MenuAdmin from './menu-admin';
+import MenuAdmin from './MenuAdmin';
 
 describe('render MenuAdmin', () => {
   it('should render admin panel with all the menu with BYPASS capabilities', async () => {

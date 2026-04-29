@@ -2,7 +2,7 @@ import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { renderHook } from '@testing-library/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useEpicFilter } from './useEpicFilter';
+import { useEpicFilter } from './use-epic-filter';
 
 vi.mock('next/navigation');
 

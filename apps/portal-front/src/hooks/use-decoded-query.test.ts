@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { useSearchParams } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
-import useDecodedQuery from './useDecodedQuery';
+import useDecodedQuery from './use-decoded-query';
 
 vi.mock('next/navigation');
 

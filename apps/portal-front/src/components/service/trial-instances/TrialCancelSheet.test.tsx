@@ -3,7 +3,7 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { TrialCancelSheet } from './trial-cancel-sheet';
+import { TrialCancelSheet } from './TrialCancelSheet';
 
 let lastCancelDeploymentRequestVariables: Record<string, unknown> | null = null;
 
@@ -138,7 +138,7 @@ describe('TrialCancelSheet', () => {
     const toast = uiMod.toast as ReturnType<typeof vi.fn>;
     toast.mockClear();
     const { TrialCancelSheet: ErrorTrialCancelSheet } =
-      await import('./trial-cancel-sheet');
+      await import('./TrialCancelSheet');
     testRender(
       <ErrorTrialCancelSheet
         deploymentRequestId="id"

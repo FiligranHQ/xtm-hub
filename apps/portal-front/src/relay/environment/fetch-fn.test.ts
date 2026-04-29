@@ -1,6 +1,6 @@
 import { RequestParameters } from 'relay-runtime';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { networkFetch, UnauthenticatedError } from './fetchFn';
+import { networkFetch, UnauthenticatedError } from './fetch-fn';
 
 const mockRequest: RequestParameters = {
   id: null,

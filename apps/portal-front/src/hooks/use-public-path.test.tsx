@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { usePathname } from 'next/navigation';
-import usePublicPath from './usePublicPath';
+import usePublicPath from './use-public-path';
 
 vi.mock('next/navigation');
 

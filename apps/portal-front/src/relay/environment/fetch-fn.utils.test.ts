@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildCookieHeader, scrubSensitiveVariables } from './fetchFn.utils';
+import { buildCookieHeader, scrubSensitiveVariables } from './fetch-fn.utils';
 
 describe('scrubSensitiveVariables', () => {
   describe('sensitive top-level fields', () => {

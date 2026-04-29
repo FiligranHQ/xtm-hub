@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { useWindowSize } from 'usehooks-ts';
 import { describe, expect, it, vi } from 'vitest';
-import useIsMobile from './useIsMobile';
+import useIsMobile from './use-is-mobile';
 
 vi.mock('usehooks-ts');
 
