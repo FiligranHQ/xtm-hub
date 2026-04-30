@@ -23,7 +23,9 @@ export class SubscriptionSpy {
         }
       : {};
 
-    this.subscription = resolver.subscribe?.(null, args, context, info);
+    this.subscription = await Promise.resolve(
+      resolver.subscribe?.(null, args, context, info)
+    );
     if (!this.subscription?.[Symbol.asyncIterator]) {
       throw new Error('Resolver did not return a valid subscription');
     }
