@@ -1,5 +1,5 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
-import { AlertDialogComponent } from '@/components/ui/alert-dialog';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { useToast } from '@filigran/ui';
 import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';

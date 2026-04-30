@@ -1,4 +1,3 @@
-import { ServiceSlugDeleteSubscription } from '@/components/service/[slug]/service-slug-delete-subscription';
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
 import BadgeOverflowCounter, {
   BadgeOverflow,
@@ -30,7 +29,8 @@ import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { ServiceSlugAddSubscription } from './service-slug-add-subscription';
+import { ServiceSlugAddSubscription } from './ServiceSlugAddSubscription';
+import { ServiceSlugDeleteSubscription } from './ServiceSlugDeleteSubscription';
 
 interface ServiceSlugProps {
   subscriptions: subscription_fragment$data[];

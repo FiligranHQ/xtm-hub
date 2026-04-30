@@ -14,7 +14,7 @@ import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { createRelayIdScalar } from '../../utils/scalar.util';
 import { extractId } from '../../utils/utils';
-import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
 import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import {
