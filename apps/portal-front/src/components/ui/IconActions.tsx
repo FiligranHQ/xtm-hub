@@ -55,7 +55,7 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-[160px]">
+        className="w-[160px] z-[1500]">
         <IconActionContext.Provider value={{ setMenuOpen }}>
           {children}
         </IconActionContext.Provider>
