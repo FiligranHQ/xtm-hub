@@ -1,5 +1,9 @@
-import { Resolvers } from '../../__generated__/resolvers-types';
+import {
+  Resolvers,
+  SubscriptionModel,
+} from '../../__generated__/resolvers-types';
 
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
@@ -10,10 +14,8 @@ import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { createRelayIdScalar } from '../../utils/scalar.util';
 import { extractId } from '../../utils/utils';
-import {
-  loadServiceInstanceBy,
-  loadServiceWithSubscriptions,
-} from '../service/instance/service-instance.domain';
+import { loadOrganizationBy } from '../organization-management/organizations/organizations.domain';
+import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import {
   getServiceCapability,
@@ -29,48 +31,29 @@ const resolvers: Resolvers = {
     service_instance: ({ service_instance_id }, _) =>
       loadServiceInstanceBy({ id: service_instance_id as ServiceInstanceId }),
     user_service: ({ id }, _) => getUserService(id),
+    organization: ({ organization_id }, _) =>
+      loadOrganizationBy({ id: organization_id as OrganizationId }),
   },
   SubscriptionCapability: {
     service_capability: ({ id }, _) => getServiceCapability(id),
   },
   Mutation: {
-    addSubscription: async (_, { service_instance_id }) => {
-      try {
-        return await subscriptionApp.subscribeSelectedOrganizationToService({
-          serviceInstanceId: service_instance_id,
-        });
-      } catch (error) {
-        throw mapToGraphQLError(error);
-      }
-    },
-    addSubscriptionInService: async (
-      _,
-      {
-        service_instance_id,
-        organization_id,
-        capability_ids,
-        start_date,
-        end_date,
-      },
-      context
-    ) => {
+    createSubscription: async (_, { input }, context) => {
       try {
         const organizationId =
-          organization_id ?? context.user.selected_organization_id;
-        const serviceInstanceId = service_instance_id;
-        const capabilityIds = capability_ids.map((capability_id) =>
+          input.organization_id ?? context.user.selected_organization_id;
+        const serviceInstanceId = input.service_instance_id;
+        const capabilityIds = input.capability_ids.map((capability_id) =>
           extractId<ServiceCapabilityId>(capability_id)
         );
 
-        await subscriptionApp.subscribeOrganizationToService({
+        return (await subscriptionApp.subscribeOrganizationToService({
           organizationId,
           serviceInstanceId,
-          startDate: start_date,
-          endDate: end_date,
+          startDate: input.start_date,
+          endDate: input.end_date,
           capabilityIds,
-        });
-
-        return loadServiceWithSubscriptions(serviceInstanceId);
+        })) as unknown as SubscriptionModel;
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -80,10 +63,9 @@ const resolvers: Resolvers = {
     },
     deleteSubscription: async (_, { subscription_id }) => {
       try {
-        const { service_instance_id } =
-          await subscriptionApp.deleteSubscription(subscription_id);
-
-        return loadServiceWithSubscriptions(service_instance_id);
+        return (await subscriptionApp.deleteSubscription(
+          subscription_id
+        )) as unknown as SubscriptionModel;
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -100,6 +82,9 @@ const resolvers: Resolvers = {
         } as SubscriptionMutator);
 
       return subscriptions[0];
+    },
+    subscriptions: async (_, opt) => {
+      return subscriptionApp.loadSubscriptions(opt);
     },
   },
 };

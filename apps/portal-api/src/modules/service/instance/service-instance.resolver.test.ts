@@ -240,32 +240,6 @@ describe('service instance by id GraphQL query', () => {
   });
 });
 
-describe('service instance by id with subscriptions GraphQL query', () => {
-  it('should delegate to loadServiceWithSubscriptions', async () => {
-    const id = SERVICES.INSTANCES.EPIC.ID;
-    const expected = { id } as unknown as Awaited<
-      ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
-    >;
-    vi.spyOn(
-      serviceInstanceDomain,
-      'loadServiceWithSubscriptions'
-    ).mockResolvedValue(expected);
-
-    const result = await serviceInstanceResolver.Query!
-      .serviceInstanceByIdWithSubscriptions!(
-      {},
-      { service_instance_id: id, searchTerm: 'test' },
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    expect(
-      serviceInstanceDomain.loadServiceWithSubscriptions
-    ).toHaveBeenCalledWith(id, 'test');
-    expect(result).toEqual(expected);
-  });
-});
-
 describe('seo service instances GraphQL query', () => {
   it('should delegate to ServiceInstanceApp.loadSeoServiceInstances', async () => {
     const expected = [] as unknown as Awaited<

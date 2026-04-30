@@ -16,11 +16,6 @@ import {
 import { requestContext } from '../../context/request.context';
 import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import {
-  ForbiddenErrorCode,
-  NotFoundErrorCode,
-} from '../../utils/error/error.code';
-import { ErrorType } from '../../utils/error/error.type';
 import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
@@ -28,7 +23,6 @@ import {
   TelemetrySource,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { subscriptionApp } from './subscription.app';
 import * as subscriptionDomain from './subscription.domain';
 import * as subscriptionHelper from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
@@ -198,152 +192,6 @@ describe('subscription resolver — unit tests', () => {
 
       expect(subscriptionDomain.getServiceCapability).toHaveBeenCalledWith(id);
       expect(result).toEqual(expected);
-    });
-  });
-
-  describe('mutation.addSubscriptionInService', () => {
-    it('should extract capability ids and subscribe organization, then load service with subscriptions', async () => {
-      const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-      const expected = { id: serviceInstanceId } as unknown as Awaited<
-        ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
-      >;
-      vi.spyOn(
-        subscriptionApp,
-        'subscribeOrganizationToService'
-      ).mockResolvedValue(undefined);
-      vi.spyOn(
-        serviceInstanceDomain,
-        'loadServiceWithSubscriptions'
-      ).mockResolvedValue(expected);
-
-      const result = await subscriptionResolver.Mutation!
-        .addSubscriptionInService!(
-        {},
-        {
-          service_instance_id: serviceInstanceId,
-          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-          capability_ids: [],
-          start_date: null,
-          end_date: null,
-        },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(
-        subscriptionApp.subscribeOrganizationToService
-      ).toHaveBeenCalledWith(
-        expect.objectContaining({ serviceInstanceId, capabilityIds: [] })
-      );
-      expect(result).toEqual(expected);
-    });
-
-    it('should use context organization when organization_id is null', async () => {
-      const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-      vi.spyOn(
-        subscriptionApp,
-        'subscribeOrganizationToService'
-      ).mockResolvedValue(undefined);
-      vi.spyOn(
-        serviceInstanceDomain,
-        'loadServiceWithSubscriptions'
-      ).mockResolvedValue(
-        {} as unknown as Awaited<
-          ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
-        >
-      );
-
-      await subscriptionResolver.Mutation!.addSubscriptionInService!(
-        {},
-        {
-          service_instance_id: serviceInstanceId,
-          organization_id: null,
-          capability_ids: [],
-          start_date: null,
-          end_date: null,
-        },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(
-        subscriptionApp.subscribeOrganizationToService
-      ).toHaveBeenCalledWith(
-        expect.objectContaining({
-          organizationId:
-            contextSimpleUserFiligran2.user.selected_organization_id,
-        })
-      );
-    });
-
-    it('should map to ForbiddenAccess for AlreadySubscribed error', async () => {
-      vi.spyOn(
-        subscriptionApp,
-        'subscribeOrganizationToService'
-      ).mockRejectedValue(new Error(ForbiddenErrorCode.AlreadySubscribed));
-
-      const call = subscriptionResolver.Mutation!.addSubscriptionInService!(
-        {},
-        {
-          service_instance_id: SERVICES.INSTANCES.EPIC.ID,
-          organization_id: null,
-          capability_ids: [],
-          start_date: null,
-          end_date: null,
-        },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      await expect(call).rejects.toMatchObject({
-        name: ErrorType.ForbiddenAccess,
-      });
-    });
-  });
-
-  describe('mutation.deleteSubscription', () => {
-    it('should call deleteSubscription app', async () => {
-      const subscriptionId = uuidv4() as SubscriptionId;
-      const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-      const expected = { id: serviceInstanceId } as unknown as Awaited<
-        ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
-      >;
-      vi.spyOn(subscriptionApp, 'deleteSubscription').mockResolvedValue({
-        service_instance_id: serviceInstanceId,
-      } as unknown as Awaited<
-        ReturnType<typeof subscriptionApp.deleteSubscription>
-      >);
-      vi.spyOn(
-        serviceInstanceDomain,
-        'loadServiceWithSubscriptions'
-      ).mockResolvedValue(expected);
-
-      const result = await subscriptionResolver.Mutation!.deleteSubscription!(
-        {},
-        { subscription_id: subscriptionId },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(subscriptionApp.deleteSubscription).toHaveBeenCalledWith(
-        subscriptionId
-      );
-      expect(result).toEqual(expected);
-    });
-
-    it('should map to NotFound for SubscriptionNotFound error', async () => {
-      vi.spyOn(subscriptionApp, 'deleteSubscription').mockRejectedValue(
-        new Error(NotFoundErrorCode.SubscriptionNotFound)
-      );
-
-      const call = subscriptionResolver.Mutation!.deleteSubscription!(
-        {},
-        { subscription_id: uuidv4() as SubscriptionId },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
     });
   });
 

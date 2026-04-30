@@ -128,6 +128,7 @@ type Query {
   settings: Settings!
   updateOpenCTIManifest(tag: String): Success!
   subscriptionById(subscription_id: SubscriptionId): SubscriptionModel
+  subscriptions(first: Int!, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [SubscriptionFilter!]): SubscriptionConnection!
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: SubscriptionId!): UserServiceConnection
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
@@ -182,8 +183,8 @@ type Mutation {
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  addSubscriptionInService(service_instance_id: ServiceInstanceId, organization_id: OrganizationId, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
-  deleteSubscription(subscription_id: SubscriptionId!): ServiceInstance
+  createSubscription(input: AddSubscriptionInput): SubscriptionModel
+  deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
@@ -988,6 +989,8 @@ type RolePortal implements Node {
   name: String!
 }
 
+scalar ServiceCapabilityId
+
 type GenericServiceCapability implements Node {
   id: ID!
   name: String
@@ -1536,6 +1539,30 @@ type SubscriptionModel implements Node {
 type SubscriptionEdge {
   cursor: String!
   node: SubscriptionModel!
+}
+
+input AddSubscriptionInput {
+  service_instance_id: ServiceInstanceId!
+  organization_id: OrganizationId!
+  capability_ids: [ServiceCapabilityId]
+  start_date: Date!
+  end_date: Date
+}
+
+type SubscriptionConnection {
+  totalCount: Int!
+  edges: [SubscriptionEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum SubscriptionFilterKey {
+  organization_name
+  service_instance_id
+}
+
+input SubscriptionFilter {
+  key: SubscriptionFilterKey
+  value: [String!]!
 }
 
 type TelemetryResponse {

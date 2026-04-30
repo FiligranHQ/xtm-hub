@@ -145,26 +145,10 @@ export const ServiceListQuery = graphql`
 
 export const ServiceByIdWithSubscriptions = graphql`
   query serviceByIdWithSubscriptionsQuery(
-    $count: Int!
-    $cursor: ID
-    $orderBy: ServiceInstanceOrdering!
-    $orderMode: OrderingMode!
-    $filters: [ServiceInstanceFilter!]
-    $searchTerm: String
+    $service_instance_id: ServiceInstanceId!
   ) {
-    serviceInstances(
-      first: $count
-      after: $cursor
-      orderBy: $orderBy
-      orderMode: $orderMode
-      filters: $filters
-      searchTerm: $searchTerm
-    ) {
-      edges {
-        node {
-          ...serviceWithSubscriptions_fragment @relay(mask: false)
-        }
-      }
+    serviceInstanceById(service_instance_id: $service_instance_id) {
+      ...serviceWithSubscriptions_fragment @relay(mask: false)
     }
   }
 `;
@@ -179,9 +163,6 @@ export const serviceWithSubscriptionsFragment = graphql`
       service_capability {
         ...serviceCapability_fragment @relay(mask: false)
       }
-    }
-    subscriptions {
-      ...subscriptionWithUserService_fragment @relay(mask: false)
     }
   }
 `;
