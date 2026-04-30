@@ -7628,6 +7628,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pg@npm:8.20.0":
+  version: 8.20.0
+  resolution: "@types/pg@npm:8.20.0"
+  dependencies:
+    "@types/node": "npm:*"
+    pg-protocol: "npm:*"
+    pg-types: "npm:^2.2.0"
+  checksum: 10/3fb5be6e02de5c1a519acfbcb73647864e0d118bd09d0dea9b02091992095094e1ba150454c1175fd0127a596947e7216e15ff9b6162cd7792b62effce6aa751
+  languageName: node
+  linkType: hard
+
 "@types/prismjs@npm:^1.0.0":
   version: 1.26.6
   resolution: "@types/prismjs@npm:1.26.6"
@@ -8516,6 +8527,7 @@ __metadata:
     "@types/graphql-upload": "npm:17.0.0"
     "@types/node": "npm:24.12.2"
     "@types/passport": "npm:1.0.17"
+    "@types/pg": "npm:8.20.0"
     "@typescript-eslint/eslint-plugin": "npm:8.59.0"
     "@typescript-eslint/parser": "npm:8.59.0"
     "@vitest/coverage-v8": "npm:4.1.5"
@@ -16509,7 +16521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-protocol@npm:^1.11.0, pg-protocol@npm:^1.13.0":
+"pg-protocol@npm:*, pg-protocol@npm:^1.11.0, pg-protocol@npm:^1.13.0":
   version: 1.13.0
   resolution: "pg-protocol@npm:1.13.0"
   checksum: 10/302cd3920df00f178519693557c34949d64c8b3af7e2c12772b14f61547b947e4c761b4ca2319dbba5b0906207bb1b535cbfc7006d40d47fd823e277c2690a71
@@ -16523,7 +16535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-types@npm:2.2.0":
+"pg-types@npm:2.2.0, pg-types@npm:^2.2.0":
   version: 2.2.0
   resolution: "pg-types@npm:2.2.0"
   dependencies:
