@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -93,10 +92,9 @@ describe('create document GraphQL mutation', () => {
 });
 
 describe('update document GraphQL mutation', () => {
-  it('should decode documentId and delegate to DocumentApp.updateDocument', async () => {
-    const rawDocId = uuidv4() as DocumentId;
-    const globalDocId = toGlobalId('Document', rawDocId);
-    const expected = { id: rawDocId } as unknown as Awaited<
+  it('should delegate to DocumentApp.updateDocument', async () => {
+    const docId = uuidv4() as DocumentId;
+    const expected = { id: docId } as unknown as Awaited<
       ReturnType<typeof DocumentApp.updateDocument>
     >;
     vi.spyOn(DocumentApp, 'updateDocument').mockResolvedValue(expected);
@@ -104,7 +102,7 @@ describe('update document GraphQL mutation', () => {
     const result = await documentResolver.Mutation!.updateDocument!(
       {},
       {
-        documentId: globalDocId,
+        documentId: docId,
         serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
@@ -114,7 +112,7 @@ describe('update document GraphQL mutation', () => {
     );
 
     expect(DocumentApp.updateDocument).toHaveBeenCalledWith(
-      expect.objectContaining({ parentDocumentId: rawDocId })
+      expect.objectContaining({ parentDocumentId: docId })
     );
     expect(result).toEqual(expected);
   });
@@ -127,7 +125,7 @@ describe('update document GraphQL mutation', () => {
     const call = documentResolver.Mutation!.updateDocument!(
       {},
       {
-        documentId: toGlobalId('Document', uuidv4()),
+        documentId: uuidv4(),
         serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
@@ -147,7 +145,7 @@ describe('update document GraphQL mutation', () => {
     const call = documentResolver.Mutation!.updateDocument!(
       {},
       {
-        documentId: toGlobalId('Document', uuidv4()),
+        documentId: uuidv4(),
         serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
         existingImageIds: [],
         input: {},
@@ -161,10 +159,9 @@ describe('update document GraphQL mutation', () => {
 });
 
 describe('delete document GraphQL mutation', () => {
-  it('should decode documentId and delegate to DocumentApp.deleteDocument', async () => {
-    const rawDocId = uuidv4() as DocumentId;
-    const globalDocId = toGlobalId('Document', rawDocId);
-    const expected = { id: rawDocId } as unknown as Awaited<
+  it('should delegate to DocumentApp.deleteDocument', async () => {
+    const docId = uuidv4() as DocumentId;
+    const expected = { id: docId } as unknown as Awaited<
       ReturnType<typeof DocumentApp.deleteDocument>
     >;
     vi.spyOn(DocumentApp, 'deleteDocument').mockResolvedValue(expected);
@@ -172,7 +169,7 @@ describe('delete document GraphQL mutation', () => {
     const result = await documentResolver.Mutation!.deleteDocument!(
       {},
       {
-        documentId: globalDocId,
+        documentId: docId,
         service_instance_id: SERVICES.INSTANCES.EPIC.ID,
         forceDelete: false,
       },
@@ -181,7 +178,7 @@ describe('delete document GraphQL mutation', () => {
     );
 
     expect(DocumentApp.deleteDocument).toHaveBeenCalledWith(
-      rawDocId,
+      docId,
       SERVICES.INSTANCES.EPIC.ID,
       false
     );
@@ -196,7 +193,7 @@ describe('delete document GraphQL mutation', () => {
     const call = documentResolver.Mutation!.deleteDocument!(
       {},
       {
-        documentId: toGlobalId('Document', uuidv4()),
+        documentId: uuidv4(),
         service_instance_id: SERVICES.INSTANCES.EPIC.ID,
         forceDelete: false,
       },
@@ -210,9 +207,9 @@ describe('delete document GraphQL mutation', () => {
 
 describe('increment share number document GraphQL mutation', () => {
   it('should load document, update counters, and return result', async () => {
-    const rawDocId = uuidv4() as DocumentId;
+    const docId = uuidv4() as DocumentId;
     const doc = {
-      id: rawDocId,
+      id: docId,
       service_instance_id: SERVICES.INSTANCES.EPIC.ID,
       name: 'doc',
     } as unknown as Awaited<
@@ -235,7 +232,7 @@ describe('increment share number document GraphQL mutation', () => {
     const result = await documentResolver.Mutation!
       .incrementShareNumberDocument!(
       {},
-      { documentId: toGlobalId('Document', rawDocId) },
+      { documentId: docId },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -250,7 +247,7 @@ describe('increment share number document GraphQL mutation', () => {
 
     const call = documentResolver.Mutation!.incrementShareNumberDocument!(
       {},
-      { documentId: toGlobalId('Document', uuidv4()) },
+      { documentId: uuidv4() },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -535,22 +532,21 @@ describe('documents GraphQL query', () => {
 });
 
 describe('document GraphQL query', () => {
-  it('should decode documentId and delegate to DocumentApp.loadDocument', async () => {
-    const rawDocId = uuidv4() as DocumentId;
-    const globalDocId = toGlobalId('Document', rawDocId);
-    const expected = { id: rawDocId } as unknown as Awaited<
+  it('should delegate to DocumentApp.loadDocument', async () => {
+    const docId = uuidv4() as DocumentId;
+    const expected = { id: docId } as unknown as Awaited<
       ReturnType<typeof DocumentApp.loadDocument>
     >;
     vi.spyOn(DocumentApp, 'loadDocument').mockResolvedValue(expected);
 
     const result = await documentResolver.Query!.document!(
       {},
-      { documentId: globalDocId },
+      { documentId: docId },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(DocumentApp.loadDocument).toHaveBeenCalledWith(rawDocId);
+    expect(DocumentApp.loadDocument).toHaveBeenCalledWith(docId);
     expect(result).toEqual(expected);
   });
 });

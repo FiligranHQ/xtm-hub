@@ -105,7 +105,7 @@ type Query {
   publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
   publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
-  document(documentId: ID, serviceInstanceId: ServiceInstanceId): Document
+  document(documentId: DocumentId, serviceInstanceId: ServiceInstanceId): Document
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
@@ -128,9 +128,9 @@ type Query {
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
   updateOpenCTIManifest(tag: String): Success!
-  subscriptionById(subscription_id: ID): SubscriptionModel
+  subscriptionById(subscription_id: SubscriptionId): SubscriptionModel
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
-  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: ID!): UserServiceConnection
+  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: SubscriptionId!): UserServiceConnection
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
   node(id: ID!): Node
 }
@@ -147,9 +147,9 @@ type Mutation {
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
-  updateDocument(documentId: ID!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [ID!]): Document!
-  deleteDocument(documentId: ID, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!
-  incrementShareNumberDocument(documentId: ID): Document!
+  updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
+  deleteDocument(documentId: DocumentId, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!
+  incrementShareNumberDocument(documentId: DocumentId): Document!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
   addOrganization(input: OrganizationInput!): Organization
@@ -162,8 +162,8 @@ type Mutation {
   changeSelectedOrganization(organization_id: OrganizationId!): User
   bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
   bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
-  removePendingUserFromOrganization(user_id: ID!, organization_id: OrganizationId!): User
-  removeUserFromOrganization(user_id: ID!, organization_id: OrganizationId!): User
+  removePendingUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
+  removeUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   editMeUser(input: EditMeUserInput!): User!
   uploadUserPicture(document: Upload!): User!
   resetPassword: Success!
@@ -184,7 +184,7 @@ type Mutation {
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
   addSubscriptionInService(service_instance_id: ServiceInstanceId, organization_id: OrganizationId, capability_ids: [ID], start_date: Date, end_date: Date): ServiceInstance
-  deleteSubscription(subscription_id: ID!): ServiceInstance
+  deleteSubscription(subscription_id: SubscriptionId!): ServiceInstance
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
@@ -481,12 +481,17 @@ type ServiceGroup implements Node {
 
 input UpdateServiceGroupsInputGroup {
   id: ServiceGroupId!
-  userIds: [ID!]!
+  userIds: [UserId!]!
 }
 
 input UpdateServiceGroupsInput {
   groups: [UpdateServiceGroupsInputGroup!]!
 }
+
+"""
+A Relay global ID for Document, extracted to a branded DocumentId string
+"""
+scalar DocumentId
 
 enum DocumentSourceType {
   external
@@ -602,8 +607,8 @@ input CreateDocumentInput {
   short_description: String!
   description: String!
   active: Boolean!
-  use_cases: [String!]
-  uploader_id: String!
+  use_cases: [UseCaseId!]
+  uploader_id: UserId!
 }
 
 input UpdateDocumentInput {
@@ -611,9 +616,9 @@ input UpdateDocumentInput {
   short_description: String
   description: String
   active: Boolean
-  use_cases: [String!]
+  use_cases: [UseCaseId!]
   uploader_organization_id: OrganizationId
-  uploader_id: String
+  uploader_id: UserId
 }
 
 type DocumentEdge {
@@ -689,6 +694,9 @@ input OrganizationInput {
   name: String!
   domains: [String!]
 }
+
+"""A Relay global ID for User, extracted to a branded UserId string"""
+scalar UserId
 
 enum UserOrdering {
   email
@@ -782,10 +790,10 @@ input AdminAddUserInput {
 }
 
 input BulkPendingUserFromOrganizationInput {
-  ids: [ID!]
+  ids: [UserId!]
   searchTerm: String
   filters: [Filter!]
-  excludedIds: [ID!]
+  excludedIds: [UserId!]
 }
 
 type UserSubscription {
@@ -836,7 +844,7 @@ type RegisteredPlatform implements Node {
   tenant_id: String
   identifier: ServiceDefinitionIdentifier!
   version: String
-  illustration_document_id: String
+  illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
   subscription: SubscriptionModel
 }
@@ -1088,8 +1096,8 @@ type ServiceInstance implements Node {
   public: Boolean
   tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition
-  logo_document_id: ID
-  illustration_document_id: ID
+  logo_document_id: DocumentId
+  illustration_document_id: DocumentId
   ordering: Int!
 }
 
@@ -1112,8 +1120,8 @@ type SeoServiceInstance implements Node {
   links: [ServiceLink]
   tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition!
-  logo_document_id: ID
-  illustration_document_id: ID
+  logo_document_id: DocumentId
+  illustration_document_id: DocumentId
 }
 
 input AddServiceInput {
@@ -1497,6 +1505,11 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   demo_url: String
 }
 
+"""
+A Relay global ID for Subscription, extracted to a branded SubscriptionId string
+"""
+scalar SubscriptionId
+
 enum SubscriptionOrdering {
   organization_name
   start_date
@@ -1533,7 +1546,7 @@ type TelemetryResponse {
 input OneClickDeployInput {
   platform_identifier: PlatformIdentifier!
   service_instance_id: ServiceInstanceId!
-  resource_id: ID!
+  resource_id: DocumentId!
   resource_title: String!
   platform_service_instance_id: ID!
 }
@@ -1541,6 +1554,9 @@ input OneClickDeployInput {
 type SendTelemetryMutation {
   oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
 }
+
+"""A Relay global ID for UseCase, extracted to a branded UseCaseId string"""
+scalar UseCaseId
 
 type UseCase implements Node {
   id: ID!
@@ -1589,7 +1605,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
-  subscriptionId: ID
+  subscriptionId: SubscriptionId
 }
 
 input UserServiceAddYourselfInput {
@@ -1600,7 +1616,7 @@ input UserServiceAddYourselfInput {
 input UserServiceDeleteInput {
   email: String!
   capabilities: [String]
-  subscriptionId: String!
+  subscriptionId: SubscriptionId!
 }
 
 type UserServiceConnection {
@@ -1660,7 +1676,7 @@ type Epic implements Node {
   timeline: Timeline!
   epic_type: EpicType!
   document: Document
-  document_id: ID
+  document_id: DocumentId
   uploader_id: String!
   updater_id: String
   created_at: Date!

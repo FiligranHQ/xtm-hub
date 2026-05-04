@@ -16,7 +16,7 @@ interface RemoveUserFromOrgaProps {
 const removeUser = graphql`
   mutation RemoveUserFromOrgaMutation(
     $connections: [ID!]!
-    $user_id: ID!
+    $user_id: UserId!
     $organization_id: OrganizationId!
   ) {
     removeUserFromOrganization(

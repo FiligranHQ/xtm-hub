@@ -14,6 +14,7 @@ import { PortalContext } from '../../../model/portal-context';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
+import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { extractId } from '../../../utils/utils';
 import { userAdminApp } from './user-admin/user.admin.app';
 import {
@@ -32,6 +33,7 @@ import { UserAuthApp } from './user.auth.app';
 import { mapUserToGraphqlUser } from './user.helper';
 
 const resolvers: Resolvers = {
+  UserId: createRelayIdScalar<UserId>('User'),
   User: {
     organizations: ({ id }, _) => getOrganizations(id),
     capabilities: ({ id }, _) => getCapabilities(id),
@@ -185,7 +187,7 @@ const resolvers: Resolvers = {
     removeUserFromOrganization: async (_, { user_id, organization_id }) => {
       try {
         const user = await UserOrganizationApp.removeUserFromOrganization({
-          userId: extractId<UserId>(user_id),
+          userId: user_id,
           organizationId: organization_id,
         });
         return mapUserToGraphqlUser(user);
@@ -203,14 +205,12 @@ const resolvers: Resolvers = {
     ) => {
       try {
         const { ids, searchTerm, filters, excludedIds } = input;
-        const extractedIds = ids.map(extractId<UserId>);
-        const extractedExcludedIds = excludedIds.map(extractId<UserId>);
         await userAdminApp.bulkRemovePendingUserFromOrganization(
           context.user.selected_organization_id,
-          extractedIds,
+          ids,
           searchTerm,
           filters,
-          extractedExcludedIds
+          excludedIds
         );
 
         return { success: true };
@@ -228,15 +228,13 @@ const resolvers: Resolvers = {
     ) => {
       try {
         const { ids, searchTerm, filters, excludedIds } = input;
-        const extractedIds = ids.map(extractId<UserId>);
-        const extractedExcludedIds = excludedIds.map(extractId<UserId>);
 
         await userAdminApp.bulkAcceptPendingUserInOrganization(
           context.user.selected_organization_id,
-          extractedIds,
+          ids,
           searchTerm,
           filters,
-          extractedExcludedIds
+          excludedIds
         );
         return { success: true };
       } catch (error) {
@@ -253,7 +251,7 @@ const resolvers: Resolvers = {
       try {
         const user =
           await UserOrganizationApp.removePendingUserFromOrganization({
-            userId: extractId<UserId>(user_id),
+            userId: user_id,
             organizationId: organization_id,
           });
 
@@ -319,42 +317,33 @@ const resolvers: Resolvers = {
   },
   Subscription: {
     User: {
-      subscribe: (_, args, context, info) => {
-        return {
-          [Symbol.asyncIterator]: () =>
-            listen(context, ['User'], info, (payload: UserSubscription) => {
-              if (!args.organizationId || payload.merge) {
-                return true;
-              }
-              const user = payload.add ?? payload.delete ?? payload.edit;
-              return user.organizations
-                .map((org) => org.id)
-                .includes(extractId(args.organizationId));
-            }),
-        };
-      },
+      subscribe: (_, args, context, info) =>
+        listen(context, ['User'], info, (payload: UserSubscription) => {
+          if (!args.organizationId || payload.merge) {
+            return true;
+          }
+          const user = payload.add ?? payload.delete ?? payload.edit;
+          return user.organizations
+            .map((org) => org.id)
+            .includes(extractId(args.organizationId));
+        }),
     },
     MeUser: {
-      subscribe: (_, __, context, info) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['MeUser'], info),
-      }),
+      subscribe: (_, __, context, info) => listen(context, ['MeUser'], info),
     },
     UserPending: {
-      subscribe: (_, args, context, info) => ({
-        [Symbol.asyncIterator]: () => {
-          return listen(
-            context,
-            ['UserPending'],
-            info,
-            (payload: UserPendingSubscription) => {
-              const organizationId = payload.delete
-                ? payload.delete.pending_organization_id
-                : payload.invalidate.id;
-              return organizationId === extractId(args.organizationId);
-            }
-          );
-        },
-      }),
+      subscribe: (_, args, context, info) =>
+        listen(
+          context,
+          ['UserPending'],
+          info,
+          (payload: UserPendingSubscription) => {
+            const organizationId = payload.delete
+              ? payload.delete.pending_organization_id
+              : payload.invalidate.id;
+            return organizationId === extractId(args.organizationId);
+          }
+        ),
     },
   },
 };

@@ -46,8 +46,8 @@ type ServiceInstance implements Node {
   public: Boolean
   tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition
-  logo_document_id: ID
-  illustration_document_id: ID
+  logo_document_id: DocumentId
+  illustration_document_id: DocumentId
   ordering: Int!
 }
 
@@ -69,8 +69,8 @@ type SeoServiceInstance implements Node {
   links: [ServiceLink]
   tags: [ServiceInstanceTag!]
   service_definition: ServiceDefinition!
-  logo_document_id: ID
-  illustration_document_id: ID
+  logo_document_id: DocumentId
+  illustration_document_id: DocumentId
 }
 
 input AddServiceInput {

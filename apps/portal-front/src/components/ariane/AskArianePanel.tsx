@@ -49,10 +49,10 @@ const AskArianePanel = ({
   const { me } = useContext(PortalContext);
   const { resolvedTheme } = useTheme();
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [topOffset, setTopOffset] = useState(64);
 
   const isDarkMode = resolvedTheme === 'dark';
   const firstName = me?.first_name ?? 'User';
-  const topOffset = 128;
 
   const logoIcon = <LogoXtmOneIcon className="size-4" />;
 
@@ -68,6 +68,23 @@ const AskArianePanel = ({
       setContainer(null);
     };
   }, [isDarkMode]);
+
+  useEffect(() => {
+    const header = document.getElementById('app-header');
+    const appShell = document.getElementById('app-shell');
+    if (!header || !appShell) return;
+
+    const update = () => {
+      setTopOffset(header.getBoundingClientRect().bottom);
+    };
+
+    update();
+
+    const mutationObserver = new MutationObserver(update);
+    mutationObserver.observe(appShell, { childList: true });
+
+    return () => mutationObserver.disconnect();
+  }, []);
 
   if (!container) {
     return null;

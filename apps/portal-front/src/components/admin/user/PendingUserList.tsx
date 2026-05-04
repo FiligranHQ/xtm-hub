@@ -61,7 +61,7 @@ import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 // Configuration or Preloader Query
 const removePendingUser = graphql`
   mutation PendingUserListRemoveUserMutation(
-    $user_id: ID!
+    $user_id: UserId!
     $organization_id: OrganizationId!
   ) {
     removePendingUserFromOrganization(
@@ -75,10 +75,10 @@ const removePendingUser = graphql`
 
 const removePendingUserBulk = graphql`
   mutation PendingUserListRemoveUserBulkMutation(
-    $ids: [ID!]
+    $ids: [UserId!]
     $searchTerm: String
     $filters: [Filter!]
-    $excludedIds: [ID!]
+    $excludedIds: [UserId!]
   ) {
     bulkRemovePendingUserFromOrganization(
       input: {
@@ -95,10 +95,10 @@ const removePendingUserBulk = graphql`
 
 const acceptPendingUserBulk = graphql`
   mutation PendingUserListAcceptUserBulkMutation(
-    $ids: [ID!]
+    $ids: [UserId!]
     $searchTerm: String
     $filters: [Filter!]
-    $excludedIds: [ID!]
+    $excludedIds: [UserId!]
   ) {
     bulkAcceptPendingUserInOrganization(
       input: {

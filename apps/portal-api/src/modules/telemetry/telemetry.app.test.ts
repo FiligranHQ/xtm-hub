@@ -154,7 +154,7 @@ describe('telemetryApp', () => {
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          resource_id: toGlobalId('DocumentId', documentId),
+          resource_id: documentId,
           resource_title: 'CsvFeed Title',
           platform_service_instance_id: toGlobalId(
             'RegisteredPlatform',
@@ -239,7 +239,7 @@ describe('telemetryApp', () => {
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          resource_id: toGlobalId('DocumentId', documentId),
+          resource_id: documentId,
           resource_title: 'CsvFeed Title',
           platform_service_instance_id: toGlobalId(
             'RegisteredPlatform',
@@ -321,7 +321,7 @@ describe('telemetryApp', () => {
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
           service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          resource_id: toGlobalId('DocumentId', documentId),
+          resource_id: documentId,
           resource_title: 'Connector Title',
           platform_service_instance_id: toGlobalId(
             'RegisteredPlatform',

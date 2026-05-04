@@ -977,13 +977,12 @@ describe('user mutation resolver', () => {
         roles: [],
       });
 
-      const userId = toGlobalId('User', pendingUser.id);
       const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       // When
       await usersResolver.Mutation.removePendingUserFromOrganization(
         undefined,
         {
-          user_id: userId,
+          user_id: pendingUser.id,
           organization_id: organizationId,
         },
         testContext,
@@ -1019,7 +1018,6 @@ describe('user mutation resolver', () => {
         last_name: 'pending',
         roles: [],
       });
-      const userId = toGlobalId('User', pendingUser.id);
       const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       const subscriptionSpy = new SubscriptionSpy();
       await subscriptionSpy.spy(
@@ -1034,7 +1032,7 @@ describe('user mutation resolver', () => {
       await usersResolver.Mutation.removePendingUserFromOrganization(
         undefined,
         {
-          user_id: userId,
+          user_id: pendingUser.id,
           organization_id: organizationId,
         },
         testContext,

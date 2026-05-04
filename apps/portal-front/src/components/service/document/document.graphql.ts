@@ -27,11 +27,11 @@ export const DocumentCreateMutation = graphql`
 
 export const DocumentUpdateMutation = graphql`
   mutation documentUpdateMutation(
-    $documentId: ID!
+    $documentId: DocumentId!
     $input: UpdateDocumentInput!
     $metadata: [DocumentMetadata!]!
     $sourceDocument: Upload
-    $existingImageIds: [ID!]
+    $existingImageIds: [DocumentId!]
     $serviceInstanceId: ServiceInstanceId!
     $logo: Upload
     $images: [Upload!]
@@ -54,7 +54,7 @@ export const DocumentUpdateMutation = graphql`
 
 export const DocumentDeleteMutation = graphql`
   mutation documentDeleteMutation(
-    $documentId: ID
+    $documentId: DocumentId
     $connections: [ID!]!
     $serviceInstanceId: ServiceInstanceId
     $forceDelete: Boolean
@@ -230,7 +230,7 @@ export const DocumentsListQuery = graphql`
 
 export const DocumentsItemQuery = graphql`
   query documentQuery(
-    $documentId: ID!
+    $documentId: DocumentId!
     $serviceInstanceId: ServiceInstanceId!
   ) {
     document(documentId: $documentId, serviceInstanceId: $serviceInstanceId) {

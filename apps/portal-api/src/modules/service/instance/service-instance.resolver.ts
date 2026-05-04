@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
   IntegrationType,
   Resolvers,
@@ -45,16 +44,6 @@ const resolvers: Resolvers = {
         );
       }
       return typeMapping[service_instance.type] ?? 'SeoServiceInstance';
-    },
-    logo_document_id: ({ logo_document_id }) => {
-      if (logo_document_id) {
-        return toGlobalId('Document', logo_document_id);
-      }
-    },
-    illustration_document_id: ({ illustration_document_id }) => {
-      if (illustration_document_id) {
-        return toGlobalId('Document', illustration_document_id);
-      }
     },
     links: ({ id }, _) => loadLinks(id),
     service_definition: ({ id }, _) =>
@@ -143,9 +132,7 @@ const resolvers: Resolvers = {
   },
   Subscription: {
     ServiceInstance: {
-      subscribe: (_, __, context) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['ServiceInstance']),
-      }),
+      subscribe: (_, __, context) => listen(context, ['ServiceInstance']),
     },
   },
 };

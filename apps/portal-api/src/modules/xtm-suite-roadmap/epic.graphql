@@ -27,7 +27,7 @@ type Epic implements Node {
   timeline: Timeline!
   epic_type: EpicType!
   document: Document
-  document_id: ID
+  document_id: DocumentId
   uploader_id: String!
   updater_id: String
   created_at: Date!
