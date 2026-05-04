@@ -3,7 +3,6 @@ import {
   LogoXtmOneIcon,
   OpenAevIconIcon,
   OpenCtiIconIcon,
-  OpenGrcIcon,
 } from '@filigran/icon';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { ReactNode } from 'react';
@@ -24,10 +23,6 @@ export const FiligranProductMapping: Record<
   [FiligranProductEnum.OPENAEV]: {
     name: 'OpenAEV',
     logo: <OpenAevIconIcon className="w-5 h-5" />,
-  },
-  [FiligranProductEnum.OPENGRC]: {
-    name: 'OpenGRC',
-    logo: <OpenGrcIcon className="w-5 h-5" />,
   },
   [FiligranProductEnum.XTMHUB]: {
     name: 'XTM Hub',

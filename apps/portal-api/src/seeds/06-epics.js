@@ -54,18 +54,6 @@ export async function seed(knex) {
         uploader_id: BYPASS_USER_ID,
       },
       {
-        id: '3d4c880a-fd27-4df0-b741-d213e5077d5d',
-        title: 'Winter is Coming Alerts',
-        short_description: 'Anticipate threats before they cross the Wall.',
-        description:
-          'This epic strengthens early warning capabilities to detect weak signals and emerging threats long before they become breaches.',
-        active: true,
-        product: 'opengrc',
-        timeline: 'now',
-        epic_type: 'other',
-        uploader_id: BYPASS_USER_ID,
-      },
-      {
         id: '36a160e1-63f5-44b1-bab1-ec499620aab5',
         title: 'Iron Bank Compliance',
         short_description: 'All debts must be paid… especially security debt.',

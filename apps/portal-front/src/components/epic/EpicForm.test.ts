@@ -10,7 +10,6 @@ describe('getEndDescription', () => {
     product                        | description
     ${FiligranProductEnum.OPENCTI} | ${'OpenCTI'}
     ${FiligranProductEnum.OPENAEV} | ${'OpenAEV'}
-    ${FiligranProductEnum.OPENGRC} | ${'OpenGRC'}
     ${FiligranProductEnum.XTMONE}  | ${'XTMOne'}
     ${FiligranProductEnum.XTMHUB}  | ${'XTM Hub'}
   `(
