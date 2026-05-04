@@ -143,25 +143,25 @@ export const ServiceListQuery = graphql`
   }
 `;
 
-export const ServiceByIdWithSubscriptions = graphql`
-  query serviceByIdWithSubscriptionsQuery(
-    $service_instance_id: ServiceInstanceId!
-  ) {
+export const ServiceInstanceByIdQuery = graphql`
+  query serviceInstanceByIdQuery($service_instance_id: ServiceInstanceId!) {
     serviceInstanceById(service_instance_id: $service_instance_id) {
-      ...serviceWithSubscriptions_fragment @relay(mask: false)
+      ...serviceInstanceForSubscriptions_fragment
     }
   }
 `;
 
-export const serviceWithSubscriptionsFragment = graphql`
-  fragment serviceWithSubscriptions_fragment on ServiceInstance {
+export const serviceInstanceForSubscriptionsFragment = graphql`
+  fragment serviceInstanceForSubscriptions_fragment on ServiceInstance @inline {
     __id
     name
     id
     description
     service_definition {
       service_capability {
-        ...serviceCapability_fragment @relay(mask: false)
+        id
+        description
+        name
       }
     }
   }

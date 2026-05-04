@@ -64,28 +64,6 @@ export const SubscriptionListQuery = graphql`
   }
 `;
 
-export const subscriptionWithUserServiceFragment = graphql`
-  fragment subscriptionWithUserService_fragment on SubscriptionModel {
-    id
-    organization {
-      id
-      name
-      personal_space
-    }
-    subscription_capability {
-      id
-      service_capability {
-        id
-        description
-        name
-      }
-    }
-    user_service {
-      ...userService_fragment @relay(mask: false)
-    }
-  }
-`;
-
 export const subscriptionListFragment = graphql`
   fragment subscriptionList_fragment on Query
   @refetchable(queryName: "SubscriptionsPaginationQuery") {

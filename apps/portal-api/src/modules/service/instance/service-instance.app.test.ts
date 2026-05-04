@@ -125,10 +125,9 @@ describe('service Instance app', () => {
         subscription_id: mockSubscriptionId,
         user_id: mockUserId,
       });
-      expect(loadServiceInstanceBySpy).toHaveBeenCalledWith(
-        'id',
-        mockServiceInstanceId
-      );
+      expect(loadServiceInstanceBySpy).toHaveBeenCalledWith({
+        id: mockServiceInstanceId,
+      });
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
       expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
     });

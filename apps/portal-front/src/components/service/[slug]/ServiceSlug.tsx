@@ -1,4 +1,7 @@
-import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
+import {
+  ServiceInstanceByIdQuery,
+  serviceInstanceForSubscriptionsFragment,
+} from '@/components/service/service.graphql';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
@@ -12,54 +15,65 @@ import {
   IconActionsLink,
 } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
-import { MoreVertIcon } from '@filigran/icon';
 import {
   Checkbox,
   DataTable,
   DataTableHeadBarOptions,
 } from '@filigran/ui';
-import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import useAdminPath from '@/hooks/use-admin-path';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
+import { MoreVertIcon } from '@filigran/icon';
+import { serviceInstanceByIdQuery } from '@generated/serviceInstanceByIdQuery.graphql';
+import { serviceInstanceForSubscriptions_fragment$key } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
-import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
+import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { ServiceSlugAddSubscription } from './ServiceSlugAddSubscription';
 import { ServiceSlugDeleteSubscription } from './ServiceSlugDeleteSubscription';
 
 interface ServiceSlugProps {
   subscriptions: subscription_fragment$data[];
-  queryRefServiceInstance: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
+  queryRefServiceInstance: PreloadedQuery<serviceInstanceByIdQuery>;
   subscriptionConnectionId: string;
 }
 
 const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConnectionId }: ServiceSlugProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const queryDataRequest = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
-    ServiceByIdWithSubscriptions,
+  const queryDataRequest = usePreloadedQuery<serviceInstanceByIdQuery>(
+    ServiceInstanceByIdQuery,
     queryRefServiceInstance
   );
+  const serviceInstanceRef = queryDataRequest.serviceInstanceById;
 
+  if (!serviceInstanceRef) {
+    return null;
+  }
+
+  const serviceInstance =
+    readInlineData<serviceInstanceForSubscriptions_fragment$key>(
+      serviceInstanceForSubscriptionsFragment,
+      serviceInstanceRef
+    );
   const [shouldDisplayPersonalSpaces, setShouldDisplayPersonalSpaces] =
     useState(false);
   const [deleteSubscription, setDeleteSubscription] = useState<
     subscription_fragment$data | undefined
   >(undefined);
 
+  const isAdminPath = useAdminPath();
+
+  const t = useTranslations();
+
   const debounceHandleInput = useDebounceCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
     DEBOUNCE_TIME
   );
-
-  const isAdminPath = useAdminPath();
-
-  const t = useTranslations();
 
   const breadcrumbValue: BreadcrumbNavLink[] = [
     ...(isAdminPath
@@ -70,7 +84,7 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
         ]
       : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
     {
-      label: queryDataRequest.serviceInstanceById?.name ?? '',
+      label: serviceInstance.name,
       original: true,
     },
   ];
@@ -163,7 +177,7 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
         <ServiceSlugAddSubscription
           isAdminPath={!!isAdminPath}
           subscriptions={subscriptions}
-          serviceInstance={queryDataRequest.serviceInstanceById}
+          serviceInstance={serviceInstance}
           subscriptionConnectionId={subscriptionConnectionId}
         />
         <DataTableHeadBarOptions />
@@ -189,10 +203,8 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{queryDataRequest.serviceInstanceById?.name}</h1>
-      <div className="pb-s italic">
-        {queryDataRequest.serviceInstanceById?.description}
-      </div>
+      <h1 className="pb-s">{serviceInstance.name}</h1>
+      <div className="pb-s italic">{serviceInstance.description}</div>
       <div className="pb-s">{t('Service.Management.Description') + ':'}</div>
 
       <DataTable

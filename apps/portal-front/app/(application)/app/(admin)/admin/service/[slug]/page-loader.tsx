@@ -3,7 +3,7 @@
 import Loader from '@/components/Loader';
 import ServiceSlug from '@/components/service/[slug]/ServiceSlug';
 
-import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
+import { ServiceInstanceByIdQuery } from '@/components/service/service.graphql';
 import {
   subscriptionFragment,
   subscriptionListFragment,
@@ -11,7 +11,7 @@ import {
 } from '@/components/subcription/subscription.graphql';
 import useMountingLoader from '@/hooks/use-mounting-loader';
 import { SubscriptionFilterKeyEnum } from '@generated/models/SubscriptionFilterKey.enum';
-import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
+import { serviceInstanceByIdQuery } from '@generated/serviceInstanceByIdQuery.graphql';
 import { subscriptionListQuery } from '@generated/subscriptionListQuery.graphql';
 import { subscriptionList_fragment$key } from '@generated/subscriptionList_fragment.graphql';
 import {
@@ -34,9 +34,7 @@ interface PreloaderProps {
 // Component
 const PageLoader = ({ id }: PreloaderProps) => {
   const [queryRefServiceInstance, loadQuery] =
-    useQueryLoader<serviceByIdWithSubscriptionsQuery>(
-      ServiceByIdWithSubscriptions
-    );
+    useQueryLoader<serviceInstanceByIdQuery>(ServiceInstanceByIdQuery);
   useMountingLoader(loadQuery, { service_instance_id: id });
 
   const queryDataSubscription = useLazyLoadQuery<subscriptionListQuery>(

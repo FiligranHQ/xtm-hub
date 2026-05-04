@@ -2,6 +2,7 @@ import { getOrganizations } from '@/components/organization/Organization.service
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
+import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 
 import {
   Button,
@@ -16,17 +17,16 @@ import {
   SheetFooter,
   useToast,
 } from '@filigran/ui';
+import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
-import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 
 interface ServiceSlugAddOrgaFormSheetProps {
-  serviceInstance: serviceWithSubscriptions_fragment$data;
+  serviceInstance: serviceInstanceForSubscriptions_fragment$data;
   subscriptions: subscription_fragment$data[];
   subscriptionConnectionId: string;
 }
@@ -174,8 +174,9 @@ export const ServiceSlugAddOrgaForm = ({
             <p className="txt-sub-content italic">
               {t('OrganizationInServiceAction.SelectCapaDescription')}
             </p>
-            {serviceInstance.service_definition?.service_capability.map(
-              ({ id, name, description }) => (
+            {serviceInstance.service_definition?.service_capability
+              ?.filter((sc) => !!sc)
+              .map(({ id, name, description }) => (
                 <FormField
                   key={id}
                   control={form.control}
@@ -204,8 +205,7 @@ export const ServiceSlugAddOrgaForm = ({
                     </FormItem>
                   )}
                 />
-              )
-            )}
+              ))}
           </div>
 
           <FormField

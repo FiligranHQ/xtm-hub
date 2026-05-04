@@ -1,93 +1,199 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   contextSimpleUserFiligran2,
-  contextSimpleUserSecondOrga,
   GRAPHQL_RESOLVE_INFO,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
+  AddSubscriptionInput,
   SubscriptionCapabilityResolvers,
   SubscriptionModel,
   SubscriptionModelResolvers,
 } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
-import ServiceInstance from '../../model/kanel/public/ServiceInstance';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { ErrorType } from '../../utils/error/error.type';
+import { loadSubscriptionCapabilities } from '../security-management/service-capability/subscription-capability.domain';
 import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import {
-  TelemetryEventService,
-  TelemetrySource,
-} from '../telemetry/telemetry.const';
-import { TelemetryEventType } from '../telemetry/telemetry.types';
 import * as subscriptionDomain from './subscription.domain';
 import * as subscriptionHelper from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
 describe('subscription mutation resolver', () => {
-  describe('addSubscription mutation - should create subscription', () => {
+  describe('createSubscription mutation - should create subscription', () => {
+    let serviceInstanceId: ServiceInstanceId;
+
+    beforeEach(async () => {
+      serviceInstanceId = uuidv4() as ServiceInstanceId;
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        name: `test-subscription-${serviceInstanceId}`,
+      });
+    });
+
     afterEach(async () => {
       vi.useRealTimers();
       await TestHelper.subscription.delete({});
+      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
     });
 
-    it('should return the service subscribed', async () => {
-      // @ts-ignore
-      const response = await subscriptionResolver.Mutation.addSubscription(
-        undefined,
+    it.each`
+      description                                       | organizationId
+      ${'use organization_id from input when provided'} | ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID}
+      ${'fallback to context selected organization id'} | ${undefined}
+    `(
+      'should $description',
+      async ({ organizationId }: { organizationId?: string }) => {
+        // Given
+        const startDate = new Date('2026-01-10T10:00:00.000Z');
+        const endDate = new Date('2026-12-10T10:00:00.000Z');
+        const input = {
+          service_instance_id: serviceInstanceId,
+          organization_id: organizationId,
+          capability_ids: [
+            toGlobalId(
+              'ServiceCapability',
+              SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
+            ),
+            toGlobalId(
+              'ServiceCapability',
+              SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID
+            ),
+          ],
+          start_date: startDate,
+          end_date: endDate,
+        } as unknown as AddSubscriptionInput;
+
+        // When
+        const result = await subscriptionResolver.Mutation!.createSubscription!(
+          {},
+          { input },
+          contextSimpleUserFiligran2,
+          GRAPHQL_RESOLVE_INFO
+        );
+
+        // Then
+        const expectedOrganizationId =
+          organizationId ??
+          contextSimpleUserFiligran2.user.selected_organization_id;
+        expect(result).toMatchObject({
+          organization_id: expectedOrganizationId,
+          service_instance_id: serviceInstanceId,
+          start_date: startDate,
+          end_date: endDate,
+        });
+
+        const createdSubscription = await TestHelper.subscription.load({
+          id: result?.id as SubscriptionId,
+        });
+        expect(createdSubscription).toMatchObject({
+          id: result?.id,
+          organization_id: expectedOrganizationId,
+          service_instance_id: serviceInstanceId,
+          start_date: startDate,
+          end_date: endDate,
+        });
+
+        const subscriptionCapabilities = await loadSubscriptionCapabilities(
+          result?.id as SubscriptionId
+        );
+        expect(subscriptionCapabilities).toHaveLength(2);
+        expect(subscriptionCapabilities).toMatchObject([
+          {
+            subscription_id: result?.id,
+            service_capability_id:
+              SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
+          },
+          {
+            subscription_id: result?.id,
+            service_capability_id:
+              SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
+          },
+        ]);
+      }
+    );
+
+    it('should reject when organization is already subscribed to service instance', async () => {
+      // Given
+      const startDate = new Date('2026-01-10T10:00:00.000Z');
+      const endDate = new Date('2026-12-10T10:00:00.000Z');
+      await TestHelper.subscription.create({
+        organization_id:
+          contextSimpleUserFiligran2.user.selected_organization_id,
+        service_instance_id: serviceInstanceId,
+        start_date: startDate,
+        end_date: endDate,
+      });
+
+      const call = subscriptionResolver.Mutation!.createSubscription!(
+        {},
         {
-          service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+          input: {
+            service_instance_id: serviceInstanceId,
+            organization_id:
+              contextSimpleUserFiligran2.user.selected_organization_id,
+            capability_ids: [],
+            start_date: startDate,
+            end_date: endDate,
+          },
         },
-        contextSimpleUserSecondOrga
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
       );
-      expect(response).toMatchObject({
-        name: SERVICES.INSTANCES.OPENAEV_SCENARIOS.NAME,
+
+      // When / Then
+      await expect(call).rejects.toMatchObject({
+        name: ErrorType.ForbiddenAccess,
+        message: ErrorCode.AlreadySubscribed,
+      });
+
+      const subscriptions = await TestHelper.subscription.loadAll({
+        organization_id:
+          contextSimpleUserFiligran2.user.selected_organization_id,
+        service_instance_id: serviceInstanceId,
+      });
+      expect(subscriptions).toHaveLength(1);
+      expect(subscriptions[0]).toMatchObject({
+        organization_id:
+          contextSimpleUserFiligran2.user.selected_organization_id,
+        service_instance_id: serviceInstanceId,
       });
     });
-    it('should send a telemetry event for subscription integrations service', async () => {
-      vi.useFakeTimers();
-      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-      vi.setSystemTime(date);
-      const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
-        .mockResolvedValue();
 
-      requestContext.set(contextSimpleUserSecondOrga);
-      // @ts-ignore
-
-      await subscriptionResolver.Mutation.addSubscription(
-        undefined,
+    it('should map unexpected input errors to SERVICE_SUBSCRIPTION_ERROR', async () => {
+      // Given
+      const call = subscriptionResolver.Mutation!.createSubscription!(
+        {},
         {
-          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          input: {
+            service_instance_id: serviceInstanceId,
+            organization_id:
+              contextSimpleUserFiligran2.user.selected_organization_id,
+            start_date: new Date('2026-01-10T10:00:00.000Z'),
+            end_date: null,
+          } as AddSubscriptionInput,
         },
-        contextSimpleUserSecondOrga
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
       );
-      expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-        '@timestamp': '2025-02-03T13:12:15.000Z',
-        event_type: TelemetryEventType.SUBSCRIBE,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
-        organization_type: 'Professional',
-        source: TelemetrySource.XTMHUB,
-        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        service: TelemetryEventService.INTEGRATIONS_LIBRARY,
+
+      // When / Then
+      await expect(call).rejects.toMatchObject({
+        name: ErrorType.UnknownError,
+        message: UnknownErrorCode.ServiceSubscriptionError,
       });
-    });
-    it('should not send a telemetry event for vault service', async () => {
-      const telemetrySpy = vi.spyOn(telemetryApp, 'sendTelemetryEvent');
 
-      // @ts-ignore
-      await subscriptionResolver.Mutation.addSubscription(
-        undefined,
-        {
-          service_instance_id: SERVICES.INSTANCES.EPIC.ID,
-        },
-        contextSimpleUserSecondOrga
-      );
-      expect(telemetrySpy).not.toHaveBeenCalled();
+      const subscriptions = await TestHelper.subscription.loadAll({
+        service_instance_id: serviceInstanceId,
+      });
+      expect(subscriptions).toHaveLength(0);
     });
   });
 });
@@ -141,10 +247,9 @@ describe('subscription resolver — unit tests', () => {
         GRAPHQL_RESOLVE_INFO
       );
 
-      expect(serviceInstanceDomain.loadServiceInstanceBy).toHaveBeenCalledWith(
-        'id',
-        serviceInstanceId
-      );
+      expect(serviceInstanceDomain.loadServiceInstanceBy).toHaveBeenCalledWith({
+        id: serviceInstanceId,
+      });
       expect(result).toEqual(expected);
     });
 

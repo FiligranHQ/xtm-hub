@@ -1,14 +1,14 @@
 import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/ServiceSlugAddOrgaForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { Button } from '@filigran/ui';
-import { serviceWithSubscriptions_fragment$data } from '@generated/serviceWithSubscriptions_fragment.graphql';
+import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 
 interface ServiceSlugAddSubscriptionActionProps {
   isAdminPath: boolean;
-  serviceInstance: serviceWithSubscriptions_fragment$data;
+  serviceInstance: serviceInstanceForSubscriptions_fragment$data;
   subscriptions: subscription_fragment$data[];
   subscriptionConnectionId: string;
 }

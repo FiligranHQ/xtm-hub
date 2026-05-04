@@ -60,7 +60,7 @@ input SubscriptionFilter {
 }
 
 type Query {
-  subscriptionById(subscription_id: ID): SubscriptionModel @auth
+  subscriptionById(subscription_id: SubscriptionId): SubscriptionModel @auth
   subscriptions(
     first: Int!
     after: ID

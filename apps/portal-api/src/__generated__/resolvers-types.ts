@@ -2648,9 +2648,9 @@ export type ResolversTypes = ResolversObject<{
   SubscriptionCapability: ResolverTypeWrapper<SubscriptionCapability>;
   SubscriptionConnection: ResolverTypeWrapper<SubscriptionConnection>;
   SubscriptionEdge: ResolverTypeWrapper<SubscriptionEdge>;
-  SubscriptionId: ResolverTypeWrapper<Scalars['SubscriptionId']['output']>;
   SubscriptionFilter: SubscriptionFilter;
   SubscriptionFilterKey: SubscriptionFilterKey;
+  SubscriptionId: ResolverTypeWrapper<Scalars['SubscriptionId']['output']>;
   SubscriptionModel: ResolverTypeWrapper<SubscriptionModel>;
   SubscriptionOrdering: SubscriptionOrdering;
   Success: ResolverTypeWrapper<Success>;
@@ -2816,8 +2816,8 @@ export type ResolversParentTypes = ResolversObject<{
   SubscriptionCapability: SubscriptionCapability;
   SubscriptionConnection: SubscriptionConnection;
   SubscriptionEdge: SubscriptionEdge;
-  SubscriptionId: Scalars['SubscriptionId']['output'];
   SubscriptionFilter: SubscriptionFilter;
+  SubscriptionId: Scalars['SubscriptionId']['output'];
   SubscriptionModel: SubscriptionModel;
   Success: Success;
   TaxiiFeed: TaxiiFeed;
