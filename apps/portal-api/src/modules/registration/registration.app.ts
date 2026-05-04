@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   AutoRegisterPlatformInput,
@@ -541,9 +540,7 @@ const mapDomainRegisteredPlatformToGraphQL = (
     identifier:
       platform.identifier ?? ServiceDefinitionIdentifier.OpenctiRegistration,
     version: platform.config?.platform_version ?? '',
-    illustration_document_id: platform.illustration_document_id
-      ? toGlobalId('Document', platform.illustration_document_id)
-      : null,
+    illustration_document_id: platform.illustration_document_id ?? null,
   };
 };
 

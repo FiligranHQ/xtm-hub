@@ -15,11 +15,12 @@ import {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 import { formatRawObject } from '../../../utils/query-raw.util';
-import { extractId, omit } from '../../../utils/utils';
+import { omit } from '../../../utils/utils';
 import { Document } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { UseCaseId } from '../../../model/kanel/public/UseCase';
 import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
@@ -35,7 +36,7 @@ export type DocumentData<T extends DocumentModel> = Omit<
   Partial<T>,
   'use_cases'
 > & {
-  use_cases?: string[];
+  use_cases?: UseCaseId[];
   parent_document_id?: DocumentId;
 };
 
@@ -53,9 +54,7 @@ export const DocumentDomain = {
     metadataKeys: DocumentMetadataKeys<T>
   ) => {
     const { user } = requestContext.require();
-    const extractedId = extractId<UserId>(documentData.uploader_id ?? '');
-    const uploader_id =
-      documentData.uploader_id && extractedId ? extractedId : user.id;
+    const uploader_id = documentData.uploader_id ?? user.id;
     const [document] = await db<DocumentModel>('Document')
       .insert({
         ...omit(documentData, [

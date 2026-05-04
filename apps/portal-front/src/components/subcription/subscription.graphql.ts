@@ -39,7 +39,7 @@ export const subscriptionFragment = graphql`
 `;
 
 export const SubscriptionDeleteMutation = graphql`
-  mutation subscriptionDeleteMutation($subscription_id: ID!) {
+  mutation subscriptionDeleteMutation($subscription_id: SubscriptionId!) {
     deleteSubscription(subscription_id: $subscription_id) {
       ...serviceWithSubscriptions_fragment @relay(mask: false)
     }
@@ -79,7 +79,7 @@ export const AddSubscriptionMutation = graphql`
 `;
 
 export const SubscriptionById = graphql`
-  query subscriptionByIdQuery($subscriptionId: ID) {
+  query subscriptionByIdQuery($subscriptionId: SubscriptionId) {
     subscriptionById(subscription_id: $subscriptionId) {
       id
       organization {

@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -85,13 +84,11 @@ describe('service groups GraphQL query', () => {
 });
 
 describe('update service groups GraphQL mutation', () => {
-  it('should decode user IDs from global IDs and delegate to ServiceGroupApp.updateGroups', async () => {
+  it('should delegate to ServiceGroupApp.updateGroups', async () => {
     // Given
     const groupId = uuidv4() as ServiceGroupId;
-    const rawUserId1 = uuidv4() as UserId;
-    const rawUserId2 = uuidv4() as UserId;
-    const globalUserId1 = toGlobalId('User', rawUserId1);
-    const globalUserId2 = toGlobalId('User', rawUserId2);
+    const userId1 = uuidv4() as UserId;
+    const userId2 = uuidv4() as UserId;
     const expected: Success = { success: true };
     vi.spyOn(ServiceGroupApp, 'updateGroups').mockResolvedValue(expected);
 
@@ -100,7 +97,7 @@ describe('update service groups GraphQL mutation', () => {
       {},
       {
         input: {
-          groups: [{ id: groupId, userIds: [globalUserId1, globalUserId2] }],
+          groups: [{ id: groupId, userIds: [userId1, userId2] }],
         },
       },
       contextSimpleUserFiligran2,
@@ -109,7 +106,7 @@ describe('update service groups GraphQL mutation', () => {
 
     // Then
     expect(ServiceGroupApp.updateGroups).toHaveBeenCalledWith([
-      { id: groupId, userIds: [rawUserId1, rawUserId2] },
+      { id: groupId, userIds: [userId1, userId2] },
     ]);
     expect(result).toMatchObject({ success: true });
   });
@@ -117,7 +114,7 @@ describe('update service groups GraphQL mutation', () => {
   it('should throw mapped error when ServiceGroupApp throws', async () => {
     // Given
     const groupId = uuidv4() as ServiceGroupId;
-    const globalUserId = toGlobalId('User', uuidv4());
+    const userId = uuidv4();
     vi.spyOn(ServiceGroupApp, 'updateGroups').mockRejectedValue(
       new Error('UNEXPECTED')
     );
@@ -125,7 +122,7 @@ describe('update service groups GraphQL mutation', () => {
     // When
     const call = serviceGroupResolver.Mutation!.updateServiceGroups!(
       {},
-      { input: { groups: [{ id: groupId, userIds: [globalUserId] }] } },
+      { input: { groups: [{ id: groupId, userIds: [userId] }] } },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );

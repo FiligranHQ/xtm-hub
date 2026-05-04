@@ -62,6 +62,12 @@ describe('createRelayIdScalar', () => {
     it('should return the raw ID as-is if already decoded', () => {
       expect(scalar.parseValue(rawId)).toBe(rawId);
     });
+    it('should throw when the global ID encodes a different type', () => {
+      const wrongGlobalId = toGlobalId('OtherType', rawId);
+      expect(() => scalar.parseValue(wrongGlobalId)).toThrow(
+        `Expected a ${typeName} global ID but received a OtherType global ID`
+      );
+    });
   });
 
   describe('parseLiteral', () => {
@@ -88,6 +94,14 @@ describe('createRelayIdScalar', () => {
     it('should return the raw ID as-is if already decoded', () => {
       expect(scalar.parseLiteral({ kind: Kind.STRING, value: rawId })).toBe(
         rawId
+      );
+    });
+    it('should throw when the global ID encodes a different type', () => {
+      const wrongGlobalId = toGlobalId('OtherType', rawId);
+      expect(() =>
+        scalar.parseLiteral({ kind: Kind.STRING, value: wrongGlobalId })
+      ).toThrow(
+        `Expected a ${typeName} global ID but received a OtherType global ID`
       );
     });
   });

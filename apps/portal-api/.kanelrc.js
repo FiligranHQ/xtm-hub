@@ -41,6 +41,7 @@ const COLUMN_ENUM_MAP = {
     creation_status: 'ServiceInstanceCreationStatus',
     join_type: 'ServiceInstanceJoinType',
     tags: 'ServiceInstanceTag',
+    illustration_document_id: { tsType: 'DocumentId', importPath: './Document' }
   },
   NewsFeedItem: {
     type: 'NewsFeedItemType',
