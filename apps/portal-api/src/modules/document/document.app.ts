@@ -16,11 +16,8 @@ import Document, {
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { UseCaseId } from '../../model/kanel/public/UseCase';
-import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { extractId } from '../../utils/utils';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -155,7 +152,7 @@ export const DocumentApp = {
         await objectUseCaseDomain.insertObjectUseCase(
           documentData.use_cases.map((id) => ({
             object_id: document.id as unknown as ObjectUseCaseObjectId,
-            use_case_id: extractId(id) as UseCaseId,
+            use_case_id: id,
           }))
         );
       }
@@ -275,12 +272,7 @@ export const DocumentApp = {
     const updatedDocument = await withTransaction(async () => {
       const { user } = requestContext.require();
       const uploader_organization_id = input.uploader_organization_id ?? null;
-
-      const extractedUploaderId = extractId<UserId>(input.uploader_id ?? '');
-      const uploader_id =
-        input.uploader_id && extractedUploaderId
-          ? extractedUploaderId
-          : user.id;
+      const uploader_id = input.uploader_id ?? user.id;
 
       const file = DocumentHelper.isDocumentFileRequired({
         documentType,
@@ -310,7 +302,7 @@ export const DocumentApp = {
           await objectUseCaseDomain.insertObjectUseCase(
             input.use_cases.map((id) => ({
               object_id: parentDocumentId as unknown as ObjectUseCaseObjectId,
-              use_case_id: extractId(id) as UseCaseId,
+              use_case_id: id,
             }))
           );
         }

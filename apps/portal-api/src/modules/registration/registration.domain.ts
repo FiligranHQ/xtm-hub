@@ -28,6 +28,7 @@ import {
 } from '../subscription/subscription.domain';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
+import { DocumentId } from '../../model/kanel/public/Document';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 
@@ -45,7 +46,7 @@ export type PlatformConfiguration = {
 export interface DomainRegisteredPlatform {
   config: PlatformConfiguration;
   identifier: ServiceDefinitionIdentifier;
-  illustration_document_id: string | null;
+  illustration_document_id: DocumentId | null;
   id: string;
 }
 

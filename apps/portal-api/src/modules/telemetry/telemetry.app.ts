@@ -1,7 +1,6 @@
 import config from 'config';
 import { OneClickDeployInput } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
-import { DocumentId } from '../../model/kanel/public/Document';
 import { UserId } from '../../model/kanel/public/User';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
@@ -112,7 +111,7 @@ export const telemetryApp = {
       'platform_version' in config
         ? (config.platform_version as string)
         : undefined,
-      extractId<DocumentId>(input.resource_id),
+      input.resource_id,
       input.resource_title,
       'tenant_id' in config ? (config.tenant_id as string) : undefined
     );

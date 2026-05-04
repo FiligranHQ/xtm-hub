@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -44,36 +43,6 @@ describe('serviceInstance.__resolveType', () => {
 });
 
 describe('serviceInstance field resolvers', () => {
-  it('logo_document_id should return global ID when set', () => {
-    const rawId = uuidv4();
-    const result = (
-      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).logo_document_id({ logo_document_id: rawId });
-    expect(result).toBe(toGlobalId('Document', rawId));
-  });
-
-  it('logo_document_id should return undefined when not set', () => {
-    const result = (
-      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).logo_document_id({ logo_document_id: null });
-    expect(result).toBeUndefined();
-  });
-
-  it('illustration_document_id should return global ID when set', () => {
-    const rawId = uuidv4();
-    const result = (
-      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).illustration_document_id({ illustration_document_id: rawId });
-    expect(result).toBe(toGlobalId('Document', rawId));
-  });
-
-  it('illustration_document_id should return undefined when not set', () => {
-    const result = (
-      serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).illustration_document_id({ illustration_document_id: null });
-    expect(result).toBeUndefined();
-  });
-
   it('links should load links by service instance id', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = [] as unknown as Awaited<

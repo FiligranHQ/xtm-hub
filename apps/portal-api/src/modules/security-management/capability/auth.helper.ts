@@ -11,7 +11,6 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { SubscriptionMutator } from '../../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../../model/user';
 import { ServiceCapabilityArgs } from '../../../security/directive-graphql/validator/service-capability.validator';
-import { extractId } from '../../../utils/utils';
 import { loadUserOrganization } from '../../common/user-organization.domain';
 import { loadUserOrganizationCapabilities } from '../user-organization-capability/user-organization-capability.domain';
 
@@ -95,7 +94,7 @@ export const getCapabilityUser = (
   args.service_instance_id
     ? loadCapabilitiesByServiceId(user, args.service_instance_id)
     : loadSubscriptionBy({
-        id: extractId(args.subscription_id),
+        id: args.subscription_id,
       } as SubscriptionMutator).then(([subscription]) =>
         loadCapabilitiesByServiceId(user, subscription.service_instance_id)
       );

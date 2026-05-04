@@ -12,6 +12,7 @@ import {
   DocumentMutator,
 } from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { UseCaseId } from '../../model/kanel/public/UseCase';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { MinioFile } from '../../thirdparty/minio/types';
 import { logApp } from '../../utils/app-logger.util';
@@ -55,7 +56,7 @@ export const BOOLEAN_METADATA = [
 
 export type Document = WithUseCases<DocumentModel>;
 export type FullDocumentMutator = Partial<DocumentModel> & {
-  use_cases?: string[];
+  use_cases?: UseCaseId[];
   parent_document_id?: DocumentId;
 };
 

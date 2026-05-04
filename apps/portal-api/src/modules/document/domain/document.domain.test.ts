@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   DocumentConnection,
@@ -405,10 +404,10 @@ describe('document domain', () => {
 
   describe('createDocument', () => {
     it.each`
-      typeOfDocument      | overwriteField                                                                       | expected
-      ${'minimal fields'} | ${{}}                                                                                | ${{}}
-      ${'uploader id'}    | ${{ uploader_id: toGlobalId('User', TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID) }} | ${{ uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID }}
-      ${'inactive'}       | ${{ active: false }}                                                                 | ${{ active: false }}
+      typeOfDocument      | overwriteField                                                   | expected
+      ${'minimal fields'} | ${{}}                                                            | ${{}}
+      ${'uploader id'}    | ${{ uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID }} | ${{ uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID }}
+      ${'inactive'}       | ${{ active: false }}                                             | ${{ active: false }}
     `(
       'it should create a document with $typeOfDocument',
       async ({ typeOfDocument, overwriteField, expected }) => {

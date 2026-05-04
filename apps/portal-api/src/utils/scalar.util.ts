@@ -6,6 +6,11 @@ const parseRelayId = <T extends string>(typeName: string, value: string): T => {
   if (type === typeName && id) {
     return id as T;
   }
+  if (type && id) {
+    throw new Error(
+      `Expected a ${typeName} global ID but received a ${type} global ID`
+    );
+  }
   // Already a raw ID (not a Relay-encoded global ID)
   return value as T;
 };

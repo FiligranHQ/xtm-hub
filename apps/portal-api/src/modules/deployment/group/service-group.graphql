@@ -8,7 +8,7 @@ type ServiceGroup implements Node {
 
 input UpdateServiceGroupsInputGroup {
   id: ServiceGroupId!
-  userIds: [ID!]!
+  userIds: [UserId!]!
 }
 
 input UpdateServiceGroupsInput {

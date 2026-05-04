@@ -6,7 +6,7 @@ type TelemetryResponse {
 input OneClickDeployInput {
   platform_identifier: PlatformIdentifier!
   service_instance_id: ServiceInstanceId!
-  resource_id: ID!
+  resource_id: DocumentId!
   resource_title: String!
   platform_service_instance_id: ID!
 }

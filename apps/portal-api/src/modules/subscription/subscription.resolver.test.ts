@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
@@ -303,9 +302,8 @@ describe('subscription resolver — unit tests', () => {
   });
 
   describe('mutation.deleteSubscription', () => {
-    it('should decode subscription_id and call deleteSubscription app', async () => {
-      const rawId = uuidv4() as SubscriptionId;
-      const globalId = toGlobalId('Subscription', rawId);
+    it('should call deleteSubscription app', async () => {
+      const subscriptionId = uuidv4() as SubscriptionId;
       const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
       const expected = { id: serviceInstanceId } as unknown as Awaited<
         ReturnType<typeof serviceInstanceDomain.loadServiceWithSubscriptions>
@@ -322,12 +320,14 @@ describe('subscription resolver — unit tests', () => {
 
       const result = await subscriptionResolver.Mutation!.deleteSubscription!(
         {},
-        { subscription_id: globalId },
+        { subscription_id: subscriptionId },
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
       );
 
-      expect(subscriptionApp.deleteSubscription).toHaveBeenCalledWith(rawId);
+      expect(subscriptionApp.deleteSubscription).toHaveBeenCalledWith(
+        subscriptionId
+      );
       expect(result).toEqual(expected);
     });
 
@@ -338,7 +338,7 @@ describe('subscription resolver — unit tests', () => {
 
       const call = subscriptionResolver.Mutation!.deleteSubscription!(
         {},
-        { subscription_id: toGlobalId('Subscription', uuidv4()) },
+        { subscription_id: uuidv4() as SubscriptionId },
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
       );
@@ -349,9 +349,8 @@ describe('subscription resolver — unit tests', () => {
 
   describe('query.subscriptionById', () => {
     it('should decode subscription_id and return first subscription', async () => {
-      const rawId = uuidv4() as SubscriptionId;
-      const globalId = toGlobalId('Subscription', rawId);
-      const expected = { id: rawId } as unknown as Awaited<
+      const subscriptionId = uuidv4() as SubscriptionId;
+      const expected = { id: subscriptionId } as unknown as Awaited<
         ReturnType<
           typeof subscriptionHelper.loadSubscriptionWithOrganizationAndCapabilitiesBy
         >
@@ -363,7 +362,7 @@ describe('subscription resolver — unit tests', () => {
 
       const result = await subscriptionResolver.Query!.subscriptionById!(
         {},
-        { subscription_id: globalId },
+        { subscription_id: subscriptionId },
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
       );
@@ -371,7 +370,7 @@ describe('subscription resolver — unit tests', () => {
       expect(
         subscriptionHelper.loadSubscriptionWithOrganizationAndCapabilitiesBy
       ).toHaveBeenCalledWith(
-        expect.objectContaining({ 'Subscription.id': rawId })
+        expect.objectContaining({ 'Subscription.id': subscriptionId })
       );
       expect(result).toEqual(expected);
     });

@@ -9,7 +9,7 @@ import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../utils/error/error.util';
-import { extractId } from '../../utils/utils';
+import { createRelayIdScalar } from '../../utils/scalar.util';
 import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
 import {
   getServiceInstance,
@@ -35,6 +35,8 @@ import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
+  DocumentId: createRelayIdScalar<DocumentId>('Document'),
+
   Mutation: {
     createDocument: async (_, input) => {
       try {
@@ -55,11 +57,9 @@ const resolvers: Resolvers = {
       try {
         return await DocumentApp.updateDocument({
           ...input,
-          parentDocumentId: extractId<DocumentId>(input.documentId),
+          parentDocumentId: input.documentId,
           serviceInstanceId: input.serviceInstanceId,
-          existingImageIds: (input.existingImageIds ?? []).map((imageId) =>
-            extractId<DocumentId>(imageId)
-          ),
+          existingImageIds: input.existingImageIds ?? [],
         });
       } catch (error) {
         if (error.message?.includes('document_type_slug_unique')) {
@@ -76,7 +76,7 @@ const resolvers: Resolvers = {
     ) => {
       try {
         return await DocumentApp.deleteDocument(
-          extractId<DocumentId>(documentId),
+          documentId,
           service_instance_id,
           forceDelete
         );
@@ -87,7 +87,7 @@ const resolvers: Resolvers = {
     incrementShareNumberDocument: async (_, { documentId }, context) => {
       try {
         const document = await DocumentDomain.loadDocumentWithMetadataById(
-          extractId<DocumentId>(documentId),
+          documentId,
           []
         );
         const documentWithCounters = await updateDocumentWithCounters(document);
@@ -218,8 +218,7 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    document: async (_, { documentId }) =>
-      DocumentApp.loadDocument(extractId<DocumentId>(documentId)),
+    document: async (_, { documentId }) => DocumentApp.loadDocument(documentId),
   },
 };
 

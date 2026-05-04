@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -93,47 +92,6 @@ describe('epic.document', () => {
 
     // Then
     expect(result).toBeNull();
-  });
-});
-
-describe('epic.document_id', () => {
-  it('should return global ID when document_id is set', () => {
-    // Given
-    const rawDocumentId = uuidv4() as DocumentId;
-    const epicParent = {
-      id: uuidv4() as EpicId,
-      document_id: rawDocumentId,
-    } as unknown as Epic;
-
-    // When
-    const result = epicResolver.Epic!.document_id!(
-      epicParent,
-      {},
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    // Then
-    expect(result).toBe(toGlobalId('Document', rawDocumentId));
-  });
-
-  it('should return undefined when document_id is null', () => {
-    // Given
-    const epicParent = {
-      id: uuidv4() as EpicId,
-      document_id: null,
-    } as unknown as Epic;
-
-    // When
-    const result = epicResolver.Epic!.document_id!(
-      epicParent,
-      {},
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    // Then
-    expect(result).toBeUndefined();
   });
 });
 

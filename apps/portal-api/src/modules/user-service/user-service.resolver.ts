@@ -1,10 +1,8 @@
 import { Resolvers } from '../../__generated__/resolvers-types';
-import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
-import { extractId } from '../../utils/utils';
 import { loadUserDetails } from '../organization-management/user/user-domain/user.domain';
 import { UserServiceApp } from './user-service.app';
 import { UserServiceDomain } from './user-service.domain';
@@ -29,7 +27,7 @@ const resolvers: Resolvers = {
           orderMode,
           orderBy,
         },
-        extractId<SubscriptionId>(subscription_id)
+        subscription_id
       );
     },
   },
@@ -39,7 +37,7 @@ const resolvers: Resolvers = {
         const user = context.user;
         return await UserServiceApp.addUserService(
           user,
-          extractId<SubscriptionId>(input.subscriptionId),
+          input.subscriptionId,
           input.email,
           input.capabilities
         );
@@ -51,7 +49,7 @@ const resolvers: Resolvers = {
       try {
         return await UserServiceApp.deleteUserService(
           input.email,
-          extractId<SubscriptionId>(input.subscriptionId)
+          input.subscriptionId
         );
       } catch (error) {
         throw mapToGraphQLError(error);

@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
   RegisteredPlatform,
   SeoServiceInstance,
@@ -179,18 +178,13 @@ export const ServiceInstanceApp = {
       contract: platformConfig.platform_contract,
       version: platformConfig.platform_version,
       identifier: serviceDefinition.identifier,
-      illustration_document_id: updatedServiceInstance.illustration_document_id
-        ? toGlobalId(
-            'Document',
-            updatedServiceInstance.illustration_document_id
-          )
-        : null,
+      illustration_document_id:
+        updatedServiceInstance.illustration_document_id ?? null,
     } as RegisteredPlatform;
   },
 
   loadSeoServiceInstances: async (): Promise<SeoServiceInstance[]> => {
-    const services = await loadSeoServiceInstances();
-    return services.map(withServiceInstanceGlobalIDs);
+    return await loadSeoServiceInstances();
   },
 
   loadSeoServiceInstance: async (slug: string): Promise<SeoServiceInstance> => {
@@ -198,46 +192,15 @@ export const ServiceInstanceApp = {
     if (!serviceInstance) {
       throw Error(ErrorCode.ServiceNotFound);
     }
-    return {
-      ...withServiceInstanceGlobalIDs(serviceInstance),
-    };
+    return serviceInstance;
   },
 
   loadLinkServiceInstancesByTags: async (
     tags: ServiceInstanceTag[]
   ): Promise<SeoServiceInstance[]> => {
-    const serviceInstances =
-      await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
-        ServiceDefinitionIdentifier.Link,
-        tags
-      );
-
-    return serviceInstances.map((serviceInstance) => ({
-      ...withServiceInstanceGlobalIDs(serviceInstance),
-    }));
+    return await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+      ServiceDefinitionIdentifier.Link,
+      tags
+    );
   },
 };
-
-/**
- * Transforms raw document IDs into GraphQL global IDs for a service instance.
- * Used for types (like SeoServiceInstance) that bypass the ServiceInstance field resolvers.
- */
-export const withServiceInstanceGlobalIDs = <
-  T extends Pick<
-    ServiceInstance,
-    'logo_document_id' | 'illustration_document_id'
-  >,
->(
-  service: T
-): T => ({
-  ...service,
-  ...(service.illustration_document_id && {
-    illustration_document_id: toGlobalId(
-      'Document',
-      service.illustration_document_id
-    ),
-  }),
-  ...(service.logo_document_id && {
-    logo_document_id: toGlobalId('Document', service.logo_document_id),
-  }),
-});
