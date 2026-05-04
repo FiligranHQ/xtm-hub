@@ -36,7 +36,7 @@ export const listen = (
 ) => {
   const iteratorFn = () => {
     try {
-      return pubsub.asyncIterator(topics);
+      return pubsub.asyncIterableIterator(topics);
     } catch (error) {
       logApp.error('Error creating async iterator', { error, topics });
       // Return an empty async iterator on error

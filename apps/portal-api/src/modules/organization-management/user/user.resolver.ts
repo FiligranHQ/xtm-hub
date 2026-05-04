@@ -317,42 +317,33 @@ const resolvers: Resolvers = {
   },
   Subscription: {
     User: {
-      subscribe: (_, args, context, info) => {
-        return {
-          [Symbol.asyncIterator]: () =>
-            listen(context, ['User'], info, (payload: UserSubscription) => {
-              if (!args.organizationId || payload.merge) {
-                return true;
-              }
-              const user = payload.add ?? payload.delete ?? payload.edit;
-              return user.organizations
-                .map((org) => org.id)
-                .includes(extractId(args.organizationId));
-            }),
-        };
-      },
+      subscribe: (_, args, context, info) =>
+        listen(context, ['User'], info, (payload: UserSubscription) => {
+          if (!args.organizationId || payload.merge) {
+            return true;
+          }
+          const user = payload.add ?? payload.delete ?? payload.edit;
+          return user.organizations
+            .map((org) => org.id)
+            .includes(extractId(args.organizationId));
+        }),
     },
     MeUser: {
-      subscribe: (_, __, context, info) => ({
-        [Symbol.asyncIterator]: () => listen(context, ['MeUser'], info),
-      }),
+      subscribe: (_, __, context, info) => listen(context, ['MeUser'], info),
     },
     UserPending: {
-      subscribe: (_, args, context, info) => ({
-        [Symbol.asyncIterator]: () => {
-          return listen(
-            context,
-            ['UserPending'],
-            info,
-            (payload: UserPendingSubscription) => {
-              const organizationId = payload.delete
-                ? payload.delete.pending_organization_id
-                : payload.invalidate.id;
-              return organizationId === extractId(args.organizationId);
-            }
-          );
-        },
-      }),
+      subscribe: (_, args, context, info) =>
+        listen(
+          context,
+          ['UserPending'],
+          info,
+          (payload: UserPendingSubscription) => {
+            const organizationId = payload.delete
+              ? payload.delete.pending_organization_id
+              : payload.invalidate.id;
+            return organizationId === extractId(args.organizationId);
+          }
+        ),
     },
   },
 };
