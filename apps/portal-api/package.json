@@ -80,7 +80,7 @@
     "knex": "3.2.9",
     "migrate": "^2.1.0",
     "node-cron": "4.2.1",
-    "nodemailer": "8.0.6",
+    "nodemailer": "8.0.7",
     "openid-client": "5.7.1",
     "passport": "0.7.0",
     "pg": "8.20.0",
