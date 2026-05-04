@@ -1,16 +1,18 @@
 import config from 'config';
+import { discovery, fetchUserInfo, type ClientMetadata } from 'openid-client';
 import {
-  ClientMetadata,
-  custom as OpenIDCustom,
-  Issuer as OpenIDIssuer,
   Strategy as OpenIDStrategy,
-} from 'openid-client';
+  type StrategyOptionsWithRequest,
+} from 'openid-client/passport';
+import { PassportStatic } from 'passport';
 import { logApp } from '../../../../utils/app-logger.util';
 import { loadRolePortalsBySSOGroups } from '../../../role-portal/role-portal.domain';
 import { providerLoginHandler } from '../login-handle';
 import { extractRole } from '../mapping-roles';
 
-export const addOIDCStrategy = async (passport): Promise<void> => {
+export const addOIDCStrategy = async (
+  passport: PassportStatic
+): Promise<void> => {
   logApp.debug('addOIDCStrategy');
   const AUTH_SSO = 'SSO';
   const STRATEGY_OPENID = 'OpenIDConnectStrategy';
@@ -19,28 +21,32 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
   const oidcConfig = getOidcConfig();
 
   const providerRef = 'oidc';
-  // Here we use directly the config and not the mapped one.
-  // All config of openid lib use snake case.
-  const openIdClient = undefined;
-  OpenIDCustom.setHttpOptionsDefaults({ timeout: 0, agent: openIdClient });
   try {
-    const issuer = await OpenIDIssuer.discover(oidcConfig.issuer);
-    const { Client } = issuer;
-
-    const client = new Client(oidcConfig);
+    const oidcConfiguration = await discovery(
+      new URL(oidcConfig.issuer),
+      oidcConfig.client_id,
+      oidcConfig.client_secret
+    );
 
     // region scopes generation
     const openIdScopes = ['openid', 'email', 'profile'];
     // endregion
-    const options = {
-      client,
+    const options: StrategyOptionsWithRequest = {
+      config: oidcConfiguration,
       passReqToCallback: true,
-      params: { scope: openIdScopes.join(' ') },
+      scope: openIdScopes.join(' '),
+      callbackURL: oidcConfig.redirect_uris?.[0],
     };
 
     const openIDStrategy = new OpenIDStrategy(
       options,
-      async (_, tokenSet, userinfo, done) => {
+      async (_req, tokens, done) => {
+        const userinfo = await fetchUserInfo(
+          oidcConfiguration,
+          tokens.access_token,
+          tokens.claims().sub
+        );
+
         const extractedRoles = extractRole(
           userinfo['https://xtm-hub-development/roles'] as string[]
         );
@@ -70,7 +76,7 @@ export const addOIDCStrategy = async (passport): Promise<void> => {
         );
         logApp.info('[OPENID] Successfully logged', { userinfo });
 
-        done(null, tokenSet.claims());
+        done(null, tokens.claims());
       }
     );
 
@@ -105,8 +111,6 @@ export const getOidcConfig = () => {
     client_id: process.env.OIDC_CLIENT_ID,
     client_secret: process.env.OIDC_CLIENT_SECRET,
     redirect_uris: process.env.OIDC_REDIRECT_URIS?.split(','),
-    logout_callback_url: process.env.OIDC_LOGOUT_CALLBACK_URL?.split(','),
-    response_types: ['code'],
   };
 
   return process.env.OIDC_ISSUER ? oidcConfigFromCi : oidcConfigFromLocal;
