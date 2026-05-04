@@ -1,5 +1,7 @@
 'use client';
 
+import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
+import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
 import {
   AutoForm,
   Button,
@@ -23,8 +25,6 @@ import { useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 import Markdown from 'react-markdown';
 import { z } from 'zod';
-import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
-import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 
 export const descriptionValue =
   ' [Long Description] - no limit of chars\n' +
@@ -57,38 +57,20 @@ export const DESCRIPTION_END_VALUE_BY_PRODUCT: Record<
 > = {
   [FiligranProductEnum.OPENCTI]:
     '\n' +
-    'New to the community? For more information and to stay up to date about OpenCTI:\n' +
-    '\n' +
-    '- [Learn more about OpenCTI](https://filigran.io/platforms/opencti/)\n' +
-    '- [Join the OpenCTI community](https://app.slack.com/client/TJ1PH4GBZ/CHZC2D38C)\n' +
-    '- [Book a personalized demo](https://filigran.io/book-a-demo/?form_origin=roadmap)\n',
+    'To stay up to date about everything OpenCTI, ' +
+    '[Join the discussion in the Community](https://filigran-community.slack.com/archives/CHZC2D38C)\n',
   [FiligranProductEnum.OPENAEV]:
     '\n' +
-    'New to the community? For more information and to stay up to date about OpenAEV:\n' +
-    '\n' +
-    '- [Learn more about OpenAEV](https://filigran.io/platforms/openaev/)\n' +
-    '- [Join the OpenEAV community](https://app.slack.com/client/TJ1PH4GBZ/CJ1PHBHF1)\n' +
-    '- [Book a personalized demo](https://filigran.io/book-a-demo/?form_origin=roadmap)\n',
-  [FiligranProductEnum.OPENGRC]:
-    '\n' +
-    'New to the community? For more information and to stay up to date about OpenGRC:\n' +
-    '\n' +
-    '- [Learn more about OpenGRC](https://filigran.io/platforms/xtm-suite/)\n' +
-    '- [Join the OpenGRC community](https://app.slack.com/client/TJ1PH4GBZ/C09ETNN9CBS)\n' +
-    '- [Book a personalized demo](https://filigran.io/book-a-demo/?form_origin=roadmap)\n',
+    'To stay up to date about everything OpenAEV, ' +
+    '[Join the discussion in the Community](https://filigran-community.slack.com/archives/CJ1PHBHF1)\n',
   [FiligranProductEnum.XTMONE]:
     '\n' +
-    'New to the community? For more information and to stay up to date about XTMOne:\n' +
-    '\n' +
-    '- [Learn more about XTMOne](https://filigran.io/platforms/xtm-suite/)\n' +
-    '- [Book a personalized demo](https://filigran.io/book-a-demo/?form_origin=roadmap)\n',
+    'To stay up to date about everything XTM One, ' +
+    '[Join the discussion in the Community](https://filigran-community.slack.com/archives/CHNEM9NUT)\n',
   [FiligranProductEnum.XTMHUB]:
     '\n' +
-    'New to the community? For more information and to stay up to date about XTM Hub:\n' +
-    '\n' +
-    '- [Explore the XTM Hub](https://hub.filigran.io/)\n' +
-    '- [Join the XTM Hub community](https://app.slack.com/client/TJ1PH4GBZ/C08HU35NPD4)\n' +
-    '- [Book a personalized demo](https://filigran.io/book-a-demo/?form_origin=roadmap)\n',
+    'To stay up to date about everything XTM Hub, ' +
+    '[Join the discussion in the Community](https://filigran-community.slack.com/archives/C08HU35NPD4)\n',
 };
 
 export const getEndDescription = (product?: FiligranProductEnum) => {

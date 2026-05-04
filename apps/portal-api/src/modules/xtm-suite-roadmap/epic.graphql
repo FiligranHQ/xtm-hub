@@ -1,7 +1,6 @@
 enum FiligranProduct {
   opencti
   openaev
-  opengrc
   xtmone
   xtmhub
 }

@@ -1,13 +1,12 @@
+import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import {
   LogoFiligranIcon,
   LogoXtmOneIcon,
   OpenAevIconIcon,
   OpenCtiIconIcon,
-  OpenGrcIcon,
 } from '@filigran/icon';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { describe, expect, it } from 'vitest';
-import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 
 describe('FiligranProductMapping', () => {
   it('contains all Filigran products from enum', () => {
@@ -20,7 +19,6 @@ describe('FiligranProductMapping', () => {
     product                        | expectedName | expectedLogoComponent
     ${FiligranProductEnum.OPENCTI} | ${'OpenCTI'} | ${OpenCtiIconIcon}
     ${FiligranProductEnum.OPENAEV} | ${'OpenAEV'} | ${OpenAevIconIcon}
-    ${FiligranProductEnum.OPENGRC} | ${'OpenGRC'} | ${OpenGrcIcon}
     ${FiligranProductEnum.XTMHUB}  | ${'XTM Hub'} | ${LogoFiligranIcon}
     ${FiligranProductEnum.XTMONE}  | ${'XTM One'} | ${LogoXtmOneIcon}
   `(

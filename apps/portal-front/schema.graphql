@@ -1649,7 +1649,6 @@ type UserServiceDeleted implements Node {
 enum FiligranProduct {
   opencti
   openaev
-  opengrc
   xtmone
   xtmhub
 }
