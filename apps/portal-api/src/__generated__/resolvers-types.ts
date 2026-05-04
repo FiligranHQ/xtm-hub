@@ -643,7 +643,6 @@ export enum FeatureFlag {
 export enum FiligranProduct {
   Openaev = 'openaev',
   Opencti = 'opencti',
-  Opengrc = 'opengrc',
   Xtmhub = 'xtmhub',
   Xtmone = 'xtmone'
 }
