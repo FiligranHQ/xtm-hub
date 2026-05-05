@@ -29,7 +29,7 @@ const Page = async () => {
         {services.map((service) => (
           <ServiceInstanceCard
             key={service.id}
-            serviceInstance={seoServiceInstanceToInstanceCardData(service)}
+            serviceInstance={seoServiceInstanceToInstanceCardData(service, t)}
           />
         ))}
       </ul>

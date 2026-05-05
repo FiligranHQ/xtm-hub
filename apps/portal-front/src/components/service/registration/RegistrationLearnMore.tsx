@@ -127,7 +127,10 @@ export const RegistrationLearnMore = async ({
               <ServiceInstanceCard
                 key={service.id}
                 className="basis-full max-w-[50%]"
-                serviceInstance={seoServiceInstanceToInstanceCardData(service)}
+                serviceInstance={seoServiceInstanceToInstanceCardData(
+                  service,
+                  t
+                )}
               />
             ))}
           </div>

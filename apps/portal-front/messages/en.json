@@ -702,6 +702,60 @@
       "ManageAccessName": "Manage access",
       "SelectCapabilities": "Select capabilities"
     },
+    "Cards": {
+      "filigran-academy": {
+        "Name": "Filigran Academy",
+        "Description": "Master OpenCTI and OpenAEV with Filigran Academy—your ultimate guide to success across all skill levels!"
+      },
+      "filigran-blog": {
+        "Name": "Filigran Blog",
+        "Description": "Discover the latest articles about OpenCTI, OpenAEV and more."
+      },
+      "openaev-101": {
+        "Name": "OpenAEV 101",
+        "Description": "Discover how to deploy and use OpenAEV, Filigran's platform for realistic cyber-threat simulation, to build hands-on adversary emulation exercises."
+      },
+      "openaev-demo": {
+        "Name": "OpenAEV Demo",
+        "Description": "Access a live OpenAEV demo instance and explore all of its features."
+      },
+      "openaev-documentation": {
+        "Name": "OpenAEV Documentation",
+        "Description": "Find all documents to get started with our Adversary Exposure Validation platform, also includes release notes and presentations."
+      },
+      "openaev-scenarios": {
+        "Name": "OpenAEV Scenarios Library",
+        "Description": "Explore a range of OpenAEV Scenarios shared by the Filigran team."
+      },
+      "opencti-101": {
+        "Name": "OpenCTI 101",
+        "Description": "The fundamentals: discover the essential concepts with basic use cases and workflows."
+      },
+      "opencti-custom-dashboards": {
+        "Name": "OpenCTI Custom Dashboards Library",
+        "Description": "Explore a range of threat management custom dashboards, helping you make the most effective use of OpenCTI."
+      },
+      "opencti-demo": {
+        "Name": "OpenCTI Demo",
+        "Description": "Access a live OpenCTI demo instance and explore all of its features."
+      },
+      "opencti-documentation": {
+        "Name": "OpenCTI Documentation",
+        "Description": "Find all documents to get started with our threat intelligence platform, also includes release notes and presentations."
+      },
+      "opencti-integrations": {
+        "Name": "OpenCTI Integrations Library",
+        "Description": "Explore a range of OpenCTI Integrations shared by the Filigran team."
+      },
+      "slack": {
+        "Name": "Slack",
+        "Description": "Connect with our growing threat management community (5000+ members). Share your experiences and find the support you need."
+      },
+      "xtm-suite-roadmap": {
+        "Name": "XTM Suite Roadmap",
+        "Description": "Explore and follow the Filigran XTM Suite roadmap."
+      }
+    },
     "ComingSoon": "Coming soon",
     "Connectors": {
       "DataImport": "Data Import",

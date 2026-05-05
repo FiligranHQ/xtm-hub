@@ -702,6 +702,60 @@
       "ManageAccessName": "アクセス管理",
       "SelectCapabilities": "機能を選択"
     },
+    "Cards": {
+      "filigran-academy": {
+        "Name": "Filigran Academy",
+        "Description": "Filigran Academy で OpenCTI と OpenAEV をマスターしましょう。あらゆるスキルレベルに対応した、成功への究極のガイドです。"
+      },
+      "filigran-blog": {
+        "Name": "Filigran ブログ",
+        "Description": "OpenCTI、OpenAEV などに関する最新記事をご覧ください。"
+      },
+      "openaev-101": {
+        "Name": "OpenAEV 101",
+        "Description": "リアルなサイバー脅威シミュレーションのための Filigran プラットフォーム OpenAEV をデプロイ・使用し、実践的な攻撃者エミュレーション演習を構築する方法を学びましょう。"
+      },
+      "openaev-demo": {
+        "Name": "OpenAEV デモ",
+        "Description": "ライブの OpenAEV デモインスタンスにアクセスし、すべての機能をお試しください。"
+      },
+      "openaev-documentation": {
+        "Name": "OpenAEV ドキュメント",
+        "Description": "当社の Adversary Exposure Validation プラットフォームを使い始めるためのすべてのドキュメント、リリースノート、プレゼンテーションをご覧いただけます。"
+      },
+      "openaev-scenarios": {
+        "Name": "OpenAEV シナリオライブラリ",
+        "Description": "Filigran チームが共有する OpenAEV シナリオの数々をご覧ください。"
+      },
+      "opencti-101": {
+        "Name": "OpenCTI 101",
+        "Description": "基礎: 基本的なユースケースとワークフローを通じて、必須の概念を学びましょう。"
+      },
+      "opencti-custom-dashboards": {
+        "Name": "OpenCTI カスタムダッシュボードライブラリ",
+        "Description": "OpenCTI を最大限に活用するための、脅威管理向けカスタムダッシュボードの数々をご覧ください。"
+      },
+      "opencti-demo": {
+        "Name": "OpenCTI デモ",
+        "Description": "ライブの OpenCTI デモインスタンスにアクセスし、すべての機能をお試しください。"
+      },
+      "opencti-documentation": {
+        "Name": "OpenCTI ドキュメント",
+        "Description": "当社の脅威インテリジェンスプラットフォームを使い始めるためのすべてのドキュメント、リリースノート、プレゼンテーションをご覧いただけます。"
+      },
+      "opencti-integrations": {
+        "Name": "OpenCTI インテグレーションライブラリ",
+        "Description": "Filigran チームが共有する OpenCTI インテグレーションの数々をご覧ください。"
+      },
+      "slack": {
+        "Name": "Slack",
+        "Description": "成長を続ける脅威管理コミュニティ (メンバー5,000人以上) に参加しましょう。経験を共有し、必要なサポートを得られます。"
+      },
+      "xtm-suite-roadmap": {
+        "Name": "XTM Suite ロードマップ",
+        "Description": "Filigran XTM Suite のロードマップを確認し、フォローしましょう。"
+      }
+    },
     "ComingSoon": "近日公開予定",
     "Connectors": {
       "DataImport": "データインポート",

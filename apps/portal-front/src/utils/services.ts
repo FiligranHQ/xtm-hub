@@ -200,15 +200,32 @@ const computeIllustrationDocumentUrl = (
   return null;
 };
 
+const localizedCardName = (
+  instance: { slug?: string | null; name: string },
+  t: ReturnType<typeof useTranslations>
+) => {
+  const key = `Service.Cards.${instance.slug}.Name`;
+  return instance.slug && t.has(key) ? t(key) : instance.name;
+};
+
+const localizedCardDescription = (
+  instance: { slug?: string | null; description?: string | null },
+  t: ReturnType<typeof useTranslations>
+) => {
+  const key = `Service.Cards.${instance.slug}.Description`;
+  return instance.slug && t.has(key) ? t(key) : instance.description!;
+};
+
 export const publicServiceInstanceToInstanceCardData = (
-  instance: serviceList_fragment$data
+  instance: serviceList_fragment$data,
+  t: ReturnType<typeof useTranslations>
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
     isLinkDisabled:
       instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
-    name: instance.name,
-    description: instance.description!,
+    name: localizedCardName(instance, t),
+    description: localizedCardDescription(instance, t),
     displayLinkArrow: isExternalService(
       instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
     ),
@@ -226,13 +243,14 @@ export const publicServiceInstanceToInstanceCardData = (
 };
 
 export const seoServiceInstanceToInstanceCardData = (
-  instance: seoServiceInstanceFragment$data
+  instance: seoServiceInstanceFragment$data,
+  t: ReturnType<typeof useTranslations>
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    name: instance.name,
+    name: localizedCardName(instance, t),
     slug: instance.slug as string,
-    description: instance.description!,
+    description: localizedCardDescription(instance, t),
     displayLinkArrow: isExternalService(
       instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
     ),

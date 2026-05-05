@@ -1,6 +1,7 @@
 'use client';
 
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
+import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
@@ -20,7 +21,6 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
 
 interface ServiceProps {
   queryRefRegisteredPlatforms: PreloadedQuery<registerRegisteredPlatformsQuery>;
@@ -61,7 +61,9 @@ const ServiceList = ({
       ...registeredPlatforms.map((platform) =>
         registeredPlatformToServiceInstanceCardData(platform, t)
       ),
-      ...serviceData.map(publicServiceInstanceToInstanceCardData),
+      ...serviceData.map((service) =>
+        publicServiceInstanceToInstanceCardData(service, t)
+      ),
     ].sort((a, b) => a!.ordering - b!.ordering);
   }, [
     freeTrialsSkeletonDataCards,
