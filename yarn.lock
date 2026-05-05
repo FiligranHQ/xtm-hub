@@ -8567,7 +8567,7 @@ __metadata:
     openid-client: "npm:6.8.4"
     passport: "npm:0.7.0"
     pg: "npm:8.20.0"
-    pg-boss: "npm:12.18.1"
+    pg-boss: "npm:12.18.2"
     prettier: "npm:3.8.3"
     prettier-plugin-organize-imports: "npm:4.3.0"
     prom-client: "npm:15.1.3"
@@ -16458,16 +16458,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-boss@npm:12.18.1":
-  version: 12.18.1
-  resolution: "pg-boss@npm:12.18.1"
+"pg-boss@npm:12.18.2":
+  version: 12.18.2
+  resolution: "pg-boss@npm:12.18.2"
   dependencies:
     cron-parser: "npm:^5.5.0"
     pg: "npm:^8.20.0"
     serialize-error: "npm:^13.0.1"
   bin:
     pg-boss: dist/cli.js
-  checksum: 10/3b9af8eb0854d6f2bd55d764eca65b6e076384f7b7e1d70b6e92506df4f421d1c88a28a786e214964bca43ec077a7928d16bca749d8acc888bbec24647670f56
+  checksum: 10/d55d20b4f203cc811ff3d753dabc556ccfd4ec87b22c797d7b8f0f2971e2b03240a4607fe86b47c9fde9b7b72edebe2996772c71ee3263cba9e8bc0bd17c1251
   languageName: node
   linkType: hard
 
