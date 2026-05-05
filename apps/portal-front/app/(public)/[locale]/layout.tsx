@@ -1,14 +1,19 @@
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
-import type { PublicLocale } from '@/i18n/config';
+import { publicLocales, type PublicLocale } from '@/i18n/config';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { Button } from '@filigran/ui/servers';
 import '@filigran/ui/theme.css';
 import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import '@styles/globals.css';
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { default as Link, default as NextLink } from 'next/link';
+import { notFound } from 'next/navigation';
 import * as React from 'react';
+
+export function generateStaticParams() {
+  return publicLocales.map((locale) => ({ locale }));
+}
 
 export async function generateMetadata({
   params,
@@ -19,7 +24,18 @@ export async function generateMetadata({
   return await getDefaultMetadata(locale, '/');
 }
 
-const RootLayout = async ({ children }: { children: React.ReactNode }) => {
+const RootLayout = async ({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) => {
+  const { locale } = await params;
+  if (!publicLocales.includes(locale as PublicLocale)) {
+    notFound();
+  }
+  setRequestLocale(locale);
   const t = await getTranslations();
 
   return (

@@ -377,6 +377,8 @@
     "ServiceFallbackDescription": "脅威インテリジェンスと保護を強化するサイバーセキュリティソリューションをご覧ください。",
     "DocumentFallbackDescriptionDashboard": "脅威インテリジェンスとモニタリングを強化するこのサイバーセキュリティダッシュボードをご覧ください。",
     "DocumentFallbackDescriptionIntegration": "脅威インテリジェンスとモニタリングを強化するこのサイバーセキュリティ統合をご覧ください。",
+    "DocumentFallbackDescriptionScenario": "敵対者エミュレーションとセキュリティ検証を強化するこのOpenAEV攻撃シナリオをご覧ください。",
+    "DocumentFallbackDescriptionGeneric": "サイバーセキュリティ体制を強化するために、XTM Hub by Filigran のこのリソースをご覧ください。",
     "ResourcePreviewAlt": "{name} - リソースプレビュー"
   },
   "CompetitorListPage": {

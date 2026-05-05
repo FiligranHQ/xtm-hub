@@ -42,6 +42,15 @@ import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
+    'Metadata.DocumentFallbackDescriptionIntegration',
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
+    'Metadata.DocumentFallbackDescriptionDashboard',
+  [ServiceSlug.OPEN_AEV_SCENARIOS]:
+    'Metadata.DocumentFallbackDescriptionScenario',
+};
+
 /**
  * Fetch the data for the page with caching to avoid multiple requests
  */
@@ -101,10 +110,10 @@ export async function generateMetadata({
 
   const pathname = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`;
 
-  const fallbackDescription =
-    serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS
-      ? t('Metadata.DocumentFallbackDescriptionDashboard')
-      : t('Metadata.DocumentFallbackDescriptionIntegration');
+  const fallbackDescription = t(
+    FALLBACK_DESCRIPTION_KEYS[serviceInstance.slug as ServiceSlug] ??
+      'Metadata.DocumentFallbackDescriptionGeneric'
+  );
 
   const metadata: Metadata = {
     title: `${document.name} | ${serviceInstance.name} | XTM Hub by Filigran`,

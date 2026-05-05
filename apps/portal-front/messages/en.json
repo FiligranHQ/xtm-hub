@@ -377,6 +377,8 @@
     "ServiceFallbackDescription": "Discover our cybersecurity solution for enhanced threat intelligence and protection.",
     "DocumentFallbackDescriptionDashboard": "Explore this cybersecurity dashboard for enhanced threat intelligence and monitoring.",
     "DocumentFallbackDescriptionIntegration": "Explore this cybersecurity integration for enhanced threat intelligence and monitoring.",
+    "DocumentFallbackDescriptionScenario": "Explore this OpenAEV attack scenario to strengthen your adversary emulation and security validation.",
+    "DocumentFallbackDescriptionGeneric": "Explore this resource on XTM Hub by Filigran to enhance your cybersecurity posture.",
     "ResourcePreviewAlt": "{name} - Resource Preview"
   },
   "CompetitorListPage": {

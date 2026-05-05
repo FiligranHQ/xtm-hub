@@ -377,6 +377,8 @@
     "ServiceFallbackDescription": "Découvrez notre solution de cybersécurité pour renforcer votre threat intelligence et votre protection.",
     "DocumentFallbackDescriptionDashboard": "Explorez ce dashboard de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
     "DocumentFallbackDescriptionIntegration": "Explorez cette intégration de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
+    "DocumentFallbackDescriptionScenario": "Explorez ce scénario d'attaque OpenAEV pour renforcer votre émulation d'adversaire et votre validation de sécurité.",
+    "DocumentFallbackDescriptionGeneric": "Explorez cette ressource sur XTM Hub by Filigran pour renforcer votre posture de cybersécurité.",
     "ResourcePreviewAlt": "{name} - Aperçu de la ressource"
   },
   "CompetitorListPage": {
