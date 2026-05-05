@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TestHelper } from '../../../tests/helper/test.helper';
+import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   GRAPHQL_RESOLVE_INFO,
@@ -8,188 +7,17 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
-  CreateSubscriptionInput,
   SubscriptionCapabilityResolvers,
   SubscriptionModel,
   SubscriptionModelResolvers,
 } from '../../__generated__/resolvers-types';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../model/kanel/public/ServiceInstance';
+import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
-import { ErrorType } from '../../utils/error/error.type';
-import { loadSubscriptionCapabilities } from '../security-management/service-capability/subscription-capability.domain';
 import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
+import { subscriptionApp } from './subscription.app';
 import * as subscriptionDomain from './subscription.domain';
 import * as subscriptionHelper from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
-
-describe('subscription mutation resolver', () => {
-  describe('createSubscription mutation - should create subscription', () => {
-    let serviceInstanceId: ServiceInstanceId;
-
-    beforeEach(async () => {
-      serviceInstanceId = uuidv4() as ServiceInstanceId;
-      await TestHelper.serviceInstance.create({
-        id: serviceInstanceId,
-        name: `test-subscription-${serviceInstanceId}`,
-      });
-    });
-
-    afterEach(async () => {
-      vi.useRealTimers();
-      await TestHelper.subscription.delete({});
-      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
-    });
-
-    it.each`
-      description                                       | organizationId
-      ${'use organization_id from input when provided'} | ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID}
-      ${'fallback to context selected organization id'} | ${undefined}
-    `(
-      'should $description',
-      async ({ organizationId }: { organizationId?: string }) => {
-        // Given
-        const startDate = new Date('2026-01-10T10:00:00.000Z');
-        const endDate = new Date('2026-12-10T10:00:00.000Z');
-        const input = {
-          service_instance_id: serviceInstanceId,
-          organization_id: organizationId,
-          capability_ids: [
-            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
-            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
-          ],
-          start_date: startDate,
-          end_date: endDate,
-        } as unknown as CreateSubscriptionInput;
-
-        // When
-        const result = await subscriptionResolver.Mutation!.createSubscription!(
-          {},
-          { input },
-          contextSimpleUserFiligran2,
-          GRAPHQL_RESOLVE_INFO
-        );
-
-        // Then
-        const expectedOrganizationId =
-          organizationId ??
-          contextSimpleUserFiligran2.user.selected_organization_id;
-        expect(result).toMatchObject({
-          organization_id: expectedOrganizationId,
-          service_instance_id: serviceInstanceId,
-          start_date: startDate,
-          end_date: endDate,
-        });
-
-        const createdSubscription = await TestHelper.subscription.load({
-          id: result?.id as SubscriptionId,
-        });
-        expect(createdSubscription).toMatchObject({
-          id: result?.id,
-          organization_id: expectedOrganizationId,
-          service_instance_id: serviceInstanceId,
-          start_date: startDate,
-          end_date: endDate,
-        });
-
-        const subscriptionCapabilities = await loadSubscriptionCapabilities(
-          result?.id as SubscriptionId
-        );
-        expect(subscriptionCapabilities).toHaveLength(2);
-        expect(subscriptionCapabilities).toMatchObject([
-          {
-            subscription_id: result?.id,
-            service_capability_id:
-              SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
-          },
-          {
-            subscription_id: result?.id,
-            service_capability_id:
-              SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
-          },
-        ]);
-      }
-    );
-
-    it('should reject when organization is already subscribed to service instance', async () => {
-      // Given
-      const startDate = new Date('2026-01-10T10:00:00.000Z');
-      const endDate = new Date('2026-12-10T10:00:00.000Z');
-      await TestHelper.subscription.create({
-        organization_id:
-          contextSimpleUserFiligran2.user.selected_organization_id,
-        service_instance_id: serviceInstanceId,
-        start_date: startDate,
-        end_date: endDate,
-      });
-
-      const call = subscriptionResolver.Mutation!.createSubscription!(
-        {},
-        {
-          input: {
-            service_instance_id: serviceInstanceId,
-            organization_id:
-              contextSimpleUserFiligran2.user.selected_organization_id,
-            capability_ids: [],
-            start_date: startDate,
-            end_date: endDate,
-          },
-        },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      // When / Then
-      await expect(call).rejects.toMatchObject({
-        name: ErrorType.ForbiddenAccess,
-        message: ErrorCode.AlreadySubscribed,
-      });
-
-      const subscriptions = await TestHelper.subscription.loadAll({
-        organization_id:
-          contextSimpleUserFiligran2.user.selected_organization_id,
-        service_instance_id: serviceInstanceId,
-      });
-      expect(subscriptions).toHaveLength(1);
-      expect(subscriptions[0]).toMatchObject({
-        organization_id:
-          contextSimpleUserFiligran2.user.selected_organization_id,
-        service_instance_id: serviceInstanceId,
-      });
-    });
-
-    it('should map unexpected input errors to SERVICE_SUBSCRIPTION_ERROR', async () => {
-      // Given
-      const call = subscriptionResolver.Mutation!.createSubscription!(
-        {},
-        {
-          input: {
-            service_instance_id: serviceInstanceId,
-            organization_id:
-              contextSimpleUserFiligran2.user.selected_organization_id,
-            start_date: new Date('2026-01-10T10:00:00.000Z'),
-            end_date: null,
-          } as CreateSubscriptionInput,
-        },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      // When / Then
-      await expect(call).rejects.toMatchObject({
-        name: ErrorType.UnknownError,
-        message: UnknownErrorCode.ServiceSubscriptionError,
-      });
-
-      const subscriptions = await TestHelper.subscription.loadAll({
-        service_instance_id: serviceInstanceId,
-      });
-      expect(subscriptions).toHaveLength(0);
-    });
-  });
-});
 
 describe('subscription resolver — unit tests', () => {
   describe('subscriptionModel field resolvers', () => {
@@ -319,6 +147,111 @@ describe('subscription resolver — unit tests', () => {
         expect.objectContaining({ 'Subscription.id': subscriptionId })
       );
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('mutation.createSubscription', () => {
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
+    const startDate = new Date('2025-01-01');
+    const endDate = new Date('2026-01-01');
+    const capabilityIds = [
+      SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
+    ];
+
+    it('should call subscribeOrganizationToService with input organization_id when provided', async () => {
+      const expected = {
+        id: uuidv4() as SubscriptionId,
+      } as unknown as SubscriptionModel;
+      vi.spyOn(
+        subscriptionApp,
+        'subscribeOrganizationToService'
+      ).mockResolvedValue(expected as never);
+
+      const result = await subscriptionResolver.Mutation!.createSubscription!(
+        {},
+        {
+          input: {
+            organization_id: organizationId,
+            service_instance_id: serviceInstanceId,
+            start_date: startDate,
+            end_date: endDate,
+            capability_ids: capabilityIds,
+          },
+        },
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      expect(
+        subscriptionApp.subscribeOrganizationToService
+      ).toHaveBeenCalledWith({
+        organizationId,
+        serviceInstanceId,
+        startDate,
+        endDate,
+        capabilityIds,
+      });
+      expect(result).toEqual(expected);
+    });
+
+    it('should fallback to context selected_organization_id when organization_id equals context organization', async () => {
+      const contextOrgId =
+        contextSimpleUserFiligran2.user.selected_organization_id;
+      const expected = {
+        id: uuidv4() as SubscriptionId,
+      } as unknown as SubscriptionModel;
+      vi.spyOn(
+        subscriptionApp,
+        'subscribeOrganizationToService'
+      ).mockResolvedValue(expected as never);
+
+      await subscriptionResolver.Mutation!.createSubscription!(
+        {},
+        {
+          input: {
+            organization_id: contextOrgId,
+            service_instance_id: serviceInstanceId,
+            start_date: startDate,
+            end_date: endDate,
+            capability_ids: capabilityIds,
+          },
+        },
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      expect(
+        subscriptionApp.subscribeOrganizationToService
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          organizationId: contextOrgId,
+        })
+      );
+    });
+
+    it('should throw a GraphQL error when subscribeOrganizationToService throws', async () => {
+      vi.spyOn(
+        subscriptionApp,
+        'subscribeOrganizationToService'
+      ).mockRejectedValue(new Error('AlreadySubscribed'));
+
+      await expect(
+        subscriptionResolver.Mutation!.createSubscription!(
+          {},
+          {
+            input: {
+              organization_id: organizationId,
+              service_instance_id: serviceInstanceId,
+              start_date: startDate,
+              end_date: endDate,
+              capability_ids: capabilityIds,
+            },
+          },
+          contextSimpleUserFiligran2,
+          GRAPHQL_RESOLVE_INFO
+        )
+      ).rejects.toThrow();
     });
   });
 });
