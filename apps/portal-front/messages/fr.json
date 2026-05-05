@@ -170,7 +170,9 @@
       "DeleteEpic": "Supprimer l'épic {epicName}",
       "SureDeleteEpic": "Êtes-vous sûr de vouloir supprimer l'épic {epicName} ?",
       "EpicDeleted": "L'épic a été supprimé"
-    }
+    },
+    "StayUpToDate": "Restez au courant de tout {product}",
+    "JoinCommunity": "Rejoignez la discussion dans la communauté"
   },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
