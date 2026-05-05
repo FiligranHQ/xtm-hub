@@ -1,7 +1,7 @@
 'use client';
 
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import { Locale } from '@/i18n/config';
+import { Locale, locales } from '@/i18n/config';
 import { setUserLocale } from '@/i18n/locale';
 import {
   Card,
@@ -73,8 +73,13 @@ export const ProfileFormPreferences = () => {
               <SelectValue placeholder={t('LocaleSwitcher.Label')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="en">{t('LocaleSwitcher.en')}</SelectItem>
-              <SelectItem value="fr">{t('LocaleSwitcher.fr')}</SelectItem>
+              {locales.map((loc) => (
+                <SelectItem
+                  key={loc}
+                  value={loc}>
+                  {t(`LocaleSwitcher.${loc}`)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

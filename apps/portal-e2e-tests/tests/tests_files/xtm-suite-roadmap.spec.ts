@@ -117,7 +117,7 @@ test.describe('XTM Suite Roadmap', () => {
       uploader_id: ADMIN_USER.ID,
     });
 
-    await page.goto('/cybersecurity-solutions/xtm-suite-roadmap');
+    await page.goto('/en/cybersecurity-solutions/xtm-suite-roadmap');
 
     await test.step("It should display the epics' page correctly", async () => {
       await expect(

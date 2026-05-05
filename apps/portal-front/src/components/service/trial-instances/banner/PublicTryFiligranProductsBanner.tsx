@@ -1,6 +1,7 @@
 'use client';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { IconActionContext } from '@/components/ui/IconActions';
+import { localizePublicHref } from '@/utils/path/localize-href';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {
   Callout,
@@ -10,13 +11,14 @@ import {
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
 export const PublicTryFiligranProductsBanner = () => {
   const t = useTranslations();
+  const locale = useLocale();
   const [menuOpen, setMenuOpen] = useState(false);
   const bannerText = (
     <span>
@@ -29,7 +31,10 @@ export const PublicTryFiligranProductsBanner = () => {
     return (
       <Link
         onClick={() => setMenuOpen(false)}
-        href={PlatformMetadataMapping[product].learnMorePublicUrl}>
+        href={localizePublicHref(
+          PlatformMetadataMapping[product].learnMorePublicUrl,
+          locale
+        )}>
         <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
           <Image
             width="25"
@@ -45,7 +50,12 @@ export const PublicTryFiligranProductsBanner = () => {
   };
 
   return (
-    <Callout className="rounded-none from-blue to-turquoise-300 bg-gradient-to-r text-black justify-center">
+    <Callout
+      className="rounded-none text-black justify-center"
+      style={{
+        backgroundImage:
+          'linear-gradient(to right, hsl(var(--blue-default)), hsl(var(--turquoise-300)))',
+      }}>
       {bannerText}
       <DropdownMenu
         open={menuOpen}

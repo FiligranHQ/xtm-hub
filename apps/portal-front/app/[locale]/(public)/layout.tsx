@@ -1,18 +1,27 @@
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
+import type { PublicLocale } from '@/i18n/config';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { Button } from '@filigran/ui/servers';
 import '@filigran/ui/theme.css';
 import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import '@styles/globals.css';
 import { Metadata } from 'next';
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { default as Link, default as NextLink } from 'next/link';
 import * as React from 'react';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return await getDefaultMetadata();
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: PublicLocale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return await getDefaultMetadata(locale, '/');
 }
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
+  const t = await getTranslations();
+
   return (
     <div className="md:flex md:flex-col md:h-screen">
       <PublicTryFiligranProductsBanner />
@@ -24,7 +33,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
         <Button
           asChild
           className="whitespace-nowrap">
-          <Link href="/login">Sign In</Link>
+          <NextLink href="/login">{t('PublicLayout.SignIn')}</NextLink>
         </Button>
       </header>
       <main className="grow overflow-auto">
@@ -33,54 +42,54 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
       <footer className="container text-muted-foreground">
         <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-8 gap-l text-center">
           <span className="txt-default">
-            <Link
+            <NextLink
               href="https://filigran.io"
               target="_blank"
               rel="noopener noreferrer">
               © {new Date().getFullYear()} Filigran.
-            </Link>{' '}
-            All rights reserved
+            </NextLink>{' '}
+            {t('PublicLayout.AllRightsReserved')}
           </span>
           <ul className="flex flex-col md:flex-row gap-l text-xs">
             <li>
-              <Link
+              <NextLink
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/">
-                Filigran website
-              </Link>
+                {t('PublicLayout.FiligranWebsite')}
+              </NextLink>
             </li>
             <li>
-              <Link
+              <NextLink
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/privacy-policy/">
-                Privacy Policy
-              </Link>
+                {t('PublicLayout.PrivacyPolicy')}
+              </NextLink>
             </li>
             <li>
-              <Link
+              <NextLink
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/terms-of-services/">
-                Terms of Services
-              </Link>
+                {t('PublicLayout.TermsOfServices')}
+              </NextLink>
             </li>
             <li>
-              <Link
+              <NextLink
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/licenses/">
-                Licenses
-              </Link>
+                {t('PublicLayout.Licenses')}
+              </NextLink>
             </li>
             <li>
-              <Link
+              <NextLink
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/contact/">
-                Contact
-              </Link>
+                {t('PublicLayout.Contact')}
+              </NextLink>
             </li>
           </ul>
         </div>

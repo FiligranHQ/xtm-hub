@@ -16,8 +16,7 @@ const Page = async () => {
       href: `/`,
     },
     {
-      label: 'OpenCTI Trial platform',
-      original: true,
+      label: 'Service.Trials.OpenCTIPlatformBreadcrumb',
     },
   ];
   const t = await getTranslations();

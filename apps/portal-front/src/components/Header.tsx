@@ -1,16 +1,17 @@
 'use client';
 
+import AskArianeButton from '@/components/ariane/AskArianeButton';
 import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { NavigationApp } from '@/components/Navigation';
+import { NotificationButton } from '@/components/notification/NotificationButton';
+import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
-import AskArianeButton from '@/components/ariane/AskArianeButton';
-import { NotificationButton } from '@/components/notification/NotificationButton';
-import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 import { MenuIcon } from '@filigran/icon';
 import { Avatar } from '@filigran/ui';
 import {
@@ -23,6 +24,7 @@ import {
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';

@@ -1,10 +1,11 @@
+import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
 } from '@generated/seoServiceInstancesQuery.graphql';
-import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { getTranslations } from 'next-intl/server';
 
 const Page = async () => {
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
@@ -15,10 +16,11 @@ const Page = async () => {
   const services = response.data
     .seoServiceInstances as unknown as seoServiceInstanceFragment$data[];
 
+  const t = await getTranslations();
   return (
     <>
       <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
-        Discover resources and expertise
+        {t('PublicHomePage.Title')}
       </h1>
       <ul
         className={

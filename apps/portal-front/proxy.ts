@@ -1,10 +1,35 @@
-import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
+import { defaultLocale, locales, publicLocales } from '@/i18n/config';
 import { manageRequest } from '@/utils/middleware/graphql-request.util';
+import createMiddleware from 'next-intl/middleware';
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
+
+const intlMiddleware = createMiddleware({
+  locales: publicLocales,
+  defaultLocale,
+  localePrefix: 'always',
+});
+
+const PUBLIC_LOCALE_PATH = new RegExp(
+  `^/(${publicLocales.join('|')})(/|$)|^/$`
+);
 
 export async function proxy(request: NextRequest, _: NextFetchEvent) {
   const proxyResponse = await manageRequest(request);
   if (proxyResponse) {
     return proxyResponse;
+  }
+
+  const { pathname } = request.nextUrl;
+
+  if (PUBLIC_LOCALE_PATH.test(pathname)) {
+    return intlMiddleware(request);
+  }
+
+  const firstSegment = pathname.split('/')[1];
+  if (firstSegment && (locales as readonly string[]).includes(firstSegment)) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${defaultLocale}${pathname.slice(firstSegment.length + 1)}`;
+    return NextResponse.redirect(url, 307);
   }
 
   const requestHeaders = new Headers(request.headers);
@@ -17,6 +42,8 @@ export async function proxy(request: NextRequest, _: NextFetchEvent) {
 
 export const config = {
   matcher: [
+    '/',
+    '/(en|fr|ja)/:path*',
     '/graphql-api',
     '/graphql-sse',
     '/auth/:path*',

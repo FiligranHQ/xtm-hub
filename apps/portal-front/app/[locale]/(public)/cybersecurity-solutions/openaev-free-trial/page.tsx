@@ -16,8 +16,7 @@ const Page = async () => {
       href: `/`,
     },
     {
-      label: 'OpenAEV Trial platform',
-      original: true,
+      label: 'Service.Trials.OpenAEVPlatformBreadcrumb',
     },
   ];
   const t = await getTranslations();

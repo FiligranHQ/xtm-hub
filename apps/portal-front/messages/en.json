@@ -287,6 +287,22 @@
     "Manage": "Manage",
     "OpenManagement": "Go to management page"
   },
+  "PublicHomePage": {
+    "Title": "Discover resources and expertise"
+  },
+  "PublicLayout": {
+    "SignIn": "Sign In",
+    "AllRightsReserved": "All rights reserved",
+    "FiligranWebsite": "Filigran website",
+    "PrivacyPolicy": "Privacy Policy",
+    "TermsOfServices": "Terms of Services",
+    "Licenses": "Licenses",
+    "Contact": "Contact"
+  },
+  "PublicResourcePage": {
+    "Download": "Download",
+    "Overview": "Overview"
+  },
   "InviteUserServiceForm": {
     "Capabilities": "Available capabilities",
     "CapabilitiesDescription": "You can add specific capabilities to {organizationName} users for their subscription on the {serviceName} service.",
@@ -313,7 +329,8 @@
   "LocaleSwitcher": {
     "Label": "Language",
     "en": "English",
-    "fr": "Français"
+    "fr": "Français",
+    "ja": "日本語"
   },
   "LoginPage": {
     "CreateYourAccount": "create your account",
@@ -350,6 +367,17 @@
     "OpenCTITrials": "OpenCTI Trials",
     "OpenAEVTrials": "OpenAEV Trials",
     "Competitors": "Competitors"
+  },
+  "Metadata": {
+    "Title": "Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation | XTM Hub by Filigran",
+    "Description": "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Uncover Threats. Take Action.",
+    "ShortTitle": "XTM Hub by Filigran - Cyber Threat Intelligence Platform",
+    "ShortDescription": "XTM Hub is your gateway to Filigran's cybersecurity solutions.",
+    "SiteName": "XTM Hub by Filigran",
+    "ServiceFallbackDescription": "Discover our cybersecurity solution for enhanced threat intelligence and protection.",
+    "DocumentFallbackDescriptionDashboard": "Explore this cybersecurity dashboard for enhanced threat intelligence and monitoring.",
+    "DocumentFallbackDescriptionIntegration": "Explore this cybersecurity integration for enhanced threat intelligence and monitoring.",
+    "ResourcePreviewAlt": "{name} - Resource Preview"
   },
   "CompetitorListPage": {
     "Name": "Name",
@@ -1057,6 +1085,34 @@
       },
       "StartTrial": "Start your free trial",
       "StartTrialWithName": "Start your free {platformName} trial",
+      "OpenAEVPlatformBreadcrumb": "OpenAEV Trial platform",
+      "OpenCTIPlatformBreadcrumb": "OpenCTI Trial platform",
+      "PageHeader": {
+        "Welcome": "Welcome to Filigran",
+        "Title": "Let's get you started with your {platformName} free trial!"
+      },
+      "Storage": {
+        "Title": "Important note about your trial environment's storage",
+        "SaaSFeaturesLink": "Enterprise Edition SaaS features",
+        "NoSLA": "<strong>The free trial environment does not include SLA.</strong> In the event of a cloud provider outage, recovery time is not guaranteed. We recommend not storing critical or irreplaceable data in your trial environment.",
+        "OpenCTIDescription": "The OpenCTI free trial provides users with a \"small\" SaaS instance, which includes all <link>Enterprise Edition SaaS features</link>, but with <strong>reduced computing power and storage (up to 40GB in intelligence data storage and 3GB in file storage).</strong> Ingesting large, premium feed with rich data sets during this trial could impact your storage quickly.",
+        "OpenAEVDescription": "The OpenAEV free trial provides users with a \"small\" instance, which includes all <link>Enterprise Edition SaaS features</link>, but with a reduced computing power and a limited storage of <strong>16GB</strong>."
+      },
+      "XTMSuite": {
+        "Title": "Your eXtended Threat Management (XTM) suite",
+        "Description": "{platformName} is part of Filigran's open-source threat intelligence, advanced adversary simulation, and strategic cyber risk management solution designed to help your organization anticipate and manage threats end-to-end.",
+        "OpenCTITagline": "Collect, correlate and leverage",
+        "OpenCTIDescription": "An open-source threat intelligence platform built by practitioners for practitioners - to break data silos and make threat intelligence truly actionable.",
+        "OpenAEVTagline": "Prioritize, test and fix what matters",
+        "OpenAEVDescription": "Proactively defend against threats with Adversarial Exposure Validation (AEV), simulating real-life attack scenarios to optimize security defenses.",
+        "LogoAlt": "{name} Logo",
+        "IllustrationAlt": "Illustration of free trial service"
+      },
+      "QuickStart": {
+        "Title": "Quick start guide",
+        "Subtitle": "Get more out of your {platformName} platform!",
+        "Description": "Explore step-by-step guides, expert courses, and community feedback to solve real-world use cases and become a Filigran champion!"
+      },
       "GoToMyTrial": "Go to my trial",
       "InfoPersonalSpace": "You can’t start a trial in your personal space—please switch to your organization’s space",
       "ReachOutToSales": "Reach out to Sales",
