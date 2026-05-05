@@ -1,23 +1,23 @@
 'use client';
+import { TrialsManageUsersForm } from '@/components/service/trial-instances/manage-users/TrialsManageUsersForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { TrialsManageUsersForm } from '@/components/service/trial-instances/manage-users/TrialsManageUsersForm';
 
-interface Props {
+interface TrialsManageUsersDialogProps {
   serviceInstanceId: string;
   organizationId?: string;
   trigger?: React.ReactNode;
   defaultOpen?: boolean;
 }
 
-export const TrialsManageUsersDialog: React.FC<Props> = ({
+export const TrialsManageUsersDialog = ({
   serviceInstanceId,
   organizationId,
   trigger,
   defaultOpen,
-}) => {
+}: TrialsManageUsersDialogProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(defaultOpen ?? false);
 

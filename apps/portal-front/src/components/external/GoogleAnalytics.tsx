@@ -2,7 +2,7 @@
 'use client';
 import Script from 'next/script';
 
-export default function GoogleAnalytics() {
+const GoogleAnalytics = () => {
   return (
     <Script
       strategy="lazyOnload"
@@ -17,4 +17,6 @@ export default function GoogleAnalytics() {
       }}
     />
   );
-}
+};
+
+export default GoogleAnalytics;

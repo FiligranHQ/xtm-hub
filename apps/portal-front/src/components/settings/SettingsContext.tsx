@@ -4,11 +4,11 @@ import {
   SettingsContext_fragment,
   SettingsContextQuery,
 } from '@/components/login/settings.graphql';
+import { SettingsPortalContext } from '@/components/settings/EnvPortalContext';
 import { settingsContext_fragment$key } from '@generated/settingsContext_fragment.graphql';
 import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import * as React from 'react';
 import { PreloadedQuery, useFragment, usePreloadedQuery } from 'react-relay';
-import { SettingsPortalContext } from '@/components/settings/EnvPortalContext';
 
 // Component interface
 interface ContextProps {
@@ -17,10 +17,7 @@ interface ContextProps {
 }
 
 // Component
-const SettingsContext: React.FunctionComponent<ContextProps> = ({
-  queryRefSettings,
-  children,
-}) => {
+const SettingsContext = ({ queryRefSettings, children }: ContextProps) => {
   const dataSettings = usePreloadedQuery<settingsContextQuery>(
     SettingsContextQuery,
     queryRefSettings

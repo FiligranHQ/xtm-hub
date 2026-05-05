@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 interface DialogCloseButtonProps {
   trigger: string;
@@ -19,12 +19,12 @@ interface DialogCloseButtonProps {
   children: ReactNode;
 }
 
-export const DialogCloseButton: FunctionComponent<DialogCloseButtonProps> = ({
+export const DialogCloseButton = ({
   trigger,
   title,
   description,
   children,
-}) => {
+}: DialogCloseButtonProps) => {
   const t = useTranslations();
   return (
     <Dialog>

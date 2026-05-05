@@ -1,14 +1,13 @@
 import { OrganizationEditMutation } from '@/components/organization/organization.graphql';
+import { OrganizationForm } from '@/components/organization/OrganizationForm';
+import { organizationFormSchema } from '@/components/organization/OrganizationForm.schema';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { useToast } from '@filigran/ui';
 import { organizationEditMutation } from '@generated/organizationEditMutation.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { OrganizationForm } from '@/components/organization/OrganizationForm';
-import { organizationFormSchema } from '@/components/organization/OrganizationForm.schema';
 
 interface EditOrganizationProps {
   organization: organizationItem_fragment$data;
@@ -16,11 +15,11 @@ interface EditOrganizationProps {
   setOpen: (open: boolean) => void;
 }
 
-export const EditOrganization: FunctionComponent<EditOrganizationProps> = ({
+export const EditOrganization = ({
   organization,
   open,
   setOpen,
-}) => {
+}: EditOrganizationProps) => {
   const t = useTranslations();
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =

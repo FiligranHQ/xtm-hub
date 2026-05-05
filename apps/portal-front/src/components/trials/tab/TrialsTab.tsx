@@ -1,3 +1,4 @@
+import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
 import { formatCancellationReason } from '@/components/trials/tab/trials-tab.utils';
 import { useTrialsListLocalstorage } from '@/components/trials/trial-list-localstorage';
 import { TrialsTabType } from '@/components/trials/trials.const';
@@ -8,11 +9,17 @@ import {
   TrialsListQuery,
   TrialsReorderRequestInQueueMutation,
 } from '@/components/trials/trials.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { SearchInput } from '@/components/ui/SearchInput';
 import {
   handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import {
+  useAdminByPass,
+  useUserHasPortalCapability,
+} from '@/hooks/use-portal-capability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { daysUntil, formatDate } from '@/utils/date';
@@ -51,14 +58,7 @@ import {
 } from '@generated/trials_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import {
-  FunctionComponent,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   readInlineData,
   useLazyLoadQuery,
@@ -66,15 +66,8 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import {
-  useAdminByPass,
-  useUserHasPortalCapability,
-} from '@/hooks/use-portal-capability';
-import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import { SearchInput } from '@/components/ui/SearchInput';
 
-interface Props {
+interface TrialsTabProps {
   type: TrialsTabType;
   platformIdentifier: PlatformIdentifierEnum;
 }
@@ -112,7 +105,7 @@ const trialsTabConfig: Record<
 
 const connectionIDs = new Map<TrialsTabType, string>();
 
-const TrialsTab: FunctionComponent<Props> = ({ type, platformIdentifier }) => {
+const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
   const t = useTranslations();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([

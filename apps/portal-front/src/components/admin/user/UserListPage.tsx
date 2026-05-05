@@ -1,21 +1,21 @@
+import { AddUser } from '@/components/admin/user/forms/AddUser';
+import { AdminAddUser } from '@/components/admin/user/forms/admin/AdminAddUser';
+import PendingUserList from '@/components/admin/user/PendingUserList';
 import {
   UserPendingListFragment,
   UserPendingListQuery,
 } from '@/components/admin/user/user.graphql';
+import UserList from '@/components/admin/user/UserList';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { notificationPendingUserQueryFilters } from '@/components/notification/NotificationButton';
+import useAdminPath from '@/hooks/use-admin-path';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { userPendingListQuery } from '@generated/userPendingListQuery.graphql';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { createContext, FunctionComponent, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-import useAdminPath from '@/hooks/use-admin-path';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { notificationPendingUserQueryFilters } from '@/components/notification/NotificationButton';
-import { AddUser } from '@/components/admin/user/forms/AddUser';
-import { AdminAddUser } from '@/components/admin/user/forms/admin/AdminAddUser';
-import PendingUserList from '@/components/admin/user/PendingUserList';
-import UserList from '@/components/admin/user/UserList';
 
 interface UserListPageProps {
   organization?: string;
@@ -39,9 +39,7 @@ const UserListContext = createContext<
   UserListConnectionContextType | undefined
 >(undefined);
 
-const UserListPage: FunctionComponent<UserListPageProps> = ({
-  organization,
-}) => {
+const UserListPage = ({ organization }: UserListPageProps) => {
   const t = useTranslations();
   const isAdminPath = useAdminPath();
   const { me } = useContext(PortalContext);

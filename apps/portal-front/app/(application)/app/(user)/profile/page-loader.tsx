@@ -1,9 +1,8 @@
 'use client';
 
 import { Profile } from '@/components/profile';
-import { APP_PATH } from '@/utils/path/constant';
-import * as React from 'react';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { APP_PATH } from '@/utils/path/constant';
 
 const breadcrumbValue = [
   {
@@ -15,7 +14,7 @@ const breadcrumbValue = [
   },
 ];
 
-const PageLoader: React.FunctionComponent = () => {
+const PageLoader = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />

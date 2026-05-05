@@ -1,7 +1,9 @@
 'use client';
 
+import { SelectWithEditableField } from '@/components/service/registration/SelectWithEditableField';
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { CheckIndeterminateIcon } from '@filigran/icon';
 import {
   AutoForm,
@@ -15,11 +17,8 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { SelectWithEditableField } from '@/components/service/registration/SelectWithEditableField';
 
 const trialCancelSchema = z.object({
   cancellation_reason: z.string().optional(),
@@ -41,13 +40,13 @@ const REASONS = [
   'expertise',
 ];
 
-export const TrialCancelSheet: FunctionComponent<TrialCancelSheetProps> = ({
+export const TrialCancelSheet = ({
   deploymentRequestId,
   isCancellationDefinitive,
   open,
   setOpen,
   platformIdentifier,
-}) => {
+}: TrialCancelSheetProps) => {
   const t = useTranslations();
   const cancellationReasons = REASONS.map((reason) => ({
     value: reason,

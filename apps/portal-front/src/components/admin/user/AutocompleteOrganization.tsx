@@ -1,7 +1,6 @@
+import { getOrganizations } from '@/components/organization/Organization.service';
 import { Combobox } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
-import { getOrganizations } from '@/components/organization/Organization.service';
 
 export interface UserOrganizationFormProps {
   id: string;
@@ -16,9 +15,10 @@ interface AutocompleteOrganizationProps {
   selectedOrganizationCapabilities: OrganizationCapabilitiesProps[];
   onValueChange: (value?: UserOrganizationFormProps) => void;
 }
-export const AutocompleteOrganization: FunctionComponent<
-  AutocompleteOrganizationProps
-> = ({ selectedOrganizationCapabilities, onValueChange }) => {
+export const AutocompleteOrganization = ({
+  selectedOrganizationCapabilities,
+  onValueChange,
+}: AutocompleteOrganizationProps) => {
   const t = useTranslations();
   const [organizationsData, refetch] = getOrganizations();
 

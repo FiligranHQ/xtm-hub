@@ -1,8 +1,8 @@
+import AppContext from '@/components/AppContext';
 import I18nContext from '@/i18n/i18n-context';
 import { getMetadataBase } from '@/utils/metadata';
 import { Metadata } from 'next';
 import * as React from 'react';
-import AppContext from '@/components/AppContext';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return {
@@ -12,14 +12,16 @@ export const generateMetadata = async (): Promise<Metadata> => {
   };
 };
 
-export default function RootLayout({
-  children,
-}: {
+interface RootLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <I18nContext>
       <AppContext>{children}</AppContext>
     </I18nContext>
   );
-}
+};
+
+export default RootLayout;

@@ -1,14 +1,14 @@
+import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
+import { ServiceListAddFilterCombobox } from '@/components/service/components/header/filter/ServiceListAddFilterCombobox';
+import { ServiceListFilterSection } from '@/components/service/components/header/filter/ServiceListFilterSection';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { SortControls } from '@/components/ui/SortControls';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { cn } from '@/lib/utils';
 import { debounceHandleInput } from '@/utils/debounce';
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { SortControls } from '@/components/ui/SortControls';
-import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
-import { ServiceListAddFilterCombobox } from '@/components/service/components/header/filter/ServiceListAddFilterCombobox';
-import { ServiceListFilterSection } from '@/components/service/components/header/filter/ServiceListFilterSection';
 
 export enum ServiceListFilterKey {
   Label = 'label',
@@ -27,7 +27,7 @@ export type ServiceListFilterMap = Partial<
   Record<ServiceListFilterKey, ServiceListFilter>
 >;
 
-interface Props {
+interface ServiceListHeaderProps {
   search: string;
   onSearchChange: (v: string) => void;
   filters: ServiceListFilterMap;
@@ -36,14 +36,14 @@ interface Props {
   className?: string;
 }
 
-export const ServiceListHeader: React.FC<Props> = ({
+export const ServiceListHeader = ({
   search,
   onSearchChange,
   filters,
   paginationControls,
   actions,
   className,
-}) => {
+}: ServiceListHeaderProps) => {
   const t = useTranslations();
   const hasMoreThanOneFilter = Object.values(filters).length > 1;
 

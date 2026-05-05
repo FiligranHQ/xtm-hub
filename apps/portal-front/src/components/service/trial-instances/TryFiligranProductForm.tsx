@@ -1,10 +1,12 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   REGIONS,
   REGIONS_VALUES,
 } from '@/components/service/trial-instances/form-constants';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
 import {
   AutoForm,
   Button,
@@ -24,11 +26,9 @@ import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentReques
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import React, { FunctionComponent, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
 
 export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
@@ -48,13 +48,11 @@ interface TryFiligranProductFormProps {
   handleCloseSheet: (e: React.MouseEvent<HTMLButtonElement>) => void;
   deploymentRequestsAvailabilityQueryRef: PreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>;
 }
-export const TryFiligranProductForm: FunctionComponent<
-  TryFiligranProductFormProps
-> = ({
+export const TryFiligranProductForm = ({
   handleSubmit,
   handleCloseSheet,
   deploymentRequestsAvailabilityQueryRef,
-}) => {
+}: TryFiligranProductFormProps) => {
   const { me } = useContext(PortalContext);
   const t = useTranslations();
 

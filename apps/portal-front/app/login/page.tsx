@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import '@filigran/ui/theme.css';
 import '@styles/globals.css';
 
@@ -26,7 +24,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 export const dynamic = 'force-dynamic';
 
-const Page: React.FunctionComponent = async () => {
+const Page = async () => {
   // @ts-expect-error
   const { data: meData }: { data: meLoaderQuery$data } =
     await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(

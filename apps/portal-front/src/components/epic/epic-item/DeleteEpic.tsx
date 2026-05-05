@@ -1,11 +1,10 @@
 import { DeleteEpicMutation } from '@/components/epic/epic.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { useToast } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { epicDeleteMutation } from '@generated/epicDeleteMutation.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 interface DeleteEpicProps {
   epic: epic_fragment$data;
@@ -14,12 +13,12 @@ interface DeleteEpicProps {
   setOpen: (open: boolean) => void;
 }
 
-export const DeleteEpic: FunctionComponent<DeleteEpicProps> = ({
+export const DeleteEpic = ({
   epic,
   connectionId,
   open,
   setOpen,
-}) => {
+}: DeleteEpicProps) => {
   const [deleteEpicMutation] =
     useMutation<epicDeleteMutation>(DeleteEpicMutation);
   const t = useTranslations();

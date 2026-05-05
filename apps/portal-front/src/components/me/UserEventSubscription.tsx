@@ -3,20 +3,19 @@
 import { LogoutMutation } from '@/components/logout.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import * as React from 'react';
 import { useState } from 'react';
 import { GraphQLSubscriptionConfig } from 'relay-runtime';
 
 import { userMeSubscription } from '@/components/admin/user/user.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import {
   userMeSubscription$data,
   userMeSubscription as userMeSubscriptionType,
 } from '@generated/userMeSubscription.graphql';
 import { useMutation, useSubscription } from 'react-relay';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 // Component
-const UserEventSubscription: React.FunctionComponent = () => {
+const UserEventSubscription = () => {
   const [commitLogoutMutation] = useMutation(LogoutMutation);
   const t = useTranslations();
 

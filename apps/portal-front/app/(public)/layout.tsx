@@ -12,11 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return await getDefaultMetadata();
 }
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="md:flex md:flex-col md:h-screen">
       <PublicTryFiligranProductsBanner />
@@ -91,4 +87,6 @@ export default async function RootLayout({
       </footer>
     </div>
   );
-}
+};
+
+export default RootLayout;

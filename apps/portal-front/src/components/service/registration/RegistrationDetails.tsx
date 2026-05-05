@@ -1,5 +1,11 @@
+import GuardCapacityComponent from '@/components/AdminGuard';
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { translateServiceDefinitionIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
+import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
+import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
+import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
+import { TrialCancelSheet } from '@/components/service/trial-instances/TrialCancelSheet';
 import { formatDate } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { Button } from '@filigran/ui/servers';
@@ -12,22 +18,16 @@ import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/r
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useFragment } from 'react-relay';
-import GuardCapacityComponent from '@/components/AdminGuard';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
-import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
-import { TrialCancelSheet } from '@/components/service/trial-instances/TrialCancelSheet';
-import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
 
-interface Props {
+interface RegistrationDetailsProps {
   registeredPlatform: registeredPlatformByServiceInstanceId_fragment$key;
 }
 
-export const RegistrationDetails: React.FC<Props> = ({
+export const RegistrationDetails = ({
   registeredPlatform,
-}) => {
+}: RegistrationDetailsProps) => {
   const t = useTranslations();
   const searchParams = useSearchParams();
   const openForm = searchParams.get('openForm') === 'true';

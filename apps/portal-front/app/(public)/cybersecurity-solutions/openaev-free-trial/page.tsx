@@ -1,16 +1,15 @@
-import { GradientButton } from '@filigran/ui/servers';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
-import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
-import React from 'react';
 import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
 import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader';
 import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { RelayProvider } from '@/relay/relay-provider';
+import { GradientButton } from '@filigran/ui/servers';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
+import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
 
-const Page: React.FC = async () => {
+const Page = async () => {
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',

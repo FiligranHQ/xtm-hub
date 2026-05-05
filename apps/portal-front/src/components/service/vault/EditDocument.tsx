@@ -1,10 +1,15 @@
 import { DocumentUpdateMutation } from '@/components/service/document/document.graphql';
+import {
+  newDocumentSchema,
+  VaultNewFileForm,
+} from '@/components/service/vault/VaultNewFileForm';
+import { IconActionContext } from '@/components/ui/IconActions';
 import { useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext } from 'react';
-import { IconActionContext } from '@/components/ui/IconActions';
-import { newDocumentSchema, VaultNewFileForm } from '@/components/service/vault/VaultNewFileForm';
+import { useContext } from 'react';
 
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import useDecodedParams from '@/hooks/use-decoded-params';
 import DocumentItem_fragmentGraphql, {
   documentItem_fragment$data,
   documentItem_fragment$key,
@@ -12,8 +17,6 @@ import DocumentItem_fragmentGraphql, {
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { readInlineData, useMutation } from 'react-relay';
 import { z } from 'zod';
-import useDecodedParams from '@/hooks/use-decoded-params';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 
 interface EditDocumentProps {
   documentData: documentItem_fragment$data;
@@ -21,11 +24,11 @@ interface EditDocumentProps {
   setOpen: (open: boolean) => void;
 }
 
-export const EditDocument: FunctionComponent<EditDocumentProps> = ({
+export const EditDocument = ({
   documentData,
   open,
   setOpen,
-}) => {
+}: EditDocumentProps) => {
   const { toast } = useToast();
   const t = useTranslations();
   const [updateMutation] = useMutation<documentUpdateMutation>(

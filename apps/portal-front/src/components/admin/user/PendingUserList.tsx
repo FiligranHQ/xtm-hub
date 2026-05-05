@@ -1,14 +1,20 @@
+import { UserFragment } from '@/components/admin/user/UserList';
+import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 import { useUserListLocalstorage } from '@/components/admin/user/pending-user-list-localstorage';
 import {
   UserPendingListFragment,
   UserPendingListQuery,
   UserPendingListSubscription,
 } from '@/components/admin/user/user.graphql';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { SearchInput } from '@/components/ui/SearchInput';
 import {
   handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { CheckIcon, CloseIcon } from '@filigran/icon';
@@ -34,14 +40,7 @@ import {
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import {
-  FunctionComponent,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   graphql,
   readInlineData,
@@ -51,12 +50,6 @@ import {
   useSubscription,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { UserFragment } from '@/components/admin/user/UserList';
-import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 
 // Configuration or Preloader Query
 const removePendingUser = graphql`
@@ -118,9 +111,7 @@ interface PendingUserListProps {
 }
 
 // Component
-const PendingUserList: FunctionComponent<PendingUserListProps> = ({
-  organization,
-}) => {
+const PendingUserList = ({ organization }: PendingUserListProps) => {
   const t = useTranslations();
   const {
     pageSize,

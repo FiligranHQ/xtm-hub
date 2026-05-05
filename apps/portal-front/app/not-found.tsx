@@ -1,11 +1,11 @@
 'use client';
-import '@filigran/ui/theme.css';
-import { usePathname } from 'next/navigation';
 import PublicPathError from '@/components/PublicPathError';
 import { RelayProvider } from '@/relay/relay-provider';
+import '@filigran/ui/theme.css';
+import { usePathname } from 'next/navigation';
 import '../styles/globals.css';
 
-export default function NotFound() {
+const NotFound = () => {
   const pathname = usePathname();
   return (
     <RelayProvider>
@@ -17,4 +17,6 @@ export default function NotFound() {
       />
     </RelayProvider>
   );
-}
+};
+
+export default NotFound;

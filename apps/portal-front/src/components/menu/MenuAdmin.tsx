@@ -1,3 +1,4 @@
+import GuardCapacityComponent from '@/components/AdminGuard';
 import { UseTranslationsProps } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
@@ -18,9 +19,8 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FunctionComponent, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
-import GuardCapacityComponent from '@/components/AdminGuard';
 
 export interface MenuAdminProps {
   open: boolean;
@@ -192,7 +192,7 @@ const AdminButton = ({
     </Link>
   );
 };
-const MenuAdmin: FunctionComponent<MenuAdminProps> = ({ open }) => {
+const MenuAdmin = ({ open }: MenuAdminProps) => {
   return (
     <>
       <Separator className="my-s" />

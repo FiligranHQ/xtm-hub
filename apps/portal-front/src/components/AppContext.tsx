@@ -24,7 +24,7 @@ const isThemeSwitchablePath = (pathname: string) => {
 };
 
 // Component
-const AppContext: React.FunctionComponent<AppProps> = ({ children }) => {
+const AppContext = ({ children }: AppProps) => {
   const locale = useLocale();
   const pathname = usePathname();
   const t = useTranslations();

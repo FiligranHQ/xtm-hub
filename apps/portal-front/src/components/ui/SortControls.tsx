@@ -10,9 +10,8 @@ import {
 import { Button } from '@filigran/ui/servers';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
-interface Props {
+interface SortControlsProps {
   orderByOptions: { label: string; value: string }[];
   onOrderByChange: (value: string) => void;
   onOrderModeChange: (value: OrderingModeEnum) => void;
@@ -21,14 +20,14 @@ interface Props {
   className?: string;
 }
 
-export const SortControls: React.FC<Props> = ({
+export const SortControls = ({
   orderByOptions,
   onOrderByChange,
   onOrderModeChange,
   selectedOrderMode,
   selectedOrderBy,
   className,
-}) => {
+}: SortControlsProps) => {
   const t = useTranslations();
 
   return (

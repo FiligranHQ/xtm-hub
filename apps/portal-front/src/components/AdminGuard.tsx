@@ -1,13 +1,13 @@
 'use client';
 
+import { PortalContext } from '@/components/me/AppPortalContext';
+import useGranted from '@/hooks/use-granted';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useContext } from 'react';
-import useGranted from '@/hooks/use-granted';
-import { useAdminByPass } from '@/hooks/use-portal-capability';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 // Component interface
 interface GuardComponentProps {
@@ -18,13 +18,13 @@ interface GuardComponentProps {
   shouldNotBePersonalSpace?: boolean;
 }
 
-const GuardCapacityComponent: React.FunctionComponent<GuardComponentProps> = ({
+const GuardCapacityComponent = ({
   children,
   capacityRestriction = [],
   portalCapabilityRestriction = [],
   displayError = false,
   shouldNotBePersonalSpace = false,
-}) => {
+}: GuardComponentProps) => {
   const { me, hasCapability } = useContext(PortalContext);
   if (!me || !hasCapability) {
     return null;

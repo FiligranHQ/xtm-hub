@@ -1,14 +1,14 @@
-import { useTranslations } from 'next-intl';
-import React, { useEffect } from 'react';
 import { RegistrationLayout } from '@/components/registration/Layout';
+import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
 
-interface Props {
+interface UnregisterPlatformNotRegisteredProps {
   confirm: () => void;
 }
 
-export const UnregisterPlatformNotRegistered: React.FC<Props> = ({
+export const UnregisterPlatformNotRegistered = ({
   confirm,
-}) => {
+}: UnregisterPlatformNotRegisteredProps) => {
   const t = useTranslations();
 
   useEffect(() => {

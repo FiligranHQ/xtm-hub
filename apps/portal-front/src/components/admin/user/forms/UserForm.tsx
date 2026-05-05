@@ -1,4 +1,7 @@
+import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 import { userFormSchema } from '@/components/admin/user/forms/user-form.schema';
+import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { isEmpty } from '@/lib/utils';
 import {
   Button,
@@ -13,21 +16,14 @@ import {
 } from '@filigran/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
-import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 
 interface UserFormProps {
   handleSubmit: (values: z.infer<typeof userFormSchema>) => void;
   validationSchema: typeof userFormSchema;
 }
-export const UserForm: FunctionComponent<UserFormProps> = ({
-  handleSubmit,
-  validationSchema,
-}) => {
+export const UserForm = ({ handleSubmit, validationSchema }: UserFormProps) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const t = useTranslations();

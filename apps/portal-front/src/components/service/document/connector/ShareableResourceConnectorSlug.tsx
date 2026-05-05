@@ -1,9 +1,21 @@
 'use client';
 
+import {
+  BreadcrumbNav,
+  BreadcrumbNavLink,
+} from '@/components/ui/BreadcrumbNav';
 import { useTranslations } from 'next-intl';
-import { BreadcrumbNav, BreadcrumbNavLink } from '@/components/ui/BreadcrumbNav';
 
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
+import { ShareableResourceConnectorPrivateDetails } from '@/components/service/document/connector/ShareableResourceConnectorPrivateDetails';
+import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';
+import ShareableResourceDescription from '@/components/service/document/ShareableResourceDescription';
+import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { getPlatformIdentifier } from '@/utils/platform';
 import { InfoIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
@@ -13,18 +25,9 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 import Link from 'next/link';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/BadgeOverflowCounter';
-import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
-import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
-import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';
-import ShareableResourceDescription from '@/components/service/document/ShareableResourceDescription';
-import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
-import { ShareableResourceConnectorPrivateDetails } from '@/components/service/document/connector/ShareableResourceConnectorPrivateDetails';
 
 // Component interface
-interface Props {
+interface ShareableResourceConnectorSlugProps {
   documentData: documentItem_fragment$data;
   serviceInstance: serviceInstance_fragment$data;
   breadcrumbValue: BreadcrumbNavLink[];
@@ -37,7 +40,7 @@ const ShareableResourceConnectorSlug = ({
   breadcrumbValue,
   shareUrl,
   serviceInstance,
-}: Props) => {
+}: ShareableResourceConnectorSlugProps) => {
   const t = useTranslations();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
   const canClickOnDeployButton = documentData.manager_supported;

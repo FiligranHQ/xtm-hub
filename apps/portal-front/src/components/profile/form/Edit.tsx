@@ -1,5 +1,7 @@
 'use client';
 
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { CountryCombobox } from '@/components/ui/country/Combobox';
 import {
   AutoForm,
   Button,
@@ -13,10 +15,8 @@ import {
   FormMessage,
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { z } from 'zod';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { CountryCombobox } from '@/components/ui/country/Combobox';
 
 const formSchema = z.object({
   first_name: z.string().optional(),
@@ -33,9 +33,7 @@ interface ProfileFormEditProps {
   onSubmit: (values: ProfileFormEditSchema) => void;
 }
 
-export const ProfileFormEdit: React.FC<ProfileFormEditProps> = ({
-  onSubmit,
-}: ProfileFormEditProps) => {
+export const ProfileFormEdit = ({ onSubmit }: ProfileFormEditProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
 

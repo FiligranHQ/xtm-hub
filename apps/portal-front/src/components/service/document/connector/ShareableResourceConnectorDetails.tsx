@@ -1,4 +1,8 @@
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
+import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
+import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
 import { Badge, Button } from '@filigran/ui/servers';
@@ -6,11 +10,6 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';
-import { FunctionComponent } from 'react';
-import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
-import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
-import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
-import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
 
 export interface ShareableResourceConnectorDetailsProps {
   connectorDetails: {
@@ -32,9 +31,10 @@ export interface ShareableResourceConnectorDetailsProps {
 
 const CONNECTOR_DOCUMENTATION =
   'https://docs.opencti.io/latest/usage/import/external-connectors/';
-export const ShareableResourceConnectorDetails: FunctionComponent<
-  ShareableResourceConnectorDetailsProps
-> = ({ connectorDetails, compatibilityItem }) => {
+export const ShareableResourceConnectorDetails = ({
+  connectorDetails,
+  compatibilityItem,
+}: ShareableResourceConnectorDetailsProps) => {
   const t = useTranslations();
   const platformName =
     PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name;

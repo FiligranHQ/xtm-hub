@@ -1,13 +1,15 @@
 'use client';
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
-import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useEffect } from 'react';
-import { useRelayEnvironment } from 'react-relay';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { useTranslations } from 'next-intl';
+import { useContext, useEffect } from 'react';
+import { useRelayEnvironment } from 'react-relay';
 
-const AppError: FunctionComponent<{
+const AppError = ({
+  error,
+}: {
   error: Error & { digest?: string; componentStack?: string };
-}> = ({ error }) => {
+}) => {
   const { settings } = useContext(SettingsContext);
   const isDevelopmentEnvSetting =
     settings?.environment && settings.environment !== 'production';

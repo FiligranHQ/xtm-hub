@@ -1,5 +1,6 @@
 'use client';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { IconActionContext } from '@/components/ui/IconActions';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {
   Callout,
@@ -13,9 +14,8 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { IconActionContext } from '@/components/ui/IconActions';
 
-export function PublicTryFiligranProductsBanner() {
+export const PublicTryFiligranProductsBanner = () => {
   const t = useTranslations();
   const [menuOpen, setMenuOpen] = useState(false);
   const bannerText = (
@@ -78,4 +78,4 @@ export function PublicTryFiligranProductsBanner() {
       </DropdownMenu>
     </Callout>
   );
-}
+};

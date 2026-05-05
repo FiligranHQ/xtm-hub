@@ -1,14 +1,28 @@
+import GuardCapacityComponent from '@/components/AdminGuard';
+import {
+  GenericCapabilityName,
+  ServiceCapabilityName,
+} from '@/components/service/[slug]/capabilities/Capability.helper';
 import {
   DocumentsListQuery,
   documentItem,
   documentsFragment,
 } from '@/components/service/document/document.graphql';
+import DeleteDocument from '@/components/service/vault/DeleteDocument';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
+import DownloadDocument from '@/components/service/vault/DownloadDocument';
+import EditDocument from '@/components/service/vault/EditDocument';
+import { VaultForm } from '@/components/service/vault/VaultForm';
+import VisualizeDocument from '@/components/service/vault/VisualizeDocument';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import {
   handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { SearchInput } from '@/components/ui/SearchInput';
+import useServiceCapability from '@/hooks/use-service-capability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
@@ -37,7 +51,6 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import * as React from 'react';
 import { useState } from 'react';
 import {
   PreloadedQuery,
@@ -46,30 +59,13 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import useServiceCapability from '@/hooks/use-service-capability';
-import GuardCapacityComponent from '@/components/AdminGuard';
-import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import { SearchInput } from '@/components/ui/SearchInput';
-import {
-  GenericCapabilityName,
-  ServiceCapabilityName,
-} from '@/components/service/[slug]/capabilities/Capability.helper';
-import DeleteDocument from '@/components/service/vault/DeleteDocument';
-import DownloadDocument from '@/components/service/vault/DownloadDocument';
-import EditDocument from '@/components/service/vault/EditDocument';
-import { VaultForm } from '@/components/service/vault/VaultForm';
-import VisualizeDocument from '@/components/service/vault/VisualizeDocument';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
-const DocumentList: React.FunctionComponent<ServiceProps> = ({
-  queryRef,
-  serviceInstance,
-}) => {
+const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
   const queryData = usePreloadedQuery<documentsQuery>(
     DocumentsListQuery,
     queryRef

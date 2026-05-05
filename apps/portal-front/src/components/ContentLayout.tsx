@@ -1,17 +1,15 @@
 'use client';
 
-import { FunctionComponent, ReactNode } from 'react';
 import {
   useChatbotContentMargin,
   useChatbotContentTransition,
 } from '@/components/ariane/use-chatbot-hooks';
+import { ReactNode } from 'react';
 interface ContentLayoutProps {
   children: ReactNode;
 }
 
-export const ContentLayout: FunctionComponent<ContentLayoutProps> = ({
-  children,
-}) => {
+export const ContentLayout = ({ children }: ContentLayoutProps) => {
   const chatbotMargin = useChatbotContentMargin();
   const chatbotTransition = useChatbotContentTransition();
 

@@ -1,3 +1,9 @@
+import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/ShareableResourceConnectorDetails';
+import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -7,14 +13,8 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import Image from 'next/image';
 import { MarkdownAsync } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/BadgeOverflowCounter';
-import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
-import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
-import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/ShareableResourceConnectorDetails';
 
-interface Props {
+interface ShareableResourceConnectorSlugPublicProps {
   documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
   serviceInstance:
     | seoServiceInstanceFragment$data
@@ -26,7 +26,7 @@ const ShareableResourceConnectorSlugPublic = ({
   documentData,
   pageUrl,
   serviceInstance,
-}: Props) => {
+}: ShareableResourceConnectorSlugPublicProps) => {
   const logo = findDocumentLogo(documentData);
   const carouselImages = filterDocumentImages(documentData);
 

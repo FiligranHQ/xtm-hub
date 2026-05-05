@@ -31,6 +31,25 @@ const eslintConfig = [
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      'react/destructuring-assignment': ['error', 'always'],
+      'react/function-component-definition': [
+        'error',
+        {
+          namedComponents: 'arrow-function',
+          unnamedComponents: 'arrow-function',
+        },
+      ],
+      'react/no-typos': 'error',
+      '@typescript-eslint/no-restricted-types': [
+        'error',
+        {
+          types: {
+            'React.FC': {
+              message: 'Use a function typed with Props instead',
+            },
+          },
+        },
+      ],
       'react-hooks/rules-of-hooks': 'off',
       '@typescript-eslint/ban-ts-comment': [
         'error',

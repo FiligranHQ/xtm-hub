@@ -1,13 +1,16 @@
 'use client';
 
 import { LogoutMutation } from '@/components/logout.graphql';
-import { cn } from '@/lib/utils';
-import { APP_PATH } from '@/utils/path/constant';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { NavigationApp } from '@/components/Navigation';
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { cn } from '@/lib/utils';
+import { APP_PATH } from '@/utils/path/constant';
 
+import AskArianeButton from '@/components/ariane/AskArianeButton';
+import { NotificationButton } from '@/components/notification/NotificationButton';
+import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 import { MenuIcon } from '@filigran/icon';
 import { Avatar } from '@filigran/ui';
 import {
@@ -21,21 +24,15 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import * as React from 'react';
 import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
-import AskArianeButton from '@/components/ariane/AskArianeButton';
-import { NotificationButton } from '@/components/notification/NotificationButton';
-import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 
 // Component interface
 interface HeaderComponentProps {
   displayLogo?: boolean;
 }
 
-const HeaderComponent: React.FunctionComponent<HeaderComponentProps> = ({
-  displayLogo,
-}) => {
+const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
   const { me, hasOrganizationCapability } = useContext(PortalContext);
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();

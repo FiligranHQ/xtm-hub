@@ -1,13 +1,13 @@
 'use client';
+import { NavigationApp } from '@/components/Navigation';
+import { CollapseMenuButton } from '@/components/menu/CollapseMenuButton';
+import { MenuLogo } from '@/components/menu/MenuLogo';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@filigran/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ElementType, FunctionComponent, useCallback } from 'react';
+import { ElementType, useCallback } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
-import { NavigationApp } from '@/components/Navigation';
-import { CollapseMenuButton } from '@/components/menu/CollapseMenuButton';
-import { MenuLogo } from '@/components/menu/MenuLogo';
 
 interface LinkMenuProps {
   open: boolean;
@@ -16,12 +16,7 @@ interface LinkMenuProps {
   text: string;
 }
 
-export const LinkMenu: FunctionComponent<LinkMenuProps> = ({
-  href,
-  icon,
-  text,
-  open,
-}) => {
+export const LinkMenu = ({ href, icon, text, open }: LinkMenuProps) => {
   const currentPath = usePathname();
   const Icon = icon;
   return (

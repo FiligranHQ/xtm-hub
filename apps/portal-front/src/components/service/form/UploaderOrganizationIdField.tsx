@@ -1,3 +1,4 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   FormControl,
   FormItem,
@@ -13,9 +14,8 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
-interface Props {
+interface ServiceFormUploaderOrganizationIdFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   isCreation: boolean;
   document?: documentItem_fragment$data;
@@ -27,7 +27,7 @@ export const ServiceFormUploaderOrganizationIdField = ({
   isCreation,
   document,
   disabled,
-}: Props) => {
+}: ServiceFormUploaderOrganizationIdFieldProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
   return (

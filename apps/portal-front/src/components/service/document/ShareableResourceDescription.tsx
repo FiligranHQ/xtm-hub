@@ -1,7 +1,6 @@
 import MDEditor from '@uiw/react-md-editor';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
-import * as React from 'react';
 
 // Component interface
 interface ShareableResourceDescriptionProps {
@@ -10,9 +9,10 @@ interface ShareableResourceDescriptionProps {
 }
 
 // Component
-const ShareableResourceDescription: React.FunctionComponent<
-  ShareableResourceDescriptionProps
-> = ({ shortDescription, longDescription }) => {
+const ShareableResourceDescription = ({
+  shortDescription,
+  longDescription,
+}: ShareableResourceDescriptionProps) => {
   const t = useTranslations();
 
   const { theme } = useTheme();

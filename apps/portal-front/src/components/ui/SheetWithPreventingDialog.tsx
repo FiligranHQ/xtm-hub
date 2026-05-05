@@ -1,3 +1,4 @@
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import {
   Sheet,
   SheetContent,
@@ -7,14 +8,7 @@ import {
   SheetTrigger,
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import {
-  createContext,
-  FunctionComponent,
-  ReactNode,
-  useContext,
-  useState,
-} from 'react';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface UserFormSheetProps {
   open: boolean;
@@ -41,9 +35,7 @@ export const useDialogContext = () => {
   return context;
 };
 
-export const SheetWithPreventingDialog: FunctionComponent<
-  UserFormSheetProps
-> = ({
+export const SheetWithPreventingDialog = ({
   open,
   setOpen,
   trigger,
@@ -51,7 +43,7 @@ export const SheetWithPreventingDialog: FunctionComponent<
   description = '',
   children,
   onOpenAutoFocus,
-}) => {
+}: UserFormSheetProps) => {
   const t = useTranslations();
   const [openDialog, setOpenDialog] = useState(false);
   const [isDirty, setIsDirty] = useState(false);

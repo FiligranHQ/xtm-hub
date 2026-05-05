@@ -24,7 +24,6 @@ import meLoaderQueryNode, {
 import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { FunctionComponent } from 'react';
 import PageLoader from './page-loader';
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -41,7 +40,7 @@ interface RootLayoutProps {
 }
 
 // Component
-const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
+const RootLayout = async ({ children }: RootLayoutProps) => {
   let shouldRedirect = false;
   let hasError = false;
 

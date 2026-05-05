@@ -2,7 +2,7 @@ import { PlatformMetadataMapping } from '@/components/registration/platform-iden
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import * as React from 'react';
-import { createContext, FunctionComponent } from 'react';
+import { createContext } from 'react';
 
 export interface RegistrationState {
   identifier?: PlatformIdentifierEnum;
@@ -35,9 +35,10 @@ export const generateRegistrationContext = (
   };
 };
 
-export const RegistrationContextProvider: FunctionComponent<
-  RegistrationProps
-> = ({ children, identifier }) => {
+export const RegistrationContextProvider = ({
+  children,
+  identifier,
+}: RegistrationProps) => {
   return (
     <RegistrationContext.Provider
       value={generateRegistrationContext(identifier)}>

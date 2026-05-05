@@ -1,9 +1,13 @@
+import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
 import {
   UserServiceDeleteMutation,
   UserServiceFromSubscription,
   userServiceFromSubscriptionFragment,
   userServicesFragment,
 } from '@/components/service/user_service.graphql';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
 import { MoreVertIcon } from '@filigran/icon';
 import {
   Badge,
@@ -18,20 +22,15 @@ import {
 } from '@generated/userServices_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/BadgeOverflowCounter';
 
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import {
-  FunctionComponent,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-
+  IconActionContext,
+  IconActions,
+  IconActionsItem,
+} from '@/components/ui/IconActions';
 import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
 import {
   PreloadedQuery,
@@ -40,24 +39,21 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import {
-  IconActionContext,
-  IconActions,
-  IconActionsItem,
-} from '@/components/ui/IconActions';
 
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { UserServiceForm } from '@/components/service/[slug]/UserServiceForm';
+import { EditUserService } from '@/components/subcription/[slug]/EditUserService';
 import { SubscriptionById } from '@/components/subcription/subscription.graphql';
+import {
+  BreadcrumbNav,
+  BreadcrumbNavLink,
+} from '@/components/ui/BreadcrumbNav';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { APP_PATH } from '@/utils/path/constant';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { UserServiceForm } from '@/components/service/[slug]/UserServiceForm';
-import { BreadcrumbNav, BreadcrumbNavLink } from '@/components/ui/BreadcrumbNav';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { EditUserService } from '@/components/subcription/[slug]/EditUserService';
 
 interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
@@ -66,12 +62,12 @@ interface SubscriptionSlugProps {
   subscriptionId: string;
 }
 
-const SubscriptionSlug: FunctionComponent<SubscriptionSlugProps> = ({
+const SubscriptionSlug = ({
   queryRef,
   queryRefSubscription,
   serviceInstance,
   subscriptionId,
-}) => {
+}: SubscriptionSlugProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
   const [editUserService, setEditUserService] = useState<

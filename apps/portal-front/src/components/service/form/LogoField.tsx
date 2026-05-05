@@ -16,12 +16,15 @@ import { useTranslations } from 'next-intl';
 import { ChangeEvent } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
-interface Props {
+interface ServiceFormLogoFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   document?: documentItem_fragment$data;
 }
 
-export const ServiceFormLogoField = ({ document, field }: Props) => {
+export const ServiceFormLogoField = ({
+  document,
+  field,
+}: ServiceFormLogoFieldProps) => {
   const t = useTranslations();
 
   const logo = field.value?.length ? field.value[0] : undefined;

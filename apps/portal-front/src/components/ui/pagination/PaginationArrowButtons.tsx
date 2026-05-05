@@ -2,21 +2,20 @@ import { ArrowNextIcon, ArrowPreviousIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
 import { PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
-interface Props {
+interface PaginationArrowButtonsProps {
   totalCount: number;
   pageIndex: number;
   pageSize: number;
   onPaginationChange: (state: PaginationState) => void;
 }
 
-export const PaginationArrowButtons: React.FC<Props> = ({
+export const PaginationArrowButtons = ({
   onPaginationChange,
   totalCount,
   pageIndex,
   pageSize,
-}) => {
+}: PaginationArrowButtonsProps) => {
   const t = useTranslations();
   const pageCount = Math.ceil(totalCount / pageSize);
 

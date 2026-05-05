@@ -1,10 +1,9 @@
-import * as React from 'react';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
 
 // Component
-const Page: React.FunctionComponent = async () => {
+const Page = async () => {
   return <PageLoader />;
 };
 

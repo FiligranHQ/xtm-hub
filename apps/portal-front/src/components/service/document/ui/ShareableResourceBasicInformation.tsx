@@ -1,13 +1,13 @@
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
-interface Props {
+interface ShareableResourceBasicInformationProps {
   children: React.ReactNode;
 }
 
-export const ShareableResourceBasicInformation: React.FC<Props> = ({
+export const ShareableResourceBasicInformation = ({
   children,
-}) => {
+}: ShareableResourceBasicInformationProps) => {
   const t = useTranslations();
   return (
     <div className="flex-1">

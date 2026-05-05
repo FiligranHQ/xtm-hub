@@ -1,6 +1,5 @@
 'use client';
 import { Carousel, CarouselItem, DialogContent } from '@filigran/ui/clients';
-import * as React from 'react';
 import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -22,9 +21,11 @@ interface ShareableResourceCarouselProps {
   className?: string;
 }
 
-const ShareableResourceCarousel: React.FunctionComponent<
-  ShareableResourceCarouselProps
-> = ({ images, serviceInstance, className }) => {
+const ShareableResourceCarousel = ({
+  images,
+  serviceInstance,
+  className,
+}: ShareableResourceCarouselProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [pictureIndex, setPictureIndex] = useState<number>(0);
   const fileNames = (images ?? []).map((image) => image?.id);

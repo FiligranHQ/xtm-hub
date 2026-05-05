@@ -1,14 +1,16 @@
 import { ServiceAddPicture } from '@/components/service/service.graphql';
+import {
+  newPicturesSchema,
+  ServiceForm,
+} from '@/components/service/ServiceForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import { useToast } from '@filigran/ui';
 import { serviceAddPictureMutation } from '@generated/serviceAddPictureMutation.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { newPicturesSchema, ServiceForm } from '@/components/service/ServiceForm';
 
 interface EditServiceProps {
   service: serviceList_fragment$data;
@@ -16,11 +18,7 @@ interface EditServiceProps {
   setOpen: (open: boolean) => void;
 }
 
-export const EditService: FunctionComponent<EditServiceProps> = ({
-  service,
-  open,
-  setOpen,
-}) => {
+export const EditService = ({ service, open, setOpen }: EditServiceProps) => {
   const t = useTranslations();
   const { toast } = useToast();
 

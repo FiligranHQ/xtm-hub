@@ -1,11 +1,3 @@
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
-import { useServiceListFilters } from '@/hooks/use-service-list-filters';
-import {
-  ServiceListLocalStorageKey,
-  useServiceListLocalStorage,
-} from '@/hooks/use-service-list-local-storage';
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import {
   availableIntegrationTypes,
@@ -13,8 +5,16 @@ import {
   SubTypesPerIntegrationType,
 } from '@/components/service/integrations/Integration.utils';
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
+import { useServiceListFilters } from '@/hooks/use-service-list-filters';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/hooks/use-service-list-local-storage';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 
-export const IntegrationTypeFilter: React.FC = () => {
+export const IntegrationTypeFilter = () => {
   const { integrationTypes, setIntegrationTypes, removeIntegrationTypes } =
     useServiceListLocalStorage(
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds

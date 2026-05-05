@@ -1,19 +1,19 @@
+import { RegistrationContext } from '@/components/registration/Context';
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import React, { useContext } from 'react';
-import { RegistrationContext } from '@/components/registration/Context';
 
-interface Props {
+interface RegistrationLayoutProps {
   children: React.ReactNode;
   cancel?: () => void;
   confirm?: () => void;
 }
 
-export const RegistrationLayout: React.FC<Props> = ({
+export const RegistrationLayout = ({
   children,
   cancel,
   confirm,
-}) => {
+}: RegistrationLayoutProps) => {
   const { displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
   return (

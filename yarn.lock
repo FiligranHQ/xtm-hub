@@ -2954,9 +2954,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:1.0.7":
-  version: 1.0.7
-  resolution: "@filigran/ui@npm:1.0.7"
+"@filigran/ui@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@filigran/ui@npm:1.1.0"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -2999,7 +2999,7 @@ __metadata:
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10/d814f4566c7c5e898f1090fe39824b93f7156a04901067e2332e66200c2cda46c08f600b3bafe50230a9a3f2c1502098188707f08e4d56b42d1d01b534601f7f
+  checksum: 10/742d7c553be4447e4f34fe4cfa7ffd0f400da68541ddb8578c1b876fb1033ba08782d34abcfde60c6628a217ec8579b090a5eec23dcb146882627752bc5fe0f6
   languageName: node
   linkType: hard
 
@@ -8564,7 +8564,7 @@ __metadata:
     migrate: "npm:^2.1.0"
     node-cron: "npm:4.2.1"
     nodemailer: "npm:8.0.7"
-    openid-client: "npm:6.8.2"
+    openid-client: "npm:6.8.4"
     passport: "npm:0.7.0"
     pg: "npm:8.20.0"
     pg-boss: "npm:12.18.1"
@@ -8588,7 +8588,7 @@ __metadata:
   dependencies:
     "@filigran/chatbot": "npm:3.2.1"
     "@filigran/icon": "npm:0.22.6"
-    "@filigran/ui": "npm:1.0.7"
+    "@filigran/ui": "npm:1.1.0"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@tailwindcss/postcss": "npm:4.2.4"
@@ -8625,7 +8625,7 @@ __metadata:
     next: "npm:16.2.4"
     next-intl: "npm:4.11.0"
     next-themes: "npm:0.4.6"
-    postcss: "npm:8.5.12"
+    postcss: "npm:8.5.13"
     prettier: "npm:3.8.3"
     prettier-plugin-organize-imports: "npm:4.3.0"
     prettier-plugin-tailwindcss: "npm:0.8.0"
@@ -13874,10 +13874,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^6.1.3":
-  version: 6.2.2
-  resolution: "jose@npm:6.2.2"
-  checksum: 10/fd66f24916d2507dbde0ca77ede86377e7d7eae42c7f94db0dfd014b0c6ce5041365dc8e757a44e54cd7606ea5e9c757aa544b51e55cb8a736e83320db1b8258
+"jose@npm:^6.2.2":
+  version: 6.2.3
+  resolution: "jose@npm:6.2.3"
+  checksum: 10/876974613c5ee988d43b65a34c96ce440dbf7706a2f07f465b8874af16ee532102e224459a7068d2c6ef044affe49690667d23ca12770c279804baec95a09608
   languageName: node
   linkType: hard
 
@@ -15949,10 +15949,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oauth4webapi@npm:^3.8.4":
-  version: 3.8.5
-  resolution: "oauth4webapi@npm:3.8.5"
-  checksum: 10/5c39d4dbd95b795438e79444a1d710631b3f8311e8b8913150b385b5815857b32f617a49d4869a4476b2318f614adfbc9d19510360df198719973f6f69a2e75b
+"oauth4webapi@npm:^3.8.5":
+  version: 3.8.6
+  resolution: "oauth4webapi@npm:3.8.6"
+  checksum: 10/980568a712c9ac6afaa35bea4b8887accfa37470fbceec6c833edad74cf82a9c981aacdbb4f270dcbc27c2a5af9b3a2d2c48ae98e51df7a278985c5f00631410
   languageName: node
   linkType: hard
 
@@ -16111,13 +16111,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:6.8.2":
-  version: 6.8.2
-  resolution: "openid-client@npm:6.8.2"
+"openid-client@npm:6.8.4":
+  version: 6.8.4
+  resolution: "openid-client@npm:6.8.4"
   dependencies:
-    jose: "npm:^6.1.3"
-    oauth4webapi: "npm:^3.8.4"
-  checksum: 10/5d30ff2419c4847d0037c43cf136dd7189b16399aaee98faaad5bcea105c4e1e4e43d2dac1141ea77049b446b50d1b26f2bb882f717b3e38a5f996645abfc1d0
+    jose: "npm:^6.2.2"
+    oauth4webapi: "npm:^3.8.5"
+  checksum: 10/39402afd4534081d0c9af41aadc916b2b6d41cab1d9eaa9b33f1a3bc3a73ba437f04ccb4b906a4523b41886ee3de716d24c028fd734282b4924cac641d5c5869
   languageName: node
   linkType: hard
 
@@ -16681,14 +16681,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.5.12":
-  version: 8.5.12
-  resolution: "postcss@npm:8.5.12"
+"postcss@npm:8.5.13":
+  version: 8.5.13
+  resolution: "postcss@npm:8.5.13"
   dependencies:
     nanoid: "npm:^3.3.11"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10/ec6b79b68c363eca3c8ffceb134a4ab637274aee6ac0857614bf7c18d40ce4ce5f9036edec57b7e0be99895724d2599d0ec7328dbd7f407204e7548697b322f1
+  checksum: 10/4763873c0a39a6f71fc552d0046fedb80dca889ed0b85e36217285f754a3bd003a906f6088feb266b1f53b0ad20483a475dce4cc1c756f05e27940c51e40ebd8
   languageName: node
   linkType: hard
 

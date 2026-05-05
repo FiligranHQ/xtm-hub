@@ -9,13 +9,14 @@ import {
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
-interface Props {
+interface ProfileFormResetPasswordProps {
   onSubmit: () => void;
 }
 
-export const ProfileFormResetPassword: React.FC<Props> = ({ onSubmit }) => {
+export const ProfileFormResetPassword = ({
+  onSubmit,
+}: ProfileFormResetPasswordProps) => {
   const t = useTranslations();
   return (
     <Card>

@@ -1,18 +1,17 @@
 'use client';
 
+import { TrialsTabQuotasPlatform } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatform';
+import TrialsTab from '@/components/trials/tab/TrialsTab';
 import { TrialsTabType } from '@/components/trials/trials.const';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
-import { TrialsTabQuotasPlatform } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatform';
-import TrialsTab from '@/components/trials/tab/TrialsTab';
 
-interface Props {
+interface TrialsListProps {
   platformIdentifier: PlatformIdentifierEnum;
 }
 
-const TrialsList: FunctionComponent<Props> = ({ platformIdentifier }) => {
+const TrialsList = ({ platformIdentifier }: TrialsListProps) => {
   const t = useTranslations();
 
   return (
@@ -66,4 +65,5 @@ const TrialsList: FunctionComponent<Props> = ({ platformIdentifier }) => {
     </>
   );
 };
+
 export default TrialsList;

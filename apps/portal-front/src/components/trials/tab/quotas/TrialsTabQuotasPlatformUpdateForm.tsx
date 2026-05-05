@@ -1,4 +1,6 @@
 import { TrialsUpdateDeploymentQuotaCapacityMutation } from '@/components/trials/trials.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { isEmpty } from '@/lib/utils';
 import {
   Button,
@@ -14,14 +16,12 @@ import { Input } from '@filigran/ui/servers';
 import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 
-interface Props {
+interface TrialsTabQuotasPlatformUpdateFormProps {
   quota: trialsDeploymentAvailabilityFragment$data;
   callback: () => void;
 }
@@ -32,10 +32,10 @@ const formSchema = z.object({
   newCapacity: z.int().min(0),
 });
 
-export const TrialsTabQuotasPlatformUpdateForm: React.FC<Props> = ({
+export const TrialsTabQuotasPlatformUpdateForm = ({
   quota,
   callback,
-}) => {
+}: TrialsTabQuotasPlatformUpdateFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const form = useForm<z.infer<typeof formSchema>>({

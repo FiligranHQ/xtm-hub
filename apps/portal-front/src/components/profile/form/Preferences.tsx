@@ -1,5 +1,6 @@
 'use client';
 
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import { Locale } from '@/i18n/config';
 import { setUserLocale } from '@/i18n/locale';
 import {
@@ -15,10 +16,9 @@ import {
 } from '@filigran/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
-import React, { useContext } from 'react';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { useContext } from 'react';
 
-export const ProfileFormPreferences: React.FC = () => {
+export const ProfileFormPreferences = () => {
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);
   const isDevelopmentEnvSetting =
