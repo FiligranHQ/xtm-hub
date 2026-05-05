@@ -48,14 +48,6 @@ export type AddServiceInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type AddSubscriptionInput = {
-  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
-  end_date?: InputMaybe<Scalars['Date']['input']>;
-  organization_id: Scalars['OrganizationId']['input'];
-  service_instance_id: Scalars['ServiceInstanceId']['input'];
-  start_date: Scalars['Date']['input'];
-};
-
 export type AddUseCaseInput = {
   color: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -227,6 +219,14 @@ export type CreateEpicInput = {
   short_description: Scalars['String']['input'];
   timeline: Timeline;
   title: Scalars['String']['input'];
+};
+
+export type CreateSubscriptionInput = {
+  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
+  end_date?: InputMaybe<Scalars['Date']['input']>;
+  organization_id: Scalars['OrganizationId']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+  start_date: Scalars['Date']['input'];
 };
 
 export type CsvFeed = Document & Integration & Node & {
@@ -985,7 +985,7 @@ export type MutationCreateEpicArgs = {
 
 
 export type MutationCreateSubscriptionArgs = {
-  input?: InputMaybe<AddSubscriptionInput>;
+  input?: InputMaybe<CreateSubscriptionInput>;
 };
 
 
@@ -1948,6 +1948,7 @@ export type ServiceLink = Node & {
 };
 
 export enum ServiceRestriction {
+  Access = 'ACCESS',
   AccessUser = 'ACCESS_USER',
   Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
@@ -2056,7 +2057,7 @@ export type SubscriptionEdge = {
 };
 
 export type SubscriptionFilter = {
-  key?: InputMaybe<SubscriptionFilterKey>;
+  key: SubscriptionFilterKey;
   value: Array<Scalars['String']['input']>;
 };
 
@@ -2489,7 +2490,6 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   AddServiceInput: AddServiceInput;
-  AddSubscriptionInput: AddSubscriptionInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
   AdminAddUserInput: AdminAddUserInput;
@@ -2512,6 +2512,7 @@ export type ResolversTypes = ResolversObject<{
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CreateEpicInput: CreateEpicInput;
+  CreateSubscriptionInput: CreateSubscriptionInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
@@ -2699,7 +2700,6 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   AddServiceInput: AddServiceInput;
-  AddSubscriptionInput: AddSubscriptionInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
   AdminAddUserInput: AdminAddUserInput;
@@ -2720,6 +2720,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CreateEpicInput: CreateEpicInput;
+  CreateSubscriptionInput: CreateSubscriptionInput;
   CsvFeed: CsvFeed;
   CustomDashboard: CustomDashboard;
   Date: Scalars['Date']['output'];

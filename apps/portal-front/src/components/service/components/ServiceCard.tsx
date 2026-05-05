@@ -1,5 +1,15 @@
 'use client';
+import { useServiceContext } from '@/components/service/components/ServiceContext';
+import {
+  CardTypeEnum,
+  ServiceDelete,
+} from '@/components/service/components/ServiceDelete';
+import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
+import useServiceCapability from '@/hooks/use-service-capability';
+import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
@@ -12,17 +22,10 @@ import { MoreVertIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import useServiceCapability from '@/hooks/use-service-capability';
-import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
-import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
-import { useServiceContext } from '@/components/service/components/ServiceContext';
-import { CardTypeEnum, ServiceDelete } from '@/components/service/components/ServiceDelete';
-import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
 
 interface ServiceCardProps {
   document: documentItem_fragment$data;
@@ -52,12 +55,12 @@ const ServiceCard = ({
   });
 
   const userCanUpdate = useServiceCapability(
-    ServiceCapabilityName.Upload,
+    ServiceRestrictionEnum.UPLOAD,
     serviceInstance
   );
 
   const userCanDelete = useServiceCapability(
-    ServiceCapabilityName.Delete,
+    ServiceRestrictionEnum.DELETE,
     serviceInstance
   );
 

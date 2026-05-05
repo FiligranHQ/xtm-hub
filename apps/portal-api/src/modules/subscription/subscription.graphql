@@ -27,7 +27,7 @@ type SubscriptionEdge {
   node: SubscriptionModel!
 }
 
-input AddSubscriptionInput {
+input CreateSubscriptionInput {
   service_instance_id: ServiceInstanceId!
   organization_id: OrganizationId!
   capability_ids: [ServiceCapabilityId]
@@ -38,7 +38,7 @@ input AddSubscriptionInput {
 type Mutation {
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
-  createSubscription(input: AddSubscriptionInput): SubscriptionModel
+  createSubscription(input: CreateSubscriptionInput): SubscriptionModel
     @auth(portalCapa: [BYPASS])
   deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
@@ -55,7 +55,7 @@ enum SubscriptionFilterKey {
   service_instance_id
 }
 input SubscriptionFilter {
-  key: SubscriptionFilterKey
+  key: SubscriptionFilterKey!
   value: [String!]!
 }
 

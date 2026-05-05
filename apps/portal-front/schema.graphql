@@ -183,7 +183,7 @@ type Mutation {
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  createSubscription(input: AddSubscriptionInput): SubscriptionModel
+  createSubscription(input: CreateSubscriptionInput): SubscriptionModel
   deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
@@ -1541,7 +1541,7 @@ type SubscriptionEdge {
   node: SubscriptionModel!
 }
 
-input AddSubscriptionInput {
+input CreateSubscriptionInput {
   service_instance_id: ServiceInstanceId!
   organization_id: OrganizationId!
   capability_ids: [ServiceCapabilityId]
@@ -1561,7 +1561,7 @@ enum SubscriptionFilterKey {
 }
 
 input SubscriptionFilter {
-  key: SubscriptionFilterKey
+  key: SubscriptionFilterKey!
   value: [String!]!
 }
 
@@ -1764,6 +1764,7 @@ enum OrganizationCapability {
 }
 
 enum ServiceRestriction {
+  ACCESS
   ACCESS_USER
   MANAGE_ACCESS
   UPLOAD

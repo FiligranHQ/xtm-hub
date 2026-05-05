@@ -1,4 +1,3 @@
-import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
 import {
   UserServiceDeleteMutation,
   UserServiceFromSubscription,
@@ -51,6 +50,7 @@ import {
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { APP_PATH } from '@/utils/path/constant';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
@@ -145,7 +145,7 @@ const SubscriptionSlug = ({
         userService?.user_service_capability?.some(
           (user_service_capa) =>
             user_service_capa?.generic_service_capability?.name ===
-            GenericCapabilityName.MANAGE_ACCESS
+            ServiceRestrictionEnum.MANAGE_ACCESS
         )
       );
     });
@@ -198,11 +198,11 @@ const SubscriptionSlug = ({
           if (
             capabilities.length === 1 &&
             capabilities[0]?.generic_service_capability?.name ===
-              GenericCapabilityName.ACCESS
+              ServiceRestrictionEnum.ACCESS
           ) {
             return (
               <Badge className="capitalize">
-                {GenericCapabilityName.ACCESS}
+                {ServiceRestrictionEnum.ACCESS}
               </Badge>
             );
           }
@@ -211,7 +211,7 @@ const SubscriptionSlug = ({
               const genericName = capability?.generic_service_capability?.name;
               const fallbackName =
                 capability?.subscription_capability?.service_capability?.name;
-              if (genericName === GenericCapabilityName.ACCESS) return null;
+              if (genericName === ServiceRestrictionEnum.ACCESS) return null;
               return {
                 id: genericName ?? fallbackName,
                 name: genericName ?? fallbackName,

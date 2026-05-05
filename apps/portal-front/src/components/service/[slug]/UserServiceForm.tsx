@@ -1,9 +1,9 @@
 import { UserFragment } from '@/components/admin/user/UserList';
+import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { GenericCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
 import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
 import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
@@ -66,9 +66,9 @@ export const UserServiceForm = ({
   const organizationId = subscription.subscriptionById?.organization?.id;
   const genericCapabilities = [
     {
-      id: GenericCapabilityName.MANAGE_ACCESS as string,
-      name: GenericCapabilityName.MANAGE_ACCESS as string,
-      description: GenericCapabilityName.MANAGE_ACCESS as string,
+      id: ServiceRestrictionEnum.MANAGE_ACCESS as string,
+      name: ServiceRestrictionEnum.MANAGE_ACCESS as string,
+      description: ServiceRestrictionEnum.MANAGE_ACCESS as string,
     },
   ];
 
@@ -232,7 +232,7 @@ export const UserServiceForm = ({
   );
 
   const isCapabilityDisabled = (id: string) => {
-    if (id === GenericCapabilityName.MANAGE_ACCESS) {
+    if (id === ServiceRestrictionEnum.MANAGE_ACCESS) {
       return false;
     }
 
@@ -350,7 +350,7 @@ export const UserServiceForm = ({
                           aria-disabled={isCapabilityDisabled(capability!.id)}
                           className="txt-sub-content cursor-pointer aria-disabled:cursor-not-allowed">
                           {capability!.name ===
-                          GenericCapabilityName.MANAGE_ACCESS
+                          ServiceRestrictionEnum.MANAGE_ACCESS
                             ? 'Manage access: The user can invite other users from his/her organization to this service'
                             : `${capability!.name} access: ${capability!.description}`}
                           {isCapabilityDisabled(capability!.id)}

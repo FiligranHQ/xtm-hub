@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw, paginate, QueryOpts } from '../../../knexfile';
 import {
+  ServiceRestriction,
   SubscriptionModel,
   UserServiceCapability,
   UserServiceConnection,
@@ -34,10 +35,7 @@ import {
   getOrCreateUser,
   insertUserIntoOrganization,
 } from '../organization-management/user/user.helper';
-import {
-  GenericServiceCapabilityIds,
-  GenericServiceCapabilityName,
-} from '../security-management/service-capability/generic-service-capability.const';
+import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
 import { insertServiceCapability } from '../security-management/service-capability/service-capability.helper';
 import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
 import {
@@ -359,7 +357,7 @@ export const UserServiceDomain = {
   loadUserServiceGenericCapability: async (
     userId: UserId,
     subscriptionId: SubscriptionId,
-    capability: GenericServiceCapabilityName
+    capability: ServiceRestriction
   ) => {
     return db('User_Service')
       .leftJoin(

@@ -38,7 +38,7 @@ export const SubscriptionDeleteMutation = graphql`
 
 export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
-    $input: AddSubscriptionInput!
+    $input: CreateSubscriptionInput!
     $connections: [ID!]!
   ) {
     createSubscription(input: $input)

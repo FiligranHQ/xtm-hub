@@ -41,9 +41,9 @@ const formSchema = z.object({
 });
 
 export const ServiceSlugAddOrgaForm = ({
-                                         serviceInstance,
-                                         subscriptions,
-                                         subscriptionConnectionId,
+  serviceInstance,
+  subscriptions,
+  subscriptionConnectionId,
 }: ServiceSlugAddOrgaFormSheetProps) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const t = useTranslations();
@@ -176,7 +176,7 @@ export const ServiceSlugAddOrgaForm = ({
             </p>
             {serviceInstance.service_definition?.service_capability
               ?.filter((sc) => !!sc)
-              .map(({ id, name, description }) => (
+              ?.map(({ id, name, description }) => (
                 <FormField
                   key={id}
                   control={form.control}

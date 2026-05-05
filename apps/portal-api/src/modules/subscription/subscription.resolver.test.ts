@@ -9,7 +9,7 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
-  AddSubscriptionInput,
+  CreateSubscriptionInput,
   SubscriptionCapabilityResolvers,
   SubscriptionModel,
   SubscriptionModelResolvers,
@@ -69,7 +69,7 @@ describe('subscription mutation resolver', () => {
           ],
           start_date: startDate,
           end_date: endDate,
-        } as unknown as AddSubscriptionInput;
+        } as unknown as CreateSubscriptionInput;
 
         // When
         const result = await subscriptionResolver.Mutation!.createSubscription!(
@@ -178,7 +178,7 @@ describe('subscription mutation resolver', () => {
               contextSimpleUserFiligran2.user.selected_organization_id,
             start_date: new Date('2026-01-10T10:00:00.000Z'),
             end_date: null,
-          } as AddSubscriptionInput,
+          } as CreateSubscriptionInput,
         },
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO

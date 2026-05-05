@@ -1,26 +1,26 @@
 import { describe, expect, it, vi } from 'vitest';
+import { ServiceRestriction } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
-import { GenericServiceCapabilityName } from './generic-service-capability.const';
 import * as ServiceCapaDomain from './service-capability.domain';
 import { willManageAccessBeConserved } from './service-capability.helper';
 
 describe('willManageAccessBeConserved', () => {
   it.each`
-    capabilities                                    | getManageAccessLeft | userId          | shouldThrowError
-    ${[]}                                           | ${true}             | ${'notTheSame'} | ${false}
-    ${[]}                                           | ${true}             | ${'notTheSame'} | ${false}
-    ${[GenericServiceCapabilityName.MANAGE_ACCESS]} | ${true}             | ${'notTheSame'} | ${false}
-    ${[GenericServiceCapabilityName.MANAGE_ACCESS]} | ${true}             | ${'notTheSame'} | ${false}
-    ${[GenericServiceCapabilityName.MANAGE_ACCESS]} | ${false}            | ${'notTheSame'} | ${false}
-    ${[GenericServiceCapabilityName.MANAGE_ACCESS]} | ${false}            | ${'notTheSame'} | ${false}
-    ${[]}                                           | ${false}            | ${'notTheSame'} | ${false}
-    ${[]}                                           | ${false}            | ${'theSame'}    | ${true}
-    ${[GenericServiceCapabilityName.MANAGE_ACCESS]} | ${false}            | ${'theSame'}    | ${false}
-    ${[]}                                           | ${true}             | ${'theSame'}    | ${false}
+    capabilities                         | getManageAccessLeft | userId          | shouldThrowError
+    ${[]}                                | ${true}             | ${'notTheSame'} | ${false}
+    ${[]}                                | ${true}             | ${'notTheSame'} | ${false}
+    ${[ServiceRestriction.ManageAccess]} | ${true}             | ${'notTheSame'} | ${false}
+    ${[ServiceRestriction.ManageAccess]} | ${true}             | ${'notTheSame'} | ${false}
+    ${[ServiceRestriction.ManageAccess]} | ${false}            | ${'notTheSame'} | ${false}
+    ${[ServiceRestriction.ManageAccess]} | ${false}            | ${'notTheSame'} | ${false}
+    ${[]}                                | ${false}            | ${'notTheSame'} | ${false}
+    ${[]}                                | ${false}            | ${'theSame'}    | ${true}
+    ${[ServiceRestriction.ManageAccess]} | ${false}            | ${'theSame'}    | ${false}
+    ${[]}                                | ${true}             | ${'theSame'}    | ${false}
   `(
     'should return $shouldThrowError if capabilities, $capabilities and manageAccessCount is $manageAccessCount and userId is $userId',
     async ({ capabilities, getManageAccessLeft, userId, shouldThrowError }) => {
