@@ -1,21 +1,22 @@
-import { cn } from '@/lib/utils';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
-import { FunctionComponent } from 'react';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
 import { ShareableResourceCardIcon } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardIcon';
 import { ShareableResourceCardImage } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardImage';
+import { cn } from '@/lib/utils';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 
 interface ShareableResourceCardHeaderProps {
   document: documentItem_fragment$data | publicDocumentItemFragment$data;
   serviceInstanceId: string;
   shouldDisplayBothIcons: boolean;
 }
-export const ShareableResourceCardHeader: FunctionComponent<
-  ShareableResourceCardHeaderProps
-> = ({ document, serviceInstanceId, shouldDisplayBothIcons }) => {
+export const ShareableResourceCardHeader = ({
+  document,
+  serviceInstanceId,
+  shouldDisplayBothIcons,
+}: ShareableResourceCardHeaderProps) => {
   const documentNameSize = document.name?.length ?? 0;
 
   return (

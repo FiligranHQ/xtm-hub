@@ -13,15 +13,15 @@ import {
   DeploymentRequestsAvailableQuery,
 } from '@/components/service/trial-instances/trial-instances.graphql';
 
-import { toast } from '@filigran/ui/clients';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import {
   TryFiligranProductForm,
   tryFiligranProductFormSchema,
 } from '@/components/service/trial-instances/TryFiligranProductForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { toast } from '@filigran/ui/clients';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
 
 import {
   fetchQuery,
@@ -35,18 +35,18 @@ import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequest
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { z } from 'zod';
 
-interface Props {
+interface StartTrialButtonProps {
   openForm?: boolean;
   platformIdentifier?: PlatformIdentifierEnum;
   source: DeploymentRequestSourceEnum;
 }
 
 // Component
-export const StartTrialButton: React.FC<Props> = ({
+export const StartTrialButton = ({
   openForm = false,
   platformIdentifier = PlatformIdentifierEnum.OPENCTI,
   source,
-}) => {
+}: StartTrialButtonProps) => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
   const router = useRouter();

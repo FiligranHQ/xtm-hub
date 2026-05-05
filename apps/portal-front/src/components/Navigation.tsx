@@ -1,21 +1,19 @@
-import { APP_PATH } from '@/utils/path/constant';
-import { HomeIcon, IndividualIcon } from '@filigran/icon';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
-import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext } from 'react';
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { LinkMenu } from '@/components/menu/Menu';
 import MenuAdmin from '@/components/menu/MenuAdmin';
 import { OrganizationSwitcher } from '@/components/menu/OrganizationSwitcher';
+import { APP_PATH } from '@/utils/path/constant';
+import { HomeIcon, IndividualIcon } from '@filigran/icon';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import { useTranslations } from 'next-intl';
+import { useContext } from 'react';
 
 interface NavigationAppProps {
   open: boolean;
 }
-export const NavigationApp: FunctionComponent<NavigationAppProps> = ({
-  open,
-}) => {
+export const NavigationApp = ({ open }: NavigationAppProps) => {
   const t = useTranslations();
   const { hasOrganizationCapability, me } = useContext(PortalContext);
 

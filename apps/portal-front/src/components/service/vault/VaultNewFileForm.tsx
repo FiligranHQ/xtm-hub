@@ -1,8 +1,9 @@
 import { DocumentExistsQuery } from '@/components/service/document/document.graphql';
-import { zodResolver } from '@hookform/resolvers/zod';
-import useDecodedParams from '@/hooks/use-decoded-params';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import useDecodedParams from '@/hooks/use-decoded-params';
+import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import {
   Button,
   FileInput,
@@ -19,11 +20,9 @@ import {
 import { documentExistsQuery } from '@generated/documentExistsQuery.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLazyLoadQuery } from 'react-relay';
 import { z } from 'zod';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 
 export const newDocumentSchema = z.object({
   description: z.string().optional(),
@@ -36,9 +35,10 @@ interface VaultNewFileFormSheetProps {
   handleSubmit: (values: z.infer<typeof newDocumentSchema>) => void;
 }
 
-export const VaultNewFileForm: FunctionComponent<
-  VaultNewFileFormSheetProps
-> = ({ document, handleSubmit }) => {
+export const VaultNewFileForm = ({
+  document,
+  handleSubmit,
+}: VaultNewFileFormSheetProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const form = useForm<z.infer<typeof newDocumentSchema>>({

@@ -1,12 +1,12 @@
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
+import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardVersion';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
-import { FunctionComponent, ReactNode } from 'react';
-import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
-import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
-import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardVersion';
+import { ReactNode } from 'react';
 
 interface ShareableResourceCardFooterVersionProps {
   document: documentItem_fragment$data | publicDocumentItemFragment$data;
@@ -14,9 +14,12 @@ interface ShareableResourceCardFooterVersionProps {
   shareLinkUrl: string;
   extraContent?: ReactNode;
 }
-export const ShareableResourceCardFooterVersion: FunctionComponent<
-  ShareableResourceCardFooterVersionProps
-> = ({ document, publicPath = false, shareLinkUrl, extraContent }) => {
+export const ShareableResourceCardFooterVersion = ({
+  document,
+  publicPath = false,
+  shareLinkUrl,
+  extraContent,
+}: ShareableResourceCardFooterVersionProps) => {
   let documentMetadata;
   if (
     docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE)

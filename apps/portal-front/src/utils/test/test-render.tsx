@@ -6,7 +6,7 @@ import messages from '@messages/en.json';
 import { render, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
-import { FunctionComponent, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { RelayEnvironmentProvider } from 'react-relay/hooks';
 import { createMockEnvironment } from 'relay-test-utils';
 import { RelayMockEnvironment } from 'relay-test-utils/lib/RelayModernMockEnvironment';
@@ -115,10 +115,7 @@ interface TestWrapperProps {
   children: ReactNode;
 }
 
-export const TestWrapper: FunctionComponent<TestWrapperProps> = ({
-  options,
-  children,
-}) => {
+export const TestWrapper = ({ options, children }: TestWrapperProps) => {
   const { relayConfig, me, settings } = options ?? {};
 
   return (

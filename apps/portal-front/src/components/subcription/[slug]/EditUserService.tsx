@@ -1,11 +1,11 @@
-import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
-import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
 import { UserServiceForm } from '@/components/service/[slug]/UserServiceForm';
 import { IconActionContext } from '@/components/ui/IconActions';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
+import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
 
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 interface EditUserServiceProps {
   userService: userServices_fragment$data;
@@ -15,13 +15,13 @@ interface EditUserServiceProps {
   setOpen: (open: boolean) => void;
 }
 
-export const EditUserService: FunctionComponent<EditUserServiceProps> = ({
+export const EditUserService = ({
   userService,
   connectionId,
   subscription,
   open,
   setOpen,
-}) => {
+}: EditUserServiceProps) => {
   const t = useTranslations();
 
   const { setMenuOpen } = useContext(IconActionContext);

@@ -1,6 +1,6 @@
 import { settingsContext_fragment$data } from '@generated/settingsContext_fragment.graphql';
 import * as React from 'react';
-import { createContext, FunctionComponent } from 'react';
+import { createContext } from 'react';
 
 export interface Settings {
   settings?: settingsContext_fragment$data | null;
@@ -18,10 +18,10 @@ export const generateSettingsContext = (
   return { settings };
 };
 
-export const SettingsPortalContext: FunctionComponent<SettingsProps> = ({
+export const SettingsPortalContext = ({
   children,
   settings,
-}) => {
+}: SettingsProps) => {
   return (
     <SettingsContext.Provider value={generateSettingsContext(settings)}>
       {children}

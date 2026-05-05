@@ -1,7 +1,24 @@
 import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
 import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
 
+import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/ServiceSlugAddOrgaForm';
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
+import {
+  BreadcrumbNav,
+  BreadcrumbNavLink,
+} from '@/components/ui/BreadcrumbNav';
+import {
+  IconActions,
+  IconActionsItem,
+  IconActionsLink,
+} from '@/components/ui/IconActions';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import useAdminPath from '@/hooks/use-admin-path';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
@@ -18,33 +35,16 @@ import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutatio
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import useAdminPath from '@/hooks/use-admin-path';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/BadgeOverflowCounter';
-import { BreadcrumbNav, BreadcrumbNavLink } from '@/components/ui/BreadcrumbNav';
-import {
-  IconActions,
-  IconActionsItem,
-  IconActionsLink,
-} from '@/components/ui/IconActions';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/ServiceSlugAddOrgaForm';
 
 interface ServiceSlugProps {
   queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
   serviceId: string;
 }
 
-const ServiceSlug: FunctionComponent<ServiceSlugProps> = ({
-  queryRef,
-  serviceId,
-}) => {
+const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const queryData = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
     ServiceByIdWithSubscriptions,

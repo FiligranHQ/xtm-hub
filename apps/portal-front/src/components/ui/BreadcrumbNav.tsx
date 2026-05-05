@@ -10,7 +10,7 @@ import {
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { Fragment, FunctionComponent } from 'react';
+import { Fragment } from 'react';
 
 interface BreadcrumbProps {
   value: BreadcrumbNavLink[];
@@ -22,9 +22,7 @@ export interface BreadcrumbNavLink {
   original?: boolean;
 }
 
-export const BreadcrumbNav: FunctionComponent<BreadcrumbProps> = ({
-  value,
-}) => {
+export const BreadcrumbNav = ({ value }: BreadcrumbProps) => {
   const t = useTranslations();
   return (
     <Breadcrumb className="pb-s sm:pb-l">

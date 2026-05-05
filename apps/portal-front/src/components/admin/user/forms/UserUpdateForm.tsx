@@ -1,5 +1,12 @@
+import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 import { userEditFormSchema } from '@/components/admin/user/forms/user-form.schema';
+import { RemoveUserFromOrga } from '@/components/admin/user/RemoveUserFromOrga';
 import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
+import { getUserListContext } from '@/components/admin/user/UserListPage';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import useAdminPath from '@/hooks/use-admin-path';
 import { isEmpty } from '@/lib/utils';
 import {
   Button,
@@ -15,27 +22,17 @@ import {
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext } from 'react';
+import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import useAdminPath from '@/hooks/use-admin-path';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
-import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
-import { RemoveUserFromOrga } from '@/components/admin/user/RemoveUserFromOrga';
-import { getUserListContext } from '@/components/admin/user/UserListPage';
 
 interface UserUpdateFormProps {
   user: UserList_fragment$data;
   callback: () => void;
 }
 
-export const UserUpdateForm: FunctionComponent<UserUpdateFormProps> = ({
-  user,
-  callback,
-}) => {
+export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const { me } = useContext(PortalContext);
   const t = useTranslations();

@@ -1,3 +1,4 @@
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import {
   Form,
   FormControl,
@@ -10,12 +11,10 @@ import {
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
-interface Props {
+interface ReachSalesDialogFormProps {
   isDialogOpen: boolean;
   setIsDialogOpen: (isOpen: boolean) => void;
   onSubmit: (message: string) => void;
@@ -26,12 +25,12 @@ const reachSalesSchema = z.object({
   message: z.string().min(1, 'Required'),
 });
 
-export const ReachSalesDialogForm: React.FC<Props> = ({
+export const ReachSalesDialogForm = ({
   isDialogOpen,
   setIsDialogOpen,
   onSubmit,
   platformIdentifier: _platformIdentifier,
-}) => {
+}: ReachSalesDialogFormProps) => {
   const t = useTranslations();
 
   const form = useForm<z.infer<typeof reachSalesSchema>>({

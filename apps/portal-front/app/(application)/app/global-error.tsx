@@ -1,15 +1,14 @@
 'use client';
 
-import { Button } from '@filigran/ui/servers';
 import AppError from '@/components/AppError';
+import { Button } from '@filigran/ui/servers';
 
-export default function GlobalError({
-  error,
-  reset,
-}: {
+interface GlobalErrorProps {
   error: Error & { digest?: string; componentStack?: string };
   reset: () => void;
-}) {
+}
+
+const GlobalError = ({ error, reset }: GlobalErrorProps) => {
   return (
     <html>
       <body>
@@ -18,4 +17,6 @@ export default function GlobalError({
       </body>
     </html>
   );
-}
+};
+
+export default GlobalError;

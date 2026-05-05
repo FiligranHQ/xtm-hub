@@ -12,17 +12,17 @@ import {
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
-interface Props {
+interface PaginationManageDropdownProps {
   pageSize: number;
   onSetPageSize: (pageSize: number) => void;
 }
 
-export const PaginationManageDropdown: React.FC<Props> = ({
+export const PaginationManageDropdown = ({
   onSetPageSize,
   pageSize,
-}) => {
+}: PaginationManageDropdownProps) => {
   const t = useTranslations();
   const dropdownItems = useMemo(() => {
     return [50, 100, 200, 300, 500].map((size) => (

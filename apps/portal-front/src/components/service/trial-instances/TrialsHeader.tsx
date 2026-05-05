@@ -2,15 +2,15 @@ import { PlatformMetadataMapping } from '@/components/registration/platform-iden
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import React from 'react';
 
-interface Props {
+interface TrialsHeaderProps {
   actions?: React.ReactNode;
   platformIdentifier?: PlatformIdentifierEnum;
 }
 
-export const TrialsHeader: React.FC<Props> = ({
+export const TrialsHeader = ({
   actions,
   platformIdentifier = PlatformIdentifierEnum.OPENCTI,
-}) => {
+}: TrialsHeaderProps) => {
   const platformName = PlatformMetadataMapping[platformIdentifier].name;
 
   return (

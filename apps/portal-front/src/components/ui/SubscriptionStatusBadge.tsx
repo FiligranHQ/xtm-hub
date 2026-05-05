@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
 import { Badge } from '@filigran/ui';
-import { FunctionComponent } from 'react';
 
 export type SubscriptionStatusTypeBadge = 'ACCEPTED' | 'REQUESTED' | 'REFUSED';
 
@@ -8,9 +7,9 @@ interface SubscriptionStatusBadgeProps {
   type?: SubscriptionStatusTypeBadge;
 }
 
-export const SubscriptionStatusBadge: FunctionComponent<
-  SubscriptionStatusBadgeProps
-> = ({ type }) => {
+export const SubscriptionStatusBadge = ({
+  type,
+}: SubscriptionStatusBadgeProps) => {
   const badgeColor = {
     REFUSED: 'text-red',
     REQUESTED: 'text-orange',

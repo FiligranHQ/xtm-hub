@@ -1,16 +1,16 @@
-import { useToast } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
-import { FunctionComponent, useContext, useEffect } from 'react';
-import useDecodedQuery from '@/hooks/use-decoded-query';
 import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import LoginForm from '@/components/login/LoginForm';
 import LoginMessage from '@/components/login/LoginMessage';
 import LoginTitleForm from '@/components/login/LoginTitle';
 import { PlatformProviderButton } from '@/components/login/PlatformProviderButton';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import useDecodedQuery from '@/hooks/use-decoded-query';
+import { useToast } from '@filigran/ui/clients';
+import { useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
+import { useContext, useEffect } from 'react';
 
-export const LoginLayout: FunctionComponent = ({}) => {
+export const LoginLayout = ({}) => {
   const { settings } = useContext(SettingsContext);
 
   const { error } = useDecodedQuery();

@@ -1,4 +1,12 @@
+import {
+  AutocompleteOrganization,
+  UserOrganizationFormProps,
+} from '@/components/admin/user/AutocompleteOrganization';
+import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 import { userAdminFormSchema } from '@/components/admin/user/forms/user-form.schema';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { cn, isEmpty } from '@/lib/utils';
 import { DeleteIcon } from '@filigran/icon';
 import {
@@ -14,24 +22,14 @@ import {
 import { Button, Input } from '@filigran/ui/servers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
-import {
-  AutocompleteOrganization,
-  UserOrganizationFormProps,
-} from '@/components/admin/user/AutocompleteOrganization';
-import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 
 interface UserAdminFormProps {
   handleSubmit: (values: z.infer<typeof userAdminFormSchema>) => void;
 }
-export const UserAdminForm: FunctionComponent<UserAdminFormProps> = ({
-  handleSubmit,
-}) => {
+export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const t = useTranslations();
   const { settings } = useContext(SettingsContext);

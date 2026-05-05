@@ -4,7 +4,7 @@ import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDi
 import useAdminPath from '@/hooks/use-admin-path';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 interface EditUserProps {
   user: UserList_fragment$data;
@@ -13,12 +13,12 @@ interface EditUserProps {
   defaultStateOpen?: boolean;
 }
 
-export const EditUser: FunctionComponent<EditUserProps> = ({
+export const EditUser = ({
   user,
   trigger,
   onCloseSheet,
   defaultStateOpen = false,
-}) => {
+}: EditUserProps) => {
   const isAdminPath = useAdminPath();
   const [openSheet, setOpenSheet] = useState(defaultStateOpen ?? false);
   const t = useTranslations();

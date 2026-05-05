@@ -5,16 +5,16 @@ import {
   createClientSideRelayEnvironment,
   createServerSideRelayEnvironment,
 } from '@/relay/environment';
+import { useStream } from '@/relay/use-stream';
 import { useServerInsertedHTML } from 'next/navigation';
 import { ReactNode, useMemo, useRef } from 'react';
 import { RelayEnvironmentProvider } from 'react-relay';
-import { useStream } from '@/relay/use-stream';
 
 interface RelayProviderProps {
   children: ReactNode;
 }
 
-export function RelayProvider({ children }: RelayProviderProps) {
+export const RelayProvider = ({ children }: RelayProviderProps) => {
   const { observer, buildHydrationScript } = useStream();
 
   const relayEnvironment = useMemo(() => {
@@ -57,4 +57,4 @@ export function RelayProvider({ children }: RelayProviderProps) {
       <>{children}</>
     </RelayEnvironmentProvider>
   );
-}
+};

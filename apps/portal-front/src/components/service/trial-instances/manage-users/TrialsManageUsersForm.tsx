@@ -1,5 +1,7 @@
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { UserFragment } from '@/components/admin/user/UserList';
 import { serviceGroupFragment } from '@/components/service/service-group.graphql';
+import { useUsersList } from '@/hooks/use-users-list';
 import {
   Button,
   Form,
@@ -18,12 +20,10 @@ import ServiceGroupsUpdateMutationGraphql from '@generated/serviceGroupsUpdateMu
 import { UserList_fragment$key } from '@generated/UserList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { readInlineData, useLazyLoadQuery, useMutation } from 'react-relay';
 import { z } from 'zod';
-import { useUsersList } from '@/hooks/use-users-list';
-import { UserFragment } from '@/components/admin/user/UserList';
 
 const formSchema = z.object({
   groups: z.array(
@@ -35,19 +35,19 @@ const formSchema = z.object({
   ),
 });
 
-interface Props {
+interface TrialsManageUsersFormProps {
   onCancel: () => void;
   onCompleted: () => void;
   organizationId?: string;
   serviceInstanceId: string;
 }
 
-export const TrialsManageUsersForm: React.FC<Props> = ({
+export const TrialsManageUsersForm = ({
   onCancel,
   organizationId,
   serviceInstanceId,
   onCompleted,
-}) => {
+}: TrialsManageUsersFormProps) => {
   const t = useTranslations();
   const { orderMode, orderBy, pageSize } = useUserListLocalstorage();
   const { data: availableUsers } = useUsersList({

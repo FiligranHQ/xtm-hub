@@ -1,7 +1,7 @@
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import Link from 'next/link';
 
-interface Props {
+interface SaaSFeaturesLinkProps {
   platformIdentifier: PlatformIdentifierEnum;
 }
 
@@ -24,7 +24,9 @@ const SLAParagraph = () => (
   </p>
 );
 
-export const TrialsStorageLimitation = ({ platformIdentifier }: Props) => {
+export const TrialsStorageLimitation = ({
+  platformIdentifier,
+}: SaaSFeaturesLinkProps) => {
   const isOpenCTI = platformIdentifier === PlatformIdentifierEnum.OPENCTI;
 
   return (

@@ -1,11 +1,11 @@
 'use client';
 
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { InfoIcon } from '@filigran/icon';
 import { useTranslations } from 'next-intl';
-import React, { useContext } from 'react';
-import { PortalContext } from '@/components/me/AppPortalContext';
+import { useContext } from 'react';
 
-const PersonalSpaceInfo: React.FC = () => {
+const PersonalSpaceInfo = () => {
   const { isPersonalSpace } = useContext(PortalContext);
   const t = useTranslations();
   if (!isPersonalSpace) return;

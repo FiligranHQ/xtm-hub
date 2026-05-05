@@ -3,7 +3,7 @@ import { FormControl, FormItem, FormLabel, FormMessage } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
-interface Props {
+interface ServiceFormDescriptionFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   documentType: string;
   disabled?: boolean;
@@ -15,7 +15,7 @@ export const ServiceFormDescriptionField = ({
   documentType,
   disabled,
   required,
-}: Props) => {
+}: ServiceFormDescriptionFieldProps) => {
   const t = useTranslations();
   return (
     <FormItem>

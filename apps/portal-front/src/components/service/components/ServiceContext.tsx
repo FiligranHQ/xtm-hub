@@ -6,7 +6,7 @@ import { ShareableResourceType } from '@/utils/shareable-resources/shareable-res
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import React, { createContext, FunctionComponent, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
 export interface ServiceContextProps {
   serviceInstance: serviceInstance_fragment$data;
@@ -48,10 +48,7 @@ export interface ServiceProps extends ServiceContextProps {
   children: React.ReactNode;
 }
 
-export const AppServiceContext: FunctionComponent<ServiceProps> = ({
-  children,
-  ...context
-}) => {
+export const AppServiceContext = ({ children, ...context }: ServiceProps) => {
   return (
     <ServiceContext.Provider value={context}>
       {children}

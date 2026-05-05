@@ -1,15 +1,14 @@
 'use client';
-import { FunctionComponent } from 'react';
 
+import { LoginLayout } from '@/components/login/LoginLayout';
 import { SettingsContextQuery } from '@/components/login/settings.graphql';
+import SettingsContext from '@/components/settings/SettingsContext';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import { useQueryLoader } from 'react-relay';
-import useMountingLoader from '@/hooks/use-mounting-loader';
-import SettingsContext from '@/components/settings/SettingsContext';
-import { LoginLayout } from '@/components/login/LoginLayout';
 
 // Component
-const Login: FunctionComponent = () => {
+const Login = () => {
   const [queryRefSettings, loadQuerySettings] =
     useQueryLoader<settingsContextQuery>(SettingsContextQuery);
   useMountingLoader(loadQuerySettings, { fetchPolicy: 'store-only' });

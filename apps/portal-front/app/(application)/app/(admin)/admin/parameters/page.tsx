@@ -1,9 +1,8 @@
 'use client';
-import { useTranslations } from 'next-intl';
-import * as React from 'react';
 import { Parameters } from '@/components/admin/parameters/Parameters';
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { useTranslations } from 'next-intl';
 
 const breadcrumbValue = [
   {
@@ -15,7 +14,7 @@ const breadcrumbValue = [
 ];
 
 // Component
-const Page: React.FunctionComponent = () => {
+const Page = () => {
   const t = useTranslations();
 
   return (

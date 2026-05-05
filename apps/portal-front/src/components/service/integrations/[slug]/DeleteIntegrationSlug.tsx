@@ -5,7 +5,14 @@ import {
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 
+import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
+import {
+  CardTypeEnum,
+  ServiceDelete,
+} from '@/components/service/components/ServiceDelete';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
+import useServiceCapability from '@/hooks/use-service-capability';
+import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
 import {
   isIntegrationItem,
   ShareableResourceType,
@@ -14,10 +21,6 @@ import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import useServiceCapability from '@/hooks/use-service-capability';
-import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
-import { CardTypeEnum, ServiceDelete } from '@/components/service/components/ServiceDelete';
 
 // Component interface
 interface DeleteIntegrationSlugProps {
@@ -25,9 +28,7 @@ interface DeleteIntegrationSlugProps {
 }
 
 // Component
-const DeleteIntegrationSlug: React.FunctionComponent<
-  DeleteIntegrationSlugProps
-> = ({ document }) => {
+const DeleteIntegrationSlug = ({ document }: DeleteIntegrationSlugProps) => {
   const router = useRouter();
   const t = useTranslations();
 

@@ -1,22 +1,21 @@
-import { CheckIndeterminateIcon } from '@filigran/icon';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { useTranslations } from 'next-intl';
-import React from 'react';
-import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
-import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { ShareableResourceIncompatibleWarning } from '@/components/service/document/ShareableResourceIncompatibleWarning';
 import {
   ShareableResourceConnectorDetails,
   ShareableResourceConnectorDetailsProps,
 } from '@/components/service/document/connector/ShareableResourceConnectorDetails';
+import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
+import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
+import { CheckIndeterminateIcon } from '@filigran/icon';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { useTranslations } from 'next-intl';
 
-interface Props {
+interface ShareableResourceConnectorPrivateDetailsProps {
   connectorDetails: ShareableResourceConnectorDetailsProps['connectorDetails'];
 }
 
-export const ShareableResourceConnectorPrivateDetails: React.FC<Props> = ({
+export const ShareableResourceConnectorPrivateDetails = ({
   connectorDetails,
-}) => {
+}: ShareableResourceConnectorPrivateDetailsProps) => {
   const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI, {
     onlyActive: true,

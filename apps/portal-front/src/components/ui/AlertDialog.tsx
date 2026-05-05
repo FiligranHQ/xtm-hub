@@ -12,7 +12,7 @@ import {
   buttonVariants,
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import React, { FunctionComponent, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 interface AlertDialogProps {
   triggerElement?: ReactNode;
@@ -60,7 +60,7 @@ Example of use :
 
 
  */
-export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
+export const AlertDialogComponent = ({
   isOpen,
   onOpenChange,
   triggerElement,
@@ -72,7 +72,7 @@ export const AlertDialogComponent: FunctionComponent<AlertDialogProps> = ({
   onClickContinue,
   variantName = 'default',
   continueButtonDisabled = false,
-}) => {
+}: AlertDialogProps) => {
   const t = useTranslations();
 
   return (

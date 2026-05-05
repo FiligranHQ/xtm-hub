@@ -1,5 +1,6 @@
 'use client';
 
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { EditIcon } from '@filigran/icon';
 import {
   Avatar,
@@ -12,15 +13,12 @@ import {
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import React, { useContext, useRef, useState } from 'react';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 interface ProfileFormPictureProps {
   onSubmit: (files: (File | null)[]) => void;
 }
 
-export const ProfileFormPicture: React.FC<ProfileFormPictureProps> = ({
-  onSubmit,
-}) => {
+export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
   const inputRef = useRef<HTMLInputElement>(null);

@@ -1,11 +1,15 @@
 import { formatDate } from '@/utils/date';
 import { LogoFiligranIcon } from '@filigran/icon';
-import * as React from 'react';
 import { useMemo } from 'react';
 
 import { Avatar } from '@filigran/ui/clients';
 
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
+import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
+import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
+import { ShareableResourceDetailMetadataItem } from '@/components/service/document/ui/ShareableResourceDetailMetadataItem';
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { formatPersonNames } from '@/utils/format/name';
 import { platformIdentifierMappedByShareableResourceType } from '@/utils/services';
@@ -20,11 +24,6 @@ import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataK
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
-import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
-import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
-import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
-import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
-import { ShareableResourceDetailMetadataItem } from '@/components/service/document/ui/ShareableResourceDetailMetadataItem';
 
 // Component interface
 interface ShareableResourceDetailsProps {
@@ -45,9 +44,10 @@ const DOCUMENTATION_URLS: Partial<Record<IntegrationTypeEnum, string>> = {
   [IntegrationTypeEnum.TAXII_FEED]: TAXII_FEED_DOCUMENTATION,
 };
 
-const ShareableResourceDetails: React.FunctionComponent<
-  ShareableResourceDetailsProps
-> = ({ documentData, downloadNumber }) => {
+const ShareableResourceDetails = ({
+  documentData,
+  downloadNumber,
+}: ShareableResourceDetailsProps) => {
   const t = useTranslations();
   const platformIdentifier =
     platformIdentifierMappedByShareableResourceType[

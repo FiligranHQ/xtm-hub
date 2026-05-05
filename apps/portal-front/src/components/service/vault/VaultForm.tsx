@@ -1,11 +1,17 @@
 'use client';
 import { DocumentCreateMutation } from '@/components/service/document/document.graphql';
+import {
+  newDocumentSchema,
+  VaultNewFileForm,
+} from '@/components/service/vault/VaultNewFileForm';
 import { Button, useToast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import * as React from 'react';
 import { useContext, useState } from 'react';
-import { newDocumentSchema, VaultNewFileForm } from '@/components/service/vault/VaultNewFileForm';
 
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import useDecodedParams from '@/hooks/use-decoded-params';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
 import DocumentItem_fragmentGraphql, {
   documentItem_fragment$key,
@@ -13,18 +19,11 @@ import DocumentItem_fragmentGraphql, {
 import { readInlineData, useMutation } from 'react-relay';
 import slugify from 'slugify';
 import { z } from 'zod';
-import useDecodedParams from '@/hooks/use-decoded-params';
-import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 interface VaultFormProps {
   connectionId: string;
   userCanUpdate: boolean;
 }
-export const VaultForm: React.FunctionComponent<VaultFormProps> = ({
-  connectionId,
-  userCanUpdate,
-}) => {
+export const VaultForm = ({ connectionId, userCanUpdate }: VaultFormProps) => {
   const { toast } = useToast();
   const t = useTranslations();
   const [createMutation] = useMutation<documentCreateMutation>(

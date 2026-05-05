@@ -1,3 +1,4 @@
+import { useOrganizationCapabilities } from '@/hooks/use-organization-capabilities';
 import {
   Badge,
   Card,
@@ -7,10 +8,9 @@ import {
   CardTitle,
 } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
-import { useOrganizationCapabilities } from '@/hooks/use-organization-capabilities';
+import { useMemo } from 'react';
 
-export const CapabilityDescription: React.FC = () => {
+export const CapabilityDescription = () => {
   const t = useTranslations();
 
   const buildTranslationKey = (capability: string) =>

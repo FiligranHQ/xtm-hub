@@ -3,15 +3,15 @@ import { LogoFiligranIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import Image from 'next/image';
-import { FunctionComponent } from 'react';
 
 interface ShareableResourceCardImageProps {
   document: documentItem_fragment$data | publicDocumentItemFragment$data;
   serviceInstanceId: string;
 }
-export const ShareableResourceCardImage: FunctionComponent<
-  ShareableResourceCardImageProps
-> = ({ document, serviceInstanceId }) => {
+export const ShareableResourceCardImage = ({
+  document,
+  serviceInstanceId,
+}: ShareableResourceCardImageProps) => {
   const logo = findDocumentLogo(document);
 
   return (

@@ -2,6 +2,8 @@
 
 import { translateServiceDefinitionIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import {
   Button,
   FileInput,
@@ -19,12 +21,9 @@ import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment
 import { serviceUpdatePlatformServiceMetadataMutation } from '@generated/serviceUpdatePlatformServiceMetadataMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 
 const platformUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -39,15 +38,13 @@ interface PlatformUpdateSheetProps {
   setOpen: (open: boolean) => void;
 }
 
-export const PlatformUpdateSheet: FunctionComponent<
-  PlatformUpdateSheetProps
-> = ({
+export const PlatformUpdateSheet = ({
   serviceInstanceId,
   serviceInstanceName,
   serviceDefinitionIdentifier,
   open,
   setOpen,
-}) => {
+}: PlatformUpdateSheetProps) => {
   const t = useTranslations();
   const { toast } = useToast();
 

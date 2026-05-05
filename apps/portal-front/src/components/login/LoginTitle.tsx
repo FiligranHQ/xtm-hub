@@ -1,9 +1,8 @@
 'use client';
-import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
+import { useTranslations } from 'next-intl';
 
-const LoginTitleForm: FunctionComponent = ({}) => {
+const LoginTitleForm = ({}) => {
   const t = useTranslations();
   return (
     <>

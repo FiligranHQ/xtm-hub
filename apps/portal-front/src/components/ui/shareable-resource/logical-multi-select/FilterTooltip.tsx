@@ -1,15 +1,18 @@
-import { Fragment, FunctionComponent } from 'react';
 import {
   FilterLabel,
   GroupedSelection,
   OrSeparator,
   SelectionChip,
 } from '@/components/ui/shareable-resource/logical-multi-select/SelectedValuesDisplay';
+import { Fragment } from 'react';
 
-export const FilterTooltip: FunctionComponent<{
+export const FilterTooltip = ({
+  groupedSelections,
+  optionLabel,
+}: {
   groupedSelections: GroupedSelection[];
   optionLabel: string;
-}> = ({ groupedSelections, optionLabel }) => {
+}) => {
   return (
     <SelectionChip className="space-y-xs space-x-xs px-s py-xs text-xs leading-6">
       <FilterLabel className="font-semibold">{optionLabel} =</FilterLabel>

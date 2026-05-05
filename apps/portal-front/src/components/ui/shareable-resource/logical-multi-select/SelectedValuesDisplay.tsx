@@ -1,3 +1,4 @@
+import { FilterTooltip } from '@/components/ui/shareable-resource/logical-multi-select/FilterTooltip';
 import { cn } from '@/lib/utils';
 import { CancelIcon } from '@filigran/icon';
 import {
@@ -8,8 +9,7 @@ import {
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
-import { Fragment, FunctionComponent, ReactNode } from 'react';
-import { FilterTooltip } from '@/components/ui/shareable-resource/logical-multi-select/FilterTooltip';
+import { Fragment, ReactNode } from 'react';
 
 export interface GroupedSelection {
   parentValue: string;
@@ -24,9 +24,11 @@ interface SelectedValuesDisplayProps {
   onRemove?: () => void;
 }
 
-export const AndSeparator: FunctionComponent<{ className?: string }> = ({
-  className,
-}) => {
+interface RemoveFilterButtonProps {
+  onRemove?: () => void;
+}
+
+export const AndSeparator = ({ className }: { className?: string }) => {
   const t = useTranslations();
   return (
     <span
@@ -39,10 +41,13 @@ export const AndSeparator: FunctionComponent<{ className?: string }> = ({
   );
 };
 
-export const FilterLabel: FunctionComponent<{
+export const FilterLabel = ({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}> = ({ children, className }) => {
+}) => {
   return (
     <span
       className={cn(
@@ -53,9 +58,7 @@ export const FilterLabel: FunctionComponent<{
     </span>
   );
 };
-export const OrSeparator: FunctionComponent<{ className?: string }> = ({
-  className,
-}) => {
+export const OrSeparator = ({ className }: { className?: string }) => {
   const t = useTranslations();
   return (
     <span
@@ -68,18 +71,23 @@ export const OrSeparator: FunctionComponent<{ className?: string }> = ({
   );
 };
 
-export const SelectionChip: FunctionComponent<{
+export const SelectionChip = ({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}> = ({ children, className }) => (
+}) => (
   <div className={cn('text-sm inline-block rounded max-w-[400px] ', className)}>
     {children}
   </div>
 );
 
-export const ChildrenLabels: FunctionComponent<{
+export const ChildrenLabels = ({
+  items,
+}: {
   items: { value: string; label: string }[];
-}> = ({ items }) => (
+}) => (
   <>
     {items.map((child, index) => (
       <Fragment key={child.value}>
@@ -90,9 +98,7 @@ export const ChildrenLabels: FunctionComponent<{
   </>
 );
 
-const RemoveFilterButton: FunctionComponent<{ onRemove?: () => void }> = ({
-  onRemove,
-}) => {
+const RemoveFilterButton = ({ onRemove }: RemoveFilterButtonProps) => {
   if (!onRemove) return null;
 
   return (
@@ -112,9 +118,12 @@ const RemoveFilterButton: FunctionComponent<{ onRemove?: () => void }> = ({
   );
 };
 
-export const SelectedValuesDisplay: FunctionComponent<
-  SelectedValuesDisplayProps
-> = ({ groupedSelections, optionLabel, placeholder, onRemove }) => {
+export const SelectedValuesDisplay = ({
+  groupedSelections,
+  optionLabel,
+  placeholder,
+  onRemove,
+}: SelectedValuesDisplayProps) => {
   if (groupedSelections.length === 0) {
     return (
       <div className="h-9 flex items-center justify-between border rounded">

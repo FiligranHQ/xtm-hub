@@ -1,16 +1,15 @@
 'use client';
 
+import Loader from '@/components/Loader';
 import { UserServiceFromSubscription } from '@/components/service/user_service.graphql';
+import SubscriptionSlug from '@/components/subcription/[slug]/SubscriptionSlug';
 import { SubscriptionById } from '@/components/subcription/subscription.graphql';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
-import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
 import { useLocalStorage } from 'usehooks-ts';
-import Loader from '@/components/Loader';
-import SubscriptionSlug from '@/components/subcription/[slug]/SubscriptionSlug';
-import useMountingLoader from '@/hooks/use-mounting-loader';
 
 // Component interface
 interface PreloaderProps {
@@ -19,10 +18,7 @@ interface PreloaderProps {
 }
 
 // Component
-const PageLoader: React.FunctionComponent<PreloaderProps> = ({
-  subscriptionId,
-  serviceInstance,
-}) => {
+const PageLoader = ({ subscriptionId, serviceInstance }: PreloaderProps) => {
   const [queryRef, loadQuery] =
     useQueryLoader<userServiceFromSubscriptionQuery>(
       UserServiceFromSubscription

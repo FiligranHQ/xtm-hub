@@ -1,19 +1,18 @@
+import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
 import Image from 'next/image';
-import { FunctionComponent } from 'react';
-import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 
 interface EpicItemFooterProps {
   epic: epic_fragment$data;
   serviceInstanceId: string;
   shiftEpicType?: boolean;
 }
-export const EpicItemFooter: FunctionComponent<EpicItemFooterProps> = ({
+export const EpicItemFooter = ({
   epic,
   serviceInstanceId,
   shiftEpicType = false,
-}) => {
+}: EpicItemFooterProps) => {
   return (
     <>
       <div className="flex w-full justify-between">

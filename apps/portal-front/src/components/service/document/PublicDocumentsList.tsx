@@ -1,7 +1,13 @@
+import { ServiceListHeader } from '@/components/service/components/header/ServiceListHeader';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import {
   publicDocumentItem,
   PublicDocumentListQuery,
 } from '@/components/service/document/public-document.graphql';
+import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
+import { PublicShareableResourceList } from '@/components/ui/shareable-resource/PublicShareableResourceList';
+import useScrollPosition from '@/hooks/use-scroll-position';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { publicDocumentItemFragment$key } from '@generated/publicDocumentItemFragment.graphql';
@@ -14,31 +20,25 @@ import {
 } from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
-import React, { useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import useScrollPosition from '@/hooks/use-scroll-position';
-import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
-import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
-import { PublicShareableResourceList } from '@/components/ui/shareable-resource/PublicShareableResourceList';
-import { ServiceListHeader } from '@/components/service/components/header/ServiceListHeader';
-import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 
-interface Props {
+interface PublicDocumentsListProps {
   serviceInstance: seoServiceInstanceFragment$data;
   queryRef: PreloadedQuery<publicDocumentsQuery>;
   baseUrl: string;
 }
 
-const PublicDocumentsList: React.FC<Props> = ({
+const PublicDocumentsList = ({
   queryRef,
   serviceInstance,
   baseUrl,
-}) => {
+}: PublicDocumentsListProps) => {
   const queryData = usePreloadedQuery<publicDocumentsQuery>(
     PublicDocumentListQuery,
     queryRef

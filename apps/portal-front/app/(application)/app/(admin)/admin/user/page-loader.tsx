@@ -1,9 +1,8 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import * as React from 'react';
 import UserListPage from '@/components/admin/user/UserListPage';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { useTranslations } from 'next-intl';
 
 const breadcrumbValue = [
   {
@@ -14,7 +13,7 @@ const breadcrumbValue = [
   },
 ];
 // Component
-const PageLoader: React.FunctionComponent = () => {
+const PageLoader = () => {
   const t = useTranslations();
 
   return (

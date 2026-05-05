@@ -1,4 +1,12 @@
+import {
+  AutocompleteOrganization,
+  UserOrganizationFormProps,
+} from '@/components/admin/user/AutocompleteOrganization';
+import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 import { userEditAdminFormSchema } from '@/components/admin/user/forms/user-form.schema';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { cn, isEmpty } from '@/lib/utils';
 import { DeleteIcon } from '@filigran/icon';
 import {
@@ -17,18 +25,10 @@ import { Label } from '@filigran/ui/clients';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
-import {
-  AutocompleteOrganization,
-  UserOrganizationFormProps,
-} from '@/components/admin/user/AutocompleteOrganization';
-import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
 
 interface AdminUserUpdateFormProps {
   user: UserList_fragment$data;
@@ -43,9 +43,10 @@ export const AdminUserUpdateFormMutation = graphql`
   }
 `;
 
-export const AdminUserUpdateForm: FunctionComponent<
-  AdminUserUpdateFormProps
-> = ({ user, callback }) => {
+export const AdminUserUpdateForm = ({
+  user,
+  callback,
+}: AdminUserUpdateFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 

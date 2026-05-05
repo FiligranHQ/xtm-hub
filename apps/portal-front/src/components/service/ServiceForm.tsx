@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import {
   Button,
   FileInput,
@@ -13,10 +14,8 @@ import {
   SheetFooter,
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 
 export const newPicturesSchema = z.object({
   illustration_document: z.custom<FileList>(),
@@ -27,9 +26,7 @@ interface ServiceFormProps {
   handleSubmit: (values: z.infer<typeof newPicturesSchema>) => void;
 }
 
-export const ServiceForm: FunctionComponent<ServiceFormProps> = ({
-  handleSubmit,
-}) => {
+export const ServiceForm = ({ handleSubmit }: ServiceFormProps) => {
   const t = useTranslations();
   const { handleCloseSheet } = useDialogContext();
   const form = useForm<z.infer<typeof newPicturesSchema>>({

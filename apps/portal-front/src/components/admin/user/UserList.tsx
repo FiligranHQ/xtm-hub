@@ -1,9 +1,19 @@
+import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { getUserListContext } from '@/components/admin/user/UserListPage';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
 import {
   handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import { SearchInput } from '@/components/ui/SearchInput';
+import useAdminPath from '@/hooks/use-admin-path';
+import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { useUsersList } from '@/hooks/use-users-list';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
@@ -15,25 +25,9 @@ import {
 import { UserListQuery$variables } from '@generated/UserListQuery.graphql';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { graphql, readInlineData, useSubscription } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import useAdminPath from '@/hooks/use-admin-path';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
-import { useUsersList } from '@/hooks/use-users-list';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/BadgeOverflowCounter';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { EditUser } from '@/components/admin/user/forms/UserUpdate';
-import { getUserListContext } from '@/components/admin/user/UserListPage';
 
 // Configuration or Preloader Query
 export const UserListQuery = graphql`
@@ -97,7 +91,7 @@ interface UserListProps {
 }
 
 // Component
-const UserList: FunctionComponent<UserListProps> = ({ organization }) => {
+const UserList = ({ organization }: UserListProps) => {
   const t = useTranslations();
   const {
     pageSize,

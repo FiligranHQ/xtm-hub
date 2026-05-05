@@ -4,10 +4,9 @@ import Loader from '@/components/Loader';
 import ServiceSlug from '@/components/service/[slug]/ServiceSlug';
 
 import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
-import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
-import * as React from 'react';
-import { useQueryLoader } from 'react-relay';
 import useMountingLoader from '@/hooks/use-mounting-loader';
+import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
+import { useQueryLoader } from 'react-relay';
 
 // Component interface
 interface PreloaderProps {
@@ -15,7 +14,7 @@ interface PreloaderProps {
 }
 
 // Component
-const PageLoader: React.FunctionComponent<PreloaderProps> = ({ id }) => {
+const PageLoader = ({ id }: PreloaderProps) => {
   const [queryRef, loadQuery] =
     useQueryLoader<serviceByIdWithSubscriptionsQuery>(
       ServiceByIdWithSubscriptions

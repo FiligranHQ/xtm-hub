@@ -1,7 +1,6 @@
-import React from 'react';
 import { PageLoader } from './page-loader';
 
-const Page: React.FC = () => {
+const Page = () => {
   return <PageLoader />;
 };
 

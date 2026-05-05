@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { FunctionComponent } from 'react';
 
 import '@styles/globals.css';
 
@@ -41,7 +40,7 @@ interface RootLayoutProps {
 }
 
 // Component
-const RootLayout: FunctionComponent<RootLayoutProps> = async ({ children }) => {
+const RootLayout = async ({ children }: RootLayoutProps) => {
   const h = await headers();
   const pathname = h.get('x-pathname') ?? `/${APP_PATH}`;
 

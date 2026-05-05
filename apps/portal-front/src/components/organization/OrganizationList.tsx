@@ -1,6 +1,12 @@
 'use client';
 
+import { CreateOrganization } from '@/components/organization/CreateOrganization';
+import { DeleteOrganization } from '@/components/organization/DeleteOrganization';
+import { EditOrganization } from '@/components/organization/EditOrganization';
+import { getOrganizations } from '@/components/organization/Organization.service';
 import { useOrganizationListLocalstorage } from '@/components/organization/organization-list-localstorage';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { SearchInput } from '@/components/ui/SearchInput';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -15,15 +21,9 @@ import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
-import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { CreateOrganization } from '@/components/organization/CreateOrganization';
-import { DeleteOrganization } from '@/components/organization/DeleteOrganization';
-import { EditOrganization } from '@/components/organization/EditOrganization';
-import { getOrganizations } from '@/components/organization/Organization.service';
-const OrganizationList: FunctionComponent = () => {
+const OrganizationList = () => {
   const t = useTranslations();
   const [editOrganization, setEditOrganization] = useState<
     organizationItem_fragment$data | undefined

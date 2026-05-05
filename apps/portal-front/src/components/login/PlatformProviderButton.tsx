@@ -1,7 +1,6 @@
+import useDecodedQuery from '@/hooks/use-decoded-query';
 import { VpnKeyIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
-import { FunctionComponent } from 'react';
-import useDecodedQuery from '@/hooks/use-decoded-query';
 
 interface LoginButtonProviderProps {
   platformProvider: {
@@ -11,9 +10,9 @@ interface LoginButtonProviderProps {
   };
 }
 
-export const PlatformProviderButton: FunctionComponent<
-  LoginButtonProviderProps
-> = ({ platformProvider }) => {
+export const PlatformProviderButton = ({
+  platformProvider,
+}: LoginButtonProviderProps) => {
   const { redirect } = useDecodedQuery();
   return (
     <Button
