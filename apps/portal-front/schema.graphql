@@ -989,7 +989,10 @@ type RolePortal implements Node {
   name: String!
 }
 
-scalar ServiceCapabilityId
+"""
+A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string
+"""
+scalar Service_CapabilityId
 
 type GenericServiceCapability implements Node {
   id: ID!
@@ -1525,8 +1528,8 @@ enum SubscriptionOrdering {
 
 type SubscriptionModel implements Node {
   id: ID!
-  organization_id: ID!
-  service_instance_id: ID!
+  organization_id: OrganizationId!
+  service_instance_id: ServiceInstanceId!
   start_date: Date
   end_date: Date
   organization: Organization!
@@ -1544,7 +1547,7 @@ type SubscriptionEdge {
 input CreateSubscriptionInput {
   service_instance_id: ServiceInstanceId!
   organization_id: OrganizationId!
-  capability_ids: [ServiceCapabilityId]
+  capability_ids: [Service_CapabilityId]
   start_date: Date!
   end_date: Date
 }

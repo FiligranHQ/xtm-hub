@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
@@ -58,14 +57,8 @@ describe('subscription mutation resolver', () => {
           service_instance_id: serviceInstanceId,
           organization_id: organizationId,
           capability_ids: [
-            toGlobalId(
-              'ServiceCapability',
-              SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
-            ),
-            toGlobalId(
-              'ServiceCapability',
-              SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID
-            ),
+            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
+            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
           ],
           start_date: startDate,
           end_date: endDate,

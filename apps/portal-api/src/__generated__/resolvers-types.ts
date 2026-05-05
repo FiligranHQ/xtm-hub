@@ -2,6 +2,7 @@ import type { CompetitorId } from '../model/kanel/public/Competitor.js';
 import type { DeploymentRequestId } from '../model/kanel/public/DeploymentRequest.js';
 import type { DocumentId } from '../model/kanel/public/Document.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
+import type { ServiceCapabilityId } from '../model/kanel/public/ServiceCapability.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
 import type { SubscriptionId } from '../model/kanel/public/Subscription.js';
 import type { UseCaseId } from '../model/kanel/public/UseCase.js';
@@ -30,7 +31,7 @@ export type Scalars = {
   DocumentId: { input: DocumentId; output: DocumentId; }
   JSON: { input: any; output: any; }
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
-  ServiceCapabilityId: { input: any; output: any; }
+  ServiceCapabilityId: { input: ServiceCapabilityId; output: ServiceCapabilityId; }
   ServiceGroupId: { input: any; output: any; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
   SubscriptionId: { input: SubscriptionId; output: SubscriptionId; }
@@ -2071,9 +2072,9 @@ export type SubscriptionModel = Node & {
   end_date?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   organization: Organization;
-  organization_id: Scalars['ID']['output'];
+  organization_id: Scalars['OrganizationId']['output'];
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ID']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   service_url: Scalars['String']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   subscription_capability?: Maybe<Array<Maybe<SubscriptionCapability>>>;
@@ -3797,9 +3798,9 @@ export type SubscriptionModelResolvers<ContextType = PortalContext, ParentType e
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
-  organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organization_id?: Resolver<ResolversTypes['OrganizationId'], ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   service_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   subscription_capability?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionCapability']>>>, ParentType, ContextType>;

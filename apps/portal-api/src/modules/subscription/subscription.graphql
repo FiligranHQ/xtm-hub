@@ -11,8 +11,8 @@ enum SubscriptionOrdering {
 }
 type SubscriptionModel implements Node {
   id: ID!
-  organization_id: ID!
-  service_instance_id: ID!
+  organization_id: OrganizationId!
+  service_instance_id: ServiceInstanceId!
   start_date: Date
   end_date: Date
   organization: Organization!

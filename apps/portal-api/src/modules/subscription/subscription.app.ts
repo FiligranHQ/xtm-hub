@@ -4,6 +4,7 @@ import {
   SubscriptionConnection,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -59,9 +60,14 @@ export const subscriptionApp = {
       end_date: endDate,
     };
 
-    const createdSubscription = await createSubscription(subscriptionData);
-    await addCapabilitiesToSubscription(createdSubscription.id, capabilityIds);
-    return createdSubscription;
+    return withTransaction(async () => {
+      const createdSubscription = await createSubscription(subscriptionData);
+      await addCapabilitiesToSubscription(
+        createdSubscription.id,
+        capabilityIds
+      );
+      return createdSubscription;
+    });
   },
 
   deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
