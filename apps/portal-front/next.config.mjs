@@ -91,6 +91,57 @@ const nextConfig = {
       },
     ];
   },
+  headers: async () => {
+    const isDev = process.env.NODE_ENV !== 'production';
+    const scriptSrc = [
+      "'self'",
+      "'unsafe-inline'",
+      ...(isDev ? ["'unsafe-eval'"] : []),
+    ].join(' ');
+    // Explanation of CSP directives:
+    // default-src 'self': block everything except my domain
+    // script-src: Mandatory for NextJS because we don't use nounces
+    // style-src: For Next to add inline CSS
+    // img-src: because we have images.remotePatterns
+    // font-src: because we use fonts from our domain and data: for inline fonts
+    // connect-src: allow fetch/graphQL/external apis
+    // related to frame : blocks iframes
+    // rest at the end: protects against XSS, clickjacking and injection
+    // upgrade-insecure-requests: force to https
+
+    const cspDirectives = [
+      "default-src 'self'",
+      `script-src ${scriptSrc}`,
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https://res.cloudinary.com",
+      "font-src 'self' data:",
+      "connect-src 'self' https:",
+      "frame-src 'none'",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "object-src 'none'",
+      'upgrade-insecure-requests',
+    ];
+
+    const csp = cspDirectives.join('; ');
+
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: csp,
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+        ],
+      },
+    ];
+  },
   output: 'standalone',
   logging: {
     fetches: {
