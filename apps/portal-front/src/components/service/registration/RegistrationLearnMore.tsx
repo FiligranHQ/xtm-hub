@@ -1,5 +1,6 @@
 'use server';
 import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
+import { defaultLocale } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
@@ -129,7 +130,8 @@ export const RegistrationLearnMore = async ({
                 className="basis-full max-w-[50%]"
                 serviceInstance={seoServiceInstanceToInstanceCardData(
                   service,
-                  t
+                  t,
+                  defaultLocale
                 )}
               />
             ))}

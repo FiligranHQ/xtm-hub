@@ -5,6 +5,7 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
+import { localizePublicHref } from '@/utils/path/localize-href';
 import { buildPlatformHoverLinks, isTrial } from '@/utils/platform';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
@@ -178,15 +179,18 @@ export const registeredPlatformToServiceInstanceCardData = (
 
 const computeUrl = (
   instance: serviceList_fragment$data | seoServiceInstanceFragment$data,
-  seo?: boolean
+  seoLocale?: string
 ) => {
   const instanceLink = instance.links?.[0]?.url;
   const serviceDefinitionIdentifier = instance.service_definition!
     .identifier as ServiceDefinitionIdentifierEnum;
   if (isExternalService(serviceDefinitionIdentifier) && instanceLink)
     return instanceLink as string;
-  if (seo) {
-    return `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${instance.slug}`;
+  if (seoLocale) {
+    return localizePublicHref(
+      `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${instance.slug}`,
+      seoLocale
+    );
   }
   return `/${APP_PATH}/service/${serviceDefinitionIdentifier}/${instance.id}`;
 };
@@ -244,7 +248,8 @@ export const publicServiceInstanceToInstanceCardData = (
 
 export const seoServiceInstanceToInstanceCardData = (
   instance: seoServiceInstanceFragment$data,
-  t: ReturnType<typeof useTranslations>
+  t: ReturnType<typeof useTranslations>,
+  locale: string
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
@@ -262,7 +267,7 @@ export const seoServiceInstanceToInstanceCardData = (
       instance.id,
       instance.logo_document_id
     ),
-    url: computeUrl(instance, true),
+    url: computeUrl(instance, locale),
     ordering: 0,
   };
 };

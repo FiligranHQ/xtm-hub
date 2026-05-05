@@ -1,4 +1,5 @@
 import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
+import type { PublicLocale } from '@/i18n/config';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -7,7 +8,12 @@ import SeoServiceInstancesQuery, {
 } from '@generated/seoServiceInstancesQuery.graphql';
 import { getTranslations } from 'next-intl/server';
 
-const Page = async () => {
+const Page = async ({
+  params,
+}: {
+  params: Promise<{ locale: PublicLocale }>;
+}) => {
+  const { locale } = await params;
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
     SeoServiceInstancesQuery,
     {},
@@ -29,7 +35,11 @@ const Page = async () => {
         {services.map((service) => (
           <ServiceInstanceCard
             key={service.id}
-            serviceInstance={seoServiceInstanceToInstanceCardData(service, t)}
+            serviceInstance={seoServiceInstanceToInstanceCardData(
+              service,
+              t,
+              locale
+            )}
           />
         ))}
       </ul>
