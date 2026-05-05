@@ -2954,9 +2954,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:1.0.7":
-  version: 1.0.7
-  resolution: "@filigran/ui@npm:1.0.7"
+"@filigran/ui@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@filigran/ui@npm:1.1.0"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -2999,7 +2999,7 @@ __metadata:
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10/d814f4566c7c5e898f1090fe39824b93f7156a04901067e2332e66200c2cda46c08f600b3bafe50230a9a3f2c1502098188707f08e4d56b42d1d01b534601f7f
+  checksum: 10/742d7c553be4447e4f34fe4cfa7ffd0f400da68541ddb8578c1b876fb1033ba08782d34abcfde60c6628a217ec8579b090a5eec23dcb146882627752bc5fe0f6
   languageName: node
   linkType: hard
 
@@ -8588,7 +8588,7 @@ __metadata:
   dependencies:
     "@filigran/chatbot": "npm:3.2.1"
     "@filigran/icon": "npm:0.22.6"
-    "@filigran/ui": "npm:1.0.7"
+    "@filigran/ui": "npm:1.1.0"
     "@hookform/resolvers": "npm:5.2.2"
     "@svgr/webpack": "npm:8.1.0"
     "@tailwindcss/postcss": "npm:4.2.4"
