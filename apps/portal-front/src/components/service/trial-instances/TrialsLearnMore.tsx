@@ -1,3 +1,4 @@
+import { TrialsStorageLimitation } from '@/components/service/trial-instances/TrialsStorageLimitation';
 import { cn } from '@/lib/utils';
 import {
   AnalyticsIcon,
@@ -9,7 +10,6 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
-import { TrialsStorageLimitation } from '@/components/service/trial-instances/TrialsStorageLimitation';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
   <h2 className="text-blue text-2xl mb-l">{children}</h2>
@@ -23,11 +23,11 @@ const P = ({
   className?: string;
 }) => <p className={cn('text-sm', className)}>{children}</p>;
 
-interface Props {
+interface H2Props {
   platformIdentifier: PlatformIdentifierEnum;
 }
 
-export const TrialsLearnMore = ({ platformIdentifier }: Props) => {
+export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
   const t = useTranslations();
   const baseTranslationKey = `Service.Trials.LearnMore.${platformIdentifier}`;
   return (

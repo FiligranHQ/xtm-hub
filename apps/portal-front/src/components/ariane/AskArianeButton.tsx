@@ -1,14 +1,13 @@
 'use client';
 
+import AskArianePanel from '@/components/ariane/AskArianePanel';
+import { useChatbot } from '@/components/ariane/use-chatbot-hooks';
 import { cn } from '@/lib/utils';
 import { LogoXtmOneIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import { type FunctionComponent } from 'react';
-import AskArianePanel from '@/components/ariane/AskArianePanel';
-import { useChatbot } from '@/components/ariane/use-chatbot-hooks';
 
-const AskArianeButton: FunctionComponent = () => {
+const AskArianeButton = () => {
   const t = useTranslations();
   const {
     isOpen,

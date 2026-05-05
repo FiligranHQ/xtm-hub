@@ -1,7 +1,7 @@
-import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
-import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
 import { getOrganizations } from '@/components/organization/Organization.service';
+import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
 
 import {
   Button,
@@ -25,7 +25,6 @@ import { serviceCapability_fragment$data } from '@generated/serviceCapability_fr
 import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -46,9 +45,12 @@ const formSchema = z.object({
   end_date: z.coerce.date<Date>().optional(),
 });
 
-export const ServiceSlugAddOrgaForm: FunctionComponent<
-  ServiceSlugAddOrgaFormSheetProps
-> = ({ serviceId, serviceName, subscriptions, capabilities }) => {
+export const ServiceSlugAddOrgaForm = ({
+  serviceId,
+  serviceName,
+  subscriptions,
+  capabilities,
+}: ServiceSlugAddOrgaFormSheetProps) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const [organizations] = getOrganizations();
   const t = useTranslations();

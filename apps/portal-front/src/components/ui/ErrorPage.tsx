@@ -1,11 +1,11 @@
 'use client';
-import { FunctionComponent, ReactNode } from 'react';
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
+import { ReactNode } from 'react';
 
 interface ErrorPageProps {
   children: ReactNode;
 }
-export const ErrorPage: FunctionComponent<ErrorPageProps> = ({ children }) => {
+export const ErrorPage = ({ children }: ErrorPageProps) => {
   return (
     <main className="absolute inset-0 z-0 m-auto flex flex-col justify-center items-center px-l">
       <div className="max-w-[450px] w-full">

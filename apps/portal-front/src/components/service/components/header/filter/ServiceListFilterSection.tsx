@@ -1,14 +1,16 @@
-import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { ServiceListFilterMap } from '@/components/service/components/header/ServiceListHeader';
+import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 
-import React, { useMemo } from 'react';
 import { AndSeparator } from '@/components/ui/shareable-resource/logical-multi-select/SelectedValuesDisplay';
+import React, { useMemo } from 'react';
 
-interface Props {
+interface ServiceListFilterSectionProps {
   filters: ServiceListFilterMap;
 }
 
-export const ServiceListFilterSection: React.FC<Props> = ({ filters }) => {
+export const ServiceListFilterSection = ({
+  filters,
+}: ServiceListFilterSectionProps) => {
   const { selectedFilters } = useServiceListFilters();
 
   const filtersList = useMemo(() => {

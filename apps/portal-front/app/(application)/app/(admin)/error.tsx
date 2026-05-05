@@ -1,11 +1,13 @@
 'use client';
 import AppError from '@/components/AppError';
 
-export default function Error({
-  error,
-}: {
+interface ErrorProps {
   error: Error & { digest?: string; componentStack?: string };
   reset: () => void;
-}) {
-  return <AppError error={error} />;
 }
+
+const Error = ({ error }: ErrorProps) => {
+  return <AppError error={error} />;
+};
+
+export default Error;

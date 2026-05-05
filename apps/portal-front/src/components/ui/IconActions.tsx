@@ -8,11 +8,13 @@ import {
   DropdownMenuTrigger,
 } from '@filigran/ui';
 import Link from 'next/link';
-import React, {
-  ComponentProps,
+import {
+  type ButtonHTMLAttributes,
+  type ComponentProps,
   createContext,
-  FunctionComponent,
-  ReactNode,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
   useState,
 } from 'react';
 export { DropdownMenuItem as IconActionsItem } from '@filigran/ui/clients';
@@ -25,18 +27,20 @@ interface IconActionsProps {
 }
 
 interface IconActionContextProps {
-  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setMenuOpen: Dispatch<SetStateAction<boolean>>;
 }
+
+type IconActionsButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const IconActionContext = createContext<IconActionContextProps>({
   setMenuOpen: () => {},
 });
-export const IconActions: FunctionComponent<IconActionsProps> = ({
+export const IconActions = ({
   children,
   label,
   icon,
   className,
-}) => {
+}: IconActionsProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -64,9 +68,11 @@ export const IconActions: FunctionComponent<IconActionsProps> = ({
   );
 };
 
-export const IconActionsButton: FunctionComponent<
-  React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ children, className, ...props }) => {
+export const IconActionsButton = ({
+  children,
+  className,
+  ...props
+}: IconActionsButtonProps) => {
   return (
     <Button
       variant="ghost"
@@ -77,14 +83,15 @@ export const IconActionsButton: FunctionComponent<
     </Button>
   );
 };
+
 type IconActionsLinkProps = ComponentProps<typeof Link> & {
   className?: string;
 };
-export const IconActionsLink: FunctionComponent<IconActionsLinkProps> = ({
+export const IconActionsLink = ({
   children,
   className,
   ...props
-}) => {
+}: IconActionsLinkProps) => {
   return (
     <DropdownMenuItem asChild>
       <Link

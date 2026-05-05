@@ -6,7 +6,6 @@ import {
   CommandSeparator,
   Separator,
 } from '@filigran/ui';
-import * as React from 'react';
 
 export type FlatOption =
   | { type: 'parent'; value: string; label: string }
@@ -25,7 +24,7 @@ interface OptionsListProps {
   showClear: boolean;
 }
 
-export const OptionsList: React.FC<OptionsListProps> = ({
+export const OptionsList = ({
   flatOptions,
   noResultString,
   isParentFullySelected,
@@ -36,7 +35,7 @@ export const OptionsList: React.FC<OptionsListProps> = ({
   onClear,
   onClose,
   showClear,
-}) => (
+}: OptionsListProps) => (
   <>
     <CommandEmpty>{noResultString}</CommandEmpty>
     <CommandGroup>

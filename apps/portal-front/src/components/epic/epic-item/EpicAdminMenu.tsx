@@ -1,23 +1,23 @@
+import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
+import { DeleteEpic } from '@/components/epic/epic-item/DeleteEpic';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { useEpicListContext } from '@/hooks/use-epic-list-context';
 import { MoreVertIcon } from '@filigran/icon';
 import { Badge } from '@filigran/ui/servers';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
-import { useEpicListContext } from '@/hooks/use-epic-list-context';
-import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
-import { DeleteEpic } from '@/components/epic/epic-item/DeleteEpic';
+import { useState } from 'react';
 
 interface EpicAdminMenuProps {
   epic: epic_fragment$data;
   userCanDelete?: boolean;
   userCanUpdate?: boolean;
 }
-export const EpicAdminMenu: FunctionComponent<EpicAdminMenuProps> = ({
+export const EpicAdminMenu = ({
   epic,
   userCanUpdate = false,
   userCanDelete = false,
-}) => {
+}: EpicAdminMenuProps) => {
   const t = useTranslations();
 
   const { connectionID } = useEpicListContext();

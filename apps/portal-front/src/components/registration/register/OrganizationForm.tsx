@@ -1,3 +1,4 @@
+import { RegistrationContext } from '@/components/registration/Context';
 import { AutoForm } from '@filigran/ui';
 import {
   FormControl,
@@ -8,11 +9,10 @@ import {
 import { Button, Input } from '@filigran/ui/servers';
 import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { useTranslations } from 'next-intl';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { z } from 'zod';
-import { RegistrationContext } from '@/components/registration/Context';
 
-interface Props {
+interface RegisterOrganizationFormProps {
   userOrganizationsQueryData: organizationListUserOrganizationsQuery$data;
   cancel: () => void;
   confirm: (organizationId: string) => void;
@@ -22,11 +22,11 @@ export const selectOrganizationFormSchema = z.object({
   organizationId: z.string().nonempty(),
 });
 
-export const RegisterOrganizationForm: React.FC<Props> = ({
+export const RegisterOrganizationForm = ({
   cancel,
   confirm,
   userOrganizationsQueryData,
-}) => {
+}: RegisterOrganizationFormProps) => {
   const organizations = [...userOrganizationsQueryData.userOrganizations].sort(
     (a, b) => Number(a.personal_space) - Number(b.personal_space)
   );

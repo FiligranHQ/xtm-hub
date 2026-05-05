@@ -1,3 +1,5 @@
+import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { formatPersonNames } from '@/utils/format/name';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Avatar } from '@filigran/ui/clients';
@@ -5,9 +7,7 @@ import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
-import { FunctionComponent, ReactNode } from 'react';
-import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
-import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
+import { ReactNode } from 'react';
 
 interface ShareableResourceCardFooterAuthorProps {
   document: documentItem_fragment$data | publicDocumentItemFragment$data;
@@ -15,9 +15,12 @@ interface ShareableResourceCardFooterAuthorProps {
   shouldDisplayAuthor?: boolean;
   extraContent?: ReactNode;
 }
-export const ShareableResourceCardFooterAuthor: FunctionComponent<
-  ShareableResourceCardFooterAuthorProps
-> = ({ document, shareLinkUrl, shouldDisplayAuthor = true, extraContent }) => {
+export const ShareableResourceCardFooterAuthor = ({
+  document,
+  shareLinkUrl,
+  shouldDisplayAuthor = true,
+  extraContent,
+}: ShareableResourceCardFooterAuthorProps) => {
   let documentMetadata;
   if (
     docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE)

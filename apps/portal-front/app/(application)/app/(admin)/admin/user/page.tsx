@@ -1,12 +1,11 @@
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import * as React from 'react';
 import GuardCapacityComponent from '@/components/AdminGuard';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
 
 // Component
-const Page: React.FunctionComponent = async () => {
+const Page = async () => {
   return (
     <GuardCapacityComponent
       displayError

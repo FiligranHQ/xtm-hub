@@ -1,13 +1,13 @@
+import { getUserListContext } from '@/components/admin/user/UserListPage';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { Button, useToast } from '@filigran/ui';
 import { RemoveUserFromOrgaMutation } from '@generated/RemoveUserFromOrgaMutation.graphql';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext } from 'react';
+import { useContext } from 'react';
 import { graphql, useMutation } from 'react-relay';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
-import { getUserListContext } from '@/components/admin/user/UserListPage';
 
 interface RemoveUserFromOrgaProps {
   user: UserList_fragment$data;
@@ -29,9 +29,7 @@ const removeUser = graphql`
   }
 `;
 
-export const RemoveUserFromOrga: FunctionComponent<RemoveUserFromOrgaProps> = ({
-  user,
-}) => {
+export const RemoveUserFromOrga = ({ user }: RemoveUserFromOrgaProps) => {
   const { me } = useContext(PortalContext);
   const { connectionID } = getUserListContext();
   const { setOpenSheet } = useDialogContext();

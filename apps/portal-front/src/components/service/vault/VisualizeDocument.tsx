@@ -1,15 +1,16 @@
+import {
+  IconActionContext,
+  IconActionsItem,
+} from '@/components/ui/IconActions';
+import useDecodedParams from '@/hooks/use-decoded-params';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useContext } from 'react';
-import useDecodedParams from '@/hooks/use-decoded-params';
-import { IconActionContext, IconActionsItem } from '@/components/ui/IconActions';
+import { useContext } from 'react';
 interface DownloadDocumentProps {
   documentData: documentItem_fragment$data;
 }
 
-export const VisualizeDocument: FunctionComponent<DownloadDocumentProps> = ({
-  documentData,
-}) => {
+export const VisualizeDocument = ({ documentData }: DownloadDocumentProps) => {
   const { setMenuOpen } = useContext(IconActionContext);
   const t = useTranslations();
   const { slug } = useDecodedParams();

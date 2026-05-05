@@ -3,16 +3,16 @@ import { FiligranLoader } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { FunctionComponent, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useMutation } from 'react-relay';
 
 interface TransferPersonalSpaceProps {
   requestId: string | null;
 }
 
-export const TransferPersonalSpace: FunctionComponent<
-  TransferPersonalSpaceProps
-> = ({ requestId }) => {
+export const TransferPersonalSpace = ({
+  requestId,
+}: TransferPersonalSpaceProps) => {
   const router = useRouter();
 
   const t = useTranslations();

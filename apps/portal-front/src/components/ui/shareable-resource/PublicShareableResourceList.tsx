@@ -1,23 +1,23 @@
+import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useTranslations } from 'next-intl';
-import React, { Fragment, useMemo } from 'react';
-import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
+import { Fragment, useMemo } from 'react';
 
-interface Props {
+interface PublicShareableResourceListProps {
   documents: publicDocumentItemFragment$data[];
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
 }
 
-export const PublicShareableResourceList: React.FC<Props> = ({
+export const PublicShareableResourceList = ({
   documents,
   serviceInstance,
   baseUrl,
-}) => {
+}: PublicShareableResourceListProps) => {
   const t = useTranslations();
 
   const documentsByIntegrationType = useMemo(() => {

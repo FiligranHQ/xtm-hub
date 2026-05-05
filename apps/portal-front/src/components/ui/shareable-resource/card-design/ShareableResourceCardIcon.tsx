@@ -10,15 +10,15 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 
 interface ShareableResourceCardIconProps {
   document: documentItem_fragment$data | publicDocumentItemFragment$data;
   shouldDisplayBothIcons: boolean;
 }
-export const ShareableResourceCardIcon: FunctionComponent<
-  ShareableResourceCardIconProps
-> = ({ document, shouldDisplayBothIcons }) => {
+export const ShareableResourceCardIcon = ({
+  document,
+  shouldDisplayBothIcons,
+}: ShareableResourceCardIconProps) => {
   const t = useTranslations();
 
   return (

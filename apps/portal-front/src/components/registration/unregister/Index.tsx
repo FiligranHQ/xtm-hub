@@ -1,7 +1,13 @@
+import Loader from '@/components/Loader';
+import { RegistrationContext } from '@/components/registration/Context';
+import { RegistrationLayout } from '@/components/registration/Layout';
 import {
   CanUnregisterPlatformFragment,
   UnregisterPlatform,
 } from '@/components/registration/register/register.graphql';
+import { UnregisterConfirm } from '@/components/registration/unregister/Confirm';
+import { UnregisterMissingCapability } from '@/components/registration/unregister/MissingCapability';
+import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/PlatformNotRegistered';
 import { toast } from '@filigran/ui/clients';
 import { registerCanUnregisterPlatformFragment$key } from '@generated/registerCanUnregisterPlatformFragment.graphql';
 import RegisterCanUnregisterPlatformQueryGraphql, {
@@ -9,21 +15,15 @@ import RegisterCanUnregisterPlatformQueryGraphql, {
 } from '@generated/registerCanUnregisterPlatformQuery.graphql';
 import { registerUnregisterPlatformMutation } from '@generated/registerUnregisterPlatformMutation.graphql';
 import { useTranslations } from 'next-intl';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   PreloadedQuery,
   useFragment,
   useMutation,
   usePreloadedQuery,
 } from 'react-relay';
-import Loader from '@/components/Loader';
-import { RegistrationContext } from '@/components/registration/Context';
-import { RegistrationLayout } from '@/components/registration/Layout';
-import { UnregisterConfirm } from '@/components/registration/unregister/Confirm';
-import { UnregisterMissingCapability } from '@/components/registration/unregister/MissingCapability';
-import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/PlatformNotRegistered';
 
-interface Props {
+interface UnregisterProps {
   platformId: string;
   tenantId?: string | null;
   queryRef: PreloadedQuery<registerCanUnregisterPlatformQuery>;
@@ -31,11 +31,11 @@ interface Props {
 
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
 
-export const Unregister: React.FC<Props> = ({
+export const Unregister = ({
   queryRef,
   platformId,
   tenantId,
-}) => {
+}: UnregisterProps) => {
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
   const t = useTranslations();
   const canUnregisterPreloadedQuery =

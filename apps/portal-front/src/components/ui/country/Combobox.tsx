@@ -1,17 +1,17 @@
+import countryData from '@/components/ui/country/data.json';
 import { Combobox } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
-import countryData from '@/components/ui/country/data.json';
+import { useMemo } from 'react';
 
 interface CountryComboboxProps {
   value?: { name: string } | undefined;
   onValueChange: (value: { name: string } | undefined) => void;
 }
 
-export const CountryCombobox: React.FC<CountryComboboxProps> = ({
+export const CountryCombobox = ({
   value,
   onValueChange,
-}) => {
+}: CountryComboboxProps) => {
   const t = useTranslations();
   const { countries } = countryData;
   const dataTab = useMemo(() => {

@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@filigran/ui';
-import { FunctionComponent, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 interface DialogInformativeProps {
   isOpen: boolean;
@@ -18,13 +18,13 @@ interface DialogInformativeProps {
   children: ReactNode;
 }
 
-export const DialogInformative: FunctionComponent<DialogInformativeProps> = ({
+export const DialogInformative = ({
   isOpen,
   onClose,
   title,
   description,
   children,
-}) => {
+}: DialogInformativeProps) => {
   return (
     <Dialog
       open={isOpen}

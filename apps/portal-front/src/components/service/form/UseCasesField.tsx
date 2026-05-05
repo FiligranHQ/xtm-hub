@@ -8,12 +8,15 @@ import {
 import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
-interface Props {
+interface ServiceFormUseCasesFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   disabled?: boolean;
 }
 
-export const ServiceFormUseCasesField = ({ field, disabled }: Props) => {
+export const ServiceFormUseCasesField = ({
+  field,
+  disabled,
+}: ServiceFormUseCasesFieldProps) => {
   const t = useTranslations();
   return (
     <FormItem>

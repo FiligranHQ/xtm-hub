@@ -2,26 +2,25 @@ import {
   EpicListQuery,
   epicsListFragment,
 } from '@/components/epic/epic.graphql';
+import { EpicList } from '@/components/epic/EpicList';
+import { useEpicFilter } from '@/hooks/use-epic-filter';
+import { EpicListContext } from '@/hooks/use-epic-list-context';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { epicsList_epics$key } from '@generated/epicsList_epics.graphql';
 import { epicsQuery } from '@generated/epicsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import React from 'react';
 import {
   PreloadedQuery,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { useEpicFilter } from '@/hooks/use-epic-filter';
-import { EpicListContext } from '@/hooks/use-epic-list-context';
-import { EpicList } from '@/components/epic/EpicList';
 
-interface Props {
+interface PublicEpicListProps {
   serviceInstance: seoServiceInstanceFragment$data;
   queryRef: PreloadedQuery<epicsQuery>;
 }
 
-const PublicEpicList: React.FC<Props> = ({ queryRef, serviceInstance }) => {
+const PublicEpicList = ({ queryRef, serviceInstance }: PublicEpicListProps) => {
   const queryData = usePreloadedQuery<epicsQuery>(EpicListQuery, queryRef);
 
   const [data, refetch] = useRefetchableFragment<

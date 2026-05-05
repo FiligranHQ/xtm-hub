@@ -18,12 +18,12 @@ interface SelectWithEditableFieldProps {
 
 const OTHER_VALUE = '__other__';
 
-export function SelectWithEditableField({
+export const SelectWithEditableField = ({
   onChange,
   options,
   labels,
   editableFieldValue,
-}: SelectWithEditableFieldProps) {
+}: SelectWithEditableFieldProps) => {
   const [selectValue, setSelectValue] = useState<string>('');
   const [customValue, setCustomValue] = useState('');
   const [open, setOpen] = useState(false);
@@ -131,4 +131,4 @@ export function SelectWithEditableField({
       </SelectContent>
     </Select>
   );
-}
+};

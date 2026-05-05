@@ -8,13 +8,7 @@ import {
   TooltipTrigger,
 } from '@filigran/ui';
 import { Badge } from '@filigran/ui/servers';
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface BadgeOverflowCounterProps {
   badges: Readonly<BadgeOverflow[]>;
@@ -27,10 +21,10 @@ export interface BadgeOverflow {
   color?: string;
 }
 
-const BadgeOverflowCounter: FunctionComponent<BadgeOverflowCounterProps> = ({
+const BadgeOverflowCounter = ({
   badges = [],
   className,
-}) => {
+}: BadgeOverflowCounterProps) => {
   const [visibleTags, setVisibleTags] = useState<number>(badges?.length ?? 0);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
 

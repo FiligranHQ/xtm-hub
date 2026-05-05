@@ -1,13 +1,13 @@
+import { getUserListContext } from '@/components/admin/user/UserListPage';
+import { UserAdminForm } from '@/components/admin/user/forms/admin/UserAdminForm';
 import { userAdminFormSchema } from '@/components/admin/user/forms/user-form.schema';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { Button, useToast } from '@filigran/ui';
 import { AdminAddUserMutation as AdminAddUserMutationType } from '@generated/AdminAddUserMutation.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { getUserListContext } from '@/components/admin/user/UserListPage';
-import { UserAdminForm } from '@/components/admin/user/forms/admin/UserAdminForm';
 
 export const AdminAddUserMutation = graphql`
   mutation AdminAddUserMutation(
@@ -21,7 +21,7 @@ export const AdminAddUserMutation = graphql`
   }
 `;
 
-export const AdminAddUser: FunctionComponent = () => {
+export const AdminAddUser = () => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
 

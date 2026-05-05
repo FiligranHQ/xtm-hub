@@ -1,3 +1,5 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
+import useIsMobile from '@/hooks/use-is-mobile';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 import { CityIcon, UnfoldMoreIcon } from '@filigran/icon';
@@ -5,10 +7,8 @@ import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
 import { OrganizationSwitcherMutation as OrganizationSwitcherMutationType } from '@generated/OrganizationSwitcherMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { FunctionComponent, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
-import useIsMobile from '@/hooks/use-is-mobile';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 interface TeamSwitcherProps {
   open: boolean;
@@ -24,9 +24,7 @@ const changeSelectedOrganizationMutation = graphql`
   }
 `;
 
-export const OrganizationSwitcher: FunctionComponent<TeamSwitcherProps> = ({
-  open,
-}) => {
+export const OrganizationSwitcher = ({ open }: TeamSwitcherProps) => {
   const router = useRouter();
   const { me } = useContext(PortalContext);
   if (!me) {

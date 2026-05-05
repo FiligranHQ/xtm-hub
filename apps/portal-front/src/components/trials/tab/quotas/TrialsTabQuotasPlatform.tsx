@@ -1,8 +1,11 @@
 'use client';
+import { TrialsTabQuotasPlatformUpdate } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdate';
 import {
   TrialsDeploymentRequestsAvailableListFragment,
   TrialsDeploymentRequestsAvailableQuery,
 } from '@/components/trials/trials.graphql';
+import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
 import { DataTable } from '@filigran/ui';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { PlatformIdentifier } from '@generated/OneClickDeployMutation.graphql';
@@ -14,23 +17,20 @@ import { trialsDeploymentRequestsAvailableList$key } from '@generated/trialsDepl
 import { trialsDeploymentRequestsAvailableQuery } from '@generated/trialsDeploymentRequestsAvailableQuery.graphql';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   readInlineData,
   useLazyLoadQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
-import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
-import { TrialsTabQuotasPlatformUpdate } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdate';
 
-interface Props {
+interface TrialsTabQuotasPlatformProps {
   platformIdentifier: PlatformIdentifier;
 }
 
-export const TrialsTabQuotasPlatform: React.FC<Props> = ({
+export const TrialsTabQuotasPlatform = ({
   platformIdentifier,
-}) => {
+}: TrialsTabQuotasPlatformProps) => {
   const t = useTranslations();
   const userHasModifyTrialQuotaCapa = useUserHasPortalCapability([
     PortalCapabilityEnum.MODIFY_TRIALS_QUOTA,

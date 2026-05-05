@@ -5,6 +5,8 @@ import {
   UserPendingListQuery,
   UserPendingListSubscription,
 } from '@/components/admin/user/user.graphql';
+import { UserFragment } from '@/components/admin/user/UserList';
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { APP_PATH } from '@/utils/path/constant';
 import {
   Popover,
@@ -37,8 +39,6 @@ import {
   useRelayEnvironment,
   useSubscription,
 } from 'react-relay';
-import { UserFragment } from '@/components/admin/user/UserList';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 export function notificationPendingUserQueryFilters(
   organization_id: string
@@ -51,7 +51,7 @@ export function notificationPendingUserQueryFilters(
   };
 }
 
-export const NotificationButton: React.FC = () => {
+export const NotificationButton = () => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
   const [openPopover, setOpenPopover] = useState(false);

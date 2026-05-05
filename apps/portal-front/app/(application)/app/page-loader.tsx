@@ -2,13 +2,13 @@
 
 import { SettingsContextQuery } from '@/components/login/settings.graphql';
 import { MeQuery } from '@/components/me/me.graphql';
+import Context from '@/components/me/MeContext';
+import SettingsContext from '@/components/settings/SettingsContext';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 import { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { settingsContextQuery } from '@generated/settingsContextQuery.graphql';
 import * as React from 'react';
 import { useQueryLoader } from 'react-relay';
-import Context from '@/components/me/MeContext';
-import SettingsContext from '@/components/settings/SettingsContext';
-import useMountingLoader from '@/hooks/use-mounting-loader';
 
 // Component interface
 interface LayoutPreloaderProps {
@@ -16,9 +16,7 @@ interface LayoutPreloaderProps {
 }
 
 // Component
-const PageLoader: React.FunctionComponent<LayoutPreloaderProps> = ({
-  children,
-}) => {
+const PageLoader = ({ children }: LayoutPreloaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<meLoaderQuery>(MeQuery);
   useMountingLoader(loadQuery, {});
   const [queryRefSettings, loadQuerySettings] =

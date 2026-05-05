@@ -11,7 +11,6 @@ import {
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 import { graphql, useMutation } from 'react-relay';
 import { useCopyToClipboard } from 'usehooks-ts';
 
@@ -29,9 +28,7 @@ export const shareLinkMutation = graphql`
   }
 `;
 
-export const ShareLinkButton: FunctionComponent<ShareLinkButtonProps> = (
-  props
-) => {
+export const ShareLinkButton = (props: ShareLinkButtonProps) => {
   const isPublicPath = usePublicPath();
   return isPublicPath ? (
     <ShareLinkServerAction {...props} />
@@ -40,18 +37,17 @@ export const ShareLinkButton: FunctionComponent<ShareLinkButtonProps> = (
   );
 };
 
-export const ShareLinkClientButton: FunctionComponent<ShareLinkButtonProps> = (
-  props
-) => {
+export const ShareLinkClientButton = (props: ShareLinkButtonProps) => {
   const [commitMutation] = useMutation(shareLinkMutation);
 
+  const { documentId, ..._ } = props;
   return (
     <ShareLinkCommonButton
       {...props}
       onClickAction={() =>
         commitMutation({
           variables: {
-            documentId: props.documentId,
+            documentId,
           },
         })
       }
@@ -59,16 +55,15 @@ export const ShareLinkClientButton: FunctionComponent<ShareLinkButtonProps> = (
   );
 };
 
-export const ShareLinkServerAction: FunctionComponent<ShareLinkButtonProps> = (
-  props
-) => {
+export const ShareLinkServerAction = (props: ShareLinkButtonProps) => {
+  const { documentId, ..._ } = props;
   return (
     <ShareLinkCommonButton
       {...props}
       onClickAction={() => {
         updateShareNumber({
           variables: {
-            documentId: props.documentId,
+            documentId,
           },
         });
       }}
@@ -79,11 +74,11 @@ export const ShareLinkServerAction: FunctionComponent<ShareLinkButtonProps> = (
 type ShareLinkCommonProps = ShareLinkButtonProps & {
   onClickAction: () => void;
 };
-export const ShareLinkCommonButton: FunctionComponent<ShareLinkCommonProps> = ({
+export const ShareLinkCommonButton = ({
   url,
   onClickAction,
   tooltipText,
-}) => {
+}: ShareLinkCommonProps) => {
   const t = useTranslations();
   const [_, copy] = useCopyToClipboard();
 

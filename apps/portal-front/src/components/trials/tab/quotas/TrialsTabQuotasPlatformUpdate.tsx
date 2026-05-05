@@ -1,22 +1,22 @@
+import { TrialsTabQuotasPlatformUpdateForm } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdateForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
 import { useTranslations } from 'next-intl';
-import React, { ReactNode, useState } from 'react';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { TrialsTabQuotasPlatformUpdateForm } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdateForm';
+import { ReactNode, useState } from 'react';
 
-interface Props {
+interface TrialsTabQuotasPlatformUpdateProps {
   quota: trialsDeploymentAvailabilityFragment$data;
   trigger?: ReactNode;
   onCloseSheet?: () => void;
   defaultStateOpen?: boolean;
 }
 
-export const TrialsTabQuotasPlatformUpdate: React.FC<Props> = ({
+export const TrialsTabQuotasPlatformUpdate = ({
   trigger,
   onCloseSheet,
   defaultStateOpen,
   quota,
-}) => {
+}: TrialsTabQuotasPlatformUpdateProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(defaultStateOpen ?? false);
   const handleOpenSheet = (open: boolean) => {

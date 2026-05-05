@@ -9,15 +9,14 @@ import {
 import { Button } from '@filigran/ui/servers';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 
-interface Props {
+interface ServiceListIntegrationDropdownProps {
   onIntegrationTypeSelect: (integrationType: IntegrationTypeEnum) => void;
 }
 
-export const ServiceListIntegrationDropdown: React.FC<Props> = ({
+export const ServiceListIntegrationDropdown = ({
   onIntegrationTypeSelect,
-}) => {
+}: ServiceListIntegrationDropdownProps) => {
   const t = useTranslations();
   return (
     <DropdownMenu>

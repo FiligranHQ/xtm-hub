@@ -1,15 +1,14 @@
 'use client';
 
-import * as React from 'react';
+import Loader from '@/components/Loader';
+import ServiceList from '@/components/service/ServiceList';
+import useMountingLoader from '@/hooks/use-mounting-loader';
 import { useEffect } from 'react';
 import {
   useLazyLoadQuery,
   useQueryLoader,
   useRefetchableFragment,
 } from 'react-relay';
-import Loader from '@/components/Loader';
-import ServiceList from '@/components/service/ServiceList';
-import useMountingLoader from '@/hooks/use-mounting-loader';
 
 import {
   ServiceListQuery,
@@ -25,7 +24,7 @@ import { servicesList_services$key } from '@generated/servicesList_services.grap
 
 export const dynamic = 'force-dynamic';
 
-const Page: React.FunctionComponent = () => {
+const Page = () => {
   // Get services
   const queryDataServiceInstances = useLazyLoadQuery<serviceQuery>(
     ServiceListQuery,

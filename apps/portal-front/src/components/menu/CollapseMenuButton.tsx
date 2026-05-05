@@ -2,17 +2,16 @@ import { cn } from '@/lib/utils';
 import { KeyboardArrowLeftIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent } from 'react';
 
 interface CollapseMenuButtonProps {
   open: boolean;
   handleOpenMenu: () => void;
 }
 
-export const CollapseMenuButton: FunctionComponent<CollapseMenuButtonProps> = ({
+export const CollapseMenuButton = ({
   open,
   handleOpenMenu,
-}) => {
+}: CollapseMenuButtonProps) => {
   const t = useTranslations();
   return (
     <div className="shrink-0 pb-s">

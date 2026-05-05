@@ -2,7 +2,7 @@ import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import * as React from 'react';
-import { createContext, FunctionComponent } from 'react';
+import { createContext } from 'react';
 
 export interface Portal {
   me?: meContext_fragment$data | null;
@@ -43,10 +43,7 @@ export const generatePortalContext = (
   };
 };
 
-export const AppPortalContext: FunctionComponent<PortalProps> = ({
-  children,
-  me,
-}) => {
+export const AppPortalContext = ({ children, me }: PortalProps) => {
   return (
     <PortalContext.Provider value={generatePortalContext(me)}>
       {children}

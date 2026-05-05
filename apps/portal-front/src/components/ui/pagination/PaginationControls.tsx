@@ -1,9 +1,8 @@
-import { PaginationState } from '@tanstack/react-table';
-import React from 'react';
 import { PaginationArrowButtons } from '@/components/ui/pagination/PaginationArrowButtons';
 import { PaginationManageDropdown } from '@/components/ui/pagination/PaginationManageDropdown';
+import { PaginationState } from '@tanstack/react-table';
 
-interface Props {
+interface PaginationControlsProps {
   pageSize: number;
   pageIndex: number;
   totalCount: number;
@@ -11,13 +10,13 @@ interface Props {
   onSetPageSize: (pageSize: number) => void;
 }
 
-export const PaginationControls: React.FC<Props> = ({
+export const PaginationControls = ({
   pageSize,
   totalCount,
   onPaginationChange,
   pageIndex,
   onSetPageSize,
-}) => {
+}: PaginationControlsProps) => {
   if (totalCount <= pageSize) {
     return null;
   }

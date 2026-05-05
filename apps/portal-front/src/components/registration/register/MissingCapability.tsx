@@ -1,22 +1,22 @@
+import { RegistrationContext } from '@/components/registration/Context';
+import { RegistrationLayout } from '@/components/registration/Layout';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import UserWithCapabilitiesInOrganizationQueryGraphql, {
   userWithCapabilitiesInOrganizationQuery,
 } from '@generated/userWithCapabilitiesInOrganizationQuery.graphql';
 import { useTranslations } from 'next-intl';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
-import { RegistrationContext } from '@/components/registration/Context';
-import { RegistrationLayout } from '@/components/registration/Layout';
 
-interface Props {
+interface RegisterStateMissingCapabilityProps {
   cancel: () => void;
   organizationId: string;
 }
 
-export const RegisterStateMissingCapability: React.FC<Props> = ({
+export const RegisterStateMissingCapability = ({
   organizationId,
   cancel,
-}) => {
+}: RegisterStateMissingCapabilityProps) => {
   const { capability, displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslations();
   const capabilities = [OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION];

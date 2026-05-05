@@ -1,3 +1,9 @@
+import { AppServiceContext } from '@/components/service/components/ServiceContext';
+import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
+import ShareableResourceConnectorSlug from '@/components/service/document/connector/ShareableResourceConnectorSlug';
+import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
@@ -6,12 +12,6 @@ import {
   isConnectorResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import { AppServiceContext } from '@/components/service/components/ServiceContext';
-import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
-import ShareableResourceConnectorSlug from '@/components/service/document/connector/ShareableResourceConnectorSlug';
-import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
-import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
 
 import {
   documentItem,
@@ -32,10 +32,10 @@ interface IntegrationSlugProps {
 }
 
 // Component
-const IntegrationSlug: React.FunctionComponent<IntegrationSlugProps> = ({
+const IntegrationSlug = ({
   queryRef,
   serviceInstance,
-}) => {
+}: IntegrationSlugProps) => {
   const data = usePreloadedQuery<documentQuery>(DocumentsItemQuery, queryRef);
   const { settings } = useContext(SettingsContext);
 

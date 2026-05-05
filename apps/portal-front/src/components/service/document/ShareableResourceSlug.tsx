@@ -1,6 +1,9 @@
-import * as React from 'react';
 import { ReactNode, useContext, useMemo, useState } from 'react';
 
+import {
+  BreadcrumbNav,
+  BreadcrumbNavLink,
+} from '@/components/ui/BreadcrumbNav';
 import { DownloadIcon, LogoFiligranIcon } from '@filigran/icon';
 import {
   Tooltip,
@@ -10,8 +13,18 @@ import {
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
-import { BreadcrumbNav, BreadcrumbNavLink } from '@/components/ui/BreadcrumbNav';
 
+import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';
+import { OPENCTI_INTEGRATION_URL_CONFIGS } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
+import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
+import ShareableResourceDescription from '@/components/service/document/ShareableResourceDescription';
+import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
+import useDecodedParams from '@/hooks/use-decoded-params';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
@@ -19,17 +32,6 @@ import { isResourceDownloadable } from '@/utils/shareable-resources/utils/sharea
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
-import useDecodedParams from '@/hooks/use-decoded-params';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/BadgeOverflowCounter';
-import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
-import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';
-import { OPENCTI_INTEGRATION_URL_CONFIGS } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
-import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
-import ShareableResourceDescription from '@/components/service/document/ShareableResourceDescription';
-import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
 
 // Component interface
 interface ShareableResourceSlugProps {
@@ -41,15 +43,13 @@ interface ShareableResourceSlugProps {
 }
 
 // Component
-const ShareableResourceSlug: React.FunctionComponent<
-  ShareableResourceSlugProps
-> = ({
+const ShareableResourceSlug = ({
   documentData,
   serviceInstance,
   breadcrumbValue,
   children,
   updateActions,
-}) => {
+}: ShareableResourceSlugProps) => {
   const t = useTranslations();
   const { serviceInstanceId } = useDecodedParams();
   const { settings } = useContext(SettingsContext);

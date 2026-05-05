@@ -1,20 +1,20 @@
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
-import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
-import { useServiceListFilters } from '@/hooks/use-service-list-filters';
-import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
+import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
+import { useServiceListFilters } from '@/hooks/use-service-list-filters';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 
-interface Props {
+interface ProductVersionFilterProps {
   platformIdentifier: PlatformIdentifierEnum;
 }
 
-export const ProductVersionFilter: React.FC<Props> = ({
+export const ProductVersionFilter = ({
   platformIdentifier,
-}) => {
+}: ProductVersionFilterProps) => {
   const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(platformIdentifier, {
     onlyActive: true,

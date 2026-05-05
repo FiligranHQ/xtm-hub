@@ -25,7 +25,7 @@ export type ServiceFormMultipleImagesFieldImages = (ExistingFile | NewFile) & {
   source_type: DocumentSourceTypeEnum;
 };
 
-interface Props {
+interface ServiceFormMultipleImagesFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   document?: documentItem_fragment$data;
   images: Array<ServiceFormMultipleImagesFieldImages>;
@@ -43,7 +43,7 @@ export const ServiceFormMultipleImagesField = ({
   imagesToDelete,
   setImagesToDelete,
   setIsDirty,
-}: Props) => {
+}: ServiceFormMultipleImagesFieldProps) => {
   const t = useTranslations();
   const inputRef = useRef<HTMLInputElement | null>(null);
 

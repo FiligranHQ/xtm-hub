@@ -1,8 +1,10 @@
+import GuardCapacityComponent from '@/components/AdminGuard';
 import {
   PlatformMetadataMapping,
   ServiceDefinitionIdentifierToPlatformIdentifier,
 } from '@/components/registration/platform-identifier-mapping';
 import { UnregisterPlatform } from '@/components/registration/register/register.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { toast } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -13,16 +15,13 @@ import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/
 import { registerUnregisterPlatformMutation } from '@generated/registerUnregisterPlatformMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 import { useMutation } from 'react-relay';
-import GuardCapacityComponent from '@/components/AdminGuard';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
-interface Props {
+interface UnregisterButtonProps {
   platform: registeredPlatformByServiceInstanceId_fragment$data;
 }
 
-export const UnregisterButton: React.FC<Props> = ({ platform }) => {
+export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
   const t = useTranslations();
   const router = useRouter();
 

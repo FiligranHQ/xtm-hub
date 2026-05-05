@@ -7,13 +7,14 @@ import {
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import Link from 'next/link';
-import React from 'react';
 
-interface Props {
+interface ShareableResourceDetailsLinkProps {
   url: string;
 }
 
-export const ShareableResourceDetailsLink: React.FC<Props> = ({ url }) => {
+export const ShareableResourceDetailsLink = ({
+  url,
+}: ShareableResourceDetailsLinkProps) => {
   return (
     <TooltipProvider>
       <Tooltip>

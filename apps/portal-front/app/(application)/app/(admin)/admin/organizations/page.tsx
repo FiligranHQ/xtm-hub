@@ -1,10 +1,9 @@
 'use client';
-import * as React from 'react';
 import GuardCapacityComponent from '@/components/AdminGuard';
 import PageLoader from './page-loader';
 
 // Component
-const Page: React.FunctionComponent = () => {
+const Page = () => {
   return (
     <GuardCapacityComponent displayError>
       <PageLoader />

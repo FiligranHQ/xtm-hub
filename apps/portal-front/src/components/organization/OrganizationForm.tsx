@@ -1,3 +1,5 @@
+import { organizationFormSchema } from '@/components/organization/OrganizationForm.schema';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import {
   Button,
   Form,
@@ -14,20 +16,19 @@ import {
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
-import { organizationFormSchema } from '@/components/organization/OrganizationForm.schema';
 
 interface OrganizationFormSheetProps {
   organization?: organizationItem_fragment$data;
   handleSubmit: (values: z.infer<typeof organizationFormSchema>) => void;
 }
 
-export const OrganizationForm: FunctionComponent<
-  OrganizationFormSheetProps
-> = ({ organization, handleSubmit }) => {
+export const OrganizationForm = ({
+  organization,
+  handleSubmit,
+}: OrganizationFormSheetProps) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const t = useTranslations();

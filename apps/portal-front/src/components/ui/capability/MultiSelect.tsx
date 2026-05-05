@@ -1,14 +1,17 @@
+import { useOrganizationCapabilities } from '@/hooks/use-organization-capabilities';
 import { MultiSelectFormField } from '@filigran/ui/clients';
 import { useTranslations } from 'next-intl';
-import React, { useMemo } from 'react';
-import { useOrganizationCapabilities } from '@/hooks/use-organization-capabilities';
+import { useMemo } from 'react';
 
-interface Props {
+interface CapabilityMultiSelectProps {
   value: string[];
   onChange: () => void;
 }
 
-export const CapabilityMultiSelect: React.FC<Props> = ({ value, onChange }) => {
+export const CapabilityMultiSelect = ({
+  value,
+  onChange,
+}: CapabilityMultiSelectProps) => {
   const t = useTranslations();
   const organizationCapabilities = useOrganizationCapabilities();
 

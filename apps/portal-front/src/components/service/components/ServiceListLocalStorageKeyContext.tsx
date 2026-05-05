@@ -1,5 +1,5 @@
-import React, { createContext, FunctionComponent, useContext } from 'react';
 import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
+import React, { createContext, useContext } from 'react';
 
 export interface ServiceListLocalStorageKeyContextProps {
   localStorageKey: ServiceListLocalStorageKey;
@@ -23,9 +23,10 @@ export interface ServiceProps extends ServiceListLocalStorageKeyContextProps {
   children: React.ReactNode;
 }
 
-export const AppServiceListLocalStorageKeyContext: FunctionComponent<
-  ServiceProps
-> = ({ children, ...context }) => {
+export const AppServiceListLocalStorageKeyContext = ({
+  children,
+  ...context
+}: ServiceProps) => {
   return (
     <ServiceListLocalStorageKeyContext.Provider value={context}>
       {children}

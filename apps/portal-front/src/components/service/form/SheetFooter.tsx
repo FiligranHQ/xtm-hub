@@ -1,11 +1,13 @@
 import { Button, SheetFooter } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
-interface Props {
+interface ServiceFormSheetFooterProps {
   handleCloseSheet: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export const ServiceFormSheetFooter = ({ handleCloseSheet }: Props) => {
+export const ServiceFormSheetFooter = ({
+  handleCloseSheet,
+}: ServiceFormSheetFooterProps) => {
   const t = useTranslations();
   return (
     <SheetFooter className="sm:justify-between pt-2">

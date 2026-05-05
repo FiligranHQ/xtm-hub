@@ -1,15 +1,15 @@
 import { Label } from '@filigran/ui/clients';
 import React from 'react';
 
-interface Props {
+interface ShareableResourceDetailItemProps {
   label: string;
   children: React.ReactNode;
 }
 
-export const ShareableResourceDetailItem: React.FC<Props> = ({
+export const ShareableResourceDetailItem = ({
   label,
   children,
-}) => {
+}: ShareableResourceDetailItemProps) => {
   return (
     <div>
       <Label className="block pb-s">{label}</Label>

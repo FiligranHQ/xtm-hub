@@ -1,3 +1,7 @@
+import {
+  getIntegrationSubTypeMetadata,
+  SubTypesPerIntegrationType,
+} from '@/components/service/integrations/Integration.utils';
 import { formatTitleCase } from '@/utils/format/case';
 import {
   FormControl,
@@ -14,12 +18,8 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-import {
-  getIntegrationSubTypeMetadata,
-  SubTypesPerIntegrationType,
-} from '@/components/service/integrations/Integration.utils';
 
-interface Props {
+interface ServiceFormIntegrationSubtypeFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   integrationType: IntegrationTypeEnum;
   document?: documentItem_fragment$data;
@@ -31,7 +31,7 @@ export const ServiceFormIntegrationSubtypeField = ({
   integrationType,
   document,
   disabled,
-}: Props) => {
+}: ServiceFormIntegrationSubtypeFieldProps) => {
   const t = useTranslations();
   return (
     <FormItem>

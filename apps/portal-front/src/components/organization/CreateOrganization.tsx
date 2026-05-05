@@ -1,21 +1,21 @@
 import { CreateOrganizationMutation } from '@/components/organization/organization.graphql';
+import { OrganizationForm } from '@/components/organization/OrganizationForm';
+import { organizationFormSchema } from '@/components/organization/OrganizationForm.schema';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { Button, useToast } from '@filigran/ui';
 import { organizationCreateMutation } from '@generated/organizationCreateMutation.graphql';
 import { useTranslations } from 'next-intl';
-import { FunctionComponent, useState } from 'react';
+import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { OrganizationForm } from '@/components/organization/OrganizationForm';
-import { organizationFormSchema } from '@/components/organization/OrganizationForm.schema';
 
 interface CreateOrganizationProps {
   connectionId: string;
 }
 
-export const CreateOrganization: FunctionComponent<CreateOrganizationProps> = ({
+export const CreateOrganization = ({
   connectionId,
-}) => {
+}: CreateOrganizationProps) => {
   const t = useTranslations();
   const { toast } = useToast();
   const [commitOrganizationCreationMutation] =
