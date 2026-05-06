@@ -187,7 +187,7 @@ app.use(graphqlUploadExpress());
 
 if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
   const printedSchema = printSchema(schema);
-  fs.writeFileSync('../portal-front/schema.graphql', printedSchema);
+  fs.writeFileSync('../frontend/schema.graphql', printedSchema);
 }
 
 app.use(function (req, res, next) {

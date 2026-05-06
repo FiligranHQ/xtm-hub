@@ -8570,9 +8570,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@xtm-hub/portal-front@workspace:apps/portal-front":
+"@xtm-hub/frontend@workspace:apps/frontend":
   version: 0.0.0-use.local
-  resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
+  resolution: "@xtm-hub/frontend@workspace:apps/frontend"
   dependencies:
     "@filigran/chatbot": "npm:3.2.1"
     "@filigran/icon": "npm:0.22.6"

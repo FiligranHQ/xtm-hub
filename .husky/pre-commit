@@ -4,5 +4,5 @@
 cd apps/backend
 yarn lint-staged
 
-cd ../portal-front
+cd ../frontend
 yarn lint-staged

@@ -54,8 +54,8 @@ jobs:
         include:
           - label: backend
             working-directory: apps/backend
-          - label: portal-front
-            working-directory: apps/portal-front
+          - label: frontend
+            working-directory: apps/frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -91,13 +91,13 @@ jobs:
       matrix:
         include:
           - image: portal-front
-            dockerfile: apps/portal-front/Dockerfile
+            dockerfile: apps/frontend/Dockerfile
           - image: portal-api
             dockerfile: apps/backend/Dockerfile
           - image: portal-e2e-tests
             dockerfile: apps/portal-e2e-tests/Dockerfile
           - image: portal-front-test
-            dockerfile: apps/portal-front/test.Dockerfile
+            dockerfile: apps/frontend/test.Dockerfile
           - image: portal-api-test
             dockerfile: apps/backend/test.Dockerfile
     outputs:
@@ -236,11 +236,11 @@ jobs:
           echo "=== Portal API Test Logs ==="
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 backend-test || echo "Could not collect backend-test logs"
           echo ""
-          echo "=== Portal Front Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-front || echo "Could not collect portal-front logs"
+          echo "=== Frontend Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 frontend || echo "Could not collect frontend logs"
           echo ""
-          echo "=== Portal Front Test Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-front-test || echo "Could not collect portal-front-test logs"
+          echo "=== Frontend Test Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 frontend-test || echo "Could not collect frontend-test logs"
           echo ""
           echo "=== PostgreSQL Logs ==="
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-postgres || echo "Could not collect portal-postgres logs"
@@ -260,8 +260,8 @@ jobs:
           mkdir -p logs
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs backend > logs/backend.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs backend-test > logs/backend-test.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-front > logs/portal-front.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-front-test > logs/portal-front-test.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs frontend > logs/frontend.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs frontend-test > logs/frontend-test.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-postgres > logs/portal-postgres.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-minio > logs/portal-minio.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-e2e-tests > logs/portal-e2e-tests.log 2>&1 || true
@@ -303,7 +303,7 @@ jobs:
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
           mkdir -p coverage
           docker run --rm \
-            -v $(pwd)/coverage:/app/apps/portal-front/coverage \
+            -v $(pwd)/coverage:/app/apps/frontend/coverage \
             filigran/portal-front-test:${IMAGE_TAGS}
 
       - name: Upload coverage to Codecov
@@ -398,7 +398,7 @@ jobs:
       matrix:
         include:
           - image: portal-front
-            dockerfile: apps/portal-front/Dockerfile
+            dockerfile: apps/frontend/Dockerfile
           - image: portal-api
             dockerfile: apps/backend/Dockerfile
     if: |

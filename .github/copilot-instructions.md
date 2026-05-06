@@ -19,7 +19,7 @@ XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace fo
 | Workspace          | Path                    | Stack | Dev Port |
 |--------------------|-------------------------|---|---|
 | `backend`          | `apps/backend`          | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `portal-front`     | `apps/portal-front`     | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
+| `frontend`         | `apps/frontend`     | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
 | `portal-e2e-tests` | `apps/portal-e2e-tests` | Playwright | — |
 
 ## Setup
@@ -61,7 +61,7 @@ yarn test                # Vitest (sets VITEST_MODE=true)
 yarn test:coverage       # with V8 coverage
 ```
 
-### Frontend (`apps/portal-front`)
+### Frontend (`apps/frontend`)
 
 ```bash
 yarn relay               # REQUIRED before build — runs relay-compiler + generate-enum script
@@ -90,8 +90,8 @@ This is the most important data flow to understand:
 
 1. **Schema definition**: `.graphql` files in `apps/backend/src/modules/**/` and `src/nodes/`
 2. **Backend codegen**: `yarn generate:ts` in backend → runs `graphql-codegen` → produces `src/__generated__/resolvers-types.ts`
-3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to `apps/portal-front/schema.graphql`
-4. **Relay compilation**: `yarn relay` in portal-front → reads `schema.graphql` → generates TypeScript artifacts in `apps/portal-front/__generated__/`
+3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to `apps/frontend/schema.graphql`
+4. **Relay compilation**: `yarn relay` in frontend → reads `schema.graphql` → generates TypeScript artifacts in `apps/frontend/__generated__/`
 5. **Enum generation**: `yarn generate:enum` (part of `yarn relay`) → extracts enums from the schema into TypeScript
 
 GraphQL resolvers are merged in `src/server/graphql-schema.ts`. Each module typically has: `*.graphql` (schema), `*.resolver.ts`, `*.service.ts`.
@@ -108,7 +108,7 @@ tsconfig.json           # Base TS config (extended by workspaces)
 graphql.config.yml      # Points to apps/backed/**/*.graphql
 codecov.yml             # Coverage reporting (informational only)
 renovate.json           # Dependency automation
-.husky/pre-commit       # Runs lint-staged in backend then portal-front
+.husky/pre-commit       # Runs lint-staged in backend then frontend
 chart/                  # Helm chart for Kubernetes deployment
 xtm-hub-dev/            # Docker Compose files (dev + CI)
 ```
@@ -213,7 +213,7 @@ test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image
 ```
 
-### Frontend — `apps/portal-front/`
+### Frontend — `apps/frontend/`
 
 ```
 app/                            # Next.js 15 App Router
@@ -402,7 +402,7 @@ Examples:
 4. Add `<name>.service.ts` with business logic
 5. Register resolver in `src/server/graphql-schema.ts`
 6. Run `yarn generate:ts` to update `src/__generated__/resolvers-types.ts`
-7. The schema will be written to `apps/portal-front/schema.graphql` on next API start (non-production)
+7. The schema will be written to `apps/frontend/schema.graphql` on next API start (non-production)
 
 ### Adding a New Frontend Page
 
@@ -489,4 +489,4 @@ trials-tab.utils.test.ts ← fast, isolated unit tests
 - **TypeScript ESLint warning** about TS 5.9.3 vs supported <5.9.0: non-blocking, ignore it
 - **Frontend port**: Dev runs on 3002, Docker production runs on 3000 internally
 - **Test DB**: Backend tests use `test_database` DB (not `cloud-portal`) when `VITEST_MODE=true`
-- **Pre-commit hook**: Runs `lint-staged` in both backend and portal-front sequentially
+- **Pre-commit hook**: Runs `lint-staged` in both backend and frontend sequentially

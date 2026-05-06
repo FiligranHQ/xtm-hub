@@ -76,12 +76,7 @@ const main = () => {
   const errorTranslationKeys = matches.filter((m) => m).map((m) => `${m}`);
   for (const locale of ['fr', 'en']) {
     console.log(`-- PROCESS ${locale.toUpperCase()} --`);
-    const file = path.join(
-      APPS_PATH,
-      'portal-front',
-      'messages',
-      locale + '.json'
-    );
+    const file = path.join(APPS_PATH, 'frontend', 'messages', locale + '.json');
     mergeWithExistingData(file, errorTranslationKeys);
     console.log('-- END --');
   }
