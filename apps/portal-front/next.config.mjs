@@ -154,6 +154,18 @@ const nextConfig = {
 
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: '/hs/:path*',
+        destination: 'https://js-eu1.hs-analytics.net/:path*',
+      },
+      {
+        source: '/hsforms/:path*',
+        destination: 'https://perf-eu1.hsforms.com/:path*',
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

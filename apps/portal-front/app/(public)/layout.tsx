@@ -21,11 +21,19 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
           <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
           <span className="sr-only">XTM Hub by Filigran</span>
         </Link>
-        <Button
-          asChild
-          className="whitespace-nowrap">
-          <Link href="/login">Sign In</Link>
-        </Button>
+        <div className="space-x-2">
+          <Button
+            asChild
+            className="whitespace-nowrap">
+            <Link href="/login">Sign In</Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="whitespace-nowrap">
+            <Link href="/signup">Sign up</Link>
+          </Button>
+        </div>
       </header>
       <main className="grow overflow-auto">
         <div className="container pt-l">{children}</div>
