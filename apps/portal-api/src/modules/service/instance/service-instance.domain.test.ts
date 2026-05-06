@@ -40,7 +40,6 @@ import {
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
   loadServiceInstanceSubscriptions,
-  loadServiceWithSubscriptions,
   loadSubscribedServiceInstancesByIdentifier,
   loadSubscriptionByServiceInstanceAndOrganization,
   ServiceInstanceDomain,
@@ -566,58 +565,6 @@ describe('service instance domain', () => {
       // Then
       expect(sendMailSpy).not.toHaveBeenCalled();
     });
-  });
-
-  describe('loadServiceWithSubscriptions', () => {
-    const serviceInstanceId = uuidv4() as ServiceInstanceId;
-    beforeEach(async () => {
-      await TestHelper.serviceInstance.create({
-        id: serviceInstanceId,
-      });
-      await TestHelper.subscription.create({
-        service_instance_id: serviceInstanceId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
-      await TestHelper.subscription.create({
-        service_instance_id: serviceInstanceId,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
-    });
-
-    afterAll(async () => {
-      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
-    });
-
-    it.each`
-      searchTerm    | expectedNames
-      ${'SECOND'}   | ${['SECOND ORGA']}
-      ${'ANYTHING'} | ${[]}
-      ${undefined}  | ${['Filigran', 'SECOND ORGA']}
-    `(
-      'should return subscriptions for searchTerm=$searchTerm',
-      async ({ searchTerm, expectedNames }) => {
-        // Given
-        requestContext.set(requestContextAdminUser);
-
-        // When
-        const result = await loadServiceWithSubscriptions(
-          serviceInstanceId,
-          searchTerm
-        );
-
-        // Then
-        expect(result.subscriptions).toHaveLength(expectedNames.length);
-        type SubscriptionWithOrg = {
-          organization: {
-            name: string;
-          };
-        };
-        const orgNames = result.subscriptions.map(
-          (sub: SubscriptionWithOrg) => sub.organization.name
-        );
-        expect(orgNames).toEqual(expectedNames);
-      }
-    );
   });
 
   describe('getUserJoined', () => {

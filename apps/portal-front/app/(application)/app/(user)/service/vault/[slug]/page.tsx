@@ -1,8 +1,8 @@
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import ServiceByIdQuery, {
   serviceByIdQuery,
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import PageLoader from './page-loader';
 
 interface ServiceVaultPageProps {
@@ -23,7 +23,7 @@ const Page = async ({ params }: ServiceVaultPageProps) => {
     <PageLoader
       serviceInstance={
         response.data
-          .serviceInstanceById as unknown as serviceInstance_fragment$data
+          .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
       }
     />
   );

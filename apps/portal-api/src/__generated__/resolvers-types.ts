@@ -2,6 +2,7 @@ import type { CompetitorId } from '../model/kanel/public/Competitor.js';
 import type { DeploymentRequestId } from '../model/kanel/public/DeploymentRequest.js';
 import type { DocumentId } from '../model/kanel/public/Document.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
+import type { ServiceCapabilityId } from '../model/kanel/public/ServiceCapability.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
 import type { SubscriptionId } from '../model/kanel/public/Subscription.js';
 import type { UseCaseId } from '../model/kanel/public/UseCase.js';
@@ -30,6 +31,7 @@ export type Scalars = {
   DocumentId: { input: DocumentId; output: DocumentId; }
   JSON: { input: any; output: any; }
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
+  ServiceCapabilityId: { input: ServiceCapabilityId; output: ServiceCapabilityId; }
   ServiceGroupId: { input: any; output: any; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
   SubscriptionId: { input: SubscriptionId; output: SubscriptionId; }
@@ -218,6 +220,14 @@ export type CreateEpicInput = {
   short_description: Scalars['String']['input'];
   timeline: Timeline;
   title: Scalars['String']['input'];
+};
+
+export type CreateSubscriptionInput = {
+  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
+  end_date?: InputMaybe<Scalars['Date']['input']>;
+  organization_id: Scalars['OrganizationId']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+  start_date: Scalars['Date']['input'];
 };
 
 export type CsvFeed = Document & Integration & Node & {
@@ -809,7 +819,6 @@ export type Mutation = {
   addOrganization?: Maybe<Organization>;
   addServicePicture?: Maybe<ServiceInstance>;
   addSubscription?: Maybe<ServiceInstance>;
-  addSubscriptionInService?: Maybe<ServiceInstance>;
   addUseCase: UseCase;
   addUser?: Maybe<User>;
   addUserService?: Maybe<Array<Maybe<UserService>>>;
@@ -827,11 +836,12 @@ export type Mutation = {
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
   createEpic: Epic;
+  createSubscription?: Maybe<SubscriptionModel>;
   deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic: Epic;
   deleteOrganization?: Maybe<Organization>;
-  deleteSubscription?: Maybe<ServiceInstance>;
+  deleteSubscription?: Maybe<SubscriptionModel>;
   deleteUseCase: UseCase;
   deleteUserService?: Maybe<UserService>;
   editMeUser: User;
@@ -881,15 +891,6 @@ export type MutationAddServicePictureArgs = {
 
 export type MutationAddSubscriptionArgs = {
   service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
-};
-
-
-export type MutationAddSubscriptionInServiceArgs = {
-  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  end_date?: InputMaybe<Scalars['Date']['input']>;
-  organization_id?: InputMaybe<Scalars['OrganizationId']['input']>;
-  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
-  start_date?: InputMaybe<Scalars['Date']['input']>;
 };
 
 
@@ -981,6 +982,11 @@ export type MutationCreateDocumentArgs = {
 export type MutationCreateEpicArgs = {
   document?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateEpicInput;
+};
+
+
+export type MutationCreateSubscriptionArgs = {
+  input?: InputMaybe<CreateSubscriptionInput>;
 };
 
 
@@ -1425,11 +1431,12 @@ export type Query = {
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById?: Maybe<ServiceInstance>;
-  serviceInstanceByIdWithSubscriptions?: Maybe<ServiceInstance>;
+  serviceInstanceByIdAndGrantAccess?: Maybe<ServiceInstance>;
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
   subscriptionById?: Maybe<SubscriptionModel>;
+  subscriptions: SubscriptionConnection;
   trialDeployments: TrialsDeployments;
   updateOpenCTIManifest: Success;
   useCases?: Maybe<UseCaseConnection>;
@@ -1602,8 +1609,7 @@ export type QueryServiceInstanceByIdArgs = {
 };
 
 
-export type QueryServiceInstanceByIdWithSubscriptionsArgs = {
-  searchTerm?: InputMaybe<Scalars['String']['input']>;
+export type QueryServiceInstanceByIdAndGrantAccessArgs = {
   service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
@@ -1625,6 +1631,16 @@ export type QueryServiceInstancesArgs = {
 
 export type QuerySubscriptionByIdArgs = {
   subscription_id?: InputMaybe<Scalars['SubscriptionId']['input']>;
+};
+
+
+export type QuerySubscriptionsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  filters?: InputMaybe<Array<SubscriptionFilter>>;
+  first: Scalars['Int']['input'];
+  orderBy: SubscriptionOrdering;
+  orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1904,6 +1920,7 @@ export type ServiceInstanceFilter = {
 };
 
 export enum ServiceInstanceFilterKey {
+  Id = 'id',
   Public = 'public',
   ServiceDefinitionIdentifier = 'service_definition_identifier',
   Tags = 'tags'
@@ -1938,6 +1955,7 @@ export type ServiceLink = Node & {
 };
 
 export enum ServiceRestriction {
+  Access = 'ACCESS',
   AccessUser = 'ACCESS_USER',
   Delete = 'DELETE',
   ManageAccess = 'MANAGE_ACCESS',
@@ -2032,20 +2050,37 @@ export type SubscriptionCapability = Node & {
   service_capability?: Maybe<ServiceCapability>;
 };
 
+export type SubscriptionConnection = {
+  __typename?: 'SubscriptionConnection';
+  edges: Array<SubscriptionEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
 export type SubscriptionEdge = {
   __typename?: 'SubscriptionEdge';
   cursor: Scalars['String']['output'];
   node: SubscriptionModel;
 };
 
+export type SubscriptionFilter = {
+  key: SubscriptionFilterKey;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum SubscriptionFilterKey {
+  OrganizationName = 'organization_name',
+  ServiceInstanceId = 'service_instance_id'
+}
+
 export type SubscriptionModel = Node & {
   __typename?: 'SubscriptionModel';
   end_date?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   organization: Organization;
-  organization_id: Scalars['ID']['output'];
+  organization_id: Scalars['OrganizationId']['output'];
   service_instance?: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ID']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   service_url: Scalars['String']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   subscription_capability?: Maybe<Array<Maybe<SubscriptionCapability>>>;
@@ -2484,6 +2519,7 @@ export type ResolversTypes = ResolversObject<{
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CreateEpicInput: CreateEpicInput;
+  CreateSubscriptionInput: CreateSubscriptionInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
@@ -2593,6 +2629,7 @@ export type ResolversTypes = ResolversObject<{
   SendTelemetryMutation: ResolverTypeWrapper<SendTelemetryMutation>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
+  ServiceCapabilityId: ResolverTypeWrapper<Scalars['ServiceCapabilityId']['output']>;
   ServiceConfigurationStatus: ServiceConfigurationStatus;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
@@ -2617,7 +2654,10 @@ export type ResolversTypes = ResolversObject<{
   SubscribedServiceInstanceConfiguration: ResolverTypeWrapper<SubscribedServiceInstanceConfiguration>;
   Subscription: ResolverTypeWrapper<{}>;
   SubscriptionCapability: ResolverTypeWrapper<SubscriptionCapability>;
+  SubscriptionConnection: ResolverTypeWrapper<SubscriptionConnection>;
   SubscriptionEdge: ResolverTypeWrapper<SubscriptionEdge>;
+  SubscriptionFilter: SubscriptionFilter;
+  SubscriptionFilterKey: SubscriptionFilterKey;
   SubscriptionId: ResolverTypeWrapper<Scalars['SubscriptionId']['output']>;
   SubscriptionModel: ResolverTypeWrapper<SubscriptionModel>;
   SubscriptionOrdering: SubscriptionOrdering;
@@ -2687,6 +2727,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CreateEpicInput: CreateEpicInput;
+  CreateSubscriptionInput: CreateSubscriptionInput;
   CsvFeed: CsvFeed;
   CustomDashboard: CustomDashboard;
   Date: Scalars['Date']['output'];
@@ -2763,6 +2804,7 @@ export type ResolversParentTypes = ResolversObject<{
   SendTelemetryMutation: SendTelemetryMutation;
   SeoServiceInstance: SeoServiceInstance;
   ServiceCapability: ServiceCapability;
+  ServiceCapabilityId: Scalars['ServiceCapabilityId']['output'];
   ServiceConnection: ServiceConnection;
   ServiceDefinition: ServiceDefinition;
   ServiceGroup: ServiceGroup;
@@ -2780,7 +2822,9 @@ export type ResolversParentTypes = ResolversObject<{
   SubscribedServiceInstanceConfiguration: SubscribedServiceInstanceConfiguration;
   Subscription: {};
   SubscriptionCapability: SubscriptionCapability;
+  SubscriptionConnection: SubscriptionConnection;
   SubscriptionEdge: SubscriptionEdge;
+  SubscriptionFilter: SubscriptionFilter;
   SubscriptionId: Scalars['SubscriptionId']['output'];
   SubscriptionModel: SubscriptionModel;
   Success: Success;
@@ -3244,7 +3288,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'serviceInstanceId'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
-  addSubscriptionInService?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionInServiceArgs>>;
   addUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationAddUseCaseArgs, 'input'>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
@@ -3262,11 +3305,12 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'input' | 'metadata'>>;
   createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
+  createSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationCreateSubscriptionArgs>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
-  deleteSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
+  deleteSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
@@ -3471,11 +3515,12 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
-  serviceInstanceByIdWithSubscriptions?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdWithSubscriptionsArgs>>;
+  serviceInstanceByIdAndGrantAccess?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdAndGrantAccessArgs>>;
   serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
+  subscriptions?: Resolver<ResolversTypes['SubscriptionConnection'], ParentType, ContextType, RequireFields<QuerySubscriptionsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   trialDeployments?: Resolver<ResolversTypes['TrialsDeployments'], ParentType, ContextType, Partial<QueryTrialDeploymentsArgs>>;
   updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
   useCases?: Resolver<Maybe<ResolversTypes['UseCaseConnection']>, ParentType, ContextType, RequireFields<QueryUseCasesArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -3584,6 +3629,10 @@ export type ServiceCapabilityResolvers<ContextType = PortalContext, ParentType e
   service_definition_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export interface ServiceCapabilityIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['ServiceCapabilityId'], any> {
+  name: 'ServiceCapabilityId';
+}
 
 export type ServiceConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceConnection'] = ResolversParentTypes['ServiceConnection']> = ResolversObject<{
   edges?: Resolver<Array<ResolversTypes['ServiceInstanceEdge']>, ParentType, ContextType>;
@@ -3735,6 +3784,13 @@ export type SubscriptionCapabilityResolvers<ContextType = PortalContext, ParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SubscriptionConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscriptionConnection'] = ResolversParentTypes['SubscriptionConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['SubscriptionEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type SubscriptionEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SubscriptionEdge'] = ResolversParentTypes['SubscriptionEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['SubscriptionModel'], ParentType, ContextType>;
@@ -3749,9 +3805,9 @@ export type SubscriptionModelResolvers<ContextType = PortalContext, ParentType e
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organization?: Resolver<ResolversTypes['Organization'], ParentType, ContextType>;
-  organization_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  organization_id?: Resolver<ResolversTypes['OrganizationId'], ParentType, ContextType>;
   service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   service_url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   subscription_capability?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionCapability']>>>, ParentType, ContextType>;
@@ -4028,6 +4084,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   SendTelemetryMutation?: SendTelemetryMutationResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
+  ServiceCapabilityId?: GraphQLScalarType;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceDefinition?: ServiceDefinitionResolvers<ContextType>;
   ServiceGroup?: ServiceGroupResolvers<ContextType>;
@@ -4043,6 +4100,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   SubscribedServiceInstanceConfiguration?: SubscribedServiceInstanceConfigurationResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SubscriptionCapability?: SubscriptionCapabilityResolvers<ContextType>;
+  SubscriptionConnection?: SubscriptionConnectionResolvers<ContextType>;
   SubscriptionEdge?: SubscriptionEdgeResolvers<ContextType>;
   SubscriptionId?: GraphQLScalarType;
   SubscriptionModel?: SubscriptionModelResolvers<ContextType>;

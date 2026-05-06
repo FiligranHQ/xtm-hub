@@ -2,38 +2,33 @@ import { getOrganizations } from '@/components/organization/Organization.service
 import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
+import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 
 import {
   Button,
   Checkbox,
+  Combobox,
   DatePicker,
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   SheetFooter,
   useToast,
 } from '@filigran/ui';
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
-import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
+import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
 interface ServiceSlugAddOrgaFormSheetProps {
-  serviceId: string;
-  serviceName: string;
-  subscriptions: subscriptionWithUserService_fragment$data[];
-  capabilities: serviceCapability_fragment$data[];
+  serviceInstance: serviceInstanceForSubscriptions_fragment$data;
+  subscriptions: subscription_fragment$data[];
+  subscriptionConnectionId: string;
 }
 
 const formSchema = z.object({
@@ -46,23 +41,37 @@ const formSchema = z.object({
 });
 
 export const ServiceSlugAddOrgaForm = ({
-  serviceId,
-  serviceName,
+  serviceInstance,
   subscriptions,
-  capabilities,
+  subscriptionConnectionId,
 }: ServiceSlugAddOrgaFormSheetProps) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
-  const [organizations] = getOrganizations();
   const t = useTranslations();
   const { toast } = useToast();
+  const [organizationsData, refetch] = getOrganizations();
+  const organizations = useMemo(() => {
+    const subscribedOrganizationIds = new Set(
+      subscriptions
+        .map((subscription) => subscription.organization?.id)
+        .filter((id): id is string => Boolean(id))
+    );
 
-  const currentOrganizationSubscriptions = subscriptions.map(
-    ({ organization }) => organization.name
-  );
-  const canBeSelectedOrganizations = organizations.organizations.edges.filter(
-    (organization) =>
-      !currentOrganizationSubscriptions.includes(organization.node.name)
-  );
+    return organizationsData.organizations.edges
+      .map(({ node }) => node)
+      .filter(({ id }) => !subscribedOrganizationIds.has(id));
+  }, [organizationsData.organizations.edges, subscriptions]);
+
+  const onAutocompleteOrganization = (value: string) => {
+    refetch({ searchTerm: value });
+  };
+
+  const onOrganizationChange = (
+    value: { id: string; name: string } | undefined,
+    onChange: (value: string) => void
+  ) => {
+    onChange(value?.id ?? '');
+    refetch({ searchTerm: '' });
+  };
 
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionInServiceCreateMutation>(
@@ -78,27 +87,33 @@ export const ServiceSlugAddOrgaForm = ({
     },
   });
 
-  setIsDirty(form.formState.isDirty);
+  useEffect(() => {
+    setIsDirty(form.formState.isDirty);
+  }, [form.formState.isDirty, setIsDirty]);
+
   const onSubmit = (inputValue: z.infer<typeof formSchema>) => {
+    const selectedOrganizationName =
+      organizations.find(({ id }) => id === inputValue.organization_id)?.name ??
+      '';
+
+    const input = {
+      service_instance_id: serviceInstance.id,
+      organization_id: inputValue.organization_id,
+      capability_ids: inputValue.capability_ids,
+      start_date: inputValue.start_date,
+      end_date: inputValue.end_date,
+    };
     commitSubscriptionCreateMutation({
       variables: {
-        service_instance_id: serviceId,
-        organization_id: inputValue.organization_id,
-        capability_ids: inputValue.capability_ids,
-        start_date: inputValue.start_date,
-        end_date: inputValue.end_date,
+        input,
+        connections: [subscriptionConnectionId],
       },
-      onCompleted: (response) => {
-        const findOrganization =
-          response.addSubscriptionInService?.subscriptions?.find(
-            (sub) => sub?.organization.id === inputValue.organization_id
-          );
-
+      onCompleted: (_response) => {
         toast({
           title: t('Utils.Success'),
           description: t('ServiceActions.OrganizationAdded', {
-            name: findOrganization!.organization.name,
-            serviceName: serviceName,
+            name: selectedOrganizationName,
+            serviceName: serviceInstance.name,
           }),
         });
         setOpenSheet(false);
@@ -122,36 +137,36 @@ export const ServiceSlugAddOrgaForm = ({
           <FormField
             control={form.control}
             name="organization_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t('OrganizationInServiceAction.Organization')}
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t(
-                          'OrganizationInServiceAction.SelectOrganization'
-                        )}
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {canBeSelectedOrganizations.map(({ node }) => (
-                      <SelectItem
-                        key={node.id}
-                        value={node.id}>
-                        {node.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const selectedOrganization = organizations.find(
+                ({ id }) => id === field.value
+              );
+
+              return (
+                <FormItem>
+                  <FormLabel>
+                    {t('OrganizationInServiceAction.Organization')}
+                  </FormLabel>
+                  <Combobox
+                    className="w-45"
+                    dataTab={organizations}
+                    order={t('OrganizationInServiceAction.SelectOrganization')}
+                    placeholder={t(
+                      'OrganizationInServiceAction.SelectOrganization'
+                    )}
+                    emptyCommand={t('Utils.NotFound')}
+                    keyValue={'id'}
+                    keyLabel={'name'}
+                    value={selectedOrganization}
+                    onInputChange={onAutocompleteOrganization}
+                    onValueChange={(value) =>
+                      onOrganizationChange(value, field.onChange)
+                    }
+                  />
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <div className="border border-primary rounded-lg p-l">
@@ -159,34 +174,38 @@ export const ServiceSlugAddOrgaForm = ({
             <p className="txt-sub-content italic">
               {t('OrganizationInServiceAction.SelectCapaDescription')}
             </p>
-            {capabilities.map(({ id, name, description }) => (
-              <FormField
-                key={id}
-                control={form.control}
-                name="capability_ids"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center">
-                    <Checkbox
-                      className="mt-xs"
-                      checked={field.value.includes(id)}
-                      onCheckedChange={(checked) => {
-                        const newValue = checked
-                          ? [...field.value, id]
-                          : field.value.filter((value: string) => value !== id);
-                        field.onChange(newValue);
-                      }}
-                      id={id}
-                    />
+            {serviceInstance.service_definition?.service_capability
+              ?.filter((sc) => !!sc)
+              ?.map(({ id, name, description }) => (
+                <FormField
+                  key={id}
+                  control={form.control}
+                  name="capability_ids"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center">
+                      <Checkbox
+                        className="mt-xs"
+                        checked={field.value.includes(id)}
+                        onCheckedChange={(checked) => {
+                          const newValue = checked
+                            ? [...field.value, id]
+                            : field.value.filter(
+                                (value: string) => value !== id
+                              );
+                          field.onChange(newValue);
+                        }}
+                        id={id}
+                      />
 
-                    <label
-                      htmlFor={id}
-                      className="txt-sub-content cursor-pointer">
-                      {name} access: {description}
-                    </label>
-                  </FormItem>
-                )}
-              />
-            ))}
+                      <label
+                        htmlFor={id}
+                        className="txt-sub-content cursor-pointer">
+                        {name} access: {description}
+                      </label>
+                    </FormItem>
+                  )}
+                />
+              ))}
           </div>
 
           <FormField
