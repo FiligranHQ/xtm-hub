@@ -170,22 +170,24 @@ describe('serviceInstance field resolvers', () => {
   });
 });
 
-describe('service instances GraphQL query', () => {
-  it('should delegate to loadServiceInstances and return result', async () => {
-    const expected = { edges: [] } as unknown as Awaited<
-      ReturnType<typeof serviceInstanceDomain.loadServiceInstances>
+describe('serviceInstanceById GraphQL query', () => {
+  it('should delegate to ServiceInstanceApp.loadServiceInstance and return result', async () => {
+    const id = SERVICES.INSTANCES.EPIC.ID;
+    const expected = { id } as unknown as Awaited<
+      ReturnType<typeof ServiceInstanceApp.loadServiceInstance>
     >;
-    vi.spyOn(serviceInstanceDomain, 'loadServiceInstances').mockResolvedValue(
+    vi.spyOn(ServiceInstanceApp, 'loadServiceInstance').mockResolvedValue(
       expected
     );
 
-    const result = await serviceInstanceResolver.Query!.serviceInstances!(
+    const result = await serviceInstanceResolver.Query!.serviceInstanceById!(
       {},
-      {},
+      { service_instance_id: id },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
+    expect(ServiceInstanceApp.loadServiceInstance).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
 });
@@ -226,7 +228,8 @@ describe('service instance by id GraphQL query', () => {
       'loadServiceInstanceAndGrantAccess'
     ).mockResolvedValue(expected);
 
-    const result = await serviceInstanceResolver.Query!.serviceInstanceById!(
+    const result = await serviceInstanceResolver.Query!
+      .serviceInstanceByIdAndGrantAccess!(
       {},
       { service_instance_id: id },
       contextSimpleUserFiligran2,
@@ -235,7 +238,7 @@ describe('service instance by id GraphQL query', () => {
 
     expect(
       ServiceInstanceApp.loadServiceInstanceAndGrantAccess
-    ).toHaveBeenCalledWith(contextSimpleUserFiligran2.user, id);
+    ).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
 });

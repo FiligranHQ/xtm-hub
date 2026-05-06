@@ -74,11 +74,13 @@ const resolvers: Resolvers = {
     serviceInstanceLinksByTags: async (_, { tags }) => {
       return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);
     },
-    serviceInstanceById: async (_, { service_instance_id }, context) => {
+    serviceInstanceByIdAndGrantAccess: async (_, { service_instance_id }) => {
       return ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        context.user,
         service_instance_id
       );
+    },
+    serviceInstanceById: async (_, { service_instance_id }) => {
+      return ServiceInstanceApp.loadServiceInstance(service_instance_id);
     },
     seoServiceInstances: async () => {
       return ServiceInstanceApp.loadSeoServiceInstances();

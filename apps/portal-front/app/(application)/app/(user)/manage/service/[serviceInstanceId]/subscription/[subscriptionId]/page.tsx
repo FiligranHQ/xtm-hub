@@ -26,7 +26,7 @@ const Page = async ({ params }: PageProps) => {
       subscriptionId={decodedSubscriptionId}
       serviceInstance={
         response.data
-          .serviceInstanceById as unknown as serviceInstance_fragment$data
+          .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
       }
     />
   );

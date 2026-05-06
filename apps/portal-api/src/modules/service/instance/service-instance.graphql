@@ -116,6 +116,9 @@ type Query {
   ): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
     @auth
+  serviceInstanceByIdAndGrantAccess(
+    service_instance_id: ServiceInstanceId
+  ): ServiceInstance @auth
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
 }

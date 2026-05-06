@@ -7,6 +7,7 @@ import {
   UpdatePlatformServiceMetadataInput,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
+import { requestContext } from '../../../context/request.context';
 import {
   ServiceInstanceId,
   ServiceInstanceMutator,
@@ -38,9 +39,10 @@ import {
 
 export const ServiceInstanceApp = {
   loadServiceInstanceAndGrantAccess: async (
-    user: UserLoadUserBy,
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
+    const { user } = requestContext.require();
+
     const service = await loadServiceInstanceBy({ id: serviceInstanceId });
     let subscription = await loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
@@ -70,6 +72,11 @@ export const ServiceInstanceApp = {
     return service;
   },
 
+  loadServiceInstance: async (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<ServiceInstance> => {
+    return loadServiceInstanceBy({ id: serviceInstanceId });
+  },
   addServicePicture: async (
     serviceInstanceId: ServiceInstanceId,
     document: Upload,

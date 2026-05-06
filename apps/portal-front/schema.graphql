@@ -123,6 +123,7 @@ type Query {
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
+  serviceInstanceByIdAndGrantAccess(service_instance_id: ServiceInstanceId): ServiceInstance
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!

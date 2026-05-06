@@ -18,6 +18,8 @@ import {
 import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
+  requestContextRegistererUserSecondOrga,
+  requestContextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
@@ -26,6 +28,7 @@ import {
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceDefinition, {
@@ -105,13 +108,13 @@ describe('service Instance app', () => {
 
     it('should load service instance when user already has access', async () => {
       // Given
+      requestContext.set(requestContextSimpleUserSecondOrga);
       loadSubscriptionBySpy.mockResolvedValueOnce(mockSubscription);
       loadUserServiceBySpy.mockResolvedValueOnce([mockUserService]);
       loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
 
       // When
       await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
@@ -134,6 +137,7 @@ describe('service Instance app', () => {
 
     it('should auto-join user when user has no access', async () => {
       // Given
+      requestContext.set(requestContextSimpleUserSecondOrga);
       loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
       loadUserServiceBySpy.mockResolvedValue([]);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
@@ -141,7 +145,6 @@ describe('service Instance app', () => {
 
       // When
       await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
@@ -156,6 +159,7 @@ describe('service Instance app', () => {
 
     it('should use subscription from user organization, not from another organization', async () => {
       // Given
+      requestContext.set(requestContextSimpleUserSecondOrga);
       const userOrganizationId =
         contextSimpleUserSecondOrga.user.selected_organization_id;
       const otherOrganizationId = uuidv4() as OrganizationId;
@@ -194,7 +198,6 @@ describe('service Instance app', () => {
 
       // When
       await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
@@ -217,6 +220,7 @@ describe('service Instance app', () => {
 
     it('should handle multiple user services', async () => {
       // Given
+      requestContext.set(requestContextSimpleUserSecondOrga);
       const multipleUserServices = [
         mockUserService,
         {
@@ -231,7 +235,6 @@ describe('service Instance app', () => {
 
       // When
       await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        contextSimpleUserSecondOrga.user,
         mockServiceInstanceId
       );
 
@@ -242,13 +245,13 @@ describe('service Instance app', () => {
 
     it('should propagate errors from loadSubscriptionBy', async () => {
       // Given
+      requestContext.set(requestContextRegistererUserSecondOrga);
       const error = new Error('Error');
       loadSubscriptionBySpy.mockRejectedValue(error);
 
       // When
       await expect(
         ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-          contextRegistererUserSecondOrga.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Error');
@@ -261,6 +264,7 @@ describe('service Instance app', () => {
 
     it('should propagate errors from grantServiceAccess', async () => {
       // Given
+      requestContext.set(requestContextSimpleUserSecondOrga);
       const error = new Error('Other error');
       loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
       loadUserServiceBySpy.mockResolvedValue([]);
@@ -269,7 +273,6 @@ describe('service Instance app', () => {
       // When
       await expect(
         ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-          contextSimpleUserSecondOrga.user,
           mockServiceInstanceId
         )
       ).rejects.toThrow('Other error');
@@ -299,7 +302,7 @@ describe('service Instance app', () => {
       uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
       vi.spyOn(
         securityGuardModule.securityGuard,
-        'assertUserIsAllowedOnOrganization'
+        'assertUserCanModifyPlatformService'
       ).mockResolvedValue(undefined);
       serviceDefinition = await TestHelper.serviceDefinition.create({
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
@@ -508,8 +511,8 @@ describe('service Instance app', () => {
       });
       vi.spyOn(
         securityGuardModule.securityGuard,
-        'assertUserIsAllowedOnOrganization'
-      ).mockRejectedValue(undefined);
+        'assertUserCanModifyPlatformService'
+      ).mockRejectedValue(new Error(ErrorCode.MissingCapabilityOnOrganization));
 
       // When / Then
       await expect(

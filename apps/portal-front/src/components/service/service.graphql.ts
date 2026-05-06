@@ -30,7 +30,9 @@ export const UpdatePlatformServiceMetadata = graphql`
 
 export const ServiceById = graphql`
   query serviceByIdQuery($service_instance_id: ServiceInstanceId) {
-    serviceInstanceById(service_instance_id: $service_instance_id) {
+    serviceInstanceByIdAndGrantAccess(
+      service_instance_id: $service_instance_id
+    ) {
       ...serviceInstance_fragment
     }
   }
