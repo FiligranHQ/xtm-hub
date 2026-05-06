@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy monorepo configuration files
 COPY .yarnrc.yml package.json yarn.lock ./
 COPY apps/backend/package.json ./apps/backend/package.json
-COPY apps/portal-e2e-tests/package.json ./apps/portal-e2e-tests/package.json
+COPY apps/e2e/package.json ./apps/e2e/package.json
 COPY apps/frontend/package.json ./apps/frontend/package.json
 
 # Install all dependencies at the workspace level

@@ -20,7 +20,7 @@ XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace fo
 |--------------------|-------------------------|---|---|
 | `backend`          | `apps/backend`          | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
 | `frontend`         | `apps/frontend`     | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
-| `portal-e2e-tests` | `apps/portal-e2e-tests` | Playwright | — |
+| `e2e`              | `apps/e2e`              | Playwright | — |
 
 ## Setup
 
@@ -75,7 +75,7 @@ yarn test:coverage       # with V8 coverage
 
 **`yarn relay` must run after any GraphQL schema change.** The `dev` script runs relay-compiler automatically via `concurrently`.
 
-### E2E Tests (`apps/portal-e2e-tests`)
+### E2E Tests (`apps/e2e`)
 
 ```bash
 yarn test:e2e            # Playwright (requires frontend + backend running)
@@ -280,7 +280,7 @@ Dockerfile                      # Production Docker image (standalone Next.js)
 - `@/*` → `./src/*`
 - `@generated/*` → `./__generated__/*`
 
-### E2E Tests — `apps/portal-e2e-tests/`
+### E2E Tests — `apps/e2e/`
 
 ```
 tests/
@@ -362,8 +362,8 @@ Removing the `skip-feature-env` label from an already-open PR triggers an immedi
 
 Before Docker builds, migrations and seeds are copied to e2e-tests:
 ```bash
-cp -r ./apps/backend/src/migrations ./apps/portal-e2e-tests/migrations
-cp -r ./apps/backend/tests/seeds ./apps/portal-e2e-tests/seeds
+cp -r ./apps/backend/src/migrations ./apps/e2e/migrations
+cp -r ./apps/backend/tests/seeds ./apps/e2e/seeds
 ```
 
 ## Commit Convention

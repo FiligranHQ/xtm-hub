@@ -95,7 +95,7 @@ jobs:
           - image: portal-api
             dockerfile: apps/backend/Dockerfile
           - image: portal-e2e-tests
-            dockerfile: apps/portal-e2e-tests/Dockerfile
+            dockerfile: apps/e2e/Dockerfile
           - image: portal-front-test
             dockerfile: apps/frontend/test.Dockerfile
           - image: portal-api-test
@@ -138,9 +138,9 @@ jobs:
 
       - name: Copy migrations
         run: |
-          cp -r ./apps/backend/src/migrations ./apps/portal-e2e-tests/migrations
-          cp -r ./apps/backend/tests/seeds ./apps/portal-e2e-tests/seeds
-          cp ./apps/backend/tests/test-utils.ts ./apps/portal-e2e-tests/test-utils.ts
+          cp -r ./apps/backend/src/migrations ./apps/e2e/migrations
+          cp -r ./apps/backend/tests/seeds ./apps/e2e/seeds
+          cp ./apps/backend/tests/test-utils.ts ./apps/e2e/test-utils.ts
 
       - name: Build and push portal image
         uses: docker/build-push-action@v6
@@ -192,9 +192,9 @@ jobs:
 
       - name: Copy migrations
         run: |
-          cp -r ./apps/backend/src/migrations ./apps/portal-e2e-tests/migrations
-          cp -r ./apps/backend/tests/seeds ./apps/portal-e2e-tests/seeds
-          cp ./apps/backend/tests/test-utils.ts ./apps/portal-e2e-tests/test-utils.ts
+          cp -r ./apps/backend/src/migrations ./apps/e2e/migrations
+          cp -r ./apps/backend/tests/seeds ./apps/e2e/seeds
+          cp ./apps/backend/tests/test-utils.ts ./apps/e2e/test-utils.ts
 
       - name: Launch docker compose
         run: |
@@ -204,9 +204,9 @@ jobs:
            GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
            GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
            GITHUB_RUN_ID="${{ github.run_id }}"
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-e2e-tests || TEST_EXIT_CODE=$?
-          CONTAINER_ID=$(docker ps -a --filter "name=portal-e2e-tests-run" --format "{{.ID}}" | head -1)
-          docker cp $CONTAINER_ID:/app/apps/portal-e2e-tests/ctrf/. ./ctrf/
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run e2e || TEST_EXIT_CODE=$?
+          CONTAINER_ID=$(docker ps -a --filter "name=e2e-run" --format "{{.ID}}" | head -1)
+          docker cp $CONTAINER_ID:/app/apps/e2e/ctrf/. ./ctrf/
           exit ${TEST_EXIT_CODE:-0}
 
       - name: Publish Test Report
@@ -249,7 +249,7 @@ jobs:
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-minio || echo "Could not collect portal-minio logs"
           echo ""
           echo "=== E2E Tests Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-e2e-tests || echo "Could not collect portal-e2e-tests logs"
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 e2e || echo "Could not collect e2e logs"
           echo ""
           echo "=== Docker container status ==="
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml ps -a || echo "Could not get container status"
@@ -264,7 +264,7 @@ jobs:
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs frontend-test > logs/frontend-test.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-postgres > logs/portal-postgres.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-minio > logs/portal-minio.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-e2e-tests > logs/portal-e2e-tests.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs e2e > logs/e2e.log 2>&1 || true
 
       - name: Upload logs
         if: failure()

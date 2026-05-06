@@ -166,7 +166,7 @@ services:
       timeout: 5s
       retries: 10
 
-  portal-e2e-tests:
+  e2e:
     logging:
       driver: "json-file"
       options:
