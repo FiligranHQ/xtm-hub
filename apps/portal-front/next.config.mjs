@@ -2,6 +2,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin();
 
+const isProductionOrStaging =
+  process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
+
 /**
  * @type {import('next').NextConfig}
  */
@@ -115,13 +118,13 @@ const nextConfig = {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://res.cloudinary.com",
       "font-src 'self' data:",
-      "connect-src 'self' https:",
+      `connect-src 'self' https:${!isProductionOrStaging ? ' http:' : ''}`,
       "frame-src 'none'",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
       "object-src 'none'",
-      'upgrade-insecure-requests',
+      ...(!isProductionOrStaging ? ['upgrade-insecure-requests'] : []),
     ];
 
     const csp = cspDirectives.join('; ');
