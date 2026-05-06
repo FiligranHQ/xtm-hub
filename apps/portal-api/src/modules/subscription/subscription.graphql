@@ -11,8 +11,8 @@ enum SubscriptionOrdering {
 }
 type SubscriptionModel implements Node {
   id: ID!
-  organization_id: ID!
-  service_instance_id: ID!
+  organization_id: OrganizationId!
+  service_instance_id: ServiceInstanceId!
   start_date: Date
   end_date: Date
   organization: Organization!
@@ -27,21 +27,46 @@ type SubscriptionEdge {
   node: SubscriptionModel!
 }
 
+input CreateSubscriptionInput {
+  service_instance_id: ServiceInstanceId!
+  organization_id: OrganizationId!
+  capability_ids: [ServiceCapabilityId]
+  start_date: Date!
+  end_date: Date
+}
+
 type Mutation {
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
-  addSubscriptionInService(
-    service_instance_id: ServiceInstanceId
-    organization_id: OrganizationId
-    capability_ids: [ID]
-    start_date: Date
-    end_date: Date
-  ): ServiceInstance @auth(portalCapa: [BYPASS])
-  deleteSubscription(subscription_id: SubscriptionId!): ServiceInstance
+  createSubscription(input: CreateSubscriptionInput): SubscriptionModel
+    @auth(portalCapa: [BYPASS])
+  deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
     @service_capa(requires: [MANAGE_ACCESS])
 }
 
+type SubscriptionConnection {
+  totalCount: Int!
+  edges: [SubscriptionEdge!]!
+  pageInfo: PageInfo!
+}
+enum SubscriptionFilterKey {
+  organization_name
+  service_instance_id
+}
+input SubscriptionFilter {
+  key: SubscriptionFilterKey!
+  value: [String!]!
+}
+
 type Query {
   subscriptionById(subscription_id: SubscriptionId): SubscriptionModel @auth
+  subscriptions(
+    first: Int!
+    after: ID
+    orderBy: SubscriptionOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    filters: [SubscriptionFilter!]
+  ): SubscriptionConnection! @auth
 }

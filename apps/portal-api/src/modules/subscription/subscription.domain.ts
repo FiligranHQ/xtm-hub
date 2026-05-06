@@ -63,10 +63,9 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
 
   const organization = await loadOrganizationBy({ id: sub.organization_id });
 
-  const serviceInstance = await loadServiceInstanceBy(
-    'ServiceInstance.id',
-    sub.service_instance_id
-  );
+  const serviceInstance = await loadServiceInstanceBy({
+    id: sub.service_instance_id,
+  });
   const userServices =
     await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
       subscription_id: subscriptionId,

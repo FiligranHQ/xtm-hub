@@ -22,3 +22,4 @@ generates:
         UserId: "../model/kanel/public/User.js#UserId"
         UseCaseId: "../model/kanel/public/UseCase.js#UseCaseId"
         SubscriptionId: "../model/kanel/public/Subscription.js#SubscriptionId"
+        ServiceCapabilityId: "../model/kanel/public/ServiceCapability.js#ServiceCapabilityId"

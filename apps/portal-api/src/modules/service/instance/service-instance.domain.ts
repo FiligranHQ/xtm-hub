@@ -28,7 +28,6 @@ import UserService, {
 } from '../../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { isUserAdminPlatform } from '../../../security/access';
-import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
 import { formatRawObject } from '../../../utils/query-raw.util';
@@ -39,7 +38,6 @@ import {
   serviceInstanceTagMappedByPlatformIdentifier,
 } from '../../registration/registration.mapping';
 import { insertServiceCapability } from '../../security-management/service-capability/service-capability.helper';
-import { loadSubscriptionCapabilities } from '../../security-management/service-capability/subscription-capability.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscription/subscription.helper';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 
@@ -337,198 +335,19 @@ export const loadServiceInstanceById = async (
     .first();
 };
 
-export const loadServiceInstanceBy = async (field: string, value: string) => {
-  return db<ServiceInstance>('ServiceInstance')
-    .where({ [field]: value })
-    .select('ServiceInstance.*')
-    .first();
-};
-
-export const loadServiceWithSubscriptions = async (
-  serviceInstanceId: ServiceInstanceId,
+export const loadServiceInstanceBy = async (
+  field: ServiceInstanceMutator,
   searchTerm?: string
 ) => {
-  const { user } = requestContext.require();
-
-  const queryUserServiceCapabilities = db('UserService_Capability')
-    .leftJoin(
-      'Generic_Service_Capability',
-      'UserService_Capability.generic_service_capability_id',
-      '=',
-      'Generic_Service_Capability.id'
-    )
-    .leftJoin(
-      'Subscription_Capability',
-      'UserService_Capability.subscription_capability_id',
-      '=',
-      'Subscription_Capability.id'
-    )
-    .leftJoin(
-      'Service_Capability',
-      'Subscription_Capability.service_capability_id',
-      '=',
-      'Service_Capability.id'
-    )
-    .select(
-      'UserService_Capability.user_service_id',
-      dbRaw(
-        `json_agg(
-        CASE
-        WHEN "Generic_Service_Capability".id IS NOT NULL THEN
-        json_build_object(
-          'id', "UserService_Capability".id,
-          'user_service_id', "UserService_Capability".user_service_id,
-          'generic_service_capability', json_build_object(
-            'id', "Generic_Service_Capability".id,
-            'name', "Generic_Service_Capability".name,
-            '__typename', 'Generic_Service_Capability'
-          ),
-          '__typename', 'UserServiceCapability'
-        )
-        WHEN "Subscription_Capability".id IS NOT NULL THEN
-        json_build_object(
-          'id', "UserService_Capability".id,
-          'user_service_id', "UserService_Capability".user_service_id,
-          'subscription_capability', json_build_object(
-            'id', "Subscription_Capability".id,
-            'service_capability', json_build_object(
-            'id', "Service_Capability".id,
-            'name', "Service_Capability".name,
-            '__typename', 'Service_Capability'
-            ),
-            '__typename', 'Subscription_Capability'
-          ),
-          '__typename', 'UserServiceCapability'
-        )
-        ELSE NULL
-        END
-      ) FILTER (WHERE "Generic_Service_Capability".id IS NOT NULL OR "Service_Capability".id IS NOT NULL) AS capabilities`
-      )
-    )
-    .groupBy('UserService_Capability.user_service_id')
-    .as('userServiceCapabilities');
-
-  const queryUserServiceWithCapa = db<UserService>('User_Service')
-    .select(
-      'User_Service.*',
-      dbRaw(
-        `COALESCE("userServiceCapabilities".capabilities, '[]'::json) as user_service_capability`
-      )
-    )
-    .tap(restrictSubscriptionToUserOrganization)
-    .leftJoin(
-      queryUserServiceCapabilities,
-      'User_Service.id',
-      '=',
-      'userServiceCapabilities.user_service_id'
-    );
-
-  const querySubscriptions = db<Subscription>('Subscription')
-    .where('Subscription.service_instance_id', '=', serviceInstanceId)
-    .leftJoin(
-      queryUserServiceWithCapa.as('userService'),
-      'userService.subscription_id',
-      '=',
-      'Subscription.id'
-    )
-    .leftJoin('User as user', 'user.id', '=', 'userService.user_id')
-    .leftJoin(
-      'Organization as org',
-      'org.id',
-      '=',
-      'Subscription.organization_id'
-    )
+  const query = db<ServiceInstance>('ServiceInstance')
+    .where(field)
     .modify((queryBuilder) => {
       if (searchTerm) {
         queryBuilder.where('org.name', 'ILIKE', `%${searchTerm}%`);
       }
-    })
-    .select(
-      dbRaw('"Subscription".*'),
-      dbRaw(
-        formatRawObject({
-          columnName: 'org',
-          typename: 'Organization',
-          as: 'organization',
-        })
-      ),
-      dbRaw(
-        `COALESCE(
-          json_agg(
-          CASE
-          WHEN "userService".id IS NOT NULL THEN
-            json_build_object(
-              'id', "userService".id,
-              'subscription_id', "userService".subscription_id,
-              'user_id', "userService".user_id,
-              'user_service_capability', COALESCE(
-                  CASE
-                    WHEN "userService".user_service_capability IS NOT NULL THEN "userService".user_service_capability
-                    ELSE '[]'::json
-                  END
-                ),
-              'user', CASE
-                WHEN "user".id IS NOT NULL THEN json_build_object(
-                  'id', "user".id,
-                  'email', "user".email,
-                  'first_name', "user".first_name,
-                  'last_name', "user".last_name,
-                  '__typename', 'User'
-                )
-                ELSE NULL
-              END,
-              '__typename', 'User_Service'
-            )
-            ELSE NULL
-            END
-          ) FILTER (WHERE "userService".id IS NOT NULL)::json,
-          '[]'::json
-        ) AS user_service`
-      )
-    )
-    .groupBy(['Subscription.id', 'Subscription.organization_id', 'org.id'])
-    .orderByRaw('CASE WHEN org.id = ? THEN 0 ELSE 1 END, "Subscription".id', [
-      user.selected_organization_id,
-    ]);
+    });
 
-  const [serviceInstance] = await db<ServiceInstance>('ServiceInstance')
-    .where('ServiceInstance.id', '=', serviceInstanceId)
-    .leftJoin(
-      'ServiceDefinition',
-      'ServiceInstance.service_definition_id',
-      '=',
-      'ServiceDefinition.id'
-    )
-    .leftJoin(
-      'Service_Capability',
-      'ServiceDefinition.id',
-      '=',
-      'Service_Capability.service_definition_id'
-    )
-    .select([
-      'ServiceInstance.*',
-      dbRaw(
-        `json_build_object('id', "ServiceDefinition".id, 'service_capability', COALESCE(json_agg(json_build_object('id', "Service_Capability".id, 'name', "Service_Capability".name, 'description', "Service_Capability".description, '__typename', 'Service_Capability')) FILTER (WHERE "Service_Capability".id IS NOT NULL), '[]'), '__typename', 'ServiceDefinition') as service_definition`
-      ),
-    ])
-    .groupBy(['ServiceInstance.id', 'ServiceDefinition.id']);
-
-  if (!isUserAdminPlatform(user)) {
-    querySubscriptions.where(
-      'Subscription.organization_id',
-      '=',
-      user.selected_organization_id
-    );
-  }
-
-  const arraySubcriptions = await querySubscriptions;
-
-  const subscriptions = arraySubcriptions.map((subscription) => ({
-    ...subscription,
-    subscription_capability: loadSubscriptionCapabilities(subscription.id),
-  }));
-
-  return { ...serviceInstance, subscriptions };
+  return query.select('ServiceInstance.*').first();
 };
 
 export const grantServiceAccess = async (
@@ -548,10 +367,9 @@ export const grantServiceAccess = async (
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
-  const serviceInstance = await loadServiceInstanceBy(
-    'ServiceInstance.id',
-    subscription.service_instance_id
-  );
+  const serviceInstance = await loadServiceInstanceBy({
+    id: subscription.service_instance_id,
+  });
 
   const service_definition = await loadServiceDefinitionByServiceInstance(
     serviceInstance.id

@@ -1249,10 +1249,9 @@ describe('registration app', () => {
         { platform: platformConfiguration }
       );
 
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        'id',
-        deploymentRequest.service_instance_id
-      );
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
+        id: deploymentRequest.service_instance_id,
+      });
       const configuration =
         await ServiceConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id

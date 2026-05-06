@@ -1,17 +1,14 @@
-import { APP_PATH } from '@/utils/path/constant';
-import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
-import { Button } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
-import Link from 'next/link';
-import { useState } from 'react';
-import useServiceCapability from '@/hooks/use-service-capability';
-import {
-  GenericCapabilityName,
-  ServiceCapabilityName,
-} from '@/components/service/[slug]/capabilities/Capability.helper';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
 import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
 import { ServiceListIntegrationDropdown } from '@/components/service/components/header/ServiceListIntegrationDropdown';
+import useServiceCapability from '@/hooks/use-service-capability';
+import { APP_PATH } from '@/utils/path/constant';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import { Button } from '@filigran/ui';
+import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useState } from 'react';
 
 const ServiceListHeaderButtons = ({}) => {
   const t = useTranslations();
@@ -25,10 +22,10 @@ const ServiceListHeaderButtons = ({}) => {
   const [openSheet, setOpenSheet] = useState(false);
 
   const canManageService = serviceInstance.capabilities.includes(
-    GenericCapabilityName.MANAGE_ACCESS
+    ServiceRestrictionEnum.MANAGE_ACCESS
   );
   const userCanUpdate = useServiceCapability(
-    ServiceCapabilityName.Upload,
+    ServiceRestrictionEnum.UPLOAD,
     serviceInstance
   );
   const isIntegration = type === ShareableResourceType.OPENCTI_INTEGRATION;

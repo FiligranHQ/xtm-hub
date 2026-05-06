@@ -20,7 +20,6 @@ import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstances,
   loadServiceInstanceSubscriptions,
-  loadServiceWithSubscriptions,
 } from './service-instance.domain';
 
 const resolvers: Resolvers = {
@@ -75,17 +74,13 @@ const resolvers: Resolvers = {
     serviceInstanceLinksByTags: async (_, { tags }) => {
       return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);
     },
-    serviceInstanceById: async (_, { service_instance_id }, context) => {
+    serviceInstanceByIdAndGrantAccess: async (_, { service_instance_id }) => {
       return ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        context.user,
         service_instance_id
       );
     },
-    serviceInstanceByIdWithSubscriptions: async (
-      _,
-      { service_instance_id, searchTerm }
-    ) => {
-      return loadServiceWithSubscriptions(service_instance_id, searchTerm);
+    serviceInstanceById: async (_, { service_instance_id }) => {
+      return ServiceInstanceApp.loadServiceInstance(service_instance_id);
     },
     seoServiceInstances: async () => {
       return ServiceInstanceApp.loadSeoServiceInstances();

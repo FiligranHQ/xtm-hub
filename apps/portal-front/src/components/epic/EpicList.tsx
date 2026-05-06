@@ -1,8 +1,15 @@
 'use client';
+import { EpicFilter, EpicFilterType } from '@/components/epic/EpicFilter';
+import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
+import { EpicItem } from '@/components/epic/epic-item/EpicItem';
+import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
+
+import { FiligranTimelineMapping } from '@/components/epic/epic-item/TimelineMapping';
 import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
 } from '@/components/epic/epic-list-utils';
+import useServiceCapability from '@/hooks/use-service-capability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
@@ -12,12 +19,6 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
-import useServiceCapability from '@/hooks/use-service-capability';
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
-import { EpicFilter, EpicFilterType } from '@/components/epic/EpicFilter';
-import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
-import { EpicItem } from '@/components/epic/epic-item/EpicItem';
-import { FiligranTimelineMapping } from '@/components/epic/epic-item/TimelineMapping';
 
 interface EpicListProps {
   epics: epic_fragment$data[];
@@ -40,11 +41,11 @@ export const EpicList = ({
   const [openSheet, setOpenSheet] = useState(false);
   const [showFinished, setShowFinished] = useState(false);
   const userCanUpdate = useServiceCapability(
-    ServiceCapabilityName.Upsert,
+    ServiceRestrictionEnum.UPSERT,
     serviceInstance as serviceInstance_fragment$data
   );
   const userCanDelete = useServiceCapability(
-    ServiceCapabilityName.Delete,
+    ServiceRestrictionEnum.DELETE,
     serviceInstance as serviceInstance_fragment$data
   );
   const filteredEpics =

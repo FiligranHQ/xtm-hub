@@ -2,16 +2,8 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
+import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { useTranslations } from 'next-intl';
-import { Fragment, useContext, useLayoutEffect } from 'react';
-import useScrollPosition from '@/hooks/use-scroll-position';
-import useServiceCapability from '@/hooks/use-service-capability';
-import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
 import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
   ServiceListFilterKey,
@@ -22,6 +14,14 @@ import ServiceListHeaderButtons from '@/components/service/components/header/Ser
 import ServiceCard from '@/components/service/components/ServiceCard';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import useScrollPosition from '@/hooks/use-scroll-position';
+import useServiceCapability from '@/hooks/use-service-capability';
+import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { useTranslations } from 'next-intl';
+import { Fragment, useContext, useLayoutEffect } from 'react';
 
 export interface ServiceListProps {
   active: documentItem_fragment$data[];
@@ -45,7 +45,7 @@ const ServiceList = ({
   const { settings } = useContext(SettingsContext);
   const { translationKey, serviceInstance, type } = useServiceContext();
   const userCanUpdate = useServiceCapability(
-    ServiceCapabilityName.Upload,
+    ServiceRestrictionEnum.UPLOAD,
     serviceInstance
   );
 

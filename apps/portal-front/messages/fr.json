@@ -417,7 +417,7 @@
     "RemoveOrganization": "Supprimer l'organisation",
     "SelectCapa": "Sélectionner les capabilités",
     "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs.",
-    "SelectOrganization": "Sélectionner une organisation",
+    "SelectOrganization": "Sélectionner",
     "StartDate": "Date de début"
   },
   "OrganizationSwitcher": {
@@ -919,6 +919,7 @@
     },
     "Management": {
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
+      "AreYouSureRemoveOrganizationAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'organisation {organizationName} pour ce service ?",
       "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",
       "Email": "Email",
       "FirstName": "Prénom",

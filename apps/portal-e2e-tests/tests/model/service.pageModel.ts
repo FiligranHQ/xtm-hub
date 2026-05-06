@@ -5,6 +5,10 @@ import { expect } from '../fixtures/baseFixtures';
 export default class ServicePage {
   constructor(private page: Page) {}
 
+  private getActiveDrawer() {
+    return this.page.locator('body > [role="dialog"]').last();
+  }
+
   async navigateToServiceListAdmin() {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Services' }).click();
@@ -25,20 +29,24 @@ export default class ServicePage {
     await this.page
       .getByRole('button', { name: 'Subscribe organization' })
       .click();
-    await this.page.getByLabel('Organization', { exact: true }).click();
-    await this.page.getByLabel(organizationName).click();
-    await this.page.getByRole('button', { name: 'Validate' }).click();
+    const drawer = this.getActiveDrawer();
+    await expect(drawer).toBeVisible();
+    await drawer.getByRole('combobox').click();
+    await this.page.getByRole('option', { name: organizationName }).click();
+    await drawer.getByRole('button', { name: 'Validate' }).click();
     await waitForDrawerToClose(this.page);
   }
   async addOrganizationIntoServiceWithCapabilities(organizationName: string) {
     await this.page
       .getByRole('button', { name: 'Subscribe organization' })
       .click();
-    await this.page.getByLabel('Organization', { exact: true }).click();
-    await this.page.getByLabel(organizationName).click();
-    await this.page.getByText('DELETE access:').click();
-    await this.page.getByLabel('UPLOAD access:').click();
-    await this.page.getByRole('button', { name: 'Validate' }).click();
+    const drawer = this.getActiveDrawer();
+    await expect(drawer).toBeVisible();
+    await drawer.getByRole('combobox').click();
+    await this.page.getByRole('option', { name: organizationName }).click();
+    await drawer.getByText('DELETE access:').click();
+    await drawer.getByLabel('UPLOAD access:').click();
+    await drawer.getByRole('button', { name: 'Validate' }).click();
     await waitForDrawerToClose(this.page);
   }
 

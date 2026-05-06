@@ -7,6 +7,7 @@ import {
   requestContextSimpleUserSecondOrga,
   SERVICES,
 } from '../../../../tests/tests.const';
+import { ServiceRestriction } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import Subscription, {
   SubscriptionId,
@@ -14,7 +15,6 @@ import Subscription, {
 import { createSubscription } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { loadCapabilities } from '../user-service-capability/user-service-capability.helper';
-import { GenericServiceCapabilityName } from './generic-service-capability.const';
 import { serviceCapabilityApp } from './service-capability.app';
 
 describe('editServiceCapability', () => {
@@ -40,15 +40,12 @@ describe('editServiceCapability', () => {
     const userService = await UserServiceDomain.createUserServiceAccess({
       subscription_id: subscription.id,
       user_id: requestContextSimpleUserSecondOrga.user.id,
-      capabilities: [GenericServiceCapabilityName.ACCESS],
+      capabilities: [ServiceRestriction.Access],
     });
 
     const editedCapa = await serviceCapabilityApp.editServiceCapability(
       userService!.id,
-      [
-        GenericServiceCapabilityName.ACCESS,
-        GenericServiceCapabilityName.MANAGE_ACCESS,
-      ],
+      [ServiceRestriction.Access, ServiceRestriction.ManageAccess],
       SERVICES.INSTANCES.VAULT.ID
     );
 
@@ -60,25 +57,22 @@ describe('editServiceCapability', () => {
 
     expect(editedCapa).toBeTruthy();
     expect(capabilities).toStrictEqual([
-      GenericServiceCapabilityName.ACCESS,
-      GenericServiceCapabilityName.MANAGE_ACCESS,
+      ServiceRestriction.Access,
+      ServiceRestriction.ManageAccess,
     ]);
   });
   it('should throw an error if user is not allowed', async () => {
     const userService = await UserServiceDomain.createUserServiceAccess({
       subscription_id: subscription.id,
       user_id: requestContextSimpleUserSecondOrga.user.id,
-      capabilities: [GenericServiceCapabilityName.ACCESS],
+      capabilities: [ServiceRestriction.Access],
     });
 
     requestContext.set(requestContextSimpleUserSecondOrga);
 
     const call = serviceCapabilityApp.editServiceCapability(
       userService!.id,
-      [
-        GenericServiceCapabilityName.ACCESS,
-        GenericServiceCapabilityName.MANAGE_ACCESS,
-      ],
+      [ServiceRestriction.Access, ServiceRestriction.ManageAccess],
       SERVICES.INSTANCES.VAULT.ID
     );
 
