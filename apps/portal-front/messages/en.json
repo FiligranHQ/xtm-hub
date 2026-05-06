@@ -170,7 +170,9 @@
       "DeleteEpic": "Delete {epicName} epic",
       "SureDeleteEpic": "Are you sure you want to delete the {epicName} epic?",
       "EpicDeleted": "The epic was deleted"
-    }
+    },
+    "StayUpToDate": "To stay up to date about everything {product}",
+    "JoinCommunity": "Join the discussion in the community"
   },
   "Error": {
     "AnErrorOccured": "An error occurred",
