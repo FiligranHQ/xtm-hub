@@ -9,7 +9,7 @@
     "test:e2e:update-snapshot": "playwright test --update-snapshots"
   },
   "dependencies": {
-    "knex": "3.2.9",
+    "knex": "3.2.10",
     "pg": "8.20.0",
     "react": "19.2.5",
     "uuid": "14.0.0"
