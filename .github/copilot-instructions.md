@@ -16,10 +16,10 @@ XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace fo
 
 ### Applications
 
-| Workspace | Path | Stack | Dev Port |
-|---|---|---|---|
-| `portal-api` | `apps/portal-api` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `portal-front` | `apps/portal-front` | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
+| Workspace          | Path                    | Stack | Dev Port |
+|--------------------|-------------------------|---|---|
+| `backend`          | `apps/backend`          | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
+| `portal-front`     | `apps/portal-front`     | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
 | `portal-e2e-tests` | `apps/portal-e2e-tests` | Playwright | — |
 
 ## Setup
@@ -50,7 +50,7 @@ yarn dev:front           # starts frontend on :3002 (needs API running first)
 
 ## Build & Validation
 
-### Backend (`apps/portal-api`)
+### Backend (`apps/backend`)
 
 ```bash
 yarn build               # esbuild compile + copy .graphql and migration .js files
@@ -88,8 +88,8 @@ E2E runs with `workers: 1` (sequential), `retries: 2`, Chromium only. Base URL d
 
 This is the most important data flow to understand:
 
-1. **Schema definition**: `.graphql` files in `apps/portal-api/src/modules/**/` and `src/nodes/`
-2. **Backend codegen**: `yarn generate:ts` in portal-api → runs `graphql-codegen` → produces `src/__generated__/resolvers-types.ts`
+1. **Schema definition**: `.graphql` files in `apps/backend/src/modules/**/` and `src/nodes/`
+2. **Backend codegen**: `yarn generate:ts` in backend → runs `graphql-codegen` → produces `src/__generated__/resolvers-types.ts`
 3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to `apps/portal-front/schema.graphql`
 4. **Relay compilation**: `yarn relay` in portal-front → reads `schema.graphql` → generates TypeScript artifacts in `apps/portal-front/__generated__/`
 5. **Enum generation**: `yarn generate:enum` (part of `yarn relay`) → extracts enums from the schema into TypeScript
@@ -105,15 +105,15 @@ GraphQL resolvers are merged in `src/server/graphql-schema.ts`. Each module typi
 .yarnrc.yml             # Yarn 4 config: node-modules linker, scripts disabled, 3-day age gate
 .rules                  # Project rules (no comments in code)
 tsconfig.json           # Base TS config (extended by workspaces)
-graphql.config.yml      # Points to apps/portal-api/**/*.graphql
+graphql.config.yml      # Points to apps/backed/**/*.graphql
 codecov.yml             # Coverage reporting (informational only)
 renovate.json           # Dependency automation
-.husky/pre-commit       # Runs lint-staged in portal-api then portal-front
+.husky/pre-commit       # Runs lint-staged in backend then portal-front
 chart/                  # Helm chart for Kubernetes deployment
 xtm-hub-dev/            # Docker Compose files (dev + CI)
 ```
 
-### Backend — `apps/portal-api/`
+### Backend — `apps/backend/`
 
 ```
 src/index.ts                    # Entry point — Express + Apollo Server + SSE setup
@@ -298,7 +298,7 @@ Dockerfile                      # E2E test Docker image
 ## Database
 
 - **SQL Query Builder**: Knex.js 3 with PostgreSQL (`pg` driver) — not an ORM
-- **Config**: `node-config` library reads from `apps/portal-api/config/` JSON files. Environment variables override via `custom-environment-variables.json`.
+- **Config**: `node-config` library reads from `apps/backend/config/` JSON files. Environment variables override via `custom-environment-variables.json`.
 - **Migrations**: JavaScript files in `src/migrations/`. Run with `yarn migrate:latest`.
 - **Seeds**: In `src/seeds/` (production) and `tests/seeds/` (test).
 - **Test DB**: When `VITEST_MODE=true`, uses `test_database` database and `tests/seeds/` directory.
@@ -362,8 +362,8 @@ Removing the `skip-feature-env` label from an already-open PR triggers an immedi
 
 Before Docker builds, migrations and seeds are copied to e2e-tests:
 ```bash
-cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
-cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+cp -r ./apps/backend/src/migrations ./apps/portal-e2e-tests/migrations
+cp -r ./apps/backend/tests/seeds ./apps/portal-e2e-tests/seeds
 ```
 
 ## Commit Convention
@@ -415,7 +415,7 @@ Examples:
 ### Adding a Database Migration
 
 ```bash
-cd apps/portal-api
+cd apps/backend
 yarn migrate:make <migration_name>    # creates JS file in src/migrations/
 ```
 
@@ -489,4 +489,4 @@ trials-tab.utils.test.ts ← fast, isolated unit tests
 - **TypeScript ESLint warning** about TS 5.9.3 vs supported <5.9.0: non-blocking, ignore it
 - **Frontend port**: Dev runs on 3002, Docker production runs on 3000 internally
 - **Test DB**: Backend tests use `test_database` DB (not `cloud-portal`) when `VITEST_MODE=true`
-- **Pre-commit hook**: Runs `lint-staged` in both portal-api and portal-front sequentially
+- **Pre-commit hook**: Runs `lint-staged` in both backend and portal-front sequentially

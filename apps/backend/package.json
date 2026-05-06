@@ -1,5 +1,5 @@
 {
-  "name": "@xtm-hub/portal-api",
+  "name": "@xtm-hub/backend",
   "version": "1.5.3",
   "description": "Portal API",
   "main": "src/index.js",

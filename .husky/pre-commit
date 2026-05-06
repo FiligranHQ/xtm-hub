@@ -1,7 +1,7 @@
 # .husky/pre-commit
 . "$(dirname -- "$0")/common.sh"
 
-cd apps/portal-api
+cd apps/backend
 yarn lint-staged
 
 cd ../portal-front

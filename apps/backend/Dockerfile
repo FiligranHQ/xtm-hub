@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy monorepo configuration files
 COPY .yarnrc.yml package.json yarn.lock ./
-COPY apps/portal-api/package.json ./apps/portal-api/package.json
+COPY apps/backend/package.json ./apps/backend/package.json
 COPY apps/portal-e2e-tests/package.json ./apps/portal-e2e-tests/package.json
 COPY apps/portal-front/package.json ./apps/portal-front/package.json
 
@@ -19,10 +19,10 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY .yarnrc.yml package.json yarn.lock ./
-COPY apps/portal-api/. ./apps/portal-api/
+COPY apps/backend/. ./apps/backend/
 
 # Build the backend
-WORKDIR /app/apps/portal-api
+WORKDIR /app/apps/backend
 RUN corepack enable && \
     yarn build
 
@@ -40,12 +40,12 @@ RUN addgroup --system --gid 1001 nodejs && \
     chown graphql:nodejs .graphql
 
 COPY --from=builder --chown=graphql:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/config ./config
-COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/package.json .
-COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/tests ./tests
-COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/src/seeds ./src/seeds
-COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/dist .
-COPY --from=builder --chown=graphql:nodejs /app/apps/portal-api/src/server/mail-template ./src/server/mail-template
+COPY --from=builder --chown=graphql:nodejs /app/apps/backend/config ./config
+COPY --from=builder --chown=graphql:nodejs /app/apps/backend/package.json .
+COPY --from=builder --chown=graphql:nodejs /app/apps/backend/tests ./tests
+COPY --from=builder --chown=graphql:nodejs /app/apps/backend/src/seeds ./src/seeds
+COPY --from=builder --chown=graphql:nodejs /app/apps/backend/dist .
+COPY --from=builder --chown=graphql:nodejs /app/apps/backend/src/server/mail-template ./src/server/mail-template
 
 USER graphql
 EXPOSE 4001

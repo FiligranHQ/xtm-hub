@@ -52,8 +52,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: portal-api
-            working-directory: apps/portal-api
+          - label: backend
+            working-directory: apps/backend
           - label: portal-front
             working-directory: apps/portal-front
     steps:
@@ -93,13 +93,13 @@ jobs:
           - image: portal-front
             dockerfile: apps/portal-front/Dockerfile
           - image: portal-api
-            dockerfile: apps/portal-api/Dockerfile
+            dockerfile: apps/backend/Dockerfile
           - image: portal-e2e-tests
             dockerfile: apps/portal-e2e-tests/Dockerfile
           - image: portal-front-test
             dockerfile: apps/portal-front/test.Dockerfile
           - image: portal-api-test
-            dockerfile: apps/portal-api/test.Dockerfile
+            dockerfile: apps/backend/test.Dockerfile
     outputs:
       docker-tags: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
       docker-labels: ${{ steps.meta.outputs.labels }}
@@ -138,9 +138,9 @@ jobs:
 
       - name: Copy migrations
         run: |
-          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
-          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
-          cp ./apps/portal-api/tests/test-utils.ts ./apps/portal-e2e-tests/test-utils.ts
+          cp -r ./apps/backend/src/migrations ./apps/portal-e2e-tests/migrations
+          cp -r ./apps/backend/tests/seeds ./apps/portal-e2e-tests/seeds
+          cp ./apps/backend/tests/test-utils.ts ./apps/portal-e2e-tests/test-utils.ts
 
       - name: Build and push portal image
         uses: docker/build-push-action@v6
@@ -192,9 +192,9 @@ jobs:
 
       - name: Copy migrations
         run: |
-          cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
-          cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
-          cp ./apps/portal-api/tests/test-utils.ts ./apps/portal-e2e-tests/test-utils.ts
+          cp -r ./apps/backend/src/migrations ./apps/portal-e2e-tests/migrations
+          cp -r ./apps/backend/tests/seeds ./apps/portal-e2e-tests/seeds
+          cp ./apps/backend/tests/test-utils.ts ./apps/portal-e2e-tests/test-utils.ts
 
       - name: Launch docker compose
         run: |
@@ -230,11 +230,11 @@ jobs:
         run: |
           echo "=== Collecting logs from all services ==="
           echo ""
-          echo "=== Portal API Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-api || echo "Could not collect portal-api logs"
+          echo "=== Backend Logs ==="
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 backend || echo "Could not collect backend logs"
           echo ""
           echo "=== Portal API Test Logs ==="
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-api-test || echo "Could not collect portal-api-test logs"
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 backend-test || echo "Could not collect backend-test logs"
           echo ""
           echo "=== Portal Front Logs ==="
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs --tail=100 portal-front || echo "Could not collect portal-front logs"
@@ -258,8 +258,8 @@ jobs:
         if: failure()
         run: |
           mkdir -p logs
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-api > logs/portal-api.log 2>&1 || true
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-api-test > logs/portal-api-test.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs backend > logs/backend.log 2>&1 || true
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs backend-test > logs/backend-test.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-front > logs/portal-front.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-front-test > logs/portal-front-test.log 2>&1 || true
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml logs portal-postgres > logs/portal-postgres.log 2>&1 || true
@@ -340,7 +340,7 @@ jobs:
         run: |
           mkdir -p coverage
           export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run backend-test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v6
@@ -400,7 +400,7 @@ jobs:
           - image: portal-front
             dockerfile: apps/portal-front/Dockerfile
           - image: portal-api
-            dockerfile: apps/portal-api/Dockerfile
+            dockerfile: apps/backend/Dockerfile
     if: |
       always() &&
       github.event_name != 'pull_request' &&

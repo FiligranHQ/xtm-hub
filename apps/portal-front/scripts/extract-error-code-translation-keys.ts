@@ -5,7 +5,7 @@ const APPS_PATH = path.join(__dirname, '..', '..');
 
 const ERROR_CODE_FILE_PATH = path.join(
   APPS_PATH,
-  'portal-api',
+  'backend',
   'src',
   'utils',
   'error',

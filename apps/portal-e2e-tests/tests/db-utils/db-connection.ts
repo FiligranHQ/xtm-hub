@@ -24,12 +24,12 @@ export const db = knex({
     tableName: 'migrations',
     directory: process.env.MIGRATIONS_PATH
       ? process.env.MIGRATIONS_PATH
-      : process.cwd() + '/../portal-api/src/migrations',
+      : process.cwd() + '/../backend/src/migrations',
   },
   seeds: {
     extension: 'js',
     directory: process.env.SEEDS_PATH
       ? process.env.SEEDS_PATH
-      : process.cwd() + '/../portal-api/tests/seeds',
+      : process.cwd() + '/../backend/tests/seeds',
   },
 });

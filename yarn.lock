@@ -8492,9 +8492,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xtm-hub/portal-api@workspace:apps/portal-api":
+"@xtm-hub/backend@workspace:apps/backend":
   version: 0.0.0-use.local
-  resolution: "@xtm-hub/portal-api@workspace:apps/portal-api"
+  resolution: "@xtm-hub/backend@workspace:apps/backend"
   dependencies:
     "@apollo/server": "npm:5.5.0"
     "@as-integrations/express5": "npm:1.1.2"

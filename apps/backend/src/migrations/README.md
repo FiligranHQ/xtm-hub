@@ -7,7 +7,7 @@ Migrations must be defined as pure JS for this reason.
 - Fill this file with `export async function up` and `export async function down`
 - On you first launch of portail-api, it will update the DB. It will insert a new entry in the `migrations` table.
 - Generate the Ts files with `yarn generate-pg-to-ts` or `npx kanel` (remove the `type: module` from
-  portal-api/package.json before launching the commands since it is not compatible)
+  backend/package.json before launching the commands since it is not compatible)
 - Please think about update your graphQL, your models etc.
 - If a column is an enum type, update `.kanelrc.js` with the new enum type and regenerate the Ts files.
 
