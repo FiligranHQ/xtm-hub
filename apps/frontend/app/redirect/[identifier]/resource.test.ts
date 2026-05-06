@@ -1,7 +1,7 @@
+import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
 import { redirectToResource } from './resource';
 import {
   loadBaseUrlFront,
@@ -179,4 +179,52 @@ describe('redirectToResource', () => {
       expect(response.headers.get('location')).toBe(expectedLocation);
     }
   );
+
+  it.each`
+    pathAndQuery                                                                                         | expectedLocation                                                                         | description
+    ${`/redirect/${IDENTIFIER}?label=foo&deployable=true`}                                               | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?label=foo&deployable=true`}     | ${'forwards extra params'}
+    ${`/redirect/${IDENTIFIER}?platform_id=platform-1&label=foo`}                                        | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?label=foo`}                     | ${'strips internal platform_id, keeps extra params'}
+    ${`/redirect/${IDENTIFIER}?opencti_platform_id=opencti-1&oaev_instance_id=oaev-1&label=bar`}         | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?label=bar`}                     | ${'strips all internal params, keeps extra params'}
+    ${`/redirect/${IDENTIFIER}?platform_id=platform-1&tenant_id=tenant-1&oaev_instance_id=oaev-1`}       | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target`}                               | ${'strips all internal params, no extra params → no query string'}
+    ${`/redirect/${IDENTIFIER}?platform_id=platform-1&tenant_id=tenant-1&label=foo&integrationType=bar`} | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?label=foo&integrationType=bar`} | ${'strips internal params, forwards multiple extra params'}
+    ${`/redirect/${IDENTIFIER}?label=foo&label=bar`}                                                     | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?label=foo&label=bar`}           | ${'preserves repeated params'}
+  `(
+    'forwards query params correctly to the instance redirect ($description)',
+    async ({ pathAndQuery, expectedLocation }) => {
+      // Given
+      vi.mocked(loadServiceInstances).mockResolvedValue([
+        {
+          id: 'instance-target',
+          service_definition: {
+            identifier: ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS,
+          },
+        },
+      ] as LoadServiceInstancesResult);
+
+      // When
+      const response = await redirectToResource(
+        { identifier: IDENTIFIER },
+        makeRequest(pathAndQuery)
+      );
+
+      // Then
+      expect(response.headers.get('location')).toBe(expectedLocation);
+    }
+  );
+
+  it('does not forward extra params to the fallback /app redirect when no instance exists', async () => {
+    // Given
+    vi.mocked(loadServiceInstances).mockResolvedValue(
+      [] as LoadServiceInstancesResult
+    );
+
+    // When
+    const response = await redirectToResource(
+      { identifier: IDENTIFIER },
+      makeRequest(`/redirect/${IDENTIFIER}?label=foo&deployable=true`)
+    );
+
+    // Then
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/app`);
+  });
 });
