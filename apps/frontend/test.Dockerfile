@@ -7,9 +7,9 @@ WORKDIR /app
 
 # Copy monorepo configuration files
 COPY .yarnrc.yml package.json yarn.lock ./
-COPY apps/portal-api/package.json ./apps/portal-api/package.json
-COPY apps/portal-e2e-tests/package.json ./apps/portal-e2e-tests/package.json
-COPY apps/portal-front/package.json ./apps/portal-front/package.json
+COPY apps/backend/package.json ./apps/backend/package.json
+COPY apps/e2e/package.json ./apps/e2e/package.json
+COPY apps/frontend/package.json ./apps/frontend/package.json
 
 # Install all dependencies at the workspace level
 RUN corepack enable && \
@@ -19,7 +19,7 @@ RUN corepack enable && \
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY apps/portal-front/. ./apps/portal-front/
+COPY apps/frontend/. ./apps/frontend/
 COPY .yarnrc.yml package.json yarn.lock ./
 
 # Set the version of the app
@@ -29,7 +29,7 @@ ENV NEXT_PUBLIC_APP_VERSION=${APP_VERSION}
 # Copy root node_modules for proper dependencies resolution
 COPY --from=deps /app/node_modules ./node_modules
 
-WORKDIR /app/apps/portal-front
+WORKDIR /app/apps/frontend
 RUN corepack enable && \
     echo "NEXT_PUBLIC_APP_VERSION=${APP_VERSION}" > .env.local
 

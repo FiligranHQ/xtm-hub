@@ -6,9 +6,9 @@ WORKDIR /app
 
 # Copy monorepo configuration files
 COPY .yarnrc.yml package.json yarn.lock ./
-COPY apps/portal-api/package.json ./apps/portal-api/package.json
-COPY apps/portal-e2e-tests/package.json ./apps/portal-e2e-tests/package.json
-COPY apps/portal-front/package.json ./apps/portal-front/package.json
+COPY apps/backend/package.json ./apps/backend/package.json
+COPY apps/e2e/package.json ./apps/e2e/package.json
+COPY apps/frontend/package.json ./apps/frontend/package.json
 
 # Install all dependencies at the workspace level
 RUN corepack enable && \
@@ -20,14 +20,14 @@ ARG APP_VERSION=0.0.0-dev
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY .yarnrc.yml package.json yarn.lock ./
-COPY apps/portal-front/. ./apps/portal-front/
+COPY apps/frontend/. ./apps/frontend/
 
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 
 # Build the frontend
-WORKDIR /app/apps/portal-front
+WORKDIR /app/apps/frontend
 RUN corepack enable && \
     echo "NEXT_PUBLIC_APP_VERSION=$APP_VERSION" > .env.local && \
     yarn build
@@ -48,14 +48,14 @@ RUN addgroup --system --gid 1001 nodejs && \
     mkdir .next && \
     chown nextjs:nodejs .next
 
-COPY --from=builder /app/apps/portal-front/public ./apps/portal-front/public
+COPY --from=builder /app/apps/frontend/public ./apps/frontend/public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/apps/portal-front/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/portal-front/.next/static ./apps/portal-front/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./apps/frontend/.next/static
 
 USER nextjs
 EXPOSE 3000
 
-CMD ["node", "apps/portal-front/server.js"]
+CMD ["node", "apps/frontend/server.js"]

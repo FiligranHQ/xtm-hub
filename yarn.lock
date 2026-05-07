@@ -8492,9 +8492,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xtm-hub/portal-api@workspace:apps/portal-api":
+"@xtm-hub/backend@workspace:apps/backend":
   version: 0.0.0-use.local
-  resolution: "@xtm-hub/portal-api@workspace:apps/portal-api"
+  resolution: "@xtm-hub/backend@workspace:apps/backend"
   dependencies:
     "@apollo/server": "npm:5.5.0"
     "@as-integrations/express5": "npm:1.1.2"
@@ -8570,9 +8570,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@xtm-hub/portal-front@workspace:apps/portal-front":
+"@xtm-hub/frontend@workspace:apps/frontend":
   version: 0.0.0-use.local
-  resolution: "@xtm-hub/portal-front@workspace:apps/portal-front"
+  resolution: "@xtm-hub/frontend@workspace:apps/frontend"
   dependencies:
     "@filigran/chatbot": "npm:3.2.1"
     "@filigran/icon": "npm:0.22.6"
@@ -8641,9 +8641,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@xtm-hub/test_e2e@workspace:apps/portal-e2e-tests":
+"@xtm-hub/test_e2e@workspace:apps/e2e":
   version: 0.0.0-use.local
-  resolution: "@xtm-hub/test_e2e@workspace:apps/portal-e2e-tests"
+  resolution: "@xtm-hub/test_e2e@workspace:apps/e2e"
   dependencies:
     "@playwright/test": "npm:1.59.1"
     "@types/node": "npm:24.12.2"

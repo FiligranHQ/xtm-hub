@@ -1,2 +1,2 @@
 schema:
-  - ./apps/portal-api/**/*.graphql
+  - ./apps/backend/**/*.graphql
