@@ -2,7 +2,6 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
-import { SERVICES } from '../../../tests/tests.const';
 import {
   NewsFeedItemMetadataKey,
   NewsFeedItemType,
@@ -155,7 +154,6 @@ describe('newsFeedDomain', () => {
       await expect(
         NewsFeedDomain.createResourceNewsFeedItem({
           document,
-          serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
           serviceDefinitionIdentifier:
             ServiceDefinitionIdentifier.OpenctiCustomDashboards,
           type: NewsFeedItemType.ResourceCustomDashboard,
@@ -172,7 +170,6 @@ describe('newsFeedDomain', () => {
 
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         serviceDefinitionIdentifier:
           ServiceDefinitionIdentifier.OpenctiCustomDashboards,
         type: NewsFeedItemType.ResourceCustomDashboard,
@@ -197,7 +194,6 @@ describe('newsFeedDomain', () => {
 
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         serviceDefinitionIdentifier:
           ServiceDefinitionIdentifier.OpenctiCustomDashboards,
         type: NewsFeedItemType.ResourceCustomDashboard,
@@ -225,7 +221,6 @@ describe('newsFeedDomain', () => {
 
       const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
         document,
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         serviceDefinitionIdentifier:
           ServiceDefinitionIdentifier.OpenctiCustomDashboards,
         type: NewsFeedItemType.ResourceCustomDashboard,
@@ -237,17 +232,13 @@ describe('newsFeedDomain', () => {
         news_feed_item_id: newsFeedItem.id,
       });
 
-      const expectedGlobalServiceInstanceId = toGlobalId(
-        'ServiceInstance',
-        SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
-      );
       const expectedGlobalDocumentId = toGlobalId('Document', document.id);
 
       expect(metadata).toBeDefined();
       expect(metadata).toMatchObject({
         news_feed_item_id: newsFeedItem.id,
         key: NewsFeedItemMetadataKey.UrlPath,
-        value: `app/service/${ServiceDefinitionIdentifier.OpenctiCustomDashboards}/${expectedGlobalServiceInstanceId}/${expectedGlobalDocumentId}`,
+        value: `redirect/${ServiceDefinitionIdentifier.OpenctiCustomDashboards}?document_id=${expectedGlobalDocumentId}`,
       });
     });
   });

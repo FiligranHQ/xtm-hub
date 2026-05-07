@@ -13,7 +13,6 @@ import NewsFeedItem, {
   NewsFeedItemId,
 } from '../../model/kanel/public/NewsFeedItem';
 import NewsFeedItemMetadata from '../../model/kanel/public/NewsFeedItemMetadata';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../utils/error/error.code';
 import { newsFeedConfigurationMapping } from './news-feed.model';
 
@@ -76,14 +75,12 @@ export const NewsFeedDomain = {
 
   createResourceNewsFeedItem: async ({
     document,
-    serviceInstanceId,
     serviceDefinitionIdentifier,
     type,
     platformIdentifier,
     tags,
   }: {
     document: Document;
-    serviceInstanceId: ServiceInstanceId;
     serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
     type: NewsFeedItemType;
     platformIdentifier: PlatformIdentifier;
@@ -103,16 +100,12 @@ export const NewsFeedDomain = {
       })
       .returning('*');
 
-    const globalServiceInstanceId = toGlobalId(
-      'ServiceInstance',
-      serviceInstanceId
-    );
     const globalDocumentId = toGlobalId('Document', document.id);
 
     await db('NewsFeedItemMetadata').insert({
       news_feed_item_id: newsFeedItem.id,
       key: NewsFeedItemMetadataKey.UrlPath,
-      value: `app/service/${serviceDefinitionIdentifier}/${globalServiceInstanceId}/${globalDocumentId}`,
+      value: `redirect/${serviceDefinitionIdentifier}?document_id=${globalDocumentId}`,
     });
 
     return newsFeedItem;
