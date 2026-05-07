@@ -1359,6 +1359,7 @@ export type PlatformInput = {
   contract: PlatformContract;
   id: Scalars['ID']['input'];
   tenantId?: InputMaybe<Scalars['String']['input']>;
+  tenantName?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
   version?: InputMaybe<Scalars['String']['input']>;
@@ -1716,6 +1717,7 @@ export type RefreshPlatformRegistrationConnectivityStatusSingleTenantInput = {
   platformIdentifier: PlatformIdentifier;
   platformVersion: Scalars['String']['input'];
   tenantId: Scalars['String']['input'];
+  tenantName: Scalars['String']['input'];
   token: Scalars['String']['input'];
   url: Scalars['String']['input'];
 };
@@ -1741,6 +1743,7 @@ export type RegisteredPlatform = Node & {
   platform_id: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
   tenant_id?: Maybe<Scalars['String']['output']>;
+  tenant_name?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   url: Scalars['String']['output'];
   version?: Maybe<Scalars['String']['output']>;
@@ -2142,6 +2145,7 @@ export type TelemetryResponse = {
 
 export type TenantDetails = {
   tenantId: Scalars['String']['input'];
+  tenantName: Scalars['String']['input'];
   token: Scalars['String']['input'];
   url: Scalars['String']['input'];
 };
@@ -3555,6 +3559,7 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   tenant_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tenant_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

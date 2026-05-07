@@ -67,9 +67,7 @@ test.describe('Registration', () => {
       await homePage.navigateTo();
       await waitForReactIdle(page);
       await expect(
-        page
-          .locator('li')
-          .filter({ hasText: 'Open AEV Instance - Private platform' })
+        page.locator('li').filter({ hasText: 'Open AEV Instance' })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();
     });
@@ -112,9 +110,7 @@ test.describe('Registration', () => {
       await homePage.navigateTo();
       await waitForReactIdle(page);
       await expect(
-        page
-          .locator('li')
-          .filter({ hasText: 'Open CTI Instance - Private platform' })
+        page.locator('li').filter({ hasText: 'Open CTI Instance' })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();
     });

@@ -20,11 +20,13 @@ const handleTenantUpgrade = async ({
   platform_id,
   token,
   tenant_id,
+  tenant_name,
   platform_identifier,
 }: {
   platform_id: string;
   token: string;
   tenant_id: string;
+  tenant_name: string;
   platform_identifier: PlatformIdentifier;
 }): Promise<ServiceConfiguration | null> => {
   const configWithoutTenant =
@@ -42,7 +44,7 @@ const handleTenantUpgrade = async ({
     configWithoutTenant &&
     !isTenantIdRequired(platform_identifier, existingConfig?.platform_version)
   ) {
-    const updatedConfig = { ...existingConfig, tenant_id };
+    const updatedConfig = { ...existingConfig, tenant_id, tenant_name };
     await ServiceConfigurationDomain.updateConfiguration(
       configWithoutTenant.service_instance_id,
       { config: updatedConfig }
@@ -85,15 +87,18 @@ const saveConfigIfChanged = async ({
   serviceConfiguration,
   platform_version,
   url,
+  tenant_name,
 }: {
   serviceConfiguration: ServiceConfiguration;
   platform_version: string;
   url?: string;
+  tenant_name?: string;
 }): Promise<void> => {
   const existingConfig = serviceConfiguration.config;
   const hasConfigChanged =
     existingConfig['platform_version'] !== platform_version ||
-    (url && existingConfig['url'] !== url);
+    (url && existingConfig['url'] !== url) ||
+    (tenant_name && existingConfig['tenant_name'] !== tenant_name);
 
   if (hasConfigChanged) {
     await ServiceConfigurationDomain.updateConfiguration(
@@ -103,6 +108,7 @@ const saveConfigIfChanged = async ({
           ...(existingConfig as object),
           platform_version,
           ...(url ? { url } : {}),
+          ...(tenant_name ? { tenant_name } : {}),
         },
       }
     );
@@ -115,6 +121,7 @@ const refreshConnectivityStatus = async ({
   platform_version,
   url,
   tenant_id,
+  tenant_name,
   platform_identifier,
 }: {
   platform_id: string;
@@ -122,6 +129,7 @@ const refreshConnectivityStatus = async ({
   platform_version: string;
   url?: string;
   tenant_id?: string;
+  tenant_name?: string;
   platform_identifier?: PlatformIdentifier;
 }): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
   if (!isValidVersion(platform_version)) {
@@ -144,12 +152,13 @@ const refreshConnectivityStatus = async ({
     });
 
   const canAttemptTenantUpgrade =
-    !serviceConfiguration && tenant_id && platform_identifier;
+    !serviceConfiguration && tenant_id && tenant_name && platform_identifier;
   if (canAttemptTenantUpgrade) {
     serviceConfiguration = await handleTenantUpgrade({
       platform_id,
       token,
       tenant_id,
+      tenant_name,
       platform_identifier,
     });
   }
@@ -161,7 +170,12 @@ const refreshConnectivityStatus = async ({
     });
   }
 
-  await saveConfigIfChanged({ serviceConfiguration, platform_version, url });
+  await saveConfigIfChanged({
+    serviceConfiguration,
+    platform_version,
+    url,
+    tenant_name,
+  });
 
   return {
     status:
@@ -193,6 +207,7 @@ export const registrationConnectivityApp = {
       token: input.token,
       url: input.url,
       tenant_id: input.tenantId,
+      tenant_name: input.tenantName,
     });
   },
 
@@ -208,6 +223,7 @@ export const registrationConnectivityApp = {
           token: tenant.token,
           url: tenant.url,
           tenant_id: tenant.tenantId,
+          tenant_name: tenant.tenantName,
         }).then(({ status }) => ({ tenantId: tenant.tenantId, status }))
       )
     );

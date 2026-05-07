@@ -170,7 +170,9 @@ export const registeredPlatformToServiceInstanceCardData = (
     isCustomIllustrationDocument: !!platform.illustration_document_id,
     logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
     fullBackgroundImage: true,
-    cardTitleOverride: `${platform.title} - ${t('Register.Details.PrivatePlatform')}`,
+    cardTitleOverride: platform.tenant_name
+      ? `${platform.title} - ${platform.tenant_name}`
+      : platform.title,
     card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
     ordering: -1, // registered platforms are displayed at the first position, after free trials
   };

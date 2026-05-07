@@ -8,6 +8,7 @@ import {
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
   PlatformContract,
+  PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
   RefreshUserPlatformTokenResponse,
@@ -62,6 +63,22 @@ import {
 import { isTenantIdRequired } from './registration.helper';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from './registration.mapping';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
+
+const buildPlatformConfiguration = (
+  platform: PlatformInput,
+  registererId: string,
+  token: string
+): PlatformConfiguration => ({
+  registerer_id: registererId,
+  platform_id: platform.id,
+  ...(platform.tenantId ? { tenant_id: platform.tenantId } : {}),
+  ...(platform.tenantName ? { tenant_name: platform.tenantName } : {}),
+  platform_url: platform.url,
+  platform_title: platform.title,
+  platform_contract: platform.contract,
+  platform_version: platform.version,
+  token,
+});
 
 export const registrationApp = {
   loadPlatformAssociatedOrganization: async (
@@ -177,16 +194,7 @@ export const registrationApp = {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
-    const configuration: PlatformConfiguration = {
-      registerer_id: user.id,
-      platform_id: platform.id,
-      ...(platform.tenantId ? { tenant_id: platform.tenantId } : {}),
-      platform_url: platform.url,
-      platform_title: platform.title,
-      platform_contract: platform.contract,
-      platform_version: platform.version,
-      token,
-    };
+    const configuration = buildPlatformConfiguration(platform, user.id, token);
 
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
@@ -465,18 +473,11 @@ export const registrationApp = {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
-    const configuration: PlatformConfiguration = {
-      registerer_id: deploymentRequest.user_requester_id,
-      platform_id: input.platform.id,
-      ...(input.platform.tenantId
-        ? { tenant_id: input.platform.tenantId }
-        : {}),
-      platform_url: input.platform.url,
-      platform_title: input.platform.title,
-      platform_contract: input.platform.contract,
-      platform_version: input.platform.version,
-      token: deploymentRequest.platform_token,
-    };
+    const configuration = buildPlatformConfiguration(
+      input.platform,
+      deploymentRequest.user_requester_id,
+      deploymentRequest.platform_token
+    );
 
     await withTransaction(async () => {
       await Promise.all([
@@ -534,6 +535,7 @@ const mapDomainRegisteredPlatformToGraphQL = (
     id: platform.id,
     platform_id: platform.config?.platform_id ?? platform.id,
     tenant_id: platform.config?.tenant_id,
+    tenant_name: platform.config?.tenant_name,
     title: platform.config?.platform_title ?? defaultTitle,
     url: platform.config?.platform_url ?? '',
     contract: platform.config?.platform_contract ?? PlatformContract.Trial,

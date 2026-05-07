@@ -122,6 +122,7 @@ export const registerRegisteredPlatformFragment = graphql`
     id
     platform_id
     tenant_id
+    tenant_name
     title
     url
     contract

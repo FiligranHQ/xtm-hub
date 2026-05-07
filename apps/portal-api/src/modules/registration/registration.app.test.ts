@@ -283,12 +283,14 @@ describe('registration app', () => {
     describe('with tenantId', () => {
       let platformId: string;
       let tenantId: string;
+      let tenantName: string;
 
       beforeEach(async () => {
         // Given — an OpenAEV platform registered with a specific tenantId
         requestContext.set(requestContextRegistererUserSecondOrga);
         platformId = uuidv4();
         tenantId = uuidv4();
+        tenantName = 'My OpenAEV tenant';
 
         await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
@@ -299,6 +301,7 @@ describe('registration app', () => {
             contract: PlatformContract.Ee,
             version: '1.0.0',
             tenantId,
+            tenantName,
           },
           identifier: PlatformIdentifier.Openaev,
         });
@@ -475,9 +478,10 @@ describe('registration app', () => {
         .mockResolvedValue();
 
       const tenantId = uuidv4();
+      const tenantName = 'My OpenAEV tenant';
       await registrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        platform: { ...platform, tenantId },
+        platform: { ...platform, tenantId, tenantName },
         identifier: PlatformIdentifier.Openaev,
       });
 
@@ -503,10 +507,11 @@ describe('registration app', () => {
         requestContext.set(requestContextRegistererUserSecondOrga);
       });
 
-      it('should store tenant_id in the config when tenantId is provided', async () => {
+      it('should store tenant_id and tenant_name in the config when  provided', async () => {
         // Given
         const platformId = uuidv4();
         const tenantId = uuidv4();
+        const tenantName = 'My OpenAEV tenant';
 
         // When
         await registrationApp.registerPlatform({
@@ -518,6 +523,7 @@ describe('registration app', () => {
             contract: PlatformContract.Ee,
             version: '1.0.0',
             tenantId,
+            tenantName,
           },
           identifier: PlatformIdentifier.Openaev,
         });
@@ -529,7 +535,11 @@ describe('registration app', () => {
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          config: { platform_id: platformId, tenant_id: tenantId },
+          config: {
+            platform_id: platformId,
+            tenant_id: tenantId,
+            tenant_name: tenantName,
+          },
         });
       });
 
@@ -556,6 +566,7 @@ describe('registration app', () => {
             platformId
           );
         expect(configuration?.config).not.toHaveProperty('tenant_id');
+        expect(configuration?.config).not.toHaveProperty('tenant_name');
       });
 
       it('should create separate service instances for the same platform_id with different tenantId values', async () => {
@@ -563,6 +574,8 @@ describe('registration app', () => {
         const platformId = uuidv4();
         const tenantId1 = uuidv4();
         const tenantId2 = uuidv4();
+        const tenantName1 = 'Tenant One';
+        const tenantName2 = 'Tenant Two';
         const basePlatform = {
           id: platformId,
           title: 'My OpenAEV platform',
@@ -574,12 +587,20 @@ describe('registration app', () => {
         // When
         await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-          platform: { ...basePlatform, tenantId: tenantId1 },
+          platform: {
+            ...basePlatform,
+            tenantId: tenantId1,
+            tenantName: tenantName1,
+          },
           identifier: PlatformIdentifier.Openaev,
         });
         await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-          platform: { ...basePlatform, tenantId: tenantId2 },
+          platform: {
+            ...basePlatform,
+            tenantId: tenantId2,
+            tenantName: tenantName2,
+          },
           identifier: PlatformIdentifier.Openaev,
         });
 
@@ -595,10 +616,18 @@ describe('registration app', () => {
             { tenantId: tenantId2 }
           );
         expect(config1).toMatchObject({
-          config: { platform_id: platformId, tenant_id: tenantId1 },
+          config: {
+            platform_id: platformId,
+            tenant_id: tenantId1,
+            tenant_name: tenantName1,
+          },
         });
         expect(config2).toMatchObject({
-          config: { platform_id: platformId, tenant_id: tenantId2 },
+          config: {
+            platform_id: platformId,
+            tenant_id: tenantId2,
+            tenant_name: tenantName2,
+          },
         });
         expect(config1?.service_instance_id).not.toBe(
           config2?.service_instance_id
@@ -609,6 +638,7 @@ describe('registration app', () => {
         // Given
         const platformId = uuidv4();
         const tenantId = uuidv4();
+        const tenantName = 'My OpenAEV tenant';
         const openaevPlatform = {
           id: platformId,
           title: 'My OpenAEV platform',
@@ -616,6 +646,7 @@ describe('registration app', () => {
           contract: PlatformContract.Ee,
           version: '1.0.0',
           tenantId,
+          tenantName,
         };
         await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
@@ -631,7 +662,11 @@ describe('registration app', () => {
         // When — register again with the same (platform_id, tenantId)
         await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-          platform: { ...openaevPlatform, title: 'Updated title' },
+          platform: {
+            ...openaevPlatform,
+            title: 'Updated title',
+            tenantName: 'newTenant',
+          },
           identifier: PlatformIdentifier.Openaev,
         });
 
@@ -645,7 +680,7 @@ describe('registration app', () => {
           firstConfig?.service_instance_id
         );
         expect(secondConfig).toMatchObject({
-          config: { platform_title: 'Updated title' },
+          config: { platform_title: 'Updated title', tenant_name: 'newTenant' },
         });
       });
     });
@@ -724,6 +759,7 @@ describe('registration app', () => {
         // Given — platform already registered with a tenantId (new client)
         const platformId = uuidv4();
         const tenantId = uuidv4();
+        const tenantName = 'My OpenAEV tenant';
         await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
@@ -733,6 +769,7 @@ describe('registration app', () => {
             contract: PlatformContract.Ee,
             version: '2.4.0',
             tenantId,
+            tenantName,
           },
           identifier: PlatformIdentifier.Openaev,
         });
@@ -759,6 +796,7 @@ describe('registration app', () => {
         // Given — platform registered with a pre-tenant version (below threshold, no tenantId)
         const platformId = uuidv4();
         const tenantId = uuidv4();
+        const tenantName = 'My OpenAEV tenant';
         await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
@@ -781,6 +819,7 @@ describe('registration app', () => {
             contract: PlatformContract.Ee,
             version: '2.4.0',
             tenantId,
+            tenantName,
           },
           identifier: PlatformIdentifier.Openaev,
         });
@@ -906,7 +945,7 @@ describe('registration app', () => {
         tenantId = uuidv4();
         await registrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-          platform: { ...platform, tenantId },
+          platform: { ...platform, tenantId, tenantName: 'My OpenAEV tenant' },
           identifier: PlatformIdentifier.Openaev,
         });
       });
@@ -955,7 +994,7 @@ describe('registration app', () => {
       const tenantId = uuidv4();
       await registrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        platform: { ...platform, tenantId },
+        platform: { ...platform, tenantId, tenantName: 'My OpenAEV tenant' },
         identifier: PlatformIdentifier.Openaev,
       });
 
@@ -1424,6 +1463,7 @@ describe('registration app', () => {
           contract: PlatformContract.Trial,
           version: '4.4.2',
           tenantId: uuidv4(),
+          tenantName: 'My OpenAEV tenant',
         };
         await registrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
@@ -1448,14 +1488,15 @@ describe('registration app', () => {
       });
     });
 
-    it('should store tenant_id in the config when tenantId is provided', async () => {
+    it('should store tenant_id and tenant_name in the config when provided', async () => {
       // Given
       const tenantId = uuidv4();
+      const tenantName = 'My OpenAEV tenant';
 
       // When
       await registrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
-        { platform: { ...platformConfiguration, tenantId } }
+        { platform: { ...platformConfiguration, tenantId, tenantName } }
       );
 
       // Then
@@ -1468,6 +1509,7 @@ describe('registration app', () => {
         config: {
           platform_id: platformConfiguration.id,
           tenant_id: tenantId,
+          tenant_name: tenantName,
         },
         service_instance_id: deploymentRequest.service_instance_id,
         status: ServiceConfigurationStatus.Active,
