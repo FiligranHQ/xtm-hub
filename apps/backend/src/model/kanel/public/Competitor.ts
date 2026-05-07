@@ -19,8 +19,7 @@ export default interface Competitor {
 
 /** Represents the initializer for the table public.Competitor */
 export interface CompetitorInitializer {
-  /** Default value: gen_random_uuid() */
-  id?: CompetitorId;
+  id: CompetitorId;
 
   name?: string | null;
 

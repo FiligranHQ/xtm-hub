@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { defaultGetPropertyMetadata } = require('kanel');
+const { makePgTsGenerator, markAsGenerated } = require('kanel');
 
 const DEFAULT_IMPORT_PATH = '../../../__generated__/resolvers-types';
 
@@ -23,25 +23,28 @@ const COLUMN_ENUM_MAP = {
     use_case: 'DeploymentRequestUseCase',
     activity_sector: 'DeploymentRequestActivitySector',
     job_title: 'DeploymentRequestJobTitle',
-    source: 'DeploymentRequestSource'
+    source: 'DeploymentRequestSource',
   },
   DeploymentRequestQuota: {
     platform_identifier: 'PlatformIdentifier',
     region: 'DeploymentRequestPlatformRegion',
   },
-  Epic:{
+  Epic: {
     product: 'FiligranProduct',
     timeline: 'Timeline',
-    epic_type: 'EpicType'
+    epic_type: 'EpicType',
   },
   ServiceDefinition: {
     identifier: 'ServiceDefinitionIdentifier',
   },
-  ServiceInstance:{
+  ServiceInstance: {
     creation_status: 'ServiceInstanceCreationStatus',
     join_type: 'ServiceInstanceJoinType',
     tags: 'ServiceInstanceTag',
-    illustration_document_id: { tsType: 'DocumentId', importPath: './Document' }
+    illustration_document_id: {
+      tsType: 'DocumentId',
+      importPath: './Document',
+    },
   },
   NewsFeedItem: {
     type: 'NewsFeedItemType',
@@ -52,41 +55,53 @@ const COLUMN_ENUM_MAP = {
 /** @type {import('kanel').Config} */
 module.exports = {
   connection: {
-    'host': '127.0.0.1',
-    'port': 5434,
-    'user': 'portal',
-    'password': 'portal-password',
-    'database': 'cloud-portal',
+    host: '127.0.0.1',
+    port: 5434,
+    user: 'portal',
+    password: 'portal-password',
+    database: 'cloud-portal',
   },
 
-  preDeleteOutputFolder: true,
   outputPath: './src/model/kanel',
-  schemas: ['public'],
+  preDeleteOutputFolder: true,
+  schemaNames: ['public'],
 
-  customTypeMap: {
-    'pg_catalog.tsvector': 'string',
-    'pg_catalog.bpchar': 'string',
-  },
+  postRenderHooks: [markAsGenerated],
 
-  getPropertyMetadata(property, details, generateFor, config) {
-    const columnEntry = COLUMN_ENUM_MAP[details.name]?.[property.name];
-    if (columnEntry) {
-      const tsType = typeof columnEntry === 'string' ? columnEntry : columnEntry.tsType;
-      const importPath = typeof columnEntry === 'string' ? DEFAULT_IMPORT_PATH : columnEntry.importPath;
-      return {
-        name: property.name,
-        typeOverride: {
-          name: tsType,
-          typeImports: [{
-            name: tsType,
-            isDefault: false,
-            path: importPath,
-            isAbsolute: true,
-            importAsType: true,
-          }],
-        },
-      };
-    }
-    return defaultGetPropertyMetadata(property, details, generateFor, config);
-  },
+  generators: [
+    makePgTsGenerator({
+      customTypeMap: {
+        'pg_catalog.tsvector': 'string',
+        'pg_catalog.bpchar': 'string',
+      },
+
+      getPropertyMetadata(property, details, generateFor, builtinMetadata) {
+        const columnEntry = COLUMN_ENUM_MAP[details.name]?.[property.name];
+        if (columnEntry) {
+          const tsType =
+            typeof columnEntry === 'string' ? columnEntry : columnEntry.tsType;
+          const importPath =
+            typeof columnEntry === 'string'
+              ? DEFAULT_IMPORT_PATH
+              : columnEntry.importPath;
+          return {
+            name: property.name,
+            typeOverride: {
+              name: tsType,
+              typeImports: [
+                {
+                  name: tsType,
+                  isDefault: false,
+                  path: importPath,
+                  isAbsolute: true,
+                  importAsType: true,
+                },
+              ],
+            },
+          };
+        }
+        return builtinMetadata;
+      },
+    }),
+  ],
 };
