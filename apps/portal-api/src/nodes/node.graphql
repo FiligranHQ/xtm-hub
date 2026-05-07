@@ -31,6 +31,7 @@ directive @service_capa(
 ) repeatable on OBJECT | FIELD_DEFINITION
 
 enum ServiceRestriction {
+  ACCESS
   ACCESS_USER
   MANAGE_ACCESS
   UPLOAD

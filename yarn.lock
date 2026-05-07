@@ -7628,17 +7628,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pg@npm:8.20.0":
-  version: 8.20.0
-  resolution: "@types/pg@npm:8.20.0"
-  dependencies:
-    "@types/node": "npm:*"
-    pg-protocol: "npm:*"
-    pg-types: "npm:^2.2.0"
-  checksum: 10/3fb5be6e02de5c1a519acfbcb73647864e0d118bd09d0dea9b02091992095094e1ba150454c1175fd0127a596947e7216e15ff9b6162cd7792b62effce6aa751
-  languageName: node
-  linkType: hard
-
 "@types/prismjs@npm:^1.0.0":
   version: 1.26.6
   resolution: "@types/prismjs@npm:1.26.6"
@@ -8527,13 +8516,12 @@ __metadata:
     "@types/graphql-upload": "npm:17.0.0"
     "@types/node": "npm:24.12.2"
     "@types/passport": "npm:1.0.17"
-    "@types/pg": "npm:8.20.0"
     "@typescript-eslint/eslint-plugin": "npm:8.59.1"
     "@typescript-eslint/parser": "npm:8.59.1"
     "@vitest/coverage-v8": "npm:4.1.5"
     "@vitest/eslint-plugin": "npm:1.6.16"
     apollo-errors: "npm:1.9.0"
-    auth0: "npm:5.8.0"
+    auth0: "npm:5.9.0"
     body-parser: "npm:2.2.2"
     chokidar: "npm:5.0.0"
     concurrently: "npm:9.2.1"
@@ -8549,7 +8537,7 @@ __metadata:
     express-rate-limit: "npm:8.4.1"
     express-session: "npm:1.19.0"
     glob: "npm:13.0.6"
-    globals: "npm:17.5.0"
+    globals: "npm:17.6.0"
     graphql: "npm:16.13.2"
     graphql-relay: "npm:0.10.2"
     graphql-sse: "npm:2.6.0"
@@ -8559,7 +8547,7 @@ __metadata:
     husky: "npm:9.1.7"
     jwt-decode: "npm:4.0.0"
     kanel: "npm:3.16.1"
-    knex: "npm:3.2.9"
+    knex: "npm:3.2.10"
     lint-staged: "npm:16.4.0"
     migrate: "npm:^2.1.0"
     node-cron: "npm:4.2.1"
@@ -8567,7 +8555,7 @@ __metadata:
     openid-client: "npm:6.8.4"
     passport: "npm:0.7.0"
     pg: "npm:8.20.0"
-    pg-boss: "npm:12.18.1"
+    pg-boss: "npm:12.18.2"
     prettier: "npm:3.8.3"
     prettier-plugin-organize-imports: "npm:4.3.0"
     prom-client: "npm:15.1.3"
@@ -8578,7 +8566,7 @@ __metadata:
     vite: "npm:8.0.10"
     vitest: "npm:4.1.5"
     winston: "npm:3.19.0"
-    zod: "npm:4.3.6"
+    zod: "npm:4.4.2"
   languageName: unknown
   linkType: soft
 
@@ -8631,7 +8619,7 @@ __metadata:
     prettier-plugin-tailwindcss: "npm:0.8.0"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
-    react-hook-form: "npm:7.74.0"
+    react-hook-form: "npm:7.75.0"
     react-markdown: "npm:10.1.0"
     react-relay: "npm:20.1.1"
     rehype-sanitize: "npm:6.0.0"
@@ -8649,7 +8637,7 @@ __metadata:
     vite-plugin-relay: "npm:2.1.0"
     vite-tsconfig-paths: "npm:6.1.1"
     vitest: "npm:4.1.5"
-    zod: "npm:4.3.6"
+    zod: "npm:4.4.2"
   languageName: unknown
   linkType: soft
 
@@ -8661,7 +8649,7 @@ __metadata:
     "@types/node": "npm:24.12.2"
     graphql: "npm:16.13.2"
     graphql-tag: "npm:2.12.6"
-    knex: "npm:3.2.9"
+    knex: "npm:3.2.10"
     monocart-reporter: "npm:2.10.1"
     pg: "npm:8.20.0"
     playwright-ctrf-json-reporter: "npm:0.0.29"
@@ -9139,14 +9127,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0@npm:5.8.0":
-  version: 5.8.0
-  resolution: "auth0@npm:5.8.0"
+"auth0@npm:5.9.0":
+  version: 5.9.0
+  resolution: "auth0@npm:5.9.0"
   dependencies:
     auth0-legacy: "npm:auth0@^4.27.0"
     jose: "npm:^4.13.2"
     uuid: "npm:^11.1.0"
-  checksum: 10/ddc6babedb55e4e78eb6f02f2900676a48721728c509e9545de5c4058a84fda12d58fe53f03422d3df8901c71a4bb86d1e9332d0bb03c143583e71727a96d1c6
+  checksum: 10/9e2342f9eb4824a975110407bf0467867eef0982fc7c80ee93b24a6056442220168a2873205045f9f6be4ea71ebc5e92be1851a7527654c129da2f38884d800a
   languageName: node
   linkType: hard
 
@@ -12431,10 +12419,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:17.5.0, globals@npm:^17.4.0":
-  version: 17.5.0
-  resolution: "globals@npm:17.5.0"
-  checksum: 10/c405a95e1ecf14a1a17caaecd4dadbad38166b3c1b514e07924604ee224e922c043fc93ae21164d124dae5536e5a812566355469e34a689601db7d3d424dc8e7
+"globals@npm:17.6.0":
+  version: 17.6.0
+  resolution: "globals@npm:17.6.0"
+  checksum: 10/2bf0febf31c942edee6f4eca7e939a9c885f8ecfb767048b1c4dd2a32008d0ab136e6076665d76b44b29c2571bbbc1681371caab05fd8ee0067c7618e841b89d
   languageName: node
   linkType: hard
 
@@ -12442,6 +12430,13 @@ __metadata:
   version: 14.0.0
   resolution: "globals@npm:14.0.0"
   checksum: 10/03939c8af95c6df5014b137cac83aa909090c3a3985caef06ee9a5a669790877af8698ab38007e4c0186873adc14c0b13764acc754b16a754c216cc56aa5f021
+  languageName: node
+  linkType: hard
+
+"globals@npm:^17.4.0":
+  version: 17.5.0
+  resolution: "globals@npm:17.5.0"
+  checksum: 10/c405a95e1ecf14a1a17caaecd4dadbad38166b3c1b514e07924604ee224e922c043fc93ae21164d124dae5536e5a812566355469e34a689601db7d3d424dc8e7
   languageName: node
   linkType: hard
 
@@ -14189,9 +14184,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:3.2.9":
-  version: 3.2.9
-  resolution: "knex@npm:3.2.9"
+"knex@npm:3.2.10":
+  version: 3.2.10
+  resolution: "knex@npm:3.2.10"
   dependencies:
     colorette: "npm:2.0.19"
     commander: "npm:^10.0.0"
@@ -14201,7 +14196,7 @@ __metadata:
     get-package-type: "npm:^0.1.0"
     getopts: "npm:2.3.0"
     interpret: "npm:^2.2.0"
-    lodash: "npm:^4.17.21"
+    lodash: "npm:^4.18.1"
     pg-connection-string: "npm:2.6.2"
     rechoir: "npm:^0.8.0"
     resolve-from: "npm:^5.0.0"
@@ -14228,7 +14223,7 @@ __metadata:
       optional: true
   bin:
     knex: bin/cli.js
-  checksum: 10/208bcae8645a4bfd681a4dfca3b3200219dbc6fb864c0b7f38e13953fe6e02b702960b99966ac950f4dfaa40964629e01e9ee583bd4315e5cb99036ed02d6d0b
+  checksum: 10/6d043d0d55bee2d6ecc977dd67fbff61121f8832d70a635f490a3979bf82cae001ee0b53a1d1222ef46c3f1bf5afac39b1fb918aaefabcc7a7a57d7c97e3cf7f
   languageName: node
   linkType: hard
 
@@ -14527,7 +14522,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.0.1, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
+"lodash@npm:^4.0.1, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.18.1":
   version: 4.18.1
   resolution: "lodash@npm:4.18.1"
   checksum: 10/306fea53dfd39dad1f03d45ba654a2405aebd35797b673077f401edb7df2543623dc44b9effbb98f69b32152295fff725a4cec99c684098947430600c6af0c3f
@@ -16458,16 +16453,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-boss@npm:12.18.1":
-  version: 12.18.1
-  resolution: "pg-boss@npm:12.18.1"
+"pg-boss@npm:12.18.2":
+  version: 12.18.2
+  resolution: "pg-boss@npm:12.18.2"
   dependencies:
     cron-parser: "npm:^5.5.0"
     pg: "npm:^8.20.0"
     serialize-error: "npm:^13.0.1"
   bin:
     pg-boss: dist/cli.js
-  checksum: 10/3b9af8eb0854d6f2bd55d764eca65b6e076384f7b7e1d70b6e92506df4f421d1c88a28a786e214964bca43ec077a7928d16bca749d8acc888bbec24647670f56
+  checksum: 10/d55d20b4f203cc811ff3d753dabc556ccfd4ec87b22c797d7b8f0f2971e2b03240a4607fe86b47c9fde9b7b72edebe2996772c71ee3263cba9e8bc0bd17c1251
   languageName: node
   linkType: hard
 
@@ -16508,7 +16503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-protocol@npm:*, pg-protocol@npm:^1.11.0, pg-protocol@npm:^1.13.0":
+"pg-protocol@npm:^1.11.0, pg-protocol@npm:^1.13.0":
   version: 1.13.0
   resolution: "pg-protocol@npm:1.13.0"
   checksum: 10/302cd3920df00f178519693557c34949d64c8b3af7e2c12772b14f61547b947e4c761b4ca2319dbba5b0906207bb1b535cbfc7006d40d47fd823e277c2690a71
@@ -16522,7 +16517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-types@npm:2.2.0, pg-types@npm:^2.2.0":
+"pg-types@npm:2.2.0":
   version: 2.2.0
   resolution: "pg-types@npm:2.2.0"
   dependencies:
@@ -17078,12 +17073,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:7.74.0":
-  version: 7.74.0
-  resolution: "react-hook-form@npm:7.74.0"
+"react-hook-form@npm:7.75.0":
+  version: 7.75.0
+  resolution: "react-hook-form@npm:7.75.0"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18 || ^19
-  checksum: 10/19fb02135a3a9c3e8f006e6297127bea7dfbb838c3d4e24762f1c443f822eadee004c6ce3bad9df184616109281cc5730c73ec05f5facce95ec721eabf48d81f
+  checksum: 10/c6431d401f6e9a49a32dc7005924c87017960a5da961c713f32d2eb0ad00d094bb3bd21439326753e775d33d1ea7bf73a0b6f315607ca49eea0563dac703c989
   languageName: node
   linkType: hard
 
@@ -20586,7 +20581,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:4.3.6, zod@npm:^3.25.0 || ^4.0.0":
+"zod@npm:4.4.2":
+  version: 4.4.2
+  resolution: "zod@npm:4.4.2"
+  checksum: 10/f3da704d9fc18afe95172a3a2d2b6971c1113cd26f16abbbdb4edcd04db062f89329f2e8a2b59f9b05aabb5ee47cd2c861219a4e8c06b435faf3473a2344e3db
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.25.0 || ^4.0.0":
   version: 4.3.6
   resolution: "zod@npm:4.3.6"
   checksum: 10/25fc0f62e01b557b4644bf0b393bbaf47542ab30877c37837ea8caf314a8713d220c7d7fe51f68ffa72f0e1018ddfa34d96f1973d23033f5a2a5a9b6b9d9da01

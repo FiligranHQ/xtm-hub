@@ -5,7 +5,6 @@ import {
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
 import {
   CardTypeEnum,
   ServiceDelete,
@@ -19,6 +18,7 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
@@ -40,7 +40,7 @@ const DeleteIntegrationSlug = ({ document }: DeleteIntegrationSlugProps) => {
     type: ShareableResourceType.OPENCTI_INTEGRATION,
   });
   const userCanDelete = useServiceCapability(
-    ServiceCapabilityName.Delete,
+    ServiceRestrictionEnum.DELETE,
     serviceContext.serviceInstance
   );
 

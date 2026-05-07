@@ -1,10 +1,10 @@
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { APP_PATH } from '@/utils/path/constant';
 import ServiceByIdQuery, {
   serviceByIdQuery,
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import PageLoader from './page-loader';
 
 interface ServiceCustomDashboardsPageProps {
@@ -30,7 +30,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
       label:
         (
           response?.data
-            .serviceInstanceById as unknown as serviceInstance_fragment$data
+            .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
         )?.name ?? '',
       original: true,
     },
@@ -44,7 +44,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
           <PageLoader
             serviceInstance={
               response.data
-                .serviceInstanceById as unknown as serviceInstance_fragment$data
+                .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
             }
           />
         </>

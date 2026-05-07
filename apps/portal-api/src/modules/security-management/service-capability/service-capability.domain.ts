@@ -1,4 +1,5 @@
 import { db } from '../../../../knexfile';
+import { ServiceRestriction } from '../../../__generated__/resolvers-types';
 import ServiceCapability, {
   ServiceCapabilityMutator,
 } from '../../../model/kanel/public/ServiceCapability';
@@ -7,7 +8,6 @@ import UserService, {
 } from '../../../model/kanel/public/UserService';
 import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
 import { addPrefixToObject } from '../../../utils/typescript';
-import { GenericServiceCapabilityName } from './generic-service-capability.const';
 
 export const loadServiceCapabilitiesBy = async (
   field:
@@ -46,7 +46,7 @@ export const getManageAccessLeft = async (userServiceId: UserServiceId) => {
     .where('User_Service.subscription_id', userService.subscription_id)
     .andWhere(
       'Generic_Service_Capability.name',
-      GenericServiceCapabilityName.MANAGE_ACCESS
+      ServiceRestriction.ManageAccess
     )
     .countDistinct('User_Service.id as count')
     .first();

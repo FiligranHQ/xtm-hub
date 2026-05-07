@@ -30,7 +30,9 @@ export const UpdatePlatformServiceMetadata = graphql`
 
 export const ServiceById = graphql`
   query serviceByIdQuery($service_instance_id: ServiceInstanceId) {
-    serviceInstanceById(service_instance_id: $service_instance_id) {
+    serviceInstanceByIdAndGrantAccess(
+      service_instance_id: $service_instance_id
+    ) {
       ...serviceInstance_fragment
     }
   }
@@ -143,33 +145,26 @@ export const ServiceListQuery = graphql`
   }
 `;
 
-export const ServiceByIdWithSubscriptions = graphql`
-  query serviceByIdWithSubscriptionsQuery(
-    $service_instance_id: ServiceInstanceId
-    $searchTerm: String
-  ) {
-    serviceInstanceByIdWithSubscriptions(
-      service_instance_id: $service_instance_id
-      searchTerm: $searchTerm
-    ) {
-      ...serviceWithSubscriptions_fragment @relay(mask: false)
+export const ServiceInstanceByIdQuery = graphql`
+  query serviceInstanceByIdQuery($service_instance_id: ServiceInstanceId!) {
+    serviceInstanceById(service_instance_id: $service_instance_id) {
+      ...serviceInstanceForSubscriptions_fragment
     }
   }
 `;
 
-export const serviceWithSubscriptionsFragment = graphql`
-  fragment serviceWithSubscriptions_fragment on ServiceInstance {
+export const serviceInstanceForSubscriptionsFragment = graphql`
+  fragment serviceInstanceForSubscriptions_fragment on ServiceInstance @inline {
     __id
     name
     id
     description
     service_definition {
       service_capability {
-        ...serviceCapability_fragment @relay(mask: false)
+        id
+        description
+        name
       }
-    }
-    subscriptions {
-      ...subscriptionWithUserService_fragment @relay(mask: false)
     }
   }
 `;

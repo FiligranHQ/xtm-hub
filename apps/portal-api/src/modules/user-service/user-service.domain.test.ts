@@ -9,6 +9,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
 } from '../../../tests/tests.const';
+import { ServiceRestriction } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -24,10 +25,7 @@ import UserServiceCapability, {
 import * as mailService from '../../server/mail-service';
 import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
 import { removeUser } from '../organization-management/user/user.helper';
-import {
-  GenericServiceCapabilityIds,
-  GenericServiceCapabilityName,
-} from '../security-management/service-capability/generic-service-capability.const';
+import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
 import { createSubscription } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user-service.domain';
 
@@ -162,7 +160,7 @@ describe('userServiceDomain', () => {
       return allSubscriptions[0];
     };
     const addSimpleUser = async (
-      capabilities = [GenericServiceCapabilityName.ACCESS]
+      capabilities = [ServiceRestriction.Access]
     ) => {
       const subscription = await getSubscription();
       return UserServiceDomain.addServiceToUsers(
@@ -223,7 +221,7 @@ describe('userServiceDomain', () => {
       const result = await UserServiceDomain.addServiceToUsers(
         subscription!,
         [SIMPLE.EMAIL, ADMIN.EMAIL],
-        [GenericServiceCapabilityName.ACCESS]
+        [ServiceRestriction.Access]
       );
 
       expect(result).toHaveLength(2);
@@ -245,7 +243,7 @@ describe('userServiceDomain', () => {
       const result = await UserServiceDomain.addServiceToUsers(
         subscription!,
         [],
-        [GenericServiceCapabilityName.ACCESS]
+        [ServiceRestriction.Access]
       );
 
       expect(result).toEqual([]);
@@ -273,13 +271,13 @@ describe('userServiceDomain', () => {
       await UserServiceDomain.addServiceToUsers(
         subscription!,
         [SIMPLE.EMAIL],
-        [GenericServiceCapabilityName.ACCESS]
+        [ServiceRestriction.Access]
       );
 
       const result = await UserServiceDomain.addServiceToUsers(
         subscription!,
         [SIMPLE.EMAIL, ADMIN.EMAIL],
-        [GenericServiceCapabilityName.ACCESS]
+        [ServiceRestriction.Access]
       );
 
       expect(result).toHaveLength(1);
@@ -296,7 +294,7 @@ describe('userServiceDomain', () => {
       const result = await UserServiceDomain.addServiceToUsers(
         subscription!,
         [newEmail],
-        [GenericServiceCapabilityName.ACCESS]
+        [ServiceRestriction.Access]
       );
 
       expect(result).toHaveLength(1);
@@ -340,9 +338,7 @@ describe('userServiceDomain', () => {
     });
 
     it('should persist MANAGE_ACCESS capability when requested', async () => {
-      const result = await addSimpleUser([
-        GenericServiceCapabilityName.MANAGE_ACCESS,
-      ]);
+      const result = await addSimpleUser([ServiceRestriction.ManageAccess]);
 
       const capabilities = await TestHelper.user_ServiceCapability.loadAll({
         user_service_id: result[0]!.id,
@@ -364,7 +360,7 @@ describe('userServiceDomain', () => {
       const call = UserServiceDomain.addServiceToUsers(
         subscription!,
         [outsiderEmail],
-        [GenericServiceCapabilityName.ACCESS]
+        [ServiceRestriction.Access]
       );
       await expect(call).rejects.toThrow(
         'The email address does not correspond to the current organization'
@@ -381,7 +377,7 @@ describe('userServiceDomain', () => {
       await UserServiceDomain.addServiceToUsers(
         subscription!,
         [SIMPLE.EMAIL, ADMIN.EMAIL],
-        [GenericServiceCapabilityName.ACCESS]
+        [ServiceRestriction.Access]
       );
 
       expect(mailService.sendMail).toHaveBeenCalledTimes(2);
@@ -413,7 +409,7 @@ describe('userServiceDomain', () => {
       const result = await UserServiceDomain.addServiceToUsers(
         subscription!,
         [SIMPLE.EMAIL, SIMPLE.EMAIL],
-        [GenericServiceCapabilityName.ACCESS]
+        [ServiceRestriction.Access]
       );
 
       expect(result).toHaveLength(1);

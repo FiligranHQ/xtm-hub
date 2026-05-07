@@ -129,10 +129,9 @@ describe('deployment app', () => {
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
         });
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        'id',
-        dbDeploymentRequest!.service_instance_id
-      );
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
+        id: dbDeploymentRequest!.service_instance_id,
+      });
 
       // Then
       expect(dbDeploymentRequest).toMatchObject({
@@ -176,10 +175,9 @@ describe('deployment app', () => {
           id: deployment.id as DeploymentRequestId,
         });
 
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        'id',
-        dbDeploymentRequest!.service_instance_id
-      );
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
+        id: dbDeploymentRequest!.service_instance_id,
+      });
 
       // Then
       expect(dbDeploymentRequest).toMatchObject({
@@ -734,10 +732,9 @@ describe('deployment app', () => {
 
       if (!dbDeploymentRequest) return;
 
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-        'id',
-        dbDeploymentRequest.service_instance_id
-      );
+      const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
+        id: dbDeploymentRequest!.service_instance_id,
+      });
       const subscription = await loadSubscriptionBy({
         service_instance_id: dbDeploymentRequest.service_instance_id,
       });
@@ -1343,10 +1340,9 @@ describe('deployment app', () => {
           cancellation_reason: isAdmin ? null : cancellationReason,
         });
 
-        const serviceInstance: ServiceInstance = await loadServiceInstanceBy(
-          'id',
-          initialDeployment.service_instance_id
-        );
+        const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
+          id: initialDeployment.service_instance_id,
+        });
         expect(serviceInstance.creation_status).toBe(
           counts_in_orga_quota
             ? ServiceInstanceCreationStatus.Pending

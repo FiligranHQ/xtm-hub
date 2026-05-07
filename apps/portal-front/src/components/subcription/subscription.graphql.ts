@@ -1,11 +1,11 @@
 import { graphql } from 'react-relay';
 
-export const subscriptionWithUserServiceFragment = graphql`
-  fragment subscriptionWithUserService_fragment on SubscriptionModel {
+export const subscriptionFragment = graphql`
+  fragment subscription_fragment on SubscriptionModel @inline {
     id
     organization {
-      id
       name
+      id
       personal_space
     }
     subscription_capability {
@@ -16,21 +16,8 @@ export const subscriptionWithUserServiceFragment = graphql`
         name
       }
     }
-    user_service {
-      ...userService_fragment @relay(mask: false)
-    }
-  }
-`;
-export const subscriptionFragment = graphql`
-  fragment subscription_fragment on SubscriptionModel {
-    id
-    organization_id
-    organization {
-      name
-      id
-    }
-    service_instance_id
     service_instance {
+      id
       name
     }
     start_date
@@ -39,41 +26,63 @@ export const subscriptionFragment = graphql`
 `;
 
 export const SubscriptionDeleteMutation = graphql`
-  mutation subscriptionDeleteMutation($subscription_id: SubscriptionId!) {
+  mutation subscriptionDeleteMutation(
+    $subscription_id: SubscriptionId!
+    $connections: [ID!]!
+  ) {
     deleteSubscription(subscription_id: $subscription_id) {
-      ...serviceWithSubscriptions_fragment @relay(mask: false)
+      id @deleteEdge(connections: $connections)
     }
   }
 `;
 
 export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
-    $service_instance_id: ServiceInstanceId!
-    $organization_id: OrganizationId
-    $capability_ids: [ID]
-    $start_date: Date!
-    $end_date: Date
+    $input: CreateSubscriptionInput!
+    $connections: [ID!]!
   ) {
-    addSubscriptionInService(
-      service_instance_id: $service_instance_id
-      organization_id: $organization_id
-      capability_ids: $capability_ids
-      start_date: $start_date
-      end_date: $end_date
-    ) {
-      ...serviceWithSubscriptions_fragment @relay(mask: false)
+    createSubscription(input: $input)
+      @prependNode(
+        connections: $connections
+        edgeTypeName: "SubscriptionEdge"
+      ) {
+      ...subscription_fragment
     }
   }
 `;
 
-export const AddSubscriptionMutation = graphql`
-  mutation subscriptionCreateMutation(
-    $service_instance_id: ServiceInstanceId!
-    $connections: [ID!]!
+export const SubscriptionListQuery = graphql`
+  query subscriptionListQuery(
+    $count: Int!
+    $cursor: ID
+    $orderBy: SubscriptionOrdering!
+    $orderMode: OrderingMode!
+    $filters: [SubscriptionFilter!]
+    $searchTerm: String
   ) {
-    addSubscription(service_instance_id: $service_instance_id)
-      @prependNode(connections: $connections, edgeTypeName: "Subscription") {
-      ...serviceList_fragment
+    ...subscriptionList_fragment
+  }
+`;
+
+export const subscriptionListFragment = graphql`
+  fragment subscriptionList_fragment on Query
+  @refetchable(queryName: "SubscriptionsPaginationQuery") {
+    subscriptions(
+      first: $count
+      after: $cursor
+      orderBy: $orderBy
+      orderMode: $orderMode
+      searchTerm: $searchTerm
+      filters: $filters
+    ) {
+      __id
+      totalCount
+      edges {
+        node {
+          id
+          ...subscription_fragment
+        }
+      }
     }
   }
 `;

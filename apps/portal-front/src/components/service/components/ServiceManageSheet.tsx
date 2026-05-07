@@ -1,17 +1,17 @@
 'use client';
 import { Button, toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { ServiceCapabilityName } from '@/components/service/[slug]/capabilities/Capability.helper';
 
-import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
+import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
+import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import useServiceCapability from '@/hooks/use-service-capability';
+import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import useServiceCapability from '@/hooks/use-service-capability';
-import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 
 interface ServiceManageSheetProps {
   document?: documentItem_fragment$data;
@@ -44,7 +44,7 @@ export const ServiceManageSheet = ({
   } = useServiceContext();
 
   const userCanUpdate = useServiceCapability(
-    ServiceCapabilityName.Upload,
+    ServiceRestrictionEnum.UPLOAD,
     serviceInstance
   );
 

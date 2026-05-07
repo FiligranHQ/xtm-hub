@@ -307,7 +307,7 @@ jobs:
             filigran/portal-front-test:${IMAGE_TAGS}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -343,7 +343,7 @@ jobs:
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run portal-api-test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -1,9 +1,7 @@
-import { SubscriptionDeleteMutation } from '@/components/subcription/subscription.graphql';
-import { serviceCapability_fragment$data } from '@generated/serviceCapability_fragment.graphql';
-
-import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/ServiceSlugAddOrgaForm';
-import { ServiceByIdWithSubscriptions } from '@/components/service/service.graphql';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import {
+  ServiceInstanceByIdQuery,
+  serviceInstanceForSubscriptionsFragment,
+} from '@/components/service/service.graphql';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
@@ -17,60 +15,65 @@ import {
   IconActionsLink,
 } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import {
+  Checkbox,
+  DataTable,
+  DataTableHeadBarOptions,
+} from '@filigran/ui';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import useAdminPath from '@/hooks/use-admin-path';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
 import { MoreVertIcon } from '@filigran/icon';
-import {
-  Button,
-  Checkbox,
-  DataTable,
-  DataTableHeadBarOptions,
-  useToast,
-} from '@filigran/ui';
-import { serviceByIdWithSubscriptionsQuery } from '@generated/serviceByIdWithSubscriptionsQuery.graphql';
-import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
-import { subscriptionWithUserService_fragment$data } from '@generated/subscriptionWithUserService_fragment.graphql';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { serviceInstanceByIdQuery } from '@generated/serviceInstanceByIdQuery.graphql';
+import { serviceInstanceForSubscriptions_fragment$key } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
+import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
-import { PreloadedQuery, useMutation, usePreloadedQuery } from 'react-relay';
+import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
+import { ServiceSlugAddSubscription } from './ServiceSlugAddSubscription';
+import { ServiceSlugDeleteSubscription } from './ServiceSlugDeleteSubscription';
 
 interface ServiceSlugProps {
-  queryRef: PreloadedQuery<serviceByIdWithSubscriptionsQuery>;
-  serviceId: string;
+  subscriptions: subscription_fragment$data[];
+  queryRefServiceInstance: PreloadedQuery<serviceInstanceByIdQuery>;
+  subscriptionConnectionId: string;
 }
 
-const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
+const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConnectionId }: ServiceSlugProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const queryData = usePreloadedQuery<serviceByIdWithSubscriptionsQuery>(
-    ServiceByIdWithSubscriptions,
-    queryRef
-  );
 
-  const [commitSubscriptionMutation] = useMutation<subscriptionDeleteMutation>(
-    SubscriptionDeleteMutation
+  const queryDataRequest = usePreloadedQuery<serviceInstanceByIdQuery>(
+    ServiceInstanceByIdQuery,
+    queryRefServiceInstance
   );
+  const serviceInstanceRef = queryDataRequest.serviceInstanceById;
 
-  const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
+  if (!serviceInstanceRef) {
+    return null;
+  }
+
+  const serviceInstance =
+    readInlineData<serviceInstanceForSubscriptions_fragment$key>(
+      serviceInstanceForSubscriptionsFragment,
+      serviceInstanceRef
+    );
   const [shouldDisplayPersonalSpaces, setShouldDisplayPersonalSpaces] =
     useState(false);
-  const [removeSubscription, setRemoveSubscription] = useState<
-    subscriptionWithUserService_fragment$data | undefined
+  const [deleteSubscription, setDeleteSubscription] = useState<
+    subscription_fragment$data | undefined
   >(undefined);
+
+  const isAdminPath = useAdminPath();
+
+  const t = useTranslations();
 
   const debounceHandleInput = useDebounceCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
     DEBOUNCE_TIME
   );
-
-  const isAdminPath = useAdminPath();
-
-  const { toast } = useToast();
-  const t = useTranslations();
 
   const breadcrumbValue: BreadcrumbNavLink[] = [
     ...(isAdminPath
@@ -81,7 +84,7 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
         ]
       : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
     {
-      label: queryData.serviceInstanceByIdWithSubscriptions!.name,
+      label: serviceInstance.name,
       original: true,
     },
   ];
@@ -89,7 +92,7 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
     pageIndex: 0,
     pageSize: 500,
   });
-  const columns: ColumnDef<subscriptionWithUserService_fragment$data>[] = [
+  const columns: ColumnDef<subscription_fragment$data>[] = [
     {
       accessorKey: 'organization.name',
       id: 'organizationName',
@@ -99,20 +102,23 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
       id: 'capabilities',
       header: 'Capabilities',
       cell: ({ row }) => {
-        const subscriptionCapabilities =
-          row.original.subscription_capability?.map(
-            (subscription_capability) => {
-              return {
-                id: subscription_capability?.service_capability?.id,
-                name: subscription_capability?.service_capability?.name,
-              };
-            }
-          );
-        return (
-          <BadgeOverflowCounter
-            badges={subscriptionCapabilities as BadgeOverflow[]}
-          />
-        );
+        const subscriptionCapabilities: BadgeOverflow[] = (
+          row.original.subscription_capability ?? []
+        ).flatMap((subscriptionCapability) => {
+          const capability = subscriptionCapability?.service_capability;
+          if (!capability?.id || !capability.name) {
+            return [];
+          }
+
+          return [
+            {
+              id: capability.id,
+              name: capability.name,
+            },
+          ];
+        });
+
+        return <BadgeOverflowCounter badges={subscriptionCapabilities} />;
       },
     },
     {
@@ -133,7 +139,7 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
                 {t('Service.Management.ManageUsers')}
               </IconActionsLink>
               <IconActionsItem
-                onClick={() => setRemoveSubscription(row.original)}>
+                onClick={() => setDeleteSubscription(row.original)}>
                 {t('Utils.Delete')}
               </IconActionsItem>
             </IconActions>
@@ -142,31 +148,6 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
       },
     },
   ];
-
-  const removeOrganization = (
-    subscription: subscriptionWithUserService_fragment$data
-  ) => {
-    commitSubscriptionMutation({
-      variables: {
-        subscription_id: subscription.id,
-      },
-      onCompleted: () => {
-        toast({
-          title: t('Utils.Success'),
-          description: t('ServiceActions.OrganizationDeleted', {
-            name: subscription.organization.name,
-          }),
-        });
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
-        });
-      },
-    });
-  };
 
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
@@ -193,78 +174,37 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
       </div>
 
       <div className="flex gap-s flex-wrap ml-auto">
-        {useAdminPath() && (
-          <SheetWithPreventingDialog
-            open={openSheetAddOrga}
-            setOpen={setOpenSheetAddOrga}
-            trigger={<Button>{t('Service.SubscribeOrganization')}</Button>}
-            title={
-              t('OrganizationInServiceAction.AddOrganization') +
-              ' ' +
-              queryData?.serviceInstanceByIdWithSubscriptions?.name
-            }>
-            <ServiceSlugAddOrgaForm
-              subscriptions={
-                queryData?.serviceInstanceByIdWithSubscriptions
-                  ?.subscriptions as subscriptionWithUserService_fragment$data[]
-              }
-              capabilities={
-                queryData?.serviceInstanceByIdWithSubscriptions
-                  ?.service_definition
-                  ?.service_capability as unknown as serviceCapability_fragment$data[]
-              }
-              serviceId={serviceId}
-              serviceName={
-                queryData.serviceInstanceByIdWithSubscriptions?.name ?? ''
-              }
-            />
-          </SheetWithPreventingDialog>
-        )}
+        <ServiceSlugAddSubscription
+          isAdminPath={!!isAdminPath}
+          subscriptions={subscriptions}
+          serviceInstance={serviceInstance}
+          subscriptionConnectionId={subscriptionConnectionId}
+        />
         <DataTableHeadBarOptions />
       </div>
     </div>
   );
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const filteredAndSortedData = useMemo(() => {
-    const subscriptions =
-      queryData.serviceInstanceByIdWithSubscriptions?.subscriptions ?? [];
-
     const filteredBySpace = subscriptions.filter(
       (subscription) =>
         subscription?.organization?.personal_space ===
         shouldDisplayPersonalSpaces
     );
 
-    const filteredBySearch = searchTerm
+    return searchTerm
       ? filteredBySpace.filter((subscription) => {
           const orgName = subscription?.organization?.name;
           return orgName?.toLowerCase().includes(searchTerm.toLowerCase());
         })
       : filteredBySpace;
-
-    const sorted = filteredBySearch.sort((a, b) => {
-      const nameA = a?.organization?.name || '';
-      const nameB = b?.organization?.name || '';
-      return nameA.localeCompare(nameB);
-    });
-
-    return sorted as subscriptionWithUserService_fragment$data[];
-  }, [
-    queryData.serviceInstanceByIdWithSubscriptions?.subscriptions,
-    shouldDisplayPersonalSpaces,
-    searchTerm,
-  ]);
+  }, [subscriptions, shouldDisplayPersonalSpaces, searchTerm]);
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">
-        {queryData.serviceInstanceByIdWithSubscriptions?.name}
-      </h1>
-      <div className="pb-s italic">
-        {queryData.serviceInstanceByIdWithSubscriptions?.description}
-      </div>
+      <h1 className="pb-s">{serviceInstance.name}</h1>
+      <div className="pb-s italic">{serviceInstance.description}</div>
       <div className="pb-s">{t('Service.Management.Description') + ':'}</div>
 
       <DataTable
@@ -277,22 +217,15 @@ const ServiceSlug = ({ queryRef, serviceId }: ServiceSlugProps) => {
           columnPinning: { right: ['actions'] },
         }}
       />
-      {removeSubscription && (
-        <AlertDialogComponent
-          key={`remove-${removeSubscription.id}`}
-          AlertTitle={t('Service.Management.RemoveAccess')}
-          actionButtonText={t('Service.Management.RemoveAccess')}
-          variantName={'destructive'}
-          isOpen={!!removeSubscription}
-          onOpenChange={(open) =>
-            setRemoveSubscription(open ? removeSubscription : undefined)
+      {deleteSubscription && (
+        <ServiceSlugDeleteSubscription
+          subscription={deleteSubscription}
+          subscriptionConnectionId={subscriptionConnectionId}
+          open={!!deleteSubscription}
+          setOpen={(open) =>
+            setDeleteSubscription(open ? deleteSubscription : undefined)
           }
-          onClickContinue={() => {
-            removeOrganization(removeSubscription);
-            setRemoveSubscription(undefined);
-          }}>
-          {'Sure ?'}
-        </AlertDialogComponent>
+        />
       )}
     </>
   );

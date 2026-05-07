@@ -11,7 +11,6 @@ import { ServiceInstanceId } from '../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../model/user';
 import { loadUserOrganization } from '../modules/common/user-organization.domain';
 import { isUserAllowedOnOrganization } from '../modules/security-management/capability/auth.helper';
-import { GenericServiceCapabilityName } from '../modules/security-management/service-capability/generic-service-capability.const';
 import { loadSubscriptionBy } from '../modules/subscription/subscription.domain';
 import { UserServiceDomain } from '../modules/user-service/user-service.domain';
 import { ErrorCode } from '../utils/error/error.code';
@@ -146,7 +145,7 @@ export const assertUserCanManageService = async (
     await UserServiceDomain.loadUserServiceGenericCapability(
       user.id,
       subscription.id,
-      GenericServiceCapabilityName.MANAGE_ACCESS
+      ServiceRestriction.ManageAccess
     );
 
   if (!userServiceCapability) {

@@ -23,7 +23,6 @@ import { TimelineEnum } from '@generated/models/Timeline.enum';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-import Markdown from 'react-markdown';
 import { z } from 'zod';
 
 export const descriptionValue =
@@ -51,34 +50,6 @@ export const epicFormSchema = z.object({
   illustration_document: z.custom<FileList>().optional(),
 });
 
-export const DESCRIPTION_END_VALUE_BY_PRODUCT: Record<
-  FiligranProductEnum,
-  string
-> = {
-  [FiligranProductEnum.OPENCTI]:
-    '\n' +
-    'To stay up to date about everything OpenCTI, ' +
-    '[Join the discussion in the Community](https://filigran-community.slack.com/archives/CHZC2D38C)\n',
-  [FiligranProductEnum.OPENAEV]:
-    '\n' +
-    'To stay up to date about everything OpenAEV, ' +
-    '[Join the discussion in the Community](https://filigran-community.slack.com/archives/CJ1PHBHF1)\n',
-  [FiligranProductEnum.XTMONE]:
-    '\n' +
-    'To stay up to date about everything XTM One, ' +
-    '[Join the discussion in the Community](https://filigran-community.slack.com/archives/CHNEM9NUT)\n',
-  [FiligranProductEnum.XTMHUB]:
-    '\n' +
-    'To stay up to date about everything XTM Hub, ' +
-    '[Join the discussion in the Community](https://filigran-community.slack.com/archives/C08HU35NPD4)\n',
-};
-
-export const getEndDescription = (product?: FiligranProductEnum) => {
-  return DESCRIPTION_END_VALUE_BY_PRODUCT[
-    product ?? FiligranProductEnum.OPENCTI
-  ];
-};
-
 const EpicForm = ({
   epic,
   handleSubmit,
@@ -91,27 +62,12 @@ const EpicForm = ({
   const [isIntegration, setIsIntegration] = useState(
     epic?.epic_type === EpicTypeEnum.INTEGRATION
   );
-  const [selectedProduct, setSelectedProduct] = useState<
-    FiligranProductEnum | undefined
-  >(
-    (epic?.product as FiligranProductEnum | undefined) ??
-      FiligranProductEnum.OPENCTI
-  );
 
   return (
     <AutoForm
-      onSubmit={(values) =>
-        handleSubmit({
-          ...values,
-          description: values.description + getEndDescription(selectedProduct),
-        })
-      }
+      onSubmit={(values) => handleSubmit(values)}
       onValuesChange={(values) => {
         setIsIntegration(values.is_integration ?? false);
-        setSelectedProduct(
-          (values.product as FiligranProductEnum | undefined) ??
-            FiligranProductEnum.OPENCTI
-        );
       }}
       formSchema={epicFormSchema}
       values={{
@@ -149,14 +105,6 @@ const EpicForm = ({
                 documentType={'Epic'}
                 required
               />
-              <p className="font-semibold txt-default mb-xs">
-                {t('Epic.Form.AutomaticallyAdded')}
-              </p>
-              <div className="bg-page-background rounded border p-m">
-                <p className="txt-gray">
-                  <Markdown>{getEndDescription(selectedProduct)}</Markdown>
-                </p>
-              </div>
             </>
           ),
         },
@@ -172,11 +120,9 @@ const EpicForm = ({
                 <span className="text-sm text-destructive"> *</span>
               </FormLabel>
               <Select
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  setSelectedProduct(value as FiligranProductEnum);
-                }}
-                value={field.value ?? FiligranProductEnum.OPENCTI}>
+                onValueChange={field.onChange}
+                value={field.value}
+                defaultValue={epic?.product ?? FiligranProductEnum.OPENCTI}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue

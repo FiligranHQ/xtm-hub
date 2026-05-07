@@ -1,3 +1,5 @@
+scalar ServiceCapabilityId
+
 type GenericServiceCapability implements Node {
   id: ID!
   name: String
