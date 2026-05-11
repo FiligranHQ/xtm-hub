@@ -1,0 +1,19 @@
+enum ServiceDefinitionIdentifier {
+  vault
+  link
+  opencti_custom_dashboards
+  opencti_integrations
+  openaev_scenarios
+  opencti_registration
+  openaev_registration
+  xtm_platform_roadmap
+}
+
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  identifier: ServiceDefinitionIdentifier!
+  service_capability: [ServiceCapability]
+}

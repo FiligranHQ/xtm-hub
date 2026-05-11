@@ -60,8 +60,8 @@ jobs:
 
       - name: Verify directories exist
         run: |
-          if [ ! -d "./apps/portal-api" ] || [ ! -d "./apps/portal-front" ]; then
-            echo "Error: apps/portal-api or apps/portal-front directory does not exist"
+          if [ ! -d "./apps/backend" ] || [ ! -d "./apps/frontend" ]; then
+            echo "Error: apps/backend or apps/frontend directory does not exist"
             exit 1
           fi
 
@@ -70,20 +70,20 @@ jobs:
         run: |
           yarn install
 
-      - name: Bump deployment version in portal-api
-        working-directory: ./apps/portal-api
+      - name: Bump deployment version in backend
+        working-directory: ./apps/backend
         run: |
           yarn version ${{ github.event.inputs.version_type }}
           echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
-      - name: Sync deployment version in portal-front
-        working-directory: ./apps/portal-front
+      - name: Sync deployment version in frontend
+        working-directory: ./apps/frontend
         run: |
           yarn version ${{ env.NEW_VERSION }}
 
       - name: Commit and tag changes
         run: |
-          git add package.json yarn.lock apps/portal-api/package.json apps/portal-front/package.json
+          git add package.json yarn.lock apps/backend/package.json apps/frontend/package.json
           git commit -m "chore(release): bump version to ${{ env.NEW_VERSION }}"
           git tag "v${{ env.NEW_VERSION }}"
 
@@ -131,7 +131,7 @@ jobs:
           echo "## Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
           echo "- **New Version:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Version Type:** ${{ github.event.inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Components Updated:** apps/portal-api, apps/portal-front" >> $GITHUB_STEP_SUMMARY
+          echo "- **Components Updated:** apps/backend, apps/frontend" >> $GITHUB_STEP_SUMMARY
           echo "- **Tag Created:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Deployment Workflow:** Triggered automatically" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
