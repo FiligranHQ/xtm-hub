@@ -5,7 +5,7 @@ const TEST_IMAGE_FILE = {
   path: './tests/tests_files/assets/test.png',
   name: 'test.png',
 };
-export default class XTMSuiteRoadmapPage {
+export default class XTMPlatformRoadmapPage {
   constructor(private page: Page) {}
   async addEpic({
     title,
@@ -15,6 +15,7 @@ export default class XTMSuiteRoadmapPage {
     timeline = 'Now',
     integration = false,
     draft = true,
+    edition_type = 'CE',
   }: {
     title: string;
     short_description: string;
@@ -23,6 +24,7 @@ export default class XTMSuiteRoadmapPage {
     timeline?: string;
     integration?: boolean;
     draft?: boolean;
+    edition_type?: string;
   }) {
     await this.page.getByRole('button', { name: 'Create' }).click();
     await this.page.getByRole('textbox', { name: 'Title' }).fill(title);
@@ -34,6 +36,9 @@ export default class XTMSuiteRoadmapPage {
       .fill(description);
     await this.page.getByRole('combobox', { name: 'Product' }).click();
     await this.page.getByRole('option', { name: product }).click();
+    await this.page
+      .getByRole('radio', { name: edition_type, exact: true })
+      .click();
     await this.page.getByRole('combobox', { name: 'Timeline' }).click();
     await this.page.getByRole('option', { name: timeline }).click();
     if (!draft) {
@@ -63,6 +68,7 @@ export default class XTMSuiteRoadmapPage {
     product,
     timeline,
     draft,
+    edition_type,
   }: {
     title?: string;
     short_description?: string;
@@ -70,6 +76,7 @@ export default class XTMSuiteRoadmapPage {
     product?: string;
     timeline?: string;
     draft: boolean;
+    edition_type?: string;
   }) {
     await this.page
       .getByRole('button', { name: 'Open menu', exact: true })
@@ -88,6 +95,11 @@ export default class XTMSuiteRoadmapPage {
     if (product) {
       await this.page.getByRole('combobox', { name: 'Product' }).click();
       await this.page.getByRole('option', { name: product }).click();
+    }
+    if (edition_type) {
+      await this.page
+        .getByRole('radio', { name: edition_type, exact: true })
+        .click();
     }
     if (timeline) {
       await this.page.getByRole('combobox', { name: 'Timeline' }).click();
@@ -115,7 +127,7 @@ export default class XTMSuiteRoadmapPage {
   }
 
   async navigateToService() {
-    const link = this.page.getByRole('link', { name: 'XTM Suite Roadmap' });
+    const link = this.page.getByRole('link', { name: 'XTM Platform Roadmap' });
     await link.first().scrollIntoViewIfNeeded();
     await link.first().click();
   }

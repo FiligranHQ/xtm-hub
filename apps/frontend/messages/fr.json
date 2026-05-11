@@ -140,7 +140,7 @@
     "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
   "Epic": {
-    "XTMRoadmap": "Roadmap Suite XTM",
+    "XTMRoadmap": "Roadmap Platform XTM",
     "AllProducts": "Tous les produits",
     "ShowFinished": "Afficher les épics terminés",
     "FilterByProduct": "Filtrer par produit",
@@ -158,6 +158,7 @@
       "Title": "Titre",
       "ShortDesc": "Description courte",
       "Description": "Description",
+      "EditionType": "type d'édition",
       "FiligranProduct": "Produit",
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Ligne de temps",
@@ -171,8 +172,7 @@
       "SureDeleteEpic": "Êtes-vous sûr de vouloir supprimer l'épic {epicName} ?",
       "EpicDeleted": "L'épic a été supprimé"
     },
-    "StayUpToDate": "Restez au courant de tout {product}",
-    "JoinCommunity": "Rejoignez la discussion dans la communauté"
+    "JoinCommunity": "Restez dans la boucle avec la communauté Filigran"
   },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
@@ -666,7 +666,7 @@
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
-      "xtm_suite_roadmap": "XTM Suite Roadmap"
+      "xtm_platform_roadmap": "XTM Platform Roadmap"
     },
     "Capabilities": {
       "AccessServiceDescription": "Vous avez uniquement accès à un service",

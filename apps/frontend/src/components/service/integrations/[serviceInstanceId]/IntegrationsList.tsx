@@ -1,19 +1,16 @@
-import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
-import {
-  ServiceListLocalStorageKey,
-  useServiceListLocalStorage,
-} from '@/hooks/use-service-list-local-storage';
-import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
-import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
-import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/IntegrationFilters';
-import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
 import {
   ServiceListFilterKey,
   ServiceListFilterMap,
 } from '@/components/service/components/header/ServiceListHeader';
+import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { AppServiceContext } from '@/components/service/components/ServiceContext';
 import ServiceList from '@/components/service/components/ServiceList';
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
+import { useIntegrationListStorage } from '@/components/service/integrations/[serviceInstanceId]/use-integration-list-storage';
+import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
+import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
+import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/IntegrationFilters';
+import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
 
 import {
   documentItem,
@@ -21,6 +18,7 @@ import {
   DocumentsListQuery,
 } from '@/components/service/document/document.graphql';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
+import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   documentItem_fragment$data,
@@ -40,7 +38,6 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
 
 interface IntegrationsListProps {
   queryRef: PreloadedQuery<documentsQuery>;
@@ -78,8 +75,6 @@ const IntegrationsList = ({
     type: ShareableResourceType.OPENCTI_INTEGRATION,
   });
 
-  const localStorageKey = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
-
   const {
     removeIntegrationTypes,
     removeProductVersions,
@@ -87,7 +82,8 @@ const IntegrationsList = ({
     removeVerified,
     pageSize,
     setPageSize,
-  } = useServiceListLocalStorage(localStorageKey);
+    localStorageKey,
+  } = useIntegrationListStorage();
 
   const filters: ServiceListFilterMap = {
     [ServiceListFilterKey.IntegrationType]: {

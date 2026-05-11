@@ -10,6 +10,11 @@ enum Timeline {
   under_consideration
   finished
 }
+enum EditionType {
+  community_edition
+  enterprise_edition
+  partial_ee
+}
 
 enum EpicType {
   other
@@ -21,6 +26,7 @@ type Epic implements Node {
   title: String!
   short_description: String!
   description: String!
+  edition_type: EditionType!
   active: Boolean!
   product: FiligranProduct!
   timeline: Timeline!
@@ -37,6 +43,7 @@ input CreateEpicInput {
   title: String!
   short_description: String!
   description: String!
+  edition_type: EditionType!
   active: Boolean
   product: FiligranProduct!
   timeline: Timeline!
@@ -48,6 +55,7 @@ input UpdateEpicInput {
   title: String
   short_description: String
   description: String
+  edition_type: EditionType!
   active: Boolean
   product: FiligranProduct
   timeline: Timeline

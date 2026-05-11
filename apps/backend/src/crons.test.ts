@@ -44,7 +44,7 @@ vi.mock(
   })
 );
 
-vi.mock('./modules/xtm-suite-roadmap/epic.app', () => ({
+vi.mock('./modules/xtm-platform-roadmap/epic.app', () => ({
   EpicApp: {
     sendPublicRoadmapMonthlyReminder:
       cronMocks.sendPublicRoadmapMonthlyReminderMock,

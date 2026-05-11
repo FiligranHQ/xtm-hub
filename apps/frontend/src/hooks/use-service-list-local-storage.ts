@@ -6,6 +6,7 @@ import {
 import usePublicPath from '@/hooks/use-public-path';
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
+import { useCallback } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 export enum ServiceListLocalStorageKey {
@@ -138,17 +139,31 @@ export const useServiceListLocalStorage = (
       OrderingModeEnum.ASC
     );
 
-  const resetAll = () => {
+  const resetAll = useCallback(() => {
     removeCount();
     removePageSize();
     removeSearch();
     removeLabels();
     removeSelectedFilters();
     removeIntegrationTypes();
+    removeProductVersions();
     removeDeployable();
+    removeVerified();
     removeOrderBy();
     removeOrderMode();
-  };
+  }, [
+    removeCount,
+    removePageSize,
+    removeSearch,
+    removeLabels,
+    removeSelectedFilters,
+    removeIntegrationTypes,
+    removeProductVersions,
+    removeDeployable,
+    removeVerified,
+    removeOrderBy,
+    removeOrderMode,
+  ]);
 
   return {
     count,

@@ -1,5 +1,7 @@
 'use server';
+import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
 import { cn } from '@/lib/utils';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -8,8 +10,6 @@ import ServiceLinksByTagsQueryGraphql, {
 } from '@generated/serviceLinksByTagsQuery.graphql';
 import Image from 'next/image';
 import React from 'react';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
-import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
   <h2 className="text-blue text-2xl mb-l">{children}</h2>
@@ -57,13 +57,13 @@ export const RegistrationLearnMore = async ({
     <>
       <Section className="bg-blue-800/5 px-xl">
         <div className="text-center w-[70%] m-auto">
-          <H2>Your eXtended Threat Management (XTM) suite</H2>
+          <H2>Your eXtended Threat Management (XTM) platform</H2>
           <P>
             {serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
               ? 'OpenCTI'
               : 'OpenAEV'}{' '}
             is part of Filigran’s open-source threat intelligence, advanced
-            adversary simulation, and strategic cyber risk management solution
+            adversary simulation, and strategic cyber risk management platform
             designed to help your organization anticipate and manage threats
             end-to-end.
           </P>
