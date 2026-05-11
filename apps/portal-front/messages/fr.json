@@ -666,7 +666,7 @@
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
-      "xtm_suite_roadmap": "XTM Suite Roadmap"
+      "xtm_platform_roadmap": "XTM PLatform Roadmap"
     },
     "Capabilities": {
       "AccessServiceDescription": "Vous avez uniquement accès à un service",

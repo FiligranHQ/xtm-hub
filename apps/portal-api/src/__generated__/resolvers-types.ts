@@ -1870,7 +1870,7 @@ export enum ServiceDefinitionIdentifier {
   OpenctiIntegrations = 'opencti_integrations',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault',
-  XtmSuiteRoadmap = 'xtm_suite_roadmap'
+  XtmPlatformRoadmap = 'xtm_platform_roadmap'
 }
 
 export type ServiceGroup = Node & {

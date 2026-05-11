@@ -5,7 +5,7 @@ const TEST_IMAGE_FILE = {
   path: './tests/tests_files/assets/test.png',
   name: 'test.png',
 };
-export default class XTMSuiteRoadmapPage {
+export default class XTMPlatformRoadmapPage {
   constructor(private page: Page) {}
   async addEpic({
     title,
@@ -115,7 +115,7 @@ export default class XTMSuiteRoadmapPage {
   }
 
   async navigateToService() {
-    const link = this.page.getByRole('link', { name: 'XTM Suite Roadmap' });
+    const link = this.page.getByRole('link', { name: 'XTM Platform Roadmap' });
     await link.first().scrollIntoViewIfNeeded();
     await link.first().click();
   }
