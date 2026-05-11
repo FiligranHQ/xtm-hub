@@ -1,17 +1,19 @@
+import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 import testRender from '@/utils/test/test-render';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
+import { EditionTypeEnum } from '@generated/models/EditionType.enum';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it } from 'vitest';
-import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 
 describe('EpicItemFooter', () => {
   const epic = {
     id: 'epic-1',
     title: 'Roadmap epic',
     epic_type: EpicTypeEnum.OTHER,
+    edition_type: EditionTypeEnum.COMMUNITY_EDITION,
     product: FiligranProductEnum.OPENCTI,
     document_id: null,
   } as epic_fragment$data;
@@ -33,6 +35,40 @@ describe('EpicItemFooter', () => {
     // Then
     expect(screen.getByText('OpenCTI')).toBeInTheDocument();
   });
+
+  it.each`
+    editionType                           | expectedLabel
+    ${EditionTypeEnum.COMMUNITY_EDITION}  | ${null}
+    ${EditionTypeEnum.ENTERPRISE_EDITION} | ${'EE'}
+    ${EditionTypeEnum.PARTIAL_EE}         | ${'Partial EE'}
+  `(
+    'renders edition tag according to edition type (editionType=$editionType)',
+    ({ editionType, expectedLabel }) => {
+      // Given
+      const environment = createMockEnvironment();
+
+      // When
+      const { queryByText } = testRender(
+        <EpicItemFooter
+          {...defaultProps}
+          epic={{ ...epic, edition_type: editionType }}
+        />,
+        {
+          relayConfig: environment,
+        }
+      );
+
+      // Then
+      if (expectedLabel) {
+        expect(screen.getByText(expectedLabel)).toBeInTheDocument();
+        return;
+      }
+
+      expect(queryByText('CE')).not.toBeInTheDocument();
+      expect(queryByText('EE')).not.toBeInTheDocument();
+      expect(queryByText('Partial EE')).not.toBeInTheDocument();
+    }
+  );
 
   it.each`
     epicType                    | documentId            | shouldRenderIntegration

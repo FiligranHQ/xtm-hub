@@ -1,11 +1,12 @@
+import { EpicItemCard } from '@/components/epic/epic-item/EpicItemCard';
 import testRender from '@/utils/test/test-render';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
+import { EditionTypeEnum } from '@generated/models/EditionType.enum';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { EpicItemCard } from '@/components/epic/epic-item/EpicItemCard';
 const useEpicListContextMock = vi.fn();
 
 vi.mock('@/hooks/use-epic-list-context', () => ({
@@ -18,6 +19,7 @@ describe('EpicItemCard', () => {
     title: 'Roadmap epic',
     epic_type: EpicTypeEnum.OTHER,
     product: FiligranProductEnum.OPENCTI,
+    edition_type: EditionTypeEnum.COMMUNITY_EDITION,
     short_description: 'short description',
     description: 'long description',
   } as epic_fragment$data;

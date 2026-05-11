@@ -30,7 +30,7 @@ const addImage = async (user: User, uploads: Upload[]) => {
   }
   const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
     user.id,
-    ServiceDefinitionIdentifier.XtmSuiteRoadmap
+    ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
   if (serviceInstance) {
     const files = await processUploads(
@@ -65,7 +65,7 @@ export const EpicApp = {
     const { user } = requestContext.require();
 
     const serviceInstance = await loadServiceInstanceBy({
-      slug: 'xtm-suite-roadmap',
+      slug: 'xtm-platform-roadmap',
     });
 
     await assertUserHasCapaOnService(user, serviceInstance.id, [
@@ -89,7 +89,7 @@ export const EpicApp = {
     const { user } = requestContext.require();
 
     const serviceInstance = await loadServiceInstanceBy({
-      slug: 'xtm-suite-roadmap',
+      slug: 'xtm-platform-roadmap',
     });
     await assertUserHasCapaOnService(user, serviceInstance.id, [
       ServiceRestriction.Upsert,
@@ -130,7 +130,7 @@ export const EpicApp = {
     const { user } = requestContext.require();
 
     const serviceInstance = await loadServiceInstanceBy({
-      slug: 'xtm-suite-roadmap',
+      slug: 'xtm-platform-roadmap',
     });
 
     await assertUserHasCapaOnService(user, serviceInstance.id, [

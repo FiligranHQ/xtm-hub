@@ -1,5 +1,8 @@
+import { EditionTypeMapping } from '@/components/epic/epic-item/EditionTypeMapping';
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
+import { Badge } from '@filigran/ui/servers';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
+import { EditionTypeEnum } from '@generated/models/EditionType.enum';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
 import Image from 'next/image';
 
@@ -36,6 +39,13 @@ export const EpicItemFooter = ({
               {epic.epic_type.toLowerCase()}
             </div>
           </div>
+        )}
+        {epic.edition_type !== EditionTypeEnum.COMMUNITY_EDITION && (
+          <Badge
+            variant="secondary"
+            className="font-semibold mr-s mt-xs">
+            {EditionTypeMapping[epic.edition_type].label}
+          </Badge>
         )}
       </div>
     </>

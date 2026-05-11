@@ -1043,7 +1043,7 @@ enum ServiceDefinitionIdentifier {
   openaev_scenarios
   opencti_registration
   openaev_registration
-  xtm_suite_roadmap
+  xtm_platform_roadmap
 }
 
 type ServiceDefinition implements Node {
@@ -1695,6 +1695,12 @@ enum Timeline {
   finished
 }
 
+enum EditionType {
+  community_edition
+  enterprise_edition
+  partial_ee
+}
+
 enum EpicType {
   other
   integration
@@ -1705,6 +1711,7 @@ type Epic implements Node {
   title: String!
   short_description: String!
   description: String!
+  edition_type: EditionType!
   active: Boolean!
   product: FiligranProduct!
   timeline: Timeline!
@@ -1721,6 +1728,7 @@ input CreateEpicInput {
   title: String!
   short_description: String!
   description: String!
+  edition_type: EditionType!
   active: Boolean
   product: FiligranProduct!
   timeline: Timeline!
@@ -1732,6 +1740,7 @@ input UpdateEpicInput {
   title: String
   short_description: String
   description: String
+  edition_type: EditionType!
   active: Boolean
   product: FiligranProduct
   timeline: Timeline

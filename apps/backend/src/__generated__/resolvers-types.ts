@@ -214,6 +214,7 @@ export type CreateDocumentInput = {
 export type CreateEpicInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description: Scalars['String']['input'];
+  edition_type: EditionType;
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   product: FiligranProduct;
@@ -606,6 +607,12 @@ export type EditUserCapabilitiesInput = {
   capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export enum EditionType {
+  CommunityEdition = 'community_edition',
+  EnterpriseEdition = 'enterprise_edition',
+  PartialEe = 'partial_ee'
+}
+
 export type Epic = Node & {
   __typename?: 'Epic';
   active: Scalars['Boolean']['output'];
@@ -613,6 +620,7 @@ export type Epic = Node & {
   description: Scalars['String']['output'];
   document?: Maybe<Document>;
   document_id?: Maybe<Scalars['DocumentId']['output']>;
+  edition_type: EditionType;
   epic_type: EpicType;
   id: Scalars['ID']['output'];
   product: FiligranProduct;
@@ -1873,7 +1881,7 @@ export enum ServiceDefinitionIdentifier {
   OpenctiIntegrations = 'opencti_integrations',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault',
-  XtmSuiteRoadmap = 'xtm_suite_roadmap'
+  XtmPlatformRoadmap = 'xtm_platform_roadmap'
 }
 
 export type ServiceGroup = Node & {
@@ -2251,6 +2259,7 @@ export type UpdateDocumentInput = {
 export type UpdateEpicInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  edition_type: EditionType;
   illustration_document?: InputMaybe<Scalars['Upload']['input']>;
   is_integration?: InputMaybe<Scalars['Boolean']['input']>;
   product?: InputMaybe<FiligranProduct>;
@@ -2558,6 +2567,7 @@ export type ResolversTypes = ResolversObject<{
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
+  EditionType: EditionType;
   Epic: ResolverTypeWrapper<Omit<Epic, 'document'> & { document?: Maybe<ResolversTypes['Document']> }>;
   EpicConnection: ResolverTypeWrapper<Omit<EpicConnection, 'edges'> & { edges: Array<ResolversTypes['EpicEdge']> }>;
   EpicEdge: ResolverTypeWrapper<Omit<EpicEdge, 'node'> & { node: ResolversTypes['Epic'] }>;
@@ -3168,6 +3178,7 @@ export type EpicResolvers<ContextType = PortalContext, ParentType extends Resolv
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
   document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
+  edition_type?: Resolver<ResolversTypes['EditionType'], ParentType, ContextType>;
   epic_type?: Resolver<ResolversTypes['EpicType'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
