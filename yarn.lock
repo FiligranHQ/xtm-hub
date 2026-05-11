@@ -72,9 +72,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/server@npm:5.5.0":
-  version: 5.5.0
-  resolution: "@apollo/server@npm:5.5.0"
+"@apollo/server@npm:5.5.1":
+  version: 5.5.1
+  resolution: "@apollo/server@npm:5.5.1"
   dependencies:
     "@apollo/cache-control-types": "npm:^1.0.3"
     "@apollo/server-gateway-interface": "npm:^2.0.0"
@@ -95,11 +95,10 @@ __metadata:
     loglevel: "npm:^1.6.8"
     lru-cache: "npm:^11.1.0"
     negotiator: "npm:^1.0.0"
-    uuid: "npm:^11.1.0"
     whatwg-mimetype: "npm:^4.0.0"
   peerDependencies:
     graphql: ^16.11.0
-  checksum: 10/35ec7455e90d15cc44c6cd4ea0c0983cd642d0cad843e7e0cb4d7754762ccd7a9e23b05ab9c1313c175b4179e6f4fa08ecb1ad0f34a429a53840cbf6964faef2
+  checksum: 10/d70ea5287ca3a62604f458924a6b77c6b99803d88228d7e01a0e89d1d29cf2a0e5af0d854ed847a3a453730bf9b44620620efc687b298582d4a48aa5db1b9073
   languageName: node
   linkType: hard
 
@@ -8496,7 +8495,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/backend@workspace:apps/backend"
   dependencies:
-    "@apollo/server": "npm:5.5.0"
+    "@apollo/server": "npm:5.5.1"
     "@as-integrations/express5": "npm:1.1.2"
     "@aws-sdk/client-s3": "npm:3.1019.0"
     "@aws-sdk/lib-storage": "npm:3.1019.0"
