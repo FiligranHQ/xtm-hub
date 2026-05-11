@@ -1,0 +1,1509 @@
+{
+  "AdminBanner": "Vous êtes actuellement en mode administrateur",
+  "App": {
+    "Collapse": "Réduire",
+    "CollapseSidebar": "Réduire la sidebar",
+    "Title": "XTM Hub"
+  },
+  "Ariane": {
+    "AnalyzingResults": "Analyse des résultats…",
+    "Ask": "Demander à Ariane",
+    "AskQuestion": "Poser une question...",
+    "background task": "tâche en arrière-plan",
+    "background tasks": "tâches en arrière-plan",
+    "Browse agents": "Parcourir les agents",
+    "Close": "Fermer",
+    "Collecting results from": "Collecte des résultats de",
+    "ComposingAnswer": "Rédaction de la réponse…",
+    "Consulting": "Consultation de",
+    "Create agent": "Créer un agent",
+    "Delegating": "Délégation",
+    "Delegating task": "Délégation de la tâche",
+    "Disclaimer": "Utilise l'IA. Vérifiez les résultats.",
+    "ErrorOccurred": "Désolé, une erreur est survenue. Veuillez réessayer.",
+    "Floating": "Flottant",
+    "Full screen": "Plein écran",
+    "New chat": "Nouvelle conversation",
+    "PromptSuggestion1": "Qu'est-ce que la plateforme Filigran XTM?",
+    "PromptSuggestion2": "Comment OpenCTI améliore-t-il la cybersécurité?",
+    "PromptSuggestion3": "Pouvez-vous expliquer les principales fonctionnalités d'OpenAEV?",
+    "PromptSuggestion4": "Où puis-je trouver la documentation d'OpenGRC?",
+    "Reasoning details": "Détails du raisonnement",
+    "Sidebar": "Barre latérale",
+    "Stop generating": "Arrêter la génération",
+    "Suggestions": "Suggestions",
+    "Switch to": "Basculer vers",
+    "Switch to another agent": "Basculer vers un autre agent",
+    "Switch view": "Changer de vue",
+    "task": "tâche",
+    "tasks": "tâches",
+    "Thinking": "Réflexion en cours...",
+    "tool call": "appel d'outil",
+    "tool calls": "appels d'outils",
+    "Transferred from": "Transféré depuis",
+    "Transferring to": "Transfert vers",
+    "UnableToConnect": "Connexion impossible. Veuillez vérifier la configuration.",
+    "UsingTools": "Utilisation des outils…",
+    "Waiting for": "En attente de",
+    "WelcomeMessage": "Comment puis-je vous aider, "
+  },
+  "Badge": {
+    "Disabled": "Désactivé",
+    "Draft": "Brouillon",
+    "Enabled": "Activé",
+    "Published": "Publié"
+  },
+  "CapabilityDescription": {
+    "Capabilities": {
+      "ADMINISTRATE_ORGANIZATION": "Possibilités de toutes les capacités au sein d'une organisation",
+      "MANAGE_ACCESS": "Possibilité d'inviter d'autres utilisateurs dans cette organisation",
+      "MANAGE_PLATFORM_REGISTRATION": "Possibilité d'inscrire et de désinscrire les plateformes",
+      "MANAGE_SUBSCRIPTION": "Possibilité de gérer et d'abonner l'organisation à des services"
+    },
+    "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
+    "Title": "Capacités disponibles"
+  },
+  "CountryComboBox": {
+    "Placeholder": "Choisir un pays"
+  },
+  "Datatable": {
+    "Asc": "Asc",
+    "Columns": "Colonnes",
+    "Desc": "Desc",
+    "GoFirstPage": "Aller à la première page",
+    "GoLastPage": "Aller à la dernière page",
+    "GoNextPage": "Aller à la page suivante",
+    "GoPreviousPage": "Aller à la page précédente",
+    "Hide": "Cacher",
+    "ManageColumnsVisibility": "Gérer la visibilité des colonnes",
+    "ResetTable": "Réinitialiser",
+    "RowsPerPage": "Lignes par page"
+  },
+  "DeploymentRequestUseCase": {
+    "threat_profiling_cti": "Profilage des menaces (CTI)",
+    "threat_profiling_fimi": "Profilage des menaces (FIMI)",
+    "threat_profiling_leo": "Profilage des menaces (Forces de l'ordre)",
+    "threat_profiling_faml": "Profilage des menaces (Fraude & LCB)",
+    "threat_hunting": "Chasse aux menaces",
+    "strategic_reporting": "Reporting stratégique (Pour les dirigeants)",
+    "technical_reporting": "Reporting stratégique (Pour les analystes)",
+    "incident_response": "Coordination de la réponse aux incidents",
+    "security_stack": "Intégration de la pile de sécurité",
+    "detection_engineering": "Ingénierie de détection",
+    "attack_simulation": "Simulation de cyberattaques",
+    "crisis_simulation": "Simulation de crise (Exercices sur table)",
+    "vulnerability_management": "Gestion des vulnérabilités",
+    "centralizing_knowledge": "Centralisation des connaissances",
+    "sharing_knowledge": "Partage des connaissances",
+    "hosting_threat_community": "Hébergement d'une communauté de partage des menaces"
+  },
+  "DeploymentRequestActivitySector": {
+    "computer_network_security": "Sécurité des ordinateurs et des réseaux",
+    "computer_games": "Jeux informatiques",
+    "computer_software": "Logiciels informatiques",
+    "defense_space": "Défense et espace",
+    "entertainment": "Divertissement",
+    "financial_services": "Services financiers",
+    "government_administration": "Administration publique",
+    "government_relations": "Relations avec les pouvoirs publics",
+    "higher_education": "Enseignement supérieur",
+    "hospital_health_care": "Hôpital & Soins de santé",
+    "hospitality": "Hospitalité",
+    "information_technology": "Technologies et services de l'information",
+    "insurance": "Assurance",
+    "legal_services": "Services juridiques",
+    "luxury_goods_jewelry": "Produits de luxe et bijoux",
+    "management_consulting": "Conseil en gestion",
+    "marketing_advertising": "Marketing et publicité",
+    "military": "Militaire",
+    "non_profit": "Gestion des organisations à but non lucratif",
+    "oil_energy": "Pétrole et énergie",
+    "pharmaceuticals": "Pharmaceutique",
+    "photography": "Photographie",
+    "retail": "Commerce de détail",
+    "security_investigations": "Sécurité et enquêtes",
+    "semiconductors": "Semi-conducteurs",
+    "telecommunications": "Télécommunications",
+    "transportation": "Transport/camionnage/chemin de fer",
+    "utilities": "Services publics",
+    "wireless": "Sans fil"
+  },
+  "DeleteUseCaseDialog": {
+    "TextDeleteUseCase": "Voulez-vous vraiment supprimer cette étiquette {name} ? ?"
+  },
+  "DialogActions": {
+    "ContinueTitle": "Voulez-vous continuer ?",
+    "PreventSheetSentence": "Vous avez commencé à remplir le formulaire. Le fait de le fermer maintenant annulera toute progression non enregistrée. Voulez-vous continuer ?",
+    "PreventSheetTitle": "Progrès non sauvegardé"
+  },
+  "DisableUserDialog": {
+    "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
+  },
+  "Epic": {
+    "XTMRoadmap": "Roadmap Suite XTM",
+    "AllProducts": "Tous les produits",
+    "ShowFinished": "Afficher les épics terminés",
+    "FilterByProduct": "Filtrer par produit",
+    "Timeline": {
+      "draft": "Brouillons",
+      "now": "Maintenant",
+      "next": "Après",
+      "under_consideration": "En considération",
+      "finished": "Terminé au cours des 3 derniers mois",
+      "IsLimited": "Limité à {maxChars} charactères",
+      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
+    },
+    "Form": {
+      "Epic": "Epic",
+      "Title": "Titre",
+      "ShortDesc": "Description courte",
+      "Description": "Description",
+      "FiligranProduct": "Produit",
+      "FiligranProductPlaceholder": "OpenCTI",
+      "Timeline": "Ligne de temps",
+      "IsActive": "Cet EPIC est-il publié ? (Par défaut votre EPIC est en mode brouillon)",
+      "Integration": "Est une intégration"
+    },
+    "EpicActions": {
+      "CreateEpic": "Créer un nouvel épic",
+      "UpdateEpic": "Mettre à jour un épic",
+      "DeleteEpic": "Supprimer l'épic {epicName}",
+      "SureDeleteEpic": "Êtes-vous sûr de vouloir supprimer l'épic {epicName} ?",
+      "EpicDeleted": "L'épic a été supprimé"
+    },
+    "StayUpToDate": "Restez au courant de tout {product}",
+    "JoinCommunity": "Rejoignez la discussion dans la communauté"
+  },
+  "Error": {
+    "AnErrorOccured": "Une erreur est survenue",
+    "Login": {
+      "LoginError": "Vous n'êtes pas autorisé à vous connecter"
+    },
+    "Server": {
+      "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de l'acceptation des utilisateurs",
+      "ADD_ORGANIZATION_ERROR": "Une erreur s'est produite lors de l'ajout d'une organisation",
+      "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
+      "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
+      "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
+      "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors du désenregistrement de la plateforme",
+      "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
+      "CANT_ADD_USER_TO_PERSONAL_SPACE": "Vous ne pouvez pas ajouter un utilisateur à votre espace personnel",
+      "CANT_REMOVE_LAST_ADMINISTRATOR": "Vous ne pouvez pas supprimer le dernier administrateur d'une organisation",
+      "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "Vous ne pouvez pas vous retirer vous-même de l'organisation",
+      "CANT_REQUEST_FREE_TRIAL": "Vous ne pouvez pas demander d'essai gratuit",
+      "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "Vous ne pouvez pas demander d'essai gratuit dans votre espace personnel",
+      "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
+      "COMPETITOR_DOMAIN_ALREADY_EXISTS": "Il existe déjà un concurrent avec le même domaine",
+      "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error lors de la creation de la requête de deploiement",
+      "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
+      "DELETE_ORGANIZATION_ERROR": "Erreur lors de la suppression de l'organisation",
+      "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
+      "DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED": "Vous ne pouvez réorganiser que les demandes de déploiement en file d'attente.",
+      "DEPLOYMENT_REQUEST_NOT_FOUND": "Une erreur inconnue s'est produite",
+      "DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND": "Le quota de la demande de déploiement n'a pas été trouvé.",
+      "DEPLOYMENT_REQUEST_STATUS_UPDATE_NOT_ALLOWED": "Une erreur inconnue s'est produite",
+      "DEPLOYMENT_REQUEST_UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
+      "DOCUMENT_CREATE_ERROR": "Une erreur s'est produite lors de la création de la ressource.",
+      "DOCUMENT_FILE_MISSING": "Fichier du document manquant",
+      "DOCUMENT_MISSING_METADATA": "Il manque des métadonnées au document.",
+      "DOCUMENT_NOT_FOUND": "La ressource n'a pas été trouvée.",
+      "DOCUMENT_UNIQUE_SLUG_ERROR": "Le nom de la ressource est déjà utilisé.",
+      "DOCUMENT_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de la ressource.",
+      "EPIC_CREATE_ERROR": "Une erreur s'est produite lors de l'ajout de l'épic.",
+      "EPIC_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de l'épic.",
+      "DELETE_EPIC_ERROR": "Une erreur s'est produite lors de la suppression de l'épic.",
+      "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
+      "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
+      "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
+      "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
+      "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
+      "EDIT_USER_SESSION_ERROR": "Une erreur inconnue s'est produite",
+      "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
+      "FREE_TRIAL_ALREADY_EXISTS": "Une instance de test existe déjà pour votre organisation",
+      "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "Vous devez d'abord accorder des capacités à l'organisation",
+      "HUBSPOT_ERROR": "Une erreur s'est produite lors de la prise de contact",
+      "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du numéro de part",
+      "INTEGRATION_TYPE_NOT_MANAGEABLE": "Ce type d'intégration n'est pas gérable.",
+      "INTEGRATION_TYPE_NOT_RECOGNIZED": "Ce type d'intégration n'est pas reconnu",
+      "INVALID_ACTION_SIZE": "Une erreur inconnue s'est produite",
+      "INVALID_EMAIL": "L'email doit être dans un format valide.",
+      "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
+      "INVALID_PLATFORM_ID": "Une erreur inconnue s'est produite",
+      "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
+      "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
+      "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
+      "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
+      "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
+      "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
+      "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
+      "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
+      "NEWS_FEED_ITEM_MISSING_TITLE": "Le titre de l'article du fil d'actualité est manquant",
+      "NO_ASYNC_CONTEXT_AVAILABLE": "Une erreur inconnue s'est produite",
+      "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "Une erreur inconnue s'est produite",
+      "ORGANIZATION_SAME_DOMAIN_EXISTS": "Une organisation ayant le même domaine existe déjà",
+      "ORGANIZATION_SAME_NAME_EXISTS": "Une organisation portant le même nom existe déjà",
+      "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "Vous n'êtes pas autorisé à faire ceci",
+      "PLATFORM_NOT_REGISTERED": "La plateforme n'est pas enregistrée",
+      "PLATFORM_TYPE_NOT_SUPPORTED": "Le type de plateforme n'est pas pris en charge",
+      "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'actualisation du jeton de la plateforme de l'utilisateur",
+      "REGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
+      "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",
+      "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
+      "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de la suppression d'un utilisateur d'une organisation en attente",
+      "SERVICE_CONFIGURATION_NOT_FOUND": "La configuration du service n'a pas été trouvée",
+      "SERVICE_CONTRACT_NOT_FOUND": "Le contrat de service n'a pas été trouvé",
+      "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
+      "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "Vous n'êtes pas autorisé à faire ceci",
+      "SERVICE_INSTANCE_NOT_FOUND": "L'instance du service n'a pas été trouvée",
+      "SERVICE_NOT_FOUND": "Le service n'a pas été trouvé",
+      "SERVICE_NOT_MANAGEABLE": "Ce service n'est pas gérable.",
+      "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
+      "SUBSCRIPTION_NOT_FOUND": "L'abonnement n'a pas été trouvé",
+      "TENANT_ID_MANDATORY": "L'identifiant du locataire est obligatoire",
+      "TRANSFER_ME_ERROR": "Une erreur s'est produite lors de la requête de transfert de personal space.",
+      "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
+      "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
+      "UPDATE_PLATFORM_SERVICE_METADATA_ERROR": "Erreur lors de la mise à jour des métadonnées du service de la plateforme",
+      "UPLOAD_USER_PICTURE_ERROR": "Une erreur s'est produite lors du téléchargement de votre photo de profil",
+      "USER_DISABLED": "L'utilisateur est désactivé",
+      "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
+      "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter"
+    },
+    "SomethingWentWrong": "Quelque chose s'est mal passé",
+    "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
+  },
+  "GenericActions": {
+    "FilterUseCases": "Cas d'utilisation...",
+    "FilterUseCasesLabel": "Cas d'utilisation",
+    "Search": "Recherche...",
+    "Paginate": {
+      "PreviousPage": "Page précédente",
+      "NextPage": "Page suivante",
+      "Manage": "Gérer la pagination",
+      "RowsPerPage": "Lignes par page"
+    }
+  },
+  "GoToProd": "Allez sur la production",
+  "HomePage": {
+    "Homepage": "Page d'accueil",
+    "Manage": "Gérer",
+    "OpenManagement": "Aller vers la page de management"
+  },
+  "PublicHomePage": {
+    "Title": "Découvrez nos ressources et notre expertise"
+  },
+  "PublicLayout": {
+    "SignIn": "Connexion",
+    "AllRightsReserved": "Tous droits réservés",
+    "FiligranWebsite": "Site Filigran",
+    "PrivacyPolicy": "Politique de confidentialité",
+    "TermsOfServices": "Conditions d'utilisation",
+    "Licenses": "Licences",
+    "Contact": "Contact"
+  },
+  "PublicResourcePage": {
+    "Download": "Télécharger",
+    "Overview": "Aperçu"
+  },
+  "InviteUserServiceForm": {
+    "Capabilities": "Capacités disponibles",
+    "CapabilitiesDescription": "Vous pouvez ajouter des capacité spécifiques aux utilisateurs de {organizationName} pour leur souscription sur {serviceName}",
+    "CapabilitiesPlaceholder": "Sélectionner les capacités",
+    "Description": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée.",
+    "DisabledCapability": "Si vous voulez donner cette capacité à vos utilisateurs sur ce service, vous devez d'abord l'activer au niveau de l'organisation",
+    "Email": "Email",
+    "GrantCapability": "Donner cette capacité",
+    "Organization": "Organisation",
+    "Title": "Inviter l'utilisateur au service {serviceName} "
+  },
+  "UseCaseActions": {
+    "AddUseCase": "Ajouter un cas d'usage",
+    "SearchLabel": "Rechercher"
+  },
+  "UseCaseForm": {
+    "Color": "Couleur",
+    "Name": "Nom"
+  },
+  "UseCaseListPage": {
+    "Color": "Couleur",
+    "Name": "Nom"
+  },
+  "LocaleSwitcher": {
+    "Label": "Langage",
+    "en": "English",
+    "fr": "Français",
+    "ja": "日本語"
+  },
+  "LoginPage": {
+    "CreateYourAccount": "créer votre compte",
+    "Email": "Email",
+    "Login": "Connexion",
+    "Logout": "Déconnexion",
+    "OnFiligranWebsite": "sur le site Filigran",
+    "Password": "Mot de passe",
+    "SignIn": "S'inscrire",
+    "Title": "Page de connexion XTM Hub",
+    "ToLoginPlease": "Pour vous connecter, veuillez"
+  },
+  "MenuActions": {
+    "Continue": "Continuer",
+    "Delete": "Supprimer",
+    "Details": "Détails",
+    "Disable": "Désactiver",
+    "Remove": "Retirer",
+    "Update": "Modifier"
+  },
+  "MenuLinks": {
+    "Backoffice": "Backoffice",
+    "Connectors": "OpenCTI contrats Connecteurs",
+    "Home": "Accueil",
+    "UseCases": "Cas d'usage",
+    "Organizations": "Organisations",
+    "Parameters": "Paramètres",
+    "Profile": "Profile",
+    "Security": "Sécurité",
+    "Services": "Services",
+    "Settings": "Réglages",
+    "SettingsLabel": "Menu des paramètres",
+    "Users": "Utilisateurs",
+    "OpenCTITrials": "Essais OpenCTI",
+    "OpenAEVTrials": "Essais OpenAEV",
+    "Competitors": "Concurrents"
+  },
+  "Metadata": {
+    "Title": "Votre passerelle vers le Renseignement sur les Cybermenaces et la Simulation d'attaques | XTM Hub by Filigran",
+    "Description": "XTM Hub est votre passerelle vers les solutions de cybersécurité de Filigran : Renseignement sur les Cybermenaces et Simulation d'attaques. Détectez les menaces. Passez à l'action.",
+    "ShortTitle": "XTM Hub by Filigran - Plateforme de Renseignement sur les Cybermenaces",
+    "ShortDescription": "XTM Hub est votre passerelle vers les solutions de cybersécurité de Filigran.",
+    "SiteName": "XTM Hub by Filigran",
+    "ServiceFallbackDescription": "Découvrez notre solution de cybersécurité pour renforcer votre threat intelligence et votre protection.",
+    "DocumentFallbackDescriptionDashboard": "Explorez ce dashboard de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
+    "DocumentFallbackDescriptionIntegration": "Explorez cette intégration de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
+    "DocumentFallbackDescriptionScenario": "Explorez ce scénario d'attaque OpenAEV pour renforcer votre émulation d'adversaire et votre validation de sécurité.",
+    "DocumentFallbackDescriptionGeneric": "Explorez cette ressource sur XTM Hub by Filigran pour renforcer votre posture de cybersécurité.",
+    "ResourcePreviewAlt": "{name} - Aperçu de la ressource"
+  },
+  "CompetitorListPage": {
+    "Name": "Nom",
+    "Domain": "Domaine",
+    "Tier": "Niveau",
+    "Edit": "Éditer",
+    "Delete": "Supprimer",
+    "AddCompetitor": "Ajouter un concurrent",
+    "DeleteDialog": {
+      "Title": "Supprimer le concurrent",
+      "Text": "Etes-vous sûr de vouloir supprimer le concurrent {name} ?"
+    }
+  },
+  "CompetitorForm": {
+    "AddTitle": "Ajouter un concurrent",
+    "EditTitle": "Modifier un concurrent",
+    "Name": "Nom",
+    "Domain": "Domaine",
+    "Tier": "Niveau",
+    "AddButton": "Ajouter un concurrent",
+    "EditButton": "Mettre à jour le concurrent"
+  },
+  "MenuUser": {
+    "Profile": "Profile",
+    "ToggleUser": "Ouvrir menu utilisateur"
+  },
+  "Notifications": {
+    "Title": "Notifications ({count})",
+    "UserNotification": {
+      "Text": "<nameFormat>{name}</nameFormat> veut rejoindre votre organisation",
+      "Title": "Requête Utilisateur"
+    }
+  },
+  "OrganizationActions": {
+    "ErrorNameAlreadyExists": "L'organisation {name} existe déjà.",
+    "OrganizationCreated": "L'organisation {name} a été créée",
+    "OrganizationDeleted": "L'organisation a été supprimée",
+    "OrganizationUpdated": "L'organisation {name} a été modifiée",
+    "SearchOrganizationWithEmail": "Recherche d'une organisation par email..."
+  },
+  "OrganizationForm": {
+    "CreateOrganization": "Créer une organisation",
+    "DeleteOrganization": "Supprimer une organisation",
+    "Domains": "Domaines",
+    "DomainsPlaceholder": "Ajouter un domaine",
+    "EditOrganization": "Modifier l'organisation",
+    "Error": {
+      "Domain": "Au moins un domaine est requis",
+      "DomainsInvalid": "La valeur du domaine n'est pas valide",
+      "DuplicateName": "Une organisation portant ce nom existe déjà",
+      "Name": "Le nom de l'organisation est requis"
+    },
+    "Name": "Nom",
+    "SureDeleteOrganization": "Êtes-vous sûr de vouloir supprimer l'organisation {organizationName} ? Cette action ne pourra pas être annulée."
+  },
+  "OrganizationInServiceAction": {
+    "AddOrganization": "Abonnement de l'organisation au service",
+    "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
+    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
+    "DeleteOrgFromService": "Supprimer l'organisation du service",
+    "EndDate": "Date de fin (optionnel)",
+    "Organization": "Organisation",
+    "RemoveOrganization": "Supprimer l'organisation",
+    "SelectCapa": "Sélectionner les capabilités",
+    "SelectCapaDescription": "Sélectionnez les capacités que l'administrateur pourra assigner aux utilisateurs.",
+    "SelectOrganization": "Sélectionner",
+    "StartDate": "Date de début"
+  },
+  "OrganizationSwitcher": {
+    "PersonalSpace": "Espace personnel",
+    "SelectOrganization": "Choisir une organisation",
+    "SelectedOrganization": "Organisation choisie"
+  },
+  "TrialsDashboard": {
+    "Columns": {
+      "Email": "Courriel",
+      "Organization": "Organisation",
+      "StartDate": "Date de début",
+      "EndDate": "Date de fin",
+      "RemainingDays": "Jours restants",
+      "Status": "Statut",
+      "Region": "Région",
+      "PlatformId": "ID de la plateforme",
+      "PlatformUrl": "URL de la plateforme",
+      "RegistrationStatus": "Statut d'enregistrement",
+      "RequestDate": "Date de la demande",
+      "Priority": "Priorité",
+      "CancellationDate": "Date d'annulation",
+      "CancellationOwner": "Propriétaire de l'annulation",
+      "CancellationReason": "Raison de l'annulation",
+      "Available": "Disponible",
+      "Taken": "Pris",
+      "Total": "Total"
+    },
+    "TabTitle": {
+      "Cancelled": "Annulé",
+      "Expired": "Expiré",
+      "Running": "En cours d'exécution",
+      "Waiting": "En attente",
+      "Quotas": "Quotas"
+    },
+    "Toast": {
+      "TrialsReordered": "Les demandes ont été réorganisées"
+    },
+    "Actions": {
+      "SearchTrials": "Recherche par email ou par organisation",
+      "MoveToTop": "Aller au début",
+      "MoveUp": "Remonter"
+    },
+    "UpdateQuotasForm": {
+      "Title": "Mise à jour des quotas pour {platform} dans {region}",
+      "QuotasUpdated": "Le quota a été mis à jour avec succès",
+      "NewCapacityLabel": "Nouvelle capacité de quota",
+      "AlertDialog": {
+        "ConfirmTitle": "Mise à jour des quotas pour la région {region}",
+        "ConfirmDescription": "Vous avez mis à jour les quotas pour la région {region} de {oldCapacity} à {newCapacity}.",
+        "ConfirmSentence": "Êtes-vous sûr de vouloir enregistrer ces modifications ?"
+      }
+    },
+    "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai",
+    "Registered": "Enregistré",
+    "NotRegistered": "Non enregistré"
+  },
+  "Parameters": {
+    "Version": "Version"
+  },
+  "PendingUserListPage": {
+    "TabTitle": "Requêtes utilisateurs ({usersCount})",
+    "WarningUserRejection": {
+      "Confirm": "Confirmer",
+      "Description": "Vous êtes sur le point de refuser cet utilisateur dans votre organisation. Cette action ne peut être annulée. Êtes-vous sûr ?",
+      "Title": "Êtes-vous sûr?"
+    },
+    "WarningUsersRejection": {
+      "Confirm": "Confirmez",
+      "Description": "Vous êtes sur le point de refuser ces utilisateurs de votre organisation. Cette action ne peut être annulée. Etes-vous sûr ?",
+      "Title": "Etes-vous sûr ?"
+    },
+    "WarningUsersAccept": {
+      "Confirm": "Confirmer",
+      "Description": "Vous êtes sur le point d'accepter ces utilisateurs dans votre organisation. Ces utilisateurs n'auront pas d'autorisations spécifiques par défaut. Si vous souhaitez attribuer ou mettre à jour des permissions, visitez l'onglet Utilisateurs. Êtes-vous sûr ?",
+      "Title": "Êtes-vous sûr ?"
+    }
+  },
+  "PlatformIdentifier": {
+    "openaev": "OpenAEV",
+    "opencti": "OpenCTI",
+    "xtmhub": "XTM Hub"
+  },
+  "ProfilePage": {
+    "Picture": "Photo de profil",
+    "Preferences": {
+      "Title": "Preferences",
+      "Language": "Langue",
+      "Theme": "Theme"
+    },
+    "PlatformsEditionDialog": {
+      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenAEV."
+    },
+    "Title": "Profile",
+    "UpdatePicture": "Mettre à jour la photo de profil",
+    "UpdateProfile": "Mise à jour du profil",
+    "PersonalSpace": {
+      "SuccessTransfer": "Espace personnel transféré avec succès",
+      "SuccessRequest": "Demande de transfert d'espace personnel envoyée avec succès",
+      "TitleDangerZone": "Transfert de l'espace personnel",
+      "TransferPersoSpaceExplanation": "Vous pouvez demander un transfert d'espace personnel pour tous vos abonnements (l'autre compte doit déjà exister).",
+      "EmailPlaceholder": "email.i.want.to.transfer.to@email.com",
+      "TransferPersoSpace": "Transférer l'espace personnel",
+      "Transfer": "Transférer",
+      "TransferConfirmSentence": "Etes-vous sûr de vouloir transférer l'abonnement de votre espace personnel ? Si le nouvel utilisateur n'a pas confirmé par email, le transfert ne sera pas effectif."
+    }
+  },
+  "RedirectPage": {
+    "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus.",
+    "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !"
+  },
+  "Register": {
+    "AnotherOrganization": {
+      "Allowed": {
+        "Registered": {
+          "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation. Voulez-vous transférer votre plateforme ?",
+          "Title": "Plateforme déjà enregistrée"
+        },
+        "Unregistered": {
+          "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée dans une autre organisation. Souhaitez-vous réenregistrer votre plateforme ?",
+          "Title": "La plateforme a été enregistrée"
+        }
+      },
+      "NotAllowed": {
+        "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer.",
+        "Title": "La plateforme est enregistrée dans une autre organisation"
+      }
+    },
+    "Back": "Retour à {platformIdentifier}",
+    "Confirm": "Inscrire",
+    "Details": {
+      "Contract": "Contrat",
+      "Contracts": {
+        "CE": "Édition communautaire",
+        "EE": "Édition Entreprise"
+      },
+      "Description": "Cliquez ici pour accéder à votre plateforme privée.",
+      "PlatformID": "ID de la plateforme",
+      "PlatformURL": "URL de la plateforme",
+      "PrivatePlatform": "Plateforme privée"
+    },
+    "Error": {
+      "Capability": {
+        "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
+        "Description": "Si vous souhaitez procéder à l'enregistrement de votre plateforme {platformIdentifier} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
+        "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub"
+      }
+    },
+    "Failed": {
+      "Description": "Une erreur s'est produite lors de l'enregistrement sur la plateforme",
+      "Title": "L'enregistrement a échoué"
+    },
+    "OpenCTI": {
+      "AnotherOrganization": {
+        "Allowed": {
+          "Registered": {
+            "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation. Voulez-vous transférer votre plateforme ?",
+            "Title": "Plateforme déjà inscrite"
+          },
+          "Unregistered": {
+            "Description": "Votre plateforme OpenCTI a déjà été inscrite dans une autre organisation. Souhaitez-vous inscrire votre plateforme à nouveau ?",
+            "Title": "La plateforme était inscrite"
+          }
+        },
+        "NotAllowed": {
+          "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer.",
+          "Title": "La plateforme est inscrite dans une autre organisation"
+        }
+      },
+      "Back": "Retour à OpenCTI",
+      "Error": {
+        "Capability": {
+          "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
+          "Description": "Si vous souhaitez procéder à l'inscription de votre plateforme OpenCTI dans le XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
+          "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub."
+        }
+      },
+      "Failed": {
+        "Description": "Une erreur s'est produite lors de l'inscription de la plateforme.",
+        "Title": "L'inscription a échoué"
+      },
+      "OrganizationForm": {
+        "Description": "Dans quel espace souhaitez-vous inscrire votre plateforme OpenCTI ?",
+        "Title": "Vous êtes sur le point d'inscrire votre plateforme OpenCTI dans XTM Hub"
+      },
+      "SameOrganization": {
+        "Registered": {
+          "Description": "Votre plateforme OpenCTI est déjà inscrite. Voulez-vous inscrire votre plateforme à nouveau ?",
+          "Title": "Plateforme déjà inscrite"
+        },
+        "Unregistered": {
+          "Description": "Votre plateforme OpenCTI a déjà été inscrite. Voulez-vous inscrire votre plateforme à nouveau  ?",
+          "Title": "La plateforme était inscrite"
+        }
+      },
+      "Succeeded": {
+        "Description": "Cet onglet sera bientôt fermé.",
+        "Title": "La plateforme OpenCTI a été inscrite avec succès"
+      },
+      "TooMuchOrganization": {
+        "Description1": "Votre plateforme OpenCTI {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+        "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
+        "Title": "Avis de réenregistrement de la plateforme"
+      }
+    },
+    "OrganizationForm": {
+      "Description": "Choisissez votre espace de travail",
+      "OrganizationalDescription": "Partagez les ressources et l'activité avec votre équipe.",
+      "OrganizationalWorkspace": "Espace de travail organisationnel",
+      "PersonalDescription": "Gardez les ressources et l'activité privées à votre compte.",
+      "PersonalWorkspace": "Espace de travail personnel",
+      "Recommended": "Recommandé",
+      "Title": "Vous êtes sur le point d'enregistrer votre plateforme {platformIdentifier} dans XTM Hub"
+    },
+    "SameOrganization": {
+      "Registered": {
+        "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée. Voulez-vous réenregistrer votre plateforme ?",
+        "Title": "Plateforme déjà enregistrée"
+      },
+      "Unregistered": {
+        "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée. Souhaitez-vous réenregistrer votre plateforme ?",
+        "Title": "La plateforme a été enregistrée"
+      }
+    },
+    "Succeeded": {
+      "Description": "Cet onglet sera bientôt fermé",
+      "Title": "La plateforme {platformIdentifier} a été enregistrée avec succès"
+    },
+    "TooMuchOrganization": {
+      "Description1": "Votre plateforme {platformIdentifier} {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+      "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
+      "Title": "Avis de réenregistrement de la plateforme"
+    }
+  },
+  "RemoveUserOrgDialog": {
+    "TextRemoveThisUser": "Êtes-vous sûr de vouloir retirer cet utilisateur {email} de votre organisation ?"
+  },
+  "Reset table": "Remise à zéro de la table",
+  "Rows per page": "Lignes par page",
+  "Service": {
+    "ServiceDefinitionIdentifier": {
+      "link": "Link",
+      "openaev_registration": "OpenAEV Registration",
+      "openaev_scenarios": "OpenAEV Scenarios",
+      "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
+      "opencti_integrations": "OpenCTI Integrations",
+      "opencti_registration": "OpenCTI Registration",
+      "vault": "Vault",
+      "xtm_suite_roadmap": "XTM Suite Roadmap"
+    },
+    "Capabilities": {
+      "AccessServiceDescription": "Vous avez uniquement accès à un service",
+      "AccessServiceName": "Access service",
+      "CapabilitiesTitle": "Capacités",
+      "ManageAccessDescription": "Vous pouvez accéder au service et inviter des utilisateurs à ce service",
+      "ManageAccessName": "Manage access",
+      "SelectCapabilities": "Sélectionner les capacités"
+    },
+    "Cards": {
+      "filigran-academy": {
+        "Name": "Filigran Academy",
+        "Description": "Maîtrisez OpenCTI et OpenAEV avec Filigran Academy — votre guide ultime vers le succès pour tous les niveaux !"
+      },
+      "filigran-blog": {
+        "Name": "Blog Filigran",
+        "Description": "Découvrez les derniers articles sur OpenCTI, OpenAEV et bien plus encore."
+      },
+      "openaev-101": {
+        "Name": "OpenAEV 101",
+        "Description": "Découvrez comment déployer et utiliser OpenAEV, la plateforme Filigran de simulation réaliste de cybermenaces, pour mettre en place des exercices concrets d'émulation d'adversaires."
+      },
+      "openaev-demo": {
+        "Name": "Démo OpenAEV",
+        "Description": "Accédez à une instance de démonstration OpenAEV en ligne et explorez toutes ses fonctionnalités."
+      },
+      "openaev-documentation": {
+        "Name": "Documentation OpenAEV",
+        "Description": "Retrouvez tous les documents pour démarrer avec notre plateforme de validation d'exposition aux adversaires, ainsi que les notes de version et les présentations."
+      },
+      "openaev-scenarios": {
+        "Name": "Bibliothèque de scénarios OpenAEV",
+        "Description": "Explorez une sélection de scénarios OpenAEV partagés par l'équipe Filigran."
+      },
+      "opencti-101": {
+        "Name": "OpenCTI 101",
+        "Description": "Les fondamentaux : découvrez les concepts essentiels à travers des cas d'usage et des workflows simples."
+      },
+      "opencti-custom-dashboards": {
+        "Name": "Bibliothèque de tableaux de bord OpenCTI",
+        "Description": "Explorez une sélection de tableaux de bord personnalisés pour la gestion des menaces, conçus pour tirer le meilleur parti d'OpenCTI."
+      },
+      "opencti-demo": {
+        "Name": "Démo OpenCTI",
+        "Description": "Accédez à une instance de démonstration OpenCTI en ligne et explorez toutes ses fonctionnalités."
+      },
+      "opencti-documentation": {
+        "Name": "Documentation OpenCTI",
+        "Description": "Retrouvez tous les documents pour démarrer avec notre plateforme de renseignement sur les menaces, ainsi que les notes de version et les présentations."
+      },
+      "opencti-integrations": {
+        "Name": "Bibliothèque d'intégrations OpenCTI",
+        "Description": "Explorez une sélection d'intégrations OpenCTI partagées par l'équipe Filigran."
+      },
+      "slack": {
+        "Name": "Slack",
+        "Description": "Rejoignez notre communauté de gestion des menaces en pleine croissance (plus de 5 000 membres). Partagez vos expériences et trouvez le soutien dont vous avez besoin."
+      },
+      "xtm-suite-roadmap": {
+        "Name": "Roadmap XTM Suite",
+        "Description": "Explorez et suivez la roadmap de la Filigran XTM Suite."
+      }
+    },
+    "ComingSoon": "Bientôt disponible",
+    "Connectors": {
+      "DataImport": "Importation de données",
+      "Description": "Explorer une gamme de connecteurs OpenCTI partagés par l'équipe Filigran",
+      "IntegrationDocumentationAndCode": "Integration documentation and code",
+      "LastVerifiedDate": "Dernière vérification",
+      "Name": "Connecteurs OpenCTI",
+      "Search": "Rechercher un connecteur par nom...",
+      "VendorContact": "Contact vendeur",
+      "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact",
+      "Incompatible": "{platformToBeUpdated} {count, plural, =1 {doit} other {doivent}} être mises à jour pour déployer ce connecteur.",
+      "UnavailableDeployments": "Ce connecteur n'est pas disponible pour le déploiement automatique."
+    },
+    "CreationStatus": "Statut de la création",
+    "Form": {
+      "Author": "Auteur",
+      "ContainerImageLabel": "Image du conteneur",
+      "CurrentLogo": "Logo actuel",
+      "DatasheetUrlLabel": "Lien vers la fiche technique (url)",
+      "BlogpostUrlLabel": "Lien vers l'article de blog (url)",
+      "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
+      "DemoUrlLabel": "Lien vers la démo (url)",
+      "DescriptionLabel": "Description",
+      "DescriptionPlaceholder": "Il s'agit d'un paragraphe décrivant le {documentType}.",
+      "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier json. Le fichier json précédent sera supprimé. Voulez-vous continuer ?",
+      "DropDocuments": "Déposer les documents ici",
+      "ExistingJSONFile": "Fichier JSON existant : {file_name}",
+      "GithubUrlLabel": "URL Github",
+      "Illustration": "Illustration",
+      "LogoDisclaimer": "Le logo Filigran est utilisé par défaut",
+      "ImagesDisclaimer": "Vos images seront ajoutées et affichées sous forme de carrousel sur la page de détails de la ressource téléchargée",
+      "ImageLabel": "Images",
+      "LogoLabel": "Logo",
+      "ManagerSupportedLabel": "Gestionnaire pris en charge",
+      "MinimumDeployableVersionLabel": "Version minimale pour déployer sur {platform}",
+      "MinimumDeployableVersionPlaceholder": "1.0.0",
+      "NameLabel": "Nom",
+      "NamePlaceholder": "nom {documentType}",
+      "NoImage": "Pas d'image sélectionnée",
+      "PlaybookSupportedLabel": "Playbook pris en charge",
+      "ProductVersionLabel": "Version de compatibilité d'{platform}",
+      "ProductVersionPlaceholder": "1.0.0",
+      "PublishedPlaceholder": "Le {documentType} est-il publié ?",
+      "Restore": "Restaurer",
+      "SelectImage": "Sélectionner une ou plusieurs image(s)",
+      "SelectIntegrationSubType": "Sous-type",
+      "SelectJSONFile": "Sélectionner le fichier JSON",
+      "ShortDescriptionLabel": "Courte description",
+      "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
+      "SlugLabel": "Slug",
+      "SlugPlaceholder": "slug",
+      "SourceCodeLabel": "Code source",
+      "SubscriptionLinkLabel": "Lien d'abonnement (url)",
+      "UpdateJSONFile": "Mise à jour du fichier JSON",
+      "UploadImage": "Télécharger une ou plusieurs nouvelle(s) image(s)",
+      "UploadLogo": "Télécharger un nouveau logo",
+      "UrlPlaceholder": "http://www.example.com",
+      "UseCasesLabel": "Cas d'utilisation",
+      "UseCasesPlaceholder": "Ajouter des cas d'utilisation",
+      "VendorUrlLabel": "URL du fournisseur",
+      "VerifiedLabel": "Vérifié"
+    },
+    "OpenctiIntegrations": {
+      "Actions": {
+        "Share": "Partager l'intégration Feed"
+      },
+      "AddService": "Ajouter une nouvelle intégration",
+      "IntegrationType": "Type d'intégration",
+      "Filter": {
+        "IntegrationSubType": {
+          "Label": "Sous-type",
+          "Placeholder": "Sous-type..."
+        },
+        "Type": {
+          "Label": "Type d'intégration",
+          "Placeholder": "Type d'intégration..."
+        },
+        "ProductVersion": {
+          "Label": "Plateformes enregistrées",
+          "Placeholder": "Plateformes enregistrées..."
+        },
+        "ManagerSupported": {
+          "Label": "Type de déploiement",
+          "Placeholder": "Type de déploiement...",
+          "AutomaticDeploy": "Déploiement automatique",
+          "ManualDeploy": "Déploiement manuel"
+        },
+        "Verified": {
+          "Label": "Statut de vérification",
+          "Placeholder": "Statut de vérification...",
+          "Verified": "Vérifié",
+          "Unverified": "Non vérifié"
+        }
+      },
+      "Type": {
+        "csv_feed": "Flux CSV",
+        "connector": "Connecteurs",
+        "rss_feed": "Flux RSS",
+        "json_feed": "Flux JSON (bientôt disponible)",
+        "taxii_feed": "Flux TAXII",
+        "stream": "Flux OpenCTI",
+        "third_party_integration": "Intégrations tierces (bientôt disponible)"
+      }
+    },
+    "CsvFeed": {
+      "Actions": {
+        "Added": "{name} a été ajouté",
+        "Deleted": "{name} a été supprimé",
+        "Share": "Partager le CSV Feed",
+        "Updated": "{name} a été modifié"
+      },
+      "Active": "Publié",
+      "AddService": "Ajouter un CSV Feed",
+      "DeleteService": "Supprimer le CSV Feed {name}",
+      "NonActive": "Brouillon",
+      "SureDeleteService": "Etes-vous sûr de vouloir supprimer le CSV Feed {name} ?",
+      "UpdateService": "Editer le CSV Feed {name}"
+    },
+    "RssFeed": {
+      "Actions": {
+        "Added": "{name} a été ajouté",
+        "Deleted": "{name} a été supprimé",
+        "Share": "Partager le RSS Feed",
+        "Updated": "{name} a été modifié"
+      },
+      "Active": "Publié",
+      "AddService": "Ajouter un RSS Feed",
+      "DeleteService": "Supprimer le RSS Feed {name}",
+      "NonActive": "Brouillon",
+      "SureDeleteService": "Etes-vous sûr de vouloir supprimer le RSS Feed {name} ?",
+      "UpdateService": "Editer le RSS Feed {name}"
+    },
+    "TaxiiFeed": {
+      "Actions": {
+        "Added": "Le flux TAXII {name} a été ajouté avec succès",
+        "Deleted": "Le flux TAXII {name} a été supprimée avec succès",
+        "Share": "Partager le flux TAXII",
+        "Updated": "Le flux TAXII {name} a été modifiée avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau flux TAXII",
+      "DeleteService": "Supprimer le flux TAXII {name}",
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux TAXII {name} ?",
+      "UpdateService": "Mettre à jour le flux TAXII {name}"
+    },
+    "Connector": {
+      "Actions": {
+        "Added": "Le connecteur {name} a été ajouté avec succès",
+        "Deleted": "Le connecteur {name} a été supprimé avec succès",
+        "Share": "Partager le connecteur",
+        "Updated": "Le connecteur {name} a été modifié avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau connecteur",
+      "DeleteService": "Supprimer le connecteur {name}",
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le connecteur {name} ?",
+      "UpdateService": "Mettre à jour le connecteur {name}"
+    },
+    "Stream": {
+      "Actions": {
+        "Added": "Le stream {name} a été ajouté avec succès",
+        "Deleted": "Le stream {name} a été supprimé avec succès",
+        "Share": "Partager le stream",
+        "Updated": "Le stream {name} a été modifié avec succès"
+      },
+      "Active": "Publié",
+      "AddService": "Ajouter un nouveau stream",
+      "DeleteService": "Supprimer le stream {name}",
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le flux {name} ?",
+      "UpdateService": "Mettre à jour le stream {name}"
+    },
+    "ThirdPartyIntegration": {
+      "Actions": {
+        "Added": "L'intégration de tiers {name} a été ajoutée avec succès",
+        "Deleted": "L'intégration de tiers {name} a été supprimée avec succès",
+        "Share": "Partager l'intégration de tiers",
+        "Updated": "L'intégration de tiers {name} a été modifiée avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter une nouvelle intégration de tiers",
+      "DeleteService": "Supprimer l'intégration de tiers {name}",
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer l'intégration de tiers {name} ?",
+      "UpdateService": "Mettre à jour l'intégration des tiers {name}"
+    },
+    "OpenctiCustomDashboards": {
+      "Actions": {
+        "Added": "Le tableau de bord personnalisé {name} a été ajouté avec succès",
+        "Deleted": "Le tableau de bord personnalisé {name} a été supprimé avec succès",
+        "Share": "Partager le tableau de bord personnalisé",
+        "Updated": "Le tableau de bord personnalisé {name} a été modifié avec succès"
+      },
+      "Active": "Publier",
+      "AddService": "Ajouter un nouveau tableau de bord",
+      "DeleteService": "Supprimer le tableau de bord personnalisé {name}",
+      "NonActive": "Projet",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le tableau de bord {name} ?",
+      "UpdateService": "Mettre à jour le tableau de bord"
+    },
+    "OpenAEVScenario": {
+      "Actions": {
+        "Added": "Le scénario {name} a été ajouté avec succès",
+        "Deleted": "Le scénario {name} a été supprimé avec succès",
+        "Updated": "Le scénario {name} a été modifié avec succès",
+        "Share": "Partager le scénario"
+      },
+      "Form": {
+        "OpenAEVScenarioFile": "Fichier de scénario",
+        "ExistingOpenAEVScenarioFile": "Fichier de scénario existant : {file_name}",
+        "UpdateZIPFile": "Mettre à jour le fichier ZIP",
+        "DescriptionUpdateZIPFile": "Vous êtes sur le point de télécharger un nouveau fichier zip. Le fichier json précédent sera supprimé. Voulez-vous continuer ?"
+      },
+      "AddService": "Ajouter un nouveau scénario",
+      "UpdateService": "Mettre à jour le scénario {name}",
+      "DeleteService": "Supprimer le scénario {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
+    },
+    "Description": "Description",
+    "GoTo": "Aller au service",
+    "GoToAdminLabel": "Administrer",
+    "GoToLabel": "Consulter",
+    "GoToManagement": "Aller à la gestion des services",
+    "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
+    "List": {
+      "Filter": {
+        "Add": "Ajouter un filtre",
+        "NoOptions": "Pas d'options",
+        "Key": {
+          "label": "Cas d'utilisation",
+          "integration_type": "Type d'intégration",
+          "product_version": "Plateformes enregistrées",
+          "manager_supported": "Type de déploiement",
+          "verified": "Statut de vérification"
+        }
+      }
+    },
+    "Management": {
+      "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
+      "AreYouSureRemoveOrganizationAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'organisation {organizationName} pour ce service ?",
+      "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",
+      "Email": "Email",
+      "FirstName": "Prénom",
+      "InviteUser": {
+        "InviteUser": "Ajouter un utilisateur au service",
+        "InviteUserSubtitle": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée dans l'encadré.",
+        "Organization": "Organisation",
+        "TitleInviteUser": "Inviter un utilisateur"
+      },
+      "LastName": "Nom",
+      "ManageUsers": "Gérer les utilisateurs",
+      "ManageUsersForOrganization": "Gérer les utilisateurs de {organizationName} dans le service {serviceName}",
+      "OneUserMax": "1 utilisateur max",
+      "RemoveAccess": "Retirer les accès",
+      "RemoveRights": "Supprimer les droits",
+      "ShowPersonalSpaces": "Montrer les espaces personnels",
+      "SearchOrganization": "Rechercher une organisation",
+      "Subscription": "Souscription"
+    },
+    "Name": "Nom",
+    "NoOwnedService": "Vous n'avez pas encore de service.",
+    "NoService": "Il n'y a pas encore de service...",
+    "Organizations": "Organisations",
+    "RegisteredPlatforms": {
+      "PlatformDetails": "Détails de la plateforme",
+      "GoToMyPlatform": "Accéder à ma plateforme"
+    },
+    "SearchServices": "Service de recherche...",
+    "ServiceName": "Nom du service",
+    "ShareableResources": {
+      "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
+      "Deploy": {
+        "DeployDescriptionNoPlatform": "Vous n'avez pas de plateforme {platformIdentifier} enregistrée.",
+        "DeployDescriptionNoPlatformIllustration": "Illustration de l'enregistrement XTM Hub",
+        "DeployDescriptionNoPlatformThen": "Pour déployer une ressource, vous devez d'abord enregistrer votre plateforme {platformIdentifier}.\n\nÉtapes d'enregistrement :\n1. Assurez-vous d'être administrateur {platformIdentifier}, ou contactez votre administrateur pour obtenir de l'aide.\n2. Connectez-vous à votre plateforme {platformIdentifier} et accédez aux paramètres &gt; Expérience Filigran.\n3. Cliquez sur le bouton &quot;Enregistrer&quot; pour terminer l'enregistrement comme dans l'image ci-dessous",
+        "DeployDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
+        "DeployPlatform": "Déployer dans {platformName}",
+        "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
+        "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
+        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" ; car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer."
+      },
+      "Details": {
+        "Author": "Auteur",
+        "BasicInformation": "Informations de base",
+        "OpenCTIDocumentation": "Documentation OpenCTI",
+        "Downloads": "Téléchargements",
+        "LastUpdatedAt": "Dernière mise à jour le",
+        "Overview": "Vue d'ensemble",
+        "MinimumDeployableVersion": "Version minimale pour être déployé sur {platform}",
+        "ProductVersion": "Version de compatibilité d'{platform}",
+        "Shares": "Actions",
+        "IntegrationType": "Type",
+        "IntegrationSubType": "Sous-type",
+        "GithubURL": "URL Github",
+        "VendorURL": "URL du fournisseur",
+        "FeedURL": "URL du flux",
+        "DatasheetURL": "URL de la fiche technique",
+        "BlogpostURL": "URL de l'article de blog",
+        "DemoURL": "URL de la démo"
+      },
+      "Download": "Télécharger",
+      "FromVersion": "Depuis la version",
+      "Share": "Partager"
+    },
+    "SubscribeOrganization": "Souscrire une organisation",
+    "SubscribeService": "Souscrire au service {serviceName}",
+    "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
+    "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
+    "SureWantSubscriptionDirect": "Commencez avec notre service gratuit {serviceName} et explorez les ressources créées par l'équipe Filigran.",
+    "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
+    "Trials": {
+      "ExploreBold": "Essai gratuit !",
+      "ExplorePlatform": "Explorez {platformName} pendant 30 jours",
+      "ExploreProducts": "Explorez OpenCTI ou OpenAEV pendant 30 jours",
+      "Active": "Votre essai gratuit d'OpenCTI est actif",
+      "Provisioning": "Votre essai gratuit d'OpenCTI est en cours de provisionnement.",
+      "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
+      "Expired": "Votre essai gratuit d'OpenCTI a expiré.",
+      "Cancelled": "Votre essai gratuit d'OpenCTI a été annulé.",
+      "CancellationReason": {
+        "value": "Les renseignements manquent d'informations exploitables pour nos besoins spécifiques",
+        "compatibility": "Incompatible avec notre pile de sécurité existante",
+        "complexity": "La configuration est trop complexe pour être réalisée dans un délai raisonnable",
+        "legal-security": "L'équipe de sécurité interne ou l'équipe juridique a exigé une résiliation immédiate",
+        "expertise": "Nous n'avons pas les analystes/expertises internes pour utiliser l'outil efficacement"
+      },
+      "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
+      "Header": {
+        "ActiveTrial": "Essai actif",
+        "DaysRemaining": "jours restant"
+      },
+      "LearnMore": {
+        "Link": "En savoir plus",
+        "openaev": {
+          "WhatCanYouDo": {
+            "Title": "Que pouvez-vous faire avec votre essai OpenAEV ?",
+            "FirstParagraph": "Bénéficiez de 30 jours pour explorer toutes les fonctionnalités d'OpenAEV afin de simuler des attaques, d'évaluer vos défenses et d'améliorer votre posture de sécurité. Cela inclut toutes les fonctionnalités de l'édition Enterprise basée sur SaaS d'OpenAEV, y compris l'utilisation de vos agents EDR existants, la génération automatisée de scénarios et les conseils de remédiation alimentés par l'IA.",
+            "SecondParagraph": "Que vous souhaitiez simuler des séquences d'attaques, effectuer des exercices réalistes sur table, valider votre posture de sécurité ou rendre compte de votre cyber-résilience à vos dirigeants, vous pouvez tester toutes les fonctionnalités d'OpenAEV en fonction de vos besoins spécifiques.",
+            "Link": "Découvrez toutes les fonctionnalités d'OpenAEV Enterprise Edition"
+          },
+          "Blocks": {
+            "First": {
+              "Title": "Établir des priorités",
+              "Description": "Créez des simulations d'attaques offensives pour identifier les vulnérabilités et les chemins d'attaque exploitables, en tirant parti des renseignements sur les menaces d'OpenCTI et de la cartographie ATT&CK de MITRE pour hiérarchiser en fonction de vos PIR."
+            },
+            "Second": {
+              "Title": "Test",
+              "Description": "Validez vos défenses en continu en effectuant des tests atomiques spécifiques, vos propres séquences d'attaque ou en important des scénarios préétablis. Lancez des exercices réalistes pour tester les réponses de vos équipes en utilisant l'EDR d'OpenAEV ou intégrez des collecteurs prédéfinis provenant des fournisseurs les plus courants."
+            },
+            "Third": {
+              "Title": "Fixer",
+              "Description": "Identifiez précisément les points à améliorer dans votre posture de sécurité grâce à des analyses détaillées, des recommandations de correction basées sur l’IA et les retours de votre équipe — puis bouclez le processus avec la création de scénarios assistée par l’IA."
+            }
+          }
+        },
+        "opencti": {
+          "WhatCanYouDo": {
+            "Title": "Que pouvez-vous faire avec votre essai OpenCTI ?",
+            "FirstParagraph": "Bénéficiez de 30 jours pour explorer toutes les fonctionnalités d'OpenCTI et enrichir vos informations sur les menaces. Cela inclut toutes les fonctionnalités d'OpenCTI Enterprise Edition telles que les playbooks automatisés, la possibilité de définir des exigences prioritaires en matière de renseignement (PIR), FINTEL, ainsi que l'importation de fichiers assistée par l'IA, la génération de rapports et la fonctionnalité de recherche NLP.",
+            "SecondParagraph": "Découvrez comment OpenCTI peut répondre à vos besoins spécifiques - qu'il s'agisse de la chasse aux menaces, de la réponse aux incidents ou de la gestion des cas - et s'intégrer à vos sources de données préférées pour que les renseignements sur les menaces puissent être exploités dans l'ensemble de votre système de sécurité.",
+            "Link": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition"
+          },
+          "Blocks": {
+            "First": {
+              "Title": "Ingestion",
+              "Description": "Consolidez et enrichissez les renseignements sur les menaces à partir de n'importe quel flux - commercial, open-source, interne - dans une plate-forme centralisée, en tirant parti de plus de 300 intégrations et en vous appuyant sur le cadre STIX 2.1. Utilisez l'importation assistée par l'IA des rapports CTI pour économiser d'innombrables heures d'analyse."
+            },
+            "Second": {
+              "Title": "Traitement",
+              "Description": "Accédez à de puissantes visualisations de tableaux de bord, à des hypergraphes de connaissances et à des playbooks pour pivoter entre les acteurs de la menace à l'aide de calendriers et de mappages ATT&CK. Adaptez vos tableaux de bord à vos besoins en matière de gestion des menaces ou des incidents, et faites de l'IA votre compagnon à chaque étape."
+            },
+            "Third": {
+              "Title": "Sortie",
+              "Description": "Faites circuler les renseignements sur les menaces dans l'ensemble de votre système de sécurité. Partagez et diffusez les renseignements entre les équipes et les outils avec un accès basé sur les rôles pour une action rapide. Utilisez OpenAEV, entièrement intégré à OpenCTI, pour valider et améliorer votre posture de sécurité."
+            }
+          }
+        }
+      },
+      "StartTrial": "Commencez votre essai gratuit",
+      "StartTrialWithName": "Commencez votre essai gratuit de {platformName}",
+      "OpenAEVPlatformBreadcrumb": "Plateforme d'essai OpenAEV",
+      "OpenCTIPlatformBreadcrumb": "Plateforme d'essai OpenCTI",
+      "PageHeader": {
+        "Welcome": "Bienvenue chez Filigran",
+        "Title": "Démarrons votre essai gratuit de {platformName} !"
+      },
+      "Storage": {
+        "Title": "Note importante sur le stockage de votre environnement d'essai",
+        "SaaSFeaturesLink": "fonctionnalités Enterprise Edition SaaS",
+        "NoSLA": "<strong>L'environnement d'essai gratuit n'inclut pas de SLA.</strong> En cas de panne du fournisseur cloud, le temps de restauration n'est pas garanti. Nous recommandons de ne pas stocker de données critiques ou irremplaçables dans votre environnement d'essai.",
+        "OpenCTIDescription": "L'essai gratuit OpenCTI fournit aux utilisateurs une instance SaaS « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec <strong>une puissance de calcul et un stockage réduits (jusqu'à 40 Go de stockage de données de threat intelligence et 3 Go de stockage de fichiers).</strong> L'ingestion de gros flux premium avec des jeux de données riches peut rapidement saturer votre stockage.",
+        "OpenAEVDescription": "L'essai gratuit OpenAEV fournit aux utilisateurs une instance « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec une puissance de calcul réduite et un stockage limité à <strong>16 Go</strong>."
+      },
+      "XTMSuite": {
+        "Title": "Votre suite eXtended Threat Management (XTM)",
+        "Description": "{platformName} fait partie de la solution open-source de threat intelligence, de simulation avancée d'adversaires et de gestion stratégique des cyber-risques de Filigran, conçue pour aider votre organisation à anticiper et gérer les menaces de bout en bout.",
+        "OpenCTITagline": "Collecter, corréler et exploiter",
+        "OpenCTIDescription": "Une plateforme de threat intelligence open-source construite par des praticiens pour des praticiens — pour briser les silos de données et rendre la threat intelligence réellement actionnable.",
+        "OpenAEVTagline": "Prioriser, tester et corriger ce qui compte",
+        "OpenAEVDescription": "Défendez-vous proactivement contre les menaces avec l'Adversarial Exposure Validation (AEV), en simulant des scénarios d'attaque réels pour optimiser vos défenses.",
+        "LogoAlt": "Logo {name}",
+        "IllustrationAlt": "Illustration du service d'essai gratuit"
+      },
+      "QuickStart": {
+        "Title": "Guide de démarrage rapide",
+        "Subtitle": "Tirez le meilleur de votre plateforme {platformName} !",
+        "Description": "Explorez des guides pas-à-pas, des cours d'experts et les retours de la communauté pour résoudre des cas d'usage concrets et devenir un champion Filigran !"
+      },
+      "GoToMyTrial": "Accéder à ma version d'évaluation",
+      "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
+      "ReachOutToSales": "Contactez nous",
+      "ReachOutToSalesMessagePlaceholder": "Votre message",
+      "NeedSupport": "Besoin d'aide",
+      "ReachOutToSalesSuccessTitle": "Merci !",
+      "ReachOutToSalesSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
+      "ReachOutToSalesDefaultMessage": "Tapez votre message pour demander de l'aide",
+      "Cancellation": {
+        "Toast": {
+          "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
+          "NewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès.",
+          "Admin": "L'essai gratuit d'OpenCTI a été annulé avec succès."
+        },
+        "ConfirmationForm": {
+          "Title": "Annuler votre essai gratuit d'OpenCTI",
+          "NoNewTrialPossible": "Veuillez noter que de nouveaux essais openCTI ne peuvent pas être demandés après cette action.",
+          "CancellationReason": "Raison de l'annulation",
+          "CancellationReasonPlaceholder": "Sélectionnez une raison",
+          "CancellationReasonOther": "Autre",
+          "CancellationReasonOtherPlaceholder": "Ecrivez votre raison ici"
+        },
+        "Confirmation": {
+          "Title": "Annulation de l'essai",
+          "Admin": "Etes-vous sûr de vouloir annuler la version d'évaluation gratuite d'OpenCTI à partir de {organizationName} ? ?"
+        }
+      },
+      "Form": {
+        "Region": "Région",
+        "RegionPlaceholder": "Veuillez sélectionner votre région préférée pour l'hébergement",
+        "AssociatedEmail": "Email associé",
+        "JobTitle": "Titre du poste",
+        "JobTitlePlaceholder": "Veuillez sélectionner votre titre de poste",
+        "ActivitySector": "Secteur d'activité",
+        "ActivitySectorPlaceholder": "Veuillez sélectionner votre secteur d'activité",
+        "UseCase": "Cas d'utilisation",
+        "UseCasePlaceholder": "Veuillez sélectionner votre cas d'utilisation",
+        "MSSA": "MSSA",
+        "MSSAAgreement": "*Je reconnais avoir lu, compris et accepté les conditions du procès de",
+        "FormRequested": "Vous avez demandé un essai gratuit. Vous recevrez un e-mail dès que la plateforme sera prête !"
+      },
+      "Display": {
+        "New": "Nouveau",
+        "Requested": "Demandée",
+        "opencti": {
+          "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
+          "FreeTrialDescription": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition pour commencer à rendre opérationnelle votre veille sur les menaces de bout en bout !"
+        },
+        "openaev": {
+          "Title": "Essai gratuit d'OpenAEV pendant 30 jours",
+          "FreeTrialDescription": "Explorez OpenAEV pour simuler des scénarios d'attaque réels, évaluer votre posture de sécurité et améliorer votre cyber-résilience - au niveau technique et humain."
+        }
+      },
+      "CapacityWarning": {
+        "Title": "Aucune plateforme disponible",
+        "Content": "Aucune plateforme n'est disponible dans cette région pour le moment. Souhaitez-vous être averti lorsque nous en aurons une de disponible ?",
+        "Continue": "Me prévenir"
+      },
+      "ManageUsers": {
+        "Title": "Gérer les utilisateurs",
+        "Email": "Courriel"
+      }
+    },
+    "Vault": {
+      "DeleteDocument": "Effacer le document",
+      "DropFile": "Lâchez le document ici",
+      "File": "Document à transmettre",
+      "FileExtension": "Le document doit avoir une extension",
+      "FileForm": {
+        "AddFile": "Ajouter un document",
+        "AlreadyExists": "Ce document existe déjà. L'ancien sera écrasé.",
+        "DeleteDialog": "Êtes-vous sûr de vouloir supprimer ce document ?",
+        "DescriptionLabel": "Description",
+        "DescriptionPlaceholder": "Ceci est une courte description du document.",
+        "DropDocuments": "Lâchez les documents ici",
+        "EditFile": "Editer le document",
+        "File": "Document",
+        "FileAlreadyExists": "Ce document existe déjà",
+        "FileExistsDialog": "Ce document existe déjà. Ce document écrasera l'ancien document. Êtes-vous sûr de vouloir continuer ?",
+        "NoDocument": "Pas de document sélectionné",
+        "SelectDocument": "Sélectionnez un document",
+        "ShortNameLabel": "Nom court",
+        "ShortNamePlaceholder": "Filigrane de la tarification",
+        "UploadNewFile": "Ajout d'un nouveau document dans le Vault"
+      },
+      "FileTab": {
+        "Description": "Description",
+        "FileName": "Nom de document",
+        "NumberDownload": "Téléchargements",
+        "Search": "Chercher par nom de document...",
+        "UploadDate": "Date d'ajout"
+      },
+      "ManageVault": "Gérer le service",
+      "UpdateDocument": "Mise à jour du document",
+      "Vault": "Partenaire Vault",
+      "VaultTitle": "Administration du Vault"
+    }
+  },
+  "ServiceActions": {
+    "OrganizationAdded": "L'organisation {name} a souscrit au service {serviceName}",
+    "OrganizationDeleted": "L'organisation {name} a été supprimée",
+    "UserCapabilitiesModified": "Les capacités de {email}'s ont été modifiées",
+    "UserServiceAdded": "{email} a été invité au service {serviceName}"
+  },
+  "ServiceForm": {
+    "EditService": "Editer les illustrations d'un service",
+    "Illustration": "Illustration du service",
+    "Logo": "Logo du service",
+    "PictureUpdated": "Illustrations mises à jour pour le service : {serviceName}",
+    "UpdatePictures": "Illustrations"
+  },
+  "ServiceName": {
+    "custom_dashboards": "Tableau de bord personnalisé"
+  },
+  "Sort Asc": "Tri Asc",
+  "Sort Desc": "Sort Desc",
+  "SortControls": {
+    "SortBy": "Trier par"
+  },
+  "DocumentOrdering": {
+    "name": "Nom",
+    "created_at": "Date de création",
+    "updated_at": "Date de mise à jour"
+  },
+  "TestEnvBanner": "Vous êtes sur l'environnement {environnement}",
+  "ThemeToggle": {
+    "Automatic": "Automatique",
+    "Dark": "Foncé",
+    "Light": "Clair",
+    "SetTheme": "Appliquer le thème",
+    "ToggleTheme": "Ouvrir menu thème"
+  },
+  "UnexpectedErrorDialog": {
+    "Description": "Veuillez essayer de vous connecter à nouveau. Si le problème persiste, contactez-nous pour obtenir de l'aide.",
+    "Title": "Un événement inattendu s'est produit."
+  },
+  "Unregister": {
+    "Unregister": "Désenregistrer",
+    "Description": "Êtes-vous sûr de vouloir désenregistrer la plateforme {platformName} ? Si vous le faites, vous devrez refaire le processus d'enregistrement de {productName}.",
+    "Confirm": {
+      "Description": "Voulez-vous procéder à la désinscription ?",
+      "Title": "Vous êtes sur le point de désenregistrer votre plateforme {platformTitle} de l'organisation {platformIdentifier} sur le Hub."
+    },
+    "Error": {
+      "Capability": {
+        "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
+        "Description": "Si vous souhaitez procéder à la désinscription de votre plateforme {name} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui dispose des autorisations appropriées pour procéder.",
+        "Title": "Vous n'avez pas l'accès {platformIdentifier} nécessaire sur le XTM Hub."
+      },
+      "NotInOrganization": {
+        "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+      },
+      "PlatformNotRegistered": {
+        "Description": "Cet onglet sera bientôt fermé.",
+        "Title": "La plateforme que vous essayez de désenregistrer n'est pas enregistrée"
+      }
+    },
+    "Failed": {
+      "Description": "Une erreur s'est produite lors de la désinscription de la plateforme.",
+      "Title": "La désinscription a échoué"
+    },
+    "OpenCTI": {
+      "Confirm": {
+        "Description": "Voulez-vous procéder à la désinscription ?",
+        "Title": "Vous'êtes sur le point de désenregistrer votre plateforme OpenCTI"
+      },
+      "Error": {
+        "Capability": {
+          "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
+          "Description": "Si vous voulez procéder à la désinscription de votre plateforme OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
+          "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub."
+        },
+        "NotInOrganization": {
+          "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+        },
+        "PlatformNotRegistered": {
+          "Description": "Cet onglet sera bientôt fermé.",
+          "Title": "La plateforme que vous essayez de désinscrire n'est pas inscrite"
+        }
+      },
+      "Failed": {
+        "Description": "Une erreur s'est produite lors de la désinscription de la plateforme.",
+        "Title": "La désinscription a échoué"
+      },
+      "Succeeded": {
+        "Description": "Cet onglet sera bientôt fermé.",
+        "Title": "La plateforme OpenCTI a été désinscrite avec succès"
+      }
+    },
+    "Succeeded": {
+      "Description": "Cet onglet sera bientôt fermé.",
+      "Title": "la plateforme {platformIdentifier} s'est désinscrite avec succès"
+    }
+  },
+  "UpdateUserDialog": {
+    "TextUpdatedUser": "Votre compte a été modifié par un administrateur. Le comportement de l'application peut donc évoluer.",
+    "TextUpdatedUserTitle": "Compte modifié !"
+  },
+  "UserActions": {
+    "AddUser": "Ajouter un utilisateur",
+    "CreateUser": "Créer un nouvel utilisateur",
+    "DetailsUser": "Détails de l'utilisateur",
+    "Disable": "Désactiver",
+    "Enable": "Activer",
+    "RemoveUser": "Retirer l'utilisateur",
+    "SearchUser": "Rechercher l'utilisateur...",
+    "UpdateUser": "Mettre à jour l'utilisateur",
+    "UserCreated": "L'utilisateur {email} a été créé",
+    "UserDeleted": "L'utilisateur {email} a été supprimé",
+    "UserRemoved": "L'utilisateur {email} a été supprimé",
+    "UserUpdated": "L'utilisateur {email} a été modifié"
+  },
+  "UserForm": {
+    "AddOrganization": "Ajouter une organisation",
+    "Country": "Pays",
+    "Email": "Courriel",
+    "Error": {
+      "FirstName": "Le prénom est requis",
+      "LastName": "Le nom de famille est requis"
+    },
+    "FirstName": "Prénom",
+    "LastName": "Nom de famille",
+    "OrganizationCapabilities": "Capacités",
+    "Organizations": "Organisations",
+    "OrganizationsCapabilitiesPlaceholder": "Capacités supplémentaires",
+    "OrganizationsPlaceholder": "Sélectionner une organisation",
+    "Password": "Mot de passe",
+    "Picture": "Photo",
+    "ResetPassword": {
+      "Action": "Réinitialiser",
+      "Sentence": "Nous vous enverrons un e-mail pour réinitialiser votre mot de passe.",
+      "Success": "L'email de réinitialisation du mot de passe a été envoyé avec succès."
+    },
+    "WhoAreYou": "Qui êtes-vous ?",
+    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom"
+  },
+  "UserListPage": {
+    "Country": "Pays",
+    "Email": "Email",
+    "FirstName": "Prénom",
+    "LastLogin": "Dernière connexion",
+    "LastName": "Nom de famille",
+    "Never": "Jamais",
+    "Organizations": "Organisations",
+    "Roles": "Rôles",
+    "Status": "Statut",
+    "TabTitle": "Utilisateurs",
+    "Title": "Liste des utilisateurs",
+    "UserForm": {
+      "Email": "Email",
+      "Password": "Mot de passe",
+      "SelectOrganization": "Sélectionner une organisation",
+      "SelectRoles": "Sélectionner rôles"
+    },
+    "Capability": "Capacité"
+  },
+  "Utils": {
+    "Cancel": "Annuler",
+    "Clear": "Effacer",
+    "Close": "Fermer",
+    "Confirm": "Confirmer",
+    "Continue": "Continuer",
+    "Copied": "Copié",
+    "Create": "Créer",
+    "Delete": "Supprimer",
+    "Deleted": "a été supprimé",
+    "Details": "Details",
+    "Download": "Télécharger",
+    "Edit": "Modifier",
+    "Error": "Erreur",
+    "FailedToCopy": "Échec de la copie",
+    "Form": {
+      "ResetFile": "Supprimer l'actuel document sélectionné."
+    },
+    "Inserted": "a été inséré",
+    "Loading": "Chargement...",
+    "Modified": "a été modifié",
+    "NotFound": "Non trouvé",
+    "OpenMenu": "Ouvrir le menu",
+    "Reset": "Effacer",
+    "Success": "Succès",
+    "Update": "Editer",
+    "Updating": "Mise à jour...",
+    "Validate": "Valider",
+    "ValidateForm": "Valider le formulaire",
+    "Verified": "Vérifié",
+    "Visualize": "Visualiser",
+    "DangerZone": "Zone de danger",
+    "AutomaticDeploy": "Déploiement automatique",
+    "And": "et",
+    "Or": "ou"
+  },
+  "Platform": {
+    "Update": "Mettre à jour",
+    "UpdateMetadata": "Mettre à jour les métadonnées de la plateforme",
+    "Name": "Nom de la plateforme",
+    "NamePlaceholder": "Entrez le nom de la plateforme",
+    "IllustrationImage": "Image d'illustration",
+    "Updated": "{platformName} a été mis à jour avec succès"
+  },
+  "Region": {
+    "APAC_AU": "Australie",
+    "APAC_SG": "Singapour",
+    "EU_WEST": "Europe Ouest",
+    "US_EAST": "États-Unis Est"
+  },
+  "VaultActions": {
+    "DocumentAdded": "{file_name} a été ajouté",
+    "DocumentDeleted": "{file_name} a été supprimé",
+    "DocumentUpdated": "{file_name} a été modifié",
+    "UpdateDocument": "Modifier le document"
+  },
+  "entitie(s)": "entité(s)",
+  "DeploymentRequestJobTitle": {
+    "ceo": "PDG",
+    "ciso_cso_cio": "RSSI/DSI/Directeur de la sécurité",
+    "c_level": "Niveau C (direction)",
+    "general_manager_vp": "Directeur général/Vice-président",
+    "director_head_cybersecurity": "Directeur/Responsable cybersécurité",
+    "cybersecurity_team_lead": "Chef d'équipe cybersécurité",
+    "application_security_specialist": "Spécialiste sécurité applicative",
+    "cloud_security_specialist": "Spécialiste sécurité cloud",
+    "cybersecurity_architect": "Architecte cybersécurité",
+    "cybersecurity_engineer": "Ingénieur cybersécurité",
+    "dfir_specialist": "Spécialiste investigation numérique et réponse aux incidents",
+    "grc_specialist": "Spécialiste gouvernance, risques et conformité",
+    "iam_specialist": "Spécialiste gestion des identités et des accès",
+    "penetration_tester": "Testeur d'intrusion",
+    "soc_analyst": "Analyste SOC (Centre des opérations de sécurité)",
+    "threat_intelligence_analyst": "Analyste renseignement sur les menaces",
+    "vulnerability_analyst": "Analyste en vulnérabilités",
+    "consultant": "Consultant",
+    "other": "Autre"
+  }
+}

@@ -1,0 +1,192 @@
+enum PlatformContract {
+  CE
+  EE
+  trial
+}
+
+type RegisteredPlatform implements Node {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  platform_id: String!
+  tenant_id: String
+  tenant_name: String
+  identifier: ServiceDefinitionIdentifier!
+  version: String
+  illustration_document_id: DocumentId
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
+}
+
+input PlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  version: String
+  tenantId: String
+  tenantName: String
+}
+
+enum PlatformIdentifier {
+  opencti
+  openaev
+}
+
+input RegisterPlatformInput {
+  organizationId: ID!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
+}
+
+input CanUnregisterPlatformInput {
+  platformId: String!
+  tenantId: String
+}
+
+type RegistrationResponse {
+  token: String!
+}
+
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
+}
+
+input IsPlatformRegisteredInput {
+  platformId: String!
+  tenantId: String
+}
+
+type IsPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
+type IsPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  platformTitle: String
+  organization: IsPlatformRegisteredOrganization
+}
+
+type CanUnregisterResponse {
+  isPlatformRegistered: Boolean!
+  isAllowed: Boolean
+  isInOrganization: Boolean
+  organizationId: ID
+}
+
+input UnregisterPlatformInput {
+  platformId: String!
+  identifier: PlatformIdentifier!
+  tenantId: String
+}
+
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
+  not_found
+}
+
+input RefreshPlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier
+}
+
+input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  url: String!
+  tenantId: String!
+  tenantName: String!
+  platformIdentifier: PlatformIdentifier!
+}
+
+input TenantDetails {
+  tenantId: String!
+  tenantName: String!
+  token: String!
+  url: String!
+}
+
+input RefreshPlatformRegistrationConnectivityStatusAllTenantsInput {
+  platformId: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier!
+  tenants: [TenantDetails!]!
+}
+
+type RefreshPlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type TenantStatus {
+  tenantId: String!
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse {
+  statuses: [TenantStatus!]!
+}
+
+type RefreshUserPlatformTokenResponse {
+  token: String!
+}
+
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier
+  onlyActive: Boolean
+  onlyTrial: Boolean
+}
+
+input RegisteredPlatformInput {
+  service_instance_id: ServiceInstanceId!
+}
+
+input AutoRegisterPlatformInput {
+  platform: PlatformInput!
+  existing_users_count: Int
+}
+
+type Query {
+  isPlatformRegistered(
+    input: IsPlatformRegisteredInput!
+  ): IsPlatformRegisteredResponse! @auth
+  canUnregisterPlatform(
+    input: CanUnregisterPlatformInput!
+  ): CanUnregisterResponse! @auth
+  registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform @auth
+  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
+    @auth
+  platformAssociatedOrganization(
+    platformId: String!
+    tenantId: String
+  ): Organization @auth
+}
+
+type Mutation {
+  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse! @auth
+  unregisterPlatform(input: UnregisterPlatformInput): Success! @auth
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth
+  # Warning ! Used by OpenCTI
+  refreshPlatformRegistrationConnectivityStatus(
+    input: RefreshPlatformRegistrationConnectivityStatusInput!
+  ): RefreshPlatformRegistrationConnectivityStatusResponse!
+  # Warning ! Used by OpenAEV
+  refreshPlatformRegistrationConnectivityStatusSingleTenant(
+    input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!
+  ): RefreshPlatformRegistrationConnectivityStatusResponse!
+  # Warning ! Used by OpenAEV
+  refreshPlatformRegistrationConnectivityStatusAllTenants(
+    input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!
+  ): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
+  # Warning ! Used by OpenCTI and OpenAEV (trials)
+  autoRegisterPlatform(
+    platform: PlatformInput @deprecated(reason: "Use input instead")
+    input: AutoRegisterPlatformInput
+  ): Success! @platform_token
+}
