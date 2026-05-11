@@ -898,6 +898,26 @@
       "NonActive": "Brouillon",
       "Active": "Publié"
     },
+    "OpenCTIPlaybook": {
+      "Actions": {
+        "Added": "Le playbook {name} a été ajouté avec succès",
+        "Deleted": "Le playbook {name} a été supprimé avec succès",
+        "Updated": "Le playbook {name} a été modifié avec succès",
+        "Share": "Partager le playbook"
+      },
+      "Form": {
+        "OpenCTIPlaybookFile": "Fichier de playbook",
+        "ExistingOpenCTIPlaybookFile": "Fichier de playbook existant : {file_name}",
+        "UpdateJSONFile": "Mettre à jour le fichier JSON",
+        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier JSON. Le fichier précédent sera supprimé. Voulez-vous continuer ?"
+      },
+      "AddService": "Ajouter un nouveau playbook",
+      "UpdateService": "Mettre à jour le playbook {name}",
+      "DeleteService": "Supprimer le playbook {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le playbook {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
+    },
     "Description": "Description",
     "GoTo": "Aller au service",
     "GoToAdminLabel": "Administrer",
@@ -1327,6 +1347,7 @@
     "Delete": "Supprimer",
     "Deleted": "a été supprimé",
     "Details": "Details",
+    "DocumentNotFound": "Document introuvable",
     "Download": "Télécharger",
     "Edit": "Modifier",
     "Error": "Erreur",
@@ -1340,6 +1361,7 @@
     "NotFound": "Non trouvé",
     "OpenMenu": "Ouvrir le menu",
     "Reset": "Effacer",
+    "ServiceNotFound": "Service introuvable",
     "Success": "Succès",
     "Update": "Editer",
     "Updating": "Mise à jour...",
