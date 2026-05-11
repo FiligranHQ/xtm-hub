@@ -167,7 +167,7 @@ src/modules/                    # Feature modules (each has .graphql + .resolver
   log/                          # Activity logs
   use-case/                     # Use cases
     object-use-case/            # Object-linked use cases
-  xtm-suite-roadmap/            # XTM Suite roadmap
+  xtm-platform-roadmap/         # XTM Platform roadmap
 src/security/                   # Authorization (GraphQL directives, access control, guards)
   directive-graphql/            # @auth GraphQL directive
   restriction/                  # Access restrictions

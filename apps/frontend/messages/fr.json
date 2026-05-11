@@ -140,7 +140,7 @@
     "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
   "Epic": {
-    "XTMRoadmap": "Roadmap Suite XTM",
+    "XTMRoadmap": "Roadmap Platform XTM",
     "AllProducts": "Tous les produits",
     "ShowFinished": "Afficher les épics terminés",
     "FilterByProduct": "Filtrer par produit",
@@ -666,7 +666,7 @@
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
-      "xtm_suite_roadmap": "XTM Suite Roadmap"
+      "xtm_platform_roadmap": "XTM Platform Roadmap"
     },
     "Capabilities": {
       "AccessServiceDescription": "Vous avez uniquement accès à un service",
