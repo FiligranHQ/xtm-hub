@@ -156,6 +156,7 @@
       "Title": "Title",
       "ShortDesc": "Short description",
       "Description": "Description",
+      "EditionType": "Edition Type",
       "FiligranProduct": "Product",
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Timeline",
@@ -171,8 +172,7 @@
       "SureDeleteEpic": "Are you sure you want to delete the {epicName} epic?",
       "EpicDeleted": "The epic was deleted"
     },
-    "StayUpToDate": "To stay up to date about everything {product}",
-    "JoinCommunity": "Join the discussion in the community"
+    "JoinCommunity": "Stay in the loop on the Filigran Community"
   },
   "Error": {
     "AnErrorOccured": "An error occurred",

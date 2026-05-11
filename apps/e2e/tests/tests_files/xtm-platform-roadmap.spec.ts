@@ -21,6 +21,7 @@ test.describe('XTM Platform Roadmap', () => {
         title: 'Title',
         short_description: 'Short description',
         description: 'This is a test epic',
+        edition_type: 'EE',
       });
 
       await expect(
@@ -28,6 +29,7 @@ test.describe('XTM Platform Roadmap', () => {
       ).toBeVisible();
 
       await expect(page.getByText(/^Title$/)).toBeVisible();
+      await expect(page.getByText(/^EE$/)).toBeVisible();
     });
     await test.step('Update an epic', async () => {
       await xtmPlatformRoadmapPage.updateEpic({
@@ -56,6 +58,9 @@ test.describe('XTM Platform Roadmap', () => {
       await expect(
         page.getByRole('combobox').filter({ hasText: 'OpenCTI (1)' })
       ).toBeVisible();
+      await expect(page.getByText(/^EE$/)).not.toBeVisible();
+      await expect(page.getByText(/^CE$/)).not.toBeVisible();
+      await expect(page.getByText(/^Partial EE$/)).not.toBeVisible();
     });
     await test.step('Create an epic draft', async () => {
       await xtmPlatformRoadmapPage.addEpic({
