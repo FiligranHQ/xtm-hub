@@ -1,18 +1,16 @@
 'use client';
 
 import { DocumentsListQuery } from '@/components/service/document/document.graphql';
+import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/IntegrationsList';
+import { useIntegrationListStorage } from '@/components/service/integrations/[serviceInstanceId]/use-integration-list-storage';
+import { useIntegrationListUrlFilters } from '@/components/service/integrations/[serviceInstanceId]/use-integration-list-url-filters';
+import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { Skeleton } from '@filigran/ui';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
-import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/IntegrationsList';
-import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
-import {
-  ServiceListLocalStorageKey,
-  useServiceListLocalStorage,
-} from '@/hooks/use-service-list-local-storage';
 
 interface PageLoaderProps {
   serviceInstance: serviceInstance_fragment$data;
@@ -32,9 +30,18 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     verified,
     orderBy,
     orderMode,
-  } = useServiceListLocalStorage(
-    ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
-  );
+    resetAll,
+    filters,
+    setFilters,
+    setSelectedFilters,
+  } = useIntegrationListStorage();
+
+  useIntegrationListUrlFilters({
+    filters,
+    resetAll,
+    setFilters,
+    setSelectedFilters,
+  });
 
   const logicalFilters = useLogicalFiltersFromStorage({
     serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS,
