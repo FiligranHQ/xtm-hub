@@ -15,20 +15,22 @@ import {
   IconActionsLink,
 } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
-import {
-  Checkbox,
-  DataTable,
-  DataTableHeadBarOptions,
-} from '@filigran/ui';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import useAdminPath from '@/hooks/use-admin-path';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import { formatName } from '@/utils/format/name';
 import { APP_PATH } from '@/utils/path/constant';
 import { MoreVertIcon } from '@filigran/icon';
+import {
+  Badge,
+  DataTable,
+  DataTableHeadBarOptions,
+  Switch,
+} from '@filigran/ui';
 import { serviceInstanceByIdQuery } from '@generated/serviceInstanceByIdQuery.graphql';
 import { serviceInstanceForSubscriptions_fragment$key } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
@@ -42,7 +44,11 @@ interface ServiceSlugProps {
   subscriptionConnectionId: string;
 }
 
-const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConnectionId }: ServiceSlugProps) => {
+const ServiceSlug = ({
+  subscriptions,
+  queryRefServiceInstance,
+  subscriptionConnectionId,
+}: ServiceSlugProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const queryDataRequest = usePreloadedQuery<serviceInstanceByIdQuery>(
@@ -152,10 +158,17 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
       <div className="flex items-center gap-m ml-l">
+        <div className="flex-1 max-w-sm">
+          <SearchInput
+            id="SearchTerm"
+            placeholder={t('Service.Management.SearchOrganization')}
+            onChange={debounceHandleInput}
+          />
+        </div>
         <div className="flex items-center">
-          <Checkbox
+          <Switch
             checked={shouldDisplayPersonalSpaces}
-            onCheckedChange={(value) => setShouldDisplayPersonalSpaces(!!value)}
+            onCheckedChange={(value) => setShouldDisplayPersonalSpaces(value)}
             id="displayPersonalSpaces"
           />
           <label
@@ -164,22 +177,9 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
             {t('Service.Management.ShowPersonalSpaces')}
           </label>
         </div>
-        <div className="flex-1 max-w-sm">
-          <SearchInput
-            id="SearchTerm"
-            placeholder={t('Service.Management.SearchOrganization')}
-            onChange={debounceHandleInput}
-          />
-        </div>
       </div>
 
       <div className="flex gap-s flex-wrap ml-auto">
-        <ServiceSlugAddSubscription
-          isAdminPath={!!isAdminPath}
-          subscriptions={subscriptions}
-          serviceInstance={serviceInstance}
-          subscriptionConnectionId={subscriptionConnectionId}
-        />
         <DataTableHeadBarOptions />
       </div>
     </div>
@@ -200,23 +200,93 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
       : filteredBySpace;
   }, [subscriptions, shouldDisplayPersonalSpaces, searchTerm]);
 
+  const availableCapabilities: BadgeOverflow[] = useMemo(
+    () =>
+      (serviceInstance.service_definition?.service_capability ?? []).flatMap(
+        (capability) => {
+          if (!capability?.id || !capability.name) {
+            return [];
+          }
+
+          return [
+            {
+              id: capability.id,
+              name: capability.name,
+            },
+          ];
+        }
+      ),
+    [serviceInstance.service_definition?.service_capability]
+  );
+
+  const serviceTags = useMemo(
+    () =>
+      (serviceInstance.tags ?? [])
+        .filter((tag) => !!tag)
+        .map((tag) => ({
+          id: tag,
+          name: tag,
+        })),
+    [serviceInstance.tags]
+  );
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{serviceInstance.name}</h1>
-      <div className="pb-s italic">{serviceInstance.description}</div>
-      <div className="pb-s">{t('Service.Management.Description') + ':'}</div>
+      <div>
+        <div className="flex flex-col gap-m mb-m">
+          <div className="flex flex-row gap-m">
+            <h1>{serviceInstance.name}</h1>
+            <BadgeOverflowCounter badges={serviceTags as BadgeOverflow[]} />
+            <div className="ml-auto">
+              <ServiceSlugAddSubscription
+                isAdminPath={!!isAdminPath}
+                subscriptions={subscriptions}
+                serviceInstance={serviceInstance}
+                subscriptionConnectionId={subscriptionConnectionId}
+              />
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground italic line-clamp-3">
+            {serviceInstance.description ??
+              t('Service.Management.NoDescription')}
+          </p>
+          <div>
+            <p className="text-xs uppercase text-muted-foreground pb-xs">
+              {t('Service.Management.AvailableCapabilities')}
+            </p>
+            {availableCapabilities.length > 0 ? (
+              <div className="flex flex-wrap gap-xs">
+                {availableCapabilities.map((capability) => (
+                  <Badge key={capability.id}>
+                    {formatName(capability.name)}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {t('Service.Management.NoAvailableCapabilities')}
+              </p>
+            )}
+          </div>
+        </div>
 
-      <DataTable
-        i18nKey={i18nKey(t)}
-        columns={columns}
-        data={filteredAndSortedData}
-        toolbar={toolbar}
-        tableState={{
-          pagination,
-          columnPinning: { right: ['actions'] },
-        }}
-      />
+        <div className="border rounded bg-page-background p-m">
+          <h2 className="">{t('Service.Management.Description') + ':'}</h2>
+
+          <DataTable
+            i18nKey={i18nKey(t)}
+            columns={columns}
+            data={filteredAndSortedData}
+            toolbar={toolbar}
+            tableState={{
+              pagination,
+              columnPinning: { right: ['actions'] },
+            }}
+          />
+        </div>
+      </div>
+
       {deleteSubscription && (
         <ServiceSlugDeleteSubscription
           subscription={deleteSubscription}

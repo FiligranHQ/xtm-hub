@@ -941,9 +941,10 @@
       }
     },
     "Management": {
+      "AvailableCapabilities": "Available capabilities",
       "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
       "AreYouSureRemoveOrganizationAccess": "Are you sure you want to remove access for organization {organizationName} from this service?",
-      "Description": "Find below the list of organizations subscribed to this service",
+      "Description": "Organization that have joined this service",
       "Email": "Email",
       "FirstName": "First Name",
       "InviteUser": {
@@ -956,11 +957,16 @@
       "ManageUsers": "Manage users",
       "ManageUsersForOrganization": "Manage {organizationName}'s users in the {serviceName} service",
       "OneUserMax": "Add 1 user max",
+      "NoAvailableCapabilities": "No available capabilities",
+      "NoDescription": "No description available",
+      "NoTags": "No tags",
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",
-      "ShowPersonalSpaces": "Show personal spaces",
+      "SubscribedOrganizations": "Subscribed organizations: {count}",
+      "ShowPersonalSpaces": "Show personal spaces only",
       "SearchOrganization": "Search organization",
-      "Subscription": "Subscription"
+      "Subscription": "Subscription",
+      "Tags": "Tags"
     },
     "Name": "Name",
     "NoOwnedService": "You don't have any services yet.",

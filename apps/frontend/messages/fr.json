@@ -941,9 +941,10 @@
       }
     },
     "Management": {
+      "AvailableCapabilities": "Capacités disponibles",
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
       "AreYouSureRemoveOrganizationAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'organisation {organizationName} pour ce service ?",
-      "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",
+      "Description": "Organisations qui ont rejoint le service",
       "Email": "Email",
       "FirstName": "Prénom",
       "InviteUser": {
@@ -955,12 +956,17 @@
       "LastName": "Nom",
       "ManageUsers": "Gérer les utilisateurs",
       "ManageUsersForOrganization": "Gérer les utilisateurs de {organizationName} dans le service {serviceName}",
+      "NoAvailableCapabilities": "Aucune capacité disponible",
+      "NoDescription": "Aucune description disponible",
+      "NoTags": "Aucun tag",
       "OneUserMax": "1 utilisateur max",
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
-      "ShowPersonalSpaces": "Montrer les espaces personnels",
+      "SubscribedOrganizations": "Organisations abonnées : {count}",
+      "ShowPersonalSpaces": "Montrer les espaces personnels seulement",
       "SearchOrganization": "Rechercher une organisation",
-      "Subscription": "Souscription"
+      "Subscription": "Souscription",
+      "Tags": "Tags"
     },
     "Name": "Nom",
     "NoOwnedService": "Vous n'avez pas encore de service.",
