@@ -72,9 +72,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/server@npm:5.5.0":
-  version: 5.5.0
-  resolution: "@apollo/server@npm:5.5.0"
+"@apollo/server@npm:5.5.1":
+  version: 5.5.1
+  resolution: "@apollo/server@npm:5.5.1"
   dependencies:
     "@apollo/cache-control-types": "npm:^1.0.3"
     "@apollo/server-gateway-interface": "npm:^2.0.0"
@@ -95,11 +95,10 @@ __metadata:
     loglevel: "npm:^1.6.8"
     lru-cache: "npm:^11.1.0"
     negotiator: "npm:^1.0.0"
-    uuid: "npm:^11.1.0"
     whatwg-mimetype: "npm:^4.0.0"
   peerDependencies:
     graphql: ^16.11.0
-  checksum: 10/35ec7455e90d15cc44c6cd4ea0c0983cd642d0cad843e7e0cb4d7754762ccd7a9e23b05ab9c1313c175b4179e6f4fa08ecb1ad0f34a429a53840cbf6964faef2
+  checksum: 10/d70ea5287ca3a62604f458924a6b77c6b99803d88228d7e01a0e89d1d29cf2a0e5af0d854ed847a3a453730bf9b44620620efc687b298582d4a48aa5db1b9073
   languageName: node
   linkType: hard
 
@@ -8496,7 +8495,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/backend@workspace:apps/backend"
   dependencies:
-    "@apollo/server": "npm:5.5.0"
+    "@apollo/server": "npm:5.5.1"
     "@as-integrations/express5": "npm:1.1.2"
     "@aws-sdk/client-s3": "npm:3.1019.0"
     "@aws-sdk/lib-storage": "npm:3.1019.0"
@@ -8566,7 +8565,7 @@ __metadata:
     vite: "npm:8.0.10"
     vitest: "npm:4.1.5"
     winston: "npm:3.19.0"
-    zod: "npm:4.4.2"
+    zod: "npm:4.4.3"
   languageName: unknown
   linkType: soft
 
@@ -8637,7 +8636,7 @@ __metadata:
     vite-plugin-relay: "npm:2.1.0"
     vite-tsconfig-paths: "npm:6.1.1"
     vitest: "npm:4.1.5"
-    zod: "npm:4.4.2"
+    zod: "npm:4.4.3"
   languageName: unknown
   linkType: soft
 
@@ -20581,10 +20580,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:4.4.2":
-  version: 4.4.2
-  resolution: "zod@npm:4.4.2"
-  checksum: 10/f3da704d9fc18afe95172a3a2d2b6971c1113cd26f16abbbdb4edcd04db062f89329f2e8a2b59f9b05aabb5ee47cd2c861219a4e8c06b435faf3473a2344e3db
+"zod@npm:4.4.3":
+  version: 4.4.3
+  resolution: "zod@npm:4.4.3"
+  checksum: 10/804b9a42aa8f35f2b3c5a8dff906291cb749115f83ee2afe3576d70b5b5c53c965365c7f4967690647a9c54af9838ff232a85ff9577a0a36c44b68bc6cdefe36
   languageName: node
   linkType: hard
 
