@@ -6,7 +6,7 @@ enum ServiceDefinitionIdentifier {
   openaev_scenarios
   opencti_registration
   openaev_registration
-  xtm_suite_roadmap
+  xtm_platform_roadmap
 }
 
 type ServiceDefinition implements Node {

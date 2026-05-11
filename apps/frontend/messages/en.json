@@ -140,7 +140,7 @@
     "TextDisableThisUser": "Are you sure you want to disable this user {email} ?"
   },
   "Epic": {
-    "XTMRoadmap": "XTM Suite Roadmap",
+    "XTMRoadmap": "XTM Platform Roadmap",
     "AllProducts": "All products",
     "ShowFinished": "Show finished",
     "FilterByProduct": "Filter by product",
@@ -156,6 +156,7 @@
       "Title": "Title",
       "ShortDesc": "Short description",
       "Description": "Description",
+      "EditionType": "Edition Type",
       "FiligranProduct": "Product",
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Timeline",
@@ -171,8 +172,7 @@
       "SureDeleteEpic": "Are you sure you want to delete the {epicName} epic?",
       "EpicDeleted": "The epic was deleted"
     },
-    "StayUpToDate": "To stay up to date about everything {product}",
-    "JoinCommunity": "Join the discussion in the community"
+    "JoinCommunity": "Stay in the loop on the Filigran Community"
   },
   "Error": {
     "AnErrorOccured": "An error occurred",
@@ -696,7 +696,7 @@
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
-      "xtm_suite_roadmap": "XTM Suite Roadmap"
+      "xtm_platform_roadmap": "XTM Platform Roadmap"
     },
     "Capabilities": {
       "AccessServiceDescription": "You just have access to a service",
@@ -755,9 +755,9 @@
         "Name": "Slack",
         "Description": "Connect with our growing threat management community (5000+ members). Share your experiences and find the support you need."
       },
-      "xtm-suite-roadmap": {
-        "Name": "XTM Suite Roadmap",
-        "Description": "Explore and follow the Filigran XTM Suite roadmap."
+      "xtm-platform-roadmap": {
+        "Name": "XTM Platform Roadmap",
+        "Description": "Explore and follow the Filigran XTM Platform roadmap."
       }
     },
     "ComingSoon": "Coming soon",
@@ -1157,8 +1157,8 @@
         "OpenCTIDescription": "The OpenCTI free trial provides users with a \"small\" SaaS instance, which includes all <link>Enterprise Edition SaaS features</link>, but with <strong>reduced computing power and storage (up to 40GB in intelligence data storage and 3GB in file storage).</strong> Ingesting large, premium feed with rich data sets during this trial could impact your storage quickly.",
         "OpenAEVDescription": "The OpenAEV free trial provides users with a \"small\" instance, which includes all <link>Enterprise Edition SaaS features</link>, but with a reduced computing power and a limited storage of <strong>16GB</strong>."
       },
-      "XTMSuite": {
-        "Title": "Your eXtended Threat Management (XTM) suite",
+      "XTMPlatform": {
+        "Title": "Your eXtended Threat Management (XTM) platform",
         "Description": "{platformName} is part of Filigran's open-source threat intelligence, advanced adversary simulation, and strategic cyber risk management solution designed to help your organization anticipate and manage threats end-to-end.",
         "OpenCTITagline": "Collect, correlate and leverage",
         "OpenCTIDescription": "An open-source threat intelligence platform built by practitioners for practitioners - to break data silos and make threat intelligence truly actionable.",

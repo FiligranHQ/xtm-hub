@@ -1,5 +1,6 @@
 'use client';
 
+import { EditionTypeMapping } from '@/components/epic/epic-item/EditionTypeMapping';
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
 import {
@@ -10,6 +11,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  RadioGroup,
+  RadioGroupItem,
   Select,
   SelectContent,
   SelectItem,
@@ -17,6 +20,7 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
+import { EditionTypeEnum } from '@generated/models/EditionType.enum';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
@@ -41,6 +45,7 @@ export const FILIGRAN_PRODUCTS_VALUES = Object.values(FiligranProductEnum);
 export const TIMELINE_VALUES = Object.values(TimelineEnum);
 export const epicFormSchema = z.object({
   product: z.enum(FILIGRAN_PRODUCTS_VALUES),
+  edition_type: z.enum(EditionTypeEnum),
   title: z.string().min(2, 'EpicForm.Error.Title').max(160),
   short_description: z.string().min(1, 'Required').max(215),
   description: z.string().min(1, 'Required'),
@@ -74,6 +79,9 @@ const EpicForm = ({
         title: epic?.title ?? '',
         short_description: epic?.short_description ?? '',
         description: epic?.description ?? descriptionValue,
+        edition_type:
+          (epic?.edition_type as EditionTypeEnum) ??
+          EditionTypeEnum.COMMUNITY_EDITION,
         product:
           (epic?.product as FiligranProductEnum) ?? FiligranProductEnum.OPENCTI,
         timeline: (epic?.timeline as TimelineEnum) ?? TimelineEnum.NOW,
@@ -208,6 +216,32 @@ const EpicForm = ({
         },
         is_integration: {
           label: t('Epic.Form.Integration'),
+        },
+        edition_type: {
+          fieldType: ({ field }) => (
+            <FormItem>
+              <FormLabel>{t('Epic.Form.EditionType')}</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  value={field.value ?? EditionTypeEnum.COMMUNITY_EDITION}
+                  className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                  {Object.values(EditionTypeEnum).map((value) => (
+                    <FormItem
+                      key={value}
+                      className="flex flex-row items-center gap-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value={value} />
+                      </FormControl>
+                      <FormLabel className="cursor-pointer font-normal">
+                        {EditionTypeMapping[value].label}
+                      </FormLabel>
+                    </FormItem>
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </FormItem>
+          ),
         },
       }}>
       <div className="flex justify-end">

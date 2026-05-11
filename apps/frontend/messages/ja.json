@@ -694,7 +694,7 @@
       "opencti_integrations": "OpenCTI 統合",
       "opencti_registration": "OpenCTI 登録",
       "vault": "ボールト",
-      "xtm_suite_roadmap": "XTM Suite ロードマップ"
+      "xtm_platform_roadmap": "XTM Platform ロードマップ"
     },
     "Capabilities": {
       "AccessServiceDescription": "サービスへのアクセス",
@@ -753,9 +753,9 @@
         "Name": "Slack",
         "Description": "成長を続ける脅威管理コミュニティ (メンバー5,000人以上) に参加しましょう。経験を共有し、必要なサポートを得られます。"
       },
-      "xtm-suite-roadmap": {
-        "Name": "XTM Suite ロードマップ",
-        "Description": "Filigran XTM Suite のロードマップを確認し、フォローしましょう。"
+      "xtm-platform-roadmap": {
+        "Name": "XTM Platform ロードマップ",
+        "Description": "Filigran XTM Platform のロードマップを確認し、フォローしましょう。"
       }
     },
     "ComingSoon": "近日公開予定",
@@ -1154,7 +1154,7 @@
         "OpenCTIDescription": "OpenCTI 無料トライアルでは、すべての <link>Enterprise Edition SaaS 機能</link> を含む「small」SaaS インスタンスをユーザーに提供しますが、<strong>計算能力とストレージは制限されます (インテリジェンスデータストレージは最大 40GB、ファイルストレージは 3GB)。</strong> このトライアル中に豊富なデータセットを含む大規模なプレミアムフィードを取り込むと、ストレージがすぐに使い切られる可能性があります。",
         "OpenAEVDescription": "OpenAEV 無料トライアルでは、すべての <link>Enterprise Edition SaaS 機能</link> を含む「small」インスタンスをユーザーに提供しますが、計算能力は低減され、ストレージは <strong>16GB</strong> に制限されます。"
       },
-      "XTMSuite": {
+      "XTMPlatform": {
         "Title": "あなたの eXtended Threat Management (XTM) スイート",
         "Description": "{platformName} は、Filigran のオープンソースの脅威インテリジェンス、高度な敵対者シミュレーション、戦略的サイバーリスク管理ソリューションの一部であり、組織が脅威をエンドツーエンドで予測・管理できるよう支援します。",
         "OpenCTITagline": "収集、相関、活用",

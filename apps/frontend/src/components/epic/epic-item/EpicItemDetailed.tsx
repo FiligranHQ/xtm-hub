@@ -30,11 +30,6 @@ export const EpicItemDetailed = ({
           serviceInstanceId={serviceInstanceId}
         />
         <p className="flex flex-wrap items-center gap-1">
-          <span className="whitespace-nowrap">
-            {t('Epic.StayUpToDate', {
-              product: FiligranProductMapping[epic.product].name,
-            })}
-          </span>
           <Link
             href={FiligranProductMapping[epic.product].link}
             target="_blank"

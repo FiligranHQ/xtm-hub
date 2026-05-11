@@ -140,7 +140,7 @@
     "TextDisableThisUser": "Êtes-vous sûr de vouloir désactiver cet utilisateur {email} ? ?"
   },
   "Epic": {
-    "XTMRoadmap": "Roadmap Suite XTM",
+    "XTMRoadmap": "Roadmap Platform XTM",
     "AllProducts": "Tous les produits",
     "ShowFinished": "Afficher les épics terminés",
     "FilterByProduct": "Filtrer par produit",
@@ -158,6 +158,7 @@
       "Title": "Titre",
       "ShortDesc": "Description courte",
       "Description": "Description",
+      "EditionType": "type d'édition",
       "FiligranProduct": "Produit",
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Ligne de temps",
@@ -171,8 +172,7 @@
       "SureDeleteEpic": "Êtes-vous sûr de vouloir supprimer l'épic {epicName} ?",
       "EpicDeleted": "L'épic a été supprimé"
     },
-    "StayUpToDate": "Restez au courant de tout {product}",
-    "JoinCommunity": "Rejoignez la discussion dans la communauté"
+    "JoinCommunity": "Restez dans la boucle avec la communauté Filigran"
   },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
@@ -696,7 +696,7 @@
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
-      "xtm_suite_roadmap": "XTM Suite Roadmap"
+      "xtm_platform_roadmap": "XTM Platform Roadmap"
     },
     "Capabilities": {
       "AccessServiceDescription": "Vous avez uniquement accès à un service",
@@ -755,9 +755,9 @@
         "Name": "Slack",
         "Description": "Rejoignez notre communauté de gestion des menaces en pleine croissance (plus de 5 000 membres). Partagez vos expériences et trouvez le soutien dont vous avez besoin."
       },
-      "xtm-suite-roadmap": {
-        "Name": "Roadmap XTM Suite",
-        "Description": "Explorez et suivez la roadmap de la Filigran XTM Suite."
+      "xtm-platform-roadmap": {
+        "Name": "Roadmap XTM Platform",
+        "Description": "Explorez et suivez la roadmap de la Filigran XTM Platform."
       }
     },
     "ComingSoon": "Bientôt disponible",
@@ -1157,8 +1157,8 @@
         "OpenCTIDescription": "L'essai gratuit OpenCTI fournit aux utilisateurs une instance SaaS « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec <strong>une puissance de calcul et un stockage réduits (jusqu'à 40 Go de stockage de données de threat intelligence et 3 Go de stockage de fichiers).</strong> L'ingestion de gros flux premium avec des jeux de données riches peut rapidement saturer votre stockage.",
         "OpenAEVDescription": "L'essai gratuit OpenAEV fournit aux utilisateurs une instance « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec une puissance de calcul réduite et un stockage limité à <strong>16 Go</strong>."
       },
-      "XTMSuite": {
-        "Title": "Votre suite eXtended Threat Management (XTM)",
+      "XTMPlatform": {
+        "Title": "Votre platform eXtended Threat Management (XTM)",
         "Description": "{platformName} fait partie de la solution open-source de threat intelligence, de simulation avancée d'adversaires et de gestion stratégique des cyber-risques de Filigran, conçue pour aider votre organisation à anticiper et gérer les menaces de bout en bout.",
         "OpenCTITagline": "Collecter, corréler et exploiter",
         "OpenCTIDescription": "Une plateforme de threat intelligence open-source construite par des praticiens pour des praticiens — pour briser les silos de données et rendre la threat intelligence réellement actionnable.",

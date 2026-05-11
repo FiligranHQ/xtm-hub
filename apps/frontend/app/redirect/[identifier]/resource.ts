@@ -1,11 +1,11 @@
+import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
+import { isValueInEnum } from '@/utils/is-value-in-enum';
 import { APP_PATH } from '@/utils/path/constant';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import OrganizationSwitcherMutation, {
   OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
 } from '@generated/OrganizationSwitcherMutation.graphql';
 import { NextRequest, NextResponse } from 'next/server';
-import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
-import { isValueInEnum } from '@/utils/is-value-in-enum';
 import {
   loadBaseUrlFront,
   loadMeUser,
@@ -47,6 +47,21 @@ export const redirectToResource = async (
   const platform_id = searchParams.get('platform_id');
   const tenant_id = searchParams.get('tenant_id');
 
+  // Build forwarded params: all params except the internal routing ones
+  const internalParams = new Set([
+    'opencti_platform_id',
+    'oaev_instance_id',
+    'platform_id',
+    'tenant_id',
+  ]);
+  const forwardedParams = new URLSearchParams();
+  searchParams.forEach((value, key) => {
+    if (!internalParams.has(key)) {
+      forwardedParams.append(key, value);
+    }
+  });
+  const queryString = forwardedParams.toString();
+
   const organizationId: string | undefined = await loadPlatformOrganizationId(
     opencti_platform_id ?? oaev_instance_id ?? platform_id,
     tenant_id
@@ -69,10 +84,6 @@ export const redirectToResource = async (
     return NextResponse.redirect(new URL(`/${APP_PATH}`, baseUrlFront));
   }
 
-  return NextResponse.redirect(
-    new URL(
-      `/${APP_PATH}/service/${identifier}/${serviceInstances[0].id}`,
-      baseUrlFront
-    )
-  );
+  const targetPath = `/${APP_PATH}/service/${identifier}/${serviceInstances[0].id}${queryString ? `?${queryString}` : ''}`;
+  return NextResponse.redirect(new URL(targetPath, baseUrlFront));
 };
