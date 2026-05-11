@@ -1,18 +1,18 @@
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { RelayProvider } from '@/relay/relay-provider';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
-import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { RelayProvider } from '@/relay/relay-provider';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PublicEpicListPageLoader } from './public-epic-list-page-loader';
 
 const Page = async () => {
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
-    { slug: 'xtm-suite-roadmap' },
+    { slug: 'xtm-platform-roadmap' },
     { cache: undefined, next: { revalidate: 3600 } }
   );
   const serviceInstance = serviceResponse.data
@@ -55,7 +55,7 @@ const Page = async () => {
       href: `/`,
     },
     {
-      label: 'XTM Suite Roadmap',
+      label: 'XTM Platform Roadmap',
       original: true,
     },
   ];

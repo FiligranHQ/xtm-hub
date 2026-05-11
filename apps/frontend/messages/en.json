@@ -140,7 +140,7 @@
     "TextDisableThisUser": "Are you sure you want to disable this user {email} ?"
   },
   "Epic": {
-    "XTMRoadmap": "XTM Suite Roadmap",
+    "XTMRoadmap": "XTM Platform Roadmap",
     "AllProducts": "All products",
     "ShowFinished": "Show finished",
     "FilterByProduct": "Filter by product",
@@ -666,7 +666,7 @@
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
-      "xtm_suite_roadmap": "XTM Suite Roadmap"
+      "xtm_platform_roadmap": "XTM Platform Roadmap"
     },
     "Capabilities": {
       "AccessServiceDescription": "You just have access to a service",
