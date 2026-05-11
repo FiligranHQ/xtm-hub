@@ -15,6 +15,7 @@ export default class XTMPlatformRoadmapPage {
     timeline = 'Now',
     integration = false,
     draft = true,
+    edition_type = 'CE',
   }: {
     title: string;
     short_description: string;
@@ -23,6 +24,7 @@ export default class XTMPlatformRoadmapPage {
     timeline?: string;
     integration?: boolean;
     draft?: boolean;
+    edition_type?: string;
   }) {
     await this.page.getByRole('button', { name: 'Create' }).click();
     await this.page.getByRole('textbox', { name: 'Title' }).fill(title);
@@ -34,6 +36,9 @@ export default class XTMPlatformRoadmapPage {
       .fill(description);
     await this.page.getByRole('combobox', { name: 'Product' }).click();
     await this.page.getByRole('option', { name: product }).click();
+    await this.page
+      .getByRole('radio', { name: edition_type, exact: true })
+      .click();
     await this.page.getByRole('combobox', { name: 'Timeline' }).click();
     await this.page.getByRole('option', { name: timeline }).click();
     if (!draft) {
@@ -63,6 +68,7 @@ export default class XTMPlatformRoadmapPage {
     product,
     timeline,
     draft,
+    edition_type,
   }: {
     title?: string;
     short_description?: string;
@@ -70,6 +76,7 @@ export default class XTMPlatformRoadmapPage {
     product?: string;
     timeline?: string;
     draft: boolean;
+    edition_type?: string;
   }) {
     await this.page
       .getByRole('button', { name: 'Open menu', exact: true })
@@ -88,6 +95,11 @@ export default class XTMPlatformRoadmapPage {
     if (product) {
       await this.page.getByRole('combobox', { name: 'Product' }).click();
       await this.page.getByRole('option', { name: product }).click();
+    }
+    if (edition_type) {
+      await this.page
+        .getByRole('radio', { name: edition_type, exact: true })
+        .click();
     }
     if (timeline) {
       await this.page.getByRole('combobox', { name: 'Timeline' }).click();
