@@ -63,16 +63,9 @@ export const serviceListFragment = graphql`
     name
     description
     creation_status
-    organization_subscribed
-    user_joined
     capabilities
     public
     tags
-    subscriptions {
-      organization {
-        name
-      }
-    }
     links {
       name
       url
