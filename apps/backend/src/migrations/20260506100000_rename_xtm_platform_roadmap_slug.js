@@ -10,14 +10,14 @@ export async function up(knex) {
       description:
         "Explore the XTM Platform roadmap to see what's coming across OpenCTI, OpenAEV, and XTM Hub — and stay ahead with full visibility into our product direction.",
     })
-    .where('slug', '=', 'xtm-platform-roadmap');
+    .where('slug', '=', 'xtm-suite-roadmap');
   await knex('ServiceDefinition')
     .update({
       identifier: 'xtm_platform_roadmap',
       name: 'XTM Platform Roadmap',
       description: 'Explore and follow the Filigran XTM Platform roadmap',
     })
-    .where('identifier', '=', 'xtm_platform_roadmap');
+    .where('identifier', '=', 'xtm_suite_roadmap');
 }
 
 /**
@@ -27,18 +27,18 @@ export async function up(knex) {
 export async function down(knex) {
   await knex('ServiceInstance')
     .update({
-      slug: 'xtm-platform-roadmap',
-      name: 'XTM Platform Roadmap',
+      slug: 'xtm-suite-roadmap',
+      name: 'XTM Suite Roadmap',
       description:
-        "Explore the XTM Platform roadmap to see what's coming across OpenCTI, OpenAEV, and XTM Hub — and stay ahead with full visibility into our product direction.",
+        "Explore the XTM Suite roadmap to see what's coming across OpenCTI, OpenAEV, and XTM Hub — and stay ahead with full visibility into our product direction.",
     })
     .where('slug', '=', 'xtm-platform-roadmap');
 
   await knex('ServiceDefinition')
     .update({
-      identifier: 'xtm_platform_roadmap',
-      name: 'XTM Platform Roadmap',
-      description: 'Explore and follow the Filigran XTM Platform roadmap',
+      identifier: 'xtm_suite_roadmap',
+      name: 'XTM Suite Roadmap',
+      description: 'Explore and follow the Filigran XTM Suite roadmap',
     })
     .where('identifier', '=', 'xtm_platform_roadmap');
 }

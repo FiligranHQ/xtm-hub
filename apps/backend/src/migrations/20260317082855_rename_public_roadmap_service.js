@@ -5,19 +5,19 @@
 export async function up(knex) {
   await knex('ServiceDefinition')
     .update({
-      identifier: 'xtm_platform_roadmap',
-      name: 'XTM Platform Roadmap',
+      identifier: 'xtm_suite_roadmap',
+      name: 'XTM Suite Roadmap',
     })
     .where('identifier', '=', 'public_roadmap');
   await knex('ServiceInstance')
     .update({
-      slug: 'xtm-platform-roadmap',
-      name: 'XTM Platform Roadmap',
+      slug: 'xtm-suite-roadmap',
+      name: 'XTM Suite Roadmap',
     })
     .where('slug', '=', 'public-roadmap');
   await knex('Service_Link')
     .update({
-      name: 'XTM Platform Roadmap',
+      name: 'XTM Suite Roadmap',
     })
     .where('name', '=', 'Public Roadmap');
 }
@@ -32,16 +32,16 @@ export async function down(knex) {
       identifier: 'public_roadmap',
       name: 'Public Roadmap',
     })
-    .where('identifier', '=', 'xtm_platform_roadmap');
+    .where('identifier', '=', 'xtm_suite_roadmap');
   await knex('ServiceInstance')
     .update({
       slug: 'public-roadmap',
       name: 'Public Roadmap',
     })
-    .where('slug', '=', 'xtm-platform-roadmap');
+    .where('slug', '=', 'xtm-suite-roadmap');
   await knex('Service_Link')
     .update({
       name: 'Public Roadmap',
     })
-    .where('name', '=', 'XTM Platform Roadmap');
+    .where('name', '=', 'XTM Suite Roadmap');
 }
