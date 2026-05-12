@@ -3,6 +3,11 @@ import {
   CreateEpicMutation,
   UpdateEpicMutation,
 } from '@/components/epic/epic.graphql';
+import EpicForm, { epicFormSchema } from '@/components/epic/EpicForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { useEpicFilter } from '@/hooks/use-epic-filter';
+import { useEpicListContext } from '@/hooks/use-epic-list-context';
+import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import { AddIcon } from '@filigran/icon';
 import { Button, useToast } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
@@ -11,11 +16,6 @@ import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
-import { useEpicFilter } from '@/hooks/use-epic-filter';
-import { useEpicListContext } from '@/hooks/use-epic-list-context';
-import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import EpicForm, { epicFormSchema } from '@/components/epic/EpicForm';
 
 interface EpicFormSheetProps {
   epic?: epic_fragment$data;
@@ -121,13 +121,17 @@ export const EpicFormSheet = ({
       open={openSheet}
       setOpen={setOpenSheet}
       trigger={
-        triggerElement || (
-          <Button
-            variant="ghost-primary"
-            className="border">
-            <AddIcon className="size-4 mr-s" />
-            {t(epic ? 'Utils.Update' : 'Utils.Create')}
-          </Button>
+        epic ? (
+          <></>
+        ) : (
+          triggerElement || (
+            <Button
+              variant="ghost-primary"
+              className="border">
+              <AddIcon className="size-4 mr-s" />
+              {t('Utils.Create')}
+            </Button>
+          )
         )
       }
       title={t(
