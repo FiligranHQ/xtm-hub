@@ -1,11 +1,17 @@
 'use client';
 
+import { EditService } from '@/components/service/EditService';
+import {
+  IconActions,
+  IconActionsItem,
+  IconActionsLink,
+} from '@/components/ui/IconActions';
+import { SearchInput } from '@/components/ui/SearchInput';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
-import { formatName } from '@/utils/format/name';
 import { APP_PATH } from '@/utils/path/constant';
 import { MoreVertIcon } from '@filigran/icon';
-import { Badge, Combobox, DataTable } from '@filigran/ui';
+import { Combobox, DataTable } from '@filigran/ui';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
@@ -16,13 +22,6 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { RefetchFnDynamic } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import {
-  IconActions,
-  IconActionsItem,
-  IconActionsLink,
-} from '@/components/ui/IconActions';
-import { SearchInput } from '@/components/ui/SearchInput';
-import { EditService } from '@/components/service/EditService';
 
 interface AdminServiceTabProps {
   serviceData: serviceList_fragment$data[];
@@ -61,40 +60,6 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
       accessorKey: 'description',
       id: 'description',
       header: t('Service.Description'),
-    },
-    {
-      accessorKey: 'creation_status',
-      id: 'creation_status',
-      header: t('Service.CreationStatus'),
-    },
-    {
-      accessorKey: 'organizations',
-      id: 'organizations',
-      header: t('Service.Organizations'),
-      cell: ({ row }) => {
-        return (
-          <>
-            {row.original.service_definition?.identifier ===
-              ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION && (
-              <Badge>
-                {formatName(
-                  row.original.subscriptions?.[0]?.organization.name ?? ''
-                )}
-              </Badge>
-            )}
-
-            {row.original.service_definition?.identifier !==
-              ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION &&
-              row.original.service_definition?.identifier !==
-                ServiceDefinitionIdentifierEnum.LINK && (
-                <>
-                  {row.original.subscriptions?.length}{' '}
-                  {t('Service.Organizations')}
-                </>
-              )}
-          </>
-        );
-      },
     },
     {
       id: 'actions',
