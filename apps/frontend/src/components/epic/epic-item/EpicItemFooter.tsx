@@ -18,11 +18,18 @@ export const EpicItemFooter = ({
 }: EpicItemFooterProps) => {
   return (
     <>
-      <div className="flex w-full justify-between">
+      <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-xs">
           <p className="bold">{FiligranProductMapping[epic.product].logo}</p>
 
           <p className="bold">{FiligranProductMapping[epic.product].name}</p>
+          {epic.edition_type !== EditionTypeEnum.COMMUNITY_EDITION && (
+            <Badge
+              variant="secondary"
+              className="ml-s font-semibold">
+              {EditionTypeMapping[epic.edition_type].label}
+            </Badge>
+          )}
         </div>
         {epic.document_id && epic.epic_type === EpicTypeEnum.INTEGRATION && (
           <div
@@ -39,13 +46,6 @@ export const EpicItemFooter = ({
               {epic.epic_type.toLowerCase()}
             </div>
           </div>
-        )}
-        {epic.edition_type !== EditionTypeEnum.COMMUNITY_EDITION && (
-          <Badge
-            variant="secondary"
-            className="font-semibold mr-s mt-xs">
-            {EditionTypeMapping[epic.edition_type].label}
-          </Badge>
         )}
       </div>
     </>
