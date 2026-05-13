@@ -20,13 +20,15 @@ import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';
 import { APP_PATH } from '@/utils/path/constant';
-import { MoreVertIcon } from '@filigran/icon';
+import { DeleteIcon, MoreVertIcon } from '@filigran/icon';
 import {
   Badge,
   DataTable,
   DataTableHeadBarOptions,
+  SelectionState,
   Switch,
 } from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import { serviceInstanceByIdQuery } from '@generated/serviceInstanceByIdQuery.graphql';
 import { serviceInstanceForSubscriptions_fragment$key } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
@@ -43,6 +45,12 @@ interface ServiceSlugProps {
   queryRefServiceInstance: PreloadedQuery<serviceInstanceByIdQuery>;
   subscriptionConnectionId: string;
 }
+
+const emptySelectionState = (): SelectionState => ({
+  selectAll: false,
+  selectedIds: new Set<string>(),
+  excludedIds: new Set<string>(),
+});
 
 const ServiceSlug = ({
   subscriptions,
@@ -68,13 +76,15 @@ const ServiceSlug = ({
     );
   const [shouldDisplayPersonalSpaces, setShouldDisplayPersonalSpaces] =
     useState(false);
-  const [deleteSubscription, setDeleteSubscription] = useState<
-    subscription_fragment$data | undefined
+  const [deleteSubscriptions, setDeleteSubscriptions] = useState<
+    subscription_fragment$data[] | undefined
   >(undefined);
   const [updateSubscription, setUpdateSubscription] = useState<
     subscription_fragment$data | undefined
   >(undefined);
   const [openEdit, setOpenEdit] = useState(false);
+  const [selection, setSelection] =
+    useState<SelectionState>(emptySelectionState);
 
   const isAdminPath = useAdminPath();
 
@@ -149,7 +159,7 @@ const ServiceSlug = ({
                 {t('Service.Management.ManageUsers')}
               </IconActionsLink>
               <IconActionsItem
-                onClick={() => setDeleteSubscription(row.original)}>
+                onClick={() => setDeleteSubscriptions([row.original])}>
                 {t('Utils.Delete')}
               </IconActionsItem>
               <IconActionsItem
@@ -210,6 +220,18 @@ const ServiceSlug = ({
         })
       : filteredBySpace;
   }, [subscriptions, shouldDisplayPersonalSpaces, searchTerm]);
+
+  const selectedSubscriptions = useMemo(() => {
+    if (selection.selectAll) {
+      return filteredAndSortedData.filter(
+        (subscription) => !selection.excludedIds.has(subscription.id)
+      );
+    }
+
+    return filteredAndSortedData.filter((subscription) =>
+      selection.selectedIds.has(subscription.id)
+    );
+  }, [filteredAndSortedData, selection]);
 
   const availableCapabilities: BadgeOverflow[] = useMemo(
     () =>
@@ -296,6 +318,28 @@ const ServiceSlug = ({
             columns={columns}
             data={filteredAndSortedData}
             toolbar={toolbar}
+            selectionOptions={{
+              selectionState: {
+                state: selection,
+                onSelectionChange: setSelection,
+              },
+              selectionHeader: {
+                actions: () => (
+                  <Button
+                    variant="ghost-destructive"
+                    size="sm"
+                    onClick={() =>
+                      setDeleteSubscriptions(selectedSubscriptions)
+                    }>
+                    <DeleteIcon className="h-4 w-4" />
+                    {t('Utils.Delete')}
+                  </Button>
+                ),
+              },
+            }}
+            tableOptions={{
+              enableRowSelection: (row) => !!row.original.id,
+            }}
             tableState={{
               pagination,
               columnPinning: { right: ['actions'] },
@@ -304,13 +348,16 @@ const ServiceSlug = ({
         </div>
       </div>
 
-      {deleteSubscription && (
+      {deleteSubscriptions && deleteSubscriptions.length > 0 && (
         <ServiceSlugDeleteSubscription
-          subscription={deleteSubscription}
+          subscriptions={deleteSubscriptions}
           subscriptionConnectionId={subscriptionConnectionId}
-          open={!!deleteSubscription}
+          onDeleted={() => {
+            setSelection(emptySelectionState);
+          }}
+          open={!!deleteSubscriptions}
           setOpen={(open) =>
-            setDeleteSubscription(open ? deleteSubscription : undefined)
+            setDeleteSubscriptions(open ? deleteSubscriptions : undefined)
           }
         />
       )}

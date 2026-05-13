@@ -42,6 +42,11 @@ export type Scalars = {
   UserServiceId: { input: UserServiceId; output: UserServiceId; }
 };
 
+export type AddServiceCapabilityInput = {
+  capabilitiesId: Array<InputMaybe<Scalars['String']['input']>>;
+  subscriptionId?: InputMaybe<Scalars['SubscriptionId']['input']>;
+};
+
 export type AddServiceInput = {
   fee_type?: InputMaybe<Scalars['String']['input']>;
   organization_id?: InputMaybe<Scalars['String']['input']>;
@@ -835,6 +840,7 @@ export type MergeEvent = Node & {
 export type Mutation = {
   __typename?: 'Mutation';
   addOrganization?: Maybe<Organization>;
+  addServiceCapability?: Maybe<SubscriptionModel>;
   addServicePicture?: Maybe<ServiceInstance>;
   addSubscription?: Maybe<ServiceInstance>;
   addUseCase: UseCase;
@@ -859,7 +865,7 @@ export type Mutation = {
   deleteDocument: Document;
   deleteEpic: Epic;
   deleteOrganization?: Maybe<Organization>;
-  deleteSubscription?: Maybe<SubscriptionModel>;
+  deleteSubscription?: Maybe<Array<Maybe<SubscriptionModel>>>;
   deleteUseCase: UseCase;
   deleteUserService?: Maybe<UserService>;
   editMeUser: User;
@@ -898,6 +904,11 @@ export type Mutation = {
 
 export type MutationAddOrganizationArgs = {
   input: OrganizationInput;
+};
+
+
+export type MutationAddServiceCapabilityArgs = {
+  input?: InputMaybe<AddServiceCapabilityInput>;
 };
 
 
@@ -1032,7 +1043,7 @@ export type MutationDeleteOrganizationArgs = {
 
 
 export type MutationDeleteSubscriptionArgs = {
-  subscription_id: Scalars['SubscriptionId']['input'];
+  subscription_ids: Array<Scalars['SubscriptionId']['input']>;
 };
 
 
@@ -2559,6 +2570,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  AddServiceCapabilityInput: AddServiceCapabilityInput;
   AddServiceInput: AddServiceInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
@@ -2773,6 +2785,7 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  AddServiceCapabilityInput: AddServiceCapabilityInput;
   AddServiceInput: AddServiceInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
@@ -3357,6 +3370,7 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
+  addServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationAddServiceCapabilityArgs>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'serviceInstanceId'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
   addUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationAddUseCaseArgs, 'input'>>;
@@ -3381,7 +3395,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
-  deleteSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
+  deleteSubscription?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionModel']>>>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_ids'>>;
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;

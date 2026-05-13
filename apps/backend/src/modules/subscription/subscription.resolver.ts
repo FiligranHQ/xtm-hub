@@ -50,11 +50,11 @@ const resolvers: Resolvers = {
         );
       }
     },
-    deleteSubscription: async (_, { subscription_id }) => {
+    deleteSubscription: async (_, { subscription_ids }) => {
       try {
         return (await subscriptionApp.deleteSubscription(
-          subscription_id
-        )) as unknown as SubscriptionModel;
+          subscription_ids
+        )) as unknown as SubscriptionModel[];
       } catch (error) {
         throw mapToGraphQLError(
           error,

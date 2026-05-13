@@ -10,7 +10,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import {
   addCapabilitiesToSubscription,
   loadSubscriptionCapabilities,
-} from '../security-management/service-capability/subscription-capability.domain';
+} from '../security-management/subscription-capability/subscription-capability.domain';
 import { subscriptionApp } from './subscription.app';
 import { createSubscription } from './subscription.domain';
 
@@ -255,7 +255,9 @@ describe('subscription app', () => {
 
       expect(subscription).toBeDefined();
 
-      const deletedSubscription = await subscriptionApp.deleteSubscription(id);
+      const deletedSubscription = await subscriptionApp.deleteSubscription([
+        id,
+      ]);
       expect(deletedSubscription).toStrictEqual(subscription);
     });
 
@@ -272,7 +274,7 @@ describe('subscription app', () => {
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
       ]);
 
-      await subscriptionApp.deleteSubscription(id);
+      await subscriptionApp.deleteSubscription([id]);
 
       const deletedSubscription = await TestHelper.subscription.load({ id });
       expect(deletedSubscription).toBeUndefined();

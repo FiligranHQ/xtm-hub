@@ -52,7 +52,7 @@ type Mutation {
   ): SubscriptionModel
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
     @service_capa(requires: [MANAGE_ACCESS])
-  deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
+  deleteSubscription(subscription_ids: [SubscriptionId!]!): [SubscriptionModel]
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
     @service_capa(requires: [MANAGE_ACCESS])
 }

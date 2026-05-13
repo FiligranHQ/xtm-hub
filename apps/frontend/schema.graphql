@@ -181,12 +181,13 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
+  addServiceCapability(input: AddServiceCapabilityInput): SubscriptionModel
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
   createSubscription(input: CreateSubscriptionInput): [SubscriptionModel]
   updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
-  deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
+  deleteSubscription(subscription_ids: [SubscriptionId!]!): [SubscriptionModel]
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
@@ -1016,6 +1017,11 @@ type GenericServiceCapability implements Node {
 input EditServiceCapabilityInput {
   user_service_id: User_ServiceId
   capabilities: [String]!
+}
+
+input AddServiceCapabilityInput {
+  subscriptionId: SubscriptionId
+  capabilitiesId: [String]!
 }
 
 type UserServiceCapability implements Node {

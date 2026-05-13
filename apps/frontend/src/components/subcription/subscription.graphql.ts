@@ -27,10 +27,10 @@ export const subscriptionFragment = graphql`
 
 export const SubscriptionDeleteMutation = graphql`
   mutation subscriptionDeleteMutation(
-    $subscription_id: SubscriptionId!
+    $subscription_ids: [SubscriptionId!]!
     $connections: [ID!]!
   ) {
-    deleteSubscription(subscription_id: $subscription_id) {
+    deleteSubscription(subscription_ids: $subscription_ids) {
       id @deleteEdge(connections: $connections)
     }
   }

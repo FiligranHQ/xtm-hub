@@ -19,12 +19,9 @@ import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscriptio
 
 export const SubscriptionDomain = {
   deleteSubscription: async (
-    id: SubscriptionId
-  ): Promise<Subscription | null> => {
-    const [deletedSubscription] = await db<Subscription>('Subscription')
-      .where({ id })
-      .delete('*');
-    return deletedSubscription;
+    ids: SubscriptionId[]
+  ): Promise<Subscription[] | null> => {
+    return db<Subscription>('Subscription').whereIn('id', ids).delete('*');
   },
 };
 

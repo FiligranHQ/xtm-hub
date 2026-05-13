@@ -55,7 +55,7 @@ export const UserServiceApp = {
         await loadSubscriptionWithOrganizationAndCapabilitiesBy({
           'Subscription.id': deletedUserService?.subscription_id,
         } as SubscriptionMutator);
-      await SubscriptionDomain.deleteSubscription(subscription.id);
+      await SubscriptionDomain.deleteSubscription([subscription.id]);
     }
 
     return deletedUserService;

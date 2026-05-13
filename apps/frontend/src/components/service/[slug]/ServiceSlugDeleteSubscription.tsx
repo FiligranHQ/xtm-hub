@@ -8,15 +8,16 @@ import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
 
 interface ServiceSlugDeleteSubscriptionProps {
-  subscription: subscription_fragment$data;
+  subscriptions: subscription_fragment$data[];
   subscriptionConnectionId: string;
   open: boolean;
   setOpen: (open: boolean) => void;
+  onDeleted: () => void;
 }
 
 export const ServiceSlugDeleteSubscription: FunctionComponent<
   ServiceSlugDeleteSubscriptionProps
-> = ({ subscription, subscriptionConnectionId, open, setOpen }) => {
+> = ({ subscriptions, subscriptionConnectionId, open, setOpen, onDeleted }) => {
   const [commitDeleteSubscription] = useMutation<subscriptionDeleteMutation>(
     SubscriptionDeleteMutation
   );
@@ -27,15 +28,16 @@ export const ServiceSlugDeleteSubscription: FunctionComponent<
   const onDeleteSubscription = () => {
     commitDeleteSubscription({
       variables: {
-        subscription_id: subscription.id,
+        subscription_ids: subscriptions.map((subscription) => subscription.id),
         connections: [subscriptionConnectionId],
       },
       onCompleted: () => {
         setOpen(false);
+        onDeleted();
         toast({
           title: t('Utils.Success'),
           description: t('ServiceActions.OrganizationDeleted', {
-            name: subscription.organization.name,
+            name: subscriptions.map((sub) => sub.organization.name).join(', '),
           }),
         });
       },
@@ -51,16 +53,20 @@ export const ServiceSlugDeleteSubscription: FunctionComponent<
 
   return (
     <AlertDialogComponent
-      key={`remove-${subscription.id}`}
+      key={`remove-${subscriptions.map((subscription) => subscription.id).join('-')}`}
       AlertTitle={t('Service.Management.RemoveAccess')}
       actionButtonText={t('Service.Management.RemoveAccess')}
       variantName={'destructive'}
       isOpen={open}
       onOpenChange={setOpen}
       onClickContinue={onDeleteSubscription}>
-      {t('Service.Management.AreYouSureRemoveOrganizationAccess', {
-        organizationName: subscription.organization.name,
-      })}
+      {subscriptions.length > 1
+        ? t('Service.Management.AreYouSureRemoveOrganizationsAccess', {
+            count: subscriptions.length,
+          })
+        : t('Service.Management.AreYouSureRemoveOrganizationAccess', {
+            organizationName: subscriptions[0].organization.name,
+          })}
     </AlertDialogComponent>
   );
 };

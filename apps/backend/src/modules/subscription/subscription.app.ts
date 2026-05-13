@@ -17,7 +17,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import {
   addCapabilitiesToSubscription,
   replaceCapabilitiesForSubscription,
-} from '../security-management/service-capability/subscription-capability.domain';
+} from '../security-management/subscription-capability/subscription-capability.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
@@ -78,8 +78,10 @@ export const subscriptionApp = {
     });
   },
 
-  deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
-    return SubscriptionDomain.deleteSubscription(id);
+  deleteSubscription: async (
+    ids: SubscriptionId[]
+  ): Promise<Subscription[]> => {
+    return SubscriptionDomain.deleteSubscription(ids);
   },
 
   updateSubscription: async ({
