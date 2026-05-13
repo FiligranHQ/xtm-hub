@@ -228,7 +228,7 @@ export type CreateEpicInput = {
 export type CreateSubscriptionInput = {
   capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
-  organization_id: Scalars['OrganizationId']['input'];
+  organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
   start_date: Scalars['Date']['input'];
 };
@@ -854,7 +854,7 @@ export type Mutation = {
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
   createEpic: Epic;
-  createSubscription?: Maybe<SubscriptionModel>;
+  createSubscription?: Maybe<Array<Maybe<SubscriptionModel>>>;
   deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic: Epic;
@@ -3376,7 +3376,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'input' | 'metadata'>>;
   createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
-  createSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationCreateSubscriptionArgs>>;
+  createSubscription?: Resolver<Maybe<Array<Maybe<ResolversTypes['SubscriptionModel']>>>, ParentType, ContextType, Partial<MutationCreateSubscriptionArgs>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;

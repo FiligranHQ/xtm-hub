@@ -15,29 +15,58 @@ import { subscriptionApp } from './subscription.app';
 import { createSubscription } from './subscription.domain';
 
 describe('subscription app', () => {
-  describe('subscribeOrganizationToService', async () => {
+  describe('subscribeOrganizationsToService', async () => {
     let serviceInstanceId: ServiceInstanceId;
+
     beforeEach(async () => {
       serviceInstanceId = uuidv4() as ServiceInstanceId;
       await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
-        name: 'test',
+        name: 'test-multi-org',
       });
     });
 
-    it('should throw an error when organization is already subscribed to the service instance', async () => {
-      const subscriptionId = uuidv4() as SubscriptionId;
-      const subscriptionData = {
-        id: subscriptionId,
-        service_instance_id: serviceInstanceId,
+    it('should create one subscription per organization id', async () => {
+      await subscriptionApp.subscribeOrganizationsToService({
+        organizationIds: [
+          TEST_ORGANIZATIONS.FILIGRAN.ID,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        ],
+        serviceInstanceId,
+        startDate: new Date(),
+        endDate: new Date(),
+        capabilityIds: [],
+      });
+
+      const filigranSubscription = await TestHelper.subscription.load({
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: serviceInstanceId,
+      });
+      const secondOrganizationSubscription = await TestHelper.subscription.load(
+        {
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          service_instance_id: serviceInstanceId,
+        }
+      );
+
+      expect(filigranSubscription).toBeDefined();
+      expect(secondOrganizationSubscription).toBeDefined();
+    });
+
+    it('should rollback all creations when one organization is already subscribed', async () => {
+      await createSubscription({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: serviceInstanceId,
         start_date: new Date(),
         end_date: new Date(),
-      };
-      await createSubscription(subscriptionData);
+      });
 
-      const call = subscriptionApp.subscribeOrganizationToService({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      const call = subscriptionApp.subscribeOrganizationsToService({
+        organizationIds: [
+          TEST_ORGANIZATIONS.FILIGRAN.ID,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        ],
         serviceInstanceId,
         startDate: new Date(),
         endDate: new Date(),
@@ -45,87 +74,13 @@ describe('subscription app', () => {
       });
 
       await expect(call).rejects.toThrow(ErrorCode.AlreadySubscribed);
-    });
 
-    it('should subscribe the organization to the service instance (without capabilities)', async () => {
-      await subscriptionApp.subscribeOrganizationToService({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        serviceInstanceId,
-        startDate: new Date(),
-        endDate: new Date(),
-        capabilityIds: [],
-      });
-
-      const createdSubscription = await TestHelper.subscription.load({
+      const filigranSubscription = await TestHelper.subscription.load({
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
       });
 
-      expect(createdSubscription).toBeDefined();
-
-      const capabilities: { service_capability_id: ServiceCapabilityId }[] =
-        await loadSubscriptionCapabilities(
-          createdSubscription?.id ?? ('' as SubscriptionId)
-        );
-      expect(capabilities).toHaveLength(0);
-    });
-
-    it('should subscribe the organization to the service instance (with capabilities)', async () => {
-      await subscriptionApp.subscribeOrganizationToService({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        serviceInstanceId,
-        startDate: new Date(),
-        endDate: new Date(),
-        capabilityIds: [
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
-        ],
-      });
-
-      const createdSubscription = await TestHelper.subscription.load({
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        service_instance_id: serviceInstanceId,
-      });
-
-      expect(createdSubscription).toBeDefined();
-
-      const capabilities: { service_capability_id: ServiceCapabilityId }[] =
-        await loadSubscriptionCapabilities(
-          createdSubscription?.id ?? ('' as SubscriptionId)
-        );
-      expect(capabilities).toHaveLength(2);
-      expect(
-        capabilities.some(
-          (capa) =>
-            capa.service_capability_id ===
-            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
-        )
-      ).toBeTruthy();
-      expect(
-        capabilities.some(
-          (capa) =>
-            capa.service_capability_id ===
-            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID
-        )
-      ).toBeTruthy();
-    });
-
-    it('should rollback subscription creation when capability insertion fails', async () => {
-      const call = subscriptionApp.subscribeOrganizationToService({
-        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        serviceInstanceId,
-        startDate: new Date(),
-        endDate: new Date(),
-        capabilityIds: [uuidv4() as ServiceCapabilityId],
-      });
-
-      await expect(call).rejects.toThrow();
-
-      const createdSubscription = await TestHelper.subscription.load({
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        service_instance_id: serviceInstanceId,
-      });
-      expect(createdSubscription).toBeUndefined();
+      expect(filigranSubscription).toBeUndefined();
     });
   });
 

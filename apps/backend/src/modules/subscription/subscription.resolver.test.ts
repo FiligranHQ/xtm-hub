@@ -254,19 +254,20 @@ describe('subscription resolver - unit tests', () => {
     ];
 
     it.each`
-      inputOrganizationId                          | expectedOrganizationId
-      ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID} | ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID}
-      ${undefined}                                 | ${contextOrganizationId}
+      inputOrganizationId                                                            | expectedOrganizationIds
+      ${[TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID]}                                 | ${[TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID]}
+      ${[TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID, TEST_ORGANIZATIONS.FILIGRAN.ID]} | ${[TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID, TEST_ORGANIZATIONS.FILIGRAN.ID]}
+      ${undefined}                                                                   | ${[contextOrganizationId]}
     `(
-      'should map organization_id=$inputOrganizationId to organizationId=$expectedOrganizationId',
-      async ({ inputOrganizationId, expectedOrganizationId }) => {
+      'should map organization_id=$inputOrganizationId to organizationIds=$expectedOrganizationIds',
+      async ({ inputOrganizationId, expectedOrganizationIds }) => {
         // Given
         const expected = {
           id: uuidv4() as SubscriptionId,
         } as unknown as SubscriptionModel;
         vi.spyOn(
           subscriptionApp,
-          'subscribeOrganizationToService'
+          'subscribeOrganizationsToService'
         ).mockResolvedValue(expected as never);
 
         // When
@@ -287,9 +288,9 @@ describe('subscription resolver - unit tests', () => {
 
         // Then
         expect(
-          subscriptionApp.subscribeOrganizationToService
+          subscriptionApp.subscribeOrganizationsToService
         ).toHaveBeenCalledWith({
-          organizationId: expectedOrganizationId,
+          organizationIds: expectedOrganizationIds,
           serviceInstanceId,
           startDate,
           endDate,
@@ -373,7 +374,7 @@ describe('subscription resolver - unit tests', () => {
     {},
     {
       input: {
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        organization_id: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID] as never,
         service_instance_id: SERVICES.INSTANCES.EPIC.ID,
         start_date: new Date('2025-01-01'),
         end_date: new Date('2026-01-01'),
@@ -382,7 +383,7 @@ describe('subscription resolver - unit tests', () => {
     },
     contextSimpleUserFiligran2,
     GRAPHQL_RESOLVE_INFO
-  )} | ${() => vi.spyOn(subscriptionApp, 'subscribeOrganizationToService').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
+  )} | ${() => vi.spyOn(subscriptionApp, 'subscribeOrganizationsToService').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
       ${'deleteSubscription'} | ${() => subscriptionResolver.Mutation!.deleteSubscription!({}, { subscription_id: uuidv4() as SubscriptionId }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscription').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
       ${'updateSubscription'} | ${() =>
   subscriptionResolver.Mutation!.updateSubscription!(

@@ -184,7 +184,7 @@ type Mutation {
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  createSubscription(input: CreateSubscriptionInput): SubscriptionModel
+  createSubscription(input: CreateSubscriptionInput): [SubscriptionModel]
   updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
   deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
   sendTelemetryEvent: SendTelemetryMutation
@@ -1586,7 +1586,7 @@ type SubscriptionEdge {
 
 input CreateSubscriptionInput {
   service_instance_id: ServiceInstanceId!
-  organization_id: OrganizationId!
+  organization_id: [OrganizationId!]!
   capability_ids: [Service_CapabilityId]
   start_date: Date!
   end_date: Date

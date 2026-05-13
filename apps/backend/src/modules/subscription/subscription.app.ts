@@ -38,39 +38,43 @@ export const subscriptionApp = {
     return subscription as unknown as SubscriptionModel;
   },
 
-  subscribeOrganizationToService: async ({
-    organizationId,
+  subscribeOrganizationsToService: async ({
+    organizationIds,
     serviceInstanceId,
     startDate,
     endDate,
     capabilityIds,
   }: {
-    organizationId: OrganizationId;
+    organizationIds: OrganizationId[];
     serviceInstanceId: ServiceInstanceId;
     startDate: Date;
     endDate: Date;
     capabilityIds: ServiceCapabilityId[];
-  }): Promise<Subscription | undefined> => {
-    await assertOrganizationIsNotAlreadySubscribed({
-      serviceInstanceId,
-      organizationId,
-    });
-
-    const subscriptionData = {
-      id: uuidv4() as SubscriptionId,
-      service_instance_id: serviceInstanceId,
-      organization_id: organizationId,
-      start_date: startDate,
-      end_date: endDate,
-    };
-
+  }): Promise<Subscription[] | undefined> => {
+    const createdSubscriptions: Subscription[] = [];
     return withTransaction(async () => {
-      const createdSubscription = await createSubscription(subscriptionData);
-      await addCapabilitiesToSubscription(
-        createdSubscription.id,
-        capabilityIds
-      );
-      return createdSubscription;
+      for (const organizationId of organizationIds) {
+        await assertOrganizationIsNotAlreadySubscribed({
+          serviceInstanceId,
+          organizationId,
+        });
+
+        const createdSubscription = await createSubscription({
+          id: uuidv4() as SubscriptionId,
+          service_instance_id: serviceInstanceId,
+          organization_id: organizationId,
+          start_date: startDate,
+          end_date: endDate,
+        });
+
+        await addCapabilitiesToSubscription(
+          createdSubscription.id,
+          capabilityIds
+        );
+        createdSubscriptions.push(createdSubscription);
+      }
+
+      return createdSubscriptions;
     });
   },
 

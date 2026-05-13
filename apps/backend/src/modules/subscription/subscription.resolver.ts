@@ -34,19 +34,15 @@ const resolvers: Resolvers = {
     service_capability: ({ id }, _) => getServiceCapability(id),
   },
   Mutation: {
-    createSubscription: async (_, { input }, context) => {
+    createSubscription: async (_, { input }) => {
       try {
-        const organizationId =
-          input.organization_id ?? context.user.selected_organization_id;
-        const serviceInstanceId = input.service_instance_id;
-
-        return (await subscriptionApp.subscribeOrganizationToService({
-          organizationId,
-          serviceInstanceId,
+        return (await subscriptionApp.subscribeOrganizationsToService({
+          organizationIds: input.organization_id,
+          serviceInstanceId: input.service_instance_id,
           startDate: input.start_date,
           endDate: input.end_date,
-          capabilityIds: input.capability_ids,
-        })) as unknown as SubscriptionModel;
+          capabilityIds: input.capability_ids ?? [],
+        })) as unknown as SubscriptionModel[];
       } catch (error) {
         throw mapToGraphQLError(
           error,

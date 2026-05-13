@@ -10,13 +10,14 @@ import { subscription_fragment$data } from '@generated/subscription_fragment.gra
 import {
   Button,
   Checkbox,
-  Combobox,
   DatePicker,
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  MultiSelectFormField,
   SheetFooter,
   useToast,
 } from '@filigran/ui';
@@ -37,8 +38,8 @@ interface ServiceSlugAddOrgaFormSheetProps {
 }
 
 const formSchema = z.object({
-  organization_id: z.string().min(2, {
-    error: 'You must choose an organization.',
+  organization_id: z.array(z.string()).min(1, {
+    error: 'You must choose at least one organization.',
   }),
   capability_ids: z.array(z.string()),
   start_date: z.coerce.date<Date>(),
@@ -54,7 +55,7 @@ export const ServiceSlugOrgaForm = ({
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const t = useTranslations();
   const { toast } = useToast();
-  const [organizationsData, refetch] = getOrganizations();
+  const [organizationsData] = getOrganizations();
   const organizations = useMemo(() => {
     const subscribedOrganizationIds = new Set(
       subscriptions
@@ -67,18 +68,6 @@ export const ServiceSlugOrgaForm = ({
       .filter(({ id }) => !subscribedOrganizationIds.has(id));
   }, [organizationsData.organizations.edges, subscriptions]);
 
-  const onAutocompleteOrganization = (value: string) => {
-    refetch({ searchTerm: value });
-  };
-
-  const onOrganizationChange = (
-    value: { id: string; name: string } | undefined,
-    onChange: (value: string) => void
-  ) => {
-    onChange(value?.id ?? '');
-    refetch({ searchTerm: '' });
-  };
-
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionInServiceCreateMutation>(
       AddSubscriptionInServiceMutation
@@ -90,7 +79,9 @@ export const ServiceSlugOrgaForm = ({
 
   const defaultValues = useMemo(() => {
     return {
-      organization_id: subscriptionToEdit?.organization.id ?? '',
+      organization_id: subscriptionToEdit?.organization.id
+        ? [subscriptionToEdit.organization.id]
+        : [],
       capability_ids: subscriptionToEdit
         ? (subscriptionToEdit.subscription_capability
             ?.map((subscriptionCapability) => {
@@ -122,7 +113,16 @@ export const ServiceSlugOrgaForm = ({
 
   const onSubmit = (inputValue: z.infer<typeof formSchema>) => {
     const selectedOrganizationName =
-      organizations.find(({ id }) => id === inputValue.organization_id)?.name ??
+      inputValue.organization_id
+        .map(
+          (organizationId) =>
+            organizationsData.organizations.edges.find(
+              ({ node }) => node.id === organizationId
+            )?.node.name
+        )
+        .filter((name): name is string => Boolean(name))
+        .join(', ') ||
+      subscriptionToEdit?.organization.name ||
       '';
 
     const input = {
@@ -141,7 +141,6 @@ export const ServiceSlugOrgaForm = ({
             start_date: inputValue.start_date,
             end_date: inputValue.end_date,
           },
-          connections: [subscriptionConnectionId],
         },
         onCompleted: (_response) => {
           toast({
@@ -199,38 +198,29 @@ export const ServiceSlugOrgaForm = ({
             <FormField
               control={form.control}
               name="organization_id"
-              render={({ field }) => {
-                const selectedOrganization = organizations.find(
-                  ({ id }) => id === field.value
-                );
-
-                return (
-                  <FormItem>
-                    <FormLabel>
-                      {t('OrganizationInServiceAction.Organization')}
-                    </FormLabel>
-                    <Combobox
-                      className="w-45"
-                      dataTab={organizations}
-                      order={t(
-                        'OrganizationInServiceAction.SelectOrganization'
-                      )}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('OrganizationInServiceAction.Organization')}
+                  </FormLabel>
+                  <FormControl>
+                    <MultiSelectFormField
+                      options={organizations}
+                      keyValue="id"
+                      keyLabel="name"
+                      value={field.value}
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      noResultString={t('Utils.NotFound')}
                       placeholder={t(
                         'OrganizationInServiceAction.SelectOrganization'
                       )}
-                      emptyCommand={t('Utils.NotFound')}
-                      keyValue={'id'}
-                      keyLabel={'name'}
-                      value={selectedOrganization}
-                      onInputChange={onAutocompleteOrganization}
-                      onValueChange={(value) =>
-                        onOrganizationChange(value, field.onChange)
-                      }
+                      variant="inverted"
                     />
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           )}
 
