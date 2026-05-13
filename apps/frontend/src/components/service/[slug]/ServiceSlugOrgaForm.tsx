@@ -1,5 +1,8 @@
 import { getOrganizations } from '@/components/organization/Organization.service';
-import { AddSubscriptionInServiceMutation } from '@/components/subcription/subscription.graphql';
+import {
+  AddSubscriptionInServiceMutation,
+  UpdateSubscriptionInServiceMutation,
+} from '@/components/subcription/subscription.graphql';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
@@ -18,6 +21,7 @@ import {
   useToast,
 } from '@filigran/ui';
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
+import { subscriptionInServiceUpdateMutation } from '@generated/subscriptionInServiceUpdateMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
@@ -28,6 +32,7 @@ import { z } from 'zod';
 interface ServiceSlugAddOrgaFormSheetProps {
   serviceInstance: serviceInstanceForSubscriptions_fragment$data;
   subscriptions: subscription_fragment$data[];
+  subscriptionToEdit?: subscription_fragment$data;
   subscriptionConnectionId: string;
 }
 
@@ -40,9 +45,10 @@ const formSchema = z.object({
   end_date: z.coerce.date<Date>().optional(),
 });
 
-export const ServiceSlugAddOrgaForm = ({
+export const ServiceSlugOrgaForm = ({
   serviceInstance,
   subscriptions,
+  subscriptionToEdit,
   subscriptionConnectionId,
 }: ServiceSlugAddOrgaFormSheetProps) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
@@ -77,15 +83,38 @@ export const ServiceSlugAddOrgaForm = ({
     useMutation<subscriptionInServiceCreateMutation>(
       AddSubscriptionInServiceMutation
     );
+  const [commitSubscriptionUpdateMutation] =
+    useMutation<subscriptionInServiceUpdateMutation>(
+      UpdateSubscriptionInServiceMutation
+    );
+
+  const defaultValues = useMemo(() => {
+    return {
+      organization_id: subscriptionToEdit?.organization.id ?? '',
+      capability_ids: subscriptionToEdit
+        ? (subscriptionToEdit.subscription_capability
+            ?.map((subscriptionCapability) => {
+              return subscriptionCapability?.service_capability?.id;
+            })
+            .filter((id): id is string => Boolean(id)) ?? [])
+        : [],
+      start_date: subscriptionToEdit?.start_date
+        ? new Date(subscriptionToEdit.start_date)
+        : new Date(),
+      end_date: subscriptionToEdit?.end_date
+        ? new Date(subscriptionToEdit.end_date)
+        : undefined,
+    };
+  }, [subscriptionToEdit]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      organization_id: '',
-      capability_ids: [],
-      start_date: new Date(),
-    },
+    defaultValues,
   });
+
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [defaultValues, form]);
 
   useEffect(() => {
     setIsDirty(form.formState.isDirty);
@@ -103,6 +132,38 @@ export const ServiceSlugAddOrgaForm = ({
       start_date: inputValue.start_date,
       end_date: inputValue.end_date,
     };
+    if (subscriptionToEdit) {
+      commitSubscriptionUpdateMutation({
+        variables: {
+          subscription_id: subscriptionToEdit.id,
+          input: {
+            capability_ids: inputValue.capability_ids,
+            start_date: inputValue.start_date,
+            end_date: inputValue.end_date,
+          },
+          connections: [subscriptionConnectionId],
+        },
+        onCompleted: (_response) => {
+          toast({
+            title: t('Utils.Success'),
+            description: t('ServiceActions.OrganizationAdded', {
+              name: selectedOrganizationName,
+              serviceName: serviceInstance.name,
+            }),
+          });
+          setOpenSheet(false);
+        },
+        onError: (error: Error) => {
+          toast({
+            variant: 'destructive',
+            title: t('Utils.Error'),
+            description: <>{t(`Error.Server.${error.message}`)}</>,
+          });
+        },
+      });
+
+      return;
+    }
     commitSubscriptionCreateMutation({
       variables: {
         input,
@@ -134,40 +195,44 @@ export const ServiceSlugAddOrgaForm = ({
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-xl">
-          <FormField
-            control={form.control}
-            name="organization_id"
-            render={({ field }) => {
-              const selectedOrganization = organizations.find(
-                ({ id }) => id === field.value
-              );
+          {!subscriptionToEdit && (
+            <FormField
+              control={form.control}
+              name="organization_id"
+              render={({ field }) => {
+                const selectedOrganization = organizations.find(
+                  ({ id }) => id === field.value
+                );
 
-              return (
-                <FormItem>
-                  <FormLabel>
-                    {t('OrganizationInServiceAction.Organization')}
-                  </FormLabel>
-                  <Combobox
-                    className="w-45"
-                    dataTab={organizations}
-                    order={t('OrganizationInServiceAction.SelectOrganization')}
-                    placeholder={t(
-                      'OrganizationInServiceAction.SelectOrganization'
-                    )}
-                    emptyCommand={t('Utils.NotFound')}
-                    keyValue={'id'}
-                    keyLabel={'name'}
-                    value={selectedOrganization}
-                    onInputChange={onAutocompleteOrganization}
-                    onValueChange={(value) =>
-                      onOrganizationChange(value, field.onChange)
-                    }
-                  />
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+                return (
+                  <FormItem>
+                    <FormLabel>
+                      {t('OrganizationInServiceAction.Organization')}
+                    </FormLabel>
+                    <Combobox
+                      className="w-45"
+                      dataTab={organizations}
+                      order={t(
+                        'OrganizationInServiceAction.SelectOrganization'
+                      )}
+                      placeholder={t(
+                        'OrganizationInServiceAction.SelectOrganization'
+                      )}
+                      emptyCommand={t('Utils.NotFound')}
+                      keyValue={'id'}
+                      keyLabel={'name'}
+                      value={selectedOrganization}
+                      onInputChange={onAutocompleteOrganization}
+                      onValueChange={(value) =>
+                        onOrganizationChange(value, field.onChange)
+                      }
+                    />
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          )}
 
           <div className="border border-primary rounded-lg p-l">
             <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>

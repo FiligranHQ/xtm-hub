@@ -36,6 +36,22 @@ export const SubscriptionDeleteMutation = graphql`
   }
 `;
 
+export const UpdateSubscriptionInServiceMutation = graphql`
+  mutation subscriptionInServiceUpdateMutation(
+    $subscription_id: SubscriptionId!
+    $input: UpdateSubscriptionInput!
+    $connections: [ID!]!
+  ) {
+    updateSubscription(subscription_id: $subscription_id, input: $input)
+      @prependNode(
+        connections: $connections
+        edgeTypeName: "SubscriptionEdge"
+      ) {
+      ...subscription_fragment
+    }
+  }
+`;
+
 export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
     $input: CreateSubscriptionInput!
@@ -46,6 +62,17 @@ export const AddSubscriptionInServiceMutation = graphql`
         connections: $connections
         edgeTypeName: "SubscriptionEdge"
       ) {
+      ...subscription_fragment
+    }
+  }
+`;
+
+export const SubscriptionUpdateMutation = graphql`
+  mutation subscriptionUpdateMutation(
+    $subscription_id: SubscriptionId!
+    $input: UpdateSubscriptionInput!
+  ) {
+    updateSubscription(subscription_id: $subscription_id, input: $input) {
       ...subscription_fragment
     }
   }

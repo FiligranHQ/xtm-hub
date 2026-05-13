@@ -66,6 +66,21 @@ const resolvers: Resolvers = {
         );
       }
     },
+    updateSubscription: async (_, { subscription_id, input }) => {
+      try {
+        return (await subscriptionApp.updateSubscription({
+          id: subscription_id,
+          startDate: input.start_date,
+          endDate: input.end_date,
+          capabilityIds: input.capability_ids,
+        })) as unknown as SubscriptionModel;
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.ServiceSubscriptionError
+        );
+      }
+    },
   },
   Query: {
     subscriptionById: async (_, { subscription_id }) => {

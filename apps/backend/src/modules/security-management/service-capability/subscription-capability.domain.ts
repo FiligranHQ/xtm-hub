@@ -29,6 +29,19 @@ export const addCapabilitiesToSubscription = async (
     .returning('*');
 };
 
+export const replaceCapabilitiesForSubscription = async (
+  subscriptionId: SubscriptionId,
+  capabilityIds: ServiceCapabilityId[]
+): Promise<SubscriptionCapability[]> => {
+  await db<SubscriptionCapability>('Subscription_Capability')
+    .where({
+      subscription_id: subscriptionId,
+    })
+    .delete();
+
+  return addCapabilitiesToSubscription(subscriptionId, capabilityIds);
+};
+
 export const loadSubscriptionCapabilities = async (
   subscriptionId: SubscriptionId
 ) => {

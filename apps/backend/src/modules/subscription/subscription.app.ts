@@ -14,11 +14,15 @@ import Subscription, {
 import { UserLoadUserBy } from '../../model/user';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { addCapabilitiesToSubscription } from '../security-management/service-capability/subscription-capability.domain';
+import {
+  addCapabilitiesToSubscription,
+  replaceCapabilitiesForSubscription,
+} from '../security-management/service-capability/subscription-capability.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
   SubscriptionDomain,
+  updateSubscriptionBy,
 } from './subscription.domain';
 
 export const subscriptionApp = {
@@ -72,6 +76,38 @@ export const subscriptionApp = {
 
   deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
     return SubscriptionDomain.deleteSubscription(id);
+  },
+
+  updateSubscription: async ({
+    id,
+    startDate,
+    endDate,
+    capabilityIds,
+  }: {
+    id: SubscriptionId;
+    startDate?: Date;
+    endDate?: Date;
+    capabilityIds?: ServiceCapabilityId[];
+  }): Promise<Subscription> => {
+    return withTransaction(async () => {
+      const data: Partial<Subscription> = {};
+      if (startDate !== undefined) data.start_date = startDate;
+      if (endDate !== undefined) data.end_date = endDate;
+
+      let updatedSubscription: Subscription;
+      if (Object.keys(data).length > 0) {
+        const [result] = await updateSubscriptionBy({ id }, data);
+        updatedSubscription = result;
+      } else {
+        updatedSubscription = await loadSubscriptionBy({ id });
+      }
+
+      if (capabilityIds !== undefined) {
+        await replaceCapabilitiesForSubscription(id, capabilityIds);
+      }
+
+      return updatedSubscription;
+    });
   },
 
   loadSubscriptions: async (opts) => {

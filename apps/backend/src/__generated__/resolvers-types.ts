@@ -891,6 +891,7 @@ export type Mutation = {
   updateEpic: Epic;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups: Array<ServiceGroup>;
+  updateSubscription?: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
 };
 
@@ -1186,6 +1187,12 @@ export type MutationUpdatePlatformServiceMetadataArgs = {
 
 export type MutationUpdateServiceGroupsArgs = {
   input: UpdateServiceGroupsInput;
+};
+
+
+export type MutationUpdateSubscriptionArgs = {
+  input: UpdateSubscriptionInput;
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 
@@ -2319,6 +2326,12 @@ export type UpdateServiceGroupsInputGroup = {
   userIds: Array<Scalars['UserId']['input']>;
 };
 
+export type UpdateSubscriptionInput = {
+  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
+  end_date?: InputMaybe<Scalars['Date']['input']>;
+  start_date?: InputMaybe<Scalars['Date']['input']>;
+};
+
 export type UseCase = Node & {
   __typename?: 'UseCase';
   color: Scalars['String']['output'];
@@ -2731,6 +2744,7 @@ export type ResolversTypes = ResolversObject<{
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
+  UpdateSubscriptionInput: UpdateSubscriptionInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   UseCase: ResolverTypeWrapper<UseCase>;
   UseCaseConnection: ResolverTypeWrapper<UseCaseConnection>;
@@ -2898,6 +2912,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
+  UpdateSubscriptionInput: UpdateSubscriptionInput;
   Upload: Scalars['Upload']['output'];
   UseCase: UseCase;
   UseCaseConnection: UseCaseConnection;
@@ -3398,6 +3413,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
+  updateSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationUpdateSubscriptionArgs, 'input' | 'subscription_id'>>;
   uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
 }>;
 

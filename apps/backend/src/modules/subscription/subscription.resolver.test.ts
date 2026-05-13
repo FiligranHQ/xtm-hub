@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   GRAPHQL_RESOLVE_INFO,
@@ -13,15 +13,23 @@ import {
 } from '../../__generated__/resolvers-types';
 import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { UnknownErrorCode } from '../../utils/error/error.code';
+import * as errorMapping from '../../utils/error/error.mapping';
+import * as organizationDomain from '../organization-management/organization/organization.domain';
 import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import * as subscriptionDomain from './subscription.domain';
 import * as subscriptionHelper from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
-describe('subscription resolver — unit tests', () => {
+describe('subscription resolver - unit tests', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('subscriptionModel field resolvers', () => {
     it('subscription_capability should call getSubscriptionCapability with subscription id', async () => {
+      // Given
       const id = uuidv4();
       const expected = [] as unknown as Awaited<
         ReturnType<typeof subscriptionDomain.getSubscriptionCapability>
@@ -31,6 +39,7 @@ describe('subscription resolver — unit tests', () => {
         'getSubscriptionCapability'
       ).mockResolvedValue(expected);
 
+      // When
       const result = await (
         subscriptionResolver.SubscriptionModel as unknown as SubscriptionModelResolvers
       ).subscription_capability!(
@@ -40,6 +49,7 @@ describe('subscription resolver — unit tests', () => {
         GRAPHQL_RESOLVE_INFO
       );
 
+      // Then
       expect(subscriptionDomain.getSubscriptionCapability).toHaveBeenCalledWith(
         id
       );
@@ -47,6 +57,7 @@ describe('subscription resolver — unit tests', () => {
     });
 
     it('service_instance should call loadServiceInstanceBy with service_instance_id', async () => {
+      // Given
       const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
       const expected = { id: serviceInstanceId } as unknown as
         | ServiceInstance
@@ -56,6 +67,7 @@ describe('subscription resolver — unit tests', () => {
         'loadServiceInstanceBy'
       ).mockResolvedValue(expected);
 
+      // When
       const result = await (
         subscriptionResolver.SubscriptionModel as unknown as SubscriptionModelResolvers
       ).service_instance!(
@@ -68,6 +80,7 @@ describe('subscription resolver — unit tests', () => {
         GRAPHQL_RESOLVE_INFO
       );
 
+      // Then
       expect(serviceInstanceDomain.loadServiceInstanceBy).toHaveBeenCalledWith({
         id: serviceInstanceId,
       });
@@ -75,6 +88,7 @@ describe('subscription resolver — unit tests', () => {
     });
 
     it('user_service should call getUserService with subscription id', async () => {
+      // Given
       const id = uuidv4();
       const expected = [] as unknown as Awaited<
         ReturnType<typeof subscriptionDomain.getUserService>
@@ -83,6 +97,7 @@ describe('subscription resolver — unit tests', () => {
         expected
       );
 
+      // When
       const result = await (
         subscriptionResolver.SubscriptionModel as unknown as SubscriptionModelResolvers
       ).user_service!(
@@ -92,13 +107,43 @@ describe('subscription resolver — unit tests', () => {
         GRAPHQL_RESOLVE_INFO
       );
 
+      // Then
       expect(subscriptionDomain.getUserService).toHaveBeenCalledWith(id);
       expect(result).toEqual(expected);
+    });
+
+    it('organization should call loadOrganizationBy with organization_id', async () => {
+      // Given
+      const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
+      const expected = { id: organizationId };
+      vi.spyOn(organizationDomain, 'loadOrganizationBy').mockResolvedValue(
+        expected as never
+      );
+
+      // When
+      const result = await (
+        subscriptionResolver.SubscriptionModel as unknown as SubscriptionModelResolvers
+      ).organization!(
+        {
+          id: uuidv4() as SubscriptionId,
+          organization_id: organizationId,
+        } as unknown as SubscriptionModel,
+        {},
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      // Then
+      expect(organizationDomain.loadOrganizationBy).toHaveBeenCalledWith({
+        id: organizationId,
+      });
+      expect(result).toMatchObject(expected);
     });
   });
 
   describe('subscriptionCapability field resolvers', () => {
     it('service_capability should call getServiceCapability with subscription capability id', async () => {
+      // Given
       const id = uuidv4();
       const expected = { id: uuidv4() } as unknown as Awaited<
         ReturnType<typeof subscriptionDomain.getServiceCapability>
@@ -107,6 +152,7 @@ describe('subscription resolver — unit tests', () => {
         expected
       );
 
+      // When
       const result = await (
         subscriptionResolver.SubscriptionCapability as unknown as SubscriptionCapabilityResolvers
       ).service_capability!(
@@ -116,15 +162,17 @@ describe('subscription resolver — unit tests', () => {
         GRAPHQL_RESOLVE_INFO
       );
 
+      // Then
       expect(subscriptionDomain.getServiceCapability).toHaveBeenCalledWith(id);
       expect(result).toEqual(expected);
     });
   });
 
   describe('query.subscriptionById', () => {
-    it('should decode subscription_id and return first subscription', async () => {
+    it('should return the first subscription when helper returns values', async () => {
+      // Given
       const subscriptionId = uuidv4() as SubscriptionId;
-      const expected = { id: subscriptionId } as unknown as Awaited<
+      const expected = { id: subscriptionId } as Awaited<
         ReturnType<
           typeof subscriptionHelper.loadSubscriptionWithOrganizationAndCapabilitiesBy
         >
@@ -132,8 +180,9 @@ describe('subscription resolver — unit tests', () => {
       vi.spyOn(
         subscriptionHelper,
         'loadSubscriptionWithOrganizationAndCapabilitiesBy'
-      ).mockResolvedValue([expected]);
+      ).mockResolvedValue([expected] as never);
 
+      // When
       const result = await subscriptionResolver.Query!.subscriptionById!(
         {},
         { subscription_id: subscriptionId },
@@ -141,107 +190,91 @@ describe('subscription resolver — unit tests', () => {
         GRAPHQL_RESOLVE_INFO
       );
 
+      // Then
       expect(
         subscriptionHelper.loadSubscriptionWithOrganizationAndCapabilitiesBy
       ).toHaveBeenCalledWith(
         expect.objectContaining({ 'Subscription.id': subscriptionId })
       );
-      expect(result).toEqual(expected);
+      expect(result).toMatchObject({ id: subscriptionId });
+    });
+
+    it('should return undefined when helper returns an empty array', async () => {
+      // Given
+      const subscriptionId = uuidv4() as SubscriptionId;
+      vi.spyOn(
+        subscriptionHelper,
+        'loadSubscriptionWithOrganizationAndCapabilitiesBy'
+      ).mockResolvedValue([] as never);
+
+      // When
+      const result = await subscriptionResolver.Query!.subscriptionById!(
+        {},
+        { subscription_id: subscriptionId },
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      // Then
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('query.subscriptions', () => {
+    it('should delegate to subscriptionApp.loadSubscriptions with provided options', async () => {
+      // Given
+      const opt = { first: 10 };
+      const expected = [{ id: uuidv4() as SubscriptionId }];
+      vi.spyOn(subscriptionApp, 'loadSubscriptions').mockResolvedValue(
+        expected as never
+      );
+
+      // When
+      const result = await subscriptionResolver.Query!.subscriptions!(
+        {},
+        opt as never,
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      // Then
+      expect(subscriptionApp.loadSubscriptions).toHaveBeenCalledWith(opt);
+      expect(result).toMatchObject(expected);
     });
   });
 
   describe('mutation.createSubscription', () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-    const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
+    const contextOrganizationId =
+      contextSimpleUserFiligran2.user.selected_organization_id;
     const startDate = new Date('2025-01-01');
     const endDate = new Date('2026-01-01');
     const capabilityIds = [
       SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
     ];
 
-    it('should call subscribeOrganizationToService with input organization_id when provided', async () => {
-      const expected = {
-        id: uuidv4() as SubscriptionId,
-      } as unknown as SubscriptionModel;
-      vi.spyOn(
-        subscriptionApp,
-        'subscribeOrganizationToService'
-      ).mockResolvedValue(expected as never);
+    it.each`
+      inputOrganizationId                          | expectedOrganizationId
+      ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID} | ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID}
+      ${undefined}                                 | ${contextOrganizationId}
+    `(
+      'should map organization_id=$inputOrganizationId to organizationId=$expectedOrganizationId',
+      async ({ inputOrganizationId, expectedOrganizationId }) => {
+        // Given
+        const expected = {
+          id: uuidv4() as SubscriptionId,
+        } as unknown as SubscriptionModel;
+        vi.spyOn(
+          subscriptionApp,
+          'subscribeOrganizationToService'
+        ).mockResolvedValue(expected as never);
 
-      const result = await subscriptionResolver.Mutation!.createSubscription!(
-        {},
-        {
-          input: {
-            organization_id: organizationId,
-            service_instance_id: serviceInstanceId,
-            start_date: startDate,
-            end_date: endDate,
-            capability_ids: capabilityIds,
-          },
-        },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(
-        subscriptionApp.subscribeOrganizationToService
-      ).toHaveBeenCalledWith({
-        organizationId,
-        serviceInstanceId,
-        startDate,
-        endDate,
-        capabilityIds,
-      });
-      expect(result).toEqual(expected);
-    });
-
-    it('should fallback to context selected_organization_id when organization_id equals context organization', async () => {
-      const contextOrgId =
-        contextSimpleUserFiligran2.user.selected_organization_id;
-      const expected = {
-        id: uuidv4() as SubscriptionId,
-      } as unknown as SubscriptionModel;
-      vi.spyOn(
-        subscriptionApp,
-        'subscribeOrganizationToService'
-      ).mockResolvedValue(expected as never);
-
-      await subscriptionResolver.Mutation!.createSubscription!(
-        {},
-        {
-          input: {
-            organization_id: contextOrgId,
-            service_instance_id: serviceInstanceId,
-            start_date: startDate,
-            end_date: endDate,
-            capability_ids: capabilityIds,
-          },
-        },
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(
-        subscriptionApp.subscribeOrganizationToService
-      ).toHaveBeenCalledWith(
-        expect.objectContaining({
-          organizationId: contextOrgId,
-        })
-      );
-    });
-
-    it('should throw a GraphQL error when subscribeOrganizationToService throws', async () => {
-      vi.spyOn(
-        subscriptionApp,
-        'subscribeOrganizationToService'
-      ).mockRejectedValue(new Error('AlreadySubscribed'));
-
-      await expect(
-        subscriptionResolver.Mutation!.createSubscription!(
+        // When
+        const result = await subscriptionResolver.Mutation!.createSubscription!(
           {},
           {
             input: {
-              organization_id: organizationId,
+              organization_id: inputOrganizationId,
               service_instance_id: serviceInstanceId,
               start_date: startDate,
               end_date: endDate,
@@ -250,8 +283,141 @@ describe('subscription resolver — unit tests', () => {
           },
           contextSimpleUserFiligran2,
           GRAPHQL_RESOLVE_INFO
-        )
-      ).rejects.toThrow();
+        );
+
+        // Then
+        expect(
+          subscriptionApp.subscribeOrganizationToService
+        ).toHaveBeenCalledWith({
+          organizationId: expectedOrganizationId,
+          serviceInstanceId,
+          startDate,
+          endDate,
+          capabilityIds,
+        });
+        expect(result).toMatchObject({ id: expected.id });
+      }
+    );
+  });
+
+  describe('mutation.deleteSubscription', () => {
+    it('should call subscriptionApp.deleteSubscription with subscription_id', async () => {
+      // Given
+      const subscriptionId = uuidv4() as SubscriptionId;
+      const expected = { id: subscriptionId };
+      vi.spyOn(subscriptionApp, 'deleteSubscription').mockResolvedValue(
+        expected as never
+      );
+
+      // When
+      const result = await subscriptionResolver.Mutation!.deleteSubscription!(
+        {},
+        { subscription_id: subscriptionId },
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      // Then
+      expect(subscriptionApp.deleteSubscription).toHaveBeenCalledWith(
+        subscriptionId
+      );
+      expect(result).toMatchObject(expected);
     });
+  });
+
+  describe('mutation.updateSubscription', () => {
+    it('should map input and call subscriptionApp.updateSubscription', async () => {
+      // Given
+      const subscriptionId = uuidv4() as SubscriptionId;
+      const startDate = new Date('2025-01-01');
+      const endDate = new Date('2026-01-01');
+      const capabilityIds = [
+        SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
+      ];
+      const expected = { id: subscriptionId };
+      vi.spyOn(subscriptionApp, 'updateSubscription').mockResolvedValue(
+        expected as never
+      );
+
+      // When
+      const result = await subscriptionResolver.Mutation!.updateSubscription!(
+        {},
+        {
+          subscription_id: subscriptionId,
+          input: {
+            start_date: startDate,
+            end_date: endDate,
+            capability_ids: capabilityIds,
+          },
+        },
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      // Then
+      expect(subscriptionApp.updateSubscription).toHaveBeenCalledWith({
+        id: subscriptionId,
+        startDate,
+        endDate,
+        capabilityIds,
+      });
+      expect(result).toMatchObject(expected);
+    });
+  });
+
+  describe('mutation error mapping', () => {
+    it.each`
+      mutationName            | runMutation                                                                                                                                                        | setupAppMock                                                                                  | expectedCode
+      ${'createSubscription'} | ${() =>
+  subscriptionResolver.Mutation!.createSubscription!(
+    {},
+    {
+      input: {
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+        start_date: new Date('2025-01-01'),
+        end_date: new Date('2026-01-01'),
+        capability_ids: [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID],
+      },
+    },
+    contextSimpleUserFiligran2,
+    GRAPHQL_RESOLVE_INFO
+  )} | ${() => vi.spyOn(subscriptionApp, 'subscribeOrganizationToService').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
+      ${'deleteSubscription'} | ${() => subscriptionResolver.Mutation!.deleteSubscription!({}, { subscription_id: uuidv4() as SubscriptionId }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscription').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
+      ${'updateSubscription'} | ${() =>
+  subscriptionResolver.Mutation!.updateSubscription!(
+    {},
+    {
+      subscription_id: uuidv4() as SubscriptionId,
+      input: {
+        start_date: new Date('2025-01-01'),
+        end_date: new Date('2026-01-01'),
+        capability_ids: [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID],
+      },
+    },
+    contextSimpleUserFiligran2,
+    GRAPHQL_RESOLVE_INFO
+  )} | ${() => vi.spyOn(subscriptionApp, 'updateSubscription').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
+    `(
+      'should map $mutationName errors with $expectedCode',
+      async ({ runMutation, setupAppMock, expectedCode }) => {
+        // Given
+        setupAppMock();
+        const mappedError = new Error('mapped error');
+        const mapToGraphQLErrorSpy = vi
+          .spyOn(errorMapping, 'mapToGraphQLError')
+          .mockReturnValue(mappedError as never);
+
+        // When
+        const run = runMutation();
+
+        // Then
+        await expect(run).rejects.toBe(mappedError);
+        expect(mapToGraphQLErrorSpy).toHaveBeenCalledWith(
+          expect.any(Error),
+          expectedCode
+        );
+      }
+    );
   });
 });

@@ -35,8 +35,8 @@ import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { ServiceSlugAddSubscription } from './ServiceSlugAddSubscription';
 import { ServiceSlugDeleteSubscription } from './ServiceSlugDeleteSubscription';
+import { ServiceSlugSubscription } from './ServiceSlugSubscription';
 
 interface ServiceSlugProps {
   subscriptions: subscription_fragment$data[];
@@ -71,6 +71,10 @@ const ServiceSlug = ({
   const [deleteSubscription, setDeleteSubscription] = useState<
     subscription_fragment$data | undefined
   >(undefined);
+  const [updateSubscription, setUpdateSubscription] = useState<
+    subscription_fragment$data | undefined
+  >(undefined);
+  const [openEdit, setOpenEdit] = useState(false);
 
   const isAdminPath = useAdminPath();
 
@@ -147,6 +151,13 @@ const ServiceSlug = ({
               <IconActionsItem
                 onClick={() => setDeleteSubscription(row.original)}>
                 {t('Utils.Delete')}
+              </IconActionsItem>
+              <IconActionsItem
+                onClick={() => {
+                  setUpdateSubscription(row.original);
+                  setOpenEdit(true);
+                }}>
+                {t('Utils.Edit')}
               </IconActionsItem>
             </IconActions>
           </div>
@@ -239,11 +250,17 @@ const ServiceSlug = ({
             <h1>{serviceInstance.name}</h1>
             <BadgeOverflowCounter badges={serviceTags as BadgeOverflow[]} />
             <div className="ml-auto">
-              <ServiceSlugAddSubscription
+              <ServiceSlugSubscription
                 isAdminPath={!!isAdminPath}
                 subscriptions={subscriptions}
+                subscriptionToEdit={updateSubscription}
                 serviceInstance={serviceInstance}
                 subscriptionConnectionId={subscriptionConnectionId}
+                openEdit={openEdit}
+                setOpenEdit={(open) => {
+                  setOpenEdit(open);
+                  if (!open) setUpdateSubscription(undefined);
+                }}
               />
             </div>
           </div>

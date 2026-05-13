@@ -35,11 +35,23 @@ input CreateSubscriptionInput {
   end_date: Date
 }
 
+input UpdateSubscriptionInput {
+  start_date: Date
+  end_date: Date
+  capability_ids: [ServiceCapabilityId]
+}
+
 type Mutation {
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   createSubscription(input: CreateSubscriptionInput): SubscriptionModel
     @auth(portalCapa: [BYPASS])
+  updateSubscription(
+    subscription_id: SubscriptionId!
+    input: UpdateSubscriptionInput!
+  ): SubscriptionModel
+    @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
+    @service_capa(requires: [MANAGE_ACCESS])
   deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
     @service_capa(requires: [MANAGE_ACCESS])

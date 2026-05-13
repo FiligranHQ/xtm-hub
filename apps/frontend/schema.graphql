@@ -185,6 +185,7 @@ type Mutation {
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
   createSubscription(input: CreateSubscriptionInput): SubscriptionModel
+  updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
   deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
@@ -1589,6 +1590,12 @@ input CreateSubscriptionInput {
   capability_ids: [Service_CapabilityId]
   start_date: Date!
   end_date: Date
+}
+
+input UpdateSubscriptionInput {
+  start_date: Date
+  end_date: Date
+  capability_ids: [Service_CapabilityId]
 }
 
 type SubscriptionConnection {
