@@ -7,7 +7,7 @@ import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import '@styles/globals.css';
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { default as Link, default as NextLink } from 'next/link';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import * as React from 'react';
 
@@ -49,7 +49,7 @@ const RootLayout = async ({
         <Button
           asChild
           className="whitespace-nowrap">
-          <NextLink href="/login">{t('PublicLayout.SignIn')}</NextLink>
+          <Link href="/login">{t('PublicLayout.SignIn')}</Link>
         </Button>
       </header>
       <main className="grow overflow-auto">
@@ -58,54 +58,54 @@ const RootLayout = async ({
       <footer className="container text-muted-foreground">
         <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-8 gap-l text-center">
           <span className="txt-default">
-            <NextLink
+            <Link
               href="https://filigran.io"
               target="_blank"
               rel="noopener noreferrer">
               © {new Date().getFullYear()} Filigran.
-            </NextLink>{' '}
+            </Link>{' '}
             {t('PublicLayout.AllRightsReserved')}
           </span>
           <ul className="flex flex-col md:flex-row gap-l text-xs">
             <li>
-              <NextLink
+              <Link
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/">
                 {t('PublicLayout.FiligranWebsite')}
-              </NextLink>
+              </Link>
             </li>
             <li>
-              <NextLink
+              <Link
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/privacy-policy/">
                 {t('PublicLayout.PrivacyPolicy')}
-              </NextLink>
+              </Link>
             </li>
             <li>
-              <NextLink
+              <Link
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/terms-of-services/">
                 {t('PublicLayout.TermsOfServices')}
-              </NextLink>
+              </Link>
             </li>
             <li>
-              <NextLink
+              <Link
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/licenses/">
                 {t('PublicLayout.Licenses')}
-              </NextLink>
+              </Link>
             </li>
             <li>
-              <NextLink
+              <Link
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/contact/">
                 {t('PublicLayout.Contact')}
-              </NextLink>
+              </Link>
             </li>
           </ul>
         </div>

@@ -64,16 +64,8 @@ export const RegistrationLearnMore = async ({
     <>
       <Section className="bg-blue-800/5 px-xl">
         <div className="text-center w-[70%] m-auto">
-          <H2>Your eXtended Threat Management (XTM) suite</H2>
-          <P>
-            {serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
-              ? 'OpenCTI'
-              : 'OpenAEV'}{' '}
-            is part of Filigran’s open-source threat intelligence, advanced
-            adversary simulation, and strategic cyber risk management solution
-            designed to help your organization anticipate and manage threats
-            end-to-end.
-          </P>
+          <H2>{t('Service.Trials.XTMPlatform.Title')}</H2>
+          <P>{t('Service.Trials.XTMPlatform.Description', { platformName })}</P>
         </div>
         <div className="flex flex-col lg:flex-row gap-xl">
           <div className="flex flex-col gap-s basis-full">
@@ -83,16 +75,18 @@ export const RegistrationLearnMore = async ({
                   width="25"
                   height="25"
                   src="/logo_opencti_dark.png"
-                  alt={t('Service.Trials.XTMSuite.LogoAlt', {
+                  alt={t('Service.Trials.XTMPlatform.LogoAlt', {
                     name: 'OpenCTI',
                   })}
                 />
                 OpenCTI
               </h3>
               <P className="mb-s">
-                <strong>{t('Service.Trials.XTMSuite.OpenCTITagline')}</strong>
+                <strong>
+                  {t('Service.Trials.XTMPlatform.OpenCTITagline')}
+                </strong>
               </P>
-              <P>{t('Service.Trials.XTMSuite.OpenCTIDescription')}</P>
+              <P>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</P>
             </div>
             <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
               <h3 className="mb-m flex gap-s">
@@ -100,16 +94,18 @@ export const RegistrationLearnMore = async ({
                   width="25"
                   height="25"
                   src="/logo_openaev_dark.png"
-                  alt={t('Service.Trials.XTMSuite.LogoAlt', {
+                  alt={t('Service.Trials.XTMPlatform.LogoAlt', {
                     name: 'OpenAEV',
                   })}
                 />
                 OpenAEV
               </h3>
               <P className="mb-s">
-                <strong>{t('Service.Trials.XTMSuite.OpenAEVTagline')}</strong>
+                <strong>
+                  {t('Service.Trials.XTMPlatform.OpenAEVTagline')}
+                </strong>
               </P>
-              <P>{t('Service.Trials.XTMSuite.OpenAEVDescription')}</P>
+              <P>{t('Service.Trials.XTMPlatform.OpenAEVDescription')}</P>
             </div>
           </div>
           <div className="basis-full m-auto">
@@ -123,7 +119,7 @@ export const RegistrationLearnMore = async ({
               }
               priority={false}
               loading="lazy"
-              alt={t('Service.Trials.XTMSuite.IllustrationAlt')}
+              alt={t('Service.Trials.XTMPlatform.IllustrationAlt')}
               className="rounded w-full"
             />
           </div>

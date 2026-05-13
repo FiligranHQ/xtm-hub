@@ -67,21 +67,21 @@ const nextConfig = {
 
       {
         source: '/cybersecurity-solutions/free-trial',
-        destination: '/cybersecurity-solutions/opencti-free-trial',
+        destination: '/en/cybersecurity-solutions/opencti-free-trial',
         permanent: true,
       },
 
       {
         source:
           '/cybersecurity-solutions/(open-bas-scenarios|obas-scenarios|open-aev-scenarios)/:path*',
-        destination: '/cybersecurity-solutions/openaev-scenarios/:path*',
+        destination: '/en/cybersecurity-solutions/openaev-scenarios/:path*',
         permanent: true,
       },
 
       {
         source:
           '/cybersecurity-solutions/(octi_integration_feeds|open-cti-integration-feeds|open-cti-integrations)/:path*',
-        destination: '/cybersecurity-solutions/opencti-integrations/:path*',
+        destination: '/en/cybersecurity-solutions/opencti-integrations/:path*',
         permanent: true,
       },
 
@@ -89,7 +89,17 @@ const nextConfig = {
         source:
           '/cybersecurity-solutions/(octi_custom_dashboards|open-cti-custom-dashboards)/:path*',
         destination:
-          '/cybersecurity-solutions/opencti-custom-dashboards/:path*',
+          '/en/cybersecurity-solutions/opencti-custom-dashboards/:path*',
+        permanent: true,
+      },
+      {
+        source: '/cybersecurity-solutions',
+        destination: '/en/cybersecurity-solutions',
+        permanent: true,
+      },
+      {
+        source: '/cybersecurity-solutions/:path*',
+        destination: '/en/cybersecurity-solutions/:path*',
         permanent: true,
       },
     ];
