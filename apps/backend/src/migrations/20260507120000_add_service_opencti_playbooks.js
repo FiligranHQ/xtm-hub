@@ -11,7 +11,7 @@ export async function up(knex) {
   await knex('ServiceDefinition').insert([
     {
       id: serviceDefinitionId,
-      name: 'OpenCTI Playbook Library',
+      name: 'OpenCTI Playbooks Library',
       description:
         'Explore a range of OpenCTI Playbooks shared by the Filigran team',
       public: true,
@@ -22,21 +22,13 @@ export async function up(knex) {
   await knex('ServiceInstance').insert([
     {
       id: serviceInstanceId,
-      name: 'OpenCTI Playbook Library',
+      name: 'OpenCTI Playbooks Library',
       description:
         'Explore a range of OpenCTI Playbooks shared by the Filigran team.',
       service_definition_id: serviceDefinitionId,
       public: true,
       slug: 'opencti-playbooks',
-    },
-  ]);
-
-  await knex('Service_Link').insert([
-    {
-      id: uuidv4(),
-      service_instance_id: serviceInstanceId,
-      url: '',
-      name: 'OpenCTI Playbook Library',
+      tags: ['openCTI'],
     },
   ]);
 
@@ -65,15 +57,6 @@ export async function down(knex) {
     .where({ identifier: 'opencti_playbooks' })
     .select('id');
   for (const serviceDef of serviceDefs) {
-    await knex
-      .delete()
-      .from('Service_Link')
-      .whereIn(
-        'service_instance_id',
-        knex('ServiceInstance')
-          .select('id')
-          .where({ service_definition_id: serviceDef.id })
-      );
     await knex
       .delete()
       .from('Service_Capability')

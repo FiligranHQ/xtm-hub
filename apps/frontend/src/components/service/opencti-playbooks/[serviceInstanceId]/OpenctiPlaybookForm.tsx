@@ -1,20 +1,14 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
+import { ServiceFormJsonFileField } from '@/components/service/form/JsonFileField';
 import { ServiceFormSheetFooter } from '@/components/service/form/SheetFooter';
 import { useServiceFormFields } from '@/components/service/form/UseServiceFormFields';
-import FileInputWithPrevent from '@/components/ui/FileInputWithPrevent';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import {
   fileListCheck,
   optionalFileListCheck,
   transformToFileList,
 } from '@/utils/documents';
-import {
-  AutoForm,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@filigran/ui';
+import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
 import { useTranslations } from 'next-intl';
@@ -144,45 +138,20 @@ export const OpenctiPlaybookForm = ({
         uploader_organization_id,
         document: isCreation
           ? {
-              label: t('Service.OpenCTIPlaybook.Form.OpenCTIPlaybookFile'),
+              label: t('Service.Form.SelectJSONFile'),
               fieldType: 'file',
               inputProps: {
-                accept: 'application/json',
+                allowedTypes: 'application/json',
                 multiple: 'multiple',
               },
             }
           : {
               fieldType: ({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t(
-                      'Service.OpenCTIPlaybook.Form.ExistingOpenCTIPlaybookFile',
-                      {
-                        file_name: field.value?.[0].name ?? document?.file_name,
-                      }
-                    )}
-                  </FormLabel>
-                  <FormControl>
-                    <div onClick={() => setIsDirty(true)}>
-                      <FileInputWithPrevent
-                        field={field}
-                        texts={{
-                          selectFile: t(
-                            'Service.OpenCTIPlaybook.Form.UpdateJSONFile'
-                          ),
-                          dialogTitle: t(
-                            'Service.OpenCTIPlaybook.Form.UpdateJSONFile'
-                          ),
-                          dialogDescription: t(
-                            'Service.OpenCTIPlaybook.Form.DescriptionUpdateJSONFile'
-                          ),
-                        }}
-                        allowedTypes="application/json"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <ServiceFormJsonFileField
+                  field={field}
+                  setIsDirty={setIsDirty}
+                  document={document}
+                />
               ),
             },
         logo,

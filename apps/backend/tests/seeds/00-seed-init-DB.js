@@ -188,6 +188,13 @@ export async function seed(knex) {
         public: true,
         identifier: 'xtm_platform_roadmap',
       },
+      {
+        id: '3c8e4f4b-9c2a-4e3d-8b5f-7d9a0c1b2e3f',
+        name: 'opencti playbooks',
+        description: 'opencti playbook description',
+        public: true,
+        identifier: 'opencti_playbooks',
+      },
     ])
     .onConflict('id')
     .ignore();
@@ -244,6 +251,16 @@ export async function seed(knex) {
         service_definition_id: 'ecc973c4-575f-4618-b3a4-ebabb9b42a81',
         ordering: 15,
         slug: 'xtm-platform-roadmap',
+      },
+      {
+        id: '01345f38-8a2b-4f3a-a731-9bd0cbb5fa58',
+        name: 'opencti playbooks',
+        description: 'short description for opencti playbooks',
+        creation_status: 'READY',
+        public: false,
+        tags: '{others}',
+        service_definition_id: '3c8e4f4b-9c2a-4e3d-8b5f-7d9a0c1b2e3f',
+        ordering: 16,
       },
     ])
     .onConflict('id')

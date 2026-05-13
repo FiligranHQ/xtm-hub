@@ -905,12 +905,6 @@
         "Updated": "Le playbook {name} a été modifié avec succès",
         "Share": "Partager le playbook"
       },
-      "Form": {
-        "OpenCTIPlaybookFile": "Fichier de playbook",
-        "ExistingOpenCTIPlaybookFile": "Fichier de playbook existant : {file_name}",
-        "UpdateJSONFile": "Mettre à jour le fichier JSON",
-        "DescriptionUpdateJSONFile": "Vous êtes sur le point de télécharger un nouveau fichier JSON. Le fichier précédent sera supprimé. Voulez-vous continuer ?"
-      },
       "AddService": "Ajouter un nouveau playbook",
       "UpdateService": "Mettre à jour le playbook {name}",
       "DeleteService": "Supprimer le playbook {name}",
