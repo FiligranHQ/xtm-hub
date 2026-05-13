@@ -99,7 +99,6 @@ export const NewsFeedApp = {
     const tags = useCases.map((useCase) => useCase.name);
     const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
       document,
-      serviceInstanceId,
       serviceDefinitionIdentifier,
       type: newsFeedType,
       platformIdentifier,
