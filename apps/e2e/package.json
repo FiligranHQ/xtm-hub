@@ -11,7 +11,7 @@
   "dependencies": {
     "knex": "3.2.10",
     "pg": "8.20.0",
-    "react": "19.2.5",
+    "react": "19.2.6",
     "uuid": "14.0.0"
   },
   "devDependencies": {
