@@ -58,7 +58,7 @@
     "@graphql-tools/merge": "9.1.9",
     "@graphql-tools/schema": "10.0.33",
     "@graphql-tools/utils": "11.1.0",
-    "@vitest/eslint-plugin": "1.6.16",
+    "@vitest/eslint-plugin": "1.6.17",
     "apollo-errors": "1.9.0",
     "auth0": "5.9.0",
     "body-parser": "2.2.2",
