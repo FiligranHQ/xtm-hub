@@ -1,4 +1,4 @@
-import { defaultLocale, locales, publicLocales } from '@/i18n/config';
+import { defaultLocale, publicLocales } from '@/i18n/config';
 import { manageRequest } from '@/utils/middleware/graphql-request.util';
 import createMiddleware from 'next-intl/middleware';
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
@@ -21,15 +21,11 @@ export async function proxy(request: NextRequest, _: NextFetchEvent) {
 
   const { pathname } = request.nextUrl;
 
-  if (PUBLIC_LOCALE_PATH.test(pathname)) {
+  if (
+    PUBLIC_LOCALE_PATH.test(pathname) ||
+    pathname.startsWith('/cybersecurity-solutions')
+  ) {
     return intlMiddleware(request);
-  }
-
-  const firstSegment = pathname.split('/')[1];
-  if (firstSegment && (locales as readonly string[]).includes(firstSegment)) {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${defaultLocale}${pathname.slice(firstSegment.length + 1)}`;
-    return NextResponse.redirect(url, 307);
   }
 
   const requestHeaders = new Headers(request.headers);
@@ -43,7 +39,9 @@ export async function proxy(request: NextRequest, _: NextFetchEvent) {
 export const config = {
   matcher: [
     '/',
-    '/(en|fr|ja)/:path*',
+    '/(en|ja)/:path*',
+    '/cybersecurity-solutions',
+    '/cybersecurity-solutions/:path*',
     '/graphql-api',
     '/graphql-sse',
     '/auth/:path*',

@@ -25,10 +25,8 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/BadgeOverflowCounter';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import useDecodedParams from '@/hooks/use-decoded-params';
-import { defaultLocale } from '@/i18n/config';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { localizePublicHref } from '@/utils/path/localize-href';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -109,10 +107,7 @@ const ShareableResourceSlug = ({
             <div className="flex gap-s ml-auto">
               <ShareLinkButton
                 documentId={documentData.id}
-                url={`${settings!.base_url_front}${localizePublicHref(
-                  `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`,
-                  defaultLocale
-                )}`}
+                url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
               />
               {shouldShowOneClickDeployComponent ? (
                 <>

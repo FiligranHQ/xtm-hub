@@ -43,16 +43,6 @@ test.describe('Locale routing', () => {
     expect(await page.locator('html').getAttribute('lang')).toBe('ja');
   });
 
-  test('redirects /fr/* public URLs to /en/*', async ({ page }) => {
-    await page.goto('/fr/');
-    await expect(page).toHaveURL(/\/en\/?$/);
-
-    await page.goto('/fr/cybersecurity-solutions/opencti-free-trial');
-    await expect(page).toHaveURL(
-      /\/en\/cybersecurity-solutions\/opencti-free-trial\/?$/
-    );
-  });
-
   test('logout from french preference lands on /en/ public page', async ({
     page,
   }) => {

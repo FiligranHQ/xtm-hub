@@ -1,7 +1,6 @@
 'use client';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { IconActionContext } from '@/components/ui/IconActions';
-import { localizePublicHref } from '@/utils/path/localize-href';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {
   Callout,
@@ -31,10 +30,7 @@ export const PublicTryFiligranProductsBanner = () => {
     return (
       <Link
         onClick={() => setMenuOpen(false)}
-        href={localizePublicHref(
-          PlatformMetadataMapping[product].learnMorePublicUrl,
-          locale
-        )}>
+        href={`/${locale}${PlatformMetadataMapping[product].learnMorePublicUrl}`}>
         <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
           <Image
             width="25"

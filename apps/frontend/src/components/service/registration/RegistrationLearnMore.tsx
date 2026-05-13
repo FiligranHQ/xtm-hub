@@ -1,6 +1,5 @@
 'use server';
 import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
-import { defaultLocale } from '@/i18n/config';
 import { cn } from '@/lib/utils';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
@@ -39,10 +38,12 @@ const Section = ({
 
 interface RegistrationLearnMoreProps {
   serviceInstanceTag: ServiceInstanceTagEnum;
+  locale?: string;
 }
 
 export const RegistrationLearnMore = async ({
   serviceInstanceTag,
+  locale,
 }: RegistrationLearnMoreProps) => {
   const response = await serverFetchGraphQL<serviceLinksByTagsQuery>(
     ServiceLinksByTagsQueryGraphql,
@@ -135,7 +136,7 @@ export const RegistrationLearnMore = async ({
                 serviceInstance={seoServiceInstanceToInstanceCardData(
                   service,
                   t,
-                  defaultLocale
+                  locale
                 )}
               />
             ))}

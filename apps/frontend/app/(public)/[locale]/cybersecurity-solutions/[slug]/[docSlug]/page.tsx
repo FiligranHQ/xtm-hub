@@ -200,8 +200,9 @@ const Page = async ({
     document.id
   );
 
-  const localizedServicePath = `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
-  const pageUrl = `${baseUrl}${localizedServicePath}/${document.slug}`;
+  const servicePath = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
+  const localizedServicePath = `/${locale}${servicePath}`;
+  const pageUrl = `${baseUrl}${servicePath}/${document.slug}`;
 
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -230,7 +231,7 @@ const Page = async ({
       '@type': 'SoftwareApplication',
       name: serviceInstance.name,
       applicationCategory: 'SecurityApplication',
-      url: `${baseUrl}${localizedServicePath}`,
+      url: `${baseUrl}${servicePath}`,
     },
     keywords: document.use_cases?.map((useCase) => useCase.name).join(', '),
     mainEntityOfPage: {
