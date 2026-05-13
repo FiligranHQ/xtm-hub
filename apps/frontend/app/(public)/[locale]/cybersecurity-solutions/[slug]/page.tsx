@@ -198,8 +198,8 @@ const Page = async ({
       href: `/${locale}`,
     },
     {
-      label: serviceInstance.name,
-      original: true,
+      label: `Service.Cards.${serviceInstance.slug}.Name`,
+      fallback: serviceInstance.name,
     },
   ];
 

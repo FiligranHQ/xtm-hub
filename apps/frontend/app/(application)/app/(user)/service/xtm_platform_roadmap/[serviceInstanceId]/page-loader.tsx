@@ -39,8 +39,7 @@ const PageLoader = ({ serviceInstance }: PreloaderProps) => {
       href: `/${APP_PATH}`,
     },
     {
-      label: t('Epic.XTMRoadmap'),
-      original: true,
+      label: 'Epic.XTMRoadmap',
     },
   ];
 

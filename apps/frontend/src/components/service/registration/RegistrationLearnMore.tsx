@@ -38,12 +38,10 @@ const Section = ({
 
 interface RegistrationLearnMoreProps {
   serviceInstanceTag: ServiceInstanceTagEnum;
-  locale?: string;
 }
 
 export const RegistrationLearnMore = async ({
   serviceInstanceTag,
-  locale,
 }: RegistrationLearnMoreProps) => {
   const response = await serverFetchGraphQL<serviceLinksByTagsQuery>(
     ServiceLinksByTagsQueryGraphql,
@@ -135,8 +133,7 @@ export const RegistrationLearnMore = async ({
                 className="basis-full max-w-[50%]"
                 serviceInstance={seoServiceInstanceToInstanceCardData(
                   service,
-                  t,
-                  locale
+                  t
                 )}
               />
             ))}

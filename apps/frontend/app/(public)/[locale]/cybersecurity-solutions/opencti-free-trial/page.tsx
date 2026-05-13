@@ -43,7 +43,6 @@ const Page = async ({
         <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENCTI} />
         <RegistrationLearnMore
           serviceInstanceTag={ServiceInstanceTagEnum.OPENCTI}
-          locale={locale}
         />
       </RelayProvider>
     </>

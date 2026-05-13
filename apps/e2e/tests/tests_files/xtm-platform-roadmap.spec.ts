@@ -122,7 +122,7 @@ test.describe('XTM Platform Roadmap', () => {
       uploader_id: ADMIN_USER.ID,
     });
 
-    await page.goto('/en/cybersecurity-solutions/xtm-platform-roadmap');
+    await page.goto('/cybersecurity-solutions/xtm-platform-roadmap');
 
     await test.step("It should display the epics' page correctly", async () => {
       await expect(

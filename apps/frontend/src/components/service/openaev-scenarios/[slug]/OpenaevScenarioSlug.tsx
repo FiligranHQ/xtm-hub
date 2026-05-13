@@ -7,13 +7,13 @@ import {
   DocumentsItemQuery,
 } from '@/components/service/document/document.graphql';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
+import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
 import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
-import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
 
 interface OpenAEVScenarioSlugProps {
   queryRef: PreloadedQuery<documentQuery>;
@@ -37,13 +37,13 @@ const OpenaevScenarioSlug = ({
       href: `/${APP_PATH}`,
     },
     {
-      label: serviceInstance.name,
+      label: `Service.Cards.${serviceInstance.slug}.Name`,
       href: `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`,
-      original: true,
+      fallback: serviceInstance.name,
     },
     {
-      label: documentData!.name!,
-      original: true,
+      label: `Service.Documents.${documentData!.slug}.Name`,
+      fallback: documentData!.name!,
     },
   ];
 

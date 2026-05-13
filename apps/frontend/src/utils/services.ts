@@ -180,8 +180,7 @@ export const registeredPlatformToServiceInstanceCardData = (
 
 const computeUrl = (
   instance: serviceList_fragment$data | seoServiceInstanceFragment$data,
-  seo?: boolean,
-  locale?: string
+  seo?: boolean
 ) => {
   const instanceLink = instance.links?.[0]?.url;
   const serviceDefinitionIdentifier = instance.service_definition!
@@ -189,8 +188,7 @@ const computeUrl = (
   if (isExternalService(serviceDefinitionIdentifier) && instanceLink)
     return instanceLink as string;
   if (seo) {
-    const prefix = locale ? `/${locale}` : '';
-    return `${prefix}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${instance.slug}`;
+    return `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${instance.slug}`;
   }
   return `/${APP_PATH}/service/${serviceDefinitionIdentifier}/${instance.id}`;
 };
@@ -248,8 +246,7 @@ export const publicServiceInstanceToInstanceCardData = (
 
 export const seoServiceInstanceToInstanceCardData = (
   instance: seoServiceInstanceFragment$data,
-  t: ReturnType<typeof useTranslations>,
-  locale?: string
+  t: ReturnType<typeof useTranslations>
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
@@ -267,7 +264,7 @@ export const seoServiceInstanceToInstanceCardData = (
       instance.id,
       instance.logo_document_id
     ),
-    url: computeUrl(instance, true, locale),
+    url: computeUrl(instance, true),
     ordering: 0,
   };
 };

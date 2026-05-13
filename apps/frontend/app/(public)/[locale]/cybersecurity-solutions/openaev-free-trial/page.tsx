@@ -44,7 +44,6 @@ const Page = async ({
         <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENAEV} />
         <RegistrationLearnMore
           serviceInstanceTag={ServiceInstanceTagEnum.OPENAEV}
-          locale={locale}
         />
       </RelayProvider>
     </>
