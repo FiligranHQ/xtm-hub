@@ -48,10 +48,7 @@ import {
 } from '../organization-management/user/user-domain/user.domain';
 import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
-import {
-  loadServiceDefinitionByServiceInstance,
-  updateServiceInstance,
-} from '../service/instance/service-instance.domain';
+import { updateServiceInstance } from '../service/instance/service-instance.domain';
 import { loadSubscriptionBy } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../telemetry/telemetry.helper';
@@ -61,7 +58,6 @@ import {
   registrationDomain,
 } from './registration.domain';
 import { isTenantIdRequired } from './registration.helper';
-import { platformIdentifierMappedByServiceDefinitionIdentifier } from './registration.mapping';
 import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 const buildPlatformConfiguration = (
@@ -86,37 +82,35 @@ export const registrationApp = {
     tenantId?: string | null
   ): Promise<Organization | null> => {
     const { user } = requestContext.require();
-    const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId, {
-        tenantId,
-      });
-    if (!serviceConfiguration) {
+    const resolvedConfiguration =
+      await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        platformId,
+        { tenantId }
+      );
+    if (!resolvedConfiguration) {
       return null;
     }
 
     if (!tenantId) {
-      const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-        serviceConfiguration.service_instance_id
-      );
-      if (!serviceDefinition) {
+      if (!resolvedConfiguration.serviceDefinition) {
         throw new Error(ErrorCode.ServiceDefinitionNotFound);
       }
-      const platformIdentifier = serviceDefinition.identifier
-        ? platformIdentifierMappedByServiceDefinitionIdentifier[
-            serviceDefinition.identifier as ServiceDefinitionIdentifier
-          ]
-        : undefined;
-      if (!platformIdentifier) {
+      if (!resolvedConfiguration.platformIdentifier) {
         throw new Error(ErrorCode.InvalidPlatformIdentifier);
       }
-      const config = serviceConfiguration.config as PlatformConfiguration;
-      if (isTenantIdRequired(platformIdentifier, config.platform_version)) {
+      if (
+        isTenantIdRequired(
+          resolvedConfiguration.platformIdentifier,
+          resolvedConfiguration.config.platform_version
+        )
+      ) {
         throw new Error(BadRequestErrorCode.TenantIdMandatory);
       }
     }
 
     const subscription = await loadSubscriptionBy({
-      service_instance_id: serviceConfiguration.service_instance_id,
+      service_instance_id:
+        resolvedConfiguration.serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
@@ -294,42 +288,34 @@ export const registrationApp = {
     identifier,
     tenantId,
   }: UnregisterPlatformInput) => {
-    const activeServiceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId, {
-        tenantId,
-        status: ServiceConfigurationStatus.Active,
-      });
-    if (!activeServiceConfiguration) {
+    const resolvedConfiguration =
+      await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        platformId,
+        {
+          tenantId,
+          status: ServiceConfigurationStatus.Active,
+        }
+      );
+    if (!resolvedConfiguration) {
       return;
     }
 
-    const configTenantId = (
-      activeServiceConfiguration.config as PlatformConfiguration
-    )?.tenant_id;
-    if (configTenantId && !tenantId) {
+    if (resolvedConfiguration.config.tenant_id && !tenantId) {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
     const subscription = await loadSubscriptionBy({
-      service_instance_id: activeServiceConfiguration.service_instance_id,
+      service_instance_id:
+        resolvedConfiguration.serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      activeServiceConfiguration.service_instance_id
-    );
-
-    if (!serviceDefinition) {
+    if (!resolvedConfiguration.serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
-
-    const platformIdentifier =
-      platformIdentifierMappedByServiceDefinitionIdentifier[
-        serviceDefinition.identifier
-      ];
-    if (identifier !== platformIdentifier) {
+    if (identifier !== resolvedConfiguration.platformIdentifier) {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
     const { user } = requestContext.require();
@@ -339,7 +325,7 @@ export const registrationApp = {
     });
 
     await ServiceConfigurationDomain.updateConfiguration(
-      activeServiceConfiguration.service_instance_id,
+      resolvedConfiguration.serviceConfiguration.service_instance_id,
       { status: ServiceConfigurationStatus.Inactive }
     );
 
@@ -358,7 +344,7 @@ export const registrationApp = {
           template: 'platform_unregistered',
           params: {
             adminName: formatName(user.first_name ?? ''),
-            platformIdentifier,
+            platformIdentifier: identifier,
           },
         })
       )
@@ -405,26 +391,27 @@ export const registrationApp = {
     organizationId: OrganizationId | null;
     isInOrganization: boolean;
   }> => {
-    const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(platformId, {
-        tenantId,
-        status: ServiceConfigurationStatus.Active,
-      });
-    if (!serviceConfiguration) {
+    const resolvedConfiguration =
+      await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        platformId,
+        {
+          tenantId,
+          status: ServiceConfigurationStatus.Active,
+        }
+      );
+    if (!resolvedConfiguration) {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
     const subscription = await loadSubscriptionBy({
-      service_instance_id: serviceConfiguration.service_instance_id,
+      service_instance_id:
+        resolvedConfiguration.serviceConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
-    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      subscription.service_instance_id
-    );
-    if (!serviceDefinition) {
+    if (!resolvedConfiguration.serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
     const { user } = requestContext.require();
