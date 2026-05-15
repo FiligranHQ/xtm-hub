@@ -57,5 +57,9 @@
   },
   "session_store": {
     "type": "SESSION_STORE_TYPE"
+  },
+  "news_feed": {
+    "cleanup_interval_value": "NEWS_FEED_CLEANUP_INTERVAL_VALUE",
+    "cleanup_interval_unit": "NEWS_FEED_CLEANUP_INTERVAL_UNIT"
   }
 }

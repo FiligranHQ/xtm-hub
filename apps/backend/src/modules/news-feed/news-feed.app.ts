@@ -14,6 +14,9 @@ import { loadServiceDefinitionByServiceInstance } from '../service/instance/serv
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
+import config from 'config';
+import { logApp } from '../../utils/app-logger.util';
+import { IntervalUnit, subtractInterval } from './news-feed.utils';
 
 export const NewsFeedApp = {
   consumeProvisionedNewsFeedItems: async ({
@@ -123,5 +126,22 @@ export const NewsFeedApp = {
       .map((platform) => platform.config.platform_id);
 
     await NewsFeedDomain.provisionNewsFeedItem(newsFeedItem.id, platformIds);
+  },
+
+  cleanExpiredNewsFeedItems: async (): Promise<void> => {
+    const value = config.get<number>('news_feed.cleanup_interval_value');
+    const unit = config.get<IntervalUnit>('news_feed.cleanup_interval_unit');
+
+    const cutoffDate = subtractInterval(new Date(), value, unit);
+
+    const deletedCount =
+      await NewsFeedDomain.deleteNewsFeedItemsOlderThan(cutoffDate);
+
+    logApp.info('Cleaned expired news feed items', {
+      deletedCount,
+      cutoffDate: cutoffDate.toISOString(),
+      intervalValue: value,
+      intervalUnit: unit,
+    });
   },
 };

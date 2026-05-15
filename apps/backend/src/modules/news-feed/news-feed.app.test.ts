@@ -398,4 +398,47 @@ describe('newsFeedApp', () => {
       });
     });
   });
+
+  describe('cleanExpiredNewsFeedItems', () => {
+    const monthsAgo = (months: number): Date => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - months);
+      return date;
+    };
+
+    afterEach(async () => {
+      await TestHelper.newsFeed.deleteItem();
+    });
+
+    it('should delete items older than configured interval and keep recent ones', async () => {
+      // Given
+      const oldItem = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'old item',
+        creation_date: monthsAgo(7),
+        tags: [],
+      });
+      const recentItem = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'recent item',
+        creation_date: monthsAgo(1),
+        tags: [],
+      });
+
+      // When
+      await NewsFeedApp.cleanExpiredNewsFeedItems();
+
+      // Then
+      const remaining = await TestHelper.newsFeed.loadItems();
+      const remainingIds = remaining.map((i) => i.id);
+      expect(remainingIds).not.toContain(oldItem.id);
+      expect(remainingIds).toContain(recentItem.id);
+    });
+
+    it('should not throw when no items exist', async () => {
+      await expect(NewsFeedApp.cleanExpiredNewsFeedItems()).resolves.not.toThrow();
+    });
+  });
 });
