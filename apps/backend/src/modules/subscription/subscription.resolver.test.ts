@@ -313,7 +313,7 @@ describe('subscription resolver - unit tests', () => {
       // When
       const result = await subscriptionResolver.Mutation!.deleteSubscription!(
         {},
-        { subscription_id: subscriptionId },
+        { subscription_ids: [subscriptionId] },
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
       );
@@ -368,7 +368,7 @@ describe('subscription resolver - unit tests', () => {
 
   describe('mutation error mapping', () => {
     it.each`
-      mutationName            | runMutation                                                                                                                                                        | setupAppMock                                                                                  | expectedCode
+      mutationName            | runMutation                                                                                                                                                           | setupAppMock                                                                                  | expectedCode
       ${'createSubscription'} | ${() =>
   subscriptionResolver.Mutation!.createSubscription!(
     {},
@@ -384,7 +384,7 @@ describe('subscription resolver - unit tests', () => {
     contextSimpleUserFiligran2,
     GRAPHQL_RESOLVE_INFO
   )} | ${() => vi.spyOn(subscriptionApp, 'subscribeOrganizationsToService').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
-      ${'deleteSubscription'} | ${() => subscriptionResolver.Mutation!.deleteSubscription!({}, { subscription_id: uuidv4() as SubscriptionId }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscription').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
+      ${'deleteSubscription'} | ${() => subscriptionResolver.Mutation!.deleteSubscription!({}, { subscription_ids: [uuidv4() as SubscriptionId] }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscription').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
       ${'updateSubscription'} | ${() =>
   subscriptionResolver.Mutation!.updateSubscription!(
     {},
