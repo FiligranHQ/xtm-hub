@@ -1,9 +1,12 @@
+scalar NewsFeedItemId
+
 enum NewsFeedItemType {
   RESOURCE_CUSTOM_DASHBOARD
 }
 
 enum NewsFeedItemMetadataKey {
   url_path
+  document_id
 }
 
 type NewsFeedItemMetadata {
@@ -12,6 +15,8 @@ type NewsFeedItemMetadata {
 }
 
 type ProvisionedNewsFeedItem {
+  id: ID!
+  is_deleted: Boolean!
   title: String!
   type: NewsFeedItemType!
   tags: [String!]!
@@ -24,7 +29,32 @@ type ConsumeProvisionedNewsFeedItemsResponse {
   available_news_feed_types: [NewsFeedItemType!]!
 }
 
+type NewsFeedItem {
+  id: NewsFeedItemId!
+  title: String!
+  creation_date: Date!
+  tags: [String!]!
+  is_deleted: Boolean!
+}
+
+type NewsFeedItemEdge {
+  cursor: String!
+  node: NewsFeedItem!
+}
+
+type NewsFeedItemConnection {
+  totalCount: Int!
+  edges: [NewsFeedItemEdge!]!
+  pageInfo: PageInfo!
+}
+
+extend type Query {
+  newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
+    @auth(portalCapa: BYPASS)
+}
+
 type Mutation {
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
     @platform_token
+  deleteNewsFeedItem(id: NewsFeedItemId!): Boolean! @auth(portalCapa: BYPASS)
 }

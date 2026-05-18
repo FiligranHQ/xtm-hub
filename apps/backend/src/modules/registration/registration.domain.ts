@@ -193,6 +193,39 @@ export const registrationDomain = {
       ]) as unknown as Promise<DomainRegisteredPlatform[]>;
   },
 
+  loadAllActiveRegisteredPlatformsByPlatformIdentifier: async (
+    platformIdentifier: PlatformIdentifier
+  ): Promise<DomainRegisteredPlatform[]> => {
+    const serviceDefinitionIdentifier =
+      serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
+
+    return db<ServiceInstance>('ServiceInstance')
+      .leftJoin(
+        'Service_Configuration',
+        'Service_Configuration.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .leftJoin(
+        'ServiceDefinition',
+        'ServiceDefinition.id',
+        '=',
+        'ServiceInstance.service_definition_id'
+      )
+      .where('ServiceInstance.creation_status', '!=', 'DISABLED')
+      .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
+      .where(
+        'Service_Configuration.status',
+        '=',
+        ServiceConfigurationStatus.Active
+      )
+      .select([
+        'Service_Configuration.config',
+        'ServiceDefinition.identifier',
+        'ServiceInstance.*',
+      ]) as unknown as Promise<DomainRegisteredPlatform[]>;
+  },
+
   loadRegisteredPlatforms: async (
     query: {
       platformIdentifier?: PlatformIdentifier;

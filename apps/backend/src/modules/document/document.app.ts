@@ -350,21 +350,33 @@ export const DocumentApp = {
       return doc;
     });
 
-    if (
-      documentBeforeUpdate.active === false &&
-      updatedDocument.active === true &&
-      NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)
-    ) {
-      NewsFeedApp.createResourceNewsFeedItem({
-        document: updatedDocument,
-        serviceInstanceId,
-        serviceDefinitionIdentifier: serviceDefinition.identifier,
-      }).catch((error) =>
-        logApp.error('Unable to create news feed item on document update', {
-          error,
-          documentId: updatedDocument.id,
-        })
-      );
+    if (NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)) {
+      if (
+        documentBeforeUpdate.active === false &&
+        updatedDocument.active === true
+      ) {
+        NewsFeedApp.createResourceNewsFeedItem({
+          document: updatedDocument,
+          serviceInstanceId,
+          serviceDefinitionIdentifier: serviceDefinition.identifier,
+        }).catch((error) =>
+          logApp.error('Unable to create news feed item on document update', {
+            error,
+            documentId: updatedDocument.id,
+          })
+        );
+      } else if (updatedDocument.active === true) {
+        NewsFeedApp.updateResourceNewsFeedItem({
+          document: updatedDocument,
+          serviceInstanceId,
+          serviceDefinitionIdentifier: serviceDefinition.identifier,
+        }).catch((error) =>
+          logApp.error('Unable to update news feed item on document update', {
+            error,
+            documentId: updatedDocument.id,
+          })
+        );
+      }
     }
 
     return updatedDocument;

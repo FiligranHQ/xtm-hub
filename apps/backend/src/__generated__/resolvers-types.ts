@@ -1,6 +1,7 @@
 import type { CompetitorId } from '../model/kanel/public/Competitor.js';
 import type { DeploymentRequestId } from '../model/kanel/public/DeploymentRequest.js';
 import type { DocumentId } from '../model/kanel/public/Document.js';
+import type { NewsFeedItemId } from '../model/kanel/public/NewsFeedItem.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
 import type { ServiceCapabilityId } from '../model/kanel/public/ServiceCapability.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
@@ -31,6 +32,7 @@ export type Scalars = {
   DeploymentRequestId: { input: DeploymentRequestId; output: DeploymentRequestId; }
   DocumentId: { input: DocumentId; output: DocumentId; }
   JSON: { input: any; output: any; }
+  NewsFeedItemId: { input: NewsFeedItemId; output: NewsFeedItemId; }
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
   ServiceCapabilityId: { input: ServiceCapabilityId; output: ServiceCapabilityId; }
   ServiceGroupId: { input: any; output: any; }
@@ -865,6 +867,7 @@ export type Mutation = {
   deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic: Epic;
+  deleteNewsFeedItem: Scalars['Boolean']['output'];
   deleteOrganization?: Maybe<Organization>;
   deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
@@ -1035,6 +1038,11 @@ export type MutationDeleteDocumentArgs = {
 
 export type MutationDeleteEpicArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteNewsFeedItemArgs = {
+  id: Scalars['NewsFeedItemId']['input'];
 };
 
 
@@ -1212,6 +1220,28 @@ export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
 };
 
+export type NewsFeedItem = {
+  __typename?: 'NewsFeedItem';
+  creation_date: Scalars['Date']['output'];
+  id: Scalars['NewsFeedItemId']['output'];
+  is_deleted: Scalars['Boolean']['output'];
+  tags: Array<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type NewsFeedItemConnection = {
+  __typename?: 'NewsFeedItemConnection';
+  edges: Array<NewsFeedItemEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type NewsFeedItemEdge = {
+  __typename?: 'NewsFeedItemEdge';
+  cursor: Scalars['String']['output'];
+  node: NewsFeedItem;
+};
+
 export type NewsFeedItemMetadata = {
   __typename?: 'NewsFeedItemMetadata';
   key: NewsFeedItemMetadataKey;
@@ -1219,6 +1249,7 @@ export type NewsFeedItemMetadata = {
 };
 
 export enum NewsFeedItemMetadataKey {
+  DocumentId = 'document_id',
   UrlPath = 'url_path'
 }
 
@@ -1460,6 +1491,8 @@ export enum PortalCapability {
 export type ProvisionedNewsFeedItem = {
   __typename?: 'ProvisionedNewsFeedItem';
   creation_date: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  is_deleted: Scalars['Boolean']['output'];
   metadata: Array<NewsFeedItemMetadata>;
   tags: Array<Scalars['String']['output']>;
   title: Scalars['String']['output'];
@@ -1479,6 +1512,7 @@ export type Query = {
   epics?: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me?: Maybe<User>;
+  newsFeedItems: NewsFeedItemConnection;
   node?: Maybe<Node>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
@@ -1582,6 +1616,12 @@ export type QueryEpicsArgs = {
 
 export type QueryIsPlatformRegisteredArgs = {
   input: IsPlatformRegisteredInput;
+};
+
+
+export type QueryNewsFeedItemsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
 };
 
 
@@ -2657,6 +2697,10 @@ export type ResolversTypes = ResolversObject<{
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;
+  NewsFeedItem: ResolverTypeWrapper<NewsFeedItem>;
+  NewsFeedItemConnection: ResolverTypeWrapper<NewsFeedItemConnection>;
+  NewsFeedItemEdge: ResolverTypeWrapper<NewsFeedItemEdge>;
+  NewsFeedItemId: ResolverTypeWrapper<Scalars['NewsFeedItemId']['output']>;
   NewsFeedItemMetadata: ResolverTypeWrapper<NewsFeedItemMetadata>;
   NewsFeedItemMetadataKey: NewsFeedItemMetadataKey;
   NewsFeedItemType: NewsFeedItemType;
@@ -2847,6 +2891,10 @@ export type ResolversParentTypes = ResolversObject<{
   MeUserSubscription: MeUserSubscription;
   MergeEvent: MergeEvent;
   Mutation: {};
+  NewsFeedItem: NewsFeedItem;
+  NewsFeedItemConnection: NewsFeedItemConnection;
+  NewsFeedItemEdge: NewsFeedItemEdge;
+  NewsFeedItemId: Scalars['NewsFeedItemId']['output'];
   NewsFeedItemMetadata: NewsFeedItemMetadata;
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   OneClickDeployInput: OneClickDeployInput;
@@ -3396,6 +3444,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
+  deleteNewsFeedItem?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteNewsFeedItemArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteSubscriptions?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionsArgs, 'subscription_ids'>>;
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
@@ -3432,6 +3481,32 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationUpdateSubscriptionArgs, 'input' | 'subscription_id'>>;
   uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
 }>;
+
+export type NewsFeedItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['NewsFeedItem'] = ResolversParentTypes['NewsFeedItem']> = ResolversObject<{
+  creation_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['NewsFeedItemId'], ParentType, ContextType>;
+  is_deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NewsFeedItemConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['NewsFeedItemConnection'] = ResolversParentTypes['NewsFeedItemConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['NewsFeedItemEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NewsFeedItemEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['NewsFeedItemEdge'] = ResolversParentTypes['NewsFeedItemEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['NewsFeedItem'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export interface NewsFeedItemIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NewsFeedItemId'], any> {
+  name: 'NewsFeedItemId';
+}
 
 export type NewsFeedItemMetadataResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['NewsFeedItemMetadata'] = ResolversParentTypes['NewsFeedItemMetadata']> = ResolversObject<{
   key?: Resolver<ResolversTypes['NewsFeedItemMetadataKey'], ParentType, ContextType>;
@@ -3595,6 +3670,8 @@ export type PlatformProviderResolvers<ContextType = PortalContext, ParentType ex
 
 export type ProvisionedNewsFeedItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ProvisionedNewsFeedItem'] = ResolversParentTypes['ProvisionedNewsFeedItem']> = ResolversObject<{
   creation_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  is_deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   metadata?: Resolver<Array<ResolversTypes['NewsFeedItemMetadata']>, ParentType, ContextType>;
   tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3614,6 +3691,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  newsFeedItems?: Resolver<ResolversTypes['NewsFeedItemConnection'], ParentType, ContextType, RequireFields<QueryNewsFeedItemsArgs, 'first'>>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
   organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<QueryOrganizationArgs, 'id'>>;
@@ -4177,6 +4255,10 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   MeUserSubscription?: MeUserSubscriptionResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  NewsFeedItem?: NewsFeedItemResolvers<ContextType>;
+  NewsFeedItemConnection?: NewsFeedItemConnectionResolvers<ContextType>;
+  NewsFeedItemEdge?: NewsFeedItemEdgeResolvers<ContextType>;
+  NewsFeedItemId?: GraphQLScalarType;
   NewsFeedItemMetadata?: NewsFeedItemMetadataResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;

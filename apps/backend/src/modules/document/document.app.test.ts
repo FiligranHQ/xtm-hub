@@ -749,6 +749,7 @@ describe('documentApp', () => {
       const createResourceNewsFeedItemSpy = vi
         .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
         .mockResolvedValue();
+      vi.spyOn(NewsFeedApp, 'updateResourceNewsFeedItem').mockResolvedValue();
 
       const activeDoc = await DocumentApp.createDocument({
         input: { ...documentData, active: true, slug: 'already-active' },
@@ -776,6 +777,98 @@ describe('documentApp', () => {
       // Then
       expect(createResourceNewsFeedItemSpy).not.toHaveBeenCalled();
     });
+
+    it('should call NewsFeedApp.updateResourceNewsFeedItem when document was already active and remains active', async () => {
+      // Given
+      vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
+      vi.spyOn(NewsFeedApp, 'createResourceNewsFeedItem').mockResolvedValue();
+      const updateResourceNewsFeedItemSpy = vi
+        .spyOn(NewsFeedApp, 'updateResourceNewsFeedItem')
+        .mockResolvedValue();
+
+      const activeDoc = await DocumentApp.createDocument({
+        input: { ...documentData, active: true, slug: 'active-to-active' },
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
+        ],
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        sourceDocument: mockUpload,
+      });
+
+      // When
+      const result = await DocumentApp.updateDocument({
+        parentDocumentId: activeDoc!.id,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '2.0.0' },
+        ],
+        input: { active: true, name: 'Updated Name' },
+        existingImageIds: [],
+      });
+
+      // Then
+      expect(updateResourceNewsFeedItemSpy).toHaveBeenCalledOnce();
+      expect(updateResourceNewsFeedItemSpy).toHaveBeenCalledWith({
+        document: expect.objectContaining({ id: result.id }),
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        serviceDefinitionIdentifier:
+          ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+      });
+    });
+
+    it.each`
+      description                                       | initialActive | updatedActive | newsFeedConfigured
+      ${'document transitions from inactive to active'} | ${false}      | ${true}       | ${true}
+      ${'document becomes inactive'}                    | ${true}       | ${false}      | ${true}
+      ${'news feed is not configured'}                  | ${true}       | ${true}       | ${false}
+    `(
+      'should NOT call NewsFeedApp.updateResourceNewsFeedItem when $description',
+      async ({
+        initialActive,
+        updatedActive,
+        newsFeedConfigured,
+      }: {
+        initialActive: boolean;
+        updatedActive: boolean;
+        newsFeedConfigured: boolean;
+      }) => {
+        // Given
+        vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(
+          newsFeedConfigured
+        );
+        vi.spyOn(NewsFeedApp, 'createResourceNewsFeedItem').mockResolvedValue();
+        const updateResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'updateResourceNewsFeedItem')
+          .mockResolvedValue();
+
+        const doc = await DocumentApp.createDocument({
+          input: {
+            ...documentData,
+            active: initialActive,
+            slug: `no-update-news-feed-${initialActive}-${updatedActive}-${newsFeedConfigured}`,
+          },
+          metadata: [
+            { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
+          ],
+          serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+          sourceDocument: mockUpload,
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: doc!.id,
+          serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+          metadata: [
+            { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
+          ],
+          input: { active: updatedActive },
+          existingImageIds: [],
+        });
+
+        // Then
+        expect(updateResourceNewsFeedItemSpy).not.toHaveBeenCalled();
+      }
+    );
   });
 
   describe('loadDocument', () => {
