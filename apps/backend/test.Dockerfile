@@ -25,6 +25,9 @@ RUN corepack enable
 # Copy root node_modules for proper dependencies resolution
 COPY --from=deps /app/node_modules ./node_modules
 
+# Copy workspace-level node_modules (vitest and other dev deps land here with node-modules linker)
+COPY --from=deps /app/apps/backend/node_modules ./apps/backend/node_modules
+
 # Run tests from the backend directory
 WORKDIR /app/apps/backend
 CMD ["yarn", "test:ci"]

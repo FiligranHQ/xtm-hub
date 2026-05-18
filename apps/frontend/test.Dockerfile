@@ -29,6 +29,9 @@ ENV NEXT_PUBLIC_APP_VERSION=${APP_VERSION}
 # Copy root node_modules for proper dependencies resolution
 COPY --from=deps /app/node_modules ./node_modules
 
+# Copy workspace-level node_modules (vitest and other dev deps land here with node-modules linker)
+COPY --from=deps /app/apps/frontend/node_modules ./apps/frontend/node_modules
+
 WORKDIR /app/apps/frontend
 RUN corepack enable && \
     echo "NEXT_PUBLIC_APP_VERSION=${APP_VERSION}" > .env.local
