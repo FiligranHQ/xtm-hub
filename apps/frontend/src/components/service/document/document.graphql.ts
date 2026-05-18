@@ -184,6 +184,10 @@ export const documentItem = graphql`
     ... on OpenAEVScenario {
       product_version
     }
+
+    ... on OpenCTIPlaybook {
+      product_version
+    }
   }
 `;
 
