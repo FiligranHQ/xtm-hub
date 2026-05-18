@@ -1,8 +1,15 @@
 {
-  "extends": "./tsconfig.json", // Extend from your main config
-  "include": ["**/*.test.ts"], // Only include test files
+  "extends": "./tsconfig.json",
+  "include": [
+    "setup-vitest.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ],
   "compilerOptions": {
-    "noEmit": true, // Do not emit any files
-    "skipLibCheck": true // Skip type checking of declaration files
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["vitest/globals", "node"]
   }
 }
