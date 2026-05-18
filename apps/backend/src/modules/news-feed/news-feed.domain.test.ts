@@ -347,4 +347,101 @@ describe('newsFeedDomain', () => {
       );
     });
   });
+
+  describe('deleteNewsFeedItemsOlderThan', () => {
+    const REFERENCE_NOW = new Date();
+
+    const monthsAgo = (months: number): Date => {
+      const date = new Date(REFERENCE_NOW);
+      date.setMonth(date.getMonth() - months);
+      return date;
+    };
+
+    const createItemWithAge = (ageInMonths: number) =>
+      TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: `item-${ageInMonths}-months-old`,
+        creation_date: monthsAgo(ageInMonths),
+        tags: [],
+      });
+
+    it.each`
+      ageInMonths | cutoffMonths | shouldBeDeleted | description
+      ${7}        | ${6}         | ${true}         | ${'older than cutoff is deleted'}
+      ${6}        | ${6}         | ${false}        | ${'exactly at cutoff boundary is kept'}
+      ${5}        | ${6}         | ${false}        | ${'within cutoff is kept'}
+      ${1}        | ${6}         | ${false}        | ${'recent is kept'}
+      ${24}       | ${6}         | ${true}         | ${'much older is deleted'}
+      ${3}        | ${1}         | ${true}         | ${'older than custom 1-month cutoff is deleted'}
+    `(
+      'should handle item aged $ageInMonths months with $cutoffMonths-month cutoff ($description)',
+      async ({ ageInMonths, cutoffMonths, shouldBeDeleted }) => {
+        // Given
+        const item = await createItemWithAge(ageInMonths);
+
+        // When
+        await NewsFeedDomain.deleteNewsFeedItemsOlderThan(
+          monthsAgo(cutoffMonths)
+        );
+
+        // Then
+        const remaining = await TestHelper.newsFeed.loadFirstItem({
+          id: item.id,
+        });
+        expect(remaining === undefined).toBe(shouldBeDeleted);
+      }
+    );
+
+    it('should return the count of deleted items', async () => {
+      // Given
+      await createItemWithAge(12);
+      await createItemWithAge(9);
+      await createItemWithAge(7);
+      await createItemWithAge(1);
+      await createItemWithAge(2);
+
+      // When
+      const deletedCount = await NewsFeedDomain.deleteNewsFeedItemsOlderThan(
+        monthsAgo(6)
+      );
+
+      // Then
+      expect(deletedCount).toBe(3);
+    });
+
+    it('should return 0 when no items are older than cutoff', async () => {
+      // Given
+      await createItemWithAge(1);
+
+      // When
+      const deletedCount = await NewsFeedDomain.deleteNewsFeedItemsOlderThan(
+        monthsAgo(6)
+      );
+
+      // Then
+      expect(deletedCount).toBe(0);
+    });
+
+    it('should cascade-delete provisioned items linked to deleted news feed items', async () => {
+      // Given
+      const oldItem = await createItemWithAge(12);
+      const platformId = uuidv4();
+      await NewsFeedDomain.provisionNewsFeedItem(oldItem.id, [platformId]);
+
+      const remainingBefore = await TestHelper.newsFeed.loadProvisioned({
+        news_feed_item_id: oldItem.id,
+      });
+      expect(remainingBefore).toHaveLength(1);
+
+      // When
+      await NewsFeedDomain.deleteNewsFeedItemsOlderThan(monthsAgo(6));
+
+      // Then
+      const remainingAfter = await TestHelper.newsFeed.loadProvisioned({
+        news_feed_item_id: oldItem.id,
+      });
+      expect(remainingAfter).toHaveLength(0);
+    });
+  });
 });

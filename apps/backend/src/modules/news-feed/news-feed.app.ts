@@ -14,6 +14,14 @@ import { loadServiceDefinitionByServiceInstance } from '../service/instance/serv
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
+import config from 'config';
+import { logApp } from '../../utils/app-logger.util';
+import {
+  INTERVAL_UNITS,
+  IntervalUnit,
+  subtractInterval,
+} from '../common/interval.helper';
+
 
 export const NewsFeedApp = {
   consumeProvisionedNewsFeedItems: async ({
@@ -123,5 +131,36 @@ export const NewsFeedApp = {
       .map((platform) => platform.config.platform_id);
 
     await NewsFeedDomain.provisionNewsFeedItem(newsFeedItem.id, platformIds);
+  },
+
+  cleanExpiredNewsFeedItems: async (): Promise<void> => {
+    const rawValue = config.get('news_feed.cleanup_interval_value');
+    const rawUnit = config.get('news_feed.cleanup_interval_unit');
+
+    if (typeof rawValue !== 'number' || !Number.isFinite(rawValue) || rawValue <= 0) {
+      throw new Error(
+        `Invalid config "news_feed.cleanup_interval_value": expected positive number, got ${typeof rawValue} (${rawValue})`
+      );
+    }
+    if (
+      typeof rawUnit !== 'string' ||
+      !INTERVAL_UNITS.includes(rawUnit as IntervalUnit)
+    ) {
+      throw new Error(
+        `Invalid config "news_feed.cleanup_interval_unit": expected one of ${INTERVAL_UNITS.join(', ')}, got ${rawUnit}`
+      );
+    }
+
+    const cutoffDate = subtractInterval(new Date(), rawValue, rawUnit as IntervalUnit);
+
+    const deletedCount =
+      await NewsFeedDomain.deleteNewsFeedItemsOlderThan(cutoffDate);
+
+    logApp.info('Cleaned expired news feed items', {
+      deletedCount,
+      cutoffDate: cutoffDate.toISOString(),
+      intervalValue: rawValue,
+      intervalUnit: rawUnit,
+    });
   },
 };
