@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { subtractInterval } from './news-feed.utils';
+import { subtractInterval } from './interval.helper';
 
 describe('subtractInterval', () => {
   const reference = new Date('2026-05-13T12:00:00.000Z');

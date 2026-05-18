@@ -16,7 +16,7 @@ import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
 import config from 'config';
 import { logApp } from '../../utils/app-logger.util';
-import { IntervalUnit, subtractInterval } from './news-feed.utils';
+import { IntervalUnit, subtractInterval } from '../common/interval.helper';
 
 const SUPPORTED_UNITS: readonly IntervalUnit[] = ['seconds', 'minutes', 'hours', 'days'] as const;
 
