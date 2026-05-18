@@ -1,15 +1,12 @@
-export type IntervalUnit = 'seconds' | 'minutes' | 'hours' | 'days' | 'months';
+export type IntervalUnit = 'seconds' | 'minutes' | 'hours' | 'days';
 
 export const subtractInterval = (
   date: Date,
   value: number,
-  unit: IntervalUnit,
+  unit: IntervalUnit
 ): Date => {
   const result = new Date(date);
   switch (unit) {
-    case 'months':
-      result.setMonth(result.getMonth() - value);
-      break;
     case 'days':
       result.setDate(result.getDate() - value);
       break;

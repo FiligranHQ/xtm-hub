@@ -18,12 +18,6 @@ describe('subtractInterval', () => {
     }
   );
 
-  it('should subtract months handling variable month lengths', () => {
-    const result = subtractInterval(reference, 6, 'months');
-    expect(result.getMonth()).toBe(10); // mai - 6 mois = novembre
-    expect(result.getFullYear()).toBe(2025);
-  });
-
   it('should throw for unsupported unit', () => {
     expect(() => subtractInterval(reference, 1, 'years' as never)).toThrow(
       'Unsupported interval unit',

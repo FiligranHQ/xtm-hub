@@ -365,26 +365,51 @@ describe('newsFeedDomain', () => {
       });
 
     it.each`
-    ageInMonths | cutoffMonths | shouldBeDeleted | description
-    ${7}        | ${6}         | ${true}         | ${'older than cutoff is deleted'}
-    ${5}        | ${6}         | ${false}        | ${'within cutoff is kept'}
-    ${1}        | ${6}         | ${false}        | ${'recent is kept'}
-    ${24}       | ${6}         | ${true}         | ${'much older is deleted'}
-    ${3}        | ${1}         | ${true}         | ${'older than custom 1-month cutoff is deleted'}
-  `(
+      ageInMonths | cutoffMonths | shouldBeDeleted | description
+      ${7}        | ${6}         | ${true}         | ${'older than cutoff is deleted'}
+      ${5}        | ${6}         | ${false}        | ${'within cutoff is kept'}
+      ${1}        | ${6}         | ${false}        | ${'recent is kept'}
+      ${24}       | ${6}         | ${true}         | ${'much older is deleted'}
+      ${3}        | ${1}         | ${true}         | ${'older than custom 1-month cutoff is deleted'}
+    `(
       'should handle item aged $ageInMonths months with $cutoffMonths-month cutoff ($description)',
       async ({ ageInMonths, cutoffMonths, shouldBeDeleted }) => {
         // Given
         const item = await createItemWithAge(ageInMonths);
 
         // When
-        await NewsFeedDomain.deleteNewsFeedItemsOlderThan(monthsAgo(cutoffMonths));
+        await NewsFeedDomain.deleteNewsFeedItemsOlderThan(
+          monthsAgo(cutoffMonths)
+        );
 
         // Then
-        const remaining = await TestHelper.newsFeed.loadFirstItem({ id: item.id });
+        const remaining = await TestHelper.newsFeed.loadFirstItem({
+          id: item.id,
+        });
         expect(remaining === undefined).toBe(shouldBeDeleted);
       }
     );
+
+    it('should not delete an item whose creation_date is exactly the cutoff', async () => {
+      // Given - the SAME date instance is used both for creation and cutoff
+      const exactBoundary = monthsAgo(6);
+      const item = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'item-exactly-at-boundary',
+        creation_date: exactBoundary,
+        tags: [],
+      });
+
+      // When
+      await NewsFeedDomain.deleteNewsFeedItemsOlderThan(exactBoundary);
+
+      // Then - SQL uses strict `<`, so item at boundary should NOT be deleted
+      const remaining = await TestHelper.newsFeed.loadFirstItem({
+        id: item.id,
+      });
+      expect(remaining).toBeDefined();
+    });
 
     it('should return the count of deleted items', async () => {
       // Given
