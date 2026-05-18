@@ -8542,7 +8542,7 @@ __metadata:
     eslint-plugin-jest: "npm:29.15.2"
     express: "npm:5.2.1"
     express-prom-bundle: "npm:8.0.0"
-    express-rate-limit: "npm:8.4.1"
+    express-rate-limit: "npm:8.5.2"
     express-session: "npm:1.19.0"
     glob: "npm:13.0.6"
     globals: "npm:17.6.0"
@@ -8625,8 +8625,8 @@ __metadata:
     prettier: "npm:3.8.3"
     prettier-plugin-organize-imports: "npm:4.3.0"
     prettier-plugin-tailwindcss: "npm:0.8.0"
-    react: "npm:19.2.5"
-    react-dom: "npm:19.2.5"
+    react: "npm:19.2.6"
+    react-dom: "npm:19.2.6"
     react-hook-form: "npm:7.75.0"
     react-markdown: "npm:10.1.0"
     react-relay: "npm:20.1.1"
@@ -8662,7 +8662,7 @@ __metadata:
     pg: "npm:8.20.0"
     playwright-ctrf-json-reporter: "npm:0.0.29"
     prettier: "npm:3.8.3"
-    react: "npm:19.2.5"
+    react: "npm:19.2.6"
     uuid: "npm:14.0.0"
   languageName: unknown
   linkType: soft
@@ -11713,14 +11713,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-rate-limit@npm:8.4.1":
-  version: 8.4.1
-  resolution: "express-rate-limit@npm:8.4.1"
+"express-rate-limit@npm:8.5.2":
+  version: 8.5.2
+  resolution: "express-rate-limit@npm:8.5.2"
   dependencies:
-    ip-address: "npm:10.1.0"
+    ip-address: "npm:^10.2.0"
   peerDependencies:
     express: ">= 4.11"
-  checksum: 10/2f979a261e6c95e31a62f2ce1cb9621566b0061706d0337091c8399617d6f09b28402ba4383aa3d72518374a7eec35be24f9703de59e563cc127ba14e2748a4d
+  checksum: 10/de2aa4582d3b1b1d242fdb8dba7b3b1c64e3a58dfa7a40d370681c175a61321fb550c6b190d755f47cefdf28f35eaad6c99ea196f99caec8caaffc2462fea1ae
   languageName: node
   linkType: hard
 
@@ -13303,10 +13303,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip-address@npm:10.1.0, ip-address@npm:^10.0.1":
+"ip-address@npm:^10.0.1":
   version: 10.1.0
   resolution: "ip-address@npm:10.1.0"
   checksum: 10/a6979629d1ad9c1fb424bc25182203fad739b40225aebc55ec6243bbff5035faf7b9ed6efab3a097de6e713acbbfde944baacfa73e11852bb43989c45a68d79e
+  languageName: node
+  linkType: hard
+
+"ip-address@npm:^10.2.0":
+  version: 10.2.0
+  resolution: "ip-address@npm:10.2.0"
+  checksum: 10/12fec399e1af5753ac322e47a6d81a50d3a528b3abb17c09525b2a2edcaedcca628c40520706f7037bc4d8e951b0296c47e7b86d0a8e6e2335c8f0ba4afcfac1
   languageName: node
   linkType: hard
 
@@ -17047,14 +17054,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:19.2.5":
-  version: 19.2.5
-  resolution: "react-dom@npm:19.2.5"
+"react-dom@npm:19.2.6":
+  version: 19.2.6
+  resolution: "react-dom@npm:19.2.6"
   dependencies:
     scheduler: "npm:^0.27.0"
   peerDependencies:
-    react: ^19.2.5
-  checksum: 10/ba14b022c7191d27b723314b964a1a4d839832e6edd231294097e323973808f97ac647bcf182ab0104e20ae6532dbc36733aec3e8333a1446a7183099c96b255
+    react: ^19.2.6
+  checksum: 10/695122e37dec3460311231ff1f9a96368d74457d4ccf60010eaebc08c3e1c47b054c9267b40d98c689ae99d0c29a340acacfd405016a954a4f11613146191e68
   languageName: node
   linkType: hard
 
@@ -17192,10 +17199,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.2.5":
-  version: 19.2.5
-  resolution: "react@npm:19.2.5"
-  checksum: 10/1c3c7ffecb90b7f89a5c3ef635e6811f3a84600097f203b918150cb7e6b0a52915e858e5b4c82317a520dffccfa46ee4819ccf92c59c5b2d6c25cffe258dd20c
+"react@npm:19.2.6":
+  version: 19.2.6
+  resolution: "react@npm:19.2.6"
+  checksum: 10/205f0db93bd6c6485f94471d1c3437ae1d410f322297c76186fe4f658f88a6786bb0805e3cf8f330f24d1daa923b6b610ec63960d2461e9201bca64ca8361db9
   languageName: node
   linkType: hard
 
