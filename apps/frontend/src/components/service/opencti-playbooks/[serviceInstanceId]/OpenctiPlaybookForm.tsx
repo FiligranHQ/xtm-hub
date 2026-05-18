@@ -16,6 +16,18 @@ import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
 
+export const descriptionValue =
+  '### Overview\n\n' +
+  'What it does and the use case it addresses\n\n' +
+  '### Dependencies\n\n' +
+  'Connectors, labels, markings, or entities required\n\n' +
+  '### How to use it\n\n' +
+  'How to set it up and what to verify after importing\n\n' +
+  '### Expected outcome\n\n' +
+  "What to look for to confirm it's working\n\n" +
+  '### Additional detail\n\n' +
+  'Optional\n';
+
 const openCTIPlaybookFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
@@ -70,6 +82,7 @@ export const OpenctiPlaybookForm = ({
     () =>
       ({
         ...document,
+        description: document?.description ?? descriptionValue,
         images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
         logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
