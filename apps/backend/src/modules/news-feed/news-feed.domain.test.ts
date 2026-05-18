@@ -349,8 +349,10 @@ describe('newsFeedDomain', () => {
   });
 
   describe('deleteNewsFeedItemsOlderThan', () => {
+    const REFERENCE_NOW = new Date();
+
     const monthsAgo = (months: number): Date => {
-      const date = new Date();
+      const date = new Date(REFERENCE_NOW);
       date.setMonth(date.getMonth() - months);
       return date;
     };
@@ -367,6 +369,7 @@ describe('newsFeedDomain', () => {
     it.each`
       ageInMonths | cutoffMonths | shouldBeDeleted | description
       ${7}        | ${6}         | ${true}         | ${'older than cutoff is deleted'}
+      ${6}        | ${6}         | ${false}        | ${'exactly at cutoff boundary is kept'}
       ${5}        | ${6}         | ${false}        | ${'within cutoff is kept'}
       ${1}        | ${6}         | ${false}        | ${'recent is kept'}
       ${24}       | ${6}         | ${true}         | ${'much older is deleted'}
@@ -389,27 +392,6 @@ describe('newsFeedDomain', () => {
         expect(remaining === undefined).toBe(shouldBeDeleted);
       }
     );
-
-    it('should not delete an item whose creation_date is exactly the cutoff', async () => {
-      // Given - the SAME date instance is used both for creation and cutoff
-      const exactBoundary = monthsAgo(6);
-      const item = await TestHelper.newsFeed.createItem({
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platform_identifier: PlatformIdentifier.Opencti,
-        title: 'item-exactly-at-boundary',
-        creation_date: exactBoundary,
-        tags: [],
-      });
-
-      // When
-      await NewsFeedDomain.deleteNewsFeedItemsOlderThan(exactBoundary);
-
-      // Then - SQL uses strict `<`, so item at boundary should NOT be deleted
-      const remaining = await TestHelper.newsFeed.loadFirstItem({
-        id: item.id,
-      });
-      expect(remaining).toBeDefined();
-    });
 
     it('should return the count of deleted items', async () => {
       // Given

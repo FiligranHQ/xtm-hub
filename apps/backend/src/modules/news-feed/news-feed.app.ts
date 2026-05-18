@@ -16,9 +16,12 @@ import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
 import config from 'config';
 import { logApp } from '../../utils/app-logger.util';
-import { IntervalUnit, subtractInterval } from '../common/interval.helper';
+import {
+  INTERVAL_UNITS,
+  IntervalUnit,
+  subtractInterval,
+} from '../common/interval.helper';
 
-const SUPPORTED_UNITS: readonly IntervalUnit[] = ['seconds', 'minutes', 'hours', 'days'] as const;
 
 export const NewsFeedApp = {
   consumeProvisionedNewsFeedItems: async ({
@@ -139,9 +142,12 @@ export const NewsFeedApp = {
         `Invalid config "news_feed.cleanup_interval_value": expected positive number, got ${typeof rawValue} (${rawValue})`
       );
     }
-    if (typeof rawUnit !== 'string' || !SUPPORTED_UNITS.includes(rawUnit as IntervalUnit)) {
+    if (
+      typeof rawUnit !== 'string' ||
+      !INTERVAL_UNITS.includes(rawUnit as IntervalUnit)
+    ) {
       throw new Error(
-        `Invalid config "news_feed.cleanup_interval_unit": expected one of ${SUPPORTED_UNITS.join(', ')}, got ${rawUnit}`
+        `Invalid config "news_feed.cleanup_interval_unit": expected one of ${INTERVAL_UNITS.join(', ')}, got ${rawUnit}`
       );
     }
 

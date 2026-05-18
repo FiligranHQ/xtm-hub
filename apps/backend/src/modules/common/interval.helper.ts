@@ -1,4 +1,5 @@
-export type IntervalUnit = 'seconds' | 'minutes' | 'hours' | 'days';
+export const INTERVAL_UNITS = ['seconds', 'minutes', 'hours', 'days'] as const;
+export type IntervalUnit = (typeof INTERVAL_UNITS)[number];
 
 export const subtractInterval = (
   date: Date,
