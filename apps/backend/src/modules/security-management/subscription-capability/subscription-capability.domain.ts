@@ -26,6 +26,8 @@ export const addCapabilitiesToSubscription = async (
 
   return db<SubscriptionCapability>('Subscription_Capability')
     .insert(data)
+    .onConflict(['subscription_id', 'service_capability_id'])
+    .ignore()
     .returning('*');
 };
 

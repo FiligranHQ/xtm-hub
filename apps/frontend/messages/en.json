@@ -222,6 +222,7 @@
       "DELETE_EPIC_ERROR": "An error occurred while deleting the epic.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
+      "ADD_CAPABILITIES_ERROR": "Error while adding capabilities",
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
@@ -958,15 +959,15 @@
       "ManageUsersForOrganization": "Manage {organizationName}'s users in the {serviceName} service",
       "OneUserMax": "Add 1 user max",
       "NoAvailableCapabilities": "No available capabilities",
-      "NoDescription": "No description available",
-      "NoTags": "No tags",
+      "AddSubscriptionCapabilities": {
+        "Button": "Add capabilities",
+        "Title": "Add subscription capabilities",
+        "Description": "Select the capabilities to add to the {count} selected subscription(s)."
+      },
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",
-      "SubscribedOrganizations": "Subscribed organizations: {count}",
       "ShowPersonalSpaces": "Show personal spaces only",
-      "SearchOrganization": "Search organization",
-      "Subscription": "Subscription",
-      "Tags": "Tags"
+      "SearchOrganization": "Search organization"
     },
     "Name": "Name",
     "NoOwnedService": "You don't have any services yet.",

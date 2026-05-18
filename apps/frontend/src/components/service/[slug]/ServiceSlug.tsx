@@ -20,7 +20,7 @@ import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';
 import { APP_PATH } from '@/utils/path/constant';
-import { DeleteIcon, MoreVertIcon } from '@filigran/icon';
+import { AddIcon, DeleteIcon, MoreVertIcon } from '@filigran/icon';
 import {
   Badge,
   DataTable,
@@ -37,6 +37,7 @@ import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
+import { ServiceSlugAddCapabilities } from './ServiceSlugAddCapabilities';
 import { ServiceSlugDeleteSubscription } from './ServiceSlugDeleteSubscription';
 import { ServiceSlugSubscription } from './ServiceSlugSubscription';
 
@@ -83,6 +84,7 @@ const ServiceSlug = ({
     subscription_fragment$data | undefined
   >(undefined);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openAddCapabilities, setOpenAddCapabilities] = useState(false);
   const [selection, setSelection] =
     useState<SelectionState>(emptySelectionState);
 
@@ -159,15 +161,15 @@ const ServiceSlug = ({
                 {t('Service.Management.ManageUsers')}
               </IconActionsLink>
               <IconActionsItem
-                onClick={() => setDeleteSubscriptions([row.original])}>
-                {t('Utils.Delete')}
-              </IconActionsItem>
-              <IconActionsItem
                 onClick={() => {
                   setUpdateSubscription(row.original);
                   setOpenEdit(true);
                 }}>
                 {t('Utils.Edit')}
+              </IconActionsItem>
+              <IconActionsItem
+                onClick={() => setDeleteSubscriptions([row.original])}>
+                {t('Utils.Delete')}
               </IconActionsItem>
             </IconActions>
           </div>
@@ -287,8 +289,7 @@ const ServiceSlug = ({
             </div>
           </div>
           <p className="text-sm text-muted-foreground italic line-clamp-3">
-            {serviceInstance.description ??
-              t('Service.Management.NoDescription')}
+            {serviceInstance.description}
           </p>
           <div>
             <p className="text-xs uppercase text-muted-foreground pb-xs">
@@ -325,15 +326,28 @@ const ServiceSlug = ({
               },
               selectionHeader: {
                 actions: () => (
-                  <Button
-                    variant="ghost-destructive"
-                    size="sm"
-                    onClick={() =>
-                      setDeleteSubscriptions(selectedSubscriptions)
-                    }>
-                    <DeleteIcon className="h-4 w-4" />
-                    {t('Utils.Delete')}
-                  </Button>
+                  <>
+                    <Button
+                      variant="ghost-primary"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() => setOpenAddCapabilities(true)}>
+                      <AddIcon className="h-4 w-4 m-s" />
+                      {t(
+                        'Service.Management.AddSubscriptionCapabilities.Button'
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost-destructive"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setDeleteSubscriptions(selectedSubscriptions)
+                      }>
+                      <DeleteIcon className="h-4 w-4 m-s" />
+                      {t('Utils.Delete')}
+                    </Button>
+                  </>
                 ),
               },
             }}
@@ -361,6 +375,13 @@ const ServiceSlug = ({
           }
         />
       )}
+      <ServiceSlugAddCapabilities
+        selectedSubscriptions={selectedSubscriptions}
+        availableCapabilities={availableCapabilities}
+        open={openAddCapabilities}
+        setOpen={setOpenAddCapabilities}
+        onCompleted={() => setSelection(emptySelectionState())}
+      />
     </>
   );
 };

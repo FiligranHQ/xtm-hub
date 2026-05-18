@@ -109,6 +109,16 @@ export const subscriptionListFragment = graphql`
   }
 `;
 
+export const AddSubscriptionCapabilityMutation = graphql`
+  mutation subscriptionAddCapabilityMutation(
+    $input: AddSubscriptionCapabilityInput!
+  ) {
+    addSubscriptionCapability(input: $input) {
+      ...subscription_fragment
+    }
+  }
+`;
+
 export const SubscriptionById = graphql`
   query subscriptionByIdQuery($subscriptionId: SubscriptionId) {
     subscriptionById(subscription_id: $subscriptionId) {

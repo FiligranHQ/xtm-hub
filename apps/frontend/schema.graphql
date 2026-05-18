@@ -181,7 +181,7 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
-  addServiceCapability(input: AddServiceCapabilityInput): SubscriptionModel
+  addSubscriptionCapability(input: AddSubscriptionCapabilityInput): [SubscriptionModel]
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
@@ -1019,9 +1019,9 @@ input EditServiceCapabilityInput {
   capabilities: [String]!
 }
 
-input AddServiceCapabilityInput {
-  subscriptionId: SubscriptionId
-  capabilitiesId: [String]!
+input AddSubscriptionCapabilityInput {
+  subscriptionsId: [SubscriptionId!]!
+  capabilitiesId: [Service_CapabilityId]!
 }
 
 type UserServiceCapability implements Node {
