@@ -35,7 +35,7 @@ enum PlatformIdentifier {
 }
 
 input RegisterPlatformInput {
-  organizationId: ID!
+  organizationId: OrganizationId!
   platform: PlatformInput!
   identifier: PlatformIdentifier!
 }
@@ -74,7 +74,7 @@ type CanUnregisterResponse {
   isPlatformRegistered: Boolean!
   isAllowed: Boolean
   isInOrganization: Boolean
-  organizationId: ID
+  organizationId: OrganizationId
 }
 
 input UnregisterPlatformInput {

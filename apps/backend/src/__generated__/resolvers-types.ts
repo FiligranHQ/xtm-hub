@@ -7,6 +7,7 @@ import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js
 import type { SubscriptionId } from '../model/kanel/public/Subscription.js';
 import type { UseCaseId } from '../model/kanel/public/UseCase.js';
 import type { UserId } from '../model/kanel/public/User.js';
+import type { UserServiceId } from '../model/kanel/public/UserService.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { PortalContext } from '../model/portal-context.js';
 export type Maybe<T> = T | null | undefined;
@@ -38,6 +39,7 @@ export type Scalars = {
   Upload: { input: any; output: any; }
   UseCaseId: { input: UseCaseId; output: UseCaseId; }
   UserId: { input: UserId; output: UserId; }
+  UserServiceId: { input: UserServiceId; output: UserServiceId; }
 };
 
 export type AddServiceInput = {
@@ -98,7 +100,7 @@ export type CanUnregisterResponse = {
   isAllowed?: Maybe<Scalars['Boolean']['output']>;
   isInOrganization?: Maybe<Scalars['Boolean']['output']>;
   isPlatformRegistered: Scalars['Boolean']['output'];
-  organizationId?: Maybe<Scalars['ID']['output']>;
+  organizationId?: Maybe<Scalars['OrganizationId']['output']>;
 };
 
 export type Capability = Node & {
@@ -595,7 +597,7 @@ export type EditMeUserInput = {
 
 export type EditServiceCapabilityInput = {
   capabilities: Array<InputMaybe<Scalars['String']['input']>>;
-  user_service_id?: InputMaybe<Scalars['String']['input']>;
+  user_service_id?: InputMaybe<Scalars['UserServiceId']['input']>;
 };
 
 export type EditUseCaseInput = {
@@ -1737,7 +1739,7 @@ export type RefreshUserPlatformTokenResponse = {
 
 export type RegisterPlatformInput = {
   identifier: PlatformIdentifier;
-  organizationId: Scalars['ID']['input'];
+  organizationId: Scalars['OrganizationId']['input'];
   platform: PlatformInput;
 };
 
@@ -2713,6 +2715,7 @@ export type ResolversTypes = ResolversObject<{
   UserServiceDeleteInput: UserServiceDeleteInput;
   UserServiceDeleted: ResolverTypeWrapper<UserServiceDeleted>;
   UserServiceEdge: ResolverTypeWrapper<UserServiceEdge>;
+  UserServiceId: ResolverTypeWrapper<Scalars['UserServiceId']['output']>;
   UserServiceOrdering: UserServiceOrdering;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
   UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
@@ -2876,6 +2879,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserServiceDeleteInput: UserServiceDeleteInput;
   UserServiceDeleted: UserServiceDeleted;
   UserServiceEdge: UserServiceEdge;
+  UserServiceId: Scalars['UserServiceId']['output'];
   UserSubscription: UserSubscription;
   UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
 }>;
@@ -2907,7 +2911,7 @@ export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentTy
   isAllowed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isInOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isPlatformRegistered?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  organizationId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  organizationId?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4030,6 +4034,10 @@ export type UserServiceEdgeResolvers<ContextType = PortalContext, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface UserServiceIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UserServiceId'], any> {
+  name: 'UserServiceId';
+}
+
 export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserSubscription'] = ResolversParentTypes['UserSubscription']> = ResolversObject<{
   add?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -4141,6 +4149,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserServiceConnection?: UserServiceConnectionResolvers<ContextType>;
   UserServiceDeleted?: UserServiceDeletedResolvers<ContextType>;
   UserServiceEdge?: UserServiceEdgeResolvers<ContextType>;
+  UserServiceId?: GraphQLScalarType;
   UserSubscription?: UserSubscriptionResolvers<ContextType>;
 }>;
 

@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -18,17 +17,17 @@ import registrationResolver from '../../registration.resolver';
 
 describe('query.canUnregisterPlatform', () => {
   it.each`
-    description        | organizationId                                      | expectedOrgGlobalId
-    ${'with orgId'}    | ${TEST_ORGANIZATIONS.FILIGRAN.ID as OrganizationId} | ${toGlobalId('Organization', TEST_ORGANIZATIONS.FILIGRAN.ID)}
-    ${'without orgId'} | ${null}                                             | ${undefined}
+    description        | organizationId                    | expectedOrgId
+    ${'with orgId'}    | ${TEST_ORGANIZATIONS.FILIGRAN.ID} | ${TEST_ORGANIZATIONS.FILIGRAN.ID}
+    ${'without orgId'} | ${null}                           | ${undefined}
   `(
     'should return isPlatformRegistered: true $description',
     async ({
       organizationId,
-      expectedOrgGlobalId,
+      expectedOrgId,
     }: {
       organizationId: OrganizationId | null;
-      expectedOrgGlobalId: string | undefined;
+      expectedOrgId: string | undefined;
     }) => {
       // Given
       const input: CanUnregisterPlatformInput = { platformId: uuidv4() };
@@ -49,7 +48,7 @@ describe('query.canUnregisterPlatform', () => {
       // Then
       expect(result).toMatchObject({
         isPlatformRegistered: true,
-        organizationId: expectedOrgGlobalId,
+        organizationId: expectedOrgId,
       });
     }
   );
