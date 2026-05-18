@@ -37,6 +37,7 @@ describe('render MenuAdmin', () => {
     expect(screen.getByText('OpenCTI Trials')).toBeInTheDocument();
     expect(screen.getByText('OpenAEV Trials')).toBeInTheDocument();
     expect(screen.getByText('Competitors')).toBeInTheDocument();
+    expect(screen.getByText('News Feeds')).toBeInTheDocument();
   });
 
   it('should render admin panel with only Trials dashboard in the menu with READ_TRIALS capabilities', async () => {
@@ -71,6 +72,7 @@ describe('render MenuAdmin', () => {
     expect(screen.getByText('OpenCTI Trials')).toBeInTheDocument();
     expect(screen.getByText('OpenAEV Trials')).toBeInTheDocument();
     expect(screen.queryByText('Competitors')).not.toBeInTheDocument();
+    expect(screen.queryByText('News Feeds')).not.toBeInTheDocument();
   });
   it('should render admin panel with only Trials dashboards and competitors in the menu with MANAGE_COMPETITOR capabilities', async () => {
     const user = userEvent.setup();
@@ -104,5 +106,6 @@ describe('render MenuAdmin', () => {
     expect(screen.queryByText('OpenCTI Trials')).not.toBeInTheDocument();
     expect(screen.queryByText('OpenAEV Trials')).not.toBeInTheDocument();
     expect(screen.getByText('Competitors')).toBeInTheDocument();
+    expect(screen.queryByText('News Feeds')).not.toBeInTheDocument();
   });
 });

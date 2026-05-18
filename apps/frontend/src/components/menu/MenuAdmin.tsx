@@ -140,6 +140,11 @@ const adminLinksData = (t: UseTranslationsProps) => [
     label: t('MenuLinks.Competitors'),
     restriction: [PortalCapabilityEnum.MODIFY_COMPETITORS],
   },
+  {
+    href: `/${APP_PATH}/admin/news-feed`,
+    label: t('MenuLinks.NewsFeeds'),
+    restriction: [PortalCapabilityEnum.BYPASS],
+  },
 ];
 
 const AdminLinks = ({ className }: { className?: string }) => {

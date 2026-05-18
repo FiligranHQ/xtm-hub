@@ -1,0 +1,294 @@
+import NewsFeedList from '@/components/admin/news-feed/NewsFeedList';
+import testRender from '@/utils/test/test-render';
+import { act, screen, waitFor, within } from '@testing-library/react';
+import { ReactNode } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+type NewsFeedItem = {
+  id: string;
+  title: string;
+  creation_date: string;
+  tags: string[];
+  is_deleted: boolean;
+};
+
+const mocks = vi.hoisted(() => ({
+  toast: vi.fn(),
+  refetch: vi.fn(),
+  deleteMutation: vi.fn(),
+  newsFeedItems: [] as NewsFeedItem[],
+}));
+
+vi.mock('next-intl', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTranslations: () => (key: string, values?: { title?: string }) =>
+    values?.title ? `${key}:${values.title}` : key,
+}));
+
+vi.mock('@/utils/date', () => ({
+  formatDate: (date: string) => `formatted:${date}`,
+}));
+
+vi.mock('react-relay', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useLazyLoadQuery: () => ({}),
+  useRefetchableFragment: () => [
+    {
+      newsFeedItems: {
+        totalCount: mocks.newsFeedItems.length,
+        edges: mocks.newsFeedItems.map((item) => ({ node: item })),
+      },
+    },
+    mocks.refetch,
+  ],
+  useMutation: () => [mocks.deleteMutation, false],
+  readInlineData: (_fragment: unknown, node: unknown) => node,
+}));
+
+vi.mock('@filigran/icon', () => ({
+  MoreVertIcon: () => <span>more</span>,
+}));
+
+vi.mock('@/components/ui/IconActions', () => ({
+  IconActions: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  IconActionsItem: ({
+    children,
+    onClick,
+  }: {
+    children: ReactNode;
+    onClick?: () => void;
+  }) => <button onClick={onClick}>{children}</button>,
+}));
+
+vi.mock('@/components/ui/AlertDialog', () => ({
+  AlertDialogComponent: ({
+    isOpen,
+    onOpenChange,
+    AlertTitle,
+    actionButtonText,
+    onClickContinue,
+    children,
+  }: {
+    isOpen: boolean;
+    onOpenChange: (open: boolean) => void;
+    AlertTitle: string;
+    actionButtonText: string;
+    onClickContinue: () => void;
+    children: ReactNode;
+  }) =>
+    isOpen ? (
+      <div role="alertdialog">
+        <h2>{AlertTitle}</h2>
+        <div>{children}</div>
+        <button onClick={onClickContinue}>{actionButtonText}</button>
+        <button onClick={() => onOpenChange(false)}>Cancel</button>
+      </div>
+    ) : null,
+}));
+
+vi.mock('@filigran/ui/servers', () => ({
+  Badge: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+}));
+
+vi.mock('@filigran/ui', () => ({
+  toast: mocks.toast,
+  DataTable: ({
+    columns,
+    data,
+    tableOptions,
+  }: {
+    columns: Array<{
+      id?: string;
+      accessorKey?: string;
+      header?: string;
+      cell?: ({ row }: { row: { original: NewsFeedItem } }) => ReactNode;
+    }>;
+    data: NewsFeedItem[];
+    tableOptions?: {
+      onPaginationChange?: (
+        updater: (previous: { pageIndex: number; pageSize: number }) => {
+          pageIndex: number;
+          pageSize: number;
+        }
+      ) => void;
+    };
+  }) => (
+    <div>
+      <button
+        onClick={() =>
+          tableOptions?.onPaginationChange?.(() => ({
+            pageIndex: 2,
+            pageSize: 10,
+          }))
+        }>
+        paginate
+      </button>
+      <table>
+        <thead>
+          <tr>
+            {columns.map((column) => (
+              <th key={column.id ?? column.accessorKey}>{column.header}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row) => (
+            <tr key={row.id}>
+              {columns.map((column) => (
+                <td key={`${row.id}-${column.id ?? column.accessorKey}`}>
+                  {column.cell
+                    ? column.cell({ row: { original: row } })
+                    : column.accessorKey
+                      ? (row[
+                          column.accessorKey as keyof NewsFeedItem
+                        ] as ReactNode)
+                      : null}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ),
+}));
+
+describe('NewsFeedList', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.newsFeedItems = [
+      {
+        id: 'item-1',
+        title: 'Active news',
+        creation_date: '2025-01-20T08:00:00.000Z',
+        tags: ['tag-1', 'tag-2'],
+        is_deleted: false,
+      },
+      {
+        id: 'item-2',
+        title: 'Deleted news',
+        creation_date: '2025-01-21T08:00:00.000Z',
+        tags: ['tag-3'],
+        is_deleted: true,
+      },
+    ];
+  });
+
+  it('renders rows and columns with deleted badge and action visibility rules', () => {
+    testRender(<NewsFeedList />);
+
+    expect(screen.getByText('NewsFeedAdminPage.Title')).toBeInTheDocument();
+    expect(
+      screen.getByText('NewsFeedAdminPage.CreationDate')
+    ).toBeInTheDocument();
+    expect(screen.getByText('NewsFeedAdminPage.Tags')).toBeInTheDocument();
+    expect(screen.getByText('NewsFeedAdminPage.IsDeleted')).toBeInTheDocument();
+
+    expect(screen.getByText('Active news')).toBeInTheDocument();
+    expect(screen.getByText('Deleted news')).toBeInTheDocument();
+    expect(
+      screen.getByText('formatted:2025-01-20T08:00:00.000Z')
+    ).toBeInTheDocument();
+    expect(screen.getByText('tag-1, tag-2')).toBeInTheDocument();
+
+    expect(
+      screen.getByText('NewsFeedAdminPage.IsDeletedYes')
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole('button', { name: 'NewsFeedAdminPage.Delete' })
+    ).toHaveLength(1);
+  });
+
+  it('opens delete dialog and confirms deletion with success toast and refetch', async () => {
+    const { user } = testRender(<NewsFeedList />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'NewsFeedAdminPage.Delete' })
+    );
+
+    const dialog = await screen.findByRole('alertdialog');
+    expect(
+      within(dialog).getByText(
+        'NewsFeedAdminPage.DeleteDialog.Text:Active news'
+      )
+    ).toBeInTheDocument();
+
+    await user.click(
+      within(dialog).getByRole('button', {
+        name: 'NewsFeedAdminPage.DeleteDialog.Confirm',
+      })
+    );
+
+    expect(mocks.deleteMutation).toHaveBeenCalledOnce();
+
+    const mutationConfig = mocks.deleteMutation.mock.calls[0]?.[0] as {
+      variables: { id: string };
+      onCompleted: () => void;
+    };
+
+    expect(mutationConfig.variables).toEqual({ id: 'item-1' });
+
+    await act(async () => {
+      mutationConfig.onCompleted();
+    });
+
+    await waitFor(() => {
+      expect(mocks.toast).toHaveBeenCalledWith({
+        title: 'NewsFeedAdminPage.DeleteSuccess:Active news',
+      });
+      expect(mocks.refetch).toHaveBeenCalledWith(
+        {
+          count: 25,
+          cursor: btoa('0'),
+        },
+        { fetchPolicy: 'store-and-network' }
+      );
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows destructive toast and closes dialog when deletion fails', async () => {
+    const { user } = testRender(<NewsFeedList />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'NewsFeedAdminPage.Delete' })
+    );
+
+    const dialog = await screen.findByRole('alertdialog');
+    await user.click(
+      within(dialog).getByRole('button', {
+        name: 'NewsFeedAdminPage.DeleteDialog.Confirm',
+      })
+    );
+
+    const mutationConfig = mocks.deleteMutation.mock.calls[0]?.[0] as {
+      onError: () => void;
+    };
+
+    await act(async () => {
+      mutationConfig.onError();
+    });
+
+    await waitFor(() => {
+      expect(mocks.toast).toHaveBeenCalledWith({
+        variant: 'destructive',
+        title: 'NewsFeedAdminPage.DeleteError',
+      });
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    });
+  });
+
+  it('refetches with expected cursor and count on pagination change', async () => {
+    const { user } = testRender(<NewsFeedList />);
+
+    await user.click(screen.getByRole('button', { name: 'paginate' }));
+
+    expect(mocks.refetch).toHaveBeenCalledWith(
+      {
+        count: 10,
+        cursor: btoa('20'),
+      },
+      { fetchPolicy: 'store-and-network' }
+    );
+  });
+});

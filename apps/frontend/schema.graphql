@@ -106,6 +106,7 @@ type Query {
   publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
   document(documentId: DocumentId, serviceInstanceId: ServiceInstanceId): Document
+  newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
@@ -153,6 +154,7 @@ type Mutation {
   incrementShareNumberDocument(documentId: DocumentId): Document!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
+  deleteNewsFeedItem(id: NewsFeedItemId!): Boolean!
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
@@ -643,12 +645,18 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
+"""
+A Relay global ID for NewsFeedItem, extracted to a branded NewsFeedItemId string
+"""
+scalar NewsFeedItemId
+
 enum NewsFeedItemType {
   RESOURCE_CUSTOM_DASHBOARD
 }
 
 enum NewsFeedItemMetadataKey {
   url_path
+  document_id
 }
 
 type NewsFeedItemMetadata {
@@ -657,6 +665,8 @@ type NewsFeedItemMetadata {
 }
 
 type ProvisionedNewsFeedItem {
+  id: ID!
+  is_deleted: Boolean!
   title: String!
   type: NewsFeedItemType!
   tags: [String!]!
@@ -667,6 +677,25 @@ type ProvisionedNewsFeedItem {
 type ConsumeProvisionedNewsFeedItemsResponse {
   news_feed_items: [ProvisionedNewsFeedItem!]!
   available_news_feed_types: [NewsFeedItemType!]!
+}
+
+type NewsFeedItem {
+  id: NewsFeedItemId!
+  title: String!
+  creation_date: Date!
+  tags: [String!]!
+  is_deleted: Boolean!
+}
+
+type NewsFeedItemEdge {
+  cursor: String!
+  node: NewsFeedItem!
+}
+
+type NewsFeedItemConnection {
+  totalCount: Int!
+  edges: [NewsFeedItemEdge!]!
+  pageInfo: PageInfo!
 }
 
 enum OrganizationOrdering {
