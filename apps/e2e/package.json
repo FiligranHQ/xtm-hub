@@ -11,15 +11,15 @@
   "dependencies": {
     "knex": "3.2.10",
     "pg": "8.20.0",
-    "react": "19.2.5",
+    "react": "19.2.6",
     "uuid": "14.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.59.1",
-    "@types/node": "24.12.2",
-    "graphql": "16.13.2",
+    "@playwright/test": "1.60.0",
+    "@types/node": "24.12.4",
+    "graphql": "16.14.0",
     "graphql-tag": "2.12.6",
-    "monocart-reporter": "2.10.1",
+    "monocart-reporter": "2.11.2",
     "playwright-ctrf-json-reporter": "0.0.29",
     "prettier": "3.8.3"
   },
