@@ -12,12 +12,11 @@ COPY apps/frontend/package.json ./apps/frontend/package.json
 
 # Install all dependencies at the workspace level
 RUN corepack enable && \
-    yarn install
+    yarn install --immutable
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY apps/backend/. ./apps/backend/
 COPY .yarnrc.yml package.json yarn.lock ./
 RUN corepack enable

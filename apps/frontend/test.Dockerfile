@@ -18,7 +18,6 @@ RUN corepack enable && \
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY apps/frontend/. ./apps/frontend/
 COPY .yarnrc.yml package.json yarn.lock ./
 
