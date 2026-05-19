@@ -23,11 +23,7 @@ import UserOrganization, {
   UserOrganizationId,
 } from '../model/kanel/public/UserOrganization';
 import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
-import {
-  insertNewOrganization,
-  loadOrganizationBy,
-  updateOrganizationBy,
-} from '../modules/organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../modules/organization-management/organization/organization.domain';
 import { loadUserBy } from '../modules/organization-management/user/user-domain/user.domain';
 import { IngestManifestApp } from '../modules/shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.app';
 import {
@@ -157,12 +153,12 @@ export const ensureRoleHasCapability = async (role, capability) => {
 };
 
 export const insertPlatformOrganization = async () => {
-  const adminOrganization = await loadOrganizationBy({
+  const adminOrganization = await OrganizationDomain.loadOrganizationBy({
     id: PLATFORM_ORGANIZATION_UUID,
   });
 
   if (!adminOrganization) {
-    await insertNewOrganization({
+    await OrganizationDomain.insertNewOrganization({
       id: PLATFORM_ORGANIZATION_UUID as OrganizationId,
       name: PLATFORM_NAME,
       domains: PLATFORM_DOMAIN,
@@ -171,12 +167,12 @@ export const insertPlatformOrganization = async () => {
 };
 
 export const insertUserAdminOrganization = async (user_id, email) => {
-  const adminOrganization = await loadOrganizationBy({
+  const adminOrganization = await OrganizationDomain.loadOrganizationBy({
     id: user_id as unknown as OrganizationId,
   });
 
   if (!adminOrganization) {
-    await insertNewOrganization({
+    await OrganizationDomain.insertNewOrganization({
       id: user_id as unknown as OrganizationId,
       name: email,
       personal_space: true,
@@ -234,10 +230,12 @@ const ensureOrganizationExists = async (
   orgId: OrganizationId,
   mail: string
 ) => {
-  const personalSpace = await loadOrganizationBy({ id: orgId });
+  const personalSpace = await OrganizationDomain.loadOrganizationBy({
+    id: orgId,
+  });
 
   if (!personalSpace) {
-    await insertNewOrganization({
+    await OrganizationDomain.insertNewOrganization({
       id: orgId,
       name: mail,
       personal_space: true,
@@ -291,7 +289,7 @@ export const ensureDevOrganizationExists = async (orgConfig: {
   domains?: string[];
 }): Promise<Organization> => {
   // Check if organization already exists by name
-  const existingOrg = await loadOrganizationBy({
+  const existingOrg = await OrganizationDomain.loadOrganizationBy({
     name: orgConfig.name,
     personal_space: false,
   });
@@ -299,7 +297,7 @@ export const ensureDevOrganizationExists = async (orgConfig: {
   if (existingOrg) {
     // Update domains if provided
     if (orgConfig.domains && orgConfig.domains.length > 0) {
-      return await updateOrganizationBy(
+      return await OrganizationDomain.updateOrganizationBy(
         { id: existingOrg.id },
         { domains: orgConfig.domains }
       );
@@ -308,7 +306,7 @@ export const ensureDevOrganizationExists = async (orgConfig: {
   }
 
   // Create new organization
-  const newOrg = await insertNewOrganization({
+  const newOrg = await OrganizationDomain.insertNewOrganization({
     id: uuidv4() as OrganizationId,
     name: orgConfig.name,
     domains: orgConfig.domains || [],

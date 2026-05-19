@@ -7,10 +7,7 @@ import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { organizationApp } from './organization.app';
-import {
-  insertNewOrganization,
-  loadOrganizationBy,
-} from './organization.domain';
+import { OrganizationDomain } from './organization.domain';
 
 describe('organizationApp', () => {
   afterEach(async () => {
@@ -79,7 +76,7 @@ describe('organizationApp', () => {
     });
 
     it('should throw if an organization with the same domain exists', async () => {
-      await insertNewOrganization({
+      await OrganizationDomain.insertNewOrganization({
         id: uuidv4() as OrganizationId,
         name: 'domain1.io',
         domains: ['domain1.io', 'domain2.io'],
@@ -96,7 +93,7 @@ describe('organizationApp', () => {
     });
 
     it('should throw if an organization with the same name exists', async () => {
-      await insertNewOrganization({
+      await OrganizationDomain.insertNewOrganization({
         id: uuidv4() as OrganizationId,
         name: 'alreadyExistingOrga',
         domains: ['alreadyExistingOrga.io'],
@@ -114,18 +111,20 @@ describe('organizationApp', () => {
   describe('deleteOrganization', () => {
     it('should delete the organization', async () => {
       const organizationId = uuidv4() as OrganizationId;
-      await insertNewOrganization({
+      await OrganizationDomain.insertNewOrganization({
         id: organizationId,
         name: 'newOrganization',
         domains: ['orga.com'],
       });
 
-      const newOrganization = await loadOrganizationBy({ id: organizationId });
+      const newOrganization = await OrganizationDomain.loadOrganizationBy({
+        id: organizationId,
+      });
       expect(newOrganization).toBeDefined();
 
       await organizationApp.deleteOrganization(organizationId);
 
-      const deletedOrganization = await loadOrganizationBy({
+      const deletedOrganization = await OrganizationDomain.loadOrganizationBy({
         id: organizationId,
       });
       expect(deletedOrganization).toBeUndefined();

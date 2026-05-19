@@ -24,10 +24,7 @@ import {
   waitForUploads,
 } from '../../../document/document.uploads.helper';
 import { updateSubscriptionBy } from '../../../subscription/subscription.domain';
-import {
-  loadOrganizationBy,
-  loadUserByOrganization,
-} from '../../organization/organization.domain';
+import { OrganizationDomain } from '../../organization/organization.domain';
 import {
   loadSimpleUserBy,
   loadUserDetails,
@@ -106,7 +103,7 @@ export const userProfileApp = {
     if (!isValidEmail(newEmail)) {
       throw new Error(ErrorCode.InvalidEmail);
     }
-    const existingPersonalSpace = await loadOrganizationBy({
+    const existingPersonalSpace = await OrganizationDomain.loadOrganizationBy({
       name: newEmail,
       personal_space: true,
     });
@@ -117,7 +114,9 @@ export const userProfileApp = {
       return; // Best way to hide from the vilain user that the account does not exist. The email will just never be sent.
     }
 
-    const newUser = await loadUserByOrganization(existingPersonalSpace.id);
+    const newUser = await OrganizationDomain.loadUserByOrganization(
+      existingPersonalSpace.id
+    );
 
     const userTransferRequest = await insertNewUserTransfer({
       from_user_id: user.id,
@@ -159,12 +158,13 @@ export const userProfileApp = {
         id: userTransferRequest.to_user_id,
       });
 
-      const personalSpaceToTransfer = await loadOrganizationBy({
-        name: fromUser.email,
-        personal_space: true,
-      });
+      const personalSpaceToTransfer =
+        await OrganizationDomain.loadOrganizationBy({
+          name: fromUser.email,
+          personal_space: true,
+        });
 
-      const currentToUserSpace = await loadOrganizationBy({
+      const currentToUserSpace = await OrganizationDomain.loadOrganizationBy({
         name: toUser.email,
         personal_space: true,
       });

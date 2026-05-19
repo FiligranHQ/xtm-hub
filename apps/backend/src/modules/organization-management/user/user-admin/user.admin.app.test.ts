@@ -9,7 +9,7 @@ import { FilterKey } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import User from '../../../../model/kanel/public/User';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import { loadOrganizationBy } from '../../organization/organization.domain';
+import { OrganizationDomain } from '../../organization/organization.domain';
 import * as UsersHelper from '../user.helper';
 import { createNewUserWithPendingOrga, removeUser } from '../user.helper';
 import { userAdminApp } from './user.admin.app';
@@ -40,7 +40,7 @@ describe('users admin app', () => {
           picture: null,
         },
       ];
-      const secondOrga = await loadOrganizationBy({
+      const secondOrga = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
@@ -48,7 +48,7 @@ describe('users admin app', () => {
         userList.map((user) => createNewUserWithPendingOrga(user, secondOrga))
       );
 
-      const filigranOrga = await loadOrganizationBy({
+      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       const filigranUser = await createNewUserWithPendingOrga(
@@ -263,7 +263,7 @@ describe('users admin app', () => {
     let createdUsers: User[];
     beforeEach(async () => {
       createdUsers = [];
-      const filigranOrga = await loadOrganizationBy({
+      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       const filigranUser = await createNewUserWithPendingOrga(
@@ -285,7 +285,7 @@ describe('users admin app', () => {
     });
     it('should throw if user is not allowed on orga', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      const filigranOrga = await loadOrganizationBy({
+      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       const filigranUser = await createNewUserWithPendingOrga(

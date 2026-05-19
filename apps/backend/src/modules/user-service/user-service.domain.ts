@@ -29,8 +29,8 @@ import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail
 import { ErrorCode } from '../../utils/error/error.code';
 import { formatRawObject } from '../../utils/query-raw.util';
 import { addPrefixToObject } from '../../utils/typescript';
-import { loadUserOrganization } from '../common/user-organization.domain';
 import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
+import { UserOrganizationDomain } from '../organization-management/user/user-organization/user-organization.domain';
 import {
   getOrCreateUser,
   insertUserIntoOrganization,
@@ -123,7 +123,11 @@ export const UserServiceDomain = {
     const [subscription] = await loadSubscriptionBy({
       id: subscription_id as SubscriptionId,
     });
-    const userOrganizations = await loadUserOrganization({ user_id });
+    const userOrganizations = await UserOrganizationDomain.loadUserOrganization(
+      {
+        user_id,
+      }
+    );
     if (
       !userOrganizations.some(
         (userOrganization) =>

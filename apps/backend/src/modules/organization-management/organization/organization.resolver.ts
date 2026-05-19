@@ -5,22 +5,18 @@ import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { StillReferencedError } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { organizationApp } from './organization.app';
-import {
-  loadOrganizationBy,
-  loadOrganizations,
-  loadOrganizationsByUser,
-} from './organization.domain';
+import { OrganizationDomain } from './organization.domain';
 
 const resolvers: Resolvers = {
   OrganizationId: createRelayIdScalar<OrganizationId>('Organization'),
   Query: {
     organization: async (_, { id }) =>
-      loadOrganizationBy({ id: id as OrganizationId }),
+      OrganizationDomain.loadOrganizationBy({ id: id as OrganizationId }),
     organizations: async (_, opts) => {
-      return loadOrganizations(opts);
+      return OrganizationDomain.loadOrganizations(opts);
     },
     userOrganizations: async (_, __, context) => {
-      return loadOrganizationsByUser(context.user.id);
+      return OrganizationDomain.loadOrganizationsByUser(context.user.id);
     },
   },
   Mutation: {

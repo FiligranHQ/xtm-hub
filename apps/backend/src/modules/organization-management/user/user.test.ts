@@ -10,19 +10,16 @@ import { requestContext } from '../../../context/request.context';
 import Organization from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
-import { createUserOrganizationRelationAndRemovePending } from '../../common/user-organization.helper';
 import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import {
-  deleteOrganizationBy,
-  loadOrganizationBy,
-} from '../organization/organization.domain';
+import { OrganizationDomain } from '../organization/organization.domain';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
 } from './user-domain/user.domain';
+import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import {
   createNewUserFromInvitation,
@@ -80,7 +77,7 @@ describe('user helpers', async () => {
       expect(newUser).toBeTruthy();
       expect(newUserPendingOrg).toHaveLength(0);
 
-      const newOrganization = await loadOrganizationBy({
+      const newOrganization = await OrganizationDomain.loadOrganizationBy({
         name: organizationName,
       });
       const userOrgCapa = await loadUserCapabilitiesByOrganization(
@@ -109,7 +106,7 @@ describe('user helpers', async () => {
 
       // Delete corresponding in order to avoid issue with other tests
       await removeUser({ email: testMail });
-      await deleteOrganizationBy({ name: organizationName });
+      await OrganizationDomain.deleteOrganizationBy({ name: organizationName });
     });
 
     it('should create a new user with Role USER and should not add it to pending organization if orga does not exist', async () => {
@@ -133,14 +130,16 @@ describe('user helpers', async () => {
     const organizationName = 'test-new-organization.fr';
     let organization: Organization;
     let user: UserLoadUserBy;
-    let anotherUser: UserLoadUserBy;
+    let anotherUser: UserLoadUserBy | undefined;
 
     beforeEach(async () => {
       const userEmail = `testLastOrganizationAdministrator${uuidv4()}@${organizationName}`;
       await createNewUserFromInvitation({
         email: userEmail,
       });
-      organization = await loadOrganizationBy({ name: organizationName });
+      organization = await OrganizationDomain.loadOrganizationBy({
+        name: organizationName,
+      });
 
       expect(organization).toBeTruthy();
 
@@ -150,15 +149,15 @@ describe('user helpers', async () => {
     afterEach(async () => {
       if (user) {
         await removeUser({ email: user.email });
-        user = null;
       }
       if (anotherUser) {
         await removeUser({ email: anotherUser.email });
-        anotherUser = null;
+        anotherUser = undefined;
       }
       if (organization) {
-        await deleteOrganizationBy({ name: organizationName });
-        organization = null;
+        await OrganizationDomain.deleteOrganizationBy({
+          name: organizationName,
+        });
       }
     });
 
@@ -185,10 +184,12 @@ describe('user helpers', async () => {
         });
 
         const [anotherUserOrgRelation] =
-          await createUserOrganizationRelationAndRemovePending({
-            user_id: anotherUser.id,
-            organizations_id: [organization.id],
-          });
+          await UserOrganizationDomain.createUserOrganizationRelationAndRemovePending(
+            {
+              user_id: anotherUser.id,
+              organizations_id: [organization.id],
+            }
+          );
         expect(anotherUserOrgRelation).toBeTruthy();
 
         await createUserOrganizationCapability({
@@ -236,10 +237,12 @@ describe('user helpers', async () => {
         });
 
         const [anotherUserOrgRelation] =
-          await createUserOrganizationRelationAndRemovePending({
-            user_id: anotherUser.id,
-            organizations_id: [organization.id],
-          });
+          await UserOrganizationDomain.createUserOrganizationRelationAndRemovePending(
+            {
+              user_id: anotherUser.id,
+              organizations_id: [organization.id],
+            }
+          );
         expect(anotherUserOrgRelation).toBeTruthy();
 
         await createUserOrganizationCapability({

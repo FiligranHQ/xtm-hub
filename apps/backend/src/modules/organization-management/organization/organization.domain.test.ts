@@ -8,16 +8,12 @@ import {
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../../model/kanel/public/User';
-import {
-  loadOrganizationsByUser,
-  loadUserByOrganization,
-  organizationDomain,
-} from './organization.domain';
+import { OrganizationDomain } from './organization.domain';
 
 describe('organizationsDomain', () => {
   describe('loadOrganizationsByUser', () => {
     it('should return the user organizations when user exists', async () => {
-      const organizations = await loadOrganizationsByUser(
+      const organizations = await OrganizationDomain.loadOrganizationsByUser(
         contextSimpleUserSecondOrga.user.id
       );
 
@@ -26,7 +22,8 @@ describe('organizationsDomain', () => {
 
     it('should return the user organizations when user does not exists', async () => {
       const userId = uuidv4() as UserId;
-      const organizations = await loadOrganizationsByUser(userId);
+      const organizations =
+        await OrganizationDomain.loadOrganizationsByUser(userId);
 
       expect(organizations).toHaveLength(0);
     });
@@ -34,7 +31,7 @@ describe('organizationsDomain', () => {
 
   describe('loadUserByOrganization', () => {
     it('should return the user of organization when user exists', async () => {
-      const users = await loadUserByOrganization(
+      const users = await OrganizationDomain.loadUserByOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
@@ -43,7 +40,7 @@ describe('organizationsDomain', () => {
 
     it('should return empty user list of organization when user is not in organization', async () => {
       const orgaId = uuidv4() as OrganizationId;
-      const users = await loadUserByOrganization(orgaId);
+      const users = await OrganizationDomain.loadUserByOrganization(orgaId);
 
       expect(users).toHaveLength(0);
     });
@@ -57,7 +54,7 @@ describe('organizationsDomain', () => {
 
     it('should return null when organization is not subscribed to service instance', async () => {
       const result =
-        await organizationDomain.loadOrganizationSubscribedToServiceInstance(
+        await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
           serviceInstance.id
         );
 
@@ -71,7 +68,7 @@ describe('organizationsDomain', () => {
       });
 
       const result =
-        await organizationDomain.loadOrganizationSubscribedToServiceInstance(
+        await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
           serviceInstance.id
         );
 
@@ -86,7 +83,7 @@ describe('organizationsDomain', () => {
 
       // When
       const result =
-        await organizationDomain.loadOrganizationsSubscribedToServiceInstance(
+        await OrganizationDomain.loadOrganizationsSubscribedToServiceInstance(
           serviceInstance.id
         );
 
@@ -108,7 +105,7 @@ describe('organizationsDomain', () => {
 
       // When
       const result =
-        await organizationDomain.loadOrganizationsSubscribedToServiceInstance(
+        await OrganizationDomain.loadOrganizationsSubscribedToServiceInstance(
           serviceInstance.id
         );
 

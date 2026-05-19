@@ -31,28 +31,18 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { hashPassword } from '../../../utils/hash-password.util';
 import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
-import {
-  loadUserOrganization,
-  updateUserOrgCapabilities,
-} from '../../common/user-organization.domain';
-import {
-  createUserOrganizationRelation,
-  createUserOrganizationRelationAndRemovePending,
-} from '../../common/user-organization.helper';
 import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscription/subscription.helper';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
-import {
-  deleteOrganizationBy,
-  insertNewOrganization,
-} from '../organization/organization.domain';
+import { OrganizationDomain } from '../organization/organization.domain';
 import { loadOrganizationsFromEmail } from '../organization/organization.helper';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
   loadUserDetails,
 } from './user-domain/user.domain';
+import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 
 export const createUserWithPersonalSpace = async (
@@ -67,11 +57,12 @@ export const createUserWithPersonalSpace = async (
   const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
   // Create user personal space organization
-  const personalSpaceOrganization = await insertNewOrganization({
-    id: uuid as unknown as OrganizationId,
-    name: data.email,
-    personal_space: true,
-  });
+  const personalSpaceOrganization =
+    await OrganizationDomain.insertNewOrganization({
+      id: uuid as unknown as OrganizationId,
+      name: data.email,
+      personal_space: true,
+    });
 
   const [addedUser] = await db<User>('User')
     .insert({
@@ -88,10 +79,11 @@ export const createUserWithPersonalSpace = async (
     .returning('*');
 
   // Insert relation UserOrganization
-  const [userOrgRelation] = await createUserOrganizationRelation({
-    user_id: addedUser.id,
-    organizations_id: [personalSpaceOrganization.id],
-  });
+  const [userOrgRelation] =
+    await UserOrganizationDomain.createUserOrganizationRelation({
+      user_id: addedUser.id,
+      organizations_id: [personalSpaceOrganization.id],
+    });
 
   await createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
@@ -110,7 +102,7 @@ export const createUserWithPersonalSpace = async (
 async function createOrganisationWithAdminUser(email: string) {
   const extractedDomain = extractDomain(email);
 
-  const newOrganization = await insertNewOrganization({
+  const newOrganization = await OrganizationDomain.insertNewOrganization({
     id: uuidv4() as OrganizationId,
     name: extractedDomain,
     domains: [extractedDomain],
@@ -132,10 +124,11 @@ async function createOrganisationWithAdminUser(email: string) {
   }
 
   // Insert relation UserOrganization
-  const [userOrgRelation] = await createUserOrganizationRelation({
-    user_id: addedUser.id,
-    organizations_id: [newOrganization.id],
-  });
+  const [userOrgRelation] =
+    await UserOrganizationDomain.createUserOrganizationRelation({
+      user_id: addedUser.id,
+      organizations_id: [newOrganization.id],
+    });
 
   await createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
@@ -239,7 +232,7 @@ export const insertUserIntoOrganization = async (
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
   const [organization] = await loadOrganizationsFromEmail(user.email);
-  const userOrganization = await loadUserOrganization({
+  const userOrganization = await UserOrganizationDomain.loadUserOrganization({
     user_id: user.id,
     organization_id: organization.id,
   });
@@ -253,10 +246,12 @@ export const insertUserIntoOrganization = async (
   }
   if (isEmpty(userOrganization)) {
     const [userOrgRelation] =
-      await createUserOrganizationRelationAndRemovePending({
-        user_id: user.id,
-        organizations_id: [organization.id],
-      });
+      await UserOrganizationDomain.createUserOrganizationRelationAndRemovePending(
+        {
+          user_id: user.id,
+          organizations_id: [organization.id],
+        }
+      );
     const shouldBeAdminOrga = await isFirstInOrganization(organization.id);
     if (shouldBeAdminOrga) {
       await createUserOrganizationCapability({
@@ -268,7 +263,7 @@ export const insertUserIntoOrganization = async (
 };
 
 export const isFirstInOrganization = async (organizationId: OrganizationId) => {
-  const userOrganization = await loadUserOrganization({
+  const userOrganization = await UserOrganizationDomain.loadUserOrganization({
     organization_id: organizationId,
   });
   return userOrganization.length === 1;
@@ -292,7 +287,7 @@ export const removeUser = async (field: UserMutator) => {
     .returning('*');
 
   // Organization personalSpace of the user should have the same id
-  await deleteOrganizationBy({
+  await OrganizationDomain.deleteOrganizationBy({
     id: deletedUser.id as unknown as OrganizationId,
   });
 
@@ -420,10 +415,12 @@ export const acceptPendingUserWithCapabilities = async ({
   orgCapabilities?: string[];
 }) => {
   const { user, userMapped } = await withTransaction(async () => {
-    await createUserOrganizationRelationAndRemovePending({
-      user_id,
-      organizations_id: [organization_id],
-    });
+    await UserOrganizationDomain.createUserOrganizationRelationAndRemovePending(
+      {
+        user_id,
+        organizations_id: [organization_id],
+      }
+    );
 
     return await updateUserCapabilities({
       user_id,
@@ -475,7 +472,7 @@ const updateUserCapabilities = async ({
   orgCapabilities?: string[];
 }) => {
   const user = await withTransaction(async () => {
-    await updateUserOrgCapabilities({
+    await UserOrganizationDomain.updateUserOrgCapabilities({
       user_id,
       organization_id,
       orgCapabilities,

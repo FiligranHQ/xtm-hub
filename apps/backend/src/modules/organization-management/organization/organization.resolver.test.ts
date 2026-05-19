@@ -22,7 +22,7 @@ import {
 } from '../../../utils/error/error.code';
 import { ErrorType } from '../../../utils/error/error.type';
 import { organizationApp } from './organization.app';
-import * as organizationsDomain from './organization.domain';
+import { OrganizationDomain } from './organization.domain';
 import organizationsResolver from './organization.resolver';
 
 describe('organization GraphQL query', () => {
@@ -30,9 +30,9 @@ describe('organization GraphQL query', () => {
     // Given
     const id = TEST_ORGANIZATIONS.FILIGRAN.ID;
     const expected = { id, name: 'Filigran' } as unknown as Awaited<
-      ReturnType<typeof organizationsDomain.loadOrganizationBy>
+      ReturnType<typeof OrganizationDomain.loadOrganizationBy>
     >;
-    vi.spyOn(organizationsDomain, 'loadOrganizationBy').mockResolvedValue(
+    vi.spyOn(OrganizationDomain, 'loadOrganizationBy').mockResolvedValue(
       expected
     );
 
@@ -45,7 +45,7 @@ describe('organization GraphQL query', () => {
     );
 
     // Then
-    expect(organizationsDomain.loadOrganizationBy).toHaveBeenCalledWith({ id });
+    expect(OrganizationDomain.loadOrganizationBy).toHaveBeenCalledWith({ id });
     expect(result).toMatchObject({ id, name: 'Filigran' });
   });
 });
@@ -79,7 +79,7 @@ describe('organizations GraphQL query', () => {
       pageInfo,
       totalCount: 1,
     };
-    vi.spyOn(organizationsDomain, 'loadOrganizations').mockReturnValue(
+    vi.spyOn(OrganizationDomain, 'loadOrganizations').mockResolvedValue(
       expected
     );
 
@@ -92,7 +92,7 @@ describe('organizations GraphQL query', () => {
     );
 
     // Then
-    expect(organizationsDomain.loadOrganizations).toHaveBeenCalledWith(opts);
+    expect(OrganizationDomain.loadOrganizations).toHaveBeenCalledWith(opts);
     expect(result).toEqual(expected);
   });
 });
@@ -103,9 +103,9 @@ describe('user organizations GraphQL query', () => {
     const expected = [
       { id: TEST_ORGANIZATIONS.FILIGRAN.ID, name: 'Filigran' },
     ] as unknown as Awaited<
-      ReturnType<typeof organizationsDomain.loadOrganizationsByUser>
+      ReturnType<typeof OrganizationDomain.loadOrganizationsByUser>
     >;
-    vi.spyOn(organizationsDomain, 'loadOrganizationsByUser').mockResolvedValue(
+    vi.spyOn(OrganizationDomain, 'loadOrganizationsByUser').mockResolvedValue(
       expected
     );
 
@@ -118,7 +118,7 @@ describe('user organizations GraphQL query', () => {
     );
 
     // Then
-    expect(organizationsDomain.loadOrganizationsByUser).toHaveBeenCalledWith(
+    expect(OrganizationDomain.loadOrganizationsByUser).toHaveBeenCalledWith(
       contextSimpleUserFiligran2.user.id
     );
     expect(result).toEqual(expected);

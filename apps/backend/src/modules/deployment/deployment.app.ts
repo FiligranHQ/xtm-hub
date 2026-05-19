@@ -45,7 +45,7 @@ import {
 } from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
 import { ucfirst } from '../../utils/utils';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { loadUser } from '../organization-management/user/user-domain/user.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
@@ -72,7 +72,7 @@ export const DeploymentApp = {
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
     const { user } = requestContext.require();
-    const chosenOrganization = await loadOrganizationBy({
+    const chosenOrganization = await OrganizationDomain.loadOrganizationBy({
       id: user.selected_organization_id,
     });
 
@@ -655,7 +655,7 @@ export const DeploymentApp = {
     const { user } = requestContext.require();
     await securityGuard.assertUserIsInOrganization(user, input.organizationId);
 
-    const organization = await loadOrganizationBy({
+    const organization = await OrganizationDomain.loadOrganizationBy({
       id: input.organizationId,
     });
     if (organization.personal_space) {
@@ -896,7 +896,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
   }
 
   try {
-    const organization = await loadOrganizationBy({
+    const organization = await OrganizationDomain.loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,
     });
     const updateDeploymentEvent = buildUpdateDeploymentEvent(

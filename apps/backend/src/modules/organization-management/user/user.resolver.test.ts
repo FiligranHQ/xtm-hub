@@ -39,7 +39,6 @@ import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
-import * as UserOrganizationDomain from '../../common/user-organization.domain';
 import { loginFromProvider } from '../../security-management/authentication/auth-user';
 import {
   deleteSubscription,
@@ -50,6 +49,7 @@ import {
   loadUser,
   loadUserBy,
 } from './user-domain/user.domain';
+import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { removeUser } from './user.helper';
 import usersResolver from './user.resolver';

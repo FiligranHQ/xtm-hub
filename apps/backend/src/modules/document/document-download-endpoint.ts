@@ -14,7 +14,7 @@ import {
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -121,7 +121,7 @@ export const documentDownloadEndpoint = (app) => {
 
           try {
             if (shouldSendEventForService(serviceDefinition.identifier)) {
-              const selectedOrga = await loadOrganizationBy({
+              const selectedOrga = await OrganizationDomain.loadOrganizationBy({
                 id: context.user.selected_organization_id,
               });
 

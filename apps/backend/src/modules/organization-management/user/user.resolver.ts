@@ -26,7 +26,7 @@ import {
   resetPassword,
   userHasOrganizationWithSubscription,
 } from './user-domain/user.domain';
-import { UserOrganizationApp } from './user-organization/user.organization.app';
+import { UserOrganizationApp } from './user-organization/user-organization.app';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { userProfileApp } from './user-profile/user.profile.app';
 import { UserAuthApp } from './user.auth.app';

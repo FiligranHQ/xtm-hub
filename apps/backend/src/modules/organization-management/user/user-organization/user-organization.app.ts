@@ -17,12 +17,7 @@ import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { formatName } from '../../../../utils/format';
-import {
-  createUserOrgCapabilities,
-  removeUserFromOrganization,
-  removeUserFromPendingList,
-} from '../../../common/user-organization.domain';
-import { loadOrganizationBy } from '../../organization/organization.domain';
+import { OrganizationDomain } from '../../organization/organization.domain';
 import { loadOrganizationsFromEmail } from '../../organization/organization.helper';
 import {
   loadUser,
@@ -32,6 +27,7 @@ import {
 } from '../user-domain/user.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import { createUserWithPersonalSpace } from '../user.helper';
+import { UserOrganizationDomain } from './user-organization.domain';
 
 export const UserOrganizationApp = {
   addUserToOrganization: async (
@@ -42,7 +38,7 @@ export const UserOrganizationApp = {
       input.email
     );
 
-    const chosenOrganization = await loadOrganizationBy({
+    const chosenOrganization = await OrganizationDomain.loadOrganizationBy({
       id: contextUser.selected_organization_id,
     });
 
@@ -73,19 +69,20 @@ export const UserOrganizationApp = {
             selected_organization_id: chosenOrganization.id,
           });
 
-      await createUserOrgCapabilities({
+      await UserOrganizationDomain.createUserOrgCapabilities({
         user,
         organization: chosenOrganization,
         orgCapabilities: input.capabilities ?? [],
         userExists: !!existingUser,
       });
 
-      const userIsDeletedFromPrendingList = await removeUserFromPendingList({
-        user_id: user.id,
-        organization_id: chosenOrganization.id,
-      });
+      const userIsDeletedFromPendingList =
+        await UserOrganizationDomain.removeUserFromPendingList({
+          user_id: user.id,
+          organization_id: chosenOrganization.id,
+        });
 
-      if (userIsDeletedFromPrendingList.length > 0) {
+      if (userIsDeletedFromPendingList.length > 0) {
         const userPendingPayload: GraphqlUser = {
           ...user,
           pending_organization_id: chosenOrganization.id,
@@ -133,7 +130,10 @@ export const UserOrganizationApp = {
       throw new Error(ErrorCode.CantRemoveYourselfFromOrgaError);
     }
 
-    await removeUserFromOrganization(userId, organizationId);
+    await UserOrganizationDomain.removeUserFromOrganization(
+      userId,
+      organizationId
+    );
     return loadUserBy({
       'User.id': userId,
     });

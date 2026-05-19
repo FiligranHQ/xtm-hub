@@ -6,7 +6,7 @@ import {
 import Document from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../utils/error/error.code';
-import { organizationDomain } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from '../registration/registration.mapping';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
@@ -114,7 +114,7 @@ export const NewsFeedApp = {
     });
 
     const organizations =
-      await organizationDomain.loadOrganizationsSubscribedToServiceInstance(
+      await OrganizationDomain.loadOrganizationsSubscribedToServiceInstance(
         serviceInstanceId
       );
 

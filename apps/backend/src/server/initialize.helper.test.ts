@@ -7,7 +7,7 @@ import { withTransaction } from '../context/database.context';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { RolePortalId } from '../model/kanel/public/RolePortal';
 import User, { UserId, UserInitializer } from '../model/kanel/public/User';
-import { loadOrganizationBy } from '../modules/organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../modules/organization-management/organization/organization.domain';
 import { CAPABILITY_BYPASS, ROLE_ADMIN, ROLE_USER } from '../portal.const';
 import { DevUser } from '../utils/config-validation.util';
 import {
@@ -86,7 +86,9 @@ describe('dev users seeding', () => {
       expect(result.personal_space).toBe(false);
 
       // Verify in database
-      const dbOrg = await loadOrganizationBy({ name: 'Test Organization' });
+      const dbOrg = await OrganizationDomain.loadOrganizationBy({
+        name: 'Test Organization',
+      });
 
       expect(dbOrg).toBeDefined();
       expect(dbOrg?.domains).toEqual(['test-dev.com']);
@@ -145,7 +147,7 @@ describe('dev users seeding', () => {
       expect(platformMembership).toBeDefined();
 
       // Verify personal space exists
-      const personalSpace = await loadOrganizationBy({
+      const personalSpace = await OrganizationDomain.loadOrganizationBy({
         id: user?.id as unknown as OrganizationId,
         personal_space: true,
       });
@@ -198,7 +200,9 @@ describe('dev users seeding', () => {
       expect(user).toBeDefined();
 
       // Verify organization was created
-      const org = await loadOrganizationBy({ name: 'User Test Organization' });
+      const org = await OrganizationDomain.loadOrganizationBy({
+        name: 'User Test Organization',
+      });
 
       expect(org).toBeDefined();
       expect(org?.domains).toEqual(['userorg.test-dev.com']);
@@ -300,7 +304,9 @@ describe('dev users seeding', () => {
         expect(adminRole).toBeDefined();
 
         // Verify organization for dev3
-        const org = await loadOrganizationBy({ name: 'Multi User Test Org' });
+        const org = await OrganizationDomain.loadOrganizationBy({
+          name: 'Multi User Test Org',
+        });
 
         expect(org).toBeDefined();
       } finally {

@@ -17,10 +17,6 @@ import { updateUserSession } from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import {
-  loadUserOrganization,
-  updateMultipleUserOrgWithCapabilities,
-} from '../../../common/user-organization.domain';
 import { loadOrganizationsFromEmail } from '../../organization/organization.helper';
 import {
   loadUser,
@@ -28,6 +24,7 @@ import {
   loadUserDetails,
   updateUser,
 } from '../user-domain/user.domain';
+import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import {
   acceptPendingUserWithCapabilities,
@@ -75,7 +72,7 @@ export const userAdminApp = {
             selected_organization_id: chosenOrganizationId,
           });
 
-      await updateMultipleUserOrgWithCapabilities(
+      await UserOrganizationDomain.updateMultipleUserOrgWithCapabilities(
         user.id,
         input.organization_capabilities
       );
@@ -119,7 +116,7 @@ export const userAdminApp = {
     } catch (err) {
       logApp.error(err);
     }
-    await updateMultipleUserOrgWithCapabilities(
+    await UserOrganizationDomain.updateMultipleUserOrgWithCapabilities(
       userId,
       organization_capabilities
     );
@@ -156,10 +153,11 @@ export const userAdminApp = {
       input.capabilities
     );
 
-    const [userOrganization] = await loadUserOrganization({
-      user_id: userId,
-      organization_id: organizationId,
-    });
+    const [userOrganization] =
+      await UserOrganizationDomain.loadUserOrganization({
+        user_id: userId,
+        organization_id: organizationId,
+      });
 
     return userOrganization
       ? await updateUserOrgCapabilitiesAndDispatch({

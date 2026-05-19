@@ -20,7 +20,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { FullyQualifiedDeploymentRequest } from '../deployment/deployment.domain';
-import { loadOrganizationsByUser } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
@@ -117,7 +117,8 @@ export const registrationDomain = {
     }
 
     if (subscription.organization_id !== targetOrganizationId) {
-      const userOrganizations = await loadOrganizationsByUser(user.id);
+      const userOrganizations =
+        await OrganizationDomain.loadOrganizationsByUser(user.id);
       if (userOrganizations.length > 2) {
         throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
       }
