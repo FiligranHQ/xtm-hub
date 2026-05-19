@@ -1,6 +1,6 @@
 {
   "name": "@xtm-hub/backend",
-  "version": "1.21.34",
+  "version": "1.21.35",
   "description": "Portal API",
   "main": "src/index.js",
   "repository": "https://github.com/FiligranHQ/cloud-portal",
