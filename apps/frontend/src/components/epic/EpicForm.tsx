@@ -35,7 +35,7 @@ export const descriptionValue =
   '            \n' +
   'Description of pain point(s) felt by the user that this Epic is solving. This pain must be specific to this Epic (not a generic, high level pain such as “*Lack of visibility in my threat landscape*”)\n' +
   '         \n' +
-  '   ### Proposed Solution\n' +
+  '### Proposed Solution\n' +
   'What we are introducing to solve the problem\n' +
   '\n' +
   '### Expected Value\n' +

@@ -1,5 +1,4 @@
 import { MockInstance } from '@vitest/spy';
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -329,10 +328,7 @@ describe('service Instance app', () => {
     it('should update name, sync config title, dispatch, and return RegisteredPlatform', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         name: 'Updated Platform Name',
       };
 
@@ -370,10 +366,7 @@ describe('service Instance app', () => {
         mime_type: 'image/png',
       });
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         name: 'Updated Platform Name',
       };
 
@@ -396,10 +389,7 @@ describe('service Instance app', () => {
     it('should not update service instance or config when no fields to update', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
       };
 
       // When
@@ -421,10 +411,7 @@ describe('service Instance app', () => {
     it('should return null illustration_document_id when service instance has none', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         name: 'Updated Name',
       };
 
@@ -450,10 +437,7 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           nonExistentId,
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              nonExistentId
-            ) as ServiceInstanceId,
+            serviceInstanceId: nonExistentId,
             name: 'Name',
           },
           null
@@ -483,10 +467,7 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              mockId
-            ) as ServiceInstanceId,
+            serviceInstanceId: mockId,
             name: 'Name',
           },
           null
@@ -520,10 +501,7 @@ describe('service Instance app', () => {
           contextSimpleUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              mockId
-            ) as ServiceInstanceId,
+            serviceInstanceId: mockId,
             name: 'Name',
           },
           null
@@ -535,10 +513,7 @@ describe('service Instance app', () => {
       // Given
       uploadNewFileSpy.mockRejectedValue(new Error('Upload failed'));
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         name: 'Updated Name',
       };
 
@@ -614,10 +589,7 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              mockId
-            ) as ServiceInstanceId,
+            serviceInstanceId: mockId,
             name: 'Updated',
           },
           null
@@ -664,7 +636,7 @@ describe('service Instance app', () => {
       // Given
       const slug = 'test-seo-slug-with-docs';
       const logoId = uuidv4() as DocumentId;
-      const illustrationId = uuidv4();
+      const illustrationId = uuidv4() as DocumentId;
 
       // logo_document_id has a FK to Document, so insert the document first
       await TestHelper.document.create({ id: logoId, type: 'logo' });
@@ -714,7 +686,7 @@ describe('service Instance app', () => {
 
   describe('loadSeoServiceInstances', () => {
     const logoId = uuidv4() as DocumentId;
-    const illustrationId = uuidv4();
+    const illustrationId = uuidv4() as DocumentId;
     const firstServiceInstancePublicId = uuidv4() as ServiceInstanceId;
     const secondServiceInstancePublicId = uuidv4() as ServiceInstanceId;
     const privateServiceInstanceId = uuidv4() as ServiceInstanceId;

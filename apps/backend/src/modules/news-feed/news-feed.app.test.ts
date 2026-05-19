@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   mockPlatformConfig,
   TestHelper,
@@ -18,6 +18,20 @@ import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedApp } from './news-feed.app';
 import { NewsFeedDomain } from './news-feed.domain';
+
+import config from 'config';
+
+vi.mock('config', async (importOriginal) => {
+  const mod = await importOriginal<{ default: typeof config }>();
+  return {
+    default: {
+      get: vi.fn(mod.default.get.bind(mod.default)),
+      has: mod.default.has.bind(mod.default),
+    },
+  };
+});
+
+const mockConfigGet = vi.mocked(config.get);
 
 describe('newsFeedApp', () => {
   describe('consumeProvisionedNewsFeedItems', () => {
@@ -396,6 +410,74 @@ describe('newsFeedApp', () => {
       expect(newsFeedItem).toMatchObject({
         tags: expect.arrayContaining(['Use Case Alpha', 'Use Case Beta']),
       });
+    });
+  });
+
+  describe('cleanExpiredNewsFeedItems', () => {
+    const monthsAgo = (months: number): Date => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - months);
+      return date;
+    };
+
+    afterEach(async () => {
+      await TestHelper.newsFeed.deleteItem();
+      mockConfigGet.mockReset();
+    });
+
+    it('should delete items older than configured interval and keep recent ones', async () => {
+      // Given
+      const oldItem = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'old item',
+        creation_date: monthsAgo(7),
+        tags: [],
+      });
+      const recentItem = await TestHelper.newsFeed.createItem({
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platform_identifier: PlatformIdentifier.Opencti,
+        title: 'recent item',
+        creation_date: monthsAgo(1),
+        tags: [],
+      });
+
+      // When
+      await NewsFeedApp.cleanExpiredNewsFeedItems();
+
+      // Then
+      const remaining = await TestHelper.newsFeed.loadItems();
+      const remainingIds = remaining.map((i) => i.id);
+      expect(remainingIds).not.toContain(oldItem.id);
+      expect(remainingIds).toContain(recentItem.id);
+    });
+
+    it('should not throw when no items exist', async () => {
+      await expect(NewsFeedApp.cleanExpiredNewsFeedItems()).resolves.not.toThrow();
+    });
+
+    it('should throw when cleanup_interval_value is not a positive number', async () => {
+      mockConfigGet.mockImplementation((key: string) => {
+        if (key === 'news_feed.cleanup_interval_value') return 'not-a-number';
+        if (key === 'news_feed.cleanup_interval_unit') return 'days';
+        return undefined;
+      });
+
+      await expect(NewsFeedApp.cleanExpiredNewsFeedItems()).rejects.toThrow(
+        /Invalid config "news_feed.cleanup_interval_value"/
+      );
+    });
+
+    it('should throw when cleanup_interval_unit is not a supported unit', async () => {
+      mockConfigGet.mockImplementation((key: string) => {
+        if (key === 'news_feed.cleanup_interval_value') return 30;
+        if (key === 'news_feed.cleanup_interval_unit') return 'weeks';
+        return undefined;
+      });
+
+      await expect(NewsFeedApp.cleanExpiredNewsFeedItems()).rejects.toThrow(
+        /Invalid config "news_feed.cleanup_interval_unit"/
+      );
     });
   });
 });

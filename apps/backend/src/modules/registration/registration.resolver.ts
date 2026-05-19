@@ -1,4 +1,3 @@
-import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
 import {
   AutoRegisterPlatformInput,
   Resolvers,
@@ -47,9 +46,7 @@ const resolvers: Resolvers = {
         return {
           ...response,
           isPlatformRegistered: true,
-          organizationId: response.organizationId
-            ? toGlobalId('Organization', response.organizationId)
-            : undefined,
+          organizationId: response.organizationId ?? undefined,
         };
       } catch (error) {
         if (error.message === ErrorCode.PlatformNotRegistered) {
@@ -88,11 +85,7 @@ const resolvers: Resolvers = {
   Mutation: {
     registerPlatform: async (_, { input }) => {
       try {
-        const payload = {
-          ...input,
-          organizationId: fromGlobalId(input.organizationId).id,
-        };
-        const token = await registrationApp.registerPlatform(payload);
+        const token = await registrationApp.registerPlatform(input);
         return { token };
       } catch (error) {
         throw mapToGraphQLError(
