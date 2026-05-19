@@ -95,7 +95,15 @@
     "vulnerability_management": "Gestion des vulnérabilités",
     "centralizing_knowledge": "Centralisation des connaissances",
     "sharing_knowledge": "Partage des connaissances",
-    "hosting_threat_community": "Hébergement d'une communauté de partage des menaces"
+    "hosting_threat_community": "Hébergement d'une communauté de partage des menaces",
+    "oaev_attack_simulation": "Exécuter la simulation de brèche et d'attaque (BAS)",
+    "oaev_penetration_testing": "Effectuer des tests de pénétration",
+    "oaev_atomic_testing": "Exécution de tests atomiques individuels",
+    "oaev_platform_validation": "Valider que mes plates-formes de sécurité fonctionnent comme prévu",
+    "oaev_tabletop_exercise": "Effectuer des exercices contextuels sur table pour la simulation de crise",
+    "oaev_purple_team": "Activation de l'équipe Purple : Améliorer les défenses en fonction des attaques",
+    "oaev_opencti_coverage": "Activer la couverture de sécurité OpenCTI",
+    "oaev_ctem_framework": "Opérationnaliser un cadre CTEM"
   },
   "DeploymentRequestActivitySector": {
     "computer_network_security": "Sécurité des ordinateurs et des réseaux",
@@ -149,9 +157,7 @@
       "now": "Maintenant",
       "next": "Après",
       "under_consideration": "En considération",
-      "finished": "Terminé au cours des 3 derniers mois",
-      "IsLimited": "Limité à {maxChars} charactères",
-      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
+      "finished": "Terminé au cours des 3 derniers mois"
     },
     "Form": {
       "Epic": "Epic",
@@ -163,7 +169,9 @@
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Ligne de temps",
       "IsActive": "Cet EPIC est-il publié ? (Par défaut votre EPIC est en mode brouillon)",
-      "Integration": "Est une intégration"
+      "Integration": "Est une intégration",
+      "IsLimited": "Limité à {maxChars} caractères",
+      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
     },
     "EpicActions": {
       "CreateEpic": "Créer un nouvel épic",

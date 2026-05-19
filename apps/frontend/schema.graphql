@@ -254,6 +254,14 @@ enum DeploymentRequestUseCase {
   centralizing_knowledge
   sharing_knowledge
   hosting_threat_community
+  oaev_attack_simulation
+  oaev_penetration_testing
+  oaev_atomic_testing
+  oaev_platform_validation
+  oaev_tabletop_exercise
+  oaev_purple_team
+  oaev_opencti_coverage
+  oaev_ctem_framework
 }
 
 enum DeploymentRequestActivitySector {
