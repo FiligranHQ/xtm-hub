@@ -1,4 +1,4 @@
-import { USE_CASES_BY_PLATFORMIDENTIFIER } from '@/components/service/trial-instances/form-constants';
+import { USE_CASES_BY_PLATFORM_IDENTIFIER } from '@/components/service/trial-instances/form-constants';
 import testRender from '@/utils/test/test-render';
 import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
@@ -94,9 +94,9 @@ const mockQueryRef =
   {} as PreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>;
 
 const openaevUseCases =
-  USE_CASES_BY_PLATFORMIDENTIFIER[PlatformIdentifierEnum.OPENAEV];
+  USE_CASES_BY_PLATFORM_IDENTIFIER[PlatformIdentifierEnum.OPENAEV];
 const openctiUseCases =
-  USE_CASES_BY_PLATFORMIDENTIFIER[PlatformIdentifierEnum.OPENCTI];
+  USE_CASES_BY_PLATFORM_IDENTIFIER[PlatformIdentifierEnum.OPENCTI];
 
 describe('TryFiligranProductForm', () => {
   it.each`

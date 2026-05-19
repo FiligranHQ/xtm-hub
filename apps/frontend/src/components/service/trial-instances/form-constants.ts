@@ -12,7 +12,7 @@ export const REGIONS = Object.values(DeploymentRequestPlatformRegionEnum).map(
   })
 );
 
-export const USE_CASES_BY_PLATFORMIDENTIFIER: Record<
+export const USE_CASES_BY_PLATFORM_IDENTIFIER: Record<
   PlatformIdentifierEnum,
   DeploymentRequestUseCaseEnum[]
 > = {

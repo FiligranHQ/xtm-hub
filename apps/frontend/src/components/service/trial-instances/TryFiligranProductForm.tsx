@@ -2,7 +2,7 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   REGIONS,
   REGIONS_VALUES,
-  USE_CASES_BY_PLATFORMIDENTIFIER,
+  USE_CASES_BY_PLATFORM_IDENTIFIER,
 } from '@/components/service/trial-instances/form-constants';
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
@@ -168,7 +168,7 @@ export const TryFiligranProductForm = ({
                   field={field}
                   label={t('Service.Trials.Form.UseCase')}
                   placeholder={t('Service.Trials.Form.UseCasePlaceholder')}
-                  values={USE_CASES_BY_PLATFORMIDENTIFIER[platformIdentifier]}
+                  values={USE_CASES_BY_PLATFORM_IDENTIFIER[platformIdentifier]}
                   translationNamespace="DeploymentRequestUseCase"
                 />
               ),
