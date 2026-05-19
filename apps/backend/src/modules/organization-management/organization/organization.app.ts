@@ -11,7 +11,6 @@ import {
   buildUpdateOrganizationEvent,
 } from '../../telemetry/telemetry.helper';
 import { OrganizationDomain } from './organization.domain';
-import { hasDomainOverlap } from './organization.helper';
 
 export const organizationApp = {
   async updateOrganization(id: OrganizationId, input: OrganizationInput) {
@@ -43,7 +42,9 @@ export const organizationApp = {
       throw new Error(ErrorCode.OrganizationSameNameExists);
     }
 
-    const overlappingDomains = await hasDomainOverlap(input.domains);
+    const overlappingDomains = await OrganizationDomain.hasDomainOverlap(
+      input.domains
+    );
     if (overlappingDomains.length > 0) {
       throw new Error(ErrorCode.OrganizationSameDomainExists);
     }

@@ -17,7 +17,7 @@ import { updateUserSession } from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import { loadOrganizationsFromEmail } from '../../organization/organization.helper';
+import { OrganizationDomain } from '../../organization/organization.domain';
 import {
   loadUser,
   loadUserBy,
@@ -38,9 +38,8 @@ import {
 export const userAdminApp = {
   addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {
     const { user: contextUser } = requestContext.require();
-    const [organizationFromEmail] = await loadOrganizationsFromEmail(
-      input.email
-    );
+    const [organizationFromEmail] =
+      await OrganizationDomain.loadOrganizationsFromEmail(input.email);
     // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
     const chosenOrganizationId: OrganizationId | undefined = input
       .organization_capabilities?.[0]

@@ -12,8 +12,26 @@ import Organization, {
 } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
+import { extractDomain } from '../../../utils/verify-email.util';
 
 export const OrganizationDomain = {
+  loadOrganizationsFromEmail: async (
+    email: string
+  ): Promise<Organization[]> => {
+    const extractedDomain = extractDomain(email);
+    return OrganizationDomain.hasDomainOverlap([extractedDomain]);
+  },
+
+  hasDomainOverlap: async (domains: string[]): Promise<Organization[]> => {
+    return db<Organization[]>('Organization')
+      .where(function () {
+        domains.forEach((domain) => {
+          this.orWhereRaw('? = ANY("domains")', [domain]);
+        });
+      })
+      .select('*');
+  },
+
   loadOrganizationByLikeName: (name: string) => {
     return db<Organization>('Organization')
       .where('name', 'ILIKE', name)

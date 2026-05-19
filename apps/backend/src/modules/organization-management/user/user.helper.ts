@@ -36,7 +36,6 @@ import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscri
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
 import { OrganizationDomain } from '../organization/organization.domain';
-import { loadOrganizationsFromEmail } from '../organization/organization.helper';
 import {
   loadUserBy,
   loadUserCapabilitiesByOrganization,
@@ -169,7 +168,8 @@ export const createNewUserFromInvitation = async (
   }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
   isFiligranUser: boolean = false
 ) => {
-  const [organization] = await loadOrganizationsFromEmail(email);
+  const [organization] =
+    await OrganizationDomain.loadOrganizationsFromEmail(email);
   let userWithRoles: User;
   if (!organization) {
     userWithRoles = await createOrganisationWithAdminUser(email);
@@ -231,7 +231,9 @@ export const insertUserIntoOrganization = async (
     await loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
-  const [organization] = await loadOrganizationsFromEmail(user.email);
+  const [organization] = await OrganizationDomain.loadOrganizationsFromEmail(
+    user.email
+  );
   const userOrganization = await UserOrganizationDomain.loadUserOrganization({
     user_id: user.id,
     organization_id: organization.id,

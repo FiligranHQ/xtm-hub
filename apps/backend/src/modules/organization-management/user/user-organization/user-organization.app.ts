@@ -18,7 +18,6 @@ import { ErrorCode } from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { formatName } from '../../../../utils/format';
 import { OrganizationDomain } from '../../organization/organization.domain';
-import { loadOrganizationsFromEmail } from '../../organization/organization.helper';
 import {
   loadUser,
   loadUserBy,
@@ -34,9 +33,8 @@ export const UserOrganizationApp = {
     input: AddUserInput
   ): Promise<UserLoadUserBy> => {
     const { user: contextUser } = requestContext.require();
-    const [organizationFromEmail] = await loadOrganizationsFromEmail(
-      input.email
-    );
+    const [organizationFromEmail] =
+      await OrganizationDomain.loadOrganizationsFromEmail(input.email);
 
     const chosenOrganization = await OrganizationDomain.loadOrganizationBy({
       id: contextUser.selected_organization_id,
