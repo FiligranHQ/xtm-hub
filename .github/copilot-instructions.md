@@ -212,6 +212,7 @@ eslint.config.mjs               # ESLint flat config (typescript-eslint strict)
 test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image
 ```
+When you create a new file in the backend, follow the template in generate-new-module.ts.
 
 ### Frontend — `apps/frontend/`
 
@@ -274,6 +275,7 @@ eslint.config.mjs               # ESLint config (next/core-web-vitals + prettier
 test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image (standalone Next.js)
 ```
+When you create a new file in the frontend, follow the template in generate-component.ts.
 
 ### Path Aliases (Frontend)
 

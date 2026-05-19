@@ -17,6 +17,7 @@
     "prepare": "cd .. && husky ./.husky",
     "auto-translation": "i18n-auto-translation -a deepl-free -p ./messages/en.json -t fr -k $SUBSCRIPTION_KEY",
     "generate:enum": "tsx scripts/generate-enum.ts",
+    "generate:component": "tsx scripts/generate-component.ts",
     "extract-error-code-translation-key": "tsx scripts/extract-error-code-translation-keys.ts"
   },
   "dependencies": {
