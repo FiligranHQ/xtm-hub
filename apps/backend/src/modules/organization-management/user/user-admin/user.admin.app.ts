@@ -35,7 +35,7 @@ import {
   updateUserOrgCapabilitiesAndDispatch,
 } from '../user.helper';
 
-export const userAdminApp = {
+export const UserAdminApp = {
   addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {
     const { user: contextUser } = requestContext.require();
     const [organizationFromEmail] =

@@ -16,7 +16,7 @@ import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { extractId } from '../../../utils/utils';
-import { userAdminApp } from './user-admin/user.admin.app';
+import { UserAdminApp } from './user-admin/user.admin.app';
 import {
   getCapabilities,
   getOrganizations,
@@ -101,7 +101,7 @@ const resolvers: Resolvers = {
     // Admin
     adminAddUser: async (_, { input }) => {
       try {
-        const user = await userAdminApp.addUser(input);
+        const user = await UserAdminApp.addUser(input);
         return mapUserToGraphqlUser(user);
       } catch (error) {
         if (error.message.includes(ErrorCode.UserDisabled)) {
@@ -114,7 +114,7 @@ const resolvers: Resolvers = {
     },
     editUserCapabilities: async (_, { id, input }) => {
       try {
-        return await userAdminApp.editUserCapabilities({
+        return await UserAdminApp.editUserCapabilities({
           userId: id as UserId,
           input,
         });
@@ -124,7 +124,7 @@ const resolvers: Resolvers = {
     },
     adminEditUser: async (_, { id, input }) => {
       try {
-        return await userAdminApp.editUser({
+        return await UserAdminApp.editUser({
           userId: id as UserId,
           input,
         });
@@ -205,7 +205,7 @@ const resolvers: Resolvers = {
     ) => {
       try {
         const { ids, searchTerm, filters, excludedIds } = input;
-        await userAdminApp.bulkRemovePendingUserFromOrganization(
+        await UserAdminApp.bulkRemovePendingUserFromOrganization(
           context.user.selected_organization_id,
           ids,
           searchTerm,
@@ -229,7 +229,7 @@ const resolvers: Resolvers = {
       try {
         const { ids, searchTerm, filters, excludedIds } = input;
 
-        await userAdminApp.bulkAcceptPendingUserInOrganization(
+        await UserAdminApp.bulkAcceptPendingUserInOrganization(
           context.user.selected_organization_id,
           ids,
           searchTerm,
