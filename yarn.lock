@@ -8529,7 +8529,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:4.1.6"
     "@vitest/eslint-plugin": "npm:1.6.17"
     apollo-errors: "npm:1.9.0"
-    auth0: "npm:5.9.1"
+    auth0: "npm:5.10.0"
     body-parser: "npm:2.2.2"
     chokidar: "npm:5.0.0"
     concurrently: "npm:9.2.1"
@@ -9135,14 +9135,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0@npm:5.9.1":
-  version: 5.9.1
-  resolution: "auth0@npm:5.9.1"
+"auth0@npm:5.10.0":
+  version: 5.10.0
+  resolution: "auth0@npm:5.10.0"
   dependencies:
     auth0-legacy: "npm:auth0@^4.27.0"
     jose: "npm:^4.13.2"
     uuid: "npm:^11.1.1"
-  checksum: 10/cbd6bf75938af5501b19e6fbcabf795f03217ab4e85c9811b7c4e6a57b17df8a86b8eed6c0890c5ed08c5477f078b336d124b916edf406f59c437fea6daa9082
+  checksum: 10/395195ab35ee3c28ad8a4d9f64c25ad1efc34d2591b6276151426f63af2d05f9f68a81f85b94f33d1bc12eed7c85888ac375fe5f6a6cd1897222382b63ac76ce
   languageName: node
   linkType: hard
 
