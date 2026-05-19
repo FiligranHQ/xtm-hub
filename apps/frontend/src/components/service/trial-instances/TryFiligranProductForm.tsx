@@ -2,6 +2,7 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   REGIONS,
   REGIONS_VALUES,
+  USE_CASES_BY_PLATFORMIDENTIFIER,
 } from '@/components/service/trial-instances/form-constants';
 
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
@@ -23,6 +24,7 @@ import {
 import { DeploymentRequestActivitySectorEnum } from '@generated/models/DeploymentRequestActivitySector.enum';
 import { DeploymentRequestJobTitleEnum } from '@generated/models/DeploymentRequestJobTitle.enum';
 import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -47,11 +49,13 @@ interface TryFiligranProductFormProps {
   handleSubmit: (values: z.infer<typeof tryFiligranProductFormSchema>) => void;
   handleCloseSheet: (e: React.MouseEvent<HTMLButtonElement>) => void;
   deploymentRequestsAvailabilityQueryRef: PreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>;
+  platformIdentifier: PlatformIdentifierEnum;
 }
 export const TryFiligranProductForm = ({
   handleSubmit,
   handleCloseSheet,
   deploymentRequestsAvailabilityQueryRef,
+  platformIdentifier,
 }: TryFiligranProductFormProps) => {
   const { me } = useContext(PortalContext);
   const t = useTranslations();
@@ -164,7 +168,7 @@ export const TryFiligranProductForm = ({
                   field={field}
                   label={t('Service.Trials.Form.UseCase')}
                   placeholder={t('Service.Trials.Form.UseCasePlaceholder')}
-                  values={Object.values(DeploymentRequestUseCaseEnum)}
+                  values={USE_CASES_BY_PLATFORMIDENTIFIER[platformIdentifier]}
                   translationNamespace="DeploymentRequestUseCase"
                 />
               ),
