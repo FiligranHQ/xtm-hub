@@ -1,4 +1,5 @@
 import AppContext from '@/components/AppContext';
+import CookieConsent from '@/components/cookie-consent/CookieConsent';
 import I18nContext from '@/i18n/i18n-context';
 import { getMetadataBase } from '@/utils/metadata';
 import { Metadata } from 'next';
@@ -20,6 +21,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <I18nContext>
       <AppContext>{children}</AppContext>
+      <CookieConsent />
     </I18nContext>
   );
 };

@@ -1,0 +1,120 @@
+/*
+ * Minimal theme overrides for tarteaucitron.js
+ * NOTE: This is a temporary minimal styling. A full design pass is in progress
+ * with the design team — the styling will be revisited as a follow-up.
+ */
+
+#tarteaucitronRoot,
+#tarteaucitronRoot * {
+    font-family: var(--font-geologica), var(--font-ibm-plex-sans), system-ui,
+    sans-serif;
+}
+
+/* ===== Bottom banner ===== */
+#tarteaucitronRoot #tarteaucitronAlertBig {
+    background: #00020c !important; /* @filigran/ui gray-1000 */
+    color: #ffffff !important;
+    border-top: 1px solid #1a2235;
+}
+
+/* All banner buttons — rounded base */
+#tarteaucitronRoot #tarteaucitronAlertBig button,
+#tarteaucitronRoot #tarteaucitronAlertBig a {
+    border-radius: 6px !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 500 !important;
+    border: 1px solid transparent !important;
+    transition: background 0.15s ease;
+    text-decoration: none !important;
+}
+
+/* Accept all — turquoise primary (filled) */
+#tarteaucitronRoot #tarteaucitronPersonalize {
+    background: #00f0bc !important; /* @filigran/ui turquoise */
+    color: #00020c !important;
+    font-weight: 600 !important;
+}
+
+/* Deny all, Personalize, Privacy policy — same outline style (CNIL: equal weight) */
+#tarteaucitronRoot #tarteaucitronAllDenied2,
+#tarteaucitronRoot #tarteaucitronCloseAlert,
+#tarteaucitronRoot #tarteaucitronPrivacyUrl {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid #cacbce !important; /* @filigran/ui gray */
+}
+
+#tarteaucitronRoot #tarteaucitronAllDenied2:hover,
+#tarteaucitronRoot #tarteaucitronCloseAlert:hover,
+#tarteaucitronRoot #tarteaucitronPrivacyUrl:hover {
+    background: rgba(202, 203, 206, 0.1) !important;
+}
+
+/* Floating icon after consent */
+#tarteaucitronRoot #tarteaucitronIcon {
+    border-radius: 50%;
+}
+
+/* ===== Personalize modal (panel) ===== */
+#tarteaucitronRoot #tarteaucitron {
+    background: #00020c !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    border: 1px solid #1a2235 !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+#tarteaucitronRoot #tarteaucitronServices,
+#tarteaucitronRoot #tarteaucitronInfo,
+#tarteaucitronRoot #tarteaucitronMainLineOffset {
+    background: #00020c !important;
+    color: #ffffff !important;
+    border-color: #1a2235 !important;
+}
+
+#tarteaucitronRoot .tarteaucitronLine,
+#tarteaucitronRoot .tarteaucitronTitle,
+#tarteaucitronRoot .tarteaucitronH1,
+#tarteaucitronRoot .tarteaucitronName,
+#tarteaucitronRoot .tarteaucitronListCookies {
+    background: transparent !important;
+    color: #ffffff !important;
+    border-color: #1a2235 !important;
+}
+
+/* Allow toggle in modal */
+#tarteaucitronRoot .tarteaucitronAllow,
+#tarteaucitronRoot #tarteaucitronAllAllowed,
+#tarteaucitronRoot #tarteaucitronAllAllowed2 {
+    background: #00f0bc !important;
+    color: #00020c !important;
+    border-radius: 6px !important;
+    font-weight: 600;
+}
+
+/* Deny toggle in modal — same outline style as banner */
+#tarteaucitronRoot .tarteaucitronDeny,
+#tarteaucitronRoot #tarteaucitronAllDenied {
+    background: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid #cacbce !important;
+    border-radius: 6px !important;
+}
+
+/* Save button in modal */
+#tarteaucitronRoot #tarteaucitronSave {
+    background: #00f0bc !important;
+    color: #00020c !important;
+    font-weight: 600;
+    border-radius: 6px !important;
+    padding: 0.5rem 1.25rem;
+}
+
+/* Close button in modal */
+#tarteaucitronRoot #tarteaucitronClosePanel {
+    color: #cacbce !important;
+    background: transparent !important;
+}
+#tarteaucitronRoot #tarteaucitronClosePanel:hover {
+    color: #ffffff !important;
+}

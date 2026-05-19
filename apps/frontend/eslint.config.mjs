@@ -315,6 +315,7 @@ const eslintConfig = [
       'next-env.d.ts',
       'graphql/generated.ts',
       'graphql/mocks.ts',
+      'public/tarteaucitron/**',
     ],
   },
   {

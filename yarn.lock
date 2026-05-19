@@ -8650,6 +8650,7 @@ __metadata:
     slugify: "npm:1.6.9"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.0"
+    tarteaucitronjs: "npm:1.32.0"
     tsx: "catalog:"
     tw-animate-css: "npm:1.4.0"
     typescript: "catalog:"
@@ -19494,6 +19495,13 @@ __metadata:
   version: 3.0.2
   resolution: "tarn@npm:3.0.2"
   checksum: 10/7476ca83a39e0e4b1d951725b6c42071f16fdd65c456936c305500af00731861de0a20e41e59b54cf410b979722816db43acd137a5a580c3c8e48a73f389b523
+  languageName: node
+  linkType: hard
+
+"tarteaucitronjs@npm:1.32.0":
+  version: 1.32.0
+  resolution: "tarteaucitronjs@npm:1.32.0"
+  checksum: 10/bdefbbc8f90fb3725cab5d52c9130f77ac06f333d4e46d8b26d4f1602418e35c6b157edd5820b3b307022b60f437f69d3be4254b28f57439ab7cf68f958b04a2
   languageName: node
   linkType: hard
 
