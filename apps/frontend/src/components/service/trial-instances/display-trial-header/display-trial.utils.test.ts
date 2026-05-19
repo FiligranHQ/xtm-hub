@@ -3,12 +3,12 @@ import {
   getDotColor,
   getHeaderDotColor,
 } from '@/components/service/trial-instances/display-trial-header/display-trial.utils';
+import { RegisteredPlatformWithDaysLeft } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 import * as Date from '@/utils/date';
 import { vi } from 'vitest';
-import { RegisteredPlatformWithDaysLeft } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 
-jest.mock('@/utils/date', () => ({
-  daysUntil: jest.fn(),
+vi.mock('@/utils/date', () => ({
+  daysUntil: vi.fn(),
 }));
 
 describe('getDotColor', () => {
@@ -58,7 +58,7 @@ describe('getHeaderDotColor', () => {
 
 describe('addDaysUntil', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('adds addDaysUntil to each trial', () => {
