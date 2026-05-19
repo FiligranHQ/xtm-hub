@@ -1,3 +1,4 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -16,9 +17,10 @@ import { registrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('mutation.registerPlatform', () => {
-  it('should return the token', async () => {
+  it('should decode organizationId from global ID before calling registrationApp and return the token', async () => {
     // Given
-    const orgId = TEST_ORGANIZATIONS.FILIGRAN.ID;
+    const rawOrgId = TEST_ORGANIZATIONS.FILIGRAN.ID;
+    const globalOrgId = toGlobalId('Organization', rawOrgId);
     const generatedToken = uuidv4();
     const platformInput = {
       id: uuidv4(),
@@ -28,7 +30,7 @@ describe('mutation.registerPlatform', () => {
       version: '1.0.0',
     };
     const input: RegisterPlatformInput = {
-      organizationId: orgId,
+      organizationId: globalOrgId,
       platform: platformInput,
       identifier: PlatformIdentifier.Opencti,
     };
@@ -47,7 +49,7 @@ describe('mutation.registerPlatform', () => {
     // Then
     expect(registrationApp.registerPlatform).toHaveBeenCalledWith({
       ...input,
-      organizationId: orgId,
+      organizationId: rawOrgId,
     });
     expect(result).toMatchObject({ token: generatedToken });
   });
@@ -55,7 +57,10 @@ describe('mutation.registerPlatform', () => {
   it('should map to BadRequest for InvalidPlatformVersion error', async () => {
     // Given
     const input: RegisterPlatformInput = {
-      organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      organizationId: toGlobalId(
+        'Organization',
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      ),
       platform: {
         id: uuidv4(),
         url: 'http://example.com',
