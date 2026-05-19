@@ -1,3 +1,4 @@
+import ServiceSlugHeader from '@/components/service/[slug]/ServiceSlugHeader';
 import {
   ServiceInstanceByIdQuery,
   serviceInstanceForSubscriptionsFragment,
@@ -6,23 +7,16 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
 import {
-  BreadcrumbNav,
-  BreadcrumbNavLink,
-} from '@/components/ui/BreadcrumbNav';
-import {
   IconActions,
   IconActionsItem,
   IconActionsLink,
 } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
-import useAdminPath from '@/hooks/use-admin-path';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
-import { formatName } from '@/utils/format/name';
 import { APP_PATH } from '@/utils/path/constant';
 import { AddIcon, DeleteIcon, MoreVertIcon } from '@filigran/icon';
 import {
-  Badge,
   DataTable,
   DataTableHeadBarOptions,
   SelectionState,
@@ -88,8 +82,6 @@ const ServiceSlug = ({
   const [selection, setSelection] =
     useState<SelectionState>(emptySelectionState);
 
-  const isAdminPath = useAdminPath();
-
   const t = useTranslations();
 
   const debounceHandleInput = useDebounceCallback(
@@ -97,19 +89,6 @@ const ServiceSlug = ({
     DEBOUNCE_TIME
   );
 
-  const breadcrumbValue: BreadcrumbNavLink[] = [
-    ...(isAdminPath
-      ? [
-          { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
-          { label: 'MenuLinks.Settings' },
-          { label: 'MenuLinks.Services', href: `/${APP_PATH}/admin/service` },
-        ]
-      : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
-    {
-      label: serviceInstance.name,
-      original: true,
-    },
-  ];
   const [pagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 500,
@@ -203,6 +182,17 @@ const ServiceSlug = ({
       </div>
 
       <div className="flex gap-s flex-wrap ml-auto">
+        <ServiceSlugSubscription
+          subscriptions={subscriptions}
+          subscriptionToEdit={updateSubscription}
+          serviceInstance={serviceInstance}
+          subscriptionConnectionId={subscriptionConnectionId}
+          openEdit={openEdit}
+          setOpenEdit={(open) => {
+            setOpenEdit(open);
+            if (!open) setUpdateSubscription(undefined);
+          }}
+        />
         <DataTableHeadBarOptions />
       </div>
     </div>
@@ -254,63 +244,10 @@ const ServiceSlug = ({
     [serviceInstance.service_definition?.service_capability]
   );
 
-  const serviceTags = useMemo(
-    () =>
-      (serviceInstance.tags ?? [])
-        .filter((tag) => !!tag)
-        .map((tag) => ({
-          id: tag,
-          name: tag,
-        })),
-    [serviceInstance.tags]
-  );
-
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue} />
       <div>
-        <div className="flex flex-col gap-m mb-m">
-          <div className="flex flex-row gap-m">
-            <h1>{serviceInstance.name}</h1>
-            <BadgeOverflowCounter badges={serviceTags as BadgeOverflow[]} />
-            <div className="ml-auto">
-              <ServiceSlugSubscription
-                isAdminPath={!!isAdminPath}
-                subscriptions={subscriptions}
-                subscriptionToEdit={updateSubscription}
-                serviceInstance={serviceInstance}
-                subscriptionConnectionId={subscriptionConnectionId}
-                openEdit={openEdit}
-                setOpenEdit={(open) => {
-                  setOpenEdit(open);
-                  if (!open) setUpdateSubscription(undefined);
-                }}
-              />
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground italic line-clamp-3">
-            {serviceInstance.description}
-          </p>
-          <div>
-            <p className="text-xs uppercase text-muted-foreground pb-xs">
-              {t('Service.Management.AvailableCapabilities')}
-            </p>
-            {availableCapabilities.length > 0 ? (
-              <div className="flex flex-wrap gap-xs">
-                {availableCapabilities.map((capability) => (
-                  <Badge key={capability.id}>
-                    {formatName(capability.name)}
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                {t('Service.Management.NoAvailableCapabilities')}
-              </p>
-            )}
-          </div>
-        </div>
-
+        <ServiceSlugHeader serviceInstance={serviceInstance} />
         <div className="border rounded bg-page-background p-m">
           <h2 className="">{t('Service.Management.Description') + ':'}</h2>
 
