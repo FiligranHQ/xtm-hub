@@ -31,7 +31,7 @@ import { isUserAdminPlatform } from '../../../security/access';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
 import { formatRawObject } from '../../../utils/query-raw.util';
-import { loadUserBy } from '../../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { PlatformConfiguration } from '../../registration/registration.domain';
 import {
   serviceInstanceNameMappedByPlatformIdentifier,
@@ -376,7 +376,9 @@ export const grantServiceAccess = async (
   );
 
   for (const userId of usersId) {
-    const user = await loadUserBy({ 'User.id': userId } as UserMutator);
+    const user = await UserDomain.loadUserBy({
+      'User.id': userId,
+    } as UserMutator);
 
     const mailTemplate = ServiceIdentifierToMailTemplate.get(
       service_definition.identifier

@@ -16,12 +16,7 @@ import { UserId } from '../../../../model/kanel/public/User';
 import { ROLE_ADMIN } from '../../../../portal.const';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../../telemetry/telemetry.const';
-import {
-  loadUserBy,
-  loadUserConnection,
-  updateUser,
-  updateUserAtLogin,
-} from './user.domain';
+import { UserDomain } from './user.domain';
 
 //Issue with test
 describe('users domain', () => {
@@ -30,7 +25,7 @@ describe('users domain', () => {
   });
 
   it('should load user Admin', async () => {
-    const response = await loadUserBy({
+    const response = await UserDomain.loadUserBy({
       'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId,
     });
     expect(response.email).toEqual(
@@ -45,7 +40,7 @@ describe('users domain', () => {
   it('should throw FORBIDDEN_ACCESS when Simple User calls EditUser', async () => {
     try {
       requestContext.set(requestContextSimpleUserSecondOrga);
-      await updateUser(
+      await UserDomain.updateUser(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
         {
           email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
@@ -63,7 +58,7 @@ describe('users domain', () => {
       .spyOn(telemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
 
-    await updateUserAtLogin(contextSimpleUserSecondOrga.user);
+    await UserDomain.updateUserAtLogin(contextSimpleUserSecondOrga.user);
     expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
       '@timestamp': '2025-02-03T13:12:15.000Z',
       event_type: 'login',
@@ -85,7 +80,7 @@ describe('users domain', () => {
     it('should only return users from the selected organization for non-platform-admin users', async () => {
       requestContext.set(requestContextAdminSecondOrga);
 
-      const result = await loadUserConnection(opts);
+      const result = await UserDomain.loadUserConnection(opts);
 
       const returnedIds = result.edges.map((e) => e.node!.id);
       expect(returnedIds).toContain(
@@ -105,7 +100,7 @@ describe('users domain', () => {
         user: { ...requestContextAdminUser.user, roles_portal: [ROLE_ADMIN] },
       });
 
-      const result = await loadUserConnection(opts);
+      const result = await UserDomain.loadUserConnection(opts);
 
       const returnedIds = result.edges.map((e) => e.node!.id);
       expect(returnedIds).toContain(

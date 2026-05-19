@@ -19,7 +19,7 @@ import UserTransferRequest, {
 } from '../../../../model/kanel/public/UserTransferRequest';
 import * as mailService from '../../../../server/mail-service';
 import { deleteSubscription } from '../../../subscription/subscription.helper';
-import { updateUser } from '../user-domain/user.domain';
+import { UserDomain } from '../user-domain/user.domain';
 import * as UserTransferRequestDomain from '../user-transferRequest/user-transfer-request.domain';
 import {
   deleteUserTransferRequest,
@@ -40,7 +40,7 @@ describe('user profile app', () => {
 
   describe('editMeUser', () => {
     afterEach(async () => {
-      await updateUser(TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID, {
+      await UserDomain.updateUser(TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID, {
         first_name: 'firstName',
         last_name: 'lastName',
         country: null,
@@ -178,10 +178,13 @@ describe('user profile app', () => {
 
   describe('uploadUserPicture', () => {
     afterEach(async () => {
-      await updateUser(TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID, {
-        picture: null,
-        picture_minio: null,
-      });
+      await UserDomain.updateUser(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        {
+          picture: null,
+          picture_minio: null,
+        }
+      );
     });
 
     const createMockUpload = (

@@ -18,12 +18,7 @@ import { ErrorCode } from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { formatName } from '../../../../utils/format';
 import { OrganizationDomain } from '../../organization/organization.domain';
-import {
-  loadUser,
-  loadUserBy,
-  loadUsersByCapabilitiesInOrganization,
-  updateUser,
-} from '../user-domain/user.domain';
+import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import { createUserWithPersonalSpace } from '../user.helper';
 import { UserOrganizationDomain } from './user-organization.domain';
@@ -56,7 +51,7 @@ export const UserOrganizationApp = {
       throw ForbiddenAccess(ErrorCode.EmailOutsideOrganizationError);
     }
 
-    const [existingUser] = await loadUser({ email: input.email });
+    const [existingUser] = await UserDomain.loadUser({ email: input.email });
 
     const user = await withTransaction(async () => {
       const user = existingUser
@@ -91,7 +86,7 @@ export const UserOrganizationApp = {
       return user;
     });
 
-    return loadUserBy({
+    return UserDomain.loadUserBy({
       'User.id': user.id,
     });
   },
@@ -102,10 +97,10 @@ export const UserOrganizationApp = {
 
     await securityGuard.assertUserIsInOrganization(user, organization_id);
 
-    const updatedUser = await updateUser(user.id, {
+    const updatedUser = await UserDomain.updateUser(user.id, {
       selected_organization_id: organization_id,
     });
-    const updatedUserLoadUserBy = await loadUserBy({
+    const updatedUserLoadUserBy = await UserDomain.loadUserBy({
       'User.id': updatedUser.id,
     });
     portalContext.req.session.user = updatedUserLoadUserBy;
@@ -132,7 +127,7 @@ export const UserOrganizationApp = {
       userId,
       organizationId
     );
-    return loadUserBy({
+    return UserDomain.loadUserBy({
       'User.id': userId,
     });
   },
@@ -148,7 +143,7 @@ export const UserOrganizationApp = {
       userId,
       organizationId
     );
-    return loadUserBy({
+    return UserDomain.loadUserBy({
       'User.id': userId,
     });
   },
@@ -174,10 +169,11 @@ export const UserOrganizationApp = {
 
     const promises = organizationsWithPendingUsers.map(async (organization) => {
       try {
-        const adminUsers = await loadUsersByCapabilitiesInOrganization(
-          organization.id,
-          [OrganizationCapability.AdministrateOrganization]
-        );
+        const adminUsers =
+          await UserDomain.loadUsersByCapabilitiesInOrganization(
+            organization.id,
+            [OrganizationCapability.AdministrateOrganization]
+          );
 
         return await Promise.all(
           adminUsers.map((adminUser) =>

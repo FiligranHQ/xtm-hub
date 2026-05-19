@@ -18,12 +18,7 @@ import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { OrganizationDomain } from '../../organization/organization.domain';
-import {
-  loadUser,
-  loadUserBy,
-  loadUserDetails,
-  updateUser,
-} from '../user-domain/user.domain';
+import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import {
@@ -58,7 +53,7 @@ export const UserAdminApp = {
       throw new Error(ErrorCode.EmailOutsideOrganizationError);
     }
 
-    const [existingUser] = await loadUser({ email: input.email });
+    const [existingUser] = await UserDomain.loadUser({ email: input.email });
 
     const finalUser = await withTransaction(async () => {
       const user = existingUser
@@ -76,7 +71,7 @@ export const UserAdminApp = {
         input.organization_capabilities
       );
 
-      return await loadUserBy({
+      return await UserDomain.loadUserBy({
         'User.id': user.id,
       });
     });
@@ -105,7 +100,7 @@ export const UserAdminApp = {
         mappedCapabilities
       );
     }
-    const updatedUser = await updateUser(userId, userInput);
+    const updatedUser = await UserDomain.updateUser(userId, userInput);
 
     try {
       await auth0Client.updateUser({
@@ -119,7 +114,7 @@ export const UserAdminApp = {
       userId,
       organization_capabilities
     );
-    const user = await loadUserDetails({
+    const user = await UserDomain.loadUserDetails({
       'User.id': userId,
     });
     updateUserSession(user);

@@ -15,7 +15,7 @@ import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
@@ -46,7 +46,7 @@ const loadUser = async (
     return { user: null };
   }
 
-  const userLoadFromUserPlatformToken = await loadUserBy({
+  const userLoadFromUserPlatformToken = await UserDomain.loadUserBy({
     'User.platform_token': user_platform_token,
   });
   return {

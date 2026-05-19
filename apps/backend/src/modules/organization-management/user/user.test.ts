@@ -15,10 +15,7 @@ import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { OrganizationDomain } from '../organization/organization.domain';
-import {
-  loadUserBy,
-  loadUserCapabilitiesByOrganization,
-} from './user-domain/user.domain';
+import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import {
@@ -38,7 +35,7 @@ describe('user helpers', async () => {
       await createNewUserFromInvitation({
         email: testMail,
       });
-      const newUser = await loadUserBy({ email: testMail });
+      const newUser = await UserDomain.loadUserBy({ email: testMail });
       const newUserPendingOrg =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: newUser.id,
@@ -68,7 +65,7 @@ describe('user helpers', async () => {
       await createNewUserFromInvitation({
         email: testMail,
       });
-      const newUser = await loadUserBy({ email: testMail });
+      const newUser = await UserDomain.loadUserBy({ email: testMail });
       const newUserPendingOrg =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: newUser.id,
@@ -80,7 +77,7 @@ describe('user helpers', async () => {
       const newOrganization = await OrganizationDomain.loadOrganizationBy({
         name: organizationName,
       });
-      const userOrgCapa = await loadUserCapabilitiesByOrganization(
+      const userOrgCapa = await UserDomain.loadUserCapabilitiesByOrganization(
         newUser.id as UserId,
         newOrganization.id
       );
@@ -114,7 +111,7 @@ describe('user helpers', async () => {
       await createNewUserFromInvitation({
         email: testMail,
       });
-      const newUser = await loadUserBy({ email: testMail });
+      const newUser = await UserDomain.loadUserBy({ email: testMail });
       const newUserPendingOrg =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: newUser.id,
@@ -143,7 +140,7 @@ describe('user helpers', async () => {
 
       expect(organization).toBeTruthy();
 
-      user = await loadUserBy({ email: userEmail });
+      user = await UserDomain.loadUserBy({ email: userEmail });
     });
 
     afterEach(async () => {
@@ -179,7 +176,7 @@ describe('user helpers', async () => {
           email: anotherUserEmail,
         });
 
-        anotherUser = await loadUserBy({
+        anotherUser = await UserDomain.loadUserBy({
           'User.email': anotherUserEmail,
         });
 
@@ -232,7 +229,7 @@ describe('user helpers', async () => {
           email: anotherUserEmail,
         });
 
-        anotherUser = await loadUserBy({
+        anotherUser = await UserDomain.loadUserBy({
           'User.email': anotherUserEmail,
         });
 

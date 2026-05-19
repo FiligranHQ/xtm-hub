@@ -24,7 +24,7 @@ import UserOrganization, {
 } from '../model/kanel/public/UserOrganization';
 import UserOrganizationCapability from '../model/kanel/public/UserOrganizationCapability';
 import { OrganizationDomain } from '../modules/organization-management/organization/organization.domain';
-import { loadUserBy } from '../modules/organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../modules/organization-management/user/user-domain/user.domain';
 import { IngestManifestApp } from '../modules/shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.app';
 import {
   ADMIN_UUID,
@@ -451,7 +451,7 @@ export const seedDevelopmentConnectors = async () => {
   }
 
   logApp.info('[SEEDING] Ingesting OpenCTI connectors manifest...');
-  const user = await loadUserBy({ 'User.id': ADMIN_UUID });
+  const user = await UserDomain.loadUserBy({ 'User.id': ADMIN_UUID });
   requestContext.run({ user }, async () => {
     await IngestManifestApp.updateOpenCTIManifest('6.8.3');
   });

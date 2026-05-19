@@ -25,11 +25,7 @@ import {
 } from '../../../document/document.uploads.helper';
 import { updateSubscriptionBy } from '../../../subscription/subscription.domain';
 import { OrganizationDomain } from '../../organization/organization.domain';
-import {
-  loadSimpleUserBy,
-  loadUserDetails,
-  updateUser,
-} from '../user-domain/user.domain';
+import { UserDomain } from '../user-domain/user.domain';
 import {
   insertNewUserTransfer,
   loadUserTransfer,
@@ -60,7 +56,7 @@ const buildPictureUrl = (userId: string) => {
 
 export const userProfileApp = {
   editMeUser: async (meUser, input: EditMeUserInput) => {
-    const updatedUser = await updateUser(meUser.id, input);
+    const updatedUser = await UserDomain.updateUser(meUser.id, input);
 
     try {
       await auth0Client.updateUser({
@@ -71,7 +67,7 @@ export const userProfileApp = {
       logApp.error(err);
     }
 
-    const user = await loadUserDetails({
+    const user = await UserDomain.loadUserDetails({
       'User.id': meUser.id,
     });
 
@@ -89,7 +85,7 @@ export const userProfileApp = {
     const minioName = await uploadPictureToMinIO(meUser.id, document.file);
     const pictureUrl = buildPictureUrl(meUser.id);
 
-    await updateUser(meUser.id, {
+    await UserDomain.updateUser(meUser.id, {
       picture: pictureUrl,
       picture_minio: minioName,
     });
@@ -151,10 +147,10 @@ export const userProfileApp = {
         throw ForbiddenAccess(ErrorCode.UserIsNotInOrganization);
       }
 
-      const fromUser = await loadSimpleUserBy({
+      const fromUser = await UserDomain.loadSimpleUserBy({
         id: userTransferRequest.from_user_id,
       });
-      const toUser = await loadSimpleUserBy({
+      const toUser = await UserDomain.loadSimpleUserBy({
         id: userTransferRequest.to_user_id,
       });
 

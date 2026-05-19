@@ -29,7 +29,7 @@ import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail
 import { ErrorCode } from '../../utils/error/error.code';
 import { formatRawObject } from '../../utils/query-raw.util';
 import { addPrefixToObject } from '../../utils/typescript';
-import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { UserOrganizationDomain } from '../organization-management/user/user-organization/user-organization.domain';
 import {
   getOrCreateUser,
@@ -154,7 +154,7 @@ export const UserServiceDomain = {
       return addedUserService;
     });
 
-    const user = await loadUserBy({ 'User.id': user_id });
+    const user = await UserDomain.loadUserBy({ 'User.id': user_id });
     const serviceInstance = await loadServiceInstanceBy({
       id: subscription.service_instance_id,
     });

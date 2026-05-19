@@ -46,7 +46,7 @@ import {
 import { formatName } from '../../utils/format';
 import { ucfirst } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import { loadUser } from '../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
@@ -511,7 +511,7 @@ export const DeploymentApp = {
     await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
-      const [requester] = await loadUser({
+      const [requester] = await UserDomain.loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
       await sendMail({
@@ -582,7 +582,7 @@ export const DeploymentApp = {
         );
 
         try {
-          const [requester] = await loadUser({
+          const [requester] = await UserDomain.loadUser({
             id: trial.user_requester_id,
           });
           await sendMail({
@@ -822,7 +822,7 @@ const sendProvisioningPlatformEmail = async (
   deploymentRequest: DeploymentRequestModel
 ) => {
   try {
-    const [user] = await loadUser({
+    const [user] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
 
@@ -846,7 +846,7 @@ const sendActivePlatformEmail = async (
   deploymentRequest: DeploymentRequestModel
 ) => {
   try {
-    const [user] = await loadUser({
+    const [user] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
 

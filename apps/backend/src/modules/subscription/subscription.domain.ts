@@ -12,7 +12,7 @@ import Subscription, {
 import { UserMutator } from '../../model/kanel/public/User';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { UserServiceDomain } from '../user-service/user-service.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
@@ -84,7 +84,7 @@ export const fillSubscriptionWithOrgaServiceAndUserService = async (
 export const fillUserServiceData = async (userServices: UserService[]) => {
   const userServicesData = [];
   for (const userService of userServices) {
-    const user = await loadUserBy({
+    const user = await UserDomain.loadUserBy({
       'User.id': userService.user_id,
     } as UserMutator);
 

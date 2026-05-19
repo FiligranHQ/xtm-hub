@@ -36,11 +36,7 @@ import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscri
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
 import { OrganizationDomain } from '../organization/organization.domain';
-import {
-  loadUserBy,
-  loadUserCapabilitiesByOrganization,
-  loadUserDetails,
-} from './user-domain/user.domain';
+import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 
@@ -192,7 +188,7 @@ export const createNewUserFromInvitation = async (
     );
   }
 
-  return loadUserBy({ 'User.id': userWithRoles.id });
+  return UserDomain.loadUserBy({ 'User.id': userWithRoles.id });
 };
 
 export const getOrCreateUser = async (
@@ -203,7 +199,7 @@ export const getOrCreateUser = async (
   upsert = false,
   isFiligranUser = false
 ) => {
-  const user = await loadUserBy({ email: userInfo.email });
+  const user = await UserDomain.loadUserBy({ email: userInfo.email });
   if (user && upsert) {
     await db<User>('User')
       .where({ id: user.id })
@@ -361,7 +357,7 @@ const isUserLastOrganizationAdministrator = async (
   userId: UserId,
   organizationId: OrganizationId
 ) => {
-  const { capabilities } = await loadUserCapabilitiesByOrganization(
+  const { capabilities } = await UserDomain.loadUserCapabilitiesByOrganization(
     userId,
     organizationId
   );
@@ -480,7 +476,7 @@ const updateUserCapabilities = async ({
       orgCapabilities,
     });
 
-    const user = await loadUserDetails({
+    const user = await UserDomain.loadUserDetails({
       'User.id': user_id,
     });
 
@@ -492,7 +488,7 @@ const updateUserCapabilities = async ({
 };
 
 export const updateAndDispatchUser = async (userId: UserId) => {
-  const user = await loadUserDetails({ 'User.id': userId });
+  const user = await UserDomain.loadUserDetails({ 'User.id': userId });
   updateUserSession(user);
   const mappedUser = mapUserToGraphqlUser(user);
   await dispatch('User', 'edit', mappedUser);
