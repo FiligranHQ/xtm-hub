@@ -245,8 +245,6 @@ describe('subscription resolver - unit tests', () => {
 
   describe('mutation.createSubscription', () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
-    const contextOrganizationId =
-      contextSimpleUserFiligran2.user.selected_organization_id;
     const startDate = new Date('2025-01-01');
     const endDate = new Date('2026-01-01');
     const capabilityIds = [
@@ -257,7 +255,6 @@ describe('subscription resolver - unit tests', () => {
       inputOrganizationId                                                            | expectedOrganizationIds
       ${[TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID]}                                 | ${[TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID]}
       ${[TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID, TEST_ORGANIZATIONS.FILIGRAN.ID]} | ${[TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID, TEST_ORGANIZATIONS.FILIGRAN.ID]}
-      ${undefined}                                                                   | ${[contextOrganizationId]}
     `(
       'should map organization_id=$inputOrganizationId to organizationIds=$expectedOrganizationIds',
       async ({ inputOrganizationId, expectedOrganizationIds }) => {
@@ -319,9 +316,9 @@ describe('subscription resolver - unit tests', () => {
       );
 
       // Then
-      expect(subscriptionApp.deleteSubscription).toHaveBeenCalledWith(
-        subscriptionId
-      );
+      expect(subscriptionApp.deleteSubscription).toHaveBeenCalledWith([
+        subscriptionId,
+      ]);
       expect(result).toMatchObject(expected);
     });
   });

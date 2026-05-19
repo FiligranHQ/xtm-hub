@@ -6,12 +6,16 @@ import {
 } from '@/components/organization/organization.graphql';
 import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
 import { organizationItem_fragment$key } from '@generated/organizationItem_fragment.graphql';
-import { organizationList_organizations$key } from '@generated/organizationList_organizations.graphql';
+import {
+  organizationList_organizations$data,
+  organizationList_organizations$key,
+} from '@generated/organizationList_organizations.graphql';
 import { organizationQuery as organizationQueryGraphql } from '@generated/organizationQuery.graphql';
 import {
   OrderingMode,
   organizationSelectQuery,
 } from '@generated/organizationSelectQuery.graphql';
+import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 import {
   useFragment,
   useLazyLoadQuery,
@@ -56,4 +60,36 @@ export const getOrganizations = ({
     organizationSelectQuery,
     organizationList_organizations$key
   >(organizationsFragment, organizationData);
+};
+
+interface AvailableOrganization {
+  readonly domains: ReadonlyArray<string> | null | undefined;
+  readonly id: string;
+  readonly name: string;
+  readonly personal_space: boolean;
+}
+
+/**
+ * Returns the list of organizations that are not yet subscribed to the service.
+ * When editing an existing subscription, the subscribed organization of that subscription
+ * is excluded from filtering so it remains selectable.
+ */
+export const getAvailableOrganizations = (
+  organizationsData: organizationList_organizations$data,
+  subscriptions: subscription_fragment$data[],
+  subscriptionToEdit?: subscription_fragment$data
+): AvailableOrganization[] => {
+  const subscribedOrganizationIds = new Set(
+    subscriptions
+      .map((subscription) => subscription.organization?.id)
+      .filter((id): id is string => Boolean(id))
+  );
+
+  if (subscriptionToEdit?.organization?.id) {
+    subscribedOrganizationIds.delete(subscriptionToEdit.organization.id);
+  }
+
+  return organizationsData.organizations.edges
+    .map(({ node }) => node)
+    .filter(({ id }) => !subscribedOrganizationIds.has(id));
 };

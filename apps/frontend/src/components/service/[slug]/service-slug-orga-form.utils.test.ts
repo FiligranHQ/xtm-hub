@@ -1,0 +1,114 @@
+import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
+import { describe, expect, it } from 'vitest';
+import { getSubscriptionDefaultValues } from './service-slug-orga-form.utils';
+
+export const makeSubscription = (
+  orgId: string,
+  overrides: Partial<subscription_fragment$data> = {}
+): subscription_fragment$data =>
+  ({
+    id: `sub-${orgId}`,
+    organization: { id: orgId, name: `Org ${orgId}`, personal_space: false },
+    subscription_capability: [],
+    service_instance: null,
+    start_date: null,
+    end_date: null,
+    ...overrides,
+  }) as unknown as subscription_fragment$data;
+
+describe('getSubscriptionDefaultValues', () => {
+  it('should return empty defaults when no subscriptionToEdit is provided', () => {
+    const before = new Date();
+    const result = getSubscriptionDefaultValues(undefined);
+    const after = new Date();
+
+    expect(result.organization_id).toEqual([]);
+    expect(result.capability_ids).toEqual([]);
+    expect(result.start_date.getTime()).toBeGreaterThanOrEqual(
+      before.getTime()
+    );
+    expect(result.start_date.getTime()).toBeLessThanOrEqual(after.getTime());
+    expect(result.end_date).toBeUndefined();
+  });
+
+  it.each`
+    description             | start_date      | end_date        | expectedStartSlice | expectedEndDefined
+    ${'both dates defined'} | ${'2025-06-01'} | ${'2026-06-01'} | ${'2025-06-01'}    | ${true}
+    ${'only start date'}    | ${'2025-03-15'} | ${null}         | ${'2025-03-15'}    | ${false}
+  `(
+    'should map dates correctly: $description',
+    ({ start_date, end_date, expectedStartSlice, expectedEndDefined }) => {
+      const subscription = makeSubscription('org-1', { start_date, end_date });
+      const result = getSubscriptionDefaultValues(subscription);
+
+      expect(result.start_date.toISOString().slice(0, 10)).toBe(
+        expectedStartSlice
+      );
+      if (expectedEndDefined) {
+        expect(result.end_date).toBeDefined();
+      } else {
+        expect(result.end_date).toBeUndefined();
+      }
+    }
+  );
+
+  it('should pre-fill organization_id with the subscribed organization', () => {
+    const subscription = makeSubscription('org-42');
+    const result = getSubscriptionDefaultValues(subscription);
+    expect(result.organization_id).toEqual(['org-42']);
+  });
+
+  it('should pre-fill capability_ids with existing capabilities', () => {
+    const subscription = makeSubscription('org-1', {
+      subscription_capability: [
+        {
+          id: 'sc-1',
+          service_capability: {
+            id: 'cap-1',
+            name: 'Upload',
+            description: 'Upload',
+            __typename: 'ServiceCapability',
+          },
+        },
+        {
+          id: 'sc-2',
+          service_capability: {
+            id: 'cap-2',
+            name: 'Delete',
+            description: 'Delete',
+            __typename: 'ServiceCapability',
+          },
+        },
+      ] as unknown as subscription_fragment$data['subscription_capability'],
+    });
+    const result = getSubscriptionDefaultValues(subscription);
+    expect(result.capability_ids).toEqual(['cap-1', 'cap-2']);
+  });
+
+  it('should filter out null capability ids', () => {
+    const subscription = makeSubscription('org-1', {
+      subscription_capability: [
+        { id: 'sc-1', service_capability: null },
+        {
+          id: 'sc-2',
+          service_capability: {
+            id: 'cap-2',
+            name: 'Delete',
+            description: 'Delete',
+            __typename: 'ServiceCapability',
+          },
+        },
+      ] as unknown as subscription_fragment$data['subscription_capability'],
+    });
+    const result = getSubscriptionDefaultValues(subscription);
+    expect(result.capability_ids).toEqual(['cap-2']);
+  });
+
+  it('should return empty capability_ids when subscription has no capabilities', () => {
+    const subscription = makeSubscription('org-1', {
+      subscription_capability: [],
+    });
+    const result = getSubscriptionDefaultValues(subscription);
+    expect(result.capability_ids).toEqual([]);
+  });
+});

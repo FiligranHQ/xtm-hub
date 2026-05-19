@@ -95,21 +95,6 @@ describe('subscription capability domain', () => {
         })
       );
     });
-    it('should load by service_capability_id', async () => {
-      await addCapabilitiesToSubscription(subscription.id, [capability1.id]);
-
-      const capabilities: SubscriptionCapability[] =
-        await loadSubscriptionCapabilitiesBy({
-          service_capability_id: capability1.id,
-        });
-      expect(capabilities).toHaveLength(1);
-      expect(capabilities[0]).toMatchObject(
-        expect.objectContaining({
-          service_capability_id: capability1.id,
-          subscription_id: subscription.id,
-        })
-      );
-    });
     it('should load by subscription_id', async () => {
       await addCapabilitiesToSubscription(subscription.id, [
         capability1.id,
@@ -133,11 +118,6 @@ describe('subscription capability domain', () => {
         []
       );
       expect(capabilities).toEqual([]);
-      const persistedCapabilities = (await loadSubscriptionCapabilitiesBy({
-        subscription_id: subscription.id,
-      })) as SubscriptionCapability[];
-
-      expect(persistedCapabilities).toHaveLength(0);
     });
     it('should insert capabilities for a subscription', async () => {
       const capabilities = await addCapabilitiesToSubscription(

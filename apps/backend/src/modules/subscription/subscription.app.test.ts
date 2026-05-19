@@ -258,7 +258,7 @@ describe('subscription app', () => {
       const deletedSubscription = await subscriptionApp.deleteSubscription([
         id,
       ]);
-      expect(deletedSubscription).toStrictEqual(subscription);
+      expect(deletedSubscription).toStrictEqual([subscription]);
     });
 
     it('should delete linked subscription capabilities', async () => {

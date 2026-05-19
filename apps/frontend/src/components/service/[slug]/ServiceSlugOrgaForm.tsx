@@ -1,4 +1,7 @@
-import { getOrganizations } from '@/components/organization/Organization.service';
+import {
+  getAvailableOrganizations,
+  getOrganizations,
+} from '@/components/organization/Organization.service';
 import {
   AddSubscriptionInServiceMutation,
   UpdateSubscriptionInServiceMutation,
@@ -6,6 +9,7 @@ import {
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
+import { getSubscriptionDefaultValues } from './service-slug-orga-form.utils';
 
 import {
   Button,
@@ -56,17 +60,15 @@ export const ServiceSlugOrgaForm = ({
   const t = useTranslations();
   const { toast } = useToast();
   const [organizationsData] = getOrganizations();
-  const organizations = useMemo(() => {
-    const subscribedOrganizationIds = new Set(
-      subscriptions
-        .map((subscription) => subscription.organization?.id)
-        .filter((id): id is string => Boolean(id))
-    );
-
-    return organizationsData.organizations.edges
-      .map(({ node }) => node)
-      .filter(({ id }) => !subscribedOrganizationIds.has(id));
-  }, [organizationsData.organizations.edges, subscriptions]);
+  const organizations = useMemo(
+    () =>
+      getAvailableOrganizations(
+        organizationsData,
+        subscriptions,
+        subscriptionToEdit
+      ),
+    [organizationsData, subscriptions, subscriptionToEdit]
+  );
 
   const [commitSubscriptionCreateMutation] =
     useMutation<subscriptionInServiceCreateMutation>(
@@ -77,26 +79,10 @@ export const ServiceSlugOrgaForm = ({
       UpdateSubscriptionInServiceMutation
     );
 
-  const defaultValues = useMemo(() => {
-    return {
-      organization_id: subscriptionToEdit?.organization.id
-        ? [subscriptionToEdit.organization.id]
-        : [],
-      capability_ids: subscriptionToEdit
-        ? (subscriptionToEdit.subscription_capability
-            ?.map((subscriptionCapability) => {
-              return subscriptionCapability?.service_capability?.id;
-            })
-            .filter((id): id is string => Boolean(id)) ?? [])
-        : [],
-      start_date: subscriptionToEdit?.start_date
-        ? new Date(subscriptionToEdit.start_date)
-        : new Date(),
-      end_date: subscriptionToEdit?.end_date
-        ? new Date(subscriptionToEdit.end_date)
-        : undefined,
-    };
-  }, [subscriptionToEdit]);
+  const defaultValues = useMemo(
+    () => getSubscriptionDefaultValues(subscriptionToEdit),
+    [subscriptionToEdit]
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

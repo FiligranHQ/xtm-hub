@@ -60,12 +60,12 @@ export const ServiceSlugDeleteSubscription: FunctionComponent<
       isOpen={open}
       onOpenChange={setOpen}
       onClickContinue={onDeleteSubscription}>
-      {subscriptions.length > 1
+      {subscriptions && subscriptions.length > 1
         ? t('Service.Management.AreYouSureRemoveOrganizationsAccess', {
             count: subscriptions.length,
           })
         : t('Service.Management.AreYouSureRemoveOrganizationAccess', {
-            organizationName: subscriptions[0].organization.name,
+            organizationName: subscriptions[0]!.organization.name,
           })}
     </AlertDialogComponent>
   );
