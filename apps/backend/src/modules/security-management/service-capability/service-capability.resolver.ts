@@ -1,10 +1,8 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
-import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
-import { extractId } from '../../../utils/utils';
 import { serviceCapabilityApp } from './service-capability.app';
 
 const resolvers: Resolvers = {
@@ -13,10 +11,8 @@ const resolvers: Resolvers = {
   Mutation: {
     editServiceCapability: async (_, { input, serviceInstanceId }) => {
       try {
-        const user_service_id = extractId<UserServiceId>(input.user_service_id);
-
         return await serviceCapabilityApp.editServiceCapability(
-          user_service_id,
+          input.user_service_id,
           input.capabilities,
           serviceInstanceId
         );
