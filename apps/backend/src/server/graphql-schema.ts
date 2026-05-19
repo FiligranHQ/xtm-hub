@@ -19,6 +19,7 @@ import openAEVScenariosResolver from '../modules/shareable-resource/openaev/scen
 import customDashboardsResolver from '../modules/shareable-resource/opencti/custom-dashboard/custom-dashboard.resolver';
 import ingestManifestResolver from '../modules/shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.resolver';
 import integrationsResolver from '../modules/shareable-resource/opencti/integration/integration.resolver';
+import openCTIPlaybooksResolver from '../modules/shareable-resource/opencti/playbook/playbook.resolver';
 import subscriptionsResolver from '../modules/subscription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
 import useCaseResolver from '../modules/use-case/use-case.resolver';
@@ -50,6 +51,7 @@ const resolvers = mergeResolvers([
   useCaseResolver,
   customDashboardsResolver,
   openAEVScenariosResolver,
+  openCTIPlaybooksResolver,
   registrationResolver,
   telemetryResolver,
   deploymentResolver,

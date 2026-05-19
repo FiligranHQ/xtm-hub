@@ -124,6 +124,10 @@ export const SERVICES = {
       NAME: 'open aev scenarios',
       ID: 'f61ee5ca-4b4f-4f94-9cb7-69b1b1c885a2' as ServiceInstanceId,
     },
+    OPENCTI_PLAYBOOKS: {
+      NAME: 'opencti playbooks',
+      ID: '01345f38-8a2b-4f3a-a731-9bd0cbb5fa58' as ServiceInstanceId,
+    },
     CUSTOM_DASHBOARDS: {
       ID: 'e1fb0d3f-a090-41c7-b183-8d949f6c2ba4' as ServiceInstanceId,
       SLUG: 'opencti-custom-dashboards',

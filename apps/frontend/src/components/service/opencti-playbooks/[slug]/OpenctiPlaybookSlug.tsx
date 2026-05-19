@@ -15,15 +15,15 @@ import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 
-interface OpenAEVScenarioSlugProps {
+interface OpenCTIPlaybookSlugProps {
   queryRef: PreloadedQuery<documentQuery>;
   serviceInstance: serviceInstance_fragment$data;
 }
 
-const OpenaevScenarioSlug = ({
+const OpenctiPlaybookSlug = ({
   queryRef,
   serviceInstance,
-}: OpenAEVScenarioSlugProps) => {
+}: OpenCTIPlaybookSlugProps) => {
   const data = usePreloadedQuery<documentQuery>(DocumentsItemQuery, queryRef);
 
   const documentData = readInlineData<documentItem_fragment$key>(
@@ -49,7 +49,7 @@ const OpenaevScenarioSlug = ({
 
   const context = useDocumentContext({
     serviceInstance,
-    type: ShareableResourceType.OPENAEV_SCENARIO,
+    type: ShareableResourceType.OPENCTI_PLAYBOOK,
   });
 
   return (
@@ -74,5 +74,4 @@ const OpenaevScenarioSlug = ({
   );
 };
 
-// Component export
-export default OpenaevScenarioSlug;
+export default OpenctiPlaybookSlug;

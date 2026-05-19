@@ -1,4 +1,5 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
 import { daysUntil } from '@/utils/date';
 import {
   APP_PATH,
@@ -14,7 +15,6 @@ import { registerRegisteredPlatformListFragment$data } from '@generated/register
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
 
 export const isExternalService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum
@@ -33,6 +33,7 @@ export const platformIdentifierMappedByShareableResourceType: Record<
     PlatformIdentifierEnum.OPENCTI,
   [ShareableResourceType.OPENCTI_INTEGRATION]: PlatformIdentifierEnum.OPENCTI,
   [ShareableResourceType.OPENAEV_SCENARIO]: PlatformIdentifierEnum.OPENAEV,
+  [ShareableResourceType.OPENCTI_PLAYBOOK]: PlatformIdentifierEnum.OPENCTI,
 };
 
 export const isExpired = (endDate: Date | undefined | null): boolean => {

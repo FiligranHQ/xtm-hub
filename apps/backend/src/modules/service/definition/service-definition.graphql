@@ -3,6 +3,7 @@ enum ServiceDefinitionIdentifier {
   link
   opencti_custom_dashboards
   opencti_integrations
+  opencti_playbooks
   openaev_scenarios
   opencti_registration
   openaev_registration

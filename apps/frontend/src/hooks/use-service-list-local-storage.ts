@@ -13,6 +13,7 @@ export enum ServiceListLocalStorageKey {
   OpenCTICustomDashboards = 'OpenCTICustomDashboards',
   OpenCTIIntegrationFeeds = 'OpenCTIIntegrationFeeds',
   OpenAEVScenarios = 'OpenAEVScenarios',
+  OpenCTIPlaybooks = 'OpenCTIPlaybooks',
 }
 
 const deserializeSelectedFilters = (stored: string): ServiceListFilterKey[] => {

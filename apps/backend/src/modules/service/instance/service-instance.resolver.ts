@@ -12,6 +12,7 @@ import { loadCapabilities } from '../../security-management/user-service-capabil
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
+import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../../shareable-resource/opencti/playbook/playbook.model';
 import { ServiceInstanceApp } from './service-instance.app';
 import {
   getUserJoined,
@@ -34,6 +35,7 @@ const resolvers: Resolvers = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
         [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegration',
+        [OPENCTI_PLAYBOOK_DOCUMENT_TYPE]: 'OpenCTIPlaybook',
       };
 
       if (service_instance.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {

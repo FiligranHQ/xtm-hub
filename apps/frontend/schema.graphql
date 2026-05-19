@@ -1040,6 +1040,7 @@ enum ServiceDefinitionIdentifier {
   link
   opencti_custom_dashboards
   opencti_integrations
+  opencti_playbooks
   openaev_scenarios
   opencti_registration
   openaev_registration
@@ -1514,6 +1515,31 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+}
+
+type OpenCTIPlaybook implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
 }
 
 """
