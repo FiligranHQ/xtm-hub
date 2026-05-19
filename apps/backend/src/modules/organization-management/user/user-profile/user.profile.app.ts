@@ -26,10 +26,7 @@ import {
 import { updateSubscriptionBy } from '../../../subscription/subscription.domain';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
-import {
-  insertNewUserTransfer,
-  loadUserTransfer,
-} from '../user-transferRequest/user-transfer-request.domain';
+import { UserTransferRequestDomain } from '../user-transferRequest/user-transfer-request.domain';
 import { updateAndDispatchUser } from '../user.helper';
 
 const deletePicture = async (pictureMinio: string) => {
@@ -114,10 +111,11 @@ export const userProfileApp = {
       existingPersonalSpace.id
     );
 
-    const userTransferRequest = await insertNewUserTransfer({
-      from_user_id: user.id,
-      to_user_id: newUser[0].id,
-    });
+    const userTransferRequest =
+      await UserTransferRequestDomain.insertNewUserTransfer({
+        from_user_id: user.id,
+        to_user_id: newUser[0].id,
+      });
     await sendMail({
       to: newEmail,
       template: 'request_transfer_personal_space',
@@ -135,9 +133,10 @@ export const userProfileApp = {
     transferPersonalSpaceId: UserTransferRequestId
   ) => {
     try {
-      const userTransferRequest = await loadUserTransfer({
-        id: transferPersonalSpaceId,
-      });
+      const userTransferRequest =
+        await UserTransferRequestDomain.loadUserTransfer({
+          id: transferPersonalSpaceId,
+        });
       if (!userTransferRequest) {
         throw new Error();
       }

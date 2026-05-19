@@ -20,11 +20,7 @@ import UserTransferRequest, {
 import * as mailService from '../../../../server/mail-service';
 import { deleteSubscription } from '../../../subscription/subscription.helper';
 import { UserDomain } from '../user-domain/user.domain';
-import * as UserTransferRequestDomain from '../user-transferRequest/user-transfer-request.domain';
-import {
-  deleteUserTransferRequest,
-  insertNewUserTransfer,
-} from '../user-transferRequest/user-transfer-request.domain';
+import { UserTransferRequestDomain } from '../user-transferRequest/user-transfer-request.domain';
 import { userProfileApp } from './user.profile.app';
 
 describe('user profile app', () => {
@@ -120,7 +116,7 @@ describe('user profile app', () => {
           .ID as unknown as OrganizationId,
         service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       });
-      await insertNewUserTransfer({
+      await UserTransferRequestDomain.insertNewUserTransfer({
         id: mockTransferRequestData[0]?.id,
         from_user_id: mockTransferRequestData[0]?.from_user_id as UserId,
         to_user_id: mockTransferRequestData[0]?.to_user_id as UserId,
@@ -130,7 +126,9 @@ describe('user profile app', () => {
       await deleteSubscription({
         id: newSubscription.id as SubscriptionId,
       });
-      await deleteUserTransferRequest({ id: mockTransferRequestData[0]?.id });
+      await UserTransferRequestDomain.deleteUserTransferRequest({
+        id: mockTransferRequestData[0]?.id,
+      });
     });
     it('should update subscription', async () => {
       requestContext.set(requestContextAdminSecondOrga);
