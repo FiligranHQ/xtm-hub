@@ -4,7 +4,7 @@ import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { StillReferencedError } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
-import { organizationApp } from './organization.app';
+import { OrganizationApp } from './organization.app';
 import { OrganizationDomain } from './organization.domain';
 
 const resolvers: Resolvers = {
@@ -22,14 +22,14 @@ const resolvers: Resolvers = {
   Mutation: {
     addOrganization: async (_, { input }) => {
       try {
-        return await organizationApp.createOrganization(input);
+        return await OrganizationApp.createOrganization(input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }
     },
     editOrganization: async (_, { id, input }) => {
       try {
-        return await organizationApp.updateOrganization(
+        return await OrganizationApp.updateOrganization(
           id as OrganizationId,
           input
         );
@@ -39,7 +39,7 @@ const resolvers: Resolvers = {
     },
     deleteOrganization: async (_, { id }) => {
       try {
-        return await organizationApp.deleteOrganization(id as OrganizationId);
+        return await OrganizationApp.deleteOrganization(id as OrganizationId);
       } catch (error) {
         if (error.message.includes('STILL_IN_ORGANIZATION')) {
           throw StillReferencedError(error.message);

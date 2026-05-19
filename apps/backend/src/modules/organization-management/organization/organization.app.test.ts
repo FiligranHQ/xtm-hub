@@ -6,7 +6,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { organizationApp } from './organization.app';
+import { OrganizationApp } from './organization.app';
 import { OrganizationDomain } from './organization.domain';
 
 describe('organizationApp', () => {
@@ -22,7 +22,7 @@ describe('organizationApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationApp.updateOrganization(
+      await OrganizationApp.updateOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         {
           domains: [
@@ -58,7 +58,7 @@ describe('organizationApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationApp.createOrganization({
+      await OrganizationApp.createOrganization({
         domains: ['test.com', 'test.fr'],
         name: 'test.com',
       });
@@ -82,7 +82,7 @@ describe('organizationApp', () => {
         domains: ['domain1.io', 'domain2.io'],
       });
 
-      const call = organizationApp.createOrganization({
+      const call = OrganizationApp.createOrganization({
         domains: ['domain1.io'],
         name: 'otherDomain.io',
       });
@@ -99,7 +99,7 @@ describe('organizationApp', () => {
         domains: ['alreadyExistingOrga.io'],
       });
 
-      const call = organizationApp.createOrganization({
+      const call = OrganizationApp.createOrganization({
         domains: ['whatever.io'],
         name: 'alreadyExistingOrga',
       });
@@ -122,7 +122,7 @@ describe('organizationApp', () => {
       });
       expect(newOrganization).toBeDefined();
 
-      await organizationApp.deleteOrganization(organizationId);
+      await OrganizationApp.deleteOrganization(organizationId);
 
       const deletedOrganization = await OrganizationDomain.loadOrganizationBy({
         id: organizationId,

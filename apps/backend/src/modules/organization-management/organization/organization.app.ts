@@ -12,7 +12,7 @@ import {
 } from '../../telemetry/telemetry.helper';
 import { OrganizationDomain } from './organization.domain';
 
-export const organizationApp = {
+export const OrganizationApp = {
   async updateOrganization(id: OrganizationId, input: OrganizationInput) {
     const updatedOrganization = await OrganizationDomain.updateOrganizationBy(
       { id },
