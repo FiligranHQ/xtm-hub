@@ -664,6 +664,7 @@
       "openaev_scenarios": "OpenAEV Scenarios",
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
       "opencti_integrations": "OpenCTI Integrations",
+      "opencti_playbooks": "OpenCTI Playbooks",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
       "xtm_platform_roadmap": "XTM Platform Roadmap"
@@ -895,6 +896,20 @@
       "UpdateService": "Update the scenario {name}",
       "DeleteService": "Delete the scenario {name}",
       "SureDeleteService": "Are you sure you want to delete the scenario {name}?",
+      "NonActive": "Draft",
+      "Active": "Published"
+    },
+    "OpenCTIPlaybook": {
+      "Actions": {
+        "Added": "The playbook {name} has been added successfully",
+        "Deleted": "The playbook {name} has been deleted successfully",
+        "Updated": "The playbook {name} has been modified successfully",
+        "Share": "Share Playbook"
+      },
+      "AddService": "Add new playbook",
+      "UpdateService": "Update the playbook {name}",
+      "DeleteService": "Delete the playbook {name}",
+      "SureDeleteService": "Are you sure you want to delete the playbook {name}?",
       "NonActive": "Draft",
       "Active": "Published"
     },
@@ -1327,6 +1342,7 @@
     "Delete": "Delete",
     "Deleted": "has been deleted",
     "Details": "Details",
+    "DocumentNotFound": "Document not found",
     "Download": "Download",
     "Edit": "Edit",
     "Error": "Error",
@@ -1340,6 +1356,7 @@
     "NotFound": "Not found",
     "OpenMenu": "Open menu",
     "Reset": "Reset",
+    "ServiceNotFound": "Service not found",
     "Success": "Success",
     "Update": "Update",
     "Updating": "Updating...",

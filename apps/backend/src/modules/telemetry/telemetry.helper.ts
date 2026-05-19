@@ -74,6 +74,10 @@ const ServiceIdentifierToEventService = new Map<
     ServiceDefinitionIdentifier.OpenctiCustomDashboards,
     TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
   ],
+  [
+    ServiceDefinitionIdentifier.OpenctiPlaybooks,
+    TelemetryEventService.OPENCTI_PLAYBOOKS_LIBRARY,
+  ],
 ]);
 
 const TelemetryTargetProductMappedByPlatformIdentifier = new Map<

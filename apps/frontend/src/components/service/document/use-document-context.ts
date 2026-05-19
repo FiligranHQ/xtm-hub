@@ -1,14 +1,26 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { ServiceContextProps } from '@/components/service/components/ServiceContext';
 import {
   ServiceForm,
   ServiceFormValues,
 } from '@/components/service/components/subscribable-services.types';
+import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
 import {
   DocumentCreateMutation,
   DocumentDeleteMutation,
   DocumentUpdateMutation,
 } from '@/components/service/document/document.graphql';
+import { ConnectorForm } from '@/components/service/integrations/forms/ConnectorForm';
+import { CsvFeedForm } from '@/components/service/integrations/forms/CsvFeedForm';
+import { RssFeedForm } from '@/components/service/integrations/forms/RssFeedForm';
+import { StreamForm } from '@/components/service/integrations/forms/StreamForm';
+import { TaxiiFeedForm } from '@/components/service/integrations/forms/TaxiiFeedForm';
+import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/ThirdPartyIntegrationForm';
+import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
+import { OpenctiPlaybookForm } from '@/components/service/opencti-playbooks/[serviceInstanceId]/OpenctiPlaybookForm';
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import {
   docIsExistingFile,
   isFile,
@@ -26,17 +38,6 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
-import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { ServiceContextProps } from '@/components/service/components/ServiceContext';
-import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
-import { ConnectorForm } from '@/components/service/integrations/forms/ConnectorForm';
-import { CsvFeedForm } from '@/components/service/integrations/forms/CsvFeedForm';
-import { RssFeedForm } from '@/components/service/integrations/forms/RssFeedForm';
-import { StreamForm } from '@/components/service/integrations/forms/StreamForm';
-import { TaxiiFeedForm } from '@/components/service/integrations/forms/TaxiiFeedForm';
-import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/ThirdPartyIntegrationForm';
-import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
 
 const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'name',
@@ -215,6 +216,7 @@ export function useDocumentContext({
   const form = useMemo(() => {
     const formMapping: Record<ShareableResourceType, () => ServiceForm> = {
       [ShareableResourceType.OPENAEV_SCENARIO]: () => OpenaevScenarioForm,
+      [ShareableResourceType.OPENCTI_PLAYBOOK]: () => OpenctiPlaybookForm,
       [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
         CustomDashboardForm,
       [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
@@ -240,6 +242,7 @@ export function useDocumentContext({
   const translationKey = useMemo(() => {
     const translationKeyMapping: Record<ShareableResourceType, () => string> = {
       [ShareableResourceType.OPENAEV_SCENARIO]: () => 'Service.OpenAEVScenario',
+      [ShareableResourceType.OPENCTI_PLAYBOOK]: () => 'Service.OpenCTIPlaybook',
       [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
         'Service.OpenctiCustomDashboards',
       [ShareableResourceType.OPENCTI_INTEGRATION]: () => {

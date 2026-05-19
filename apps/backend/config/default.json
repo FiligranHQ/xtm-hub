@@ -105,5 +105,9 @@
   "session_store": {
     "type": "postgresql",
     "cleanup_interval_minutes": 60
+  },
+  "news_feed": {
+    "cleanup_interval_value": 180,
+    "cleanup_interval_unit": "days"
   }
 }

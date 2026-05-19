@@ -488,10 +488,7 @@ describe('user mutation resolver', () => {
               password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
                   capabilities: [],
                 },
               ],

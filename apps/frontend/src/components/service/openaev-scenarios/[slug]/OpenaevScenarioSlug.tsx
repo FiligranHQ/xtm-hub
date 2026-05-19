@@ -2,6 +2,7 @@ import { AppServiceContext } from '@/components/service/components/ServiceContex
 import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
 import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
 
+import DeleteShareableResourceSlug from '@/components/service/document/DeleteShareableResourceSlug';
 import {
   documentItem,
   DocumentsItemQuery,
@@ -13,7 +14,6 @@ import { documentItem_fragment$key } from '@generated/documentItem_fragment.grap
 import { documentQuery } from '@generated/documentQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
-import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
 
 interface OpenAEVScenarioSlugProps {
   queryRef: PreloadedQuery<documentQuery>;
@@ -61,7 +61,7 @@ const OpenaevScenarioSlug = ({
           documentData={documentData}
           updateActions={
             <>
-              <DeleteIntegrationSlug document={documentData} />
+              <DeleteShareableResourceSlug document={documentData} />
               <ServiceManageSheet
                 document={documentData}
                 variant={'button'}

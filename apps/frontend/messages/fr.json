@@ -664,6 +664,7 @@
       "openaev_scenarios": "OpenAEV Scenarios",
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
       "opencti_integrations": "OpenCTI Integrations",
+      "opencti_playbooks": "OpenCTI Playbooks",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
       "xtm_platform_roadmap": "XTM Platform Roadmap"
@@ -895,6 +896,20 @@
       "UpdateService": "Mettre à jour le scénario {name}",
       "DeleteService": "Supprimer le scénario {name}",
       "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le scénario {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
+    },
+    "OpenCTIPlaybook": {
+      "Actions": {
+        "Added": "Le playbook {name} a été ajouté avec succès",
+        "Deleted": "Le playbook {name} a été supprimé avec succès",
+        "Updated": "Le playbook {name} a été modifié avec succès",
+        "Share": "Partager le playbook"
+      },
+      "AddService": "Ajouter un nouveau playbook",
+      "UpdateService": "Mettre à jour le playbook {name}",
+      "DeleteService": "Supprimer le playbook {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le playbook {name}?",
       "NonActive": "Brouillon",
       "Active": "Publié"
     },
@@ -1327,6 +1342,7 @@
     "Delete": "Supprimer",
     "Deleted": "a été supprimé",
     "Details": "Details",
+    "DocumentNotFound": "Document introuvable",
     "Download": "Télécharger",
     "Edit": "Modifier",
     "Error": "Erreur",
@@ -1340,6 +1356,7 @@
     "NotFound": "Non trouvé",
     "OpenMenu": "Ouvrir le menu",
     "Reset": "Effacer",
+    "ServiceNotFound": "Service introuvable",
     "Success": "Succès",
     "Update": "Editer",
     "Updating": "Mise à jour...",
