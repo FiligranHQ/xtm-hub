@@ -453,7 +453,9 @@ describe('newsFeedApp', () => {
     });
 
     it('should not throw when no items exist', async () => {
-      await expect(NewsFeedApp.cleanExpiredNewsFeedItems()).resolves.not.toThrow();
+      await expect(
+        NewsFeedApp.cleanExpiredNewsFeedItems()
+      ).resolves.not.toThrow();
     });
 
     it('should throw when cleanup_interval_value is not a positive number', async () => {

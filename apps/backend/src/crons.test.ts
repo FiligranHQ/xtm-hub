@@ -133,4 +133,4 @@ describe('crons', () => {
       expect(stop).toHaveBeenCalledTimes(1);
     }
   });
-})
+});

@@ -131,9 +131,7 @@ export const NewsFeedDomain = {
       .ignore();
   },
 
-  deleteNewsFeedItemsOlderThan: async (
-    cutoffDate: Date
-  ): Promise<number> => {
+  deleteNewsFeedItemsOlderThan: async (cutoffDate: Date): Promise<number> => {
     const deletedRows: { id: NewsFeedItemId }[] = await db('NewsFeedItem')
       .where('creation_date', '<', cutoffDate)
       .delete()
