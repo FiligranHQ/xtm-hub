@@ -1765,7 +1765,7 @@ export type RefreshUserPlatformTokenResponse = {
 
 export type RegisterPlatformInput = {
   identifier: PlatformIdentifier;
-  organizationId: Scalars['OrganizationId']['input'];
+  organizationId: Scalars['ID']['input'];
   platform: PlatformInput;
 };
 
