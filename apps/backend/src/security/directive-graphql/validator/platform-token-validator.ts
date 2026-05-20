@@ -8,10 +8,7 @@ import { requestContext } from '../../../context/request.context';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.domain';
-import {
-  loadOrganizationBy,
-  organizationDomain,
-} from '../../../modules/organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../../../modules/organization-management/organization/organization.domain';
 import { ServiceConfigurationDomain } from '../../../modules/registration/service-configuration/service-configuration.domain';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
 import { logApp } from '../../../utils/app-logger.util';
@@ -89,7 +86,7 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
 
   const deploymentRequest = await validateAndGetRequestedPlatformToken(req);
   if (deploymentRequest) {
-    return loadOrganizationBy({
+    return OrganizationDomain.loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,
     });
   }
@@ -100,7 +97,7 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
       token: extractPlatformToken(req),
     });
   if (serviceConfiguration) {
-    return organizationDomain.loadOrganizationSubscribedToServiceInstance(
+    return OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
       serviceConfiguration.service_instance_id
     );
   }

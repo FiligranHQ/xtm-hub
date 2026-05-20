@@ -2,11 +2,11 @@ import cron, { ScheduledTask } from 'node-cron';
 import { requestContext } from './context/request.context';
 import { DeploymentApp } from './modules/deployment/deployment.app';
 import { ServiceGroupApp } from './modules/deployment/group/service-group.app';
-import { UserOrganizationApp } from './modules/organization-management/user/user-organization/user.organization.app';
+import { NewsFeedApp } from './modules/news-feed/news-feed.app';
+import { UserOrganizationApp } from './modules/organization-management/user/user-organization/user-organization.app';
 import { EpicApp } from './modules/xtm-platform-roadmap/epic.app';
 import { CRONS_USER_CONTEXT } from './portal.const';
 import { logApp } from './utils/app-logger.util';
-import { NewsFeedApp } from './modules/news-feed/news-feed.app';
 
 const scheduledTasks: ScheduledTask[] = [];
 

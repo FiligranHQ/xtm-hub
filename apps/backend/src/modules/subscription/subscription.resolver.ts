@@ -10,7 +10,7 @@ import {
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { createRelayIdScalar } from '../../utils/scalar.util';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import {
@@ -28,7 +28,7 @@ const resolvers: Resolvers = {
       loadServiceInstanceBy({ id: service_instance_id }),
     user_service: ({ id }, _) => getUserService(id),
     organization: ({ organization_id }, _) =>
-      loadOrganizationBy({ id: organization_id }),
+      OrganizationDomain.loadOrganizationBy({ id: organization_id }),
   },
   SubscriptionCapability: {
     service_capability: ({ id }, _) => getServiceCapability(id),

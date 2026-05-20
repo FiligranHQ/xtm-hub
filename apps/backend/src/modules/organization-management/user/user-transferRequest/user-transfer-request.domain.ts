@@ -5,27 +5,27 @@ import UserTransferRequest, {
 } from '../../../../model/kanel/public/UserTransferRequest';
 import { addPrefixToObject } from '../../../../utils/typescript';
 
-export const insertNewUserTransfer = (
-  data: UserTransferRequestInitializer
-): Promise<UserTransferRequest[]> => {
-  return db<UserTransferRequest>('User_TransferRequest')
-    .insert(data)
-    .returning('*');
-};
+export const UserTransferRequestDomain = {
+  insertNewUserTransfer: (
+    data: UserTransferRequestInitializer
+  ): Promise<UserTransferRequest[]> => {
+    return db<UserTransferRequest>('User_TransferRequest')
+      .insert(data)
+      .returning('*');
+  },
 
-export const loadUserTransfer = (
-  field:
-    | addPrefixToObject<UserTransferRequestMutator, 'User_TransferRequest.'>
-    | UserTransferRequestMutator
-) => {
-  return db<UserTransferRequest>('User_TransferRequest').where(field).first();
-};
+  loadUserTransfer: (
+    field:
+      | addPrefixToObject<UserTransferRequestMutator, 'User_TransferRequest.'>
+      | UserTransferRequestMutator
+  ) => {
+    return db<UserTransferRequest>('User_TransferRequest').where(field).first();
+  },
 
-export const deleteUserTransferRequest = async (
-  field: UserTransferRequestMutator
-) => {
-  return db<UserTransferRequest>('User_TransferRequest')
-    .where(field)
-    .delete('*')
-    .returning('*');
+  deleteUserTransferRequest: async (field: UserTransferRequestMutator) => {
+    return db<UserTransferRequest>('User_TransferRequest')
+      .where(field)
+      .delete('*')
+      .returning('*');
+  },
 };

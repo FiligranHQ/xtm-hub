@@ -24,19 +24,9 @@ import {
   waitForUploads,
 } from '../../../document/document.uploads.helper';
 import { updateSubscriptionBy } from '../../../subscription/subscription.domain';
-import {
-  loadOrganizationBy,
-  loadUserByOrganization,
-} from '../../organization/organization.domain';
-import {
-  loadSimpleUserBy,
-  loadUserDetails,
-  updateUser,
-} from '../user-domain/user.domain';
-import {
-  insertNewUserTransfer,
-  loadUserTransfer,
-} from '../user-transferRequest/user-transfer-request.domain';
+import { OrganizationDomain } from '../../organization/organization.domain';
+import { UserDomain } from '../user-domain/user.domain';
+import { UserTransferRequestDomain } from '../user-transferRequest/user-transfer-request.domain';
 import { updateAndDispatchUser } from '../user.helper';
 
 const deletePicture = async (pictureMinio: string) => {
@@ -63,7 +53,7 @@ const buildPictureUrl = (userId: string) => {
 
 export const userProfileApp = {
   editMeUser: async (meUser, input: EditMeUserInput) => {
-    const updatedUser = await updateUser(meUser.id, input);
+    const updatedUser = await UserDomain.updateUser(meUser.id, input);
 
     try {
       await auth0Client.updateUser({
@@ -74,7 +64,7 @@ export const userProfileApp = {
       logApp.error(err);
     }
 
-    const user = await loadUserDetails({
+    const user = await UserDomain.loadUserDetails({
       'User.id': meUser.id,
     });
 
@@ -92,7 +82,7 @@ export const userProfileApp = {
     const minioName = await uploadPictureToMinIO(meUser.id, document.file);
     const pictureUrl = buildPictureUrl(meUser.id);
 
-    await updateUser(meUser.id, {
+    await UserDomain.updateUser(meUser.id, {
       picture: pictureUrl,
       picture_minio: minioName,
     });
@@ -106,7 +96,7 @@ export const userProfileApp = {
     if (!isValidEmail(newEmail)) {
       throw new Error(ErrorCode.InvalidEmail);
     }
-    const existingPersonalSpace = await loadOrganizationBy({
+    const existingPersonalSpace = await OrganizationDomain.loadOrganizationBy({
       name: newEmail,
       personal_space: true,
     });
@@ -117,12 +107,15 @@ export const userProfileApp = {
       return; // Best way to hide from the vilain user that the account does not exist. The email will just never be sent.
     }
 
-    const newUser = await loadUserByOrganization(existingPersonalSpace.id);
+    const newUser = await OrganizationDomain.loadUserByOrganization(
+      existingPersonalSpace.id
+    );
 
-    const userTransferRequest = await insertNewUserTransfer({
-      from_user_id: user.id,
-      to_user_id: newUser[0].id,
-    });
+    const userTransferRequest =
+      await UserTransferRequestDomain.insertNewUserTransfer({
+        from_user_id: user.id,
+        to_user_id: newUser[0].id,
+      });
     await sendMail({
       to: newEmail,
       template: 'request_transfer_personal_space',
@@ -140,9 +133,10 @@ export const userProfileApp = {
     transferPersonalSpaceId: UserTransferRequestId
   ) => {
     try {
-      const userTransferRequest = await loadUserTransfer({
-        id: transferPersonalSpaceId,
-      });
+      const userTransferRequest =
+        await UserTransferRequestDomain.loadUserTransfer({
+          id: transferPersonalSpaceId,
+        });
       if (!userTransferRequest) {
         throw new Error();
       }
@@ -152,19 +146,20 @@ export const userProfileApp = {
         throw ForbiddenAccess(ErrorCode.UserIsNotInOrganization);
       }
 
-      const fromUser = await loadSimpleUserBy({
+      const fromUser = await UserDomain.loadSimpleUserBy({
         id: userTransferRequest.from_user_id,
       });
-      const toUser = await loadSimpleUserBy({
+      const toUser = await UserDomain.loadSimpleUserBy({
         id: userTransferRequest.to_user_id,
       });
 
-      const personalSpaceToTransfer = await loadOrganizationBy({
-        name: fromUser.email,
-        personal_space: true,
-      });
+      const personalSpaceToTransfer =
+        await OrganizationDomain.loadOrganizationBy({
+          name: fromUser.email,
+          personal_space: true,
+        });
 
-      const currentToUserSpace = await loadOrganizationBy({
+      const currentToUserSpace = await OrganizationDomain.loadOrganizationBy({
         name: toUser.email,
         personal_space: true,
       });

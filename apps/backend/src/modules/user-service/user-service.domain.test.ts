@@ -23,7 +23,7 @@ import UserServiceCapability, {
   UserServiceCapabilityId,
 } from '../../model/kanel/public/UserServiceCapability';
 import * as mailService from '../../server/mail-service';
-import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { removeUser } from '../organization-management/user/user.helper';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
 import { createSubscription } from '../subscription/subscription.domain';
@@ -281,7 +281,7 @@ describe('userServiceDomain', () => {
       );
 
       expect(result).toHaveLength(1);
-      const user2 = await loadUserBy({ email: ADMIN.EMAIL });
+      const user2 = await UserDomain.loadUserBy({ email: ADMIN.EMAIL });
       expect(result[0]!.user_id).toBe(user2.id);
     });
 
@@ -299,7 +299,7 @@ describe('userServiceDomain', () => {
 
       expect(result).toHaveLength(1);
 
-      const createdUser = await loadUserBy({ email: newEmail });
+      const createdUser = await UserDomain.loadUserBy({ email: newEmail });
       expect(createdUser).toBeDefined();
       expect(createdUser.email).toBe(newEmail);
       expect(result[0]!.user_id).toBe(createdUser.id);

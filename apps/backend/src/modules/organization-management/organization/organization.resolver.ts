@@ -4,36 +4,32 @@ import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { StillReferencedError } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
-import { organizationApp } from './organization.app';
-import {
-  loadOrganizationBy,
-  loadOrganizations,
-  loadOrganizationsByUser,
-} from './organization.domain';
+import { OrganizationApp } from './organization.app';
+import { OrganizationDomain } from './organization.domain';
 
 const resolvers: Resolvers = {
   OrganizationId: createRelayIdScalar<OrganizationId>('Organization'),
   Query: {
     organization: async (_, { id }) =>
-      loadOrganizationBy({ id: id as OrganizationId }),
+      OrganizationDomain.loadOrganizationBy({ id: id as OrganizationId }),
     organizations: async (_, opts) => {
-      return loadOrganizations(opts);
+      return OrganizationDomain.loadOrganizations(opts);
     },
     userOrganizations: async (_, __, context) => {
-      return loadOrganizationsByUser(context.user.id);
+      return OrganizationDomain.loadOrganizationsByUser(context.user.id);
     },
   },
   Mutation: {
     addOrganization: async (_, { input }) => {
       try {
-        return await organizationApp.createOrganization(input);
+        return await OrganizationApp.createOrganization(input);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddOrganizationError);
       }
     },
     editOrganization: async (_, { id, input }) => {
       try {
-        return await organizationApp.updateOrganization(
+        return await OrganizationApp.updateOrganization(
           id as OrganizationId,
           input
         );
@@ -43,7 +39,7 @@ const resolvers: Resolvers = {
     },
     deleteOrganization: async (_, { id }) => {
       try {
-        return await organizationApp.deleteOrganization(id as OrganizationId);
+        return await OrganizationApp.deleteOrganization(id as OrganizationId);
       } catch (error) {
         if (error.message.includes('STILL_IN_ORGANIZATION')) {
           throw StillReferencedError(error.message);
