@@ -14,7 +14,7 @@ const toPascalCase = (value: string) => {
     .join('');
 
   if (!normalized) {
-    throw new Error('Le nom du composant est invalide.');
+    throw new Error("Component's name is not valid.");
   }
 
   return normalized;
@@ -54,7 +54,7 @@ const createComponentFile = async () => {
   });
 
   try {
-    const input = await rl.question('Nom du composant: ');
+    const input = await rl.question('Component name: ');
     const componentName = toPascalCase(input.trim());
     const targetDirectory = process.env.INIT_CWD ?? process.cwd();
     const componentFilePath = path.resolve(
@@ -63,7 +63,7 @@ const createComponentFile = async () => {
     );
 
     if (await fileExists(componentFilePath)) {
-      throw new Error(`Le fichier existe deja: ${componentFilePath}`);
+      throw new Error(`File already exists: ${componentFilePath}`);
     }
 
     await writeFile(
@@ -72,7 +72,7 @@ const createComponentFile = async () => {
       'utf-8'
     );
 
-    process.stdout.write(`Composant cree: ${componentFilePath}\n`);
+    process.stdout.write(`Component created: ${componentFilePath}\n`);
   } finally {
     rl.close();
   }

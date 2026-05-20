@@ -4,12 +4,12 @@ import process from 'node:process';
 import readline from 'node:readline/promises';
 
 const resolverTemplate = (
-  resolverName: string
+  resolverName: string,
+  needScalarId: boolean
 ) => `import { Resolvers } from '../../__generated__/resolvers-types';
-import { createRelayIdScalar } from '../../utils/scalar.util';
-
+${needScalarId ? "import { createRelayIdScalar } from '../../utils/scalar.util';\n" : ''}
 const resolvers: Resolvers = {
-  ${toPascalCase(resolverName)}Id: createRelayIdScalar<string>('${toPascalCase(resolverName)}'),
+  ${needScalarId ? `${toPascalCase(resolverName)}Id: createRelayIdScalar<${toPascalCase(resolverName)}Id>('${toPascalCase(resolverName)}'),\n  ` : ''}
   Query: {
   },
   Mutation: {
@@ -56,13 +56,16 @@ const domainTemplate = (resolverName: string) => {
 `;
 };
 
-const graphQLTemplate = (resolverName: string) => {
-  const typeName = `${toPascalCase(resolverName)}Placeholder`;
+const graphQLTemplate = (resolverName: string, needScalarId: boolean) => {
   return `
-  scalar ${toPascalCase(resolverName)}Id
-  
-  type ${typeName} implements Node {
-    id: ${toPascalCase(resolverName)}Id
+  ${
+    needScalarId
+      ? `scalar ${toPascalCase(resolverName)}Id
+  `
+      : ''
+  }
+
+  type ${toPascalCase(resolverName)} implements Node {
   }
   `;
 };
@@ -194,6 +197,9 @@ const createResolverFiles = async () => {
       throw new Error("Module's name is mandatory");
     }
 
+    const needScalarIdInput = await rl.question('Need scalar? (y/n): ');
+    const needScalarId = needScalarIdInput.trim().toLowerCase() === 'y';
+
     const moduleFolderPath = path.resolve(
       process.cwd(),
       'src/modules',
@@ -226,7 +232,7 @@ const createResolverFiles = async () => {
     const filesToCreate = [
       {
         filePath: resolverFilePath,
-        content: resolverTemplate(resolverName),
+        content: resolverTemplate(resolverName, needScalarId),
       },
       {
         filePath: resolverTestFilePath,
@@ -234,7 +240,7 @@ const createResolverFiles = async () => {
       },
       {
         filePath: graphQLFilePath,
-        content: graphQLTemplate(resolverName),
+        content: graphQLTemplate(resolverName, needScalarId),
       },
       {
         filePath: appFilePath,
@@ -265,9 +271,11 @@ const createResolverFiles = async () => {
     const resolverIdentifier = toResolverIdentifier(resolverName);
     const resolverImportPath = `../modules/${resolverName}/${resolverName}.resolver`;
     await updateGraphqlSchema(resolverIdentifier, resolverImportPath);
-    const scalarTypeName = toPascalCase(resolverName);
-    const scalarName = `${scalarTypeName}Id`;
-    await updateCodegenScalar(scalarName, scalarTypeName);
+    if (needScalarId) {
+      const scalarTypeName = toPascalCase(resolverName);
+      const scalarName = `${scalarTypeName}Id`;
+      await updateCodegenScalar(scalarName, scalarTypeName);
+    }
 
     const createdFiles = filesToCreate
       .map(({ filePath }) => `- ${filePath}`)
