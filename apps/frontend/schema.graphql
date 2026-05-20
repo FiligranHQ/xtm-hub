@@ -195,7 +195,7 @@ type Mutation {
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
   deleteUseCase(id: ID!): UseCase!
   addUserService(input: UserServiceAddInput!): [UserService]
-  deleteUserService(input: UserServiceDeleteInput!): UserService
+  deleteUserServices(input: UserServicesDeleteInput!): [UserService]
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
   deleteEpic(id: ID!): Epic!
@@ -1732,10 +1732,8 @@ input UserServiceAddYourselfInput {
   serviceInstanceId: ServiceInstanceId
 }
 
-input UserServiceDeleteInput {
-  email: String!
-  capabilities: [String]
-  subscriptionId: SubscriptionId!
+input UserServicesDeleteInput {
+  userServiceIds: [User_ServiceId!]!
 }
 
 type UserServiceConnection {

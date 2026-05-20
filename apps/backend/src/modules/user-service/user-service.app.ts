@@ -3,10 +3,10 @@ import {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import User from '../../model/kanel/public/User';
-import UserService from '../../model/kanel/public/UserService';
+import UserService, {
+  UserServiceId,
+} from '../../model/kanel/public/UserService';
 import { ErrorCode } from '../../utils/error/error.code';
-import { UserDomain } from '../organization-management/user/user-domain/user.domain';
-import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
 import { UserServiceDomain } from './user-service.domain';
 
@@ -35,29 +35,7 @@ export const UserServiceApp = {
     );
   },
 
-  deleteUserService: async (email: string, subscriptionId: SubscriptionId) => {
-    const userToDelete = await UserDomain.loadUserBy({ email });
-    const deletedUserService = await UserServiceDomain.deleteUserService(
-      userToDelete.id,
-      subscriptionId
-    );
-    if (!deletedUserService) {
-      return;
-    }
-    // Find subscription and remove it if no other userServices
-    const usersServices =
-      await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
-        subscription_id: deletedUserService?.subscription_id,
-      });
-
-    if (usersServices.length === 0) {
-      const [subscription] =
-        await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-          'Subscription.id': deletedUserService?.subscription_id,
-        } as SubscriptionMutator);
-      await SubscriptionDomain.deleteSubscriptions([subscription.id]);
-    }
-
-    return deletedUserService;
+  deleteUserServices: async (userServiceIds: UserServiceId[]) => {
+    return UserServiceDomain.deleteUserServices(userServiceIds);
   },
 };

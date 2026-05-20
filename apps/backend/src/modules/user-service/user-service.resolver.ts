@@ -48,12 +48,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
-    deleteUserService: async (_, { input }) => {
+    deleteUserServices: async (_, { input }) => {
       try {
-        return await UserServiceApp.deleteUserService(
-          input.email,
-          input.subscriptionId
-        );
+        return await UserServiceApp.deleteUserServices(input.userServiceIds);
       } catch (error) {
         throw mapToGraphQLError(error);
       }

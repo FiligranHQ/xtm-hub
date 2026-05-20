@@ -15,7 +15,6 @@ import {
   UserServiceOrdering,
 } from '../../__generated__/resolvers-types';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { UserId } from '../../model/kanel/public/User';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UserWithOrganizationsAndRole } from '../../model/user';
 import {
@@ -228,44 +227,40 @@ describe('add user service GraphQL mutation', () => {
 describe('delete user service GraphQL mutation', () => {
   it('should delegate to UserServiceApp', async () => {
     // Given
-    const subscriptionId = uuidv4() as SubscriptionId;
-    const email = 'user@test.com';
+    const userServiceId = uuidv4() as UserServiceId;
     const expected = {
-      id: uuidv4(),
-      user_id: 'some-user-id' as UserId,
-      subscription_id: subscriptionId,
+      userServiceIds: [userServiceId],
     };
-    vi.spyOn(UserServiceApp, 'deleteUserService').mockResolvedValue(
+    vi.spyOn(UserServiceApp, 'deleteUserServices').mockResolvedValue(
       expected as unknown as Awaited<
-        ReturnType<typeof UserServiceApp.deleteUserService>
+        ReturnType<typeof UserServiceApp.deleteUserServices>
       >
     );
 
     // When
-    const result = await userServiceResolver.Mutation!.deleteUserService!(
+    const result = await userServiceResolver.Mutation!.deleteUserServices!(
       {},
-      { input: { email, subscriptionId: subscriptionId } },
+      { input: { userServiceIds: [userServiceId] } },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     // Then
-    expect(UserServiceApp.deleteUserService).toHaveBeenCalledWith(
-      email,
-      subscriptionId
-    );
-    expect(result).toMatchObject({ subscription_id: subscriptionId });
+    expect(UserServiceApp.deleteUserServices).toHaveBeenCalledWith([
+      userServiceId,
+    ]);
+    expect(result).toMatchObject({ userServiceIds: [userServiceId] });
   });
 
   it('should map to NotFound for SubscriptionNotFound error', async () => {
     // Given
     const subscriptionId = uuidv4() as SubscriptionId;
-    vi.spyOn(UserServiceApp, 'deleteUserService').mockRejectedValue(
+    vi.spyOn(UserServiceApp, 'deleteUserServices').mockRejectedValue(
       new Error(NotFoundErrorCode.SubscriptionNotFound)
     );
 
     // When
-    const call = userServiceResolver.Mutation!.deleteUserService!(
+    const call = userServiceResolver.Mutation!.deleteUserServices!(
       {},
       {
         input: { email: 'user@test.com', subscriptionId: subscriptionId },

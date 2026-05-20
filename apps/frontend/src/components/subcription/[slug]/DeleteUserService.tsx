@@ -1,0 +1,71 @@
+import { UserServiceDeleteMutation } from '@/components/service/user_service.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
+import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
+import { useTranslations } from 'next-intl';
+import { useMutation } from 'react-relay';
+
+interface DeleteUserServiceProps {
+  userServices: userServices_fragment$data[];
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  connectionId: string;
+  onDeleted?: () => void;
+}
+
+export const DeleteUserService = ({
+  userServices,
+  isOpen,
+  onOpenChange,
+  connectionId,
+  onDeleted,
+}: DeleteUserServiceProps) => {
+  const t = useTranslations();
+  const [commitUserServiceDeletingMutation] =
+    useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
+
+  const handleConfirmDelete = () => {
+    const userServiceIds = userServices
+      .map((userService) => userService.id)
+      .filter((id): id is string => !!id);
+
+    commitUserServiceDeletingMutation({
+      variables: {
+        connections: [connectionId],
+        input: {
+          userServiceIds,
+        },
+      },
+      onCompleted: () => {
+        onOpenChange(false);
+        onDeleted?.();
+      },
+    });
+  };
+
+  if (userServices.length === 0) {
+    return null;
+  }
+
+  const firstUserService = userServices[0];
+
+  return (
+    <AlertDialogComponent
+      key={`delete-${userServices.map((userService) => userService.id).join('-')}`}
+      AlertTitle={t('Service.Management.RemoveAccess')}
+      actionButtonText={t('Service.Management.RemoveAccess')}
+      variantName={'destructive'}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      onClickContinue={handleConfirmDelete}>
+      {userServices.length > 1
+        ? t('Service.Management.AreYouSureRemoveUsersAccess', {
+            count: userServices.length,
+          })
+        : t('Service.Management.AreYouSureRemoveAccess', {
+            firstname: firstUserService?.user?.first_name ?? '',
+            lastname: firstUserService?.user?.last_name ?? '',
+          })}
+    </AlertDialogComponent>
+  );
+};

@@ -126,10 +126,10 @@ export const UserServiceCreateMutation = graphql`
 
 export const UserServiceDeleteMutation = graphql`
   mutation userServiceDeleteMutation(
-    $input: UserServiceDeleteInput!
+    $input: UserServicesDeleteInput!
     $connections: [ID!]!
   ) {
-    deleteUserService(input: $input) {
+    deleteUserServices(input: $input) {
       id @deleteEdge(connections: $connections)
     }
   }

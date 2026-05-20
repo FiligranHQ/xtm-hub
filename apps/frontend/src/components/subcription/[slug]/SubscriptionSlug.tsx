@@ -1,5 +1,4 @@
 import {
-  UserServiceDeleteMutation,
   UserServiceFromSubscription,
   userServiceFromSubscriptionFragment,
   userServicesFragment,
@@ -7,12 +6,13 @@ import {
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
-import { MoreVertIcon } from '@filigran/icon';
+import { DeleteIcon, MoreVertIcon } from '@filigran/icon';
 import {
   Badge,
   Button,
   DataTable,
   DataTableHeadBarOptions,
+  SelectionState,
 } from '@filigran/ui';
 import { userServiceFromSubscription$key } from '@generated/userServiceFromSubscription.graphql';
 import {
@@ -24,22 +24,21 @@ import { useTranslations } from 'next-intl';
 
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { DeleteUserService } from '@/components/subcription/[slug]/DeleteUserService';
 import {
   IconActionContext,
   IconActions,
   IconActionsItem,
 } from '@/components/ui/IconActions';
-import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
 import {
   PreloadedQuery,
   readInlineData,
-  useMutation,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
+import ServiceSlugHeader from '@/components/service/[slug]/ServiceSlugHeader';
 import { UserServiceForm } from '@/components/service/[slug]/UserServiceForm';
 import { EditUserService } from '@/components/subcription/[slug]/EditUserService';
 import { SubscriptionById } from '@/components/subcription/subscription.graphql';
@@ -51,6 +50,7 @@ import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDi
 import { APP_PATH } from '@/utils/path/constant';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
+import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
@@ -59,28 +59,32 @@ interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
   queryRefSubscription: PreloadedQuery<subscriptionByIdQuery>;
   serviceInstance?: serviceInstance_fragment$data;
-  subscriptionId: string;
 }
+
+const emptySelectionState = (): SelectionState => ({
+  selectAll: false,
+  selectedIds: new Set<string>(),
+  excludedIds: new Set<string>(),
+});
 
 const SubscriptionSlug = ({
   queryRef,
   queryRefSubscription,
   serviceInstance,
-  subscriptionId,
 }: SubscriptionSlugProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
   const [editUserService, setEditUserService] = useState<
     userServices_fragment$data | undefined
   >(undefined);
-  const [deleteUserService, setDeleteUserService] = useState<
-    userServices_fragment$data | undefined
+  const [deleteUserServices, setDeleteUserServices] = useState<
+    userServices_fragment$data[] | undefined
   >(undefined);
+  const [selection, setSelection] =
+    useState<SelectionState>(emptySelectionState);
 
   const { me } = useContext(PortalContext);
   const { setMenuOpen } = useContext(IconActionContext);
-  const [commitUserServiceDeletingMutation] =
-    useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
 
   useEffect(() => {
     if (!openSheet && openSheet !== null) setMenuOpen(false);
@@ -151,25 +155,28 @@ const SubscriptionSlug = ({
     });
   }, [userData, me?.id]);
 
-  const deleteCurrentUser = useCallback(
-    (email: string) => {
-      commitUserServiceDeletingMutation({
-        variables: {
-          connections: [userServices.userServiceFromSubscription?.__id ?? ''],
-          input: {
-            email,
-            subscriptionId,
-          },
-        },
-        onCompleted() {},
-      });
-    },
-    [
-      commitUserServiceDeletingMutation,
-      userServices.userServiceFromSubscription?.__id,
-      subscriptionId,
-    ]
+  const isBypass = useMemo(
+    () =>
+      me?.capabilities?.some(
+        (capa) => capa?.name === PortalCapabilityEnum.BYPASS
+      ) ?? false,
+    [me?.capabilities]
   );
+
+  const canManageUserServices = isBypass || canManageService();
+
+  const selectedUserServices = useMemo(() => {
+    if (selection.selectAll) {
+      return userData.filter(
+        (userService) => !selection.excludedIds.has(userService.id)
+      );
+    }
+
+    return userData.filter((userService) =>
+      selection.selectedIds.has(userService.id)
+    );
+  }, [selection, userData]);
+
   const columns: ColumnDef<userServices_fragment$data>[] = useMemo(
     () => [
       {
@@ -232,10 +239,7 @@ const SubscriptionSlug = ({
         cell: ({ row }) => {
           return (
             <div className="flex items-center justify-end">
-              {(me?.capabilities?.some(
-                (capa) => capa?.name === PortalCapabilityEnum.BYPASS
-              ) ||
-                canManageService()) && (
+              {canManageUserServices && (
                 <IconActions
                   icon={
                     <>
@@ -248,7 +252,7 @@ const SubscriptionSlug = ({
                     {t('Utils.Update')}
                   </IconActionsItem>
                   <IconActionsItem
-                    onClick={() => setDeleteUserService(row.original)}>
+                    onClick={() => setDeleteUserServices([row.original])}>
                     {t('Utils.Delete')}
                   </IconActionsItem>
                 </IconActions>
@@ -258,7 +262,7 @@ const SubscriptionSlug = ({
         },
       },
     ],
-    [canManageService, me?.capabilities, t]
+    [canManageUserServices, t]
   );
 
   const [pagination] = useState<PaginationState>({
@@ -305,44 +309,49 @@ const SubscriptionSlug = ({
     <>
       <BreadcrumbNav value={breadcrumbValue} />
 
-      <h1 className="pb-xl">
-        {t('Service.Management.ManageUsersForOrganization', {
-          organizationName:
-            queryDataSubscription.subscriptionById!.organization.name,
-          serviceName:
-            queryDataSubscription.subscriptionById!.service_instance!.name,
-        })}
-      </h1>
-      {queryDataSubscription.subscriptionById!.subscription_capability!.length >
-        0 && (
-        <div className="inline-block border rounded border-primary p-l txt-sub-content">
-          <div className="txt-container-title">
-            {t('InviteUserServiceForm.Capabilities')}:{' '}
-          </div>
-          <div className="italic mb-s">
-            {t('InviteUserServiceForm.CapabilitiesDescription', {
-              organizationName:
-                queryDataSubscription.subscriptionById!.organization.name,
-              serviceName:
-                queryDataSubscription.subscriptionById!.service_instance!.name,
-            })}
-          </div>
-          {queryDataSubscription.subscriptionById?.subscription_capability?.map(
-            (subscriptionCapa) => {
-              return (
-                <div key={subscriptionCapa?.id}>
-                  {subscriptionCapa?.service_capability?.name}:{' '}
-                  {subscriptionCapa?.service_capability?.description}
-                </div>
-              );
+      {serviceInstance ||
+        (queryDataSubscription.subscriptionById?.service_instance && (
+          <ServiceSlugHeader
+            serviceInstance={
+              (serviceInstance ||
+                queryDataSubscription.subscriptionById
+                  ?.service_instance) as unknown as serviceInstanceForSubscriptions_fragment$data
             }
-          )}
-        </div>
-      )}
+          />
+        ))}
+
       <DataTable
         toolbar={toolbar}
         columns={columns}
         data={userData}
+        selectionOptions={
+          canManageUserServices
+            ? {
+                selectionState: {
+                  state: selection,
+                  onSelectionChange: setSelection,
+                },
+                selectionHeader: {
+                  actions: () => (
+                    <Button
+                      variant="ghost-destructive"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setDeleteUserServices(selectedUserServices)
+                      }>
+                      <DeleteIcon className="h-4 w-4 m-s" />
+                      {t('Utils.Delete')}
+                    </Button>
+                  ),
+                },
+              }
+            : undefined
+        }
+        tableOptions={{
+          enableRowSelection: (row) =>
+            canManageUserServices && !!row.original.id,
+        }}
         tableState={{
           pagination,
           columnPinning: { right: ['actions'] },
@@ -360,25 +369,20 @@ const SubscriptionSlug = ({
           }
         />
       )}
-      {deleteUserService && (
-        <AlertDialogComponent
-          key={`delete-${deleteUserService.id}`}
-          AlertTitle={t('Service.Management.RemoveAccess')}
-          actionButtonText={t('Service.Management.RemoveAccess')}
-          variantName={'destructive'}
-          isOpen={!!deleteUserService}
-          onOpenChange={(open) =>
-            setDeleteUserService(open ? deleteUserService : undefined)
-          }
-          onClickContinue={() => {
-            deleteCurrentUser(deleteUserService.user?.email ?? '');
-            setDeleteUserService(undefined);
-          }}>
-          {t('Service.Management.AreYouSureRemoveAccess', {
-            firstname: deleteUserService.user!.first_name!,
-            lastname: deleteUserService.user!.last_name!,
-          })}
-        </AlertDialogComponent>
+      {deleteUserServices && deleteUserServices.length > 0 && (
+        <DeleteUserService
+          userServices={deleteUserServices}
+          isOpen={!!deleteUserServices}
+          connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
+          onDeleted={() => {
+            setSelection(emptySelectionState);
+          }}
+          onOpenChange={(open) => {
+            if (!open) {
+              setDeleteUserServices(undefined);
+            }
+          }}
+        />
       )}
     </>
   );

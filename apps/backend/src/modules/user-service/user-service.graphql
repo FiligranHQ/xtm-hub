@@ -23,15 +23,17 @@ input UserServiceAddYourselfInput {
   serviceInstanceId: ServiceInstanceId
 }
 
-input UserServiceDeleteInput {
-  email: String!
-  capabilities: [String]
-  subscriptionId: SubscriptionId!
+input UserServicesDeleteInput {
+  userServiceIds: [UserServiceId!]!
 }
 
 type Mutation {
   addUserService(input: UserServiceAddInput!): [UserService] @auth
-  deleteUserService(input: UserServiceDeleteInput!): UserService @auth
+  deleteUserServices(input: UserServicesDeleteInput!): [UserService]
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+    )
 }
 type Query {
   userServiceFromSubscription(
