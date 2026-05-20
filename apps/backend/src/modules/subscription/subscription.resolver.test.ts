@@ -15,7 +15,7 @@ import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import * as errorMapping from '../../utils/error/error.mapping';
-import * as organizationDomain from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import * as subscriptionDomain from './subscription.domain';
@@ -116,7 +116,7 @@ describe('subscription resolver - unit tests', () => {
       // Given
       const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       const expected = { id: organizationId };
-      vi.spyOn(organizationDomain, 'loadOrganizationBy').mockResolvedValue(
+      vi.spyOn(OrganizationDomain, 'loadOrganizationBy').mockResolvedValue(
         expected as never
       );
 
@@ -134,7 +134,7 @@ describe('subscription resolver - unit tests', () => {
       );
 
       // Then
-      expect(organizationDomain.loadOrganizationBy).toHaveBeenCalledWith({
+      expect(OrganizationDomain.loadOrganizationBy).toHaveBeenCalledWith({
         id: organizationId,
       });
       expect(result).toMatchObject(expected);
@@ -243,7 +243,7 @@ describe('subscription resolver - unit tests', () => {
     });
   });
 
-  describe('mutation.createSubscription', () => {
+  describe('mutation.createSubscriptions', () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const startDate = new Date('2025-01-01');
     const endDate = new Date('2026-01-01');
@@ -268,7 +268,8 @@ describe('subscription resolver - unit tests', () => {
         ).mockResolvedValue(expected as never);
 
         // When
-        const result = await subscriptionResolver.Mutation!.createSubscription!(
+        const result = await subscriptionResolver.Mutation!
+          .createSubscriptions!(
           {},
           {
             input: {
@@ -298,17 +299,17 @@ describe('subscription resolver - unit tests', () => {
     );
   });
 
-  describe('mutation.deleteSubscription', () => {
-    it('should call subscriptionApp.deleteSubscription with subscription_id', async () => {
+  describe('mutation.deleteSubscriptions', () => {
+    it('should call subscriptionApp.deleteSubscriptions with subscription_id', async () => {
       // Given
       const subscriptionId = uuidv4() as SubscriptionId;
       const expected = { id: subscriptionId };
-      vi.spyOn(subscriptionApp, 'deleteSubscription').mockResolvedValue(
+      vi.spyOn(subscriptionApp, 'deleteSubscriptions').mockResolvedValue(
         expected as never
       );
 
       // When
-      const result = await subscriptionResolver.Mutation!.deleteSubscription!(
+      const result = await subscriptionResolver.Mutation!.deleteSubscriptions!(
         {},
         { subscription_ids: [subscriptionId] },
         contextSimpleUserFiligran2,
@@ -316,7 +317,7 @@ describe('subscription resolver - unit tests', () => {
       );
 
       // Then
-      expect(subscriptionApp.deleteSubscription).toHaveBeenCalledWith([
+      expect(subscriptionApp.deleteSubscriptions).toHaveBeenCalledWith([
         subscriptionId,
       ]);
       expect(result).toMatchObject(expected);
@@ -365,9 +366,9 @@ describe('subscription resolver - unit tests', () => {
 
   describe('mutation error mapping', () => {
     it.each`
-      mutationName            | runMutation                                                                                                                                                           | setupAppMock                                                                                  | expectedCode
+      mutationName            | runMutation                                                                                                                                                            | setupAppMock                                                                                   | expectedCode
       ${'createSubscription'} | ${() =>
-  subscriptionResolver.Mutation!.createSubscription!(
+  subscriptionResolver.Mutation!.createSubscriptions!(
     {},
     {
       input: {
@@ -381,7 +382,7 @@ describe('subscription resolver - unit tests', () => {
     contextSimpleUserFiligran2,
     GRAPHQL_RESOLVE_INFO
   )} | ${() => vi.spyOn(subscriptionApp, 'subscribeOrganizationsToService').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
-      ${'deleteSubscription'} | ${() => subscriptionResolver.Mutation!.deleteSubscription!({}, { subscription_ids: [uuidv4() as SubscriptionId] }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscription').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
+      ${'deleteSubscription'} | ${() => subscriptionResolver.Mutation!.deleteSubscriptions!({}, { subscription_ids: [uuidv4() as SubscriptionId] }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscriptions').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
       ${'updateSubscription'} | ${() =>
   subscriptionResolver.Mutation!.updateSubscription!(
     {},

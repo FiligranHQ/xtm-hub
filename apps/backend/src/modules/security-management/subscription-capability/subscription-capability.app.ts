@@ -1,22 +1,16 @@
-import { SubscriptionModel } from '../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../context/database.context';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
-import { SubscriptionId } from '../../../model/kanel/public/Subscription';
-import { loadSubscriptionBy } from '../../subscription/subscription.domain';
-import { addCapabilitiesToSubscription } from './subscription-capability.domain';
+import Subscription, {
+  SubscriptionId,
+} from '../../../model/kanel/public/Subscription';
+import { loadSubscriptionsBy } from '../../subscription/subscription.domain';
+import { addCapabilitiesToSubscriptions } from './subscription-capability.domain';
 
-export const subscriptionCapabilityApp = {
-  addSubscriptionCapability: async (
+export const SubscriptionCapabilityApp = {
+  addSubscriptionsCapabilities: async (
     subscriptionsId: SubscriptionId[],
     capabilitiesId: ServiceCapabilityId[]
-  ): Promise<SubscriptionModel[]> => {
-    const modifiedSubscriptions = [];
-    await withTransaction(async () => {
-      for (const subscriptionId of subscriptionsId) {
-        await addCapabilitiesToSubscription(subscriptionId, capabilitiesId);
-        modifiedSubscriptions.push(loadSubscriptionBy({ id: subscriptionId }));
-      }
-    });
-    return modifiedSubscriptions;
+  ): Promise<Subscription[]> => {
+    await addCapabilitiesToSubscriptions(subscriptionsId, capabilitiesId);
+    return loadSubscriptionsBy(subscriptionsId);
   },
 };

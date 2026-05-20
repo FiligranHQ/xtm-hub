@@ -16,14 +16,23 @@ export const addCapabilitiesToSubscription = async (
   subscriptionId: SubscriptionId,
   capabilityIds: ServiceCapabilityId[]
 ): Promise<SubscriptionCapability[]> => {
-  if (!capabilityIds.length) {
+  return addCapabilitiesToSubscriptions([subscriptionId], capabilityIds);
+};
+
+export const addCapabilitiesToSubscriptions = async (
+  subscriptionIds: SubscriptionId[],
+  capabilityIds: ServiceCapabilityId[]
+): Promise<SubscriptionCapability[]> => {
+  if (!subscriptionIds.length || !capabilityIds.length) {
     return [];
   }
 
-  const data = capabilityIds.map((capabilityId) => ({
-    service_capability_id: capabilityId,
-    subscription_id: subscriptionId,
-  }));
+  const data = subscriptionIds.flatMap((subscriptionId) =>
+    capabilityIds.map((capabilityId) => ({
+      service_capability_id: capabilityId,
+      subscription_id: subscriptionId,
+    }))
+  );
 
   return db<SubscriptionCapability>('Subscription_Capability')
     .insert(data)

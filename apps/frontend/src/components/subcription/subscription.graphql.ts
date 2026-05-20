@@ -30,7 +30,7 @@ export const SubscriptionDeleteMutation = graphql`
     $subscription_ids: [SubscriptionId!]!
     $connections: [ID!]!
   ) {
-    deleteSubscription(subscription_ids: $subscription_ids) {
+    deleteSubscriptions(subscription_ids: $subscription_ids) {
       id @deleteEdge(connections: $connections)
     }
   }
@@ -49,10 +49,10 @@ export const UpdateSubscriptionInServiceMutation = graphql`
 
 export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
-    $input: CreateSubscriptionInput!
+    $input: CreateSubscriptionsInput!
     $connections: [ID!]!
   ) {
-    createSubscription(input: $input)
+    createSubscriptions(input: $input)
       @prependNode(
         connections: $connections
         edgeTypeName: "SubscriptionEdge"

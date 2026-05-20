@@ -134,7 +134,7 @@ describe('subscription domain', () => {
     });
   });
 
-  describe(`SubscriptionDomain.${SubscriptionDomain.deleteSubscription.name}`, () => {
+  describe(`SubscriptionDomain.${SubscriptionDomain.deleteSubscriptions.name}`, () => {
     it('should delete subscriptions by ids and return the deleted rows', async () => {
       const id1 = uuidv4() as SubscriptionId;
       const id2 = uuidv4() as SubscriptionId;
@@ -153,7 +153,7 @@ describe('subscription domain', () => {
         end_date: null,
       });
 
-      const deleted = await SubscriptionDomain.deleteSubscription([id1, id2]);
+      const deleted = await SubscriptionDomain.deleteSubscriptions([id1, id2]);
 
       expect(deleted).toHaveLength(2);
       expect(deleted?.map((s) => s.id)).toEqual(
@@ -167,7 +167,7 @@ describe('subscription domain', () => {
     });
 
     it('should return an empty array when no ids match', async () => {
-      const deleted = await SubscriptionDomain.deleteSubscription([
+      const deleted = await SubscriptionDomain.deleteSubscriptions([
         uuidv4() as SubscriptionId,
       ]);
       expect(deleted).toEqual([]);

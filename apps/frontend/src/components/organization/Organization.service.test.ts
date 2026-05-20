@@ -1,7 +1,8 @@
 import { organizationList_organizations$data } from '@generated/organizationList_organizations.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
+import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { getUnsubscribedOrganizations } from './Organization.service';
+import { useUnsubscribedOrganizations } from './Organization.service';
 
 const makeOrg = (id: string, name: string) => ({ id, name });
 
@@ -43,10 +44,16 @@ describe('getAvailableOrganizations', () => {
   ]);
 
   it('should return all organizations when there are no subscriptions', () => {
-    const result = getUnsubscribedOrganizations(organizationsData, []);
+    const { result } = renderHook(() =>
+      useUnsubscribedOrganizations(organizationsData, [])
+    );
 
-    expect(result).toHaveLength(3);
-    expect(result.map((o) => o.id)).toEqual(['org-1', 'org-2', 'org-3']);
+    expect(result.current).toHaveLength(3);
+    expect(result.current.map((o) => o.id)).toEqual([
+      'org-1',
+      'org-2',
+      'org-3',
+    ]);
   });
 
   it('should exclude already-subscribed organizations', () => {
@@ -54,13 +61,12 @@ describe('getAvailableOrganizations', () => {
       makeSubscription('org-1'),
       makeSubscription('org-2'),
     ];
-    const result = getUnsubscribedOrganizations(
-      organizationsData,
-      subscriptions
+    const { result } = renderHook(() =>
+      useUnsubscribedOrganizations(organizationsData, subscriptions)
     );
 
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({ id: 'org-3', name: 'Org 3' });
+    expect(result.current).toHaveLength(1);
+    expect(result.current[0]).toMatchObject({ id: 'org-3', name: 'Org 3' });
   });
 
   it('should keep the edited subscription organization available when editing', () => {
@@ -69,14 +75,16 @@ describe('getAvailableOrganizations', () => {
       makeSubscription('org-2'),
     ];
     const subscriptionToEdit = makeSubscription('org-1');
-    const result = getUnsubscribedOrganizations(
-      organizationsData,
-      subscriptions,
-      subscriptionToEdit
+    const { result } = renderHook(() =>
+      useUnsubscribedOrganizations(
+        organizationsData,
+        subscriptions,
+        subscriptionToEdit
+      )
     );
 
-    expect(result.map((o) => o.id)).toContain('org-1');
-    expect(result.map((o) => o.id)).not.toContain('org-2');
+    expect(result.current.map((o) => o.id)).toContain('org-1');
+    expect(result.current.map((o) => o.id)).not.toContain('org-2');
   });
 
   it('should return empty array when all organizations are subscribed and none is being edited', () => {
@@ -85,12 +93,11 @@ describe('getAvailableOrganizations', () => {
       makeSubscription('org-2'),
       makeSubscription('org-3'),
     ];
-    const result = getUnsubscribedOrganizations(
-      organizationsData,
-      subscriptions
+    const { result } = renderHook(() =>
+      useUnsubscribedOrganizations(organizationsData, subscriptions)
     );
 
-    expect(result).toHaveLength(0);
+    expect(result.current).toHaveLength(0);
   });
 
   it('should ignore subscriptions with no organization id', () => {
@@ -100,12 +107,15 @@ describe('getAvailableOrganizations', () => {
         organization: { id: '', name: 'Org 1', personal_space: false },
       } as unknown as subscription_fragment$data,
     ];
-    const result = getUnsubscribedOrganizations(
-      organizationsData,
-      subscriptions
+    const { result } = renderHook(() =>
+      useUnsubscribedOrganizations(organizationsData, subscriptions)
     );
 
-    expect(result).toHaveLength(3);
-    expect(result.map((o) => o.id)).toEqual(['org-1', 'org-2', 'org-3']);
+    expect(result.current).toHaveLength(3);
+    expect(result.current.map((o) => o.id)).toEqual([
+      'org-1',
+      'org-2',
+      'org-3',
+    ]);
   });
 });

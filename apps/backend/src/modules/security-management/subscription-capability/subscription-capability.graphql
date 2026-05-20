@@ -5,6 +5,6 @@ input AddSubscriptionCapabilityInput {
 
 type Mutation {
   addSubscriptionCapability(
-    input: AddSubscriptionCapabilityInput
-  ): [SubscriptionModel] @auth
+    input: AddSubscriptionCapabilityInput!
+  ): [SubscriptionModel!]! @auth(portalCapa: [BYPASS])
 }

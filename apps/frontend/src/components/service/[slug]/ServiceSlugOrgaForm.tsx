@@ -1,6 +1,6 @@
 import {
   getOrganizations,
-  getUnsubscribedOrganizations,
+  useUnsubscribedOrganizations,
 } from '@/components/organization/Organization.service';
 import {
   AddSubscriptionInServiceMutation,
@@ -9,7 +9,7 @@ import {
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInServiceCreateMutation.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
-import { getSubscriptionDefaultValues } from './service-slug-orga-form.utils';
+import { useSubscriptionDefaultValues } from './use-subscription-default-values';
 
 import {
   Button,
@@ -29,7 +29,7 @@ import { serviceInstanceForSubscriptions_fragment$data } from '@generated/servic
 import { subscriptionInServiceUpdateMutation } from '@generated/subscriptionInServiceUpdateMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -60,14 +60,10 @@ export const ServiceSlugOrgaForm = ({
   const t = useTranslations();
   const { toast } = useToast();
   const [organizationsData] = getOrganizations();
-  const organizations = useMemo(
-    () =>
-      getUnsubscribedOrganizations(
-        organizationsData,
-        subscriptions,
-        subscriptionToEdit
-      ),
-    [organizationsData, subscriptions, subscriptionToEdit]
+  const organizations = useUnsubscribedOrganizations(
+    organizationsData,
+    subscriptions,
+    subscriptionToEdit
   );
 
   const [commitSubscriptionCreateMutation] =
@@ -79,10 +75,7 @@ export const ServiceSlugOrgaForm = ({
       UpdateSubscriptionInServiceMutation
     );
 
-  const defaultValues = useMemo(
-    () => getSubscriptionDefaultValues(subscriptionToEdit),
-    [subscriptionToEdit]
-  );
+  const defaultValues = useSubscriptionDefaultValues(subscriptionToEdit);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

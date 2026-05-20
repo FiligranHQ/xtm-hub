@@ -78,10 +78,10 @@ export const subscriptionApp = {
     });
   },
 
-  deleteSubscription: async (
+  deleteSubscriptions: async (
     ids: SubscriptionId[]
   ): Promise<Subscription[]> => {
-    return SubscriptionDomain.deleteSubscription(ids);
+    return SubscriptionDomain.deleteSubscriptions(ids);
   },
 
   updateSubscription: async ({

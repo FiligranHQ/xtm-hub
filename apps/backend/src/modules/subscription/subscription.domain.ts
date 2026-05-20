@@ -18,7 +18,7 @@ import { UserServiceDomain } from '../user-service/user-service.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 export const SubscriptionDomain = {
-  deleteSubscription: async (
+  deleteSubscriptions: async (
     ids: SubscriptionId[]
   ): Promise<Subscription[] | null> => {
     return db<Subscription>('Subscription').whereIn('id', ids).delete('*');
@@ -127,6 +127,11 @@ export const loadSubscriptionBy = async (
   field: SubscriptionMutator
 ): Promise<Subscription | null> => {
   return db<Subscription>('Subscription').where(field).first();
+};
+export const loadSubscriptionsBy = async (
+  ids: SubscriptionId[]
+): Promise<Subscription[]> => {
+  return db<Subscription[]>('Subscription').whereIn('id', ids).select('*');
 };
 
 export const updateSubscriptionBy = async (

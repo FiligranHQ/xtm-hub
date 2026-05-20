@@ -945,6 +945,7 @@
       "AvailableCapabilities": "Available capabilities",
       "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
       "AreYouSureRemoveOrganizationAccess": "Are you sure you want to remove access for organization {organizationName} from this service?",
+      "AreYouSureRemoveOrganizationsAccess": "Are you sure you want to remove access for {count} organizations from this service?",
       "Description": "Organizations that have joined this service",
       "Email": "Email",
       "FirstName": "First Name",

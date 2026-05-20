@@ -16,6 +16,7 @@ import {
   organizationSelectQuery,
 } from '@generated/organizationSelectQuery.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
+import { useMemo } from 'react';
 import {
   useFragment,
   useLazyLoadQuery,
@@ -74,22 +75,24 @@ interface AvailableOrganization {
  * When editing an existing subscription, the subscribed organization of that subscription
  * is excluded from filtering so it remains selectable.
  */
-export const getUnsubscribedOrganizations = (
+export const useUnsubscribedOrganizations = (
   organizationsData: organizationList_organizations$data,
   subscriptions: subscription_fragment$data[],
   subscriptionToEdit?: subscription_fragment$data
 ): AvailableOrganization[] => {
-  const subscribedOrganizationIds = new Set(
-    subscriptions
-      .map((subscription) => subscription.organization?.id)
-      .filter((id): id is string => Boolean(id))
-  );
+  return useMemo(() => {
+    const subscribedOrganizationIds = new Set(
+      subscriptions
+        .map((subscription) => subscription.organization?.id)
+        .filter((id): id is string => Boolean(id))
+    );
 
-  if (subscriptionToEdit?.organization?.id) {
-    subscribedOrganizationIds.delete(subscriptionToEdit.organization.id);
-  }
+    if (subscriptionToEdit?.organization?.id) {
+      subscribedOrganizationIds.delete(subscriptionToEdit.organization.id);
+    }
 
-  return organizationsData.organizations.edges
-    .map(({ node }) => node)
-    .filter(({ id }) => !subscribedOrganizationIds.has(id));
+    return organizationsData.organizations.edges
+      .map(({ node }) => node)
+      .filter(({ id }) => !subscribedOrganizationIds.has(id));
+  }, [organizationsData, subscriptions, subscriptionToEdit]);
 };

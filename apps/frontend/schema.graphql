@@ -181,13 +181,13 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
-  addSubscriptionCapability(input: AddSubscriptionCapabilityInput): [SubscriptionModel]
+  addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  createSubscription(input: CreateSubscriptionInput): [SubscriptionModel]
+  createSubscriptions(input: CreateSubscriptionsInput): [SubscriptionModel!]!
   updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
-  deleteSubscription(subscription_ids: [SubscriptionId!]!): [SubscriptionModel]
+  deleteSubscriptions(subscription_ids: [SubscriptionId!]!): [SubscriptionModel!]!
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
@@ -1590,7 +1590,7 @@ type SubscriptionEdge {
   node: SubscriptionModel!
 }
 
-input CreateSubscriptionInput {
+input CreateSubscriptionsInput {
   service_instance_id: ServiceInstanceId!
   organization_id: [OrganizationId!]!
   capability_ids: [Service_CapabilityId]

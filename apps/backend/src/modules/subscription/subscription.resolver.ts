@@ -34,7 +34,7 @@ const resolvers: Resolvers = {
     service_capability: ({ id }, _) => getServiceCapability(id),
   },
   Mutation: {
-    createSubscription: async (_, { input }) => {
+    createSubscriptions: async (_, { input }) => {
       try {
         return (await subscriptionApp.subscribeOrganizationsToService({
           organizationIds: input.organization_id,
@@ -50,9 +50,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    deleteSubscription: async (_, { subscription_ids }) => {
+    deleteSubscriptions: async (_, { subscription_ids }) => {
       try {
-        return (await subscriptionApp.deleteSubscription(
+        return (await subscriptionApp.deleteSubscriptions(
           subscription_ids
         )) as unknown as SubscriptionModel[];
       } catch (error) {

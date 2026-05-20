@@ -7,6 +7,7 @@ import Subscription from '../../../model/kanel/public/Subscription';
 import SubscriptionCapability from '../../../model/kanel/public/SubscriptionCapability';
 import {
   addCapabilitiesToSubscription,
+  addCapabilitiesToSubscriptions,
   loadSubscriptionCapabilities,
   loadSubscriptionCapabilitiesBy,
   replaceCapabilitiesForSubscription,
@@ -16,6 +17,7 @@ describe('subscription capability domain', () => {
   let serviceDefinition: ServiceDefinition;
   let serviceInstance: ServiceInstance;
   let subscription: Subscription;
+  let subscription2: Subscription;
   let capability1: ServiceCapability;
   let capability2: ServiceCapability;
   let capability3: ServiceCapability;
@@ -28,6 +30,9 @@ describe('subscription capability domain', () => {
       service_definition_id: serviceDefinition.id,
     });
     subscription = await TestHelper.subscription.create({
+      service_instance_id: serviceInstance.id,
+    });
+    subscription2 = await TestHelper.subscription.create({
       service_instance_id: serviceInstance.id,
     });
     capability1 = await TestHelper.serviceCapability.create({
@@ -50,17 +55,22 @@ describe('subscription capability domain', () => {
     await TestHelper.subscriptionCapability.delete({
       subscription_id: subscription.id,
     });
+    await TestHelper.subscriptionCapability.delete({
+      subscription_id: subscription2.id,
+    });
   });
 
   afterAll(async () => {
     await TestHelper.subscriptionCapability.delete({
       subscription_id: subscription.id,
     });
+    await TestHelper.subscriptionCapability.delete({
+      subscription_id: subscription2.id,
+    });
 
     await TestHelper.serviceCapability.delete({ id: capability1.id });
     await TestHelper.serviceCapability.delete({ id: capability2.id });
     await TestHelper.serviceCapability.delete({ id: capability3.id });
-    await TestHelper.subscription.delete({ id: subscription.id });
     await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
     await TestHelper.serviceDefinition.delete({ id: serviceDefinition.id });
   });
@@ -126,6 +136,34 @@ describe('subscription capability domain', () => {
       })) as SubscriptionCapability[];
 
       expect(persistedCapabilities).toHaveLength(2);
+    });
+  });
+  describe('addCapabilitiesToSubscriptions', () => {
+    it('should return an empty array when subscription list is empty', async () => {
+      const capabilities = await addCapabilitiesToSubscriptions(
+        [],
+        [capability1.id]
+      );
+      expect(capabilities).toEqual([]);
+    });
+
+    it('should insert capabilities for multiple subscriptions in one call', async () => {
+      const capabilities = await addCapabilitiesToSubscriptions(
+        [subscription.id, subscription2.id],
+        [capability1.id, capability2.id]
+      );
+
+      expect(capabilities).toHaveLength(4);
+
+      const persistedCapabilitiesSub1 = await loadSubscriptionCapabilitiesBy({
+        subscription_id: subscription.id,
+      });
+      const persistedCapabilitiesSub2 = await loadSubscriptionCapabilitiesBy({
+        subscription_id: subscription2.id,
+      });
+
+      expect(persistedCapabilitiesSub1).toHaveLength(2);
+      expect(persistedCapabilitiesSub2).toHaveLength(2);
     });
   });
   describe('replaceCapabilitiesForSubscription', () => {

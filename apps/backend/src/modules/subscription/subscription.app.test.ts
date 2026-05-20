@@ -242,7 +242,7 @@ describe('subscription app', () => {
     });
   });
 
-  describe(`${subscriptionApp.deleteSubscription.name}`, () => {
+  describe(`${subscriptionApp.deleteSubscriptions.name}`, () => {
     it('should delete the subscription', async () => {
       const id = uuidv4() as SubscriptionId;
       const subscription = await createSubscription({
@@ -255,7 +255,7 @@ describe('subscription app', () => {
 
       expect(subscription).toBeDefined();
 
-      const deletedSubscription = await subscriptionApp.deleteSubscription([
+      const deletedSubscription = await subscriptionApp.deleteSubscriptions([
         id,
       ]);
       expect(deletedSubscription).toStrictEqual([subscription]);
@@ -274,7 +274,7 @@ describe('subscription app', () => {
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
       ]);
 
-      await subscriptionApp.deleteSubscription([id]);
+      await subscriptionApp.deleteSubscriptions([id]);
 
       const deletedSubscription = await TestHelper.subscription.load({ id });
       expect(deletedSubscription).toBeUndefined();

@@ -27,7 +27,7 @@ type SubscriptionEdge {
   node: SubscriptionModel!
 }
 
-input CreateSubscriptionInput {
+input CreateSubscriptionsInput {
   service_instance_id: ServiceInstanceId!
   organization_id: [OrganizationId!]!
   capability_ids: [ServiceCapabilityId]
@@ -44,7 +44,7 @@ input UpdateSubscriptionInput {
 type Mutation {
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
-  createSubscription(input: CreateSubscriptionInput): [SubscriptionModel]
+  createSubscriptions(input: CreateSubscriptionsInput): [SubscriptionModel!]!
     @auth(portalCapa: [BYPASS])
   updateSubscription(
     subscription_id: SubscriptionId!
@@ -52,7 +52,9 @@ type Mutation {
   ): SubscriptionModel
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
     @service_capa(requires: [MANAGE_ACCESS])
-  deleteSubscription(subscription_ids: [SubscriptionId!]!): [SubscriptionModel]
+  deleteSubscriptions(
+    subscription_ids: [SubscriptionId!]!
+  ): [SubscriptionModel!]!
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
     @service_capa(requires: [MANAGE_ACCESS])
 }

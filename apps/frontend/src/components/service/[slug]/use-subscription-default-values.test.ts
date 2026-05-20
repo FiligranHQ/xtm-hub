@@ -1,6 +1,7 @@
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
+import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { getSubscriptionDefaultValues } from './service-slug-orga-form.utils';
+import { useSubscriptionDefaultValues } from './use-subscription-default-values';
 
 export const makeSubscription = (
   orgId: string,
@@ -16,19 +17,23 @@ export const makeSubscription = (
     ...overrides,
   }) as unknown as subscription_fragment$data;
 
-describe('getSubscriptionDefaultValues', () => {
+describe('useSubscriptionDefaultValues', () => {
   it('should return empty defaults when no subscriptionToEdit is provided', () => {
     const before = new Date();
-    const result = getSubscriptionDefaultValues(undefined);
+    const { result } = renderHook(() =>
+      useSubscriptionDefaultValues(undefined)
+    );
     const after = new Date();
 
-    expect(result.organization_id).toEqual([]);
-    expect(result.capability_ids).toEqual([]);
-    expect(result.start_date.getTime()).toBeGreaterThanOrEqual(
+    expect(result.current.organization_id).toEqual([]);
+    expect(result.current.capability_ids).toEqual([]);
+    expect(result.current.start_date.getTime()).toBeGreaterThanOrEqual(
       before.getTime()
     );
-    expect(result.start_date.getTime()).toBeLessThanOrEqual(after.getTime());
-    expect(result.end_date).toBeUndefined();
+    expect(result.current.start_date.getTime()).toBeLessThanOrEqual(
+      after.getTime()
+    );
+    expect(result.current.end_date).toBeUndefined();
   });
 
   it.each`
@@ -39,23 +44,27 @@ describe('getSubscriptionDefaultValues', () => {
     'should map dates correctly: $description',
     ({ start_date, end_date, expectedStartSlice, expectedEndDefined }) => {
       const subscription = makeSubscription('org-1', { start_date, end_date });
-      const result = getSubscriptionDefaultValues(subscription);
+      const { result } = renderHook(() =>
+        useSubscriptionDefaultValues(subscription)
+      );
 
-      expect(result.start_date.toISOString().slice(0, 10)).toBe(
+      expect(result.current.start_date.toISOString().slice(0, 10)).toBe(
         expectedStartSlice
       );
       if (expectedEndDefined) {
-        expect(result.end_date).toBeDefined();
+        expect(result.current.end_date).toBeDefined();
       } else {
-        expect(result.end_date).toBeUndefined();
+        expect(result.current.end_date).toBeUndefined();
       }
     }
   );
 
   it('should pre-fill organization_id with the subscribed organization', () => {
     const subscription = makeSubscription('org-42');
-    const result = getSubscriptionDefaultValues(subscription);
-    expect(result.organization_id).toEqual(['org-42']);
+    const { result } = renderHook(() =>
+      useSubscriptionDefaultValues(subscription)
+    );
+    expect(result.current.organization_id).toEqual(['org-42']);
   });
 
   it('should pre-fill capability_ids with existing capabilities', () => {
@@ -81,8 +90,10 @@ describe('getSubscriptionDefaultValues', () => {
         },
       ] as unknown as subscription_fragment$data['subscription_capability'],
     });
-    const result = getSubscriptionDefaultValues(subscription);
-    expect(result.capability_ids).toEqual(['cap-1', 'cap-2']);
+    const { result } = renderHook(() =>
+      useSubscriptionDefaultValues(subscription)
+    );
+    expect(result.current.capability_ids).toEqual(['cap-1', 'cap-2']);
   });
 
   it('should filter out null capability ids', () => {
@@ -100,15 +111,19 @@ describe('getSubscriptionDefaultValues', () => {
         },
       ] as unknown as subscription_fragment$data['subscription_capability'],
     });
-    const result = getSubscriptionDefaultValues(subscription);
-    expect(result.capability_ids).toEqual(['cap-2']);
+    const { result } = renderHook(() =>
+      useSubscriptionDefaultValues(subscription)
+    );
+    expect(result.current.capability_ids).toEqual(['cap-2']);
   });
 
   it('should return empty capability_ids when subscription has no capabilities', () => {
     const subscription = makeSubscription('org-1', {
       subscription_capability: [],
     });
-    const result = getSubscriptionDefaultValues(subscription);
-    expect(result.capability_ids).toEqual([]);
+    const { result } = renderHook(() =>
+      useSubscriptionDefaultValues(subscription)
+    );
+    expect(result.current.capability_ids).toEqual([]);
   });
 });
