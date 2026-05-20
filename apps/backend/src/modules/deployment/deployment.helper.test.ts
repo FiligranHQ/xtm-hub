@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestActivitySector,
@@ -7,6 +7,7 @@ import {
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestSource,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import DeploymentRequestModel, {
@@ -15,6 +16,9 @@ import DeploymentRequestModel, {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
+import * as mailService from '../../server/mail-service';
+import { HUBSPOT_QUEUES } from '../../thirdparty/pgboss/hubspot.jobs';
+import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { AlreadyExistsErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployment.domain';
 import {
@@ -23,6 +27,7 @@ import {
   hasDeploymentTelemetryDataChanged,
   isHubStatusTransitionValid,
   isPlatformStateTransitionValid,
+  sendMailAndNotifyHubspot,
 } from './deployment.helper';
 
 const buildDeploymentRequest = (
@@ -52,6 +57,7 @@ const buildDeploymentRequest = (
   cancellation_user_id: null,
   cancellation_date: null,
   cancellation_reason: null,
+  source: DeploymentRequestSource.Xtmhub,
   ...overrides,
 });
 
@@ -503,5 +509,92 @@ describe('hasDeploymentTelemetryDataChanged', () => {
     };
 
     expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(false);
+  });
+});
+
+describe('sendMailAndNotifyHubspot', () => {
+  let mockSendMail: ReturnType<typeof vi.spyOn>;
+  let mockPgBossSend: ReturnType<typeof vi.spyOn>;
+  const deploymentId = uuidv4() as DeploymentRequestId;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(Date.UTC(2025, 4, 20, 10, 0, 0)));
+    mockSendMail = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
+    mockPgBossSend = vi.spyOn(PgBossProducer, 'send').mockResolvedValue(null);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should call sendMail with the mail data', async () => {
+    await sendMailAndNotifyHubspot({
+      mail_data: {
+        to: 'user@example.com',
+        template: 'free_trial_requested',
+        params: {
+          firstName: 'John',
+          platformIdentifier: PlatformIdentifier.Opencti,
+        },
+      },
+      deployment_request_id: deploymentId,
+      deployment_request_status: DeploymentRequestHubStatus.Pending,
+    });
+
+    expect(mockSendMail).toHaveBeenCalledExactlyOnceWith({
+      to: 'user@example.com',
+      template: 'free_trial_requested',
+      params: {
+        firstName: 'John',
+        platformIdentifier: PlatformIdentifier.Opencti,
+      },
+    });
+  });
+
+  it('should call PgBossProducer.send with the correct Hubspot event', async () => {
+    const now = new Date(Date.UTC(2025, 4, 20, 10, 0, 0));
+    await sendMailAndNotifyHubspot({
+      mail_data: {
+        to: 'user@example.com',
+        template: 'free_trial_requested',
+        params: {
+          firstName: 'John',
+          platformIdentifier: PlatformIdentifier.Opencti,
+        },
+      },
+      deployment_request_id: deploymentId,
+      deployment_request_status: DeploymentRequestHubStatus.Pending,
+    });
+
+    expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
+      event: {
+        subject: 'Your OpenCTI Free Trial Request',
+        timestamp: now.toISOString(),
+        deployment_id: deploymentId,
+        deployment_status: DeploymentRequestHubStatus.Pending,
+      },
+    });
+  });
+
+  it('should not call PgBossProducer.send when sendMail throws', async () => {
+    mockSendMail.mockRejectedValue(new Error('SMTP unavailable'));
+
+    await expect(
+      sendMailAndNotifyHubspot({
+        mail_data: {
+          to: 'user@example.com',
+          template: 'free_trial_requested',
+          params: {
+            firstName: 'John',
+            platformIdentifier: PlatformIdentifier.Opencti,
+          },
+        },
+        deployment_request_id: deploymentId,
+        deployment_request_status: DeploymentRequestHubStatus.Pending,
+      })
+    ).rejects.toThrow('SMTP unavailable');
+
+    expect(mockPgBossSend).not.toHaveBeenCalled();
   });
 });

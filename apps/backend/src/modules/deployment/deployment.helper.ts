@@ -4,8 +4,18 @@ import {
   DeploymentRequestPlatformState,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
-import DeploymentRequestModel from '../../model/kanel/public/DeploymentRequest';
+import DeploymentRequestModel, {
+  DeploymentRequestId,
+} from '../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { sendMail, SendMailParams } from '../../server/mail-service';
+import {
+  MailTemplates,
+  templateSubjects,
+} from '../../server/mail-template/mail';
+import { HUBSPOT_QUEUES } from '../../thirdparty/pgboss/hubspot.jobs';
+import { PgBossProducer } from '../../thirdparty/pgboss/producer';
+import { logApp } from '../../utils/app-logger.util';
 import { AlreadyExistsErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployment.domain';
 
@@ -203,4 +213,45 @@ export const computeHubStatus = (
   }
 
   return newHubStatus;
+};
+
+const notifyMailSentToHubspot = async <T extends keyof MailTemplates>({
+  mail_data,
+  deployment_request_id,
+  deployment_request_status,
+}: {
+  mail_data: SendMailParams<T>;
+  deployment_request_id: DeploymentRequestId;
+  deployment_request_status: DeploymentRequestHubStatus;
+}): Promise<void> => {
+  const subject = templateSubjects[mail_data.template](mail_data.params);
+
+  const event = {
+    subject,
+    timestamp: new Date().toISOString(),
+    deployment_id: deployment_request_id,
+    deployment_status: deployment_request_status,
+  };
+  try {
+    await PgBossProducer.send(HUBSPOT_QUEUES.MAIL_SENT, { event });
+  } catch (error) {
+    logApp.error('Failed to notify hubspot for mailSent', { event, error });
+  }
+};
+
+export const sendMailAndNotifyHubspot = async <T extends keyof MailTemplates>({
+  mail_data,
+  deployment_request_id,
+  deployment_request_status,
+}: {
+  mail_data: SendMailParams<T>;
+  deployment_request_id: DeploymentRequestId;
+  deployment_request_status: DeploymentRequestHubStatus;
+}): Promise<void> => {
+  await sendMail(mail_data);
+  await notifyMailSentToHubspot({
+    mail_data,
+    deployment_request_id,
+    deployment_request_status: deployment_request_status,
+  });
 };

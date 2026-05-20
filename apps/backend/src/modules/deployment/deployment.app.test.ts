@@ -49,6 +49,8 @@ import {
   XTM_HUB_SUPPORT_EMAIL,
 } from '../../portal.const';
 import * as mailService from '../../server/mail-service';
+import { HUBSPOT_QUEUES } from '../../thirdparty/pgboss/hubspot.jobs';
+import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import {
   BadRequestErrorCode,
   ErrorCode,
@@ -92,12 +94,14 @@ import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 describe('deployment app', () => {
   let telemetrySpy: MockInstance;
   let mockSendMail: MockInstance;
+  let mockPgBossSend: MockInstance;
 
   beforeEach(() => {
     telemetrySpy = vi
       .spyOn(telemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
     mockSendMail = vi.spyOn(mailService, 'sendMail');
+    mockPgBossSend = vi.spyOn(PgBossProducer, 'send').mockResolvedValue(null);
   });
 
   afterEach(async () => {
@@ -346,7 +350,7 @@ describe('deployment app', () => {
 
     describe('mail', () => {
       describe('development environment', () => {
-        it('should send a mail if status is pending to dev team', async () => {
+        it('should send a mail to user and dev team and notify Hubspot if status is pending', async () => {
           requestContext.set(requestContextAdminUser);
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
@@ -376,9 +380,21 @@ describe('deployment app', () => {
               userName: `${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME} ${TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME}`,
             },
           });
+
+          expect(mockPgBossSend).toHaveBeenCalledWith(
+            HUBSPOT_QUEUES.MAIL_SENT,
+            {
+              event: {
+                subject: 'Your OpenCTI Free Trial Request',
+                timestamp: expect.any(String),
+                deployment_id: expect.any(String),
+                deployment_status: DeploymentRequestHubStatus.Pending,
+              },
+            }
+          );
         });
 
-        it('should send a mail if there is no space available', async () => {
+        it('should send a mail and notify Hubspot if there is no space available', async () => {
           requestContext.set(requestContextRegistererUserSecondOrga);
 
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
@@ -413,6 +429,18 @@ describe('deployment app', () => {
               userName: `${contextRegistererUserSecondOrga.user.first_name} ${contextRegistererUserSecondOrga.user.last_name}`,
             },
           });
+
+          expect(mockPgBossSend).toHaveBeenCalledWith(
+            HUBSPOT_QUEUES.MAIL_SENT,
+            {
+              event: {
+                subject: 'Your OpenCTI Free Trial Request',
+                timestamp: expect.any(String),
+                deployment_id: expect.any(String),
+                deployment_status: DeploymentRequestHubStatus.Queued,
+              },
+            }
+          );
         });
       });
 
@@ -428,7 +456,7 @@ describe('deployment app', () => {
           portalConfig.environment = originalEnvironment;
         });
 
-        it('should send a mail if status is pending to dev team', async () => {
+        it('should send a mail to user and dev team and notify Hubspot if status is pending', async () => {
           requestContext.set(requestContextAdminUser);
 
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
@@ -459,9 +487,21 @@ describe('deployment app', () => {
               userName: `${contextBypassUser.user.first_name} ${contextBypassUser.user.last_name}`,
             },
           });
+
+          expect(mockPgBossSend).toHaveBeenCalledWith(
+            HUBSPOT_QUEUES.MAIL_SENT,
+            {
+              event: {
+                subject: 'Your OpenCTI Free Trial Request',
+                timestamp: expect.any(String),
+                deployment_id: expect.any(String),
+                deployment_status: DeploymentRequestHubStatus.Pending,
+              },
+            }
+          );
         });
 
-        it('should send a mail if there is no space available', async () => {
+        it('should send a mail and notify Hubspot if there is no space available', async () => {
           requestContext.set(requestContextRegistererUserSecondOrga);
 
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
@@ -498,6 +538,18 @@ describe('deployment app', () => {
               userName: `${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.FIRST_NAME} ${TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.LAST_NAME}`,
             },
           });
+
+          expect(mockPgBossSend).toHaveBeenCalledWith(
+            HUBSPOT_QUEUES.MAIL_SENT,
+            {
+              event: {
+                subject: 'Your OpenCTI Free Trial Request',
+                timestamp: expect.any(String),
+                deployment_id: expect.any(String),
+                deployment_status: DeploymentRequestHubStatus.Queued,
+              },
+            }
+          );
         });
       });
     });
@@ -993,7 +1045,7 @@ describe('deployment app', () => {
       });
     });
     describe('mail', () => {
-      it('should send a mail in case deployment request is in provisioning (only first time)', async () => {
+      it('should send a mail and notify Hubspot when transitioning to provisioning (only first time)', async () => {
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
@@ -1006,8 +1058,17 @@ describe('deployment app', () => {
             platformIdentifier: PlatformIdentifier.Opencti,
           },
         });
+        expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
+          event: {
+            subject: 'Your OpenCTI Platform Is Being Provisioned',
+            timestamp: expect.any(String),
+            deployment_id: initialDeployment.id,
+            deployment_status: DeploymentRequestHubStatus.Provisioning,
+          },
+        });
 
         mockSendMail.mockClear();
+        mockPgBossSend.mockClear();
 
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
@@ -1015,9 +1076,13 @@ describe('deployment app', () => {
         });
 
         expect(mockSendMail).not.toHaveBeenCalled();
+        expect(mockPgBossSend).not.toHaveBeenCalledWith(
+          HUBSPOT_QUEUES.MAIL_SENT,
+          expect.anything()
+        );
       });
 
-      it('should send a mail in case deployment request is in active (only first time)', async () => {
+      it('should send a mail and notify Hubspot when transitioning to active (only first time)', async () => {
         vi.spyOn(
           ServiceConfigurationDomain,
           'loadConfigurationByPlatform'
@@ -1046,8 +1111,17 @@ describe('deployment app', () => {
             ),
           },
         });
+        expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
+          event: {
+            subject: 'Welcome to your OpenCTI free trial!',
+            timestamp: expect.any(String),
+            deployment_id: initialDeployment.id,
+            deployment_status: DeploymentRequestHubStatus.Active,
+          },
+        });
 
         mockSendMail.mockClear();
+        mockPgBossSend.mockClear();
 
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
@@ -1056,6 +1130,10 @@ describe('deployment app', () => {
           actual_state: DeploymentRequestPlatformState.Active,
         });
         expect(mockSendMail).not.toHaveBeenCalled();
+        expect(mockPgBossSend).not.toHaveBeenCalledWith(
+          HUBSPOT_QUEUES.MAIL_SENT,
+          expect.anything()
+        );
       });
     });
   });
@@ -1432,7 +1510,7 @@ describe('deployment app', () => {
       });
     });
 
-    it('should send a mail to the trial requester', async () => {
+    it('should send a mail to the trial requester and notify Hubspot', async () => {
       const deployment = (await insertDeploymentRequest({
         user_requester_id:
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
@@ -1446,6 +1524,14 @@ describe('deployment app', () => {
         params: {
           firstName: '',
           platformIdentifier: PlatformIdentifier.Opencti,
+        },
+      });
+      expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
+        event: {
+          subject: 'Your OpenCTI Trial Has Been Cancelled',
+          timestamp: expect.any(String),
+          deployment_id: deployment.id,
+          deployment_status: DeploymentRequestHubStatus.Cancelled,
         },
       });
     });
@@ -1988,7 +2074,7 @@ describe('deployment app', () => {
         });
       }
     );
-    it('should send a mail to the requester', async () => {
+    it('should send a mail to the requester and notify Hubspot', async () => {
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -2010,6 +2096,14 @@ describe('deployment app', () => {
         params: {
           firstName: '',
           platformIdentifier: PlatformIdentifier.Opencti,
+        },
+      });
+      expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
+        event: {
+          subject: 'Your OpenCTI Free Trial Has Expired',
+          timestamp: date.toISOString(),
+          deployment_id: expect.any(String),
+          deployment_status: DeploymentRequestHubStatus.Expired,
         },
       });
     });

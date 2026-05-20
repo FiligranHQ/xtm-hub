@@ -64,6 +64,7 @@ import {
   computeHubStatus,
   hasDeploymentTelemetryDataChanged,
   isPlatformStateTransitionValid,
+  sendMailAndNotifyHubspot,
 } from './deployment.helper';
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
@@ -187,13 +188,17 @@ export const DeploymentApp = {
             ? 'free_trial_requested'
             : 'free_trial_queued';
 
-        await sendMail({
-          to: user.email,
-          template: mailTemplate,
-          params: {
-            firstName: formatName(user.first_name ?? ''),
-            platformIdentifier: input.platform_identifier,
+        await sendMailAndNotifyHubspot({
+          mail_data: {
+            to: user.email,
+            template: mailTemplate,
+            params: {
+              firstName: formatName(user.first_name ?? ''),
+              platformIdentifier: input.platform_identifier,
+            },
           },
+          deployment_request_id: createdDeploymentRequest.id,
+          deployment_request_status: createdDeploymentRequest.hub_status,
         });
       } catch (error) {
         logApp.error('Unable to send mail', {
@@ -514,13 +519,17 @@ export const DeploymentApp = {
       const [requester] = await UserDomain.loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
-      await sendMail({
-        to: requester.email,
-        template: 'free_trial_cancelled',
-        params: {
-          firstName: formatName(requester.first_name ?? ''),
-          platformIdentifier: updatedDeploymentRequest.platform_identifier,
+      await sendMailAndNotifyHubspot({
+        mail_data: {
+          to: requester.email,
+          template: 'free_trial_cancelled',
+          params: {
+            firstName: formatName(requester.first_name ?? ''),
+            platformIdentifier: updatedDeploymentRequest.platform_identifier,
+          },
         },
+        deployment_request_id: updatedDeploymentRequest.id,
+        deployment_request_status: updatedDeploymentRequest.hub_status,
       });
     } catch (error) {
       logApp.error('Unable to send mail for trial cancellation', {
@@ -585,13 +594,17 @@ export const DeploymentApp = {
           const [requester] = await UserDomain.loadUser({
             id: trial.user_requester_id,
           });
-          await sendMail({
-            to: requester.email,
-            template: 'free_trial_expired',
-            params: {
-              firstName: formatName(requester.first_name ?? ''),
-              platformIdentifier: trial.platform_identifier,
+          await sendMailAndNotifyHubspot({
+            mail_data: {
+              to: requester.email,
+              template: 'free_trial_expired',
+              params: {
+                firstName: formatName(requester.first_name ?? ''),
+                platformIdentifier: trial.platform_identifier,
+              },
             },
+            deployment_request_id: trial.id,
+            deployment_request_status: DeploymentRequestHubStatus.Expired,
           });
         } catch (error) {
           logApp.error('Unable to send mail for trial expiration', {
@@ -826,13 +839,17 @@ const sendProvisioningPlatformEmail = async (
       id: deploymentRequest.user_requester_id,
     });
 
-    await sendMail({
-      to: user.email,
-      template: 'free_trial_provisioning',
-      params: {
-        firstName: formatName(user.first_name ?? ''),
-        platformIdentifier: deploymentRequest.platform_identifier,
+    await sendMailAndNotifyHubspot({
+      mail_data: {
+        to: user.email,
+        template: 'free_trial_provisioning',
+        params: {
+          firstName: formatName(user.first_name ?? ''),
+          platformIdentifier: deploymentRequest.platform_identifier,
+        },
       },
+      deployment_request_id: deploymentRequest.id,
+      deployment_request_status: DeploymentRequestHubStatus.Provisioning,
     });
   } catch (error) {
     logApp.error('Unable to send mail', {
@@ -859,18 +876,22 @@ const sendActivePlatformEmail = async (
       JSON.stringify(serviceConfiguration.config)
     );
 
-    await sendMail({
-      to: user.email,
-      template: 'free_trial_registered',
-      params: {
-        firstName: formatName(user.first_name ?? ''),
-        platformUrl: parsedConfig.platform_url,
-        platformIdentifier: deploymentRequest.platform_identifier,
-        globalServiceInstanceId: toGlobalId(
-          'ServiceInstance',
-          deploymentRequest.service_instance_id
-        ),
+    await sendMailAndNotifyHubspot({
+      mail_data: {
+        to: user.email,
+        template: 'free_trial_registered',
+        params: {
+          firstName: formatName(user.first_name ?? ''),
+          platformUrl: parsedConfig.platform_url,
+          platformIdentifier: deploymentRequest.platform_identifier,
+          globalServiceInstanceId: toGlobalId(
+            'ServiceInstance',
+            deploymentRequest.service_instance_id
+          ),
+        },
       },
+      deployment_request_id: deploymentRequest.id,
+      deployment_request_status: DeploymentRequestHubStatus.Active,
     });
   } catch (error) {
     logApp.error('Unable to send mail after deployment request is active', {

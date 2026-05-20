@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport(smtpOptions);
 
 const templateCache = new Map<string, HandlebarsTemplateDelegate>();
 
-interface SendMailParams<T extends keyof MailTemplates> {
+export interface SendMailParams<T extends keyof MailTemplates> {
   to: string | string[];
   template: T;
   params?: MailTemplates[T];
