@@ -4,14 +4,15 @@ import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { createRelayIdScalar } from '../../utils/scalar.util';
-import { loadUserDetails } from '../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { UserServiceApp } from './user-service.app';
 import { UserServiceDomain } from './user-service.domain';
 
 const resolvers: Resolvers = {
   UserServiceId: createRelayIdScalar<UserServiceId>('User_Service'),
   UserService: {
-    user: ({ user_id }) => loadUserDetails({ 'User.id': user_id as UserId }),
+    user: ({ user_id }) =>
+      UserDomain.loadUserDetails({ 'User.id': user_id as UserId }),
     subscription: ({ id }, _) =>
       UserServiceDomain.loadSubscriptionByUserService(id as UserServiceId),
     user_service_capability: ({ id }, _) =>

@@ -7,10 +7,7 @@ import {
 } from '../../../server/initialize.helper';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { isEmptyField } from '../../../utils/utils';
-import {
-  loadUserBy,
-  updateUserAtLogin,
-} from '../../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { getOrCreateUser } from '../../organization-management/user/user.helper';
 import { removeAllUserRolePortal } from '../../role-portal/role-portal.domain';
 
@@ -35,7 +32,7 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
       await Promise.all(
         userInfo.roles.map((role) => addRoleToUser(user.id, role))
       );
-      return loadUserBy({ 'User.id': user.id });
+      return UserDomain.loadUserBy({ 'User.id': user.id });
     }
   }
 
@@ -47,11 +44,11 @@ export const authenticateUser = async (
   res: Response,
   user: UserInfo
 ) => {
-  const logged = await loadUserBy({ email: user.email });
+  const logged = await UserDomain.loadUserBy({ email: user.email });
   if (!logged || logged.disabled) {
     return;
   }
-  req.session.user = await updateUserAtLogin(logged);
+  req.session.user = await UserDomain.updateUserAtLogin(logged);
   req.session.save();
   return logged;
 };

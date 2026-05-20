@@ -5,7 +5,7 @@ import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { validatePassword } from '../../../security/util/user';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
-import { loadUserBy, updateUserAtLogin } from './user-domain/user.domain';
+import { UserDomain } from './user-domain/user.domain';
 
 const validPassword = (user: UserLoadUserBy, password: string): boolean => {
   return validatePassword(user.salt, password, user.password);
@@ -27,9 +27,9 @@ export const UserAuthApp = {
     }
 
     const { req } = context;
-    const loggedUser = await loadUserBy({ email });
+    const loggedUser = await UserDomain.loadUserBy({ email });
     if (loggedUser && validPassword(loggedUser, password)) {
-      req.session.user = await updateUserAtLogin(loggedUser);
+      req.session.user = await UserDomain.updateUserAtLogin(loggedUser);
 
       return loggedUser;
     }

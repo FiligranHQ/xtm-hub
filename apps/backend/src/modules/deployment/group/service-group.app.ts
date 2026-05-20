@@ -12,7 +12,7 @@ import { auth0Client } from '../../../thirdparty/auth0/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
-import { organizationDomain } from '../../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../../organization-management/organization/organization.domain';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { PlatformConfiguration } from '../../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
@@ -55,7 +55,7 @@ export const ServiceGroupApp = {
     );
 
     const serviceGroupsOrganization =
-      await organizationDomain.loadOrganizationSubscribedToServiceInstance(
+      await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
         serviceInstanceIds[0]
       );
     if (

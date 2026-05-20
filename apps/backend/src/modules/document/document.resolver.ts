@@ -10,7 +10,7 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import {
   getServiceInstance,
   loadServiceDefinitionByServiceInstance,
@@ -100,7 +100,7 @@ const resolvers: Resolvers = {
 
           if (shouldSendEventForService(serviceDefinition.identifier)) {
             const selectedOrga = context.user
-              ? await loadOrganizationBy({
+              ? await OrganizationDomain.loadOrganizationBy({
                   id: context.user.selected_organization_id,
                 })
               : undefined;

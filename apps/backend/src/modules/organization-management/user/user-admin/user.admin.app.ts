@@ -17,17 +17,9 @@ import { updateUserSession } from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import {
-  loadUserOrganization,
-  updateMultipleUserOrgWithCapabilities,
-} from '../../../common/user-organization.domain';
-import { loadOrganizationsFromEmail } from '../../organization/organization.helper';
-import {
-  loadUser,
-  loadUserBy,
-  loadUserDetails,
-  updateUser,
-} from '../user-domain/user.domain';
+import { OrganizationDomain } from '../../organization/organization.domain';
+import { UserDomain } from '../user-domain/user.domain';
+import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import {
   acceptPendingUserWithCapabilities,
@@ -38,12 +30,11 @@ import {
   updateUserOrgCapabilitiesAndDispatch,
 } from '../user.helper';
 
-export const userAdminApp = {
+export const UserAdminApp = {
   addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {
     const { user: contextUser } = requestContext.require();
-    const [organizationFromEmail] = await loadOrganizationsFromEmail(
-      input.email
-    );
+    const [organizationFromEmail] =
+      await OrganizationDomain.loadOrganizationsFromEmail(input.email);
     // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
     const chosenOrganizationId: OrganizationId | undefined = input
       .organization_capabilities?.[0]
@@ -62,7 +53,7 @@ export const userAdminApp = {
       throw new Error(ErrorCode.EmailOutsideOrganizationError);
     }
 
-    const [existingUser] = await loadUser({ email: input.email });
+    const [existingUser] = await UserDomain.loadUser({ email: input.email });
 
     const finalUser = await withTransaction(async () => {
       const user = existingUser
@@ -75,12 +66,12 @@ export const userAdminApp = {
             selected_organization_id: chosenOrganizationId,
           });
 
-      await updateMultipleUserOrgWithCapabilities(
+      await UserOrganizationDomain.updateMultipleUserOrgWithCapabilities(
         user.id,
         input.organization_capabilities
       );
 
-      return await loadUserBy({
+      return await UserDomain.loadUserBy({
         'User.id': user.id,
       });
     });
@@ -109,7 +100,7 @@ export const userAdminApp = {
         mappedCapabilities
       );
     }
-    const updatedUser = await updateUser(userId, userInput);
+    const updatedUser = await UserDomain.updateUser(userId, userInput);
 
     try {
       await auth0Client.updateUser({
@@ -119,11 +110,11 @@ export const userAdminApp = {
     } catch (err) {
       logApp.error(err);
     }
-    await updateMultipleUserOrgWithCapabilities(
+    await UserOrganizationDomain.updateMultipleUserOrgWithCapabilities(
       userId,
       organization_capabilities
     );
-    const user = await loadUserDetails({
+    const user = await UserDomain.loadUserDetails({
       'User.id': userId,
     });
     updateUserSession(user);
@@ -156,10 +147,11 @@ export const userAdminApp = {
       input.capabilities
     );
 
-    const [userOrganization] = await loadUserOrganization({
-      user_id: userId,
-      organization_id: organizationId,
-    });
+    const [userOrganization] =
+      await UserOrganizationDomain.loadUserOrganization({
+        user_id: userId,
+        organization_id: organizationId,
+      });
 
     return userOrganization
       ? await updateUserOrgCapabilitiesAndDispatch({

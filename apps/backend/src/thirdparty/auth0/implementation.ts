@@ -1,7 +1,7 @@
 import { AuthenticationClient, ManagementClient } from 'auth0';
 import config from 'config';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { loadOrganizationBy } from '../../modules/organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../../modules/organization-management/organization/organization.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { buildUserMetadataUpdate } from './auth0.util';
 import {
@@ -85,7 +85,9 @@ export const auth0ClientImplementation: Auth0Client = {
     organization_id: OrganizationId,
     platform_id: string
   ): Promise<void> => {
-    const organization = await loadOrganizationBy({ id: organization_id });
+    const organization = await OrganizationDomain.loadOrganizationBy({
+      id: organization_id,
+    });
     logApp.info(
       `Delete API Audience for organization ${organization.name} with platform_id ${platform_id}`
     );

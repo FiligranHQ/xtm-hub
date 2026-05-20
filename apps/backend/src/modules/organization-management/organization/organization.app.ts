@@ -10,17 +10,11 @@ import {
   buildCreateOrganizationEvent,
   buildUpdateOrganizationEvent,
 } from '../../telemetry/telemetry.helper';
-import {
-  deleteOrganizationBy,
-  insertNewOrganization,
-  organizationDomain,
-  updateOrganizationBy,
-} from './organization.domain';
-import { hasDomainOverlap } from './organization.helper';
+import { OrganizationDomain } from './organization.domain';
 
-export const organizationApp = {
+export const OrganizationApp = {
   async updateOrganization(id: OrganizationId, input: OrganizationInput) {
-    const updatedOrganization = await updateOrganizationBy(
+    const updatedOrganization = await OrganizationDomain.updateOrganizationBy(
       { id },
       { ...input }
     );
@@ -43,17 +37,19 @@ export const organizationApp = {
 
   async createOrganization(input: OrganizationInput) {
     const existingOrganization =
-      await organizationDomain.loadOrganizationByLikeName(input.name);
+      await OrganizationDomain.loadOrganizationByLikeName(input.name);
     if (existingOrganization?.id) {
       throw new Error(ErrorCode.OrganizationSameNameExists);
     }
 
-    const overlappingDomains = await hasDomainOverlap(input.domains);
+    const overlappingDomains = await OrganizationDomain.hasDomainOverlap(
+      input.domains
+    );
     if (overlappingDomains.length > 0) {
       throw new Error(ErrorCode.OrganizationSameDomainExists);
     }
 
-    const createdOrganization = await insertNewOrganization({
+    const createdOrganization = await OrganizationDomain.insertNewOrganization({
       id: uuidv4() as OrganizationId,
       ...input,
     });
@@ -75,7 +71,7 @@ export const organizationApp = {
   },
 
   async deleteOrganization(id: OrganizationId) {
-    const deletedOrganization = await deleteOrganizationBy({
+    const deletedOrganization = await OrganizationDomain.deleteOrganizationBy({
       id,
     });
 
