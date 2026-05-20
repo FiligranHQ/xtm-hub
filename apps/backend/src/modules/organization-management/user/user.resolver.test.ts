@@ -266,6 +266,9 @@ describe('user mutation resolver', () => {
             user: {},
           },
         },
+        res: {
+          cookie: vi.fn(),
+        },
       }
     );
     // Then

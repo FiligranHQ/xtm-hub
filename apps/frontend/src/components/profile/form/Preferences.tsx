@@ -1,5 +1,6 @@
 'use client';
 
+import { MeEditUserMutation } from '@/components/me/me.graphql';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import { Locale, locales } from '@/i18n/config';
 import { setUserLocale } from '@/i18n/locale';
@@ -17,6 +18,7 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useContext } from 'react';
+import { useMutation } from 'react-relay';
 
 export const ProfileFormPreferences = () => {
   const t = useTranslations();
@@ -25,9 +27,11 @@ export const ProfileFormPreferences = () => {
     settings?.environment && settings.environment !== 'production';
   const locale = useLocale();
   const { theme, setTheme } = useTheme();
+  const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
 
   const onLocaleChange = (value: string) => {
     void setUserLocale(value as Locale);
+    commitEditMeUserMutation({ variables: { language: value } });
   };
 
   const currentTheme = theme ?? 'dark';

@@ -30,6 +30,8 @@ export default interface User {
 
   country: string | null;
 
+  language: string;
+
   platform_token: string | null;
 
   picture_minio: string | null;
@@ -59,6 +61,8 @@ export interface UserInitializer {
 
   country?: string | null;
 
+  language?: string;
+
   platform_token?: string | null;
 
   picture_minio?: string | null;
@@ -87,6 +91,8 @@ export interface UserMutator {
   last_login?: Date | null;
 
   country?: string | null;
+
+  language?: string;
 
   platform_token?: string | null;
 

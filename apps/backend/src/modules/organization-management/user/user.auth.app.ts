@@ -26,10 +26,12 @@ export const UserAuthApp = {
       throw ForbiddenAccess('Local authentication is not enabled');
     }
 
-    const { req } = context;
+    const { req, res } = context;
     const loggedUser = await loadUserBy({ email });
     if (loggedUser && validPassword(loggedUser, password)) {
       req.session.user = await updateUserAtLogin(loggedUser);
+
+      res.cookie('NEXT_LOCALE', loggedUser.language);
 
       return loggedUser;
     }

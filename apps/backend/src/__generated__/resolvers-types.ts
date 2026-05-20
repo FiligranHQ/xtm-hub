@@ -590,6 +590,7 @@ export enum DocumentSourceType {
 export type EditMeUserInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   first_name?: InputMaybe<Scalars['String']['input']>;
+  language?: InputMaybe<Scalars['String']['input']>;
   last_name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2315,6 +2316,7 @@ export type User = Node & {
   email: Scalars['String']['output'];
   first_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  language?: Maybe<Scalars['String']['output']>;
   last_login?: Maybe<Scalars['Date']['output']>;
   last_name?: Maybe<Scalars['String']['output']>;
   organization_capabilities?: Maybe<Array<OrganizationCapabilities>>;
@@ -3956,6 +3958,7 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  language?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   last_login?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization_capabilities?: Resolver<Maybe<Array<ResolversTypes['OrganizationCapabilities']>>, ParentType, ContextType>;

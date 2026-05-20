@@ -55,4 +55,23 @@ test.describe('Locale routing', () => {
     await page.getByRole('menuitem', { name: 'Déconnexion' }).click();
     await expect(page).toHaveURL(/\/en/);
   });
+
+  test('language preference persists across logout/login', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    const profilePage = new ProfilePage(page);
+
+    await loginPage.navigateToAndLogin();
+    await profilePage.navigateTo();
+    await profilePage.changeLanguage('Français');
+
+    await page.getByRole('button', { name: 'Ouvrir menu utilisateur' }).click();
+    await page.getByRole('menuitem', { name: 'Déconnexion' }).click();
+    await expect(page).toHaveURL(/\/en/);
+
+    await loginPage.navigateToAndLogin();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+    await expect(
+      page.getByRole('button', { name: 'Ouvrir menu utilisateur' })
+    ).toBeVisible();
+  });
 });
