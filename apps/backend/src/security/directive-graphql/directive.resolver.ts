@@ -1,5 +1,5 @@
 import { PortalContext } from '../../model/portal-context';
-import { getCapabilities } from '../../modules/organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../../modules/organization-management/user/user-domain/user.domain';
 import {
   ForbiddenAccess,
   UnauthenticatedAccess,
@@ -36,7 +36,7 @@ export const createSecureFieldResolver = (
 
     // Load user capabilities if not already loaded
     if (user && !user.capabilities) {
-      user.capabilities = await getCapabilities(user.id);
+      user.capabilities = await UserDomain.getCapabilities(user.id);
     }
 
     // Authentication check

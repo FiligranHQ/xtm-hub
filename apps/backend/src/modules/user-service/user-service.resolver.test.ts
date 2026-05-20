@@ -23,7 +23,7 @@ import {
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
-import * as usersDomain from '../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { UserServiceApp } from './user-service.app';
 import { UserServiceDomain } from './user-service.domain';
 import userServiceResolver from './user-service.resolver';
@@ -34,7 +34,7 @@ describe('userService field resolvers', () => {
       // Given
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID;
       const expected = { id: userId, email: 'user@test.com' };
-      vi.spyOn(usersDomain, 'loadUserDetails').mockResolvedValue(
+      vi.spyOn(UserDomain, 'loadUserDetails').mockResolvedValue(
         expected as unknown as UserWithOrganizationsAndRole
       );
 
@@ -47,7 +47,7 @@ describe('userService field resolvers', () => {
       );
 
       // Then
-      expect(usersDomain.loadUserDetails).toHaveBeenCalledWith({
+      expect(UserDomain.loadUserDetails).toHaveBeenCalledWith({
         'User.id': userId,
       });
       expect(result).toEqual(expected);

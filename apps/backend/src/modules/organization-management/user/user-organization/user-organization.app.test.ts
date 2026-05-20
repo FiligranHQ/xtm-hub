@@ -12,10 +12,10 @@ import User, { UserId } from '../../../../model/kanel/public/User';
 import { PortalContext } from '../../../../model/portal-context';
 import * as MailService from '../../../../server/mail-service';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import { loadUserOrganization } from '../../../common/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import { insertUser } from '../user.test.utils';
-import { UserOrganizationApp } from './user.organization.app';
+import { UserOrganizationApp } from './user-organization.app';
+import { UserOrganizationDomain } from './user-organization.domain';
 
 describe('usersOrganizationApp', () => {
   describe('sendPendingUsersDigest', () => {
@@ -272,10 +272,11 @@ describe('usersOrganizationApp', () => {
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
-      const userShouldNotBeInTheOrg = await loadUserOrganization({
-        user_id: newUser.id,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      const userShouldNotBeInTheOrg =
+        await UserOrganizationDomain.loadUserOrganization({
+          user_id: newUser.id,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        });
 
       expect(userShouldNotBeInTheOrg).toHaveLength(0);
 
@@ -298,10 +299,11 @@ describe('usersOrganizationApp', () => {
 
       expect(userPendingShouldExistAnymore).toHaveLength(0);
 
-      const userShouldBeAdded = await loadUserOrganization({
-        user_id: newUser.id,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      const userShouldBeAdded =
+        await UserOrganizationDomain.loadUserOrganization({
+          user_id: newUser.id,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        });
 
       expect(userShouldBeAdded).toHaveLength(1);
     });

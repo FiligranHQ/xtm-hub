@@ -1,3 +1,4 @@
+import ServiceSlugHeader from '@/components/service/[slug]/ServiceSlugHeader';
 import {
   ServiceInstanceByIdQuery,
   serviceInstanceForSubscriptionsFragment,
@@ -6,35 +7,33 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
 import {
-  BreadcrumbNav,
-  BreadcrumbNavLink,
-} from '@/components/ui/BreadcrumbNav';
-import {
   IconActions,
   IconActionsItem,
   IconActionsLink,
 } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
-import {
-  Checkbox,
-  DataTable,
-  DataTableHeadBarOptions,
-} from '@filigran/ui';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import useAdminPath from '@/hooks/use-admin-path';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
-import { MoreVertIcon } from '@filigran/icon';
+import { AddIcon, DeleteIcon, MoreVertIcon } from '@filigran/icon';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  SelectionState,
+  Switch,
+} from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
 import { serviceInstanceByIdQuery } from '@generated/serviceInstanceByIdQuery.graphql';
 import { serviceInstanceForSubscriptions_fragment$key } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { ServiceSlugAddSubscription } from './ServiceSlugAddSubscription';
+import { ServiceSlugAddCapabilities } from './ServiceSlugAddCapabilities';
 import { ServiceSlugDeleteSubscription } from './ServiceSlugDeleteSubscription';
+import { ServiceSlugSubscription } from './ServiceSlugSubscription';
 
 interface ServiceSlugProps {
   subscriptions: subscription_fragment$data[];
@@ -42,7 +41,17 @@ interface ServiceSlugProps {
   subscriptionConnectionId: string;
 }
 
-const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConnectionId }: ServiceSlugProps) => {
+const emptySelectionState = (): SelectionState => ({
+  selectAll: false,
+  selectedIds: new Set<string>(),
+  excludedIds: new Set<string>(),
+});
+
+const ServiceSlug = ({
+  subscriptions,
+  queryRefServiceInstance,
+  subscriptionConnectionId,
+}: ServiceSlugProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const queryDataRequest = usePreloadedQuery<serviceInstanceByIdQuery>(
@@ -62,11 +71,16 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
     );
   const [shouldDisplayPersonalSpaces, setShouldDisplayPersonalSpaces] =
     useState(false);
-  const [deleteSubscription, setDeleteSubscription] = useState<
+  const [deleteSubscriptions, setDeleteSubscriptions] = useState<
+    subscription_fragment$data[] | undefined
+  >(undefined);
+  const [updateSubscription, setUpdateSubscription] = useState<
     subscription_fragment$data | undefined
   >(undefined);
-
-  const isAdminPath = useAdminPath();
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openAddCapabilities, setOpenAddCapabilities] = useState(false);
+  const [selection, setSelection] =
+    useState<SelectionState>(emptySelectionState);
 
   const t = useTranslations();
 
@@ -75,19 +89,6 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
     DEBOUNCE_TIME
   );
 
-  const breadcrumbValue: BreadcrumbNavLink[] = [
-    ...(isAdminPath
-      ? [
-          { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
-          { label: 'MenuLinks.Settings' },
-          { label: 'MenuLinks.Services', href: `/${APP_PATH}/admin/service` },
-        ]
-      : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
-    {
-      label: serviceInstance.name,
-      original: true,
-    },
-  ];
   const [pagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 500,
@@ -139,7 +140,14 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
                 {t('Service.Management.ManageUsers')}
               </IconActionsLink>
               <IconActionsItem
-                onClick={() => setDeleteSubscription(row.original)}>
+                onClick={() => {
+                  setUpdateSubscription(row.original);
+                  setOpenEdit(true);
+                }}>
+                {t('Utils.Edit')}
+              </IconActionsItem>
+              <IconActionsItem
+                onClick={() => setDeleteSubscriptions([row.original])}>
                 {t('Utils.Delete')}
               </IconActionsItem>
             </IconActions>
@@ -152,10 +160,17 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
       <div className="flex items-center gap-m ml-l">
+        <div className="flex-1 max-w-sm">
+          <SearchInput
+            id="SearchTerm"
+            placeholder={t('Service.Management.SearchOrganization')}
+            onChange={debounceHandleInput}
+          />
+        </div>
         <div className="flex items-center">
-          <Checkbox
+          <Switch
             checked={shouldDisplayPersonalSpaces}
-            onCheckedChange={(value) => setShouldDisplayPersonalSpaces(!!value)}
+            onCheckedChange={(value) => setShouldDisplayPersonalSpaces(value)}
             id="displayPersonalSpaces"
           />
           <label
@@ -164,21 +179,19 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
             {t('Service.Management.ShowPersonalSpaces')}
           </label>
         </div>
-        <div className="flex-1 max-w-sm">
-          <SearchInput
-            id="SearchTerm"
-            placeholder={t('Service.Management.SearchOrganization')}
-            onChange={debounceHandleInput}
-          />
-        </div>
       </div>
 
       <div className="flex gap-s flex-wrap ml-auto">
-        <ServiceSlugAddSubscription
-          isAdminPath={!!isAdminPath}
+        <ServiceSlugSubscription
           subscriptions={subscriptions}
+          subscriptionToEdit={updateSubscription}
           serviceInstance={serviceInstance}
           subscriptionConnectionId={subscriptionConnectionId}
+          openEdit={openEdit}
+          setOpenEdit={(open) => {
+            setOpenEdit(open);
+            if (!open) setUpdateSubscription(undefined);
+          }}
         />
         <DataTableHeadBarOptions />
       </div>
@@ -200,33 +213,112 @@ const ServiceSlug = ({ subscriptions, queryRefServiceInstance, subscriptionConne
       : filteredBySpace;
   }, [subscriptions, shouldDisplayPersonalSpaces, searchTerm]);
 
+  const selectedSubscriptions = useMemo(() => {
+    if (selection.selectAll) {
+      return filteredAndSortedData.filter(
+        (subscription) => !selection.excludedIds.has(subscription.id)
+      );
+    }
+
+    return filteredAndSortedData.filter((subscription) =>
+      selection.selectedIds.has(subscription.id)
+    );
+  }, [filteredAndSortedData, selection]);
+
+  const availableCapabilities: BadgeOverflow[] = useMemo(
+    () =>
+      (serviceInstance.service_definition?.service_capability ?? []).flatMap(
+        (capability) => {
+          if (!capability?.id || !capability.name) {
+            return [];
+          }
+
+          return [
+            {
+              id: capability.id,
+              name: capability.name,
+            },
+          ];
+        }
+      ),
+    [serviceInstance.service_definition?.service_capability]
+  );
+
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="pb-s">{serviceInstance.name}</h1>
-      <div className="pb-s italic">{serviceInstance.description}</div>
-      <div className="pb-s">{t('Service.Management.Description') + ':'}</div>
+      <div>
+        <ServiceSlugHeader serviceInstance={serviceInstance} />
+        <div className="border rounded bg-page-background p-m">
+          <h2 className="">{t('Service.Management.Description') + ':'}</h2>
 
-      <DataTable
-        i18nKey={i18nKey(t)}
-        columns={columns}
-        data={filteredAndSortedData}
-        toolbar={toolbar}
-        tableState={{
-          pagination,
-          columnPinning: { right: ['actions'] },
-        }}
-      />
-      {deleteSubscription && (
+          <DataTable
+            i18nKey={i18nKey(t)}
+            columns={columns}
+            data={filteredAndSortedData}
+            toolbar={toolbar}
+            selectionOptions={{
+              selectionState: {
+                state: selection,
+                onSelectionChange: setSelection,
+              },
+              selectionHeader: {
+                actions: () => (
+                  <>
+                    <Button
+                      variant="ghost-primary"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() => setOpenAddCapabilities(true)}>
+                      <AddIcon className="h-4 w-4 m-s" />
+                      {t(
+                        'Service.Management.AddSubscriptionCapabilities.Button'
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost-destructive"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setDeleteSubscriptions(selectedSubscriptions)
+                      }>
+                      <DeleteIcon className="h-4 w-4 m-s" />
+                      {t('Utils.Delete')}
+                    </Button>
+                  </>
+                ),
+              },
+            }}
+            tableOptions={{
+              enableRowSelection: (row) => !!row.original.id,
+            }}
+            tableState={{
+              pagination,
+              columnPinning: { right: ['actions'] },
+            }}
+          />
+        </div>
+      </div>
+
+      {deleteSubscriptions && deleteSubscriptions.length > 0 && (
         <ServiceSlugDeleteSubscription
-          subscription={deleteSubscription}
+          subscriptions={deleteSubscriptions}
           subscriptionConnectionId={subscriptionConnectionId}
-          open={!!deleteSubscription}
+          onDeleted={() => {
+            setSelection(emptySelectionState);
+          }}
+          open={!!deleteSubscriptions}
           setOpen={(open) =>
-            setDeleteSubscription(open ? deleteSubscription : undefined)
+            setDeleteSubscriptions(open ? deleteSubscriptions : undefined)
           }
         />
       )}
+      <ServiceSlugAddCapabilities
+        selectedSubscriptions={selectedSubscriptions}
+        availableCapabilities={availableCapabilities}
+        open={openAddCapabilities}
+        setOpen={setOpenAddCapabilities}
+        onCompleted={() => setSelection(emptySelectionState())}
+      />
     </>
   );
 };

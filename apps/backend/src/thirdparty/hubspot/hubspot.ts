@@ -10,7 +10,7 @@ import {
   DeploymentRequestDomain,
   FullyQualifiedDeploymentRequest,
 } from '../../modules/deployment/deployment.domain';
-import { loadUserBy } from '../../modules/organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../../modules/organization-management/user/user-domain/user.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { isValidUrl } from '../../utils/utils';
 import {
@@ -97,7 +97,7 @@ export async function hubspotWebhookSend<T extends HubspotWebhookType>(
 
 export const hubspotLoginHook = async (userId: string) =>
   hubspotHook('login', async () => {
-    const user = await loadUserBy({ 'User.id': userId as UserId });
+    const user = await UserDomain.loadUserBy({ 'User.id': userId as UserId });
     const is_admin = user.organization_capabilities.some((orga_capa) => {
       return (
         orga_capa.organization.personal_space === false &&

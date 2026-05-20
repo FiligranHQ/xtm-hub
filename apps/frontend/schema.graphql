@@ -181,11 +181,13 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
+  addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  createSubscription(input: CreateSubscriptionInput): SubscriptionModel
-  deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
+  createSubscriptions(input: CreateSubscriptionsInput): [SubscriptionModel!]!
+  updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
+  deleteSubscriptions(subscription_ids: [SubscriptionId!]!): [SubscriptionModel!]!
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
@@ -1017,6 +1019,11 @@ input EditServiceCapabilityInput {
   capabilities: [String]!
 }
 
+input AddSubscriptionCapabilityInput {
+  subscriptionsId: [SubscriptionId!]!
+  capabilitiesId: [Service_CapabilityId]!
+}
+
 type UserServiceCapability implements Node {
   id: ID!
   user_service_id: ID!
@@ -1583,12 +1590,18 @@ type SubscriptionEdge {
   node: SubscriptionModel!
 }
 
-input CreateSubscriptionInput {
+input CreateSubscriptionsInput {
   service_instance_id: ServiceInstanceId!
-  organization_id: OrganizationId!
+  organization_id: [OrganizationId!]!
   capability_ids: [Service_CapabilityId]
   start_date: Date!
   end_date: Date
+}
+
+input UpdateSubscriptionInput {
+  start_date: Date
+  end_date: Date
+  capability_ids: [Service_CapabilityId]
 }
 
 type SubscriptionConnection {

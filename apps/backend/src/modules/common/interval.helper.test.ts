@@ -20,7 +20,7 @@ describe('subtractInterval', () => {
 
   it('should throw for unsupported unit', () => {
     expect(() => subtractInterval(reference, 1, 'years' as never)).toThrow(
-      'Unsupported interval unit',
+      'Unsupported interval unit'
     );
   });
 });

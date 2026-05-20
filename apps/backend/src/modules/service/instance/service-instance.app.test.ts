@@ -42,7 +42,6 @@ import * as securityGuardModule from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import * as documentHelper from '../../document/document.helper';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
-import { subscriptionApp } from '../../subscription/subscription.app';
 import * as subscriptionDomain from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { ServiceInstanceApp } from './service-instance.app';
@@ -54,7 +53,6 @@ describe('service Instance app', () => {
     let loadUserServiceBySpy: MockInstance;
     let loadServiceInstanceBySpy: MockInstance;
     let grantServiceAccessSpy: MockInstance;
-    let subscribeOrganizationToServiceSpy: MockInstance;
 
     const mockServiceInstanceId = uuidv4() as ServiceInstanceId;
     const mockSubscriptionId = uuidv4() as SubscriptionId;
@@ -99,10 +97,6 @@ describe('service Instance app', () => {
         serviceInstanceDomain,
         'grantServiceAccess'
       );
-      subscribeOrganizationToServiceSpy = vi.spyOn(
-        subscriptionApp,
-        'subscribeOrganizationToService'
-      );
     });
 
     it('should load service instance when user already has access', async () => {
@@ -131,7 +125,6 @@ describe('service Instance app', () => {
         id: mockServiceInstanceId,
       });
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
     });
 
     it('should auto-join user when user has no access', async () => {
@@ -148,7 +141,6 @@ describe('service Instance app', () => {
       );
 
       // Then
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
@@ -206,7 +198,6 @@ describe('service Instance app', () => {
         organization_id: userOrganizationId,
       });
 
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
@@ -238,7 +229,6 @@ describe('service Instance app', () => {
       );
 
       // Then
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
     });
 
@@ -257,7 +247,6 @@ describe('service Instance app', () => {
 
       // Then
       expect(loadUserServiceBySpy).not.toHaveBeenCalled();
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
     });
 

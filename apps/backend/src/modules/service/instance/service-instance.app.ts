@@ -50,8 +50,8 @@ export const ServiceInstanceApp = {
     });
 
     if (!subscription) {
-      subscription = await subscriptionApp.subscribeOrganizationToService({
-        organizationId: user.selected_organization_id,
+      [subscription] = await subscriptionApp.subscribeOrganizationsToService({
+        organizationIds: [user.selected_organization_id],
         serviceInstanceId: serviceInstanceId,
         startDate: new Date(),
         endDate: null,

@@ -14,11 +14,15 @@ import Subscription, {
 import { UserLoadUserBy } from '../../model/user';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { addCapabilitiesToSubscription } from '../security-management/service-capability/subscription-capability.domain';
+import {
+  addCapabilitiesToSubscription,
+  replaceCapabilitiesForSubscription,
+} from '../security-management/subscription-capability/subscription-capability.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
   SubscriptionDomain,
+  updateSubscriptionBy,
 } from './subscription.domain';
 
 export const subscriptionApp = {
@@ -34,44 +38,82 @@ export const subscriptionApp = {
     return subscription as unknown as SubscriptionModel;
   },
 
-  subscribeOrganizationToService: async ({
-    organizationId,
+  subscribeOrganizationsToService: async ({
+    organizationIds,
     serviceInstanceId,
     startDate,
     endDate,
     capabilityIds,
   }: {
-    organizationId: OrganizationId;
+    organizationIds: OrganizationId[];
     serviceInstanceId: ServiceInstanceId;
     startDate: Date;
     endDate: Date;
     capabilityIds: ServiceCapabilityId[];
-  }): Promise<Subscription | undefined> => {
-    await assertOrganizationIsNotAlreadySubscribed({
-      serviceInstanceId,
-      organizationId,
-    });
-
-    const subscriptionData = {
-      id: uuidv4() as SubscriptionId,
-      service_instance_id: serviceInstanceId,
-      organization_id: organizationId,
-      start_date: startDate,
-      end_date: endDate,
-    };
-
+  }): Promise<Subscription[] | undefined> => {
+    const createdSubscriptions: Subscription[] = [];
     return withTransaction(async () => {
-      const createdSubscription = await createSubscription(subscriptionData);
-      await addCapabilitiesToSubscription(
-        createdSubscription.id,
-        capabilityIds
-      );
-      return createdSubscription;
+      for (const organizationId of organizationIds) {
+        await assertOrganizationIsNotAlreadySubscribed({
+          serviceInstanceId,
+          organizationId,
+        });
+
+        const createdSubscription = await createSubscription({
+          id: uuidv4() as SubscriptionId,
+          service_instance_id: serviceInstanceId,
+          organization_id: organizationId,
+          start_date: startDate,
+          end_date: endDate,
+        });
+
+        await addCapabilitiesToSubscription(
+          createdSubscription.id,
+          capabilityIds
+        );
+        createdSubscriptions.push(createdSubscription);
+      }
+
+      return createdSubscriptions;
     });
   },
 
-  deleteSubscription: async (id: SubscriptionId): Promise<Subscription> => {
-    return SubscriptionDomain.deleteSubscription(id);
+  deleteSubscriptions: async (
+    ids: SubscriptionId[]
+  ): Promise<Subscription[]> => {
+    return SubscriptionDomain.deleteSubscriptions(ids);
+  },
+
+  updateSubscription: async ({
+    id,
+    startDate,
+    endDate,
+    capabilityIds,
+  }: {
+    id: SubscriptionId;
+    startDate?: Date;
+    endDate?: Date;
+    capabilityIds?: ServiceCapabilityId[];
+  }): Promise<Subscription> => {
+    return withTransaction(async () => {
+      const data: Partial<Subscription> = {};
+      if (startDate !== undefined) data.start_date = startDate;
+      if (endDate !== undefined) data.end_date = endDate;
+
+      let updatedSubscription: Subscription;
+      if (Object.keys(data).length > 0) {
+        const [result] = await updateSubscriptionBy({ id }, data);
+        updatedSubscription = result;
+      } else {
+        updatedSubscription = await loadSubscriptionBy({ id });
+      }
+
+      if (capabilityIds !== undefined) {
+        await replaceCapabilitiesForSubscription(id, capabilityIds);
+      }
+
+      return updatedSubscription;
+    });
   },
 
   loadSubscriptions: async (opts) => {

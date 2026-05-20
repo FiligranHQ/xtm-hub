@@ -1,0 +1,10 @@
+input AddSubscriptionCapabilityInput {
+  subscriptionsId: [SubscriptionId!]!
+  capabilitiesId: [ServiceCapabilityId]!
+}
+
+type Mutation {
+  addSubscriptionCapability(
+    input: AddSubscriptionCapabilityInput!
+  ): [SubscriptionModel!]! @auth(portalCapa: [BYPASS])
+}

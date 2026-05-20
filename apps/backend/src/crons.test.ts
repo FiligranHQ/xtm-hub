@@ -37,7 +37,7 @@ vi.mock('./modules/deployment/deployment.app', () => ({
 }));
 
 vi.mock(
-  './modules/organization-management/user/user-organization/user.organization.app',
+  './modules/organization-management/user/user-organization/user-organization.app',
   () => ({
     UserOrganizationApp: {
       sendPendingUsersDigest: cronMocks.sendPendingUsersDigestMock,
@@ -133,4 +133,4 @@ describe('crons', () => {
       expect(stop).toHaveBeenCalledTimes(1);
     }
   });
-})
+});

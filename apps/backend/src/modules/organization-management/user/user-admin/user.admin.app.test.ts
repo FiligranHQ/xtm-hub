@@ -9,10 +9,10 @@ import { FilterKey } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import User from '../../../../model/kanel/public/User';
 import { ErrorCode } from '../../../../utils/error/error.code';
-import { loadOrganizationBy } from '../../organization/organization.domain';
+import { OrganizationDomain } from '../../organization/organization.domain';
 import * as UsersHelper from '../user.helper';
 import { createNewUserWithPendingOrga, removeUser } from '../user.helper';
-import { userAdminApp } from './user.admin.app';
+import { UserAdminApp } from './user.admin.app';
 
 describe('users admin app', () => {
   describe('bulkAcceptPendingUserInOrganization', () => {
@@ -40,7 +40,7 @@ describe('users admin app', () => {
           picture: null,
         },
       ];
-      const secondOrga = await loadOrganizationBy({
+      const secondOrga = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
@@ -48,7 +48,7 @@ describe('users admin app', () => {
         userList.map((user) => createNewUserWithPendingOrga(user, secondOrga))
       );
 
-      const filigranOrga = await loadOrganizationBy({
+      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       const filigranUser = await createNewUserWithPendingOrga(
@@ -74,7 +74,7 @@ describe('users admin app', () => {
       requestContext.set(requestContextAdminSecondOrga);
       const userToRemove = createdUsers[0];
 
-      const call = userAdminApp.bulkAcceptPendingUserInOrganization(
+      const call = UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.FILIGRAN.ID,
         [userToRemove!.id],
         undefined,
@@ -88,7 +88,7 @@ describe('users admin app', () => {
     it('should accept users by id', async () => {
       requestContext.set(requestContextAdminSecondOrga);
       const userToRemove = createdUsers[0];
-      await userAdminApp.bulkAcceptPendingUserInOrganization(
+      await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [userToRemove!.id],
         undefined,
@@ -105,7 +105,7 @@ describe('users admin app', () => {
 
     it('should accept users by filter', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      await userAdminApp.bulkAcceptPendingUserInOrganization(
+      await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
@@ -138,7 +138,7 @@ describe('users admin app', () => {
       requestContext.set(requestContextAdminSecondOrga);
       const excludedUser = createdUsers[0];
 
-      await userAdminApp.bulkAcceptPendingUserInOrganization(
+      await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         undefined,
@@ -168,7 +168,7 @@ describe('users admin app', () => {
         (user) => user.email === 'testOne@second-orga.com'
       );
 
-      await userAdminApp.bulkAcceptPendingUserInOrganization(
+      await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'One',
@@ -192,7 +192,7 @@ describe('users admin app', () => {
         (user) => user.email === 'testOne@second-orga.com'
       );
 
-      await userAdminApp.bulkAcceptPendingUserInOrganization(
+      await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'test',
@@ -215,7 +215,7 @@ describe('users admin app', () => {
       const nonAcceptedUser = createdUsers.find(
         (user) => user.email === 'testOne@second-orga.com'
       );
-      await userAdminApp.bulkAcceptPendingUserInOrganization(
+      await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
         'test',
@@ -244,7 +244,7 @@ describe('users admin app', () => {
         (user) => user.email === 'testFiligran@filigran.io'
       );
 
-      await userAdminApp.bulkAcceptPendingUserInOrganization(
+      await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.FILIGRAN.ID,
         [],
         undefined,
@@ -263,7 +263,7 @@ describe('users admin app', () => {
     let createdUsers: User[];
     beforeEach(async () => {
       createdUsers = [];
-      const filigranOrga = await loadOrganizationBy({
+      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       const filigranUser = await createNewUserWithPendingOrga(
@@ -285,7 +285,7 @@ describe('users admin app', () => {
     });
     it('should throw if user is not allowed on orga', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      const filigranOrga = await loadOrganizationBy({
+      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       const filigranUser = await createNewUserWithPendingOrga(
@@ -298,7 +298,7 @@ describe('users admin app', () => {
         filigranOrga
       );
 
-      const call = userAdminApp.bulkRemovePendingUserFromOrganization(
+      const call = UserAdminApp.bulkRemovePendingUserFromOrganization(
         TEST_ORGANIZATIONS.FILIGRAN.ID,
         [filigranUser!.id],
         undefined,
