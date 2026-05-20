@@ -8635,7 +8635,7 @@ __metadata:
     relay-test-utils: "npm:20.1.1"
     remark-gfm: "npm:4.0.1"
     slugify: "npm:1.6.9"
-    tailwind-merge: "npm:3.5.0"
+    tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.2.4"
     tsx: "npm:4.21.0"
     tw-animate-css: "npm:1.4.0"
@@ -18967,6 +18967,13 @@ __metadata:
   version: 3.5.0
   resolution: "tailwind-merge@npm:3.5.0"
   checksum: 10/888861e2fc685dc282e6c0d735a2ca7656c3f13da6947896401f50aea924e481ab6dc7629b6f6a28125505f1b06ee97381ad792849204f34ee1ede375b119e0c
+  languageName: node
+  linkType: hard
+
+"tailwind-merge@npm:3.6.0":
+  version: 3.6.0
+  resolution: "tailwind-merge@npm:3.6.0"
+  checksum: 10/1da88698b6d878c391ab83064346e4b5b038d1b519d90825044df4b096971522c12253c7d6ab586c9da04e2039ba46573696138ea3d19c685d3c236f1f892899
   languageName: node
   linkType: hard
 
