@@ -1,47 +1,59 @@
-import { ServiceSlugAddOrgaForm } from '@/components/service/[slug]/ServiceSlugAddOrgaForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import useAdminPath from '@/hooks/use-admin-path';
 import { Button } from '@filigran/ui';
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
+import { ServiceSlugOrgaForm } from './ServiceSlugOrgaForm';
 
 interface ServiceSlugAddSubscriptionActionProps {
-  isAdminPath: boolean;
   serviceInstance: serviceInstanceForSubscriptions_fragment$data;
   subscriptions: subscription_fragment$data[];
   subscriptionConnectionId: string;
+  subscriptionToEdit?: subscription_fragment$data;
+  openEdit?: boolean;
+  setOpenEdit?: (open: boolean) => void;
 }
 
-export const ServiceSlugAddSubscription: FunctionComponent<
+export const ServiceSlugSubscription: FunctionComponent<
   ServiceSlugAddSubscriptionActionProps
 > = ({
-  isAdminPath,
   serviceInstance,
   subscriptions,
   subscriptionConnectionId,
+  subscriptionToEdit,
+  openEdit,
+  setOpenEdit,
 }) => {
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
   const t = useTranslations();
+  const isAdminPath = useAdminPath();
 
   if (!isAdminPath || !serviceInstance) {
     return null;
   }
+  const isEditMode = !!subscriptionToEdit;
+  const sheetOpen = isEditMode ? (openEdit ?? false) : openSheetAddOrga;
+  const setSheetOpen = isEditMode
+    ? (setOpenEdit ?? setOpenSheetAddOrga)
+    : setOpenSheetAddOrga;
 
   return (
     <SheetWithPreventingDialog
-      open={openSheetAddOrga}
-      setOpen={setOpenSheetAddOrga}
+      open={sheetOpen}
+      setOpen={setSheetOpen}
       trigger={<Button>{t('Service.SubscribeOrganization')}</Button>}
       title={
         t('OrganizationInServiceAction.AddOrganization') +
         ' ' +
         serviceInstance.name
       }>
-      <ServiceSlugAddOrgaForm
+      <ServiceSlugOrgaForm
         subscriptions={subscriptions}
         subscriptionConnectionId={subscriptionConnectionId}
         serviceInstance={serviceInstance}
+        subscriptionToEdit={subscriptionToEdit}
       />
     </SheetWithPreventingDialog>
   );

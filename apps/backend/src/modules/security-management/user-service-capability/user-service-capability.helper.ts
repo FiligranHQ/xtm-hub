@@ -11,7 +11,7 @@ import UserServiceCapability, {
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadGenericServiceCapabilityBy } from '../service-capability/generic-service-capability.helper';
 import { loadServiceCapabilitiesBy } from '../service-capability/service-capability.domain';
-import { loadSubscriptionCapabilitiesBy } from '../service-capability/subscription-capability.domain';
+import { loadSubscriptionCapabilitiesBy } from '../subscription-capability/subscription-capability.domain';
 
 export const insertCapabilities = async (
   capabilities: string[],
