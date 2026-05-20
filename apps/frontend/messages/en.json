@@ -95,7 +95,15 @@
     "vulnerability_management": "Vulnerability Management",
     "centralizing_knowledge": "Centralizing Knowledge",
     "sharing_knowledge": "Sharing Knowledge",
-    "hosting_threat_community": "Hosting Threat Sharing Community"
+    "hosting_threat_community": "Hosting Threat Sharing Community",
+    "oaev_attack_simulation": "Run Breach and Attack Simulation (BAS)",
+    "oaev_penetration_testing": "Run penetration testing",
+    "oaev_atomic_testing": "Run individual atomic testing",
+    "oaev_platform_validation": "Validate my security platforms work as expected",
+    "oaev_tabletop_exercise": "Run contextual tabletop exercises for crisis simulation",
+    "oaev_purple_team": "Purple Team enablement: Improve defenses based on attacks",
+    "oaev_opencti_coverage": "Enable OpenCTI security coverage",
+    "oaev_ctem_framework": "Operationalize a CTEM framework"
   },
   "DeploymentRequestActivitySector": {
     "computer_network_security": "Computer & Network Security",
