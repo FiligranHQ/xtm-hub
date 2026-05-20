@@ -24,3 +24,4 @@ generates:
         SubscriptionId: "../model/kanel/public/Subscription.js#SubscriptionId"
         ServiceCapabilityId: "../model/kanel/public/ServiceCapability.js#ServiceCapabilityId"
         UserServiceId: "../model/kanel/public/UserService.js#UserServiceId"
+        SubscriptionCapabilityId: "../model/kanel/public/SubscriptionCapability.js#SubscriptionCapabilityId"
