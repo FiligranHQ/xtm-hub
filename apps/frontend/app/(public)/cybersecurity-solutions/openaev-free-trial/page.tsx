@@ -30,7 +30,6 @@ const Page = async () => {
           actions={
             <GradientButton className="bg-white dark:bg-none">
               <Link href="/redirect/create-openaev-free-trial">
-                {' '}
                 {t('Service.Trials.StartTrial')}
               </Link>
             </GradientButton>

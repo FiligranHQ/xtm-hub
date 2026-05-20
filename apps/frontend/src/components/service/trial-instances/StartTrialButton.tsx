@@ -147,6 +147,7 @@ export const StartTrialButton = ({
         deploymentRequestsAvailabilityQueryRef={
           deploymentRequestsAvailabilityQueryRef
         }
+        platformIdentifier={platformIdentifier}
       />
     </SheetWithPreventingDialog>
   );

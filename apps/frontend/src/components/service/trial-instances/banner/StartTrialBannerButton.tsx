@@ -13,14 +13,14 @@ import {
   DeploymentRequestsAvailableQuery,
 } from '@/components/service/trial-instances/trial-instances.graphql';
 
-import { toast } from '@filigran/ui/clients';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import {
   TryFiligranProductForm,
   tryFiligranProductFormSchema,
 } from '@/components/service/trial-instances/TryFiligranProductForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { toast } from '@filigran/ui/clients';
+import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
+import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
 
 import {
   fetchQuery,
@@ -30,7 +30,9 @@ import {
 } from 'react-relay';
 
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PRODUCTS_AVAILABLE_ON_TRIAL } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
+import { IconActionContext } from '@/components/ui/IconActions';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,12 +40,9 @@ import {
 } from '@filigran/ui';
 import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { PlatformIdentifier } from '@generated/OneClickDeployMutation.graphql';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { IconActionContext } from '@/components/ui/IconActions';
-import { PRODUCTS_AVAILABLE_ON_TRIAL } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 
 // Component
 export const StartTrialBannerButton = () => {
@@ -55,7 +54,7 @@ export const StartTrialBannerButton = () => {
   const [openSheet, setOpenSheet] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [platformIdentifier, setPlatformIdentifier] =
-    useState<PlatformIdentifier>(PlatformIdentifierEnum.OPENCTI);
+    useState<PlatformIdentifierEnum>(PlatformIdentifierEnum.OPENCTI);
   if (isBlacklisted) {
     return (
       <Button
@@ -128,7 +127,7 @@ export const StartTrialBannerButton = () => {
       },
     });
   };
-  const handleProductChosen = (platformIdentifier: PlatformIdentifier) => {
+  const handleProductChosen = (platformIdentifier: PlatformIdentifierEnum) => {
     setOpenSheet(true);
     setMenuOpen(false);
     setPlatformIdentifier(platformIdentifier);
@@ -190,7 +189,9 @@ export const StartTrialBannerButton = () => {
           <Button
             onClick={() => {
               setOpenSheet(true);
-              setPlatformIdentifier(availableTrials[0]!);
+              setPlatformIdentifier(
+                availableTrials[0]! as PlatformIdentifierEnum
+              );
             }}
             className="bg-white text-black hover:bg-white text-[12px] px-s py-0.5 min-h-0 h-auto">
             {t('Service.Trials.StartTrial')}
@@ -204,6 +205,7 @@ export const StartTrialBannerButton = () => {
         deploymentRequestsAvailabilityQueryRef={
           deploymentRequestsAvailabilityQueryRef
         }
+        platformIdentifier={platformIdentifier}
       />
     </SheetWithPreventingDialog>
   );
