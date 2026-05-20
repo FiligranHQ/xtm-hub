@@ -1,7 +1,7 @@
 import { organizationList_organizations$data } from '@generated/organizationList_organizations.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 import { describe, expect, it } from 'vitest';
-import { getAvailableOrganizations } from './Organization.service';
+import { getUnsubscribedOrganizations } from './Organization.service';
 
 const makeOrg = (id: string, name: string) => ({ id, name });
 
@@ -43,7 +43,7 @@ describe('getAvailableOrganizations', () => {
   ]);
 
   it('should return all organizations when there are no subscriptions', () => {
-    const result = getAvailableOrganizations(organizationsData, []);
+    const result = getUnsubscribedOrganizations(organizationsData, []);
 
     expect(result).toHaveLength(3);
     expect(result.map((o) => o.id)).toEqual(['org-1', 'org-2', 'org-3']);
@@ -54,7 +54,10 @@ describe('getAvailableOrganizations', () => {
       makeSubscription('org-1'),
       makeSubscription('org-2'),
     ];
-    const result = getAvailableOrganizations(organizationsData, subscriptions);
+    const result = getUnsubscribedOrganizations(
+      organizationsData,
+      subscriptions
+    );
 
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchObject({ id: 'org-3', name: 'Org 3' });
@@ -66,7 +69,7 @@ describe('getAvailableOrganizations', () => {
       makeSubscription('org-2'),
     ];
     const subscriptionToEdit = makeSubscription('org-1');
-    const result = getAvailableOrganizations(
+    const result = getUnsubscribedOrganizations(
       organizationsData,
       subscriptions,
       subscriptionToEdit
@@ -82,7 +85,10 @@ describe('getAvailableOrganizations', () => {
       makeSubscription('org-2'),
       makeSubscription('org-3'),
     ];
-    const result = getAvailableOrganizations(organizationsData, subscriptions);
+    const result = getUnsubscribedOrganizations(
+      organizationsData,
+      subscriptions
+    );
 
     expect(result).toHaveLength(0);
   });
@@ -94,7 +100,10 @@ describe('getAvailableOrganizations', () => {
         organization: { id: '', name: 'Org 1', personal_space: false },
       } as unknown as subscription_fragment$data,
     ];
-    const result = getAvailableOrganizations(organizationsData, subscriptions);
+    const result = getUnsubscribedOrganizations(
+      organizationsData,
+      subscriptions
+    );
 
     expect(result).toHaveLength(3);
     expect(result.map((o) => o.id)).toEqual(['org-1', 'org-2', 'org-3']);

@@ -11,14 +11,7 @@ import {
   loadSubscriptionCapabilitiesBy,
   replaceCapabilitiesForSubscription,
 } from './subscription-capability.domain';
-type SubscriptionCapabilityWithJoin = SubscriptionCapability & {
-  service_capability: {
-    id: string | null;
-    name: string | null;
-    description: string | null;
-    __typename: 'Service_Capability';
-  };
-};
+
 describe('subscription capability domain', () => {
   let serviceDefinition: ServiceDefinition;
   let serviceInstance: ServiceInstance;
@@ -165,9 +158,7 @@ describe('subscription capability domain', () => {
   describe('loadSubscriptionCapabilities', () => {
     it('should return subscription capabilities with joined service_capability field', async () => {
       await addCapabilitiesToSubscription(subscription.id, [capability1.id]);
-      const capabilities = (await loadSubscriptionCapabilities(
-        subscription.id
-      )) as SubscriptionCapabilityWithJoin[];
+      const capabilities = await loadSubscriptionCapabilities(subscription.id);
       expect(capabilities).toHaveLength(1);
       expect(capabilities[0]).toMatchObject(
         expect.objectContaining({

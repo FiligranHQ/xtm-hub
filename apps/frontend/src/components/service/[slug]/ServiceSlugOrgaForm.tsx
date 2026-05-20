@@ -1,6 +1,6 @@
 import {
-  getAvailableOrganizations,
   getOrganizations,
+  getUnsubscribedOrganizations,
 } from '@/components/organization/Organization.service';
 import {
   AddSubscriptionInServiceMutation,
@@ -62,7 +62,7 @@ export const ServiceSlugOrgaForm = ({
   const [organizationsData] = getOrganizations();
   const organizations = useMemo(
     () =>
-      getAvailableOrganizations(
+      getUnsubscribedOrganizations(
         organizationsData,
         subscriptions,
         subscriptionToEdit

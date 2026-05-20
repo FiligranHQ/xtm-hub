@@ -27,7 +27,7 @@ describe('subscription domain', () => {
     });
   });
 
-  describe(`${createSubscription.name}`, () => {
+  describe(`should test createSubscription`, () => {
     it('should create a subscription and return it', async () => {
       const id = uuidv4() as SubscriptionId;
       const start_date = new Date('2025-01-01');
@@ -66,7 +66,7 @@ describe('subscription domain', () => {
     });
   });
 
-  describe(`${loadSubscriptionBy.name}`, () => {
+  describe(`should test loadSubscriptionBy`, () => {
     it('should return the subscription matching the given field', async () => {
       const id = uuidv4() as SubscriptionId;
       await createSubscription({
@@ -110,7 +110,7 @@ describe('subscription domain', () => {
     });
   });
 
-  describe(`${updateSubscriptionBy.name}`, () => {
+  describe(`should test updateSubscriptionBy`, () => {
     it('should update the subscription fields and return the updated rows', async () => {
       const id = uuidv4() as SubscriptionId;
       await createSubscription({
@@ -174,7 +174,7 @@ describe('subscription domain', () => {
     });
   });
 
-  describe(`${getSubscriptionCapability.name}`, () => {
+  describe('should test getSubscriptionCapability', () => {
     it('should return capabilities linked to the subscription', async () => {
       const id = uuidv4() as SubscriptionId;
       await createSubscription({
@@ -216,7 +216,7 @@ describe('subscription domain', () => {
     });
   });
 
-  describe(`${getServiceCapability.name}`, () => {
+  describe('should test getServiceCapability', () => {
     it('should return the service capability linked to a subscription_capability id', async () => {
       const subscriptionId = uuidv4() as SubscriptionId;
       await createSubscription({
@@ -247,7 +247,7 @@ describe('subscription domain', () => {
     });
   });
 
-  describe(`${transferSubscriptionToOrganization.name}`, () => {
+  describe(`should test transferSubscriptionToOrganization`, () => {
     it('should transfer a subscription to a new organization', async () => {
       const id = uuidv4() as SubscriptionId;
       await createSubscription({

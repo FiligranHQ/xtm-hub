@@ -1,4 +1,5 @@
 import { db, dbRaw } from '../../../../knexfile';
+import { withTransaction } from '../../../context/database.context';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import SubscriptionCapability, {
@@ -35,13 +36,20 @@ export const replaceCapabilitiesForSubscription = async (
   subscriptionId: SubscriptionId,
   capabilityIds: ServiceCapabilityId[]
 ): Promise<SubscriptionCapability[]> => {
-  await db<SubscriptionCapability>('Subscription_Capability')
-    .where({
-      subscription_id: subscriptionId,
-    })
-    .delete();
+  let subscriptionCapabilities = [];
+  await withTransaction(async () => {
+    await db<SubscriptionCapability>('Subscription_Capability')
+      .where({
+        subscription_id: subscriptionId,
+      })
+      .delete();
 
-  return addCapabilitiesToSubscription(subscriptionId, capabilityIds);
+    subscriptionCapabilities = await addCapabilitiesToSubscription(
+      subscriptionId,
+      capabilityIds
+    );
+  });
+  return subscriptionCapabilities;
 };
 
 export const loadSubscriptionCapabilities = async (

@@ -1,3 +1,4 @@
+import { SubscriptionModel } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
@@ -8,7 +9,7 @@ export const subscriptionCapabilityApp = {
   addSubscriptionCapability: async (
     subscriptionsId: SubscriptionId[],
     capabilitiesId: ServiceCapabilityId[]
-  ) => {
+  ): Promise<SubscriptionModel[]> => {
     const modifiedSubscriptions = [];
     await withTransaction(async () => {
       for (const subscriptionId of subscriptionsId) {

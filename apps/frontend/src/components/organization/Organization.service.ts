@@ -74,7 +74,7 @@ interface AvailableOrganization {
  * When editing an existing subscription, the subscribed organization of that subscription
  * is excluded from filtering so it remains selectable.
  */
-export const getAvailableOrganizations = (
+export const getUnsubscribedOrganizations = (
   organizationsData: organizationList_organizations$data,
   subscriptions: subscription_fragment$data[],
   subscriptionToEdit?: subscription_fragment$data

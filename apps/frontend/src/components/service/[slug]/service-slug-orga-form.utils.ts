@@ -19,14 +19,11 @@ export const getSubscriptionDefaultValues = (
     organization_id: subscriptionToEdit?.organization.id
       ? [subscriptionToEdit.organization.id]
       : [],
-    capability_ids: subscriptionToEdit
-      ? (subscriptionToEdit.subscription_capability
-          ?.map((sc) => sc?.service_capability?.id)
-          .filter((id): id is string => Boolean(id)) ?? [])
-      : [],
-    start_date: subscriptionToEdit?.start_date
-      ? new Date(subscriptionToEdit.start_date)
-      : new Date(),
+    capability_ids:
+      subscriptionToEdit?.subscription_capability
+        ?.map((sc) => sc?.service_capability?.id)
+        .filter((id): id is string => Boolean(id)) ?? [],
+    start_date: new Date(subscriptionToEdit?.start_date ?? Date.now()),
     end_date: subscriptionToEdit?.end_date
       ? new Date(subscriptionToEdit.end_date)
       : undefined,

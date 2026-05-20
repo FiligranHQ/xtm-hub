@@ -34,10 +34,17 @@ export const ServiceSlugDeleteSubscription: FunctionComponent<
       onCompleted: () => {
         setOpen(false);
         onDeleted();
+        const organizations = subscriptions
+          .map((sub) => sub.organization.name)
+          .join(', ');
+
         toast({
           title: t('Utils.Success'),
           description: t('ServiceActions.OrganizationDeleted', {
-            name: subscriptions.map((sub) => sub.organization.name).join(', '),
+            name:
+              organizations.length > 50
+                ? `${organizations.slice(0, 50)}...`
+                : organizations,
           }),
         });
       },
