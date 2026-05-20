@@ -1,6 +1,6 @@
 {
   "name": "@xtm-hub/frontend",
-  "version": "1.21.36",
+  "version": "1.22.0",
   "private": true,
   "scripts": {
     "dev": "concurrently \"relay-compiler && tsx scripts/generate-enum.ts\" \"next dev  --turbopack -p 3002\"",
