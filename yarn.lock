@@ -8619,7 +8619,7 @@ __metadata:
     lint-staged: "npm:16.4.0"
     monocart-reporter: "npm:2.11.2"
     next: "npm:16.2.6"
-    next-intl: "npm:4.11.1"
+    next-intl: "npm:4.12.0"
     next-themes: "npm:0.4.6"
     postcss: "npm:8.5.14"
     prettier: "npm:3.8.3"
@@ -13137,12 +13137,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"icu-minify@npm:^4.11.1":
-  version: 4.11.1
-  resolution: "icu-minify@npm:4.11.1"
+"icu-minify@npm:^4.12.0":
+  version: 4.12.0
+  resolution: "icu-minify@npm:4.12.0"
   dependencies:
     "@formatjs/icu-messageformat-parser": "npm:^3.4.0"
-  checksum: 10/cca3b679538b8e21bb434f7eb134617c4761df392858f9acf778cf7f373b964c927c14177699e3811a0592a68117279148c9c41aed8729fd557196bbc6c7889b
+  checksum: 10/f1ab6fd2a945f311ac202f805400f4bdb1585159af8909f270803ab283dc43744e39d983ca635cae1da94651ccdf3ebabaa5092cdca34ce2048d02eeb00243ac
   languageName: node
   linkType: hard
 
@@ -15713,32 +15713,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-intl-swc-plugin-extractor@npm:^4.11.1":
-  version: 4.11.1
-  resolution: "next-intl-swc-plugin-extractor@npm:4.11.1"
-  checksum: 10/6134eff96e7b8813bc644efcbd1c333c3f0aeca55c57acd8fcbfa6edcff31286a630cc4399c6ddf79d9684fbff7f51b0e755cddb7537c80c8dbb885cc10ed787
+"next-intl-swc-plugin-extractor@npm:^4.12.0":
+  version: 4.12.0
+  resolution: "next-intl-swc-plugin-extractor@npm:4.12.0"
+  checksum: 10/1be5c16d98d9d48e83a4a358b6c24b57a3bc8b2ea7f6e1cc34b0116ff8260ed972e5ab17c46dd6dd0cd1aca5a3bf75ffbf843ad9a36abb2b6952df0662ce3932
   languageName: node
   linkType: hard
 
-"next-intl@npm:4.11.1":
-  version: 4.11.1
-  resolution: "next-intl@npm:4.11.1"
+"next-intl@npm:4.12.0":
+  version: 4.12.0
+  resolution: "next-intl@npm:4.12.0"
   dependencies:
     "@formatjs/intl-localematcher": "npm:^0.8.1"
     "@parcel/watcher": "npm:^2.4.1"
     "@swc/core": "npm:^1.15.2"
-    icu-minify: "npm:^4.11.1"
+    icu-minify: "npm:^4.12.0"
     negotiator: "npm:^1.0.0"
-    next-intl-swc-plugin-extractor: "npm:^4.11.1"
+    next-intl-swc-plugin-extractor: "npm:^4.12.0"
     po-parser: "npm:^2.1.1"
-    use-intl: "npm:^4.11.1"
+    use-intl: "npm:^4.12.0"
   peerDependencies:
     next: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/8021f50517dd057ee7c1e291ec9b5b0cbc79fd2a8398d205550fa9450c78e57047becb7836eae6b6a864c702daed14cdb3a0f1211a37c452f4a8fa565794aad8
+  checksum: 10/d660c3f2d31d1c8dd7dd23f72b28bfb32a235548a596847202b405f95dd062a561ff87f72d0468ba2239f5ad162d8a1f0441c0cf23719fa0143003e6a8ab9e26
   languageName: node
   linkType: hard
 
@@ -19813,17 +19813,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-intl@npm:^4.11.1":
-  version: 4.11.1
-  resolution: "use-intl@npm:4.11.1"
+"use-intl@npm:^4.12.0":
+  version: 4.12.0
+  resolution: "use-intl@npm:4.12.0"
   dependencies:
     "@formatjs/fast-memoize": "npm:^3.1.0"
     "@schummar/icu-type-parser": "npm:1.21.5"
-    icu-minify: "npm:^4.11.1"
+    icu-minify: "npm:^4.12.0"
     intl-messageformat: "npm:^11.1.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
-  checksum: 10/2510a768b63815b56e3e78971d5ae76ace34186f93d4549377164ace5a8f820eb37bc116b855bc71effd1fe514cf34759e7d096f664b7156edbba1fe7ea2520f
+  checksum: 10/59b832868e8fb0c8310ff662077df0a73bfbc9678ea162e45093c0fe4d9329e8aa7887658f144d9b4893804b73af450c5bcf174c957ca607c7ce40e842db6605
   languageName: node
   linkType: hard
 
