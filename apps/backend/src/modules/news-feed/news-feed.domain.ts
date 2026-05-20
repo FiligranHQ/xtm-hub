@@ -130,4 +130,12 @@ export const NewsFeedDomain = {
       .onConflict(['news_feed_item_id', 'platform_id'])
       .ignore();
   },
+
+  deleteNewsFeedItemsOlderThan: async (cutoffDate: Date): Promise<number> => {
+    const deletedRows: { id: NewsFeedItemId }[] = await db('NewsFeedItem')
+      .where('creation_date', '<', cutoffDate)
+      .delete()
+      .returning('id');
+    return deletedRows.length;
+  },
 };

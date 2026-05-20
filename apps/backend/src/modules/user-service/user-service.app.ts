@@ -5,7 +5,7 @@ import {
 import User from '../../model/kanel/public/User';
 import UserService from '../../model/kanel/public/UserService';
 import { ErrorCode } from '../../utils/error/error.code';
-import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
 import { UserServiceDomain } from './user-service.domain';
@@ -36,7 +36,7 @@ export const UserServiceApp = {
   },
 
   deleteUserService: async (email: string, subscriptionId: SubscriptionId) => {
-    const userToDelete = await loadUserBy({ email });
+    const userToDelete = await UserDomain.loadUserBy({ email });
     const deletedUserService = await UserServiceDomain.deleteUserService(
       userToDelete.id,
       subscriptionId
@@ -55,7 +55,7 @@ export const UserServiceApp = {
         await loadSubscriptionWithOrganizationAndCapabilitiesBy({
           'Subscription.id': deletedUserService?.subscription_id,
         } as SubscriptionMutator);
-      await SubscriptionDomain.deleteSubscription(subscription.id);
+      await SubscriptionDomain.deleteSubscriptions([subscription.id]);
     }
 
     return deletedUserService;

@@ -1,15 +1,16 @@
+import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/Integration.utils';
+import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { useMemo } from 'react';
-import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/Integration.utils';
-import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 
 type SimpleFiltersParams = {
   serviceInstanceSlug:
     | ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS
-    | ServiceSlug.OPEN_AEV_SCENARIOS;
+    | ServiceSlug.OPEN_AEV_SCENARIOS
+    | ServiceSlug.OPEN_CTI_PLAYBOOKS;
   labels: LogicalMultiSelectSelection;
 };
 

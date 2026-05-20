@@ -6,11 +6,8 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
-import { organizationApp } from './organization.app';
-import {
-  insertNewOrganization,
-  loadOrganizationBy,
-} from './organization.domain';
+import { OrganizationApp } from './organization.app';
+import { OrganizationDomain } from './organization.domain';
 
 describe('organizationApp', () => {
   afterEach(async () => {
@@ -25,7 +22,7 @@ describe('organizationApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationApp.updateOrganization(
+      await OrganizationApp.updateOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         {
           domains: [
@@ -61,7 +58,7 @@ describe('organizationApp', () => {
         .spyOn(telemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await organizationApp.createOrganization({
+      await OrganizationApp.createOrganization({
         domains: ['test.com', 'test.fr'],
         name: 'test.com',
       });
@@ -79,13 +76,13 @@ describe('organizationApp', () => {
     });
 
     it('should throw if an organization with the same domain exists', async () => {
-      await insertNewOrganization({
+      await OrganizationDomain.insertNewOrganization({
         id: uuidv4() as OrganizationId,
         name: 'domain1.io',
         domains: ['domain1.io', 'domain2.io'],
       });
 
-      const call = organizationApp.createOrganization({
+      const call = OrganizationApp.createOrganization({
         domains: ['domain1.io'],
         name: 'otherDomain.io',
       });
@@ -96,13 +93,13 @@ describe('organizationApp', () => {
     });
 
     it('should throw if an organization with the same name exists', async () => {
-      await insertNewOrganization({
+      await OrganizationDomain.insertNewOrganization({
         id: uuidv4() as OrganizationId,
         name: 'alreadyExistingOrga',
         domains: ['alreadyExistingOrga.io'],
       });
 
-      const call = organizationApp.createOrganization({
+      const call = OrganizationApp.createOrganization({
         domains: ['whatever.io'],
         name: 'alreadyExistingOrga',
       });
@@ -114,18 +111,20 @@ describe('organizationApp', () => {
   describe('deleteOrganization', () => {
     it('should delete the organization', async () => {
       const organizationId = uuidv4() as OrganizationId;
-      await insertNewOrganization({
+      await OrganizationDomain.insertNewOrganization({
         id: organizationId,
         name: 'newOrganization',
         domains: ['orga.com'],
       });
 
-      const newOrganization = await loadOrganizationBy({ id: organizationId });
+      const newOrganization = await OrganizationDomain.loadOrganizationBy({
+        id: organizationId,
+      });
       expect(newOrganization).toBeDefined();
 
-      await organizationApp.deleteOrganization(organizationId);
+      await OrganizationApp.deleteOrganization(organizationId);
 
-      const deletedOrganization = await loadOrganizationBy({
+      const deletedOrganization = await OrganizationDomain.loadOrganizationBy({
         id: organizationId,
       });
       expect(deletedOrganization).toBeUndefined();

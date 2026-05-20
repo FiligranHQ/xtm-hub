@@ -74,7 +74,7 @@ type CanUnregisterResponse {
   isPlatformRegistered: Boolean!
   isAllowed: Boolean
   isInOrganization: Boolean
-  organizationId: ID
+  organizationId: OrganizationId
 }
 
 input UnregisterPlatformInput {

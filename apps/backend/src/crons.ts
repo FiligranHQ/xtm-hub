@@ -2,7 +2,8 @@ import cron, { ScheduledTask } from 'node-cron';
 import { requestContext } from './context/request.context';
 import { DeploymentApp } from './modules/deployment/deployment.app';
 import { ServiceGroupApp } from './modules/deployment/group/service-group.app';
-import { UserOrganizationApp } from './modules/organization-management/user/user-organization/user.organization.app';
+import { NewsFeedApp } from './modules/news-feed/news-feed.app';
+import { UserOrganizationApp } from './modules/organization-management/user/user-organization/user-organization.app';
 import { EpicApp } from './modules/xtm-platform-roadmap/epic.app';
 import { CRONS_USER_CONTEXT } from './portal.const';
 import { logApp } from './utils/app-logger.util';
@@ -49,6 +50,16 @@ const cleanExpiredTrialGroups = async (): Promise<void> => {
   }
 };
 
+const cleanExpiredNewsFeedItems = async (): Promise<void> => {
+  logApp.info('Running cleanExpiredNewsFeedItems job');
+  requestContext.set(CRONS_USER_CONTEXT);
+  try {
+    await NewsFeedApp.cleanExpiredNewsFeedItems();
+  } catch (error) {
+    logApp.error('cleanExpiredNewsFeedItems job failed:', { error });
+  }
+};
+
 export const initCronJobs = () => {
   logApp.info('Initializing cron jobs');
   scheduledTasks.push(cron.schedule('0 2 * * *', expireTrials));
@@ -57,6 +68,7 @@ export const initCronJobs = () => {
     cron.schedule('0 8 1 * *', sendPublicRoadmapMonthlyReminder)
   );
   scheduledTasks.push(cron.schedule('0 3 * * *', cleanExpiredTrialGroups));
+  scheduledTasks.push(cron.schedule('0 4 * * *', cleanExpiredNewsFeedItems));
 };
 
 export const stopCronJobs = () => {

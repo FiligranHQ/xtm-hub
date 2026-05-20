@@ -2,7 +2,7 @@ import config from 'config';
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserLoadUserBy } from '../../../model/user';
 import * as UserSecurity from '../../../security/util/user';
-import * as UserDomain from './user-domain/user.domain';
+import { UserDomain } from './user-domain/user.domain';
 import { UserAuthApp } from './user.auth.app';
 
 vi.mock('config', () => ({
@@ -10,8 +10,10 @@ vi.mock('config', () => ({
 }));
 
 vi.mock('./user-domain/user.domain', () => ({
-  loadUserBy: vi.fn(),
-  updateUserAtLogin: vi.fn(),
+  UserDomain: {
+    loadUserBy: vi.fn(),
+    updateUserAtLogin: vi.fn(),
+  },
 }));
 
 vi.mock('../../../security/util/user', () => ({

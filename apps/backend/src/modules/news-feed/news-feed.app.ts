@@ -1,3 +1,4 @@
+import config from 'config';
 import {
   ConsumeProvisionedNewsFeedItemsResponse,
   NewsFeedItemMetadataKey,
@@ -5,8 +6,14 @@ import {
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { organizationDomain } from '../organization-management/organization/organization.domain';
+import {
+  INTERVAL_UNITS,
+  IntervalUnit,
+  subtractInterval,
+} from '../common/interval.helper';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from '../registration/registration.mapping';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
@@ -106,7 +113,7 @@ export const NewsFeedApp = {
     });
 
     const organizations =
-      await organizationDomain.loadOrganizationsSubscribedToServiceInstance(
+      await OrganizationDomain.loadOrganizationsSubscribedToServiceInstance(
         serviceInstanceId
       );
 
@@ -123,5 +130,44 @@ export const NewsFeedApp = {
       .map((platform) => platform.config.platform_id);
 
     await NewsFeedDomain.provisionNewsFeedItem(newsFeedItem.id, platformIds);
+  },
+
+  cleanExpiredNewsFeedItems: async (): Promise<void> => {
+    const rawValue = config.get('news_feed.cleanup_interval_value');
+    const rawUnit = config.get('news_feed.cleanup_interval_unit');
+
+    if (
+      typeof rawValue !== 'number' ||
+      !Number.isFinite(rawValue) ||
+      rawValue <= 0
+    ) {
+      throw new Error(
+        `Invalid config "news_feed.cleanup_interval_value": expected positive number, got ${typeof rawValue} (${rawValue})`
+      );
+    }
+    if (
+      typeof rawUnit !== 'string' ||
+      !INTERVAL_UNITS.includes(rawUnit as IntervalUnit)
+    ) {
+      throw new Error(
+        `Invalid config "news_feed.cleanup_interval_unit": expected one of ${INTERVAL_UNITS.join(', ')}, got ${rawUnit}`
+      );
+    }
+
+    const cutoffDate = subtractInterval(
+      new Date(),
+      rawValue,
+      rawUnit as IntervalUnit
+    );
+
+    const deletedCount =
+      await NewsFeedDomain.deleteNewsFeedItemsOlderThan(cutoffDate);
+
+    logApp.info('Cleaned expired news feed items', {
+      deletedCount,
+      cutoffDate: cutoffDate.toISOString(),
+      intervalValue: rawValue,
+      intervalUnit: rawUnit,
+    });
   },
 };

@@ -152,6 +152,7 @@ export const serviceInstanceForSubscriptionsFragment = graphql`
     name
     id
     description
+    tags
     service_definition {
       service_capability {
         id

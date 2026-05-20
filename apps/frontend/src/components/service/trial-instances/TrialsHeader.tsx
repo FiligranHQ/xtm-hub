@@ -16,16 +16,18 @@ export const TrialsHeader = async ({
   const platformName = PlatformMetadataMapping[platformIdentifier].name;
 
   return (
-    <header className="flex justify-between items-start my-xl">
+    <header className="flex flex-col gap-m md:flex-row md:justify-between md:items-start my-xl">
       <div className="flex flex-col">
-        <h2 className="text-blue text-2xl mb-2">
+        <h2 className="text-blue text-xl md:text-2xl mb-2">
           {t('Service.Trials.PageHeader.Welcome')}
         </h2>
-        <h1 className="text-3xl">
+        <h1 className="text-2xl md:text-3xl">
           {t('Service.Trials.PageHeader.Title', { platformName })}
         </h1>
       </div>
-      <div className="flex gap-s">{actions}</div>
+      <div className="flex flex-wrap gap-s md:flex-nowrap md:shrink-0">
+        {actions}
+      </div>
     </header>
   );
 };

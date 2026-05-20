@@ -7,6 +7,7 @@ import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js
 import type { SubscriptionId } from '../model/kanel/public/Subscription.js';
 import type { UseCaseId } from '../model/kanel/public/UseCase.js';
 import type { UserId } from '../model/kanel/public/User.js';
+import type { UserServiceId } from '../model/kanel/public/UserService.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { PortalContext } from '../model/portal-context.js';
 export type Maybe<T> = T | null | undefined;
@@ -38,6 +39,7 @@ export type Scalars = {
   Upload: { input: any; output: any; }
   UseCaseId: { input: UseCaseId; output: UseCaseId; }
   UserId: { input: UserId; output: UserId; }
+  UserServiceId: { input: UserServiceId; output: UserServiceId; }
 };
 
 export type AddServiceInput = {
@@ -47,6 +49,11 @@ export type AddServiceInput = {
   service_instance_description?: InputMaybe<Scalars['String']['input']>;
   service_instance_name?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddSubscriptionCapabilityInput = {
+  capabilitiesId: Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>;
+  subscriptionsId: Array<Scalars['SubscriptionId']['input']>;
 };
 
 export type AddUseCaseInput = {
@@ -98,7 +105,7 @@ export type CanUnregisterResponse = {
   isAllowed?: Maybe<Scalars['Boolean']['output']>;
   isInOrganization?: Maybe<Scalars['Boolean']['output']>;
   isPlatformRegistered: Scalars['Boolean']['output'];
-  organizationId?: Maybe<Scalars['ID']['output']>;
+  organizationId?: Maybe<Scalars['OrganizationId']['output']>;
 };
 
 export type Capability = Node & {
@@ -223,10 +230,10 @@ export type CreateEpicInput = {
   title: Scalars['String']['input'];
 };
 
-export type CreateSubscriptionInput = {
+export type CreateSubscriptionsInput = {
   capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
-  organization_id: Scalars['OrganizationId']['input'];
+  organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
   start_date: Scalars['Date']['input'];
 };
@@ -494,6 +501,14 @@ export enum DeploymentRequestUseCase {
   DetectionEngineering = 'detection_engineering',
   HostingThreatCommunity = 'hosting_threat_community',
   IncidentResponse = 'incident_response',
+  OaevAtomicTesting = 'oaev_atomic_testing',
+  OaevAttackSimulation = 'oaev_attack_simulation',
+  OaevCtemFramework = 'oaev_ctem_framework',
+  OaevOpenctiCoverage = 'oaev_opencti_coverage',
+  OaevPenetrationTesting = 'oaev_penetration_testing',
+  OaevPlatformValidation = 'oaev_platform_validation',
+  OaevPurpleTeam = 'oaev_purple_team',
+  OaevTabletopExercise = 'oaev_tabletop_exercise',
   SecurityStack = 'security_stack',
   SharingKnowledge = 'sharing_knowledge',
   StrategicReporting = 'strategic_reporting',
@@ -596,7 +611,7 @@ export type EditMeUserInput = {
 
 export type EditServiceCapabilityInput = {
   capabilities: Array<InputMaybe<Scalars['String']['input']>>;
-  user_service_id?: InputMaybe<Scalars['String']['input']>;
+  user_service_id?: InputMaybe<Scalars['UserServiceId']['input']>;
 };
 
 export type EditUseCaseInput = {
@@ -828,6 +843,7 @@ export type Mutation = {
   addOrganization?: Maybe<Organization>;
   addServicePicture?: Maybe<ServiceInstance>;
   addSubscription?: Maybe<ServiceInstance>;
+  addSubscriptionCapability: Array<SubscriptionModel>;
   addUseCase: UseCase;
   addUser?: Maybe<User>;
   addUserService?: Maybe<Array<Maybe<UserService>>>;
@@ -845,12 +861,12 @@ export type Mutation = {
   createDeploymentRequest: DeploymentRequest;
   createDocument: Document;
   createEpic: Epic;
-  createSubscription?: Maybe<SubscriptionModel>;
+  createSubscriptions: Array<SubscriptionModel>;
   deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic: Epic;
   deleteOrganization?: Maybe<Organization>;
-  deleteSubscription?: Maybe<SubscriptionModel>;
+  deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
   deleteUserService?: Maybe<UserService>;
   editMeUser: User;
@@ -882,6 +898,7 @@ export type Mutation = {
   updateEpic: Epic;
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups: Array<ServiceGroup>;
+  updateSubscription?: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
 };
 
@@ -900,6 +917,11 @@ export type MutationAddServicePictureArgs = {
 
 export type MutationAddSubscriptionArgs = {
   service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type MutationAddSubscriptionCapabilityArgs = {
+  input: AddSubscriptionCapabilityInput;
 };
 
 
@@ -994,8 +1016,8 @@ export type MutationCreateEpicArgs = {
 };
 
 
-export type MutationCreateSubscriptionArgs = {
-  input?: InputMaybe<CreateSubscriptionInput>;
+export type MutationCreateSubscriptionsArgs = {
+  input?: InputMaybe<CreateSubscriptionsInput>;
 };
 
 
@@ -1021,8 +1043,8 @@ export type MutationDeleteOrganizationArgs = {
 };
 
 
-export type MutationDeleteSubscriptionArgs = {
-  subscription_id: Scalars['SubscriptionId']['input'];
+export type MutationDeleteSubscriptionsArgs = {
+  subscription_ids: Array<Scalars['SubscriptionId']['input']>;
 };
 
 
@@ -1180,6 +1202,12 @@ export type MutationUpdateServiceGroupsArgs = {
 };
 
 
+export type MutationUpdateSubscriptionArgs = {
+  input: UpdateSubscriptionInput;
+  subscription_id: Scalars['SubscriptionId']['input'];
+};
+
+
 export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
 };
@@ -1244,6 +1272,32 @@ export type OpenCtiPlatformRegistrationStatusInput = {
 export type OpenCtiPlatformRegistrationStatusResponse = {
   __typename?: 'OpenCTIPlatformRegistrationStatusResponse';
   status: PlatformRegistrationConnectivityStatus;
+};
+
+export type OpenCtiPlaybook = Document & Node & {
+  __typename?: 'OpenCTIPlaybook';
+  active: Scalars['Boolean']['output'];
+  children_documents?: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  download_number?: Maybe<Scalars['Int']['output']>;
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  product_version?: Maybe<Scalars['String']['output']>;
+  service_instance?: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number?: Maybe<Scalars['Int']['output']>;
+  short_description?: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription?: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  updater_id?: Maybe<Scalars['String']['output']>;
+  uploader?: Maybe<User>;
+  uploader_organization?: Maybe<Organization>;
+  use_cases?: Maybe<Array<UseCase>>;
 };
 
 export enum OrderingMode {
@@ -1880,6 +1934,7 @@ export enum ServiceDefinitionIdentifier {
   OpenaevScenarios = 'openaev_scenarios',
   OpenctiCustomDashboards = 'opencti_custom_dashboards',
   OpenctiIntegrations = 'opencti_integrations',
+  OpenctiPlaybooks = 'opencti_playbooks',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault',
   XtmPlatformRoadmap = 'xtm_platform_roadmap'
@@ -2283,6 +2338,12 @@ export type UpdateServiceGroupsInputGroup = {
   userIds: Array<Scalars['UserId']['input']>;
 };
 
+export type UpdateSubscriptionInput = {
+  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
+  end_date?: InputMaybe<Scalars['Date']['input']>;
+  start_date?: InputMaybe<Scalars['Date']['input']>;
+};
+
 export type UseCase = Node & {
   __typename?: 'UseCase';
   color: Scalars['String']['output'];
@@ -2504,14 +2565,15 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
+  Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   AddServiceInput: AddServiceInput;
+  AddSubscriptionCapabilityInput: AddSubscriptionCapabilityInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
   AdminAddUserInput: AdminAddUserInput;
@@ -2534,7 +2596,7 @@ export type ResolversTypes = ResolversObject<{
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CreateEpicInput: CreateEpicInput;
-  CreateSubscriptionInput: CreateSubscriptionInput;
+  CreateSubscriptionsInput: CreateSubscriptionsInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
@@ -2603,6 +2665,7 @@ export type ResolversTypes = ResolversObject<{
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
   OpenCTIPlatformRegistrationStatusResponse: ResolverTypeWrapper<OpenCtiPlatformRegistrationStatusResponse>;
+  OpenCTIPlaybook: ResolverTypeWrapper<OpenCtiPlaybook>;
   OrderingMode: OrderingMode;
   Organization: ResolverTypeWrapper<Organization>;
   OrganizationCapabilities: ResolverTypeWrapper<OrganizationCapabilities>;
@@ -2695,6 +2758,7 @@ export type ResolversTypes = ResolversObject<{
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
+  UpdateSubscriptionInput: UpdateSubscriptionInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   UseCase: ResolverTypeWrapper<UseCase>;
   UseCaseConnection: ResolverTypeWrapper<UseCaseConnection>;
@@ -2715,6 +2779,7 @@ export type ResolversTypes = ResolversObject<{
   UserServiceDeleteInput: UserServiceDeleteInput;
   UserServiceDeleted: ResolverTypeWrapper<UserServiceDeleted>;
   UserServiceEdge: ResolverTypeWrapper<UserServiceEdge>;
+  UserServiceId: ResolverTypeWrapper<Scalars['UserServiceId']['output']>;
   UserServiceOrdering: UserServiceOrdering;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
   UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
@@ -2723,6 +2788,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   AddServiceInput: AddServiceInput;
+  AddSubscriptionCapabilityInput: AddSubscriptionCapabilityInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
   AdminAddUserInput: AdminAddUserInput;
@@ -2743,7 +2809,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
   CreateEpicInput: CreateEpicInput;
-  CreateSubscriptionInput: CreateSubscriptionInput;
+  CreateSubscriptionsInput: CreateSubscriptionsInput;
   CsvFeed: CsvFeed;
   CustomDashboard: CustomDashboard;
   Date: Scalars['Date']['output'];
@@ -2787,6 +2853,7 @@ export type ResolversParentTypes = ResolversObject<{
   OpenAEVScenario: OpenAevScenario;
   OpenCTIPlatformRegistrationStatusInput: OpenCtiPlatformRegistrationStatusInput;
   OpenCTIPlatformRegistrationStatusResponse: OpenCtiPlatformRegistrationStatusResponse;
+  OpenCTIPlaybook: OpenCtiPlaybook;
   Organization: Organization;
   OrganizationCapabilities: OrganizationCapabilities;
   OrganizationCapabilitiesInput: OrganizationCapabilitiesInput;
@@ -2860,6 +2927,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
+  UpdateSubscriptionInput: UpdateSubscriptionInput;
   Upload: Scalars['Upload']['output'];
   UseCase: UseCase;
   UseCaseConnection: UseCaseConnection;
@@ -2878,6 +2946,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserServiceDeleteInput: UserServiceDeleteInput;
   UserServiceDeleted: UserServiceDeleted;
   UserServiceEdge: UserServiceEdge;
+  UserServiceId: Scalars['UserServiceId']['output'];
   UserSubscription: UserSubscription;
   UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
 }>;
@@ -2909,7 +2978,7 @@ export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentTy
   isAllowed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isInOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isPlatformRegistered?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  organizationId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  organizationId?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3133,7 +3202,7 @@ export interface DeploymentRequestIdScalarConfig extends GraphQLScalarTypeConfig
 }
 
 export type DocumentResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Document'] = ResolversParentTypes['Document']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'IntegrationHack' | 'OpenAEVScenario' | 'RssFeed' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'IntegrationHack' | 'OpenAEVScenario' | 'OpenCTIPlaybook' | 'RssFeed' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -3305,6 +3374,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'serviceInstanceId'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
+  addSubscriptionCapability?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationAddSubscriptionCapabilityArgs, 'input'>>;
   addUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationAddUseCaseArgs, 'input'>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
@@ -3322,12 +3392,12 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'input' | 'metadata'>>;
   createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
-  createSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationCreateSubscriptionArgs>>;
+  createSubscriptions?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationCreateSubscriptionsArgs>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
   deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
-  deleteSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionArgs, 'subscription_id'>>;
+  deleteSubscriptions?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionsArgs, 'subscription_ids'>>;
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
   deleteUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationDeleteUserServiceArgs, 'input'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
@@ -3359,6 +3429,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
+  updateSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationUpdateSubscriptionArgs, 'input' | 'subscription_id'>>;
   uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
 }>;
 
@@ -3369,7 +3440,7 @@ export type NewsFeedItemMetadataResolvers<ContextType = PortalContext, ParentTyp
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationRef' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'OpenAEVScenario' | 'OpenCTIPlaybook' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationRef' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -3401,6 +3472,32 @@ export type OpenAevScenarioResolvers<ContextType = PortalContext, ParentType ext
 
 export type OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenCTIPlatformRegistrationStatusResponse'] = ResolversParentTypes['OpenCTIPlatformRegistrationStatusResponse']> = ResolversObject<{
   status?: Resolver<ResolversTypes['PlatformRegistrationConnectivityStatus'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type OpenCtiPlaybookResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OpenCTIPlaybook'] = ResolversParentTypes['OpenCTIPlaybook']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  file_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  minio_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  product_version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  service_instance?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
+  share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
+  use_cases?: Resolver<Maybe<Array<ResolversTypes['UseCase']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4033,6 +4130,10 @@ export type UserServiceEdgeResolvers<ContextType = PortalContext, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface UserServiceIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UserServiceId'], any> {
+  name: 'UserServiceId';
+}
+
 export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserSubscription'] = ResolversParentTypes['UserSubscription']> = ResolversObject<{
   add?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -4080,6 +4181,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Node?: NodeResolvers<ContextType>;
   OpenAEVScenario?: OpenAevScenarioResolvers<ContextType>;
   OpenCTIPlatformRegistrationStatusResponse?: OpenCtiPlatformRegistrationStatusResponseResolvers<ContextType>;
+  OpenCTIPlaybook?: OpenCtiPlaybookResolvers<ContextType>;
   Organization?: OrganizationResolvers<ContextType>;
   OrganizationCapabilities?: OrganizationCapabilitiesResolvers<ContextType>;
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
@@ -4144,6 +4246,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserServiceConnection?: UserServiceConnectionResolvers<ContextType>;
   UserServiceDeleted?: UserServiceDeletedResolvers<ContextType>;
   UserServiceEdge?: UserServiceEdgeResolvers<ContextType>;
+  UserServiceId?: GraphQLScalarType;
   UserSubscription?: UserSubscriptionResolvers<ContextType>;
 }>;
 

@@ -1,4 +1,4 @@
-import { fromGlobalId, toGlobalId } from 'graphql-relay/node/node.js';
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 import {
   AutoRegisterPlatformInput,
   Resolvers,
@@ -47,9 +47,7 @@ const resolvers: Resolvers = {
         return {
           ...response,
           isPlatformRegistered: true,
-          organizationId: response.organizationId
-            ? toGlobalId('Organization', response.organizationId)
-            : undefined,
+          organizationId: response.organizationId ?? undefined,
         };
       } catch (error) {
         if (error.message === ErrorCode.PlatformNotRegistered) {
@@ -90,6 +88,7 @@ const resolvers: Resolvers = {
       try {
         const payload = {
           ...input,
+          // type may not be an OrganizationId, but can be a IsPlatformRegisteredOrganization
           organizationId: fromGlobalId(input.organizationId).id,
         };
         const token = await registrationApp.registerPlatform(payload);

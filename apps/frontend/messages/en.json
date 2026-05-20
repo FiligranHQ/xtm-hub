@@ -95,7 +95,15 @@
     "vulnerability_management": "Vulnerability Management",
     "centralizing_knowledge": "Centralizing Knowledge",
     "sharing_knowledge": "Sharing Knowledge",
-    "hosting_threat_community": "Hosting Threat Sharing Community"
+    "hosting_threat_community": "Hosting Threat Sharing Community",
+    "oaev_attack_simulation": "Run Breach and Attack Simulation (BAS)",
+    "oaev_penetration_testing": "Run penetration testing",
+    "oaev_atomic_testing": "Run individual atomic testing",
+    "oaev_platform_validation": "Validate my security platforms work as expected",
+    "oaev_tabletop_exercise": "Run contextual tabletop exercises for crisis simulation",
+    "oaev_purple_team": "Purple Team enablement: Improve defenses based on attacks",
+    "oaev_opencti_coverage": "Enable OpenCTI security coverage",
+    "oaev_ctem_framework": "Operationalize a CTEM framework"
   },
   "DeploymentRequestActivitySector": {
     "computer_network_security": "Computer & Network Security",
@@ -214,6 +222,7 @@
       "DELETE_EPIC_ERROR": "An error occurred while deleting the epic.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
+      "ADD_CAPABILITIES_ERROR": "Error while adding capabilities",
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
@@ -694,6 +703,7 @@
       "openaev_scenarios": "OpenAEV Scenarios",
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
       "opencti_integrations": "OpenCTI Integrations",
+      "opencti_playbooks": "OpenCTI Playbooks",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
       "xtm_platform_roadmap": "XTM Platform Roadmap"
@@ -982,6 +992,20 @@
       "NonActive": "Draft",
       "Active": "Published"
     },
+    "OpenCTIPlaybook": {
+      "Actions": {
+        "Added": "The playbook {name} has been added successfully",
+        "Deleted": "The playbook {name} has been deleted successfully",
+        "Updated": "The playbook {name} has been modified successfully",
+        "Share": "Share Playbook"
+      },
+      "AddService": "Add new playbook",
+      "UpdateService": "Update the playbook {name}",
+      "DeleteService": "Delete the playbook {name}",
+      "SureDeleteService": "Are you sure you want to delete the playbook {name}?",
+      "NonActive": "Draft",
+      "Active": "Published"
+    },
     "Description": "Description",
     "GoTo": "Go to service page",
     "GoToAdminLabel": "Manage",
@@ -1002,9 +1026,11 @@
       }
     },
     "Management": {
+      "AvailableCapabilities": "Available capabilities",
       "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
       "AreYouSureRemoveOrganizationAccess": "Are you sure you want to remove access for organization {organizationName} from this service?",
-      "Description": "Find below the list of organizations subscribed to this service",
+      "AreYouSureRemoveOrganizationsAccess": "Are you sure you want to remove access for {count} organizations from this service?",
+      "Description": "Organizations that have joined this service",
       "Email": "Email",
       "FirstName": "First Name",
       "InviteUser": {
@@ -1017,11 +1043,16 @@
       "ManageUsers": "Manage users",
       "ManageUsersForOrganization": "Manage {organizationName}'s users in the {serviceName} service",
       "OneUserMax": "Add 1 user max",
+      "NoAvailableCapabilities": "No available capabilities",
+      "AddSubscriptionCapabilities": {
+        "Button": "Add capabilities",
+        "Title": "Add subscription capabilities",
+        "Description": "Select the capabilities to add to the {count} selected subscription(s)."
+      },
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",
-      "ShowPersonalSpaces": "Show personal spaces",
-      "SearchOrganization": "Search organization",
-      "Subscription": "Subscription"
+      "ShowPersonalSpaces": "Show personal spaces only",
+      "SearchOrganization": "Search organization"
     },
     "Name": "Name",
     "NoOwnedService": "You don't have any services yet.",
@@ -1439,6 +1470,7 @@
     "Delete": "Delete",
     "Deleted": "has been deleted",
     "Details": "Details",
+    "DocumentNotFound": "Document not found",
     "Download": "Download",
     "Edit": "Edit",
     "Error": "Error",
@@ -1452,6 +1484,7 @@
     "NotFound": "Not found",
     "OpenMenu": "Open menu",
     "Reset": "Reset",
+    "ServiceNotFound": "Service not found",
     "Success": "Success",
     "Update": "Update",
     "Updating": "Updating...",

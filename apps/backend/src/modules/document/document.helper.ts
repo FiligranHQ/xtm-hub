@@ -41,6 +41,11 @@ import {
   isIntegrationType,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../shareable-resource/opencti/integration/integration.model';
+import {
+  OPENCTI_PLAYBOOK_DOCUMENT_TYPE,
+  OPENCTI_PLAYBOOK_METADATA,
+  OPENCTI_PLAYBOOK_METADATA_KEYS,
+} from '../shareable-resource/opencti/playbook/playbook.model';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
@@ -65,6 +70,7 @@ export const ALL_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
     ...INTEGRATION_METADATA_KEYS,
     ...CUSTOM_DASHBOARD_METADATA_KEYS,
     ...OPENAEV_SCENARIO_METADATA_KEYS,
+    ...OPENCTI_PLAYBOOK_METADATA_KEYS,
     ...DOCUMENT_IMAGE_METADATA_KEYS,
   ])
 );
@@ -73,6 +79,7 @@ export type ManageableServiceDefinitionIdentifier =
   | ServiceDefinitionIdentifier.OpenctiIntegrations
   | ServiceDefinitionIdentifier.OpenctiCustomDashboards
   | ServiceDefinitionIdentifier.OpenaevScenarios
+  | ServiceDefinitionIdentifier.OpenctiPlaybooks
   | ServiceDefinitionIdentifier.Vault;
 
 export const VAULT_DOCUMENT_TYPE = 'vault';
@@ -81,6 +88,7 @@ export type DOCUMENT_TYPE =
   | typeof OPENCTI_INTEGRATION_DOCUMENT_TYPE
   | typeof OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE
   | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE
+  | typeof OPENCTI_PLAYBOOK_DOCUMENT_TYPE
   | typeof VAULT_DOCUMENT_TYPE;
 
 const DocumentTypeMappedByServiceDefinition: Record<
@@ -93,6 +101,8 @@ const DocumentTypeMappedByServiceDefinition: Record<
     OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
   [ServiceDefinitionIdentifier.OpenaevScenarios]:
     OPENAEV_SCENARIO_DOCUMENT_TYPE,
+  [ServiceDefinitionIdentifier.OpenctiPlaybooks]:
+    OPENCTI_PLAYBOOK_DOCUMENT_TYPE,
   [ServiceDefinitionIdentifier.Vault]: VAULT_DOCUMENT_TYPE,
 };
 
@@ -135,6 +145,8 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
   },
   [ServiceDefinitionIdentifier.OpenaevScenarios]: () =>
     OPENAEV_SCENARIO_METADATA,
+  [ServiceDefinitionIdentifier.OpenctiPlaybooks]: () =>
+    OPENCTI_PLAYBOOK_METADATA,
   [ServiceDefinitionIdentifier.Vault]: () => [],
 };
 
@@ -198,6 +210,8 @@ export const DocumentHelper = {
         CUSTOM_DASHBOARD_METADATA_KEYS,
       [ServiceDefinitionIdentifier.OpenaevScenarios]:
         OPENAEV_SCENARIO_METADATA_KEYS,
+      [ServiceDefinitionIdentifier.OpenctiPlaybooks]:
+        OPENCTI_PLAYBOOK_METADATA_KEYS,
     };
 
     return mapping[serviceDefinitionIdentifier] ?? [];

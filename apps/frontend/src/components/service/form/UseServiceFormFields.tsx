@@ -1,12 +1,3 @@
-import { filterDocumentImages } from '@/utils/documents';
-import { FormItem } from '@filigran/ui';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
-import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
 import { ServiceFormIntegrationSubtypeField } from '@/components/service/form/IntegrationSubtypeField';
 import { ServiceFormLogoField } from '@/components/service/form/LogoField';
@@ -17,6 +8,15 @@ import {
 import { ServiceFormUploaderIdField } from '@/components/service/form/UploaderIdField';
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/UploaderOrganizationIdField';
 import { ServiceFormUseCasesField } from '@/components/service/form/UseCasesField';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { filterDocumentImages } from '@/utils/documents';
+import { FormItem } from '@filigran/ui';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
+import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 type DocumentType =
   | 'CSV Feed'
@@ -26,6 +26,7 @@ type DocumentType =
   | 'Third Party Integration'
   | 'Custom Dashboard'
   | 'Scenario'
+  | 'Playbook'
   | 'Connector';
 
 const integrationTypeMappedByDocumentType: Record<
@@ -34,6 +35,7 @@ const integrationTypeMappedByDocumentType: Record<
 > = {
   'Custom Dashboard': null,
   Scenario: null,
+  Playbook: null,
   'CSV Feed': IntegrationTypeEnum.CSV_FEED,
   'TAXII Feed': IntegrationTypeEnum.TAXII_FEED,
   'RSS Feed': IntegrationTypeEnum.RSS_FEED,

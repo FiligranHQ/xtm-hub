@@ -181,11 +181,13 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
+  addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  createSubscription(input: CreateSubscriptionInput): SubscriptionModel
-  deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
+  createSubscriptions(input: CreateSubscriptionsInput): [SubscriptionModel!]!
+  updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
+  deleteSubscriptions(subscription_ids: [SubscriptionId!]!): [SubscriptionModel!]!
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
@@ -254,6 +256,14 @@ enum DeploymentRequestUseCase {
   centralizing_knowledge
   sharing_knowledge
   hosting_threat_community
+  oaev_attack_simulation
+  oaev_penetration_testing
+  oaev_atomic_testing
+  oaev_platform_validation
+  oaev_tabletop_exercise
+  oaev_purple_team
+  oaev_opencti_coverage
+  oaev_ctem_framework
 }
 
 enum DeploymentRequestActivitySector {
@@ -908,7 +918,7 @@ type CanUnregisterResponse {
   isPlatformRegistered: Boolean!
   isAllowed: Boolean
   isInOrganization: Boolean
-  organizationId: ID
+  organizationId: OrganizationId
 }
 
 input UnregisterPlatformInput {
@@ -1007,8 +1017,13 @@ type GenericServiceCapability implements Node {
 }
 
 input EditServiceCapabilityInput {
-  user_service_id: String
+  user_service_id: User_ServiceId
   capabilities: [String]!
+}
+
+input AddSubscriptionCapabilityInput {
+  subscriptionsId: [SubscriptionId!]!
+  capabilitiesId: [Service_CapabilityId]!
 }
 
 type UserServiceCapability implements Node {
@@ -1042,6 +1057,7 @@ enum ServiceDefinitionIdentifier {
   link
   opencti_custom_dashboards
   opencti_integrations
+  opencti_playbooks
   openaev_scenarios
   opencti_registration
   openaev_registration
@@ -1518,6 +1534,31 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   demo_url: String
 }
 
+type OpenCTIPlaybook implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
+}
+
 """
 A Relay global ID for Subscription, extracted to a branded SubscriptionId string
 """
@@ -1551,12 +1592,18 @@ type SubscriptionEdge {
   node: SubscriptionModel!
 }
 
-input CreateSubscriptionInput {
+input CreateSubscriptionsInput {
   service_instance_id: ServiceInstanceId!
-  organization_id: OrganizationId!
+  organization_id: [OrganizationId!]!
   capability_ids: [Service_CapabilityId]
   start_date: Date!
   end_date: Date
+}
+
+input UpdateSubscriptionInput {
+  start_date: Date
+  end_date: Date
+  capability_ids: [Service_CapabilityId]
 }
 
 type SubscriptionConnection {
@@ -1626,6 +1673,11 @@ input EditUseCaseInput {
   name: String
   color: String
 }
+
+"""
+A Relay global ID for User_Service, extracted to a branded User_ServiceId string
+"""
+scalar User_ServiceId
 
 enum UserServiceOrdering {
   first_name

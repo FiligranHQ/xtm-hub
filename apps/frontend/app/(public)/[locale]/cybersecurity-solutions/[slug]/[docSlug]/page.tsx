@@ -49,6 +49,8 @@ const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
     'Metadata.DocumentFallbackDescriptionDashboard',
   [ServiceSlug.OPEN_AEV_SCENARIOS]:
     'Metadata.DocumentFallbackDescriptionScenario',
+  [ServiceSlug.OPEN_CTI_PLAYBOOKS]:
+    'Metadata.DocumentFallbackDescriptionGeneric',
 };
 
 /**

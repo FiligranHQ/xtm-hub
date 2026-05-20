@@ -7,7 +7,7 @@ import {
   CompetitorInitializer,
 } from '../../../model/kanel/public/Competitor';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { loadOrganizationBy } from '../../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../../organization-management/organization/organization.domain';
 import { CompetitorApp } from './competitor.app';
 import { CompetitorDomain } from './competitor.domain';
 
@@ -117,7 +117,7 @@ describe('competitorApp', () => {
 
   describe('isOrganizationBlacklisted', () => {
     it('should return false when the competitor table is empty', async () => {
-      const org = await loadOrganizationBy({
+      const org = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       const result = await CompetitorApp.isOrganizationBlacklisted(org);
@@ -129,7 +129,7 @@ describe('competitorApp', () => {
         domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
-      const org = await loadOrganizationBy({
+      const org = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
       const result = await CompetitorApp.isOrganizationBlacklisted(org);
@@ -141,7 +141,7 @@ describe('competitorApp', () => {
         domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
-      const org = await loadOrganizationBy({
+      const org = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
       const result = await CompetitorApp.isOrganizationBlacklisted(org);

@@ -12,6 +12,7 @@ import organizationResolver from '../modules/organization-management/organizatio
 import userResolver from '../modules/organization-management/user/user.resolver';
 import registrationResolver from '../modules/registration/registration.resolver';
 import serviceCapabilityResolver from '../modules/security-management/service-capability/service-capability.resolver';
+import subscriptionCapabilityResolver from '../modules/security-management/subscription-capability/subscription-capability.resolver';
 import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';
 import ServiceInstanceResolver from '../modules/service/instance/service-instance.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
@@ -19,6 +20,7 @@ import openAEVScenariosResolver from '../modules/shareable-resource/openaev/scen
 import customDashboardsResolver from '../modules/shareable-resource/opencti/custom-dashboard/custom-dashboard.resolver';
 import ingestManifestResolver from '../modules/shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.resolver';
 import integrationsResolver from '../modules/shareable-resource/opencti/integration/integration.resolver';
+import openCTIPlaybooksResolver from '../modules/shareable-resource/opencti/playbook/playbook.resolver';
 import subscriptionsResolver from '../modules/subscription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
 import useCaseResolver from '../modules/use-case/use-case.resolver';
@@ -44,12 +46,14 @@ const resolvers = mergeResolvers([
   settingsResolver,
   vaultResolver,
   subscriptionsResolver,
+  subscriptionCapabilityResolver,
   userServiceResolver,
   serviceCapabilityResolver,
   logResolver,
   useCaseResolver,
   customDashboardsResolver,
   openAEVScenariosResolver,
+  openCTIPlaybooksResolver,
   registrationResolver,
   telemetryResolver,
   deploymentResolver,

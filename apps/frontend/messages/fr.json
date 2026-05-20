@@ -95,7 +95,15 @@
     "vulnerability_management": "Gestion des vulnérabilités",
     "centralizing_knowledge": "Centralisation des connaissances",
     "sharing_knowledge": "Partage des connaissances",
-    "hosting_threat_community": "Hébergement d'une communauté de partage des menaces"
+    "hosting_threat_community": "Hébergement d'une communauté de partage des menaces",
+    "oaev_attack_simulation": "Exécuter la simulation de brèche et d'attaque (BAS)",
+    "oaev_penetration_testing": "Effectuer des tests de pénétration",
+    "oaev_atomic_testing": "Exécution de tests atomiques individuels",
+    "oaev_platform_validation": "Valider que mes plates-formes de sécurité fonctionnent comme prévu",
+    "oaev_tabletop_exercise": "Effectuer des exercices contextuels sur table pour la simulation de crise",
+    "oaev_purple_team": "Activation de l'équipe Purple : Améliorer les défenses en fonction des attaques",
+    "oaev_opencti_coverage": "Activer la couverture de sécurité OpenCTI",
+    "oaev_ctem_framework": "Opérationnaliser un cadre CTEM"
   },
   "DeploymentRequestActivitySector": {
     "computer_network_security": "Sécurité des ordinateurs et des réseaux",
@@ -149,9 +157,7 @@
       "now": "Maintenant",
       "next": "Après",
       "under_consideration": "En considération",
-      "finished": "Terminé au cours des 3 derniers mois",
-      "IsLimited": "Limité à {maxChars} charactères",
-      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
+      "finished": "Terminé au cours des 3 derniers mois"
     },
     "Form": {
       "Epic": "Epic",
@@ -163,7 +169,9 @@
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Ligne de temps",
       "IsActive": "Cet EPIC est-il publié ? (Par défaut votre EPIC est en mode brouillon)",
-      "Integration": "Est une intégration"
+      "Integration": "Est une intégration",
+      "IsLimited": "Limité à {maxChars} caractères",
+      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
     },
     "EpicActions": {
       "CreateEpic": "Créer un nouvel épic",
@@ -213,6 +221,7 @@
       "EPIC_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de l'épic.",
       "DELETE_EPIC_ERROR": "Une erreur s'est produite lors de la suppression de l'épic.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
+      "ADD_CAPABILITIES_ERROR": "Erreur lors de l'ajout des capacités",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
       "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
       "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
@@ -694,6 +703,7 @@
       "openaev_scenarios": "OpenAEV Scenarios",
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
       "opencti_integrations": "OpenCTI Integrations",
+      "opencti_playbooks": "OpenCTI Playbooks",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
       "xtm_platform_roadmap": "XTM Platform Roadmap"
@@ -982,6 +992,20 @@
       "NonActive": "Brouillon",
       "Active": "Publié"
     },
+    "OpenCTIPlaybook": {
+      "Actions": {
+        "Added": "Le playbook {name} a été ajouté avec succès",
+        "Deleted": "Le playbook {name} a été supprimé avec succès",
+        "Updated": "Le playbook {name} a été modifié avec succès",
+        "Share": "Partager le playbook"
+      },
+      "AddService": "Ajouter un nouveau playbook",
+      "UpdateService": "Mettre à jour le playbook {name}",
+      "DeleteService": "Supprimer le playbook {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le playbook {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
+    },
     "Description": "Description",
     "GoTo": "Aller au service",
     "GoToAdminLabel": "Administrer",
@@ -1002,9 +1026,11 @@
       }
     },
     "Management": {
+      "AvailableCapabilities": "Capacités disponibles",
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
       "AreYouSureRemoveOrganizationAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'organisation {organizationName} pour ce service ?",
-      "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",
+      "AreYouSureRemoveOrganizationsAccess": "Êtes-vous sûr de vouloir retirer les accès pour {count} organizations pour ce service ?",
+      "Description": "Organisations qui ont rejoint le service",
       "Email": "Email",
       "FirstName": "Prénom",
       "InviteUser": {
@@ -1016,12 +1042,17 @@
       "LastName": "Nom",
       "ManageUsers": "Gérer les utilisateurs",
       "ManageUsersForOrganization": "Gérer les utilisateurs de {organizationName} dans le service {serviceName}",
+      "NoAvailableCapabilities": "Aucune capacité disponible",
+      "AddSubscriptionCapabilities": {
+        "Button": "Ajouter des capacités",
+        "Title": "Ajouter des capacités aux abonnements",
+        "Description": "Sélectionnez les capacités à ajouter aux {count} abonnement(s) sélectionné(s)."
+      },
       "OneUserMax": "1 utilisateur max",
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
-      "ShowPersonalSpaces": "Montrer les espaces personnels",
-      "SearchOrganization": "Rechercher une organisation",
-      "Subscription": "Souscription"
+      "ShowPersonalSpaces": "Montrer les espaces personnels seulement",
+      "SearchOrganization": "Rechercher une organisation"
     },
     "Name": "Nom",
     "NoOwnedService": "Vous n'avez pas encore de service.",
@@ -1273,7 +1304,7 @@
   "ServiceActions": {
     "OrganizationAdded": "L'organisation {name} a souscrit au service {serviceName}",
     "OrganizationDeleted": "L'organisation {name} a été supprimée",
-    "UserCapabilitiesModified": "Les capacités de {email}'s ont été modifiées",
+    "OrganizationsDeleted": "{count} organisations ont été supprimées",
     "UserServiceAdded": "{email} a été invité au service {serviceName}"
   },
   "ServiceForm": {
@@ -1439,6 +1470,7 @@
     "Delete": "Supprimer",
     "Deleted": "a été supprimé",
     "Details": "Details",
+    "DocumentNotFound": "Document introuvable",
     "Download": "Télécharger",
     "Edit": "Modifier",
     "Error": "Erreur",
@@ -1452,6 +1484,7 @@
     "NotFound": "Non trouvé",
     "OpenMenu": "Ouvrir le menu",
     "Reset": "Effacer",
+    "ServiceNotFound": "Service introuvable",
     "Success": "Succès",
     "Update": "Editer",
     "Updating": "Mise à jour...",

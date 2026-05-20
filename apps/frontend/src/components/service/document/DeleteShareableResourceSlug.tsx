@@ -22,13 +22,13 @@ import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enu
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
-// Component interface
-interface DeleteIntegrationSlugProps {
+interface DeleteShareableResourceSlugProps {
   document: documentItem_fragment$data;
 }
 
-// Component
-const DeleteIntegrationSlug = ({ document }: DeleteIntegrationSlugProps) => {
+const DeleteShareableResourceSlug = ({
+  document,
+}: DeleteShareableResourceSlugProps) => {
   const router = useRouter();
   const t = useTranslations();
 
@@ -74,5 +74,4 @@ const DeleteIntegrationSlug = ({ document }: DeleteIntegrationSlugProps) => {
   );
 };
 
-// Component export
-export default DeleteIntegrationSlug;
+export default DeleteShareableResourceSlug;

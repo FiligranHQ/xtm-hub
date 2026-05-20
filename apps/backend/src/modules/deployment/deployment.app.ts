@@ -45,8 +45,8 @@ import {
 } from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
 import { ucfirst } from '../../utils/utils';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
-import { loadUser } from '../organization-management/user/user-domain/user.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
@@ -72,7 +72,7 @@ export const DeploymentApp = {
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
     const { user } = requestContext.require();
-    const chosenOrganization = await loadOrganizationBy({
+    const chosenOrganization = await OrganizationDomain.loadOrganizationBy({
       id: user.selected_organization_id,
     });
 
@@ -511,7 +511,7 @@ export const DeploymentApp = {
     await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
-      const [requester] = await loadUser({
+      const [requester] = await UserDomain.loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
       await sendMail({
@@ -582,7 +582,7 @@ export const DeploymentApp = {
         );
 
         try {
-          const [requester] = await loadUser({
+          const [requester] = await UserDomain.loadUser({
             id: trial.user_requester_id,
           });
           await sendMail({
@@ -655,7 +655,7 @@ export const DeploymentApp = {
     const { user } = requestContext.require();
     await securityGuard.assertUserIsInOrganization(user, input.organizationId);
 
-    const organization = await loadOrganizationBy({
+    const organization = await OrganizationDomain.loadOrganizationBy({
       id: input.organizationId,
     });
     if (organization.personal_space) {
@@ -822,7 +822,7 @@ const sendProvisioningPlatformEmail = async (
   deploymentRequest: DeploymentRequestModel
 ) => {
   try {
-    const [user] = await loadUser({
+    const [user] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
 
@@ -846,7 +846,7 @@ const sendActivePlatformEmail = async (
   deploymentRequest: DeploymentRequestModel
 ) => {
   try {
-    const [user] = await loadUser({
+    const [user] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
 
@@ -896,7 +896,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
   }
 
   try {
-    const organization = await loadOrganizationBy({
+    const organization = await OrganizationDomain.loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,
     });
     const updateDeploymentEvent = buildUpdateDeploymentEvent(
