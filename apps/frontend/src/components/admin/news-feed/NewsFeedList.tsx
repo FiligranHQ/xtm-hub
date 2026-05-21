@@ -6,6 +6,7 @@ import {
   NewsFeedListQuery,
 } from '@/components/admin/news-feed/news-feed.graphql';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
@@ -129,7 +130,12 @@ const NewsFeedList = () => {
         id: 'tags',
         header: t('NewsFeedAdminPage.Tags'),
         cell: ({ row }) => (
-          <span className="truncate">{row.original.tags.join(', ')}</span>
+          <BadgeOverflowCounter
+            badges={row.original.tags.map((tag) => ({
+              id: `${row.original.id}-${tag}`,
+              name: tag,
+            }))}
+          />
         ),
       },
       {

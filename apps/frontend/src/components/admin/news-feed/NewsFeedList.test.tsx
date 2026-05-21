@@ -90,6 +90,16 @@ vi.mock('@filigran/ui/servers', () => ({
   Badge: ({ children }: { children: ReactNode }) => <span>{children}</span>,
 }));
 
+vi.mock('@/components/ui/BadgeOverflowCounter', () => ({
+  default: ({ badges }: { badges: Array<{ id: string; name: string }> }) => (
+    <div>
+      {badges.map((badge) => (
+        <span key={badge.id}>{badge.name}</span>
+      ))}
+    </div>
+  ),
+}));
+
 vi.mock('@filigran/ui', () => ({
   toast: mocks.toast,
   DataTable: ({
@@ -189,7 +199,8 @@ describe('NewsFeedList', () => {
     expect(
       screen.getByText('formatted:2025-01-20T08:00:00.000Z')
     ).toBeInTheDocument();
-    expect(screen.getByText('tag-1, tag-2')).toBeInTheDocument();
+    expect(screen.getByText('tag-1')).toBeInTheDocument();
+    expect(screen.getByText('tag-2')).toBeInTheDocument();
 
     expect(
       screen.getByText('NewsFeedAdminPage.IsDeletedYes')
