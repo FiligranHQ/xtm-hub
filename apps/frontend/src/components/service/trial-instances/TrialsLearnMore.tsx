@@ -1,3 +1,5 @@
+'use client';
+
 import { TrialsStorageLimitation } from '@/components/service/trial-instances/TrialsStorageLimitation';
 import { cn } from '@/lib/utils';
 import {

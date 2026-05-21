@@ -1,6 +1,8 @@
+'use client';
+
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 interface TrialsHeaderProps {
@@ -8,11 +10,11 @@ interface TrialsHeaderProps {
   platformIdentifier?: PlatformIdentifierEnum;
 }
 
-export const TrialsHeader = async ({
+export const TrialsHeader = ({
   actions,
   platformIdentifier = PlatformIdentifierEnum.OPENCTI,
 }: TrialsHeaderProps) => {
-  const t = await getTranslations();
+  const t = useTranslations();
   const platformName = PlatformMetadataMapping[platformIdentifier].name;
 
   return (

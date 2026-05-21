@@ -1,5 +1,7 @@
+'use client';
+
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
@@ -7,10 +9,10 @@ interface TrialsStorageLimitationProps {
   platformIdentifier: PlatformIdentifierEnum;
 }
 
-export const TrialsStorageLimitation = async ({
+export const TrialsStorageLimitation = ({
   platformIdentifier,
 }: TrialsStorageLimitationProps) => {
-  const t = await getTranslations();
+  const t = useTranslations();
   const isOpenCTI = platformIdentifier === PlatformIdentifierEnum.OPENCTI;
 
   const renderLink = (chunks: ReactNode) => (
