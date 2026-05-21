@@ -1,3 +1,4 @@
+import { RegistrationDetails } from '@/components/service/registration/RegistrationDetails';
 import testRender from '@/utils/test/test-render';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -9,7 +10,6 @@ import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrationDetails } from '@/components/service/registration/RegistrationDetails';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -265,10 +265,9 @@ describe('RegistrationDetails', () => {
 
     it.each`
       label                                             | platform         | capabilities                                                 | shouldShow
-      ${'non-trial, both update capabilities'}          | ${basePlatform}  | ${updateCapabilities}                                        | ${true}
-      ${'trial, both update capabilities'}              | ${trialPlatform} | ${updateCapabilities}                                        | ${false}
-      ${'non-trial, only ADMINISTRATE_ORGANIZATION'}    | ${basePlatform}  | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}    | ${false}
-      ${'non-trial, only MANAGE_PLATFORM_REGISTRATION'} | ${basePlatform}  | ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]} | ${false}
+      ${'trial, with update capabilities'}              | ${trialPlatform} | ${updateCapabilities}                                        | ${false}
+      ${'non-trial, only ADMINISTRATE_ORGANIZATION'}    | ${basePlatform}  | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}    | ${true}
+      ${'non-trial, only MANAGE_PLATFORM_REGISTRATION'} | ${basePlatform}  | ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]} | ${true}
       ${'non-trial, no capabilities'}                   | ${basePlatform}  | ${[]}                                                        | ${false}
     `(
       'should show=$shouldShow for $label',
