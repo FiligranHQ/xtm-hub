@@ -21,10 +21,7 @@ export async function proxy(request: NextRequest, _: NextFetchEvent) {
 
   const { pathname } = request.nextUrl;
 
-  if (
-    PUBLIC_LOCALE_PATH.test(pathname) ||
-    pathname.startsWith('/cybersecurity-solutions')
-  ) {
+  if (PUBLIC_LOCALE_PATH.test(pathname) || !pathname.startsWith('/app')) {
     return intlMiddleware(request);
   }
 

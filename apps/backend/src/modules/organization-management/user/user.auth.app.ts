@@ -31,7 +31,7 @@ export const UserAuthApp = {
     if (loggedUser && validPassword(loggedUser, password)) {
       req.session.user = await UserDomain.updateUserAtLogin(loggedUser);
 
-      res.cookie('NEXT_LOCALE', loggedUser.language);
+      res.cookie('NEXT_LOCALE', loggedUser.selected_language);
 
       return loggedUser;
     }

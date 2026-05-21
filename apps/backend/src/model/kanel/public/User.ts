@@ -30,7 +30,7 @@ export default interface User {
 
   country: string | null;
 
-  language: string;
+  selected_language: string;
 
   platform_token: string | null;
 
@@ -61,7 +61,7 @@ export interface UserInitializer {
 
   country?: string | null;
 
-  language?: string;
+  selected_language?: string;
 
   platform_token?: string | null;
 
@@ -92,7 +92,7 @@ export interface UserMutator {
 
   country?: string | null;
 
-  language?: string;
+  selected_language?: string;
 
   platform_token?: string | null;
 

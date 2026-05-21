@@ -7,7 +7,7 @@ export const MeContextFragment = graphql`
     first_name
     last_name
     country
-    language
+    selected_language
     picture
     selected_organization_id @required(action: THROW)
     capabilities @required(action: THROW) {
@@ -53,14 +53,14 @@ export const MeEditUserMutation = graphql`
     $first_name: String
     $last_name: String
     $country: String
-    $language: String
+    $selected_language: String
   ) {
     editMeUser(
       input: {
         first_name: $first_name
         last_name: $last_name
         country: $country
-        language: $language
+        selected_language: $selected_language
       }
     ) {
       ...meContext_fragment

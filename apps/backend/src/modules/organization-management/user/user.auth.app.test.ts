@@ -30,7 +30,7 @@ const mockUser = {
   email: 'user@company.com',
   salt: 'somesalt',
   password: 'somehash',
-  language: 'en',
+  selected_language: 'en',
 } as UserLoadUserBy;
 
 const SSO_ONLY_SETTINGS = [{ provider: 'oidc' }];

@@ -31,7 +31,7 @@ export const ProfileFormPreferences = () => {
 
   const onLocaleChange = (value: string) => {
     void setUserLocale(value as Locale);
-    commitEditMeUserMutation({ variables: { language: value } });
+    commitEditMeUserMutation({ variables: { selected_language: value } });
   };
 
   const currentTheme = theme ?? 'dark';
