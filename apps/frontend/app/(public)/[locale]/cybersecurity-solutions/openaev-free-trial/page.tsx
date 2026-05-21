@@ -2,6 +2,7 @@ import { RegistrationLearnMore } from '@/components/service/registration/Registr
 import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader';
 import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
 import { GradientButton } from '@filigran/ui/servers';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
@@ -9,15 +10,19 @@ import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enu
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
-const Page = async () => {
+const Page = async ({
+  params,
+}: {
+  params: Promise<{ locale: PublicLocale }>;
+}) => {
+  const { locale } = await params;
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
-      href: `/`,
+      href: `/${locale}`,
     },
     {
-      label: 'OpenAEV Trial platform',
-      original: true,
+      label: 'Service.Trials.OpenAEVPlatformBreadcrumb',
     },
   ];
   const t = await getTranslations();

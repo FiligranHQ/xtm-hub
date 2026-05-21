@@ -606,6 +606,7 @@ export type EditMeUserInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   first_name?: InputMaybe<Scalars['String']['input']>;
   last_name?: InputMaybe<Scalars['String']['input']>;
+  selected_language?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EditServiceCapabilityInput = {
@@ -2383,6 +2384,7 @@ export type User = Node & {
   pending_organization_id?: Maybe<Scalars['OrganizationId']['output']>;
   picture?: Maybe<Scalars['String']['output']>;
   roles_portal?: Maybe<Array<RolePortal>>;
+  selected_language?: Maybe<Scalars['String']['output']>;
   selected_org_capabilities?: Maybe<Array<OrganizationCapability>>;
   selected_organization_id?: Maybe<Scalars['OrganizationId']['output']>;
 };
@@ -4060,6 +4062,7 @@ export type UserResolvers<ContextType = PortalContext, ParentType extends Resolv
   pending_organization_id?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   roles_portal?: Resolver<Maybe<Array<ResolversTypes['RolePortal']>>, ParentType, ContextType>;
+  selected_language?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   selected_org_capabilities?: Resolver<Maybe<Array<ResolversTypes['OrganizationCapability']>>, ParentType, ContextType>;
   selected_organization_id?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

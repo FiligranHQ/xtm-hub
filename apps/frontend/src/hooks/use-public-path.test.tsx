@@ -11,10 +11,15 @@ describe('usePublicPath', () => {
     expected | path
     ${true}  | ${'/cybersecurity-solutions'}
     ${true}  | ${'/cybersecurity-solutions/abc'}
+    ${true}  | ${'/ja/cybersecurity-solutions'}
+    ${true}  | ${'/ja/cybersecurity-solutions/abc'}
+    ${true}  | ${'/en/cybersecurity-solutions/abc/def'}
+    ${false} | ${'/fr/cybersecurity-solutions'}
     ${false} | ${'/cezfze/cybersecurity-solutions'}
     ${false} | ${'/random'}
     ${false} | ${'/cyber'}
     ${false} | ${'/something/cybersecurity-solutions'}
+    ${false} | ${'/ja/app/something'}
   `('should return $expected for pathname $path', ({ expected, path }) => {
     usePathname.mockReturnValue(path);
 

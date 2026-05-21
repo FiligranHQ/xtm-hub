@@ -61,7 +61,9 @@ const ServiceList = ({
       ...registeredPlatforms.map((platform) =>
         registeredPlatformToServiceInstanceCardData(platform, t)
       ),
-      ...serviceData.map(publicServiceInstanceToInstanceCardData),
+      ...serviceData.map((service) =>
+        publicServiceInstanceToInstanceCardData(service, t)
+      ),
     ].sort((a, b) => a!.ordering - b!.ordering);
   }, [
     freeTrialsSkeletonDataCards,

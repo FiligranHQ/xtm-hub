@@ -50,5 +50,6 @@ export const authenticateUser = async (
   }
   req.session.user = await UserDomain.updateUserAtLogin(logged);
   req.session.save();
+  res.cookie('NEXT_LOCALE', logged.selected_language);
   return logged;
 };
