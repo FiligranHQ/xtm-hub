@@ -53,8 +53,9 @@ const buildPictureUrl = (userId: string) => {
 
 export const userProfileApp = {
   editMeUser: async (meUser, input: EditMeUserInput) => {
-    const { language, ...rest } = input;
-    const sanitized = language != null ? { ...rest, language } : rest;
+    const { selected_language, ...rest } = input;
+    const sanitized =
+      selected_language != null ? { ...rest, selected_language } : rest;
     const updatedUser = await UserDomain.updateUser(meUser.id, sanitized);
 
     try {
