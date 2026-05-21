@@ -11,6 +11,14 @@ const CookieConsent = () => {
   const [coreReady, setCoreReady] = useState(false);
   const initialized = useRef(false);
 
+  // The cookie consent banner only mounts when explicitly enabled (= production).
+  // CNIL/GDPR requirements apply to public-facing prod; dev, staging, and preview
+  // environments are internal and the banner would otherwise interfere with E2E
+  // tests and product validation.
+  if (process.env.NEXT_PUBLIC_ENABLE_COOKIE_BANNER !== 'true') {
+    return null;
+  }
+
   const handleServicesReady = (): void => {
     if (initialized.current) return;
     initTarteaucitron(locale);
