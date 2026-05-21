@@ -37,13 +37,13 @@ const OpenaevScenarioSlug = ({
       href: `/${APP_PATH}`,
     },
     {
-      label: serviceInstance.name,
+      label: `Service.Cards.${serviceInstance.slug}.Name`,
       href: `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}`,
-      original: true,
+      fallback: serviceInstance.name,
     },
     {
-      label: documentData!.name!,
-      original: true,
+      label: `Service.Documents.${documentData!.slug}.Name`,
+      fallback: documentData!.name!,
     },
   ];
 

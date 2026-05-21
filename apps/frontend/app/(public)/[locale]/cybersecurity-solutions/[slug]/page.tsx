@@ -1,4 +1,13 @@
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import type { PublicLocale } from '@/i18n/config';
+import { RelayProvider } from '@/relay/relay-provider';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { formatPersonNames } from '@/utils/format/name';
+import {
+  buildAlternates,
+  getAlternateLocaleTags,
+  getLocaleTag,
+} from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
@@ -8,11 +17,9 @@ import SeoServiceInstanceQuery, {
 } from '@generated/seoServiceInstanceQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { RelayProvider } from '@/relay/relay-provider';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PublicDocumentListPageLoader } from './public-document-list-page-loader';
 
 /**
@@ -52,25 +59,31 @@ const getPageData = cache(async (slug: string) => {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: PublicLocale }>;
 }): Promise<Metadata> {
   const awaitedParams = await params;
+  const { locale } = awaitedParams;
 
   const { baseUrl, serviceInstance } = await getPageData(awaitedParams.slug);
+  const tMeta = await getTranslations({ locale, namespace: 'Metadata' });
+
+  const pathname = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
 
   const metadata: Metadata = {
     title: `${serviceInstance.name} | XTM Hub by Filigran`,
     description:
-      serviceInstance.description ||
-      'Discover our cybersecurity solution for enhanced threat intelligence and protection.',
+      serviceInstance.description || tMeta('ServiceFallbackDescription'),
     metadataBase: new URL(baseUrl),
     openGraph: {
       title: serviceInstance.name,
       description: serviceInstance.description!,
-      url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+      url: `${baseUrl}/${locale}${pathname}`,
       type: 'website',
       siteName: 'XTM Hub by Filigran',
+      locale: getLocaleTag(locale),
+      alternateLocale: getAlternateLocaleTags(locale),
     },
+    alternates: buildAlternates(pathname, locale),
     twitter: {
       card: 'summary_large_image',
       title: serviceInstance.name,
@@ -99,12 +112,20 @@ export async function generateMetadata({
 /**
  * The page component
  */
-const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
+const Page = async ({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: PublicLocale }>;
+}) => {
   const awaitedParams = await params;
+  const { locale } = awaitedParams;
+  setRequestLocale(locale);
 
   const { baseUrl, serviceInstance, documents } = await getPageData(
     awaitedParams.slug
   );
+
+  const localizedServiceUrl = `${baseUrl}/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
 
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -134,7 +155,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
       .join(', '),
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+      '@id': localizedServiceUrl,
     },
     hasPart: documents.map((document) => {
       const dashboardJsonLd: Record<string, unknown> = {
@@ -174,11 +195,11 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
-      href: '/',
+      href: `/${locale}`,
     },
     {
-      label: serviceInstance.name,
-      original: true,
+      label: `Service.Cards.${serviceInstance.slug}.Name`,
+      fallback: serviceInstance.name,
     },
   ];
 

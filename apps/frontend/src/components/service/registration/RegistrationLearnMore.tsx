@@ -8,6 +8,7 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import ServiceLinksByTagsQueryGraphql, {
   serviceLinksByTagsQuery,
 } from '@generated/serviceLinksByTagsQuery.graphql';
+import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import React from 'react';
 
@@ -52,21 +53,18 @@ export const RegistrationLearnMore = async ({
 
   const services = response.data
     .serviceInstanceLinksByTags as unknown as seoServiceInstanceFragment$data[];
+  const t = await getTranslations();
+  const platformName =
+    serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
+      ? 'OpenCTI'
+      : 'OpenAEV';
 
   return (
     <>
       <Section className="bg-blue-800/5 px-xl">
         <div className="text-center w-[70%] m-auto">
-          <H2>Your eXtended Threat Management (XTM) platform</H2>
-          <P>
-            {serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
-              ? 'OpenCTI'
-              : 'OpenAEV'}{' '}
-            is part of Filigran’s open-source threat intelligence, advanced
-            adversary simulation, and strategic cyber risk management platform
-            designed to help your organization anticipate and manage threats
-            end-to-end.
-          </P>
+          <H2>{t('Service.Trials.XTMPlatform.Title')}</H2>
+          <P>{t('Service.Trials.XTMPlatform.Description', { platformName })}</P>
         </div>
         <div className="flex flex-col lg:flex-row gap-xl">
           <div className="flex flex-col gap-s basis-full">
@@ -76,18 +74,18 @@ export const RegistrationLearnMore = async ({
                   width="25"
                   height="25"
                   src="/logo_opencti_dark.png"
-                  alt="OpenCTI Logo"
+                  alt={t('Service.Trials.XTMPlatform.LogoAlt', {
+                    name: 'OpenCTI',
+                  })}
                 />
                 OpenCTI
               </h3>
               <P className="mb-s">
-                <strong>Collect, correlate and leverage</strong>
+                <strong>
+                  {t('Service.Trials.XTMPlatform.OpenCTITagline')}
+                </strong>
               </P>
-              <P>
-                An open-source threat intelligence platform built by
-                practitioners for practitioners - to break data silos and make
-                threat intelligence truly actionable.
-              </P>
+              <P>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</P>
             </div>
             <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
               <h3 className="mb-m flex gap-s">
@@ -95,18 +93,18 @@ export const RegistrationLearnMore = async ({
                   width="25"
                   height="25"
                   src="/logo_openaev_dark.png"
-                  alt="OpenAEV Logo"
+                  alt={t('Service.Trials.XTMPlatform.LogoAlt', {
+                    name: 'OpenAEV',
+                  })}
                 />
                 OpenAEV
               </h3>
               <P className="mb-s">
-                <strong>Prioritize, test and fix what matters</strong>
+                <strong>
+                  {t('Service.Trials.XTMPlatform.OpenAEVTagline')}
+                </strong>
               </P>
-              <P>
-                Proactively defend against threats with Adversarial Exposure
-                Validation (AEV), simulating real-life attack scenarios to
-                optimize security defenses.
-              </P>
+              <P>{t('Service.Trials.XTMPlatform.OpenAEVDescription')}</P>
             </div>
           </div>
           <div className="basis-full m-auto">
@@ -120,7 +118,7 @@ export const RegistrationLearnMore = async ({
               }
               priority={false}
               loading="lazy"
-              alt={`Illustration of free trial service`}
+              alt={t('Service.Trials.XTMPlatform.IllustrationAlt')}
               className="rounded w-full"
             />
           </div>
@@ -133,23 +131,20 @@ export const RegistrationLearnMore = async ({
               <ServiceInstanceCard
                 key={service.id}
                 className="basis-full max-w-[50%]"
-                serviceInstance={seoServiceInstanceToInstanceCardData(service)}
+                serviceInstance={seoServiceInstanceToInstanceCardData(
+                  service,
+                  t
+                )}
               />
             ))}
           </div>
           <div className="order-first lg:order-last basis-full">
-            <H2>Quick start guide</H2>
+            <H2>{t('Service.Trials.QuickStart.Title')}</H2>
             <P className="text-gray mb-l">
-              Get more out of your{' '}
-              {serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
-                ? 'OpenCTI'
-                : 'OpenAEV'}{' '}
-              platform!
+              {t('Service.Trials.QuickStart.Subtitle', { platformName })}
             </P>
             <P className="text-gray">
-              Explore step-by-step guides, expert courses, and community
-              feedback to solve real-world use cases and become a Filigran
-              champion!
+              {t('Service.Trials.QuickStart.Description')}
             </P>
           </div>
         </div>

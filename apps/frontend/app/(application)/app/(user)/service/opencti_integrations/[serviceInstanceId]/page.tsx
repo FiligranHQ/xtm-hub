@@ -21,18 +21,16 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
     }
   );
 
+  const serviceInstance = response?.data
+    .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data;
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
       href: `/${APP_PATH}`,
     },
     {
-      label:
-        (
-          response?.data
-            .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
-        )?.name ?? '',
-      original: true,
+      label: `Service.Cards.${serviceInstance?.slug}.Name`,
+      fallback: serviceInstance?.name ?? '',
     },
   ];
 

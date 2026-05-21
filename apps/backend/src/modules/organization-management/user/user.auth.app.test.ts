@@ -22,6 +22,7 @@ vi.mock('../../../security/util/user', () => ({
 
 const mockContext = {
   req: { session: {} },
+  res: { cookie: vi.fn() },
 } as never;
 
 const mockUser = {
@@ -29,6 +30,7 @@ const mockUser = {
   email: 'user@company.com',
   salt: 'somesalt',
   password: 'somehash',
+  selected_language: 'en',
 } as UserLoadUserBy;
 
 const SSO_ONLY_SETTINGS = [{ provider: 'oidc' }];

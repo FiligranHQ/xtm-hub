@@ -1,18 +1,43 @@
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
+import { publicLocales, type PublicLocale } from '@/i18n/config';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { Button } from '@filigran/ui/servers';
 import '@filigran/ui/theme.css';
 import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import '@styles/globals.css';
 import { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import * as React from 'react';
 
-export async function generateMetadata(): Promise<Metadata> {
-  return await getDefaultMetadata();
+export function generateStaticParams() {
+  return publicLocales.map((locale) => ({ locale }));
 }
 
-const RootLayout = async ({ children }: { children: React.ReactNode }) => {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: PublicLocale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return await getDefaultMetadata(locale, '/');
+}
+
+const RootLayout = async ({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) => {
+  const { locale } = await params;
+  if (!publicLocales.includes(locale as PublicLocale)) {
+    notFound();
+  }
+  setRequestLocale(locale);
+  const t = await getTranslations();
+
   return (
     <div className="md:flex md:flex-col md:h-screen">
       <PublicTryFiligranProductsBanner />
@@ -24,7 +49,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
         <Button
           asChild
           className="whitespace-nowrap">
-          <Link href="/login">Sign In</Link>
+          <Link href="/login">{t('PublicLayout.SignIn')}</Link>
         </Button>
       </header>
       <main className="grow overflow-auto">
@@ -39,7 +64,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
               rel="noopener noreferrer">
               © {new Date().getFullYear()} Filigran.
             </Link>{' '}
-            All rights reserved
+            {t('PublicLayout.AllRightsReserved')}
           </span>
           <ul className="flex flex-col md:flex-row gap-l text-xs">
             <li>
@@ -47,7 +72,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/">
-                Filigran website
+                {t('PublicLayout.FiligranWebsite')}
               </Link>
             </li>
             <li>
@@ -55,7 +80,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/privacy-policy/">
-                Privacy Policy
+                {t('PublicLayout.PrivacyPolicy')}
               </Link>
             </li>
             <li>
@@ -63,7 +88,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/terms-of-services/">
-                Terms of Services
+                {t('PublicLayout.TermsOfServices')}
               </Link>
             </li>
             <li>
@@ -71,7 +96,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/licenses/">
-                Licenses
+                {t('PublicLayout.Licenses')}
               </Link>
             </li>
             <li>
@@ -79,7 +104,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://filigran.io/contact/">
-                Contact
+                {t('PublicLayout.Contact')}
               </Link>
             </li>
           </ul>

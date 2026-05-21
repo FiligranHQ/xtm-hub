@@ -29,7 +29,7 @@ export default class LoginPage {
     await this.page.goto('/login');
   }
   async navigateToPublicPages() {
-    await this.page.goto('/cybersecurity-solutions');
+    await this.page.goto('/en/cybersecurity-solutions');
   }
 
   async navigateToAndLogin(userEmail = 'admin@filigran.io') {
@@ -46,7 +46,7 @@ export default class LoginPage {
   async logout() {
     await this.page.getByRole('button', { name: 'Open menu user' }).click();
     await this.page.getByRole('menuitem', { name: 'Logout' }).click();
-    await this.page.waitForURL('/');
+    await this.page.waitForURL('/en');
   }
 
   async assertCurrentPage() {

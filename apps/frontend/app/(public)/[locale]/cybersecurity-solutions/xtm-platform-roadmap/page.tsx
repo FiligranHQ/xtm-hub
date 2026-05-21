@@ -55,8 +55,7 @@ const Page = async () => {
       href: `/`,
     },
     {
-      label: 'XTM Platform Roadmap',
-      original: true,
+      label: 'Epic.XTMRoadmap',
     },
   ];
 
