@@ -95,7 +95,15 @@
     "vulnerability_management": "脆弱性管理",
     "centralizing_knowledge": "知識の一元化",
     "sharing_knowledge": "知識の共有",
-    "hosting_threat_community": "脅威共有コミュニティの主催"
+    "hosting_threat_community": "脅威共有コミュニティの主催",
+    "oaev_attack_simulation": "侵入・攻撃シミュレーション（BAS）の実行",
+    "oaev_penetration_testing": "侵入テストの実行",
+    "oaev_atomic_testing": "個別のアトミック・テストの実行",
+    "oaev_platform_validation": "セキュリティー・プラットフォームが 期待通りに機能するか検証する",
+    "oaev_tabletop_exercise": "#__# 危機シミュレーションのための、状況に応じた卓上演習を実行する #__#",
+    "oaev_purple_team": "パープルチームの有効化攻撃に基づいて防御を改善する",
+    "oaev_opencti_coverage": "OpenCTI セキュリティカバレッジの有効化",
+    "oaev_ctem_framework": "CTEM フレームワークの運用"
   },
   "DeploymentRequestActivitySector": {
     "computer_network_security": "コンピュータとネットワークのセキュリティ",
@@ -156,6 +164,7 @@
       "Title": "タイトル",
       "ShortDesc": "簡単な説明",
       "Description": "説明文",
+      "EditionType": "エディション・タイプ",
       "FiligranProduct": "製品名",
       "FiligranProductPlaceholder": "オープンCTI",
       "Timeline": "タイムライン",
@@ -170,7 +179,8 @@
       "DeleteEpic": "{epicName} エピックを削除する",
       "SureDeleteEpic": "本当に {epicName} エピックを削除しますか？",
       "EpicDeleted": "エピックを削除しました"
-    }
+    },
+    "JoinCommunity": "フィリグランコミュニティの輪に入る"
   },
   "Error": {
     "AnErrorOccured": "エラーが発生しました",
@@ -212,6 +222,7 @@
       "DELETE_EPIC_ERROR": "エピックの削除中にエラーが発生した。",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "あなたが組織内で最後のアクセス管理権限を持つユーザーであるため、この権限を削除することはできません。",
       "EDIT_CAPABILITIES_ERROR": "ケイパビリティの編集中にエラーが発生しました",
+      "ADD_CAPABILITIES_ERROR": "機能追加時のエラー",
       "EDIT_ME_USER_ERROR": "プロフィール編集中のエラー",
       "EDIT_ORGANIZATION_ERROR": "組織編集中のエラー",
       "EDIT_USER_ERROR": "ユーザー編集中のエラー",
@@ -692,6 +703,7 @@
       "openaev_scenarios": "OpenAEVシナリオ",
       "opencti_custom_dashboards": "OpenCTI カスタムダッシュボード",
       "opencti_integrations": "OpenCTI 統合",
+      "opencti_playbooks": "OpenCTI プレイブック",
       "opencti_registration": "OpenCTI 登録",
       "vault": "ボールト",
       "xtm_platform_roadmap": "XTM Platform ロードマップ"
@@ -980,6 +992,20 @@
       "NonActive": "草案",
       "Active": "公開"
     },
+    "OpenCTIPlaybook": {
+      "Actions": {
+        "Added": "プレイブック {name} は正常に追加されました。",
+        "Deleted": "プレイブック {name} は正常に削除された",
+        "Updated": "プレイブック {name} は正常に変更された",
+        "Share": "プレイブックを共有する"
+      },
+      "AddService": "新しいプレイブックを追加する",
+      "UpdateService": "プレイブックを更新する {name}",
+      "DeleteService": "プレイブックを削除する {name}",
+      "SureDeleteService": "本当にプレイブック {name} を削除しますか？",
+      "NonActive": "草案",
+      "Active": "公開"
+    },
     "Description": "出版",
     "GoTo": "サービスページへ",
     "GoToAdminLabel": "管理する",
@@ -1000,7 +1026,10 @@
       }
     },
     "Management": {
+      "AvailableCapabilities": "利用可能な機能",
       "AreYouSureRemoveAccess": "本当にこのサービスのユーザー {firstname} {lastname} のアクセスを削除してもよろしいですか？",
+      "AreYouSureRemoveOrganizationAccess": "このサービスから組織{organizationName}のアクセスを削除してもよろしいですか？",
+      "AreYouSureRemoveOrganizationsAccess": "このサービスから組織 {count} のアクセスを削除してもよろしいですか？",
       "Description": "このサービスに加入している組織のリストを以下に表示します。",
       "Email": "電子メール",
       "FirstName": "ファーストネーム",
@@ -1014,11 +1043,16 @@
       "ManageUsers": "ユーザー管理",
       "ManageUsersForOrganization": "{serviceName} サービスでの {organizationName} のユーザーを管理する",
       "OneUserMax": "最大1ユーザーを追加",
+      "NoAvailableCapabilities": "利用可能な機能はありません",
+      "AddSubscriptionCapabilities": {
+        "Button": "機能を追加する",
+        "Title": "購読機能の追加",
+        "Description": "選択した{count}購読に追加する機能を選択します。"
+      },
       "RemoveAccess": "アクセス削除",
       "RemoveRights": "権限削除",
       "ShowPersonalSpaces": "個人スペースの表示",
-      "SearchOrganization": "組織検索",
-      "Subscription": "サブスクリプション"
+      "SearchOrganization": "組織検索"
     },
     "Name": "氏名",
     "NoOwnedService": "まだサービスをご利用になっていません。",
@@ -1040,7 +1074,27 @@
         "DeployPlatform": "{platformName} にデプロイしますか？",
         "DeployQuestionTag": "どの {platformType} プラットフォームに配置しますか？",
         "DeployResourceDescription": "あなたは {resourceName} {resourceType} をデプロイしようとしています。",
-        "DeployIncompatibleVersion": "このリソースは OpenCTI プラットフォームにデプロイできません \"{platformTitle}\" なぜならプラットフォームのバージョンはもうこのリソースと互換性がないからです。先に進む前に、プラットフォームをアップデートするか、互換性のあるリソースのバージョンを使う必要があります。"
+        "DeployIncompatibleVersion": "このリソースは OpenCTI プラットフォームにデプロイできません \"{platformTitle}\" なぜならプラットフォームのバージョンはもうこのリソースと互換性がないからです。先に進む前に、プラットフォームをアップデートするか、互換性のあるリソースのバージョンを使う必要があります。",
+        "EE": {
+          "Tag": "EE",
+          "HoverTitle": "エンタープライズ版で利用可能",
+          "HoverSubtitle": "クリックして詳細を見る",
+          "PlatformRequiresEE": "プラットフォーム \"{platformTitle}\" は Community Edition です。プレイブックをワンクリックでデプロイするには、OpenCTIのEnterprise Editionが必要です。"
+        },
+        "EELearnMore": {
+          "Title": "ワンクリックデプロイ",
+          "Subtitle": "OpenCTI Enterprise Edition で利用可能",
+          "Heading": "ワンクリックでプレイブックを OpenCTI インスタンスに直接デプロイ",
+          "FirstParagraph": "ワンクリックデプロイにより、XTMハブからOpenCTIプラットフォームにプレイブックを即座に直接プッシュできます。手動での設定やファイル操作は必要ありません。",
+          "SecondParagraph": "プレイブックを選択し、デプロイをクリックすると、数秒以内にインスタンスで実行する準備が整います。",
+          "EnterpriseEditionTitle": "OpenCTI エンタープライズ版 (EE)",
+          "EnterpriseEditionDescription": "OpenCTI Enterprise Editionは、脅威インテリジェンス運用の高度化を目指す企業向けに、高度な機能、エンタープライズグレードの拡張性、専用サポートを提供します。",
+          "Link": "詳細はこちら",
+          "InterestedTitle": "もっと知りたいですか？",
+          "InterestedSubtitle": "すぐに担当者がご連絡いたします！",
+          "DefaultMessage": "OpenCTI Enterprise Editionの詳細について興味があります。",
+          "SendButton": "送信"
+        }
       },
       "Details": {
         "Author": "著者",
@@ -1436,6 +1490,7 @@
     "Delete": "削除",
     "Deleted": "削除された",
     "Details": "詳細",
+    "DocumentNotFound": "ドキュメントが見つかりません",
     "Download": "ダウンロード",
     "Edit": "編集",
     "Error": "エラー",
@@ -1449,6 +1504,7 @@
     "NotFound": "見つからない",
     "OpenMenu": "メニューを開く",
     "Reset": "リセット",
+    "ServiceNotFound": "サービスが見つからない",
     "Success": "サクセス",
     "Update": "更新",
     "Updating": "更新中...",

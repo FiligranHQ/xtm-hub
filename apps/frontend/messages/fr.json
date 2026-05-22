@@ -1074,7 +1074,27 @@
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
         "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
-        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" ; car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer."
+        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" ; car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer.",
+        "EE": {
+          "Tag": "EE",
+          "HoverTitle": "Disponible dans l'Enterprise Edition",
+          "HoverSubtitle": "cliquez pour en savoir plus",
+          "PlatformRequiresEE": "Votre plateforme \"{platformTitle}\" est en Community Edition. Le déploiement en un clic des playbooks nécessite l'Enterprise Edition d'OpenCTI."
+        },
+        "EELearnMore": {
+          "Title": "Déploiement en un clic",
+          "Subtitle": "Disponible dans OpenCTI Enterprise Edition",
+          "Heading": "Déployez vos playbooks directement sur votre instance OpenCTI en un seul clic",
+          "FirstParagraph": "Le déploiement en un clic vous permet de pousser instantanément n'importe quel playbook du XTM Hub directement vers votre plateforme OpenCTI. Aucune configuration manuelle ni gestion de fichiers requise.",
+          "SecondParagraph": "Choisissez un playbook, cliquez sur déployer, et il est prêt à être exécuté dans votre instance en quelques secondes.",
+          "EnterpriseEditionTitle": "OpenCTI Enterprise Edition (EE)",
+          "EnterpriseEditionDescription": "OpenCTI Enterprise Edition fournit des fonctionnalités avancées, une scalabilité de niveau entreprise et un support dédié aux organisations qui souhaitent faire évoluer leurs opérations de threat intelligence.",
+          "Link": "En savoir plus",
+          "InterestedTitle": "Vous souhaitez en savoir plus ?",
+          "InterestedSubtitle": "Faites-le nous savoir ci-dessous, quelqu'un vous recontactera bientôt !",
+          "DefaultMessage": "Je souhaite obtenir plus d'informations sur OpenCTI Enterprise Edition.",
+          "SendButton": "Envoyer"
+        }
       },
       "Details": {
         "Author": "Auteur",
@@ -1304,7 +1324,7 @@
   "ServiceActions": {
     "OrganizationAdded": "L'organisation {name} a souscrit au service {serviceName}",
     "OrganizationDeleted": "L'organisation {name} a été supprimée",
-    "OrganizationsDeleted": "{count} organisations ont été supprimées",
+    "UserCapabilitiesModified": "les capacités de {email}'s ont été modifiées",
     "UserServiceAdded": "{email} a été invité au service {serviceName}"
   },
   "ServiceForm": {

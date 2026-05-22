@@ -1,5 +1,8 @@
 import config from 'config';
-import { OneClickDeployInput } from '../../__generated__/resolvers-types';
+import {
+  OneClickDeployInput,
+  PlatformContract,
+} from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { UserId } from '../../model/kanel/public/User';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
@@ -113,7 +116,10 @@ export const telemetryApp = {
         : undefined,
       input.resource_id,
       input.resource_title,
-      'tenant_id' in config ? (config.tenant_id as string) : undefined
+      'tenant_id' in config ? (config.tenant_id as string) : undefined,
+      'platform_contract' in config
+        ? (config.platform_contract as PlatformContract)
+        : undefined
     );
     await telemetryApp.sendTelemetryEvent(event);
   },

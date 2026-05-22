@@ -1,23 +1,22 @@
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
-import { getPlatformIdentifier } from '@/utils/platform';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTrigger,
-  SimpleTooltip,
-} from '@filigran/ui';
-import { Button } from '@filigran/ui/servers';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { OneClickDeployMutation as OneClickDeployMutationType } from '@generated/OneClickDeployMutation.graphql';
-import { useTranslations } from 'next-intl';
-import { useCallback, useMemo, useState } from 'react';
-import { graphql, useMutation } from 'react-relay';
-import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
-import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import ChoosePlatformForm from '@/components/service/document/one-click-deploy/ChoosePlatformForm';
+import EeBadge from '@/components/service/document/one-click-deploy/EeBadge';
+import EeLearnMoreSheet from '@/components/service/document/one-click-deploy/EeLearnMoreSheet';
 import NoPlatformDisplay from '@/components/service/document/one-click-deploy/NoPlatformDisplay';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/OnePlatformDisplay';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
+import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
+import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
+import { getPlatformIdentifier, isEeCapableContract } from '@/utils/platform';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import { AlertDialog, AlertDialogContent, SimpleTooltip } from '@filigran/ui';
+import { Button } from '@filigran/ui/servers';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { OneClickDeployMutation as OneClickDeployMutationType } from '@generated/OneClickDeployMutation.graphql';
+import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
+import { useTranslations } from 'next-intl';
+import { useCallback, useMemo, useState } from 'react';
+import { graphql, useMutation } from 'react-relay';
 
 interface OneClickDeployProps {
   documentData: documentItem_fragment$data;
@@ -50,6 +49,7 @@ const OneClickDeploy = ({
   );
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isEeSheetOpen, setIsEeSheetOpen] = useState(false);
   const [platformBasePath, setPlatformBasePath] = useState('');
   const [shouldOpenTab, setShouldOpenTab] = useState(false);
   const { openTab } = useOneClickDeployTab({ platformBasePath, documentData });
@@ -59,43 +59,63 @@ const OneClickDeploy = ({
       requiredProductVersion,
     });
 
+  const requiresEe =
+    documentData.type === ShareableResourceType.OPENCTI_PLAYBOOK;
+
+  const hasEeCapablePlatform = useMemo(
+    () => platforms.some((platform) => isEeCapableContract(platform.contract)),
+    [platforms]
+  );
+  const eeBlocked = requiresEe && !hasEeCapablePlatform;
+
+  const sendTelemetry = useCallback(
+    (platform: useRegisteredPlatformsFragment$data) => {
+      sendOneClickDeployEvent({
+        variables: {
+          input: {
+            platform_identifier: platformIdentifier,
+            service_instance_id: documentData.service_instance!.id,
+            resource_id: documentData.id,
+            resource_title: documentData.name ?? '',
+            platform_service_instance_id: platform.id,
+          },
+        },
+      });
+    },
+    [
+      sendOneClickDeployEvent,
+      platformIdentifier,
+      documentData.service_instance,
+      documentData.id,
+      documentData.name,
+    ]
+  );
+
   const onOneClickDeploy = useCallback(
     (basePath: string) => {
       const [platform] = platforms.filter(
         (platform) => platform.url === basePath
       );
       if (platform) {
-        sendOneClickDeployEvent({
-          variables: {
-            input: {
-              platform_identifier: platformIdentifier,
-              service_instance_id: documentData.service_instance!.id,
-              resource_id: documentData.id,
-              resource_title: documentData.name ?? '',
-              platform_service_instance_id: platform!.id,
-            },
-          },
-        });
+        sendTelemetry(platform);
       }
       setPlatformBasePath(basePath);
       setShouldOpenTab(true);
     },
-    [
-      platforms,
-      sendOneClickDeployEvent,
-      platformIdentifier,
-      documentData.service_instance,
-      documentData.id,
-      documentData.name,
-      setPlatformBasePath,
-      setShouldOpenTab,
-    ]
+    [platforms, sendTelemetry, setPlatformBasePath, setShouldOpenTab]
   );
 
   if (shouldOpenTab) {
     openTab();
     setShouldOpenTab(false);
   }
+
+  const openEeSheet = useCallback(() => {
+    if (platforms[0]) {
+      sendTelemetry(platforms[0]);
+    }
+    setIsEeSheetOpen(true);
+  }, [platforms, sendTelemetry]);
 
   const alertContent = useMemo(() => {
     if (platforms.length === 0) {
@@ -129,6 +149,7 @@ const OneClickDeploy = ({
             PlatformMetadataMapping[platformIdentifier].name ?? 'OpenCTI'
           }
           requiredProductVersion={requiredProductVersion}
+          requiresEe={requiresEe}
         />
       );
     }
@@ -138,15 +159,18 @@ const OneClickDeploy = ({
     onOneClickDeploy,
     platformIdentifier,
     requiredProductVersion,
+    requiresEe,
   ]);
 
   const isDeploymentDisabled = useMemo(() => {
-    return platforms.length === 1 && incompatiblePlatformsCount === 1;
-  }, [platforms, incompatiblePlatformsCount]);
+    return (
+      !eeBlocked && platforms.length === 1 && incompatiblePlatformsCount === 1
+    );
+  }, [eeBlocked, platforms, incompatiblePlatformsCount]);
 
   const button = (
     <Button
-      disabled={isDeploymentDisabled}
+      disabled={isDeploymentDisabled || eeBlocked}
       onClick={() => setIsOpen(true)}>
       {t('Service.ShareableResources.Deploy.DeployPlatform', {
         platformName:
@@ -155,25 +179,46 @@ const OneClickDeploy = ({
     </Button>
   );
 
+  const buttonWithBadge = eeBlocked ? (
+    <div className="relative inline-flex items-center mr-6">
+      {button}
+      <div className="absolute inset-y-0 right-0 flex items-center translate-x-1/2 z-10">
+        <EeBadge onClick={openEeSheet} />
+      </div>
+    </div>
+  ) : (
+    button
+  );
+
   const container = isDeploymentDisabled ? (
     <SimpleTooltip
       title={t('Service.Connectors.Incompatible', {
         platformToBeUpdated,
         count: incompatiblePlatformsCount,
       })}>
-      {button}
+      {buttonWithBadge}
     </SimpleTooltip>
   ) : (
-    button
+    buttonWithBadge
   );
 
   return (
-    <AlertDialog open={isOpen}>
-      <AlertDialogTrigger>{container}</AlertDialogTrigger>
-      <AlertDialogContent className="max-w-3xl w-full">
-        {alertContent}
-      </AlertDialogContent>
-    </AlertDialog>
+    <>
+      {container}
+      <AlertDialog
+        open={isOpen}
+        onOpenChange={setIsOpen}>
+        <AlertDialogContent className="max-w-3xl w-full">
+          {alertContent}
+        </AlertDialogContent>
+      </AlertDialog>
+      <EeLearnMoreSheet
+        open={isEeSheetOpen}
+        setOpen={setIsEeSheetOpen}
+        serviceInstanceId={documentData.service_instance!.id}
+        platformIdentifier={platformIdentifier}
+      />
+    </>
   );
 };
 
