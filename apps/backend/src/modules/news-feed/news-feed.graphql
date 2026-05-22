@@ -14,7 +14,7 @@ type NewsFeedItemMetadata {
   value: String
 }
 
-type ProvisionedNewsFeedItem {
+type ProvisionedNewsFeedItem implements Node {
   id: ID!
   is_deleted: Boolean!
   title: String!
@@ -29,8 +29,8 @@ type ConsumeProvisionedNewsFeedItemsResponse {
   available_news_feed_types: [NewsFeedItemType!]!
 }
 
-type NewsFeedItem {
-  id: NewsFeedItemId!
+type NewsFeedItem implements Node {
+  id: ID!
   title: String!
   creation_date: Date!
   tags: [String!]!
