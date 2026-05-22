@@ -72,19 +72,17 @@ export const NewsFeedDomain = {
         .filter((item) => item.is_deleted)
         .map((item) => item.id);
       if (deletedItemIds.length > 0) {
-        const remainingProvisioned: { news_feed_item_id: NewsFeedItemId }[] =
-          await db('ProvisionedNewsFeedItem')
-            .whereIn('news_feed_item_id', deletedItemIds)
-            .select('news_feed_item_id');
-        const remainingIds = new Set(
-          remainingProvisioned.map((r) => r.news_feed_item_id)
-        );
-        const toHardDelete = deletedItemIds.filter(
-          (id) => !remainingIds.has(id)
-        );
-        if (toHardDelete.length > 0) {
-          await db('NewsFeedItem').whereIn('id', toHardDelete).delete();
-        }
+        await db('NewsFeedItem')
+          .whereIn('id', deletedItemIds)
+          .whereNotExists(
+            db('ProvisionedNewsFeedItem')
+              .whereRaw('?? = ??', [
+                'ProvisionedNewsFeedItem.news_feed_item_id',
+                'NewsFeedItem.id',
+              ])
+              .select('news_feed_item_id')
+          )
+          .delete();
       }
 
       return newsFeedItems.map((item) => ({
