@@ -4,8 +4,10 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { ServiceCapabilityCreateMutation } from '@/components/service/[slug]/capabilities/service-capability.graphql';
-import { UserServiceCreateMutation } from '@/components/service/user_service.graphql';
+import {
+  UserServiceCreateMutation,
+  UserServiceEditMutation,
+} from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { useUsersList } from '@/hooks/use-users-list';
 import { emailRegex } from '@/lib/regexs';
@@ -28,10 +30,10 @@ import {
   TooltipTrigger,
   useToast,
 } from '@filigran/ui';
-import { serviceCapabilityMutation } from '@generated/serviceCapabilityMutation.graphql';
 import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
 import { UserList_fragment$key } from '@generated/UserList_fragment.graphql';
 import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
+import { userServiceEditMutation } from '@generated/userServiceEditMutation.graphql';
 import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
@@ -54,8 +56,9 @@ export const UserServiceForm = ({
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const { me } = useContext(PortalContext);
 
-  const [commitServiceCapabilityMutation] =
-    useMutation<serviceCapabilityMutation>(ServiceCapabilityCreateMutation);
+  const [commitUserServiceEditMutation] = useMutation<userServiceEditMutation>(
+    UserServiceEditMutation
+  );
   const [commitUserServiceMutation] = useMutation<userServiceCreateMutation>(
     UserServiceCreateMutation
   );
@@ -152,14 +155,12 @@ export const UserServiceForm = ({
     const editCapaValues = {
       capabilities: values.capabilities,
     };
-    commitServiceCapabilityMutation({
+    commitUserServiceEditMutation({
       variables: {
         input: {
-          user_service_id: userService!.id,
-
+          userServiceId: userService!.id,
           ...editCapaValues,
         },
-        serviceInstanceId: subscription.subscriptionById?.service_instance?.id,
       },
       onCompleted() {
         toast({

@@ -877,6 +877,7 @@ export type Mutation = {
   editServiceCapability?: Maybe<SubscriptionModel>;
   editUseCase: UseCase;
   editUserCapabilities: User;
+  editUserService?: Maybe<UserService>;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login?: Maybe<User>;
@@ -1092,6 +1093,11 @@ export type MutationEditUseCaseArgs = {
 export type MutationEditUserCapabilitiesArgs = {
   id: Scalars['ID']['input'];
   input: EditUserCapabilitiesInput;
+};
+
+
+export type MutationEditUserServiceArgs = {
+  input: UserServiceEditInput;
 };
 
 
@@ -2508,6 +2514,11 @@ export type UserServiceEdge = {
   node?: Maybe<UserService>;
 };
 
+export type UserServiceEditInput = {
+  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  userServiceId: Scalars['UserServiceId']['input'];
+};
+
 export enum UserServiceOrdering {
   Email = 'email',
   FirstName = 'first_name',
@@ -2821,6 +2832,7 @@ export type ResolversTypes = ResolversObject<{
   UserServiceConnection: ResolverTypeWrapper<UserServiceConnection>;
   UserServiceDeleted: ResolverTypeWrapper<UserServiceDeleted>;
   UserServiceEdge: ResolverTypeWrapper<UserServiceEdge>;
+  UserServiceEditInput: UserServiceEditInput;
   UserServiceId: ResolverTypeWrapper<Scalars['UserServiceId']['output']>;
   UserServiceOrdering: UserServiceOrdering;
   UserServicesDeleteInput: UserServicesDeleteInput;
@@ -2992,6 +3004,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserServiceConnection: UserServiceConnection;
   UserServiceDeleted: UserServiceDeleted;
   UserServiceEdge: UserServiceEdge;
+  UserServiceEditInput: UserServiceEditInput;
   UserServiceId: Scalars['UserServiceId']['output'];
   UserServicesDeleteInput: UserServicesDeleteInput;
   UserSubscription: UserSubscription;
@@ -3453,6 +3466,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationEditUseCaseArgs, 'id' | 'input'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
+  editUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationEditUserServiceArgs, 'input'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;

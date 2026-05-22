@@ -123,6 +123,34 @@ export const UserServiceCreateMutation = graphql`
     }
   }
 `;
+export const UserServiceEditMutation = graphql`
+  mutation userServiceEditMutation($input: UserServiceEditInput!) {
+    editUserService(input: $input) {
+      id
+      user {
+        id
+        first_name
+        last_name
+        email
+      }
+      user_service_capability {
+        id
+        generic_service_capability {
+          id
+          name
+        }
+        subscription_capability {
+          id
+          service_capability {
+            id
+            description
+            name
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const UserServiceDeleteMutation = graphql`
   mutation userServiceDeleteMutation(

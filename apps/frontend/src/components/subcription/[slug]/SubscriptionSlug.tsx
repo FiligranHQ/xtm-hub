@@ -22,14 +22,16 @@ import {
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 
 import { DeleteUserService } from '@/components/subcription/[slug]/DeleteUserService';
+import { SubscriptionSlugUserService } from '@/components/subcription/[slug]/SubscriptionSlugUserService';
+import { SubscriptionById } from '@/components/subcription/subscription.graphql';
 import {
-  IconActionContext,
-  IconActions,
-  IconActionsItem,
-} from '@/components/ui/IconActions';
+  BreadcrumbNav,
+  BreadcrumbNavLink,
+} from '@/components/ui/BreadcrumbNav';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import {
   PreloadedQuery,
   readInlineData,
@@ -39,14 +41,6 @@ import {
 
 import { PortalContext } from '@/components/me/AppPortalContext';
 import ServiceSlugHeader from '@/components/service/[slug]/ServiceSlugHeader';
-import { UserServiceForm } from '@/components/service/[slug]/UserServiceForm';
-import { EditUserService } from '@/components/subcription/[slug]/EditUserService';
-import { SubscriptionById } from '@/components/subcription/subscription.graphql';
-import {
-  BreadcrumbNav,
-  BreadcrumbNavLink,
-} from '@/components/ui/BreadcrumbNav';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { APP_PATH } from '@/utils/path/constant';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
@@ -73,7 +67,6 @@ const SubscriptionSlug = ({
   serviceInstance,
 }: SubscriptionSlugProps) => {
   const t = useTranslations();
-  const [openSheet, setOpenSheet] = useState(false);
   const [editUserService, setEditUserService] = useState<
     userServices_fragment$data | undefined
   >(undefined);
@@ -84,11 +77,6 @@ const SubscriptionSlug = ({
     useState<SelectionState>(emptySelectionState);
 
   const { me } = useContext(PortalContext);
-  const { setMenuOpen } = useContext(IconActionContext);
-
-  useEffect(() => {
-    if (!openSheet && openSheet !== null) setMenuOpen(false);
-  }, [openSheet, setMenuOpen]);
 
   const queryData = usePreloadedQuery<userServiceFromSubscriptionQuery>(
     UserServiceFromSubscription,
@@ -99,7 +87,7 @@ const SubscriptionSlug = ({
     SubscriptionById,
     queryRefSubscription
   );
-  let breadcrumbValue: BreadcrumbNavLink[] = [];
+  let breadcrumbValue: BreadcrumbNavLink[];
   if (serviceInstance) {
     breadcrumbValue = [
       { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
@@ -273,33 +261,15 @@ const SubscriptionSlug = ({
   const toolbar = (
     <div className="flex justify-between flex-wrap gap-s pt-s">
       <div className="flex gap-s flex-wrap ml-auto">
-        <SheetWithPreventingDialog
-          open={openSheet}
-          setOpen={setOpenSheet}
-          onOpenAutoFocus={(event) => {
-            event.preventDefault();
-            // Wait for the drawer to open to set focus on the combobox
-            setTimeout(() => {
-              const input = document.querySelector(
-                'div[role="dialog"][data-state="open"] form input'
-              ) as HTMLInputElement | null;
-              input?.focus();
-            }, 500); // Drawer animation time
-          }}
-          trigger={
-            <Button>
-              {t('Service.Management.InviteUser.TitleInviteUser')}
-            </Button>
+        <SubscriptionSlugUserService
+          connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
+          subscription={queryDataSubscription}
+          userServiceToEdit={editUserService}
+          openEdit={!!editUserService}
+          setOpenEdit={(open) =>
+            setEditUserService(open ? editUserService : undefined)
           }
-          title={t('InviteUserServiceForm.Title', {
-            serviceName:
-              queryDataSubscription.subscriptionById!.service_instance!.name,
-          })}>
-          <UserServiceForm
-            connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
-            subscription={queryDataSubscription}
-          />
-        </SheetWithPreventingDialog>
+        />
         <DataTableHeadBarOptions />
       </div>
     </div>
@@ -357,18 +327,6 @@ const SubscriptionSlug = ({
           columnPinning: { right: ['actions'] },
         }}
       />
-      {editUserService && (
-        <EditUserService
-          key={`edit-${editUserService.id}`}
-          userService={editUserService}
-          connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
-          subscription={queryDataSubscription ?? {}}
-          open={!!editUserService}
-          setOpen={(open) =>
-            setEditUserService(open ? editUserService : undefined)
-          }
-        />
-      )}
       {deleteUserServices && deleteUserServices.length > 0 && (
         <DeleteUserService
           userServices={deleteUserServices}

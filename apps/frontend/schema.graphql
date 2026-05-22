@@ -195,6 +195,7 @@ type Mutation {
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
   deleteUseCase(id: ID!): UseCase!
   addUserService(input: UserServiceAddInput!): [UserService]
+  editUserService(input: UserServiceEditInput!): UserService
   deleteUserServices(input: UserServicesDeleteInput!): [UserService]
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
@@ -1734,6 +1735,11 @@ input UserServiceAddYourselfInput {
 
 input UserServicesDeleteInput {
   userServiceIds: [User_ServiceId!]!
+}
+
+input UserServiceEditInput {
+  userServiceId: User_ServiceId!
+  capabilities: [String]
 }
 
 type UserServiceConnection {

@@ -26,9 +26,14 @@ input UserServiceAddYourselfInput {
 input UserServicesDeleteInput {
   userServiceIds: [UserServiceId!]!
 }
+input UserServiceEditInput {
+  userServiceId: UserServiceId!
+  capabilities: [String]
+}
 
 type Mutation {
   addUserService(input: UserServiceAddInput!): [UserService] @auth
+  editUserService(input: UserServiceEditInput!): UserService @auth
   deleteUserServices(input: UserServicesDeleteInput!): [UserService]
     @auth(
       portalCapa: [BYPASS]

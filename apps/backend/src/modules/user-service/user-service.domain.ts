@@ -37,7 +37,10 @@ import {
 } from '../organization-management/user/user.helper';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
 import { insertServiceCapability } from '../security-management/service-capability/service-capability.helper';
-import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
+import {
+  insertCapabilities,
+  insertUserServiceCapability,
+} from '../security-management/user-service-capability/user-service-capability.helper';
 import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
@@ -147,10 +150,9 @@ export const UserServiceDomain = {
         user_service_id: addedUserService.id,
         generic_service_capability_id:
           GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
+        subscription_capability_id: null,
       };
-      await db<UserServiceCapability>('UserService_Capability')
-        .insert(user_service_capa)
-        .returning('*');
+      await insertUserServiceCapability(user_service_capa);
       return addedUserService;
     });
 
@@ -195,6 +197,10 @@ export const UserServiceDomain = {
       | UserServiceMutator
   ): Promise<UserService[]> => {
     return db<UserService>('User_Service').where(field);
+  },
+
+  loadUserServicesBy: async (ids: UserServiceId[]): Promise<UserService[]> => {
+    return db<UserService[]>('User_Service').whereIn('id', ids).select('*');
   },
 
   loadUserServiceWithCapabilitiesBy: async (field: UserServiceMutator) => {

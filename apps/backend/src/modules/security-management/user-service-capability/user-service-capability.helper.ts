@@ -7,6 +7,8 @@ import { SubscriptionCapabilityId } from '../../../model/kanel/public/Subscripti
 import UserService from '../../../model/kanel/public/UserService';
 import UserServiceCapability, {
   UserServiceCapabilityId,
+  UserServiceCapabilityInitializer,
+  UserServiceCapabilityMutator,
 } from '../../../model/kanel/public/UserServiceCapability';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadGenericServiceCapabilityBy } from '../service-capability/generic-service-capability.helper';
@@ -27,6 +29,7 @@ export const insertCapabilities = async (
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: userService.id,
         generic_service_capability_id: genericCapability.id,
+        subscription_capability_id: null,
       });
     } else {
       const [serviceCapability] = await loadServiceCapabilitiesBy({
@@ -48,10 +51,12 @@ export const insertCapabilities = async (
           );
         }
       );
+
       if (isCapabilityGrantedForOrganization) {
-        await db<UserServiceCapability>('UserService_Capability').insert({
+        await insertUserServiceCapability({
           id: uuidv4() as UserServiceCapabilityId,
           user_service_id: userService.id,
+          generic_service_capability_id: null,
           subscription_capability_id:
             subscriptionCapability.id as SubscriptionCapabilityId,
         });
@@ -62,10 +67,47 @@ export const insertCapabilities = async (
   }
 };
 
-export const insertUserServiceCapability = async (data) => {
-  await db<UserServiceCapability>('UserService_Capability')
+const loadUserServiceCapabilityBy = async (
+  field: UserServiceCapabilityMutator
+) => {
+  return db<UserServiceCapability>('UserService_Capability')
+    .where(field)
+    .first();
+};
+
+export const insertUserServiceCapability = async (
+  data: UserServiceCapabilityInitializer
+) => {
+  const capabilitySelector = {
+    user_service_id: data.user_service_id ?? null,
+    generic_service_capability_id: data.generic_service_capability_id ?? null,
+    subscription_capability_id: data.subscription_capability_id ?? null,
+  };
+
+  const existingCapability =
+    await loadUserServiceCapabilityBy(capabilitySelector);
+
+  if (existingCapability) {
+    return existingCapability;
+  }
+
+  const [insertedCapability] = await db<UserServiceCapability>(
+    'UserService_Capability'
+  )
     .insert(data)
+    .onConflict([
+      'user_service_id',
+      'generic_service_capability_id',
+      'subscription_capability_id',
+    ])
+    .ignore()
     .returning('*');
+
+  if (insertedCapability) {
+    return insertedCapability;
+  }
+
+  return loadUserServiceCapabilityBy(capabilitySelector);
 };
 
 export const loadCapabilities = async (serviceInstanceId, userId, orgaId) => {
