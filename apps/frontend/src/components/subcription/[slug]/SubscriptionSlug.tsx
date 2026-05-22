@@ -395,6 +395,7 @@ const SubscriptionSlug = ({
         open={openAddCapabilities}
         setOpen={setOpenAddCapabilities}
         onCompleted={() => setSelection(emptySelectionState())}
+        serviceInstanceId={serviceInstance!.id}
       />
     </>
   );

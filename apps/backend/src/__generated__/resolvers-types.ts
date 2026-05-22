@@ -910,6 +910,7 @@ export type Mutation = {
 
 export type MutationAddCapabilitiesToUserServicesArgs = {
   input: UserServicesAddCapabilitiesInput;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -947,6 +948,7 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
+  subscription_id?: InputMaybe<Scalars['SubscriptionId']['input']>;
 };
 
 
@@ -1070,6 +1072,7 @@ export type MutationDeleteUseCaseArgs = {
 
 export type MutationDeleteUserServicesArgs = {
   input: UserServicesDeleteInput;
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -1104,6 +1107,7 @@ export type MutationEditUserCapabilitiesArgs = {
 
 export type MutationEditUserServiceArgs = {
   input: UserServiceEditInput;
+  subscription_id?: InputMaybe<Scalars['SubscriptionId']['input']>;
 };
 
 
@@ -2484,7 +2488,6 @@ export type UserService = Node & {
 export type UserServiceAddInput = {
   capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Array<Scalars['String']['input']>;
-  subscriptionId?: InputMaybe<Scalars['SubscriptionId']['input']>;
 };
 
 export type UserServiceAddYourselfInput = {
@@ -3444,7 +3447,7 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  AddCapabilitiesToUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddCapabilitiesToUserServicesArgs, 'input'>>;
+  AddCapabilitiesToUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddCapabilitiesToUserServicesArgs, 'input' | 'service_instance_id'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'serviceInstanceId'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;

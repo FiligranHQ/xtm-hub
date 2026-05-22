@@ -161,6 +161,7 @@ export const UserServiceForm = ({
           userServiceId: userService!.id,
           ...editCapaValues,
         },
+        subscription_id: subscription.subscriptionById!.id,
       },
       onCompleted() {
         toast({
@@ -188,8 +189,8 @@ export const UserServiceForm = ({
         input: {
           email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,
-          subscriptionId: subscription.subscriptionById?.id ?? '',
         },
+        subscription_id: subscription.subscriptionById?.id ?? '',
       },
       onCompleted() {
         toast({

@@ -35,6 +35,8 @@ export const DeleteUserService = ({
         input: {
           userServiceIds,
         },
+        service_instance_id:
+          userServices[0]?.subscription?.service_instance?.id,
       },
       onCompleted: () => {
         onOpenChange(false);

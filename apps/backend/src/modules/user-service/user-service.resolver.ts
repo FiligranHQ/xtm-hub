@@ -35,12 +35,12 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    addUserService: async (_, { input }, context) => {
+    addUserService: async (_, { input, subscription_id }, context) => {
       try {
         const user = context.user;
         return await UserServiceApp.addUserService(
           user,
-          input.subscriptionId,
+          subscription_id,
           input.email,
           input.capabilities
         );

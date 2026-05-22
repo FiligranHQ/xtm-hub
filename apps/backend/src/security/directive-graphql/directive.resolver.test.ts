@@ -129,4 +129,45 @@ describe('createSecureFieldResolver', () => {
       expect(result).toBe('ok');
     });
   });
+
+  describe('combined auth and service capability checks', () => {
+    it.each`
+      hasRoleCapability | hasServiceCapability | shouldThrow
+      ${true}           | ${false}             | ${false}
+      ${false}          | ${true}              | ${false}
+      ${false}          | ${false}             | ${true}
+    `(
+      'should authorize when at least one capability passes (role=$hasRoleCapability, service=$hasServiceCapability)',
+      async ({ hasRoleCapability, hasServiceCapability, shouldThrow }) => {
+        const originalResolve = vi.fn().mockResolvedValue('ok');
+        const resolver = createSecureFieldResolver(originalResolve, {
+          isAuthenticatedFn: () => true,
+          hasCapabilityFn: () => hasRoleCapability,
+          hasServiceCapabilityFn: vi
+            .fn()
+            .mockResolvedValue(hasServiceCapability),
+          authDirective: { portalCapa: ['BYPASS'] },
+          serviceCapaDirective: { requires: ['UPLOAD'] },
+        });
+
+        const execution = resolver(
+          {},
+          {},
+          { user: { id: '1', capabilities: [] } } as unknown as PortalContext,
+          GRAPHQL_RESOLVE_INFO
+        );
+
+        if (shouldThrow) {
+          await expect(execution).rejects.toMatchObject({
+            name: ErrorType.ForbiddenAccess,
+          });
+          expect(originalResolve).not.toHaveBeenCalled();
+          return;
+        }
+
+        await expect(execution).resolves.toBe('ok');
+        expect(originalResolve).toHaveBeenCalledOnce();
+      }
+    );
+  });
 });

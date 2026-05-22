@@ -21,6 +21,7 @@ interface SubscriptionSlugAddCapabilitiesProps {
   availableCapabilities: BadgeOverflow[];
   open: boolean;
   setOpen: (open: boolean) => void;
+  serviceInstanceId: string;
   onCompleted?: () => void;
 }
 
@@ -29,6 +30,7 @@ export const SubscriptionSlugAddCapabilities = ({
   availableCapabilities,
   open,
   setOpen,
+  serviceInstanceId,
   onCompleted,
 }: SubscriptionSlugAddCapabilitiesProps) => {
   const t = useTranslations();
@@ -67,6 +69,7 @@ export const SubscriptionSlugAddCapabilities = ({
           userServiceIds: selectedUserServices.map((us) => us.id),
           capabilities,
         },
+        service_instance_id: serviceInstanceId,
       },
       onCompleted: () => {
         resetAndClose();

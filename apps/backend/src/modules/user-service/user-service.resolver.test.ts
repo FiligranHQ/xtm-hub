@@ -169,7 +169,6 @@ describe('add user service GraphQL mutation', () => {
     // Given
     const subscriptionId = uuidv4() as SubscriptionId;
     const input = {
-      subscriptionId: subscriptionId,
       email: ['user@test.com'],
       capabilities: ['MANAGE_ACCESS'],
     };
@@ -181,7 +180,7 @@ describe('add user service GraphQL mutation', () => {
     // When
     const result = await userServiceResolver.Mutation!.addUserService!(
       {},
-      { input },
+      { input, subscription_id: subscriptionId },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
