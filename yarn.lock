@@ -8455,7 +8455,7 @@ __metadata:
     slugify: "npm:1.6.9"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.0"
-    tsx: "npm:4.22.1"
+    tsx: "npm:4.22.2"
     tw-animate-css: "npm:1.4.0"
     typescript: "npm:5.9.3"
     usehooks-ts: "npm:3.1.1"
@@ -19012,6 +19012,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsx@npm:4.22.2":
+  version: 4.22.2
+  resolution: "tsx@npm:4.22.2"
+  dependencies:
+    esbuild: "npm:~0.28.0"
+    fsevents: "npm:~2.3.3"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: 10/544b0ae0f0b30be3354136c0f544fb284223351cd20d9e63c2e4905a5861070925d84d09fa29c639bb3dfd5fbb09a957e908a813efd28dd03cefa55174d77318
+  languageName: node
+  linkType: hard
+
 "tw-animate-css@npm:1.4.0":
   version: 1.4.0
   resolution: "tw-animate-css@npm:1.4.0"
@@ -20189,7 +20204,7 @@ __metadata:
     eslint-config-prettier: "npm:^10.1.5"
     eslint-plugin-unicorn: "npm:64.0.0"
     stylus: "github:stylus/stylus#0.64.0"
-    tsx: "npm:4.22.1"
+    tsx: "npm:4.22.2"
     typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
