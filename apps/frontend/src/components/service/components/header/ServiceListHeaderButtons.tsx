@@ -1,17 +1,21 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { ServiceListIntegrationDropdown } from '@/components/service/components/header/ServiceListIntegrationDropdown';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
 import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
-import { ServiceListIntegrationDropdown } from '@/components/service/components/header/ServiceListIntegrationDropdown';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { Button } from '@filigran/ui';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 const ServiceListHeaderButtons = ({}) => {
   const t = useTranslations();
+  const { hasOrganizationCapability } = useContext(PortalContext);
+
   const {
     serviceInstance,
     translationKey,
@@ -21,9 +25,17 @@ const ServiceListHeaderButtons = ({}) => {
   } = useServiceContext();
   const [openSheet, setOpenSheet] = useState(false);
 
-  const canManageService = serviceInstance.capabilities.includes(
-    ServiceRestrictionEnum.MANAGE_ACCESS
-  );
+  const canManageService =
+    serviceInstance.capabilities.includes(
+      ServiceRestrictionEnum.MANAGE_ACCESS
+    ) ||
+    (hasOrganizationCapability &&
+      (hasOrganizationCapability(
+        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      ) ||
+        hasOrganizationCapability(
+          OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION
+        )));
   const userCanUpdate = useServiceCapability(
     ServiceRestrictionEnum.UPLOAD,
     serviceInstance

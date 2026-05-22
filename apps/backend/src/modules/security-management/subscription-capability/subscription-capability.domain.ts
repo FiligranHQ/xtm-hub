@@ -1,3 +1,4 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { db, dbRaw } from '../../../../knexfile';
 import { withTransaction } from '../../../context/database.context';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
@@ -29,7 +30,8 @@ export const addCapabilitiesToSubscriptions = async (
 
   const data = subscriptionIds.flatMap((subscriptionId) =>
     capabilityIds.map((capabilityId) => ({
-      service_capability_id: capabilityId,
+      service_capability_id: fromGlobalId(capabilityId)
+        .id as ServiceCapabilityId,
       subscription_id: subscriptionId,
     }))
   );

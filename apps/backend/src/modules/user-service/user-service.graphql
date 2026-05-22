@@ -32,13 +32,23 @@ input UserServiceEditInput {
 }
 
 type Mutation {
-  addUserService(input: UserServiceAddInput!): [UserService] @auth
-  editUserService(input: UserServiceEditInput!): UserService @auth
+  addUserService(input: UserServiceAddInput!): [UserService]  @auth(
+    portalCapa: [BYPASS]
+    orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+  )
+  @service_capa(requires: [MANAGE_ACCESS])
+  editUserService(input: UserServiceEditInput!): UserService  @auth(
+    portalCapa: [BYPASS]
+    orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+  )
+  @service_capa(requires: [MANAGE_ACCESS])
   deleteUserServices(input: UserServicesDeleteInput!): [UserService]
     @auth(
       portalCapa: [BYPASS]
       orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
     )
+  @service_capa(requires: [MANAGE_ACCESS])
+
 }
 type Query {
   userServiceFromSubscription(

@@ -43,6 +43,7 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import ServiceSlugHeader from '@/components/service/[slug]/ServiceSlugHeader';
 import { SubscriptionSlugAddCapabilities } from '@/components/subcription/[slug]/SubscriptionSlugAddCapabilities';
 import { APP_PATH } from '@/utils/path/constant';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
@@ -78,7 +79,7 @@ const SubscriptionSlug = ({
   const [selection, setSelection] =
     useState<SelectionState>(emptySelectionState);
 
-  const { me } = useContext(PortalContext);
+  const { me, hasOrganizationCapability } = useContext(PortalContext);
 
   const queryData = usePreloadedQuery<userServiceFromSubscriptionQuery>(
     UserServiceFromSubscription,
@@ -135,12 +136,19 @@ const SubscriptionSlug = ({
   const canManageService = useCallback(() => {
     return userData.some((userService) => {
       return (
-        userService?.user?.id === me?.id &&
-        userService?.user_service_capability?.some(
-          (user_service_capa) =>
-            user_service_capa?.generic_service_capability?.name ===
-            ServiceRestrictionEnum.MANAGE_ACCESS
-        )
+        (userService?.user?.id === me?.id &&
+          userService?.user_service_capability?.some(
+            (user_service_capa) =>
+              user_service_capa?.generic_service_capability?.name ===
+              ServiceRestrictionEnum.MANAGE_ACCESS
+          )) ||
+        (hasOrganizationCapability &&
+          (hasOrganizationCapability(
+            OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+          ) ||
+            hasOrganizationCapability(
+              OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION
+            )))
       );
     });
   }, [userData, me?.id]);
@@ -302,20 +310,20 @@ const SubscriptionSlug = ({
     </div>
   );
 
+  const headerServiceInstance =
+    serviceInstance ?? queryDataSubscription.subscriptionById?.service_instance;
+
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
 
-      {serviceInstance ||
-        (queryDataSubscription.subscriptionById?.service_instance && (
-          <ServiceSlugHeader
-            serviceInstance={
-              (serviceInstance ||
-                queryDataSubscription.subscriptionById
-                  ?.service_instance) as unknown as serviceInstanceForSubscriptions_fragment$data
-            }
-          />
-        ))}
+      {headerServiceInstance ? (
+        <ServiceSlugHeader
+          serviceInstance={
+            headerServiceInstance as unknown as serviceInstanceForSubscriptions_fragment$data
+          }
+        />
+      ) : null}
 
       <DataTable
         toolbar={toolbar}

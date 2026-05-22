@@ -26,8 +26,9 @@ type Mutation {
   AddCapabilitiesToUserServices(
     input: UserServicesAddCapabilitiesInput!
   ): [UserService]
-    @auth(
-      portalCapa: [BYPASS]
-      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
-    )
+  @service_capa(requires: [MANAGE_ACCESS])
+  @auth(
+  portalCapa: [BYPASS]
+  orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+  )
 }
