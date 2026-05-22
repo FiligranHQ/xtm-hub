@@ -13,6 +13,7 @@ import userResolver from '../modules/organization-management/user/user.resolver'
 import registrationResolver from '../modules/registration/registration.resolver';
 import serviceCapabilityResolver from '../modules/security-management/service-capability/service-capability.resolver';
 import subscriptionCapabilityResolver from '../modules/security-management/subscription-capability/subscription-capability.resolver';
+import userServiceCapabilityResolver from '../modules/security-management/user-service-capability/user-service-capability.resolver';
 import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';
 import ServiceInstanceResolver from '../modules/service/instance/service-instance.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
@@ -47,6 +48,7 @@ const resolvers = mergeResolvers([
   vaultResolver,
   subscriptionsResolver,
   subscriptionCapabilityResolver,
+  userServiceCapabilityResolver,
   userServiceResolver,
   serviceCapabilityResolver,
   logResolver,

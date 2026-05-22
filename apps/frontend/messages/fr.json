@@ -1034,9 +1034,15 @@
       "NoAvailableCapabilities": "Aucune capacité disponible",
       "AddSubscriptionCapabilities": {
         "Button": "Ajouter des capacités",
-        "Title": "Ajouter des capacités aux abonnements",
+        "Title": "Ajouter des capacités aux souscriptions",
         "Description": "Sélectionnez les capacités à ajouter aux {count} abonnement(s) sélectionné(s)."
       },
+      "AddUserServiceCapabilities": {
+        "Button": "Ajouter des capacités",
+        "Title": "Ajouter des capacités aux userService",
+        "Description": "Sélectionnez les capacités à ajouter aux {count} userService(s) sélectionné(s)."
+      },
+      "OneUserMax": "1 utilisateur max",
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
       "ShowPersonalSpaces": "Montrer les espaces personnels seulement",

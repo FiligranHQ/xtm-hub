@@ -6,7 +6,7 @@ import {
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
-import { DeleteIcon, MoreVertIcon } from '@filigran/icon';
+import { AddIcon, DeleteIcon, MoreVertIcon } from '@filigran/icon';
 import {
   Badge,
   Button,
@@ -41,6 +41,7 @@ import {
 
 import { PortalContext } from '@/components/me/AppPortalContext';
 import ServiceSlugHeader from '@/components/service/[slug]/ServiceSlugHeader';
+import { SubscriptionSlugAddCapabilities } from '@/components/subcription/[slug]/SubscriptionSlugAddCapabilities';
 import { APP_PATH } from '@/utils/path/constant';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
@@ -73,6 +74,7 @@ const SubscriptionSlug = ({
   const [deleteUserServices, setDeleteUserServices] = useState<
     userServices_fragment$data[] | undefined
   >(undefined);
+  const [openAddCapabilities, setOpenAddCapabilities] = useState(false);
   const [selection, setSelection] =
     useState<SelectionState>(emptySelectionState);
 
@@ -152,6 +154,31 @@ const SubscriptionSlug = ({
   );
 
   const canManageUserServices = isBypass || canManageService();
+
+  const availableCapabilities: BadgeOverflow[] = useMemo(
+    () =>
+      (
+        queryDataSubscription.subscriptionById?.subscription_capability ?? []
+      ).flatMap((subscription_capability) => {
+        if (
+          !subscription_capability?.service_capability?.id ||
+          !subscription_capability?.service_capability?.name
+        ) {
+          return [];
+        }
+
+        return [
+          {
+            id: subscription_capability?.service_capability?.id,
+            name: subscription_capability?.service_capability?.name,
+          },
+        ];
+      }),
+    [
+      queryDataSubscription.subscriptionById?.service_instance
+        ?.service_definition?.service_capability,
+    ]
+  );
 
   const selectedUserServices = useMemo(() => {
     if (selection.selectAll) {
@@ -303,16 +330,28 @@ const SubscriptionSlug = ({
                 },
                 selectionHeader: {
                   actions: () => (
-                    <Button
-                      variant="ghost-destructive"
-                      size="sm"
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setDeleteUserServices(selectedUserServices)
-                      }>
-                      <DeleteIcon className="h-4 w-4 m-s" />
-                      {t('Utils.Delete')}
-                    </Button>
+                    <>
+                      <Button
+                        variant="ghost-primary"
+                        size="sm"
+                        className="cursor-pointer"
+                        onClick={() => setOpenAddCapabilities(true)}>
+                        <AddIcon className="h-4 w-4 m-s" />
+                        {t(
+                          'Service.Management.AddUserServiceCapabilities.Button'
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost-destructive"
+                        size="sm"
+                        className="cursor-pointer"
+                        onClick={() =>
+                          setDeleteUserServices(selectedUserServices)
+                        }>
+                        <DeleteIcon className="h-4 w-4 m-s" />
+                        {t('Utils.Delete')}
+                      </Button>
+                    </>
                   ),
                 },
               }
@@ -342,6 +381,13 @@ const SubscriptionSlug = ({
           }}
         />
       )}
+      <SubscriptionSlugAddCapabilities
+        selectedUserServices={selectedUserServices}
+        availableCapabilities={availableCapabilities}
+        open={openAddCapabilities}
+        setOpen={setOpenAddCapabilities}
+        onCompleted={() => setSelection(emptySelectionState())}
+      />
     </>
   );
 };

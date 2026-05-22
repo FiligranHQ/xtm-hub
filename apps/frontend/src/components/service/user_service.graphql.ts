@@ -162,3 +162,27 @@ export const UserServiceDeleteMutation = graphql`
     }
   }
 `;
+
+export const UserServicesAddCapabilitiesMutation = graphql`
+  mutation userServicesAddCapabilitiesMutation(
+    $input: UserServicesAddCapabilitiesInput!
+  ) {
+    AddCapabilitiesToUserServices(input: $input) {
+      id
+      user_service_capability {
+        id
+        generic_service_capability {
+          id
+          name
+        }
+        subscription_capability {
+          id
+          service_capability {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;

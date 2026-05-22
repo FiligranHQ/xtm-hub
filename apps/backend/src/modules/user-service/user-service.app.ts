@@ -46,7 +46,7 @@ export const UserServiceApp = {
     const userService =
       await UserServiceDomain.loadUserServiceById(userServiceId);
     await UserServiceDomain.deleteUserCapabilityById(userService.id);
-    await insertCapabilities(capabilities, userService);
+    await insertCapabilities(capabilities, [userService]);
     return UserServiceDomain.loadUserServiceById(userServiceId);
   },
 };

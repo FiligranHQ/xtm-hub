@@ -144,7 +144,7 @@ export const UserServiceDomain = {
         .insert(user_service)
         .returning('*');
 
-      await insertCapabilities(capabilities, addedUserService);
+      await insertCapabilities(capabilities, [addedUserService]);
       const user_service_capa: UserServiceCapabilityInitializer = {
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: addedUserService.id,
@@ -152,7 +152,7 @@ export const UserServiceDomain = {
           GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
         subscription_capability_id: null,
       };
-      await insertUserServiceCapability(user_service_capa);
+      await insertUserServiceCapability([user_service_capa]);
       return addedUserService;
     });
 

@@ -184,6 +184,7 @@ type Mutation {
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
+  AddCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!): [UserService]
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
@@ -1074,6 +1075,11 @@ type ServiceCapability implements Node {
   name: String
   description: String
   service_definition_id: ID
+}
+
+input UserServicesAddCapabilitiesInput {
+  userServiceIds: [User_ServiceId!]!
+  capabilities: [String]
 }
 
 type ServiceLink implements Node {

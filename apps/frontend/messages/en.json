@@ -1037,6 +1037,11 @@
         "Title": "Add subscription capabilities",
         "Description": "Select the capabilities to add to the {count} selected subscription(s)."
       },
+      "AddUserServiceCapabilities": {
+        "Button": "Add capabilities",
+        "Title": "Add userService capabilities",
+        "Description": "Select the capabilities to add to the {count} selected userService(s)."
+      },
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",
       "ShowPersonalSpaces": "Show personal spaces only",

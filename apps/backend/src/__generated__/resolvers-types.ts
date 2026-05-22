@@ -842,6 +842,7 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  AddCapabilitiesToUserServices?: Maybe<Array<Maybe<UserService>>>;
   addOrganization?: Maybe<Organization>;
   addServicePicture?: Maybe<ServiceInstance>;
   addSubscription?: Maybe<ServiceInstance>;
@@ -904,6 +905,11 @@ export type Mutation = {
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription?: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
+};
+
+
+export type MutationAddCapabilitiesToUserServicesArgs = {
+  input: UserServicesAddCapabilitiesInput;
 };
 
 
@@ -2531,6 +2537,11 @@ export enum UserServiceOrdering {
   SubscriptionStatus = 'subscription_status'
 }
 
+export type UserServicesAddCapabilitiesInput = {
+  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  userServiceIds: Array<Scalars['UserServiceId']['input']>;
+};
+
 export type UserServicesDeleteInput = {
   userServiceIds: Array<Scalars['UserServiceId']['input']>;
 };
@@ -2835,6 +2846,7 @@ export type ResolversTypes = ResolversObject<{
   UserServiceEditInput: UserServiceEditInput;
   UserServiceId: ResolverTypeWrapper<Scalars['UserServiceId']['output']>;
   UserServiceOrdering: UserServiceOrdering;
+  UserServicesAddCapabilitiesInput: UserServicesAddCapabilitiesInput;
   UserServicesDeleteInput: UserServicesDeleteInput;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
   UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
@@ -3006,6 +3018,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserServiceEdge: UserServiceEdge;
   UserServiceEditInput: UserServiceEditInput;
   UserServiceId: Scalars['UserServiceId']['output'];
+  UserServicesAddCapabilitiesInput: UserServicesAddCapabilitiesInput;
   UserServicesDeleteInput: UserServicesDeleteInput;
   UserSubscription: UserSubscription;
   UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
@@ -3431,6 +3444,7 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  AddCapabilitiesToUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddCapabilitiesToUserServicesArgs, 'input'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'serviceInstanceId'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;

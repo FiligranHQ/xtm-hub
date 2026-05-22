@@ -29,7 +29,7 @@ export const serviceCapabilityApp = {
       const userService =
         await UserServiceDomain.loadUserServiceById(user_service_id);
 
-      await insertCapabilities(capabilities, userService);
+      await insertCapabilities(capabilities, [userService]);
       return userService;
     });
     return fillSubscriptionWithOrgaServiceAndUserService(
