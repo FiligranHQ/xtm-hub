@@ -1,0 +1,672 @@
+import {
+  CreateDocumentInput,
+  DocumentImageType,
+  DocumentMetadataKeyCode,
+  DocumentMetadata as DocumentMetadataResolverType,
+  MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
+  QueryDocumentsArgs,
+  QueryPublicDocumentsArgs,
+} from '../../__generated__/resolvers-types';
+import { withTransaction } from '../../context/database.context';
+import { requestContext } from '../../context/request.context';
+import Document, {
+  DocumentId,
+  default as DocumentModel,
+} from '../../model/kanel/public/Document';
+import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
+import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
+import { NewsFeedApp } from '../news-feed/news-feed.app';
+import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
+import { telemetryApp } from '../telemetry/telemetry.app';
+import { buildCreateEvent } from '../telemetry/telemetry.helper';
+import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
+import { useCaseApp } from '../use-case/use-case.app';
+import {
+  ALL_METADATA_KEYS,
+  BOOLEAN_METADATA,
+  DOCUMENT_TYPE,
+  DocumentHelper,
+  loadDocumentWithCountersById,
+  loadSeoDocumentWithCountersBySlug,
+  ManageableServiceDefinitionIdentifier,
+} from './document.helper';
+import { processUploads, Upload } from './document.uploads.helper';
+import { DocumentChildrenDomain } from './domain/document.children.domain';
+import { DocumentData, DocumentDomain } from './domain/document.domain';
+import {
+  DocumentMetadataDomain,
+  DocumentMetadataKeys,
+} from './domain/document.metadata.domain';
+
+export const DocumentApp = {
+  createDocument: async ({
+    input,
+    metadata,
+    serviceInstanceId,
+    sourceDocument,
+    logo,
+    images = [],
+  }: {
+    input: CreateDocumentInput;
+    metadata: DocumentMetadataResolverType[];
+    serviceInstanceId: ServiceInstanceId;
+    sourceDocument?: Upload;
+    logo?: Upload;
+    images?: Upload[];
+  }) => {
+    const serviceDefinition =
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const [sourceDocumentFile] = await processUploads(
+      sourceDocument,
+      serviceInstanceId
+    );
+    const imagesFiles = await processUploads(images, serviceInstanceId);
+    const [logoFile] = await processUploads(logo, serviceInstanceId);
+
+    const documentMetadata =
+      DocumentHelper.buildCompleteMetadataFromDocumentFile({
+        sourceDocumentFile,
+        metadata,
+      });
+
+    DocumentHelper.assertMetadataIsNotMissing(
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
+      documentMetadata
+    );
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
+      );
+
+    DocumentHelper.assertDocumentFileIsNotMissing({
+      hasDocument: !!sourceDocument,
+      documentType,
+      documentMetadata,
+    });
+
+    const isDocumentFileRequired = DocumentHelper.isDocumentFileRequired({
+      documentType,
+      documentMetadata,
+    });
+
+    const documentData: DocumentData<Document> = {
+      ...input,
+      service_instance_id: serviceInstanceId,
+      type: documentType,
+      ...(sourceDocumentFile && isDocumentFileRequired
+        ? {
+            file_name: sourceDocumentFile.fileName,
+            minio_name: sourceDocumentFile.minioName,
+            mime_type: sourceDocumentFile.mimeType,
+          }
+        : {}),
+    };
+
+    const createdDocument = await withTransaction(async () => {
+      const metadataKeys = documentMetadata.map(
+        ({ key }) => key
+      ) as DocumentMetadataKeys<Document>;
+      const document = await DocumentDomain.createDocument(
+        documentData,
+        metadataKeys
+      );
+
+      if (documentMetadata.length) {
+        await DocumentMetadataDomain.insertMetadataFromKeyValue(
+          document.id,
+          documentMetadata
+        );
+
+        for (const meta of documentMetadata) {
+          document[meta.key] = meta.value;
+        }
+      }
+
+      await DocumentChildrenDomain.createImageDocuments(
+        document.id,
+        document.service_instance_id,
+        imagesFiles,
+        DocumentImageType.Image
+      );
+
+      if (logoFile) {
+        await DocumentChildrenDomain.createImageDocuments(
+          document.id,
+          document.service_instance_id,
+          [logoFile],
+          DocumentImageType.Logo
+        );
+      }
+
+      if (documentData.use_cases?.length) {
+        await objectUseCaseDomain.insertObjectUseCase(
+          documentData.use_cases.map((id) => ({
+            object_id: document.id as unknown as ObjectUseCaseObjectId,
+            use_case_id: id,
+          }))
+        );
+      }
+
+      return document;
+    });
+
+    try {
+      const createEvent = await buildCreateEvent(createdDocument);
+      await telemetryApp.sendTelemetryEvent(createEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event for document creation', {
+        error,
+        documentId: createdDocument.id,
+      });
+    }
+
+    if (
+      createdDocument.active === true &&
+      NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)
+    ) {
+      NewsFeedApp.createResourceNewsFeedItem({
+        document: createdDocument,
+        serviceInstanceId,
+        serviceDefinitionIdentifier: serviceDefinition.identifier,
+      }).catch((error) =>
+        logApp.error('Unable to create news feed item on document creation', {
+          error,
+          documentId: createdDocument.id,
+        })
+      );
+    }
+
+    return createdDocument;
+  },
+
+  updateDocument: async ({
+    parentDocumentId,
+    serviceInstanceId,
+    metadata,
+    sourceDocument,
+    existingImageIds,
+    input,
+    images,
+    logo,
+  }: {
+    parentDocumentId: DocumentId;
+    serviceInstanceId: ServiceInstanceId;
+    metadata: DocumentMetadataResolverType[];
+    sourceDocument?: Upload;
+    existingImageIds: DocumentId[];
+    logo?: Upload;
+    images?: Upload[];
+    input: MutationUpdateDocumentArgsResolverType['input'];
+  }) => {
+    const serviceDefinition =
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const documentBeforeUpdate = await DocumentDomain.loadDocumentBy({
+      id: parentDocumentId,
+    });
+
+    if (!documentBeforeUpdate) {
+      throw new Error(ErrorCode.DocumentNotFound);
+    }
+
+    if (documentBeforeUpdate.service_instance_id !== serviceInstanceId) {
+      throw new Error(ErrorCode.DocumentNotFound);
+    }
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
+      );
+    const [sourceDocumentFile] = await processUploads(
+      sourceDocument,
+      serviceInstanceId
+    );
+    const imagesFiles = await processUploads(images, serviceInstanceId);
+    const [logoFile] = await processUploads(logo, serviceInstanceId);
+
+    let documentMetadata = DocumentHelper.buildCompleteMetadataFromDocumentFile(
+      {
+        sourceDocumentFile,
+        metadata,
+      }
+    );
+
+    if (
+      !documentMetadata.some(
+        ({ key }) => key === DocumentMetadataKeyCode.FeedUrl
+      )
+    ) {
+      const existingFeedUrl =
+        await DocumentMetadataDomain.loadMetadataValueByKey(
+          parentDocumentId,
+          DocumentMetadataKeyCode.FeedUrl
+        );
+      if (existingFeedUrl) {
+        documentMetadata = [
+          ...documentMetadata,
+          { key: DocumentMetadataKeyCode.FeedUrl, value: existingFeedUrl },
+        ];
+      }
+    }
+
+    DocumentHelper.assertMetadataIsNotMissing(
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
+      documentMetadata
+    );
+
+    const updatedDocument = await withTransaction(async () => {
+      const { user } = requestContext.require();
+      const uploader_organization_id = input.uploader_organization_id ?? null;
+      const uploader_id = input.uploader_id ?? user.id;
+
+      const file = DocumentHelper.isDocumentFileRequired({
+        documentType,
+        documentMetadata,
+      })
+        ? sourceDocumentFile
+        : undefined;
+
+      const doc = await DocumentDomain.updateDocument({
+        parentDocumentId,
+        document: {
+          data: input,
+          file,
+          type: documentType,
+        },
+        uploader_organization_id,
+        uploader_id,
+      });
+
+      // If use_cases is null => that mean we want to update the field to empty
+      if (input.use_cases !== undefined) {
+        await objectUseCaseDomain.deleteObjectUseCaseBy({
+          object_id: parentDocumentId as unknown as ObjectUseCaseObjectId,
+        });
+
+        if (input.use_cases?.length > 0) {
+          await objectUseCaseDomain.insertObjectUseCase(
+            input.use_cases.map((id) => ({
+              object_id: parentDocumentId as unknown as ObjectUseCaseObjectId,
+              use_case_id: id,
+            }))
+          );
+        }
+      }
+
+      if (documentMetadata.length) {
+        await DocumentMetadataDomain.deleteMetadata({ id: parentDocumentId });
+        await DocumentMetadataDomain.insertMetadataFromKeyValue(
+          doc.id,
+          documentMetadata
+        );
+
+        for (const meta of documentMetadata) {
+          doc[meta.key] = BOOLEAN_METADATA.includes(meta.key)
+            ? meta.value === 'true'
+            : meta.value;
+        }
+      }
+
+      // Delete the images that are not in the existingImages array
+      const childIds = await DocumentChildrenDomain.loadChildrenIds(
+        parentDocumentId,
+        existingImageIds
+      );
+      if (childIds.length > 0) {
+        await DocumentDomain.deleteDocuments(childIds);
+      }
+
+      await DocumentChildrenDomain.createImageDocuments(
+        parentDocumentId,
+        serviceInstanceId,
+        imagesFiles,
+        DocumentImageType.Image
+      );
+
+      if (logoFile) {
+        await DocumentChildrenDomain.createImageDocuments(
+          parentDocumentId,
+          serviceInstanceId,
+          [logoFile],
+          DocumentImageType.Logo
+        );
+      }
+
+      return doc;
+    });
+
+    if (
+      documentBeforeUpdate.active === false &&
+      updatedDocument.active === true &&
+      NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)
+    ) {
+      NewsFeedApp.createResourceNewsFeedItem({
+        document: updatedDocument,
+        serviceInstanceId,
+        serviceDefinitionIdentifier: serviceDefinition.identifier,
+      }).catch((error) =>
+        logApp.error('Unable to create news feed item on document update', {
+          error,
+          documentId: updatedDocument.id,
+        })
+      );
+    }
+
+    return updatedDocument;
+  },
+
+  createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(
+    documentData: DocumentData<T>,
+    metadataKeys: DocumentMetadataKeys<T> = []
+  ): Promise<T> => {
+    return await withTransaction(async () => {
+      const document = await DocumentDomain.createDocument(
+        documentData,
+        metadataKeys
+      );
+
+      if (documentData.parent_document_id) {
+        await DocumentChildrenDomain.insertChildRelationship({
+          parentDocumentId: documentData.parent_document_id,
+          childDocumentId: document.id,
+        });
+      }
+
+      if (metadataKeys.length) {
+        const metadatas = await DocumentMetadataDomain.insertMetadata(
+          document.id,
+          documentData,
+          metadataKeys
+        );
+
+        for (const metadata of metadatas) {
+          document[metadata.key] = metadata.value;
+        }
+      }
+
+      return document as T;
+    });
+  },
+
+  upsertDocumentWithExternalImage: async <T extends DocumentModel>(
+    type: string,
+    input: Partial<T>,
+    externalImageUpload: Upload,
+    metadataKeys: DocumentMetadataKeys<T>
+  ) => {
+    return withTransaction(async () => {
+      const doc = await upsertDocument<T>(
+        {
+          ...input,
+          type,
+        },
+        metadataKeys
+      );
+
+      await DocumentChildrenDomain.upsertExternalImage(
+        doc,
+        externalImageUpload
+      );
+
+      return doc;
+    });
+  },
+
+  deleteDocument: async <T extends DocumentModel>(
+    documentId: DocumentId,
+    serviceInstanceId: ServiceInstanceId,
+    hardDelete: boolean
+  ): Promise<T> => {
+    const documentFromDb = await DocumentDomain.loadDocumentBy({
+      id: documentId,
+      service_instance_id: serviceInstanceId,
+    });
+
+    if (!documentFromDb) {
+      throw new Error('Document not found');
+    }
+
+    const childIds = await DocumentChildrenDomain.loadChildrenIds(documentId);
+    if (hardDelete) {
+      // Get all minio_name before their deletion
+      const childrenDocumentFromDB = (
+        await Promise.all(
+          childIds.map((id) => DocumentDomain.loadDocumentBy({ id }))
+        )
+      ).filter(
+        (childDocument): childDocument is DocumentModel =>
+          childDocument !== undefined
+      );
+      await withTransaction(async () => {
+        await DocumentChildrenDomain.deleteChildrenByParent(documentId);
+
+        await DocumentDomain.deleteDocuments([...childIds, documentId]);
+
+        // Use Cases
+        await objectUseCaseDomain.deleteObjectUseCaseBy({
+          object_id: documentId as unknown as ObjectUseCaseObjectId,
+        });
+      });
+      await DocumentHelper.deleteFileFromMinIO(
+        childrenDocumentFromDB,
+        documentFromDb
+      );
+      return documentFromDb as T;
+    }
+
+    // Soft delete => desactivate the document
+    await DocumentDomain.deactivateDocuments([documentId, ...childIds]);
+
+    return documentFromDb as T;
+  },
+
+  loadDocuments: async (input: QueryDocumentsArgs) => {
+    const serviceDefinition =
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        input.serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
+
+    return DocumentDomain.loadParentDocumentsByServiceInstance(
+      documentType,
+      input,
+      metadataKeys
+    );
+  },
+
+  loadPublicDocumentsByServiceSlug: async (
+    serviceInstanceSlug: string
+  ): Promise<Document[]> => {
+    const serviceDefinition =
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstanceSlug(
+        serviceInstanceSlug
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
+
+    return DocumentDomain.loadSeoDocumentsByServiceSlug(
+      documentType,
+      serviceInstanceSlug,
+      metadataKeys
+    );
+  },
+
+  loadPublicDocumentBySlug: async (
+    serviceInstanceId: ServiceInstanceId,
+    slug: string
+  ) => {
+    const serviceDefinition =
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+
+    const { documentType, metadataKeys } =
+      getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
+
+    return loadSeoDocumentWithCountersBySlug(documentType, slug, metadataKeys);
+  },
+
+  loadPublicDocuments: async (input: QueryPublicDocumentsArgs) => {
+    const serviceDefinition =
+      await ServiceDefinitionDomain.loadServiceDefinitionByServiceInstance(
+        input.serviceInstanceId
+      );
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceDefinitionNotFound);
+    }
+    const serviceDefinitionIdentifier =
+      serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
+
+    const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
+      serviceDefinitionIdentifier
+    );
+
+    const documentType =
+      DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+        serviceDefinitionIdentifier
+      );
+
+    const { slug, ...opts } = input;
+
+    return DocumentDomain.loadPaginatedSeoDocumentsByServiceSlug(
+      documentType,
+      slug,
+      opts,
+      metadataKeys
+    );
+  },
+
+  loadDocument: async (documentId: DocumentId) => {
+    return loadDocumentWithCountersById(documentId, ALL_METADATA_KEYS);
+  },
+};
+
+const upsertDocument = async <T extends DocumentModel>(
+  documentData: DocumentData<T>,
+  metadataKeys: DocumentMetadataKeys<T> = []
+): Promise<T> => {
+  return await withTransaction(async () => {
+    // Prepare the data to insert
+    const document = await DocumentDomain.upsertOnSlug(
+      documentData,
+      metadataKeys
+    );
+
+    const documentWasUpdated = !!document.updated_at;
+
+    // Handle parent document relationship
+    if (documentData.parent_document_id) {
+      // First, delete existing relationship if it exists (for upsert scenario)
+      if (documentWasUpdated) {
+        await DocumentChildrenDomain.deleteChild(document.id);
+      }
+
+      // Insert new relationship
+      await DocumentChildrenDomain.insertChildRelationship({
+        parentDocumentId: documentData.parent_document_id,
+        childDocumentId: document.id,
+      });
+    }
+
+    if (documentData.use_cases?.length) {
+      if (documentWasUpdated) {
+        await objectUseCaseDomain.deleteObjectUseCaseBy({
+          object_id: document.id as unknown as ObjectUseCaseObjectId,
+        });
+      }
+      const insertObjectUseCase = [];
+      for (const name of documentData.use_cases) {
+        const useCase = await useCaseApp.loadOrCreateUseCase({
+          name,
+        });
+        insertObjectUseCase.push({
+          object_id: document.id as unknown as ObjectUseCaseObjectId,
+          use_case_id: useCase.id,
+        });
+      }
+      await objectUseCaseDomain.insertObjectUseCase(insertObjectUseCase);
+    }
+
+    if (metadataKeys.length > 0) {
+      // If document was updated (not created)
+      if (documentWasUpdated) {
+        // Delete all existing metadata except 'version'
+        await DocumentMetadataDomain.deleteMetadata({
+          id: document.id,
+          excludedKeys: [DocumentMetadataKeyCode.ProductVersion],
+        });
+        const existingVersion = await DocumentMetadataDomain.loadProductVersion(
+          document.id
+        );
+        if (existingVersion) {
+          document[DocumentMetadataKeyCode.ProductVersion] = existingVersion;
+        }
+      }
+
+      // Insert new metadata (excluding version) if documentWasUpdated
+      const metadataKeysWithoutProductVersion = metadataKeys.filter(
+        (key) =>
+          key !== DocumentMetadataKeyCode.ProductVersion || !documentWasUpdated
+      );
+
+      const metadatas = await DocumentMetadataDomain.insertMetadata(
+        document.id,
+        documentData,
+        metadataKeysWithoutProductVersion
+      );
+
+      for (const metadata of metadatas) {
+        document[metadata.key] = metadata.value;
+      }
+    }
+
+    return document as T;
+  });
+};
+
+const getMetadataKeysAndDocumentTypeFromServiceDefinition = (
+  serviceDefinition: ServiceDefinition
+): { documentType: DOCUMENT_TYPE; metadataKeys: DocumentMetadataKeyCode[] } => {
+  const serviceDefinitionIdentifier =
+    serviceDefinition.identifier as ManageableServiceDefinitionIdentifier;
+
+  const metadataKeys = DocumentHelper.getMetadataKeysForServiceDefinition(
+    serviceDefinitionIdentifier
+  );
+
+  const documentType = DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
+    serviceDefinitionIdentifier
+  );
+
+  return {
+    documentType,
+    metadataKeys,
+  };
+};

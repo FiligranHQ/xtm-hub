@@ -11,21 +11,21 @@
   "keywords": [],
   "author": "Filigran",
   "scripts": {
-    "dev:api": "yarn workspace  @xtm-hub/portal-api dev",
-    "dev:front": "yarn workspace  @xtm-hub/portal-front dev"
+    "dev:api": "yarn workspace  @xtm-hub/backend dev",
+    "dev:front": "yarn workspace  @xtm-hub/frontend dev"
   },
   "devDependencies": {
     "eslint": "^9.30.1",
-    "eslint-config-next": "^15.3.5",
     "eslint-config-prettier": "^10.1.5",
     "stylus": "github:stylus/stylus#0.64.0",
     "typescript": "5.9.3"
   },
   "dependencies": {
-    "@types/node": "24.12.0",
+    "@types/node": "24.12.2",
+    "eslint-plugin-unicorn": "64.0.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3"
   },
   "tsConfig": "tsconfig.json",
-  "packageManager": "yarn@4.12.0"
+  "packageManager": "yarn@4.14.1"
 }

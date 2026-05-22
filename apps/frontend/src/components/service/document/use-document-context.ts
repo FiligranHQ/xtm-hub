@@ -1,0 +1,286 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { ServiceContextProps } from '@/components/service/components/ServiceContext';
+import {
+  ServiceForm,
+  ServiceFormValues,
+} from '@/components/service/components/subscribable-services.types';
+import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
+import {
+  DocumentCreateMutation,
+  DocumentDeleteMutation,
+  DocumentUpdateMutation,
+} from '@/components/service/document/document.graphql';
+import { ConnectorForm } from '@/components/service/integrations/forms/ConnectorForm';
+import { CsvFeedForm } from '@/components/service/integrations/forms/CsvFeedForm';
+import { RssFeedForm } from '@/components/service/integrations/forms/RssFeedForm';
+import { StreamForm } from '@/components/service/integrations/forms/StreamForm';
+import { TaxiiFeedForm } from '@/components/service/integrations/forms/TaxiiFeedForm';
+import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/ThirdPartyIntegrationForm';
+import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
+import { OpenctiPlaybookForm } from '@/components/service/opencti-playbooks/[serviceInstanceId]/OpenctiPlaybookForm';
+import { omit } from '@/lib/omit';
+import { pick } from '@/lib/pick';
+import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import {
+  docIsExistingFile,
+  isFile,
+  splitExistingAndNewImages,
+} from '@/utils/documents';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import { toast } from '@filigran/ui';
+import { documentCreateMutation } from '@generated/documentCreateMutation.graphql';
+import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
+import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
+import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { useTranslations } from 'next-intl';
+import { useContext, useMemo, useState } from 'react';
+import { useMutation } from 'react-relay';
+
+const documentBaseKeys: Array<keyof ServiceFormValues> = [
+  'name',
+  'slug',
+  'uploader_id',
+  'uploader_organization_id',
+  'short_description',
+  'description',
+  'use_cases',
+  'active',
+];
+
+const documentFileKeys: Array<keyof ServiceFormValues> = [
+  'document',
+  'logo',
+  'images',
+];
+
+interface UseDocumentContextProps {
+  serviceInstance: serviceInstance_fragment$data;
+  connectionId?: string;
+  type: ShareableResourceType;
+}
+
+export function useDocumentContext({
+  serviceInstance,
+  connectionId,
+  type,
+}: UseDocumentContextProps): ServiceContextProps {
+  const { me } = useContext(PortalContext);
+  const [integrationType, setIntegrationType] = useState<IntegrationTypeEnum>(
+    IntegrationTypeEnum.CSV_FEED
+  );
+  const t = useTranslations();
+  const [createMutation] = useMutation<documentCreateMutation>(
+    DocumentCreateMutation
+  );
+
+  const handleAddSheet = async (
+    values: ServiceFormValues,
+    onSuccess: (serviceName: string) => void,
+    onError: (error: Error) => void
+  ) => {
+    const input = omit(
+      {
+        ...pick(values, documentBaseKeys),
+        uploader_id: values?.uploader_id ?? '',
+      },
+      ['uploader_organization_id']
+    );
+    const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
+    const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);
+    const logo = Array.from(values?.logo ?? []).slice(0, 1);
+    const images = Array.from(values?.images ?? []);
+
+    createMutation({
+      variables: {
+        input: {
+          ...input,
+          active: input.active ?? false,
+        },
+        metadata: Object.keys(metadata)
+          .map((key) => ({
+            key: key as DocumentMetadataKeyCodeEnum,
+            value: metadata[key as keyof typeof metadata],
+          }))
+          .filter(({ value }) => Boolean(value)),
+        serviceInstanceId: serviceInstance.id,
+        connections: connectionId ? [connectionId] : [],
+        sourceDocument: sourceDocument.map(() => ({})),
+        logo: logo.map(() => ({})),
+        images: images.map(() => ({})),
+      },
+      uploadables: splitFileListToUploadableMap({
+        sourceDocument,
+        logo,
+        images,
+      }),
+
+      onCompleted: (response) => {
+        if (!response.createDocument) {
+          toast({
+            variant: 'destructive',
+            title: t('Utils.Error'),
+            description: t('Error.AnErrorOccured'),
+          });
+          return;
+        }
+
+        onSuccess(input.name);
+      },
+      onError: (error) => {
+        onError(error);
+      },
+    });
+  };
+
+  const [deleteMutation] = useMutation<documentDeleteMutation>(
+    DocumentDeleteMutation
+  );
+
+  const handleDeleteSheet = async (
+    document: documentItem_fragment$data,
+    onCompleted: () => void
+  ) => {
+    deleteMutation({
+      variables: {
+        documentId: document.id,
+        serviceInstanceId: serviceInstance.id,
+        connections: connectionId ? [connectionId] : [],
+        forceDelete: true,
+      },
+      onCompleted() {
+        onCompleted();
+      },
+    });
+  };
+
+  const [updateMutation] = useMutation<documentUpdateMutation>(
+    DocumentUpdateMutation
+  );
+
+  const handleUpdateSheet = async (
+    values: ServiceFormValues,
+    resource: documentItem_fragment$data,
+    onSuccess: (serviceName: string) => void,
+    onError: (error: Error) => void
+  ) => {
+    const input = omit(
+      {
+        ...pick(values, documentBaseKeys),
+        uploader_id: values?.uploader_id ?? '',
+      },
+      ['slug']
+    );
+
+    const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
+    const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);
+    const images = Array.from(values?.images ?? []);
+    const [existingImageIds, newImages] = splitExistingAndNewImages(images);
+    const logo = Array.from(values?.logo ?? []).slice(0, 1);
+
+    updateMutation({
+      variables: {
+        input,
+        serviceInstanceId: serviceInstance.id,
+        sourceDocument: sourceDocument.map(() => ({})),
+        images: newImages.map(() => ({})),
+        ...(isFile(logo[0]) ? { logo: logo.map(() => ({})) } : {}),
+        documentId: resource.id,
+        metadata: Object.keys(metadata)
+          .map((key) => ({
+            key: key as DocumentMetadataKeyCodeEnum,
+            value: metadata[key as keyof typeof metadata],
+          }))
+          .filter(({ value }) => Boolean(value)),
+        existingImageIds: [
+          ...existingImageIds,
+          ...(docIsExistingFile(logo[0]) ? [logo[0].id] : []),
+        ],
+      },
+      uploadables: splitFileListToUploadableMap({
+        sourceDocument,
+        images: newImages,
+        ...(isFile(logo[0]) ? { logo } : {}),
+      }),
+      onCompleted: () => {
+        onSuccess(values.name);
+      },
+      onError: (error) => {
+        onError(error);
+      },
+    });
+  };
+
+  const form = useMemo(() => {
+    const formMapping: Record<ShareableResourceType, () => ServiceForm> = {
+      [ShareableResourceType.OPENAEV_SCENARIO]: () => OpenaevScenarioForm,
+      [ShareableResourceType.OPENCTI_PLAYBOOK]: () => OpenctiPlaybookForm,
+      [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
+        CustomDashboardForm,
+      [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
+        const integrationMapping: Partial<
+          Record<IntegrationTypeEnum, ServiceForm>
+        > = {
+          [IntegrationTypeEnum.CSV_FEED]: CsvFeedForm,
+          [IntegrationTypeEnum.TAXII_FEED]: TaxiiFeedForm,
+          [IntegrationTypeEnum.RSS_FEED]: RssFeedForm,
+          [IntegrationTypeEnum.STREAM]: StreamForm,
+          [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
+            ThirdPartyIntegrationForm,
+          [IntegrationTypeEnum.CONNECTOR]: ConnectorForm,
+        };
+
+        return integrationMapping[integrationType] ?? CsvFeedForm;
+      },
+    };
+
+    return formMapping[type]();
+  }, [type, integrationType]);
+
+  const translationKey = useMemo(() => {
+    const translationKeyMapping: Record<ShareableResourceType, () => string> = {
+      [ShareableResourceType.OPENAEV_SCENARIO]: () => 'Service.OpenAEVScenario',
+      [ShareableResourceType.OPENCTI_PLAYBOOK]: () => 'Service.OpenCTIPlaybook',
+      [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
+        'Service.OpenctiCustomDashboards',
+      [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
+        const integrationMapping: Partial<Record<IntegrationTypeEnum, string>> =
+          {
+            [IntegrationTypeEnum.CSV_FEED]: 'Service.CsvFeed',
+            [IntegrationTypeEnum.TAXII_FEED]: 'Service.TaxiiFeed',
+            [IntegrationTypeEnum.RSS_FEED]: 'Service.RssFeed',
+            [IntegrationTypeEnum.STREAM]: 'Service.Stream',
+            [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
+              'Service.ThirdPartyIntegration',
+            [IntegrationTypeEnum.CONNECTOR]: 'Service.Connector',
+          };
+
+        return integrationMapping[integrationType] ?? '';
+      },
+    };
+
+    return translationKeyMapping[type]();
+  }, [type, integrationType]);
+
+  const currentUserSubscriptionId = me?.id
+    ? serviceInstance.subscriptions?.find((subscription) =>
+        subscription?.user_service?.some(
+          (userService) => userService?.user?.id === me.id
+        )
+      )?.id
+    : undefined;
+
+  return {
+    serviceInstance,
+    handleAddSheet,
+    handleUpdateSheet,
+    handleDeleteSheet,
+    ServiceForm: form,
+    translationKey,
+    currentUserSubscriptionId,
+    type,
+    setIntegrationType,
+  };
+}

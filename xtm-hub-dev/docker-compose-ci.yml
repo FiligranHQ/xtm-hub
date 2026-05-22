@@ -1,6 +1,6 @@
 services:
-  portal-front:
-    container_name: portal-front
+  frontend:
+    container_name: frontend
     logging:
       driver: "json-file"
       options:
@@ -8,18 +8,18 @@ services:
         max-file: "3"
     image: filigran/portal-front:${IMAGE_TAGS}
     depends_on:
-      portal-api:
+      backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://portal-front:3000/health"]
+      test: ["CMD", "wget", "-qO-", "http://frontend:3000/health"]
       interval: 10s
       timeout: 5s
       retries: 10
     environment:
-      - SERVER_HTTP_API=http://portal-api:4001
+      - SERVER_HTTP_API=http://backend:4001
 
-  portal-front-test:
-    container_name: portal-front-test
+  frontend-test:
+    container_name: frontend-test
     logging:
       driver: "json-file"
       options:
@@ -27,11 +27,11 @@ services:
         max-file: "3"
     image: filigran/portal-front-test:${IMAGE_TAGS}
     environment:
-      - SERVER_HTTP_API=http://portal-api:4001
+      - SERVER_HTTP_API=http://backend:4001
     volumes:
-      - "./coverage:/app/apps/portal-front/coverage"
-  portal-api-test:
-    container_name: portal-api-test
+      - "./coverage:/app/apps/frontend/coverage"
+  backend-test:
+    container_name: backend-test
     logging:
       driver: "json-file"
       options:
@@ -58,10 +58,12 @@ services:
       - MINIO_ACCESS_KEY=portal
       - MINIO_SECRET_KEY=changeme
       - MINIO_USE_SSL=false
+      - PORTAL_COOKIE_NAME=cloud-portal
+      - PORTAL_COOKIE_SECRET=XR4MFizbXn09doSZ
     volumes:
-      - "./coverage:/app/apps/portal-api/coverage"
-  portal-api:
-    container_name: portal-api
+      - "./coverage:/app/apps/backend/coverage"
+  backend:
+    container_name: backend
     logging:
       driver: "json-file"
       options:
@@ -69,7 +71,7 @@ services:
         max-file: "3"
     image: filigran/portal-api:${IMAGE_TAGS}
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://portal-api:4001/health"]
+      test: ["CMD", "wget", "-qO-", "http://backend:4001/health"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -100,7 +102,9 @@ services:
       - START_DEV_SERVER=true
       - ELASTIC_HOST=portal-elasticsearch
       - ELASTIC_PORT=9200
-      - BASE_URL_FRONT=http://portal-front:3000
+      - BASE_URL_FRONT=http://frontend:3000
+      - PORTAL_COOKIE_NAME=cloud-portal
+      - PORTAL_COOKIE_SECRET=XR4MFizbXn09doSZ
 
   portal-postgres:
     container_name: portal-postgres
@@ -162,7 +166,7 @@ services:
       timeout: 5s
       retries: 10
 
-  portal-e2e-tests:
+  e2e:
     logging:
       driver: "json-file"
       options:
@@ -170,15 +174,15 @@ services:
         max-file: "3"
     image: filigran/portal-e2e-tests:${IMAGE_TAGS}
     depends_on:
-      portal-front:
+      frontend:
         condition: service_healthy
-      portal-api:
+      backend:
         condition: service_healthy
       portal-minio:
         condition: service_healthy
     environment:
-      - E2E_BASE_URL=http://portal-front:3000
-      - E2E_API_URL=http://portal-api:4001
+      - E2E_BASE_URL=http://frontend:3000
+      - E2E_API_URL=http://backend:4001
       - POSTGRES_USER=portal
       - DATABASE_HOST=portal-postgres
       - POSTGRES_DB=test_database

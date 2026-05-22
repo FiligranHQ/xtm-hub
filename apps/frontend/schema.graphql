@@ -1,0 +1,1864 @@
+directive @system_token(portalCapa: [PortalCapability!] = []) repeatable on OBJECT | FIELD_DEFINITION
+
+directive @platform_token repeatable on OBJECT | FIELD_DEFINITION
+
+directive @auth(portalCapa: [PortalCapability] = [], orgaCapa: [OrganizationCapability] = []) repeatable on OBJECT | FIELD_DEFINITION
+
+directive @service_capa(requires: [ServiceRestriction] = []) repeatable on OBJECT | FIELD_DEFINITION
+
+scalar JSON
+
+scalar Date
+
+scalar Upload
+
+enum FilterKey {
+  label
+  organization_id
+  personal_space
+  integration_type
+  integration_subtype
+  slug
+  product_version
+  manager_supported
+  feed_url
+  verified
+}
+
+enum LogicalOperator {
+  AND
+  OR
+}
+
+input Filter {
+  key: FilterKey
+  value: [String!]!
+}
+
+input LogicalFilterInput {
+  leaf: Filter
+  operator: LogicalOperator
+  children: [LogicalFilterInput!]
+}
+
+type Success {
+  success: Boolean!
+}
+
+"""
+A Relay global ID for Competitor, extracted to a branded CompetitorId string
+"""
+scalar CompetitorId
+
+enum CompetitorOrdering {
+  name
+  tier
+  domain
+}
+
+enum CompetitorTier {
+  tier1
+  tier2
+  tier3
+}
+
+type Competitor implements Node {
+  id: ID!
+  name: String!
+  tier: CompetitorTier!
+  domain: String!
+}
+
+type CompetitorEdge {
+  cursor: String!
+  node: Competitor!
+}
+
+type CompetitorConnection {
+  totalCount: Int!
+  edges: [CompetitorEdge!]!
+  pageInfo: PageInfo!
+}
+
+input CreateCompetitorInput {
+  name: String!
+  tier: CompetitorTier!
+  domain: String!
+}
+
+input UpdateCompetitorInput {
+  id: CompetitorId!
+  name: String
+  tier: CompetitorTier
+  domain: String
+}
+
+type Query {
+  competitors(first: Int!, after: ID, orderBy: CompetitorOrdering!, orderMode: OrderingMode!): CompetitorConnection!
+  deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
+  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
+  deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
+  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
+  serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
+  documentExists(documentName: String, service_instance_id: ServiceInstanceId): Boolean
+  publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId!): DocumentConnection!
+  publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
+  publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
+  document(documentId: DocumentId, serviceInstanceId: ServiceInstanceId): Document
+  organization(id: ID!): Organization
+  organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
+  userOrganizations: [Organization!]!
+  me: User
+  usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
+  users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  userHasOrganizationWithSubscription: Boolean!
+  openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
+  isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
+  canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
+  registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
+  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
+  platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
+  serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
+  serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
+  serviceInstanceByIdAndGrantAccess(service_instance_id: ServiceInstanceId): ServiceInstance
+  seoServiceInstances: [SeoServiceInstance!]!
+  seoServiceInstance(slug: String!): SeoServiceInstance!
+  settings: Settings!
+  updateOpenCTIManifest(tag: String): Success!
+  subscriptionById(subscription_id: SubscriptionId): SubscriptionModel
+  subscriptions(first: Int!, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [SubscriptionFilter!]): SubscriptionConnection!
+  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
+  userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: SubscriptionId!): UserServiceConnection
+  epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
+  node(id: ID!): Node
+}
+
+type Mutation {
+  createCompetitor(input: CreateCompetitorInput!): Competitor!
+  updateCompetitor(input: UpdateCompetitorInput!): Competitor!
+  deleteCompetitor(id: CompetitorId!): Competitor!
+  createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
+  updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
+  reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
+  cancelDeploymentRequest(deploymentRequestId: DeploymentRequestId!, cancellationReason: String): DeploymentRequest
+  adminCancelDeploymentRequest(deploymentRequestId: DeploymentRequestId): DeploymentRequest
+  updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
+  updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
+  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
+  updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
+  deleteDocument(documentId: DocumentId, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!
+  incrementShareNumberDocument(documentId: DocumentId): Document!
+  frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
+  addOrganization(input: OrganizationInput!): Organization
+  editOrganization(id: ID!, input: OrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+  adminAddUser(input: AdminAddUserInput!): User
+  adminEditUser(id: ID!, input: AdminEditUserInput!): User!
+  addUser(input: AddUserInput!): User
+  editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
+  changeSelectedOrganization(organization_id: OrganizationId!): User
+  bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
+  bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
+  removePendingUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
+  removeUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
+  editMeUser(input: EditMeUserInput!): User!
+  uploadUserPicture(document: Upload!): User!
+  resetPassword: Success!
+  requestTransferPersonalSpace(new_email: String): Success!
+  transferPersonalSpace(requestId: ID!): Success!
+  login(email: String!, password: String): User
+  logout: ID!
+  contactUs(message: String, platformId: ID, platformIdentifier: PlatformIdentifier): Success!
+  registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
+  unregisterPlatform(input: UnregisterPlatformInput): Success!
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
+  refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  refreshPlatformRegistrationConnectivityStatusSingleTenant(input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
+  refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
+  autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
+  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
+  addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
+  addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
+  updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
+  addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
+  createSubscriptions(input: CreateSubscriptionsInput): [SubscriptionModel!]!
+  updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
+  deleteSubscriptions(subscription_ids: [SubscriptionId!]!): [SubscriptionModel!]!
+  sendTelemetryEvent: SendTelemetryMutation
+  addUseCase(input: AddUseCaseInput!): UseCase!
+  editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
+  deleteUseCase(id: ID!): UseCase!
+  addUserService(input: UserServiceAddInput!): [UserService]
+  deleteUserService(input: UserServiceDeleteInput!): UserService
+  createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
+  updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
+  deleteEpic(id: ID!): Epic!
+}
+
+"""
+A Relay global ID for DeploymentRequest, extracted to a branded DeploymentRequestId string
+"""
+scalar DeploymentRequestId
+
+enum DeploymentRequestPlatformRegion {
+  eu_west
+  us_east
+  apac_au
+  apac_sg
+}
+
+enum DeploymentRequestDeploymentType {
+  trial
+}
+
+enum DeploymentRequestHubStatus {
+  queued
+  pending
+  provisioning
+  active
+  expired
+  failed
+  cancelled
+}
+
+enum DeploymentRequestPlatformState {
+  unprovisioned
+  provisioning
+  active
+  removing
+  removed
+}
+
+enum DeploymentRequestSource {
+  xtmhub
+  opencti_demo
+  openaev_demo
+}
+
+enum DeploymentRequestUseCase {
+  threat_profiling_cti
+  threat_profiling_fimi
+  threat_profiling_faml
+  threat_profiling_leo
+  threat_hunting
+  technical_reporting
+  strategic_reporting
+  incident_response
+  security_stack
+  detection_engineering
+  attack_simulation
+  crisis_simulation
+  vulnerability_management
+  centralizing_knowledge
+  sharing_knowledge
+  hosting_threat_community
+  oaev_attack_simulation
+  oaev_penetration_testing
+  oaev_atomic_testing
+  oaev_platform_validation
+  oaev_tabletop_exercise
+  oaev_purple_team
+  oaev_opencti_coverage
+  oaev_ctem_framework
+}
+
+enum DeploymentRequestActivitySector {
+  computer_network_security
+  computer_games
+  computer_software
+  defense_space
+  entertainment
+  financial_services
+  government_administration
+  government_relations
+  higher_education
+  hospital_health_care
+  hospitality
+  information_technology
+  insurance
+  legal_services
+  luxury_goods_jewelry
+  management_consulting
+  marketing_advertising
+  military
+  non_profit
+  oil_energy
+  pharmaceuticals
+  photography
+  retail
+  security_investigations
+  semiconductors
+  telecommunications
+  transportation
+  utilities
+  wireless
+}
+
+enum DeploymentRequestJobTitle {
+  ceo
+  ciso_cso_cio
+  c_level
+  general_manager_vp
+  director_head_cybersecurity
+  cybersecurity_team_lead
+  application_security_specialist
+  cloud_security_specialist
+  cybersecurity_architect
+  cybersecurity_engineer
+  dfir_specialist
+  grc_specialist
+  iam_specialist
+  penetration_tester
+  soc_analyst
+  threat_intelligence_analyst
+  vulnerability_analyst
+  consultant
+  other
+}
+
+type DeploymentRequest implements Node {
+  id: ID!
+  platform_identifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
+  job_title: DeploymentRequestJobTitle
+  activity_sector: DeploymentRequestActivitySector
+  use_case: DeploymentRequestUseCase
+  start_date: Date
+  end_date: Date
+  hub_status: DeploymentRequestHubStatus!
+  ordering: Int!
+  requester_email: String
+  organization_requester_id: OrganizationId!
+  service_instance_id: ServiceInstanceId!
+  organization_name: String
+  request_date: Date!
+  counts_in_orga_quota: Boolean!
+  cancellation_date: Date
+  cancellation_user_email: String
+  cancellation_reason: String
+  platform_id: String
+  platform_url: String
+}
+
+type PlatformDeploymentRequest {
+  id: ID!
+  platform_identifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
+  platform_token: String!
+  hub_status: DeploymentRequestHubStatus!
+  target_state: DeploymentRequestPlatformState
+  actual_state: DeploymentRequestPlatformState
+  ordering: Int!
+  start_date: Date
+  end_date: Date
+  job_title: DeploymentRequestJobTitle
+  activity_sector: DeploymentRequestActivitySector
+  use_case: DeploymentRequestUseCase
+  organization_name: String!
+  organization_domains: [String!]
+  requester_email: String!
+  requester_first_name: String
+  requester_last_name: String
+  platform_id: String
+  platform_url: String
+  failure_reason: String
+}
+
+input CreateDeploymentRequestInput {
+  platform_identifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  type: DeploymentRequestDeploymentType!
+  job_title: DeploymentRequestJobTitle
+  activity_sector: DeploymentRequestActivitySector
+  use_case: DeploymentRequestUseCase
+  source: DeploymentRequestSource!
+}
+
+input UpdateDeploymentRequestInput {
+  id: DeploymentRequestId!
+  start_date: Date
+  end_date: Date
+  platform_id: String
+  failure_reason: String
+  actual_state: DeploymentRequestPlatformState
+  ordering: Int
+}
+
+enum DeploymentRequestFilterKey {
+  region
+  type
+  hub_status
+  target_state
+  actual_state
+  platform_identifier
+}
+
+input DeploymentRequestFilter {
+  key: DeploymentRequestFilterKey
+  value: [String!]!
+}
+
+type DeploymentRequestEdge {
+  cursor: String!
+  node: DeploymentRequest!
+}
+
+type PlatformDeploymentRequestEdge {
+  cursor: String!
+  node: PlatformDeploymentRequest!
+}
+
+type DeploymentRequestConnection {
+  totalCount: Int!
+  edges: [DeploymentRequestEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PlatformDeploymentRequestConnection {
+  totalCount: Int!
+  edges: [PlatformDeploymentRequestEdge!]!
+  pageInfo: PageInfo!
+}
+
+type DeploymentAvailability {
+  region: DeploymentRequestPlatformRegion!
+  availableCount: Int!
+  capacity: Int!
+  platform_identifier: PlatformIdentifier!
+}
+
+type DeployedPlatform {
+  serviceInstanceId: ServiceInstanceId!
+  platformIdentifier: PlatformIdentifier!
+}
+
+type TrialsDeployments {
+  availableTrials: [PlatformIdentifier!]!
+  deployed: [DeployedPlatform!]!
+  isBlacklisted: Boolean!
+}
+
+enum DeploymentRequestOrdering {
+  requester_email
+  organization_name
+  start_date
+  end_date
+  hub_status
+  region
+  ordering
+  request_date
+  cancellation_date
+  cancellation_user_email
+  cancellation_reason
+}
+
+enum ReorderDeploymentRequestInQueueDirection {
+  top
+  up
+}
+
+input ReorderDeploymentRequestInQueueInput {
+  id: DeploymentRequestId!
+  direction: ReorderDeploymentRequestInQueueDirection!
+}
+
+input UpdateDeploymentQuotaCapacityInput {
+  platformIdentifier: PlatformIdentifier!
+  region: DeploymentRequestPlatformRegion!
+  newCapacity: Int!
+}
+
+input TrialDeploymentsInput {
+  organizationId: OrganizationId!
+  platformIdentifiers: [PlatformIdentifier!]
+}
+
+"""
+A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string
+"""
+scalar ServiceGroupId
+
+type ServiceGroup implements Node {
+  id: ID!
+  name: String!
+  users: [User!]
+}
+
+input UpdateServiceGroupsInputGroup {
+  id: ServiceGroupId!
+  userIds: [UserId!]!
+}
+
+input UpdateServiceGroupsInput {
+  groups: [UpdateServiceGroupsInputGroup!]!
+}
+
+"""
+A Relay global ID for Document, extracted to a branded DocumentId string
+"""
+scalar DocumentId
+
+enum DocumentSourceType {
+  external
+  internal
+}
+
+enum DocumentImageType {
+  logo
+  image
+}
+
+enum DocumentMetadataKeyCode {
+  feed_url
+  integration_type
+  integration_subtype
+  datasheet_url
+  blogpost_url
+  demo_url
+  product_version
+  vendor_url
+  github_url
+  container_image
+  verified
+  source_code
+  subscription_link
+  manager_supported
+  playbook_supported
+  image_type
+  minimum_deployable_version
+}
+
+type ShareableResource {
+  id: ID!
+  file_name: String!
+  created_at: Date!
+  name: String
+  description: String
+  download_number: Int
+  active: Boolean!
+  source_type: DocumentSourceType!
+  image_type: DocumentImageType
+}
+
+enum DocumentOrdering {
+  file_name
+  description
+  created_at
+  updated_at
+  download_number
+  name
+}
+
+"""
+/!\ WARNING Do not use this type.
+It exists only to cover cases where we failed to map to a specific Document.
+"""
+type DefaultDocument implements Node & Document {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+}
+
+interface Document implements Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+}
+
+input DocumentMetadata {
+  key: DocumentMetadataKeyCode!
+  value: String!
+}
+
+input CreateDocumentInput {
+  name: String!
+  slug: String!
+  short_description: String!
+  description: String!
+  active: Boolean!
+  use_cases: [UseCaseId!]
+  uploader_id: UserId!
+}
+
+input UpdateDocumentInput {
+  name: String
+  short_description: String
+  description: String
+  active: Boolean
+  use_cases: [UseCaseId!]
+  uploader_organization_id: OrganizationId
+  uploader_id: UserId
+}
+
+type DocumentEdge {
+  cursor: String!
+  node: Document!
+}
+
+type DocumentConnection {
+  totalCount: Int!
+  edges: [DocumentEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum NewsFeedItemType {
+  RESOURCE_CUSTOM_DASHBOARD
+}
+
+enum NewsFeedItemMetadataKey {
+  url_path
+}
+
+type NewsFeedItemMetadata {
+  key: NewsFeedItemMetadataKey!
+  value: String
+}
+
+type ProvisionedNewsFeedItem {
+  title: String!
+  type: NewsFeedItemType!
+  tags: [String!]!
+  metadata: [NewsFeedItemMetadata!]!
+  creation_date: Date!
+}
+
+type ConsumeProvisionedNewsFeedItemsResponse {
+  news_feed_items: [ProvisionedNewsFeedItem!]!
+  available_news_feed_types: [NewsFeedItemType!]!
+}
+
+enum OrganizationOrdering {
+  name
+}
+
+"""
+A Relay global ID for Organization, extracted to a branded OrganizationId string
+"""
+scalar OrganizationId
+
+type OrganizationRef implements Node {
+  id: ID!
+}
+
+type Organization implements Node {
+  id: ID!
+  name: String!
+  domains: [String!]
+  personal_space: Boolean!
+  capabilityUser: [Capability]
+}
+
+type OrganizationEdge {
+  cursor: String!
+  node: Organization!
+}
+
+type OrganizationConnection {
+  totalCount: Int!
+  edges: [OrganizationEdge!]!
+  pageInfo: PageInfo!
+}
+
+input OrganizationInput {
+  name: String!
+  domains: [String!]
+}
+
+"""A Relay global ID for User, extracted to a branded UserId string"""
+scalar UserId
+
+enum UserOrdering {
+  email
+  first_name
+  last_name
+  disabled
+  country
+  last_login
+}
+
+type Capability implements Node {
+  id: ID!
+  name: PortalCapability!
+}
+
+type OrganizationCapabilities implements Node {
+  id: ID!
+  organization: Organization!
+  capabilities: [OrganizationCapability!]
+}
+
+type User implements Node {
+  id: ID!
+  email: String!
+  first_name: String
+  last_name: String
+  picture: String
+  country: String
+  disabled: Boolean
+  selected_organization_id: OrganizationId
+  organizations: [Organization!]
+  organization_capabilities: [OrganizationCapabilities!]
+  capabilities: [Capability!]
+  roles_portal: [RolePortal!]
+  selected_org_capabilities: [OrganizationCapability!]
+  last_login: Date
+  pending_organization_id: OrganizationId
+}
+
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+type UserConnection {
+  totalCount: Int!
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+input UsersWithCapabilitiesInOrganizationInput {
+  organizationId: OrganizationId!
+  capabilities: [OrganizationCapability!]!
+}
+
+input AdminEditUserInput {
+  disabled: Boolean
+  first_name: String
+  last_name: String
+  email: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+input EditUserCapabilitiesInput {
+  capabilities: [String!]
+}
+
+input EditMeUserInput {
+  first_name: String
+  last_name: String
+  country: String
+}
+
+input OrganizationCapabilitiesInput {
+  organization_id: OrganizationId!
+  capabilities: [String!]
+}
+
+input AddUserInput {
+  email: String!
+  password: String
+  capabilities: [String!]
+}
+
+input AdminAddUserInput {
+  email: String!
+  first_name: String
+  last_name: String
+  password: String
+  organization_capabilities: [OrganizationCapabilitiesInput!]
+}
+
+input BulkPendingUserFromOrganizationInput {
+  ids: [UserId!]
+  searchTerm: String
+  filters: [Filter!]
+  excludedIds: [UserId!]
+}
+
+type UserSubscription {
+  add: User
+  edit: User
+  delete: User
+  merge: MergeEvent
+}
+
+type MeUserSubscription {
+  edit: User
+  delete: User
+}
+
+type UserPendingSubscription {
+  delete: User
+  invalidate: OrganizationRef
+}
+
+type Subscription {
+  User(organizationId: ID): UserSubscription
+  MeUser: MeUserSubscription
+  UserPending(organizationId: ID!): UserPendingSubscription
+  ServiceInstance: ServiceInstanceSubscription
+}
+
+input OpenCTIPlatformRegistrationStatusInput {
+  platformId: String!
+  token: String!
+}
+
+type OpenCTIPlatformRegistrationStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+enum PlatformContract {
+  CE
+  EE
+  trial
+}
+
+type RegisteredPlatform implements Node {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  platform_id: String!
+  tenant_id: String
+  tenant_name: String
+  identifier: ServiceDefinitionIdentifier!
+  version: String
+  illustration_document_id: DocumentId
+  deployment_request: DeploymentRequest
+  subscription: SubscriptionModel
+}
+
+input PlatformInput {
+  id: ID!
+  url: String!
+  title: String!
+  contract: PlatformContract!
+  version: String
+  tenantId: String
+  tenantName: String
+}
+
+enum PlatformIdentifier {
+  opencti
+  openaev
+}
+
+input RegisterPlatformInput {
+  organizationId: ID!
+  platform: PlatformInput!
+  identifier: PlatformIdentifier!
+}
+
+input CanUnregisterPlatformInput {
+  platformId: String!
+  tenantId: String
+}
+
+type RegistrationResponse {
+  token: String!
+}
+
+enum PlatformRegistrationStatus {
+  registered
+  unregistered
+  never_registered
+}
+
+input IsPlatformRegisteredInput {
+  platformId: String!
+  tenantId: String
+}
+
+type IsPlatformRegisteredOrganization implements Node {
+  id: ID!
+}
+
+type IsPlatformRegisteredResponse {
+  status: PlatformRegistrationStatus!
+  platformTitle: String
+  organization: IsPlatformRegisteredOrganization
+}
+
+type CanUnregisterResponse {
+  isPlatformRegistered: Boolean!
+  isAllowed: Boolean
+  isInOrganization: Boolean
+  organizationId: OrganizationId
+}
+
+input UnregisterPlatformInput {
+  platformId: String!
+  identifier: PlatformIdentifier!
+  tenantId: String
+}
+
+enum PlatformRegistrationConnectivityStatus {
+  active
+  inactive
+  not_found
+}
+
+input RefreshPlatformRegistrationConnectivityStatusInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier
+}
+
+input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
+  platformId: String!
+  token: String!
+  platformVersion: String!
+  url: String!
+  tenantId: String!
+  tenantName: String!
+  platformIdentifier: PlatformIdentifier!
+}
+
+input TenantDetails {
+  tenantId: String!
+  tenantName: String!
+  token: String!
+  url: String!
+}
+
+input RefreshPlatformRegistrationConnectivityStatusAllTenantsInput {
+  platformId: String!
+  platformVersion: String!
+  platformIdentifier: PlatformIdentifier!
+  tenants: [TenantDetails!]!
+}
+
+type RefreshPlatformRegistrationConnectivityStatusResponse {
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type TenantStatus {
+  tenantId: String!
+  status: PlatformRegistrationConnectivityStatus!
+}
+
+type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse {
+  statuses: [TenantStatus!]!
+}
+
+type RefreshUserPlatformTokenResponse {
+  token: String!
+}
+
+input RegisteredPlatformsInput {
+  identifier: PlatformIdentifier
+  onlyActive: Boolean
+  onlyTrial: Boolean
+}
+
+input RegisteredPlatformInput {
+  service_instance_id: ServiceInstanceId!
+}
+
+input AutoRegisterPlatformInput {
+  platform: PlatformInput!
+  existing_users_count: Int
+}
+
+enum ServiceConfigurationStatus {
+  active
+  inactive
+}
+
+type RolePortal implements Node {
+  id: ID!
+  name: String!
+}
+
+"""
+A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string
+"""
+scalar Service_CapabilityId
+
+type GenericServiceCapability implements Node {
+  id: ID!
+  name: String
+}
+
+input EditServiceCapabilityInput {
+  user_service_id: User_ServiceId
+  capabilities: [String]!
+}
+
+input AddSubscriptionCapabilityInput {
+  subscriptionsId: [SubscriptionId!]!
+  capabilitiesId: [Service_CapabilityId]!
+}
+
+type UserServiceCapability implements Node {
+  id: ID!
+  user_service_id: ID!
+  generic_service_capability: GenericServiceCapability
+  subscription_capability: SubscriptionCapability
+}
+
+type SubscriptionCapability implements Node {
+  id: ID!
+  service_capability: ServiceCapability
+}
+
+type ServiceCapability implements Node {
+  id: ID!
+  name: String
+  description: String
+  service_definition_id: ID
+}
+
+type ServiceLink implements Node {
+  id: ID!
+  service_instance_id: ID
+  url: String
+  name: String
+}
+
+enum ServiceDefinitionIdentifier {
+  vault
+  link
+  opencti_custom_dashboards
+  opencti_integrations
+  opencti_playbooks
+  openaev_scenarios
+  opencti_registration
+  openaev_registration
+  xtm_platform_roadmap
+}
+
+type ServiceDefinition implements Node {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  identifier: ServiceDefinitionIdentifier!
+  service_capability: [ServiceCapability]
+}
+
+"""
+A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string
+"""
+scalar ServiceInstanceId
+
+enum ServiceInstanceOrdering {
+  name
+  description
+  ordering
+}
+
+enum ServiceInstanceCreationStatus {
+  DISABLED
+  PENDING
+  CREATED
+  READY
+}
+
+enum ServiceInstanceTag {
+  openCTI
+  openAEV
+  trial
+  others
+}
+
+enum ServiceInstanceFilterKey {
+  id
+  tags
+  service_definition_identifier
+  public
+}
+
+input ServiceInstanceFilter {
+  key: ServiceInstanceFilterKey
+  value: [String!]!
+}
+
+type ServiceInstance implements Node {
+  id: ID!
+  name: String!
+  description: String
+  slug: String
+  creation_status: ServiceInstanceCreationStatus
+  organization_subscribed: Boolean
+  user_joined: Boolean
+  links: [ServiceLink]
+  organization: [Organization]
+  subscriptions: [SubscriptionModel]
+  capabilities: [String]!
+  public: Boolean
+  tags: [ServiceInstanceTag!]
+  service_definition: ServiceDefinition
+  logo_document_id: DocumentId
+  illustration_document_id: DocumentId
+  ordering: Int!
+}
+
+type ServiceInstanceEdge {
+  cursor: String!
+  node: ServiceInstance
+}
+
+type ServiceConnection {
+  totalCount: Int!
+  edges: [ServiceInstanceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type SeoServiceInstance implements Node {
+  id: ID!
+  name: String!
+  slug: String
+  description: String
+  links: [ServiceLink]
+  tags: [ServiceInstanceTag!]
+  service_definition: ServiceDefinition!
+  logo_document_id: DocumentId
+  illustration_document_id: DocumentId
+}
+
+input AddServiceInput {
+  service_instance_name: String
+  service_instance_description: String
+  fee_type: String
+  price: Int
+  organization_id: String
+  url: String
+}
+
+input UpdatePlatformServiceMetadataInput {
+  serviceInstanceId: ServiceInstanceId!
+  name: String
+}
+
+type SubscribedServiceInstanceConfiguration {
+  token: String!
+  platform_id: String!
+  platform_url: String!
+  registerer_id: String!
+  platform_title: String!
+  platform_contract: PlatformContract!
+}
+
+type ServiceInstanceSubscription {
+  add: ServiceInstance
+  edit: ServiceInstance
+  delete: ServiceInstance
+}
+
+enum FeatureFlag {
+  DUMMY
+}
+
+type PlatformProvider {
+  name: String!
+  type: String!
+  provider: String!
+}
+
+type Settings {
+  platform_feature_flags: [FeatureFlag!]!
+  platform_providers: [PlatformProvider!]!
+  base_url_front: String!
+  environment: String!
+}
+
+type OpenAEVScenario implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
+}
+
+type CustomDashboard implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
+}
+
+enum IntegrationType {
+  csv_feed
+  connector
+  rss_feed
+  json_feed
+  taxii_feed
+  stream
+  third_party_integration
+}
+
+enum IntegrationSubType {
+  EXTERNAL_IMPORT
+  INTERNAL_ENRICHMENT
+  INTERNAL_EXPORT_FILE
+  INTERNAL_IMPORT_FILE
+  STREAM
+  NATIVE
+  ORCHESTRATION
+  DETECTION
+  CASE_MANAGEMENT
+  THREAT_ACTORS
+  MALWARE
+  CYBER_INDUSTRY
+  PERIODIC_BRIEFING
+  SECURITY_RESEARCHER
+  VENDORS
+  FEDERAL_ORGANIZATION
+  JOURNALISTS
+  NOT_FOR_PROFIT_ORGANIZATION
+  SOCIAL_MEDIA
+  DARKWEB
+}
+
+interface Integration implements Node & Document {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type IntegrationHack implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type CsvFeed implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type Connector implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  product_version: String
+  container_image: String
+  verified: Boolean!
+  source_code: String
+  subscription_link: String
+  integration_subtype: IntegrationSubType!
+  manager_supported: Boolean!
+  playbook_supported: Boolean!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+  minimum_deployable_version: String
+}
+
+type TaxiiFeed implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type RssFeed implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type Stream implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  feed_url: String
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type ThirdPartyIntegration implements Node & Document & Integration {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  remover_id: ID
+  integration_type: IntegrationType!
+  integration_subtype: IntegrationSubType!
+  vendor_url: String!
+  product_version: String
+  github_url: String
+  datasheet_url: String
+  blogpost_url: String
+  demo_url: String
+}
+
+type OpenCTIPlaybook implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
+}
+
+"""
+A Relay global ID for Subscription, extracted to a branded SubscriptionId string
+"""
+scalar SubscriptionId
+
+enum SubscriptionOrdering {
+  organization_name
+  start_date
+  end_date
+  service_name
+  service_provider
+  service_type
+  service_description
+}
+
+type SubscriptionModel implements Node {
+  id: ID!
+  organization_id: OrganizationId!
+  service_instance_id: ServiceInstanceId!
+  start_date: Date
+  end_date: Date
+  organization: Organization!
+  service_url: String!
+  service_instance: ServiceInstance
+  subscription_capability: [SubscriptionCapability]
+  user_service: [UserService]!
+}
+
+type SubscriptionEdge {
+  cursor: String!
+  node: SubscriptionModel!
+}
+
+input CreateSubscriptionsInput {
+  service_instance_id: ServiceInstanceId!
+  organization_id: [OrganizationId!]!
+  capability_ids: [Service_CapabilityId]
+  start_date: Date!
+  end_date: Date
+}
+
+input UpdateSubscriptionInput {
+  start_date: Date
+  end_date: Date
+  capability_ids: [Service_CapabilityId]
+}
+
+type SubscriptionConnection {
+  totalCount: Int!
+  edges: [SubscriptionEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum SubscriptionFilterKey {
+  organization_name
+  service_instance_id
+}
+
+input SubscriptionFilter {
+  key: SubscriptionFilterKey!
+  value: [String!]!
+}
+
+type TelemetryResponse {
+  result: Boolean!
+  message: String
+}
+
+input OneClickDeployInput {
+  platform_identifier: PlatformIdentifier!
+  service_instance_id: ServiceInstanceId!
+  resource_id: DocumentId!
+  resource_title: String!
+  platform_service_instance_id: ID!
+}
+
+type SendTelemetryMutation {
+  oneClickDeploy(input: OneClickDeployInput!): TelemetryResponse
+}
+
+"""A Relay global ID for UseCase, extracted to a branded UseCaseId string"""
+scalar UseCaseId
+
+type UseCase implements Node {
+  id: ID!
+  name: String!
+  color: String!
+}
+
+enum UseCaseOrdering {
+  name
+  color
+}
+
+type UseCaseEdge {
+  cursor: String!
+  node: UseCase!
+}
+
+type UseCaseConnection {
+  totalCount: Int!
+  edges: [UseCaseEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddUseCaseInput {
+  name: String!
+  color: String!
+}
+
+input EditUseCaseInput {
+  name: String
+  color: String
+}
+
+"""
+A Relay global ID for User_Service, extracted to a branded User_ServiceId string
+"""
+scalar User_ServiceId
+
+enum UserServiceOrdering {
+  first_name
+  last_name
+  email
+  service_name
+  service_provider
+  service_type
+  service_description
+  subscription_status
+  ordering
+}
+
+input UserServiceAddInput {
+  email: [String!]!
+  capabilities: [String]
+  subscriptionId: SubscriptionId
+}
+
+input UserServiceAddYourselfInput {
+  email: [String!]!
+  serviceInstanceId: ServiceInstanceId
+}
+
+input UserServiceDeleteInput {
+  email: String!
+  capabilities: [String]
+  subscriptionId: SubscriptionId!
+}
+
+type UserServiceConnection {
+  totalCount: Int!
+  edges: [UserServiceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserServiceEdge {
+  cursor: String!
+  node: UserService
+}
+
+type UserService implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
+  user: User
+  subscription: SubscriptionModel
+  user_service_capability: [UserServiceCapability]
+  ordering: Int
+}
+
+type UserServiceDeleted implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
+}
+
+enum FiligranProduct {
+  opencti
+  openaev
+  xtmone
+  xtmhub
+}
+
+enum Timeline {
+  now
+  next
+  under_consideration
+  finished
+}
+
+enum EditionType {
+  community_edition
+  enterprise_edition
+  partial_ee
+}
+
+enum EpicType {
+  other
+  integration
+}
+
+type Epic implements Node {
+  id: ID!
+  title: String!
+  short_description: String!
+  description: String!
+  edition_type: EditionType!
+  active: Boolean!
+  product: FiligranProduct!
+  timeline: Timeline!
+  epic_type: EpicType!
+  document: Document
+  document_id: DocumentId
+  uploader_id: String!
+  updater_id: String
+  created_at: Date!
+  updated_at: Date
+}
+
+input CreateEpicInput {
+  title: String!
+  short_description: String!
+  description: String!
+  edition_type: EditionType!
+  active: Boolean
+  product: FiligranProduct!
+  timeline: Timeline!
+  is_integration: Boolean
+  illustration_document: Upload
+}
+
+input UpdateEpicInput {
+  title: String
+  short_description: String
+  description: String
+  edition_type: EditionType!
+  active: Boolean
+  product: FiligranProduct
+  timeline: Timeline
+  is_integration: Boolean
+  illustration_document: Upload
+}
+
+type EpicEdge {
+  cursor: String!
+  node: Epic!
+}
+
+type EpicConnection {
+  totalCount: Int!
+  edges: [EpicEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum EpicOrdering {
+  title
+}
+
+enum PortalCapability {
+  BYPASS
+  READ_TRIALS
+  MODIFY_TRIALS
+  MODIFY_TRIALS_QUOTA
+  MODIFY_COMPETITORS
+  MANAGE_DEPLOYMENT
+  MANAGE_CONNECTORS_INGESTIONS
+}
+
+enum OrganizationCapability {
+  ADMINISTRATE_ORGANIZATION
+  MANAGE_ACCESS
+  MANAGE_SUBSCRIPTION
+  MANAGE_PLATFORM_REGISTRATION
+}
+
+enum ServiceRestriction {
+  ACCESS
+  ACCESS_USER
+  MANAGE_ACCESS
+  UPLOAD
+  DELETE
+  UPSERT
+}
+
+interface Node {
+  id: ID!
+}
+
+enum OrderingMode {
+  asc
+  desc
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type MergeEvent implements Node {
+  id: ID!
+  from: ID!
+  target: ID!
+}

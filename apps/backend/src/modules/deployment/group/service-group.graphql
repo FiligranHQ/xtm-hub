@@ -1,0 +1,32 @@
+scalar ServiceGroupId
+
+type ServiceGroup implements Node {
+  id: ID!
+  name: String!
+  users: [User!]
+}
+
+input UpdateServiceGroupsInputGroup {
+  id: ServiceGroupId!
+  userIds: [UserId!]!
+}
+
+input UpdateServiceGroupsInput {
+  groups: [UpdateServiceGroupsInputGroup!]!
+}
+
+type Query {
+  serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
+}
+
+type Mutation {
+  updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
+}

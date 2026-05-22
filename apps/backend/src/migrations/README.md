@@ -1,0 +1,14 @@
+Knex migrations doesnt support correctly ESM and typescript for now.
+Migrations must be defined as pure JS for this reason.
+
+## How to create a DB migration
+
+- Run "yarn knex:run migrate:make my_modif_name". It will create a migration file in the src/migrations.
+- Fill this file with `export async function up` and `export async function down`
+- On you first launch of portail-api, it will update the DB. It will insert a new entry in the `migrations` table.
+- Generate the Ts files with `yarn generate-pg-to-ts` or `npx kanel` (remove the `type: module` from
+  backend/package.json before launching the commands since it is not compatible)
+- Please think about update your graphQL, your models etc.
+- If a column is an enum type, update `.kanelrc.js` with the new enum type and regenerate the Ts files.
+
+NB : If you create a new table, add the databaseType in the knexfile.ts

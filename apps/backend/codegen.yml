@@ -1,0 +1,27 @@
+schema:
+  - "./src/**/*.graphql"
+emitLegacyCommonJSImports: false
+generates:
+  ./src/__generated__/resolvers-types.ts:
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+    config:
+      useTypeImports: true
+      useIndexSignature: true
+      maybeValue: T | null | undefined
+      inputMaybeValue: T | null
+      makeResolverTypeCallable: true
+      contextType: "../model/portal-context.js#PortalContext"
+      scalars:
+        ServiceInstanceId: "../model/kanel/public/ServiceInstance.js#ServiceInstanceId"
+        OrganizationId: "../model/kanel/public/Organization.js#OrganizationId"
+        CompetitorId: "../model/kanel/public/Competitor.js#CompetitorId"
+        DeploymentRequestId: "../model/kanel/public/DeploymentRequest.js#DeploymentRequestId"
+        DocumentId: "../model/kanel/public/Document.js#DocumentId"
+        UserId: "../model/kanel/public/User.js#UserId"
+        UseCaseId: "../model/kanel/public/UseCase.js#UseCaseId"
+        SubscriptionId: "../model/kanel/public/Subscription.js#SubscriptionId"
+        ServiceCapabilityId: "../model/kanel/public/ServiceCapability.js#ServiceCapabilityId"
+        UserServiceId: "../model/kanel/public/UserService.js#UserServiceId"
+        SubscriptionCapabilityId: "../model/kanel/public/SubscriptionCapability.js#SubscriptionCapabilityId"

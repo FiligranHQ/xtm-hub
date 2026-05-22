@@ -1,0 +1,39 @@
+import { APP_PATH } from '@/utils/path/constant';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import { renderHook } from '@testing-library/react';
+import { usePathname } from 'next/navigation';
+import { describe, expect, it, vi } from 'vitest';
+import useAdminPath from '@/hooks/use-admin-path';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
+
+vi.mock('./use-portal-capability', () => ({
+  useAdminByPass: vi.fn(),
+}));
+vi.mock('next/navigation', () => ({
+  usePathname: vi.fn(),
+}));
+
+describe('useAdminPath', () => {
+  it.each`
+    expected | userCapa                       | path
+    ${true}  | ${PortalCapabilityEnum.BYPASS} | ${'admin'}
+    ${false} | ${'NOBYPASS'}                  | ${'admin'}
+    ${false} | ${PortalCapabilityEnum.BYPASS} | ${'nothing'}
+    ${false} | ${'NOBYPASS'}                  | ${'nothing'}
+  `(
+    'Should return $expected if user has $userCapa and path includes $path',
+    ({ expected, userCapa, path }) => {
+      // Given
+      vi.mocked(useAdminByPass).mockReturnValue(
+        userCapa === PortalCapabilityEnum.BYPASS
+      );
+      vi.mocked(usePathname).mockReturnValue(`/${APP_PATH}/${path}/dashboard`);
+
+      // When
+      const { result } = renderHook(() => useAdminPath());
+
+      // Then
+      expect(result.current).toBe(expected);
+    }
+  );
+});

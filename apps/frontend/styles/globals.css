@@ -1,0 +1,152 @@
+@import '@filigran/chatbot/styles.css';
+@import '@filigran/ui/theme.css';
+@import 'tw-animate-css';
+@import 'tailwindcss';
+
+@reference '@filigran/ui/index.css';
+:root {
+  --hover-background: hsl(var(--gray-150));
+}
+.dark,
+body[data-theme='dark'],
+body[data-theme='Dark'] {
+  --hover-background: hsla(0, 0%, 100%, 0.1);
+}
+@source '../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
+@source '../../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
+
+@variant dark (.dark &);
+@variant mobile (@media screen and (max-width: 40rem));
+
+@layer base {
+  * {
+    @apply border-border;
+    font-family: var(--font-ibm-plex-sans), system-ui, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-geologica), system-ui, sans-serif;
+  }
+
+  h1 {
+    @apply txt-title;
+  }
+  h2 {
+    @apply txt-subtitle;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  ol {
+    @apply list-decimal pl-8;
+  }
+}
+
+.wmde-markdown,
+.markdown-content {
+  ul {
+    list-style-type: disc;
+  }
+  ol {
+    list-style-type: decimal;
+  }
+}
+
+.markdown-content {
+  line-height: 1.6;
+  word-wrap: break-word;
+
+  h1 {
+    @apply border-border mt-6 mb-4 border-b pb-2 text-2xl font-semibold;
+  }
+  h2 {
+    @apply border-border mt-5 mb-3 border-b pb-2 text-xl font-semibold;
+  }
+  h3 {
+    @apply mt-4 mb-2 text-lg font-semibold;
+  }
+  h4,
+  h5,
+  h6 {
+    @apply mt-3 mb-2 text-base font-semibold;
+  }
+
+  p {
+    @apply my-3;
+  }
+
+  a {
+    @apply text-primary underline hover:no-underline;
+  }
+
+  ul,
+  ol {
+    @apply my-3 pl-8;
+  }
+  ul {
+    @apply list-disc;
+  }
+  ol {
+    @apply list-decimal;
+  }
+  li {
+    @apply my-1;
+  }
+  li > ul,
+  li > ol {
+    @apply my-1;
+  }
+
+  blockquote {
+    @apply border-border text-muted-foreground my-3 border-l-4 pl-4 italic;
+  }
+
+  code:not(pre code) {
+    @apply bg-muted rounded px-1.5 py-0.5 font-mono text-sm;
+  }
+
+  pre {
+    @apply bg-muted my-3 overflow-x-auto rounded-md p-4;
+  }
+  pre code {
+    @apply bg-transparent p-0 font-mono text-sm;
+  }
+
+  hr {
+    @apply border-border my-6 border-t;
+  }
+
+  table {
+    @apply my-3 w-full border-collapse;
+  }
+  th,
+  td {
+    @apply border-border border px-3 py-2 text-left;
+  }
+  th {
+    @apply bg-muted font-semibold;
+  }
+
+  img {
+    @apply my-3 h-auto max-w-full rounded;
+  }
+
+  strong {
+    @apply font-semibold;
+  }
+  em {
+    @apply italic;
+  }
+}
+
+/* Allow fullsize textArea in MD editor (https://github.com/uiwjs/react-md-editor/issues/625) */
+.w-md-editor-text {
+  min-height: 100% !important;
+}

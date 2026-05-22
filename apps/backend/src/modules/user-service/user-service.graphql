@@ -1,0 +1,70 @@
+scalar UserServiceId
+
+enum UserServiceOrdering {
+  first_name
+  last_name
+  email
+  service_name
+  service_provider
+  service_type
+  service_description
+  subscription_status
+  ordering
+}
+
+input UserServiceAddInput {
+  email: [String!]!
+  capabilities: [String]
+  subscriptionId: SubscriptionId
+}
+
+input UserServiceAddYourselfInput {
+  email: [String!]!
+  serviceInstanceId: ServiceInstanceId
+}
+
+input UserServiceDeleteInput {
+  email: String!
+  capabilities: [String]
+  subscriptionId: SubscriptionId!
+}
+
+type Mutation {
+  addUserService(input: UserServiceAddInput!): [UserService] @auth
+  deleteUserService(input: UserServiceDeleteInput!): UserService @auth
+}
+type Query {
+  userServiceFromSubscription(
+    first: Int!
+    after: ID
+    orderBy: UserServiceOrdering!
+    orderMode: OrderingMode!
+    subscription_id: SubscriptionId!
+  ): UserServiceConnection @auth
+}
+type UserServiceConnection {
+  totalCount: Int!
+  edges: [UserServiceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserServiceEdge {
+  cursor: String!
+  node: UserService
+}
+
+type UserService implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
+  user: User
+  subscription: SubscriptionModel
+  user_service_capability: [UserServiceCapability]
+  ordering: Int
+}
+
+type UserServiceDeleted implements Node {
+  id: ID!
+  subscription_id: ID!
+  user_id: ID!
+}

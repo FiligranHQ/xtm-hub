@@ -1,0 +1,169 @@
+import { fromGlobalId } from 'graphql-relay/node/node.js';
+import {
+  AutoRegisterPlatformInput,
+  Resolvers,
+} from '../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { PortalContext } from '../../model/portal-context';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  UnknownErrorCode,
+} from '../../utils/error/error.code';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { BadRequestError } from '../../utils/error/error.util';
+import { DeploymentRequestDomain } from '../deployment/deployment.domain';
+import { loadSubscriptionByServiceInstanceAndOrganization } from '../service/instance/service-instance.domain';
+import { registrationApp } from './registration.app';
+import { registrationConnectivityApp } from './registration.connectivity.app';
+
+const resolvers: Resolvers = {
+  RegisteredPlatform: {
+    subscription: ({ id }, _, context) =>
+      loadSubscriptionByServiceInstanceAndOrganization(
+        context.user.selected_organization_id,
+        id as ServiceInstanceId
+      ),
+    deployment_request: ({ id }, _, __) =>
+      DeploymentRequestDomain.loadDeploymentRequestBy({
+        service_instance_id: id as ServiceInstanceId,
+      }),
+  },
+  Query: {
+    isPlatformRegistered: async (_, { input }) => {
+      try {
+        return await registrationApp.isPlatformRegistered(input);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.IsPlatformRegisteredUnknownError
+        );
+      }
+    },
+    canUnregisterPlatform: async (_, { input }) => {
+      try {
+        const response = await registrationApp.canUnregisterPlatform(input);
+
+        return {
+          ...response,
+          isPlatformRegistered: true,
+          organizationId: response.organizationId ?? undefined,
+        };
+      } catch (error) {
+        if (error.message === ErrorCode.PlatformNotRegistered) {
+          return {
+            isPlatformRegistered: false,
+          };
+        }
+
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.CanUnregisterPlatformUnknownError
+        );
+      }
+    },
+    registeredPlatform: async (_, { input }) =>
+      registrationApp.loadRegisteredPlatform(input.service_instance_id),
+    registeredPlatforms: async (_, { input }) =>
+      registrationApp.loadRegisteredPlatforms(input),
+    /**
+     * @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead.
+     * This function is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the new endpoint.
+     */
+    openCTIPlatformRegistrationStatus: async (_, { input }) =>
+      registrationApp.loadPlatformRegistrationStatus(input),
+    platformAssociatedOrganization: async (_, { platformId, tenantId }) => {
+      try {
+        return await registrationApp.loadPlatformAssociatedOrganization(
+          platformId,
+          tenantId
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
+  },
+  Mutation: {
+    registerPlatform: async (_, { input }) => {
+      try {
+        const payload = {
+          ...input,
+          // type may not be an OrganizationId, but can be a IsPlatformRegisteredOrganization
+          organizationId: fromGlobalId(input.organizationId).id,
+        };
+        const token = await registrationApp.registerPlatform(payload);
+        return { token };
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.RegisterPlatformUnknownError
+        );
+      }
+    },
+    unregisterPlatform: async (_, { input }) => {
+      try {
+        await registrationApp.unregisterPlatform(input);
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.UnregisterPlatformUnknownError
+        );
+      }
+    },
+    refreshUserPlatformToken: async (_, __, context) => {
+      try {
+        return await registrationApp.refreshUserPlatformToken(context.user.id);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.RefreshUserPlatformTokenUnknownError
+        );
+      }
+    },
+    refreshPlatformRegistrationConnectivityStatus: async (_, { input }) =>
+      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+        input
+      ),
+    refreshPlatformRegistrationConnectivityStatusSingleTenant: async (
+      _,
+      { input }
+    ) =>
+      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+        input
+      ),
+    refreshPlatformRegistrationConnectivityStatusAllTenants: async (
+      _,
+      { input }
+    ) =>
+      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        input
+      ),
+    autoRegisterPlatform: async (
+      _,
+      { platform, input },
+      context: PortalContext
+    ) => {
+      // TODO: Simplify code and remove deprecated input and tests once all trials use the new input type.
+      const resolvedInput: AutoRegisterPlatformInput | null =
+        input ?? (platform ? { platform } : null);
+      if (!resolvedInput) {
+        throw BadRequestError(
+          BadRequestErrorCode.MissingAutoRegisterPlatformArgument
+        );
+      }
+      try {
+        const token = context.req.header('XTM-Hub-Platform-Token');
+        await registrationApp.autoRegisterPlatform(token, resolvedInput);
+        return { success: true };
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.RegisterPlatformUnknownError
+        );
+      }
+    },
+  },
+};
+
+export default resolvers;

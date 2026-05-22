@@ -1,0 +1,26 @@
+import { graphql } from 'react-relay';
+
+export const ServiceCapabilityCreateMutation = graphql`
+  mutation serviceCapabilityMutation(
+    $input: EditServiceCapabilityInput
+    $serviceInstanceId: ServiceInstanceId
+  ) {
+    editServiceCapability(
+      input: $input
+      serviceInstanceId: $serviceInstanceId
+    ) {
+      id
+      organization {
+        name
+      }
+      user_service {
+        ...userService_fragment @relay(mask: false)
+      }
+      service_instance {
+        id
+        name
+        description
+      }
+    }
+  }
+`;

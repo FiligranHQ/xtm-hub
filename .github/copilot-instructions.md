@@ -16,11 +16,11 @@ XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace fo
 
 ### Applications
 
-| Workspace | Path | Stack | Dev Port |
-|---|---|---|---|
-| `portal-api` | `apps/portal-api` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `portal-front` | `apps/portal-front` | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
-| `portal-e2e-tests` | `apps/portal-e2e-tests` | Playwright | — |
+| Workspace          | Path                    | Stack | Dev Port |
+|--------------------|-------------------------|---|---|
+| `backend`          | `apps/backend`          | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
+| `frontend`         | `apps/frontend`     | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
+| `e2e`              | `apps/e2e`              | Playwright | — |
 
 ## Setup
 
@@ -50,7 +50,7 @@ yarn dev:front           # starts frontend on :3002 (needs API running first)
 
 ## Build & Validation
 
-### Backend (`apps/portal-api`)
+### Backend (`apps/backend`)
 
 ```bash
 yarn build               # esbuild compile + copy .graphql and migration .js files
@@ -61,7 +61,7 @@ yarn test                # Vitest (sets VITEST_MODE=true)
 yarn test:coverage       # with V8 coverage
 ```
 
-### Frontend (`apps/portal-front`)
+### Frontend (`apps/frontend`)
 
 ```bash
 yarn relay               # REQUIRED before build — runs relay-compiler + generate-enum script
@@ -75,7 +75,7 @@ yarn test:coverage       # with V8 coverage
 
 **`yarn relay` must run after any GraphQL schema change.** The `dev` script runs relay-compiler automatically via `concurrently`.
 
-### E2E Tests (`apps/portal-e2e-tests`)
+### E2E Tests (`apps/e2e`)
 
 ```bash
 yarn test:e2e            # Playwright (requires frontend + backend running)
@@ -88,10 +88,10 @@ E2E runs with `workers: 1` (sequential), `retries: 2`, Chromium only. Base URL d
 
 This is the most important data flow to understand:
 
-1. **Schema definition**: `.graphql` files in `apps/portal-api/src/modules/**/` and `src/nodes/`
-2. **Backend codegen**: `yarn generate:ts` in portal-api → runs `graphql-codegen` → produces `src/__generated__/resolvers-types.ts`
-3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to `apps/portal-front/schema.graphql`
-4. **Relay compilation**: `yarn relay` in portal-front → reads `schema.graphql` → generates TypeScript artifacts in `apps/portal-front/__generated__/`
+1. **Schema definition**: `.graphql` files in `apps/backend/src/modules/**/` and `src/nodes/`
+2. **Backend codegen**: `yarn generate:ts` in backend → runs `graphql-codegen` → produces `src/__generated__/resolvers-types.ts`
+3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to `apps/frontend/schema.graphql`
+4. **Relay compilation**: `yarn relay` in frontend → reads `schema.graphql` → generates TypeScript artifacts in `apps/frontend/__generated__/`
 5. **Enum generation**: `yarn generate:enum` (part of `yarn relay`) → extracts enums from the schema into TypeScript
 
 GraphQL resolvers are merged in `src/server/graphql-schema.ts`. Each module typically has: `*.graphql` (schema), `*.resolver.ts`, `*.service.ts`.
@@ -105,15 +105,15 @@ GraphQL resolvers are merged in `src/server/graphql-schema.ts`. Each module typi
 .yarnrc.yml             # Yarn 4 config: node-modules linker, scripts disabled, 3-day age gate
 .rules                  # Project rules (no comments in code)
 tsconfig.json           # Base TS config (extended by workspaces)
-graphql.config.yml      # Points to apps/portal-api/**/*.graphql
+graphql.config.yml      # Points to apps/backed/**/*.graphql
 codecov.yml             # Coverage reporting (informational only)
 renovate.json           # Dependency automation
-.husky/pre-commit       # Runs lint-staged in portal-api then portal-front
+.husky/pre-commit       # Runs lint-staged in backend then frontend
 chart/                  # Helm chart for Kubernetes deployment
 xtm-hub-dev/            # Docker Compose files (dev + CI)
 ```
 
-### Backend — `apps/portal-api/`
+### Backend — `apps/backend/`
 
 ```
 src/index.ts                    # Entry point — Express + Apollo Server + SSE setup
@@ -122,46 +122,77 @@ src/crons.ts                    # Scheduled jobs (node-cron)
 src/portal.const.ts             # Platform constants (UUIDs, roles, system user)
 src/pub.ts                      # GraphQL PubSub for subscriptions
 src/session-store-manager.ts    # Session store (PostgreSQL or memory)
+src/shutdown.ts                 # Graceful shutdown logic
 src/modules/                    # Feature modules (each has .graphql + .resolver.ts + .service.ts)
   common/                       # Shared GraphQL types (PageInfo, Connection, etc.)
-  organizations/                # Organization management
-  users/                        # User management
-  services/                     # Service instances, definitions, documents, deployments, integrations
-    document/                   # File management (MinIO)
-    integrations/               # OpenCTI connectors, CSV feeds
-    custom-dashboards/          # OpenCTI dashboards
-    openaev-scenarios/          # OpenBAS/AEV scenarios
-    registration/               # Platform registration
-    deployments/                # Service deployment requests
+  organization-management/      # Organization & user management
+    organizations/              # Organization management
+    users/                      # User management
+      user-admin/               # Admin user operations
+      user-domain/              # User domain logic
+      user-organization/        # User-organization relationships
+      user-pending/             # Pending user requests
+      user-profile/             # User profile
+      user-transferRequest/     # User transfer requests
+  service/                      # Service instances and definitions
+    instance/                   # Service instances
     definition/                 # Service definitions
-    group/                      # Service groups
-    instances/service-link/     # Service links
-    contract/                   # Service configuration/contracts
+  service-link/                 # Service links
+  deployment/                   # Deployment requests
+    competitor/                 # Competitor tracking
+    group/                      # Deployment groups
+    quota/                      # Deployment quotas
+  document/                     # File management (MinIO)
+    domain/                     # Document domain logic
+  shareable-resource/           # Shareable resources
+    opencti/                    # OpenCTI resources
+      integration/              # OpenCTI integrations
+      custom-dashboard/         # OpenCTI dashboards
+    openaev/                    # OpenAEV resources
+      scenario/                 # OpenAEV scenarios
+  registration/                 # Platform registration
+    service-configuration/      # Service configuration/contracts
+  security-management/          # Security & capabilities
+    authentication/             # Authentication providers
+      provider/                 # OIDC / local providers
+    capability/                 # Platform capabilities
+    service-capability/         # Service-level capabilities
+    user-organization-capability/ # User-org capabilities
+    user-service-capability/    # User-service capabilities
   settings/                     # Platform settings + labels
-  subcription/                  # Subscription management
-  user_service/                 # User-service relationships + capabilities
+  subscription/                 # Subscription management
+  user-service/                 # User-service relationships
   role-portal/                  # Role management
   telemetry/                    # Telemetry data
   log/                          # Activity logs
-  ingest-manifest/              # Manifest ingestion
-src/auth/                       # Authentication (OIDC provider, local)
+  use-case/                     # Use cases
+    object-use-case/            # Object-linked use cases
+  xtm-platform-roadmap/         # XTM Platform roadmap
 src/security/                   # Authorization (GraphQL directives, access control, guards)
   directive-graphql/            # @auth GraphQL directive
-  layer/                        # Security layers
   restriction/                  # Access restrictions
+  util/                         # Security utilities
 src/context/                    # AsyncLocalStorage contexts (request, database transaction)
 src/model/                      # TypeScript models
   kanel/                        # Auto-generated types from PostgreSQL (via kanel)
   portal-context.ts             # PortalContext type (user, req, res)
   user.ts                       # User type definitions
 src/nodes/                      # GraphQL Node interface (Relay-compatible)
+src/scripts/                    # Utility scripts
+src/server/                     # Server setup
+  apollo-plugins/               # Apollo Server plugins
+  endpoints/                    # Express endpoints
+  mail-template/                # Email templates
 src/stores/                     # Session store (PostgreSQL)
 src/thirdparty/                 # External services
   elasticsearch/                # ES client + migrations
   minio/                        # S3-compatible storage
   auth0/                        # Auth0 integration
   hubspot/                      # HubSpot webhooks
+  copilot/                      # Copilot integration
+  pgboss/                       # Job queue (pg-boss)
 src/utils/                      # Utilities (logger, hashing, formatting, feature flags)
+  error/                        # Error handling utilities
 src/seeds/                      # Production seed data
 src/migrations/                 # Knex database migrations (.js files)
 src/es-migrations/              # Elasticsearch migrations
@@ -181,12 +212,13 @@ eslint.config.mjs               # ESLint flat config (typescript-eslint strict)
 test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image
 ```
+When you create a new file in the backend, follow the template in generate-new-module.ts.
 
-### Frontend — `apps/portal-front/`
+### Frontend — `apps/frontend/`
 
 ```
 app/                            # Next.js 15 App Router
-  layout.tsx                    # Root layout
+  Layout.tsx                    # Root layout
   (application)/app/            # Authenticated app routes
     (admin)/admin/              # Admin panel (users, orgs, labels, services, trials, parameters)
     (user)/                     # User-facing routes
@@ -210,8 +242,8 @@ src/
   hooks/                        # Custom React hooks (useGranted, useDecodedParams, useIsMobile, etc.)
   relay/                        # Relay client setup
     environment/                # Client + server Relay environments
-    RelayProvider.tsx            # SSR-compatible Relay provider with streaming
-    serverPortalApiFetch.ts     # Server-side GraphQL fetch (uses Next.js cookies)
+    relay-provider.tsx            # SSR-compatible Relay provider with streaming
+    server-portal-api-fetch.ts     # Server-side GraphQL fetch (uses Next.js cookies)
   i18n/                         # Internationalization (next-intl)
     config.ts                   # i18n configuration
     locale.ts                   # Supported locales
@@ -243,13 +275,14 @@ eslint.config.mjs               # ESLint config (next/core-web-vitals + prettier
 test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image (standalone Next.js)
 ```
+When you create a new file in the frontend, follow the template in generate-component.ts.
 
 ### Path Aliases (Frontend)
 
 - `@/*` → `./src/*`
 - `@generated/*` → `./__generated__/*`
 
-### E2E Tests — `apps/portal-e2e-tests/`
+### E2E Tests — `apps/e2e/`
 
 ```
 tests/
@@ -267,7 +300,7 @@ Dockerfile                      # E2E test Docker image
 ## Database
 
 - **SQL Query Builder**: Knex.js 3 with PostgreSQL (`pg` driver) — not an ORM
-- **Config**: `node-config` library reads from `apps/portal-api/config/` JSON files. Environment variables override via `custom-environment-variables.json`.
+- **Config**: `node-config` library reads from `apps/backend/config/` JSON files. Environment variables override via `custom-environment-variables.json`.
 - **Migrations**: JavaScript files in `src/migrations/`. Run with `yarn migrate:latest`.
 - **Seeds**: In `src/seeds/` (production) and `tests/seeds/` (test).
 - **Test DB**: When `VITEST_MODE=true`, uses `test_database` database and `tests/seeds/` directory.
@@ -331,8 +364,8 @@ Removing the `skip-feature-env` label from an already-open PR triggers an immedi
 
 Before Docker builds, migrations and seeds are copied to e2e-tests:
 ```bash
-cp -r ./apps/portal-api/src/migrations ./apps/portal-e2e-tests/migrations
-cp -r ./apps/portal-api/tests/seeds ./apps/portal-e2e-tests/seeds
+cp -r ./apps/backend/src/migrations ./apps/e2e/migrations
+cp -r ./apps/backend/tests/seeds ./apps/e2e/seeds
 ```
 
 ## Commit Convention
@@ -371,7 +404,7 @@ Examples:
 4. Add `<name>.service.ts` with business logic
 5. Register resolver in `src/server/graphql-schema.ts`
 6. Run `yarn generate:ts` to update `src/__generated__/resolvers-types.ts`
-7. The schema will be written to `apps/portal-front/schema.graphql` on next API start (non-production)
+7. The schema will be written to `apps/frontend/schema.graphql` on next API start (non-production)
 
 ### Adding a New Frontend Page
 
@@ -384,9 +417,71 @@ Examples:
 ### Adding a Database Migration
 
 ```bash
-cd apps/portal-api
+cd apps/backend
 yarn migrate:make <migration_name>    # creates JS file in src/migrations/
 ```
+
+## Testing Patterns
+
+Both apps use **Vitest**. Test files sit next to the source file they cover (`*.test.ts` / `*.test.tsx`).
+
+### Prefer parametric tests with `it.each`
+
+When multiple cases share the same assertion logic, always use the template-literal form of `it.each` instead of duplicating `it()` blocks. This keeps tests compact and the failure output readable.
+
+```typescript
+it.each`
+  input        | expected
+  ${'foo'}     | ${'FOO'}
+  ${'bar'}     | ${'BAR'}
+  ${''}        | ${''}
+`('should uppercase "$input" to "$expected"', ({ input, expected }) => {
+  expect(toUpper(input)).toBe(expected);
+});
+```
+
+Rules:
+- First row = column headers (used in the test name via `$columnName` interpolation)
+- Each subsequent row = one test case
+- Include a `description` column when the input/expected values alone are not self-explanatory (see example below)
+
+```typescript
+it.each`
+  reason                       | expected                 | description
+  ${'Other: my reason'}        | ${'Other: my reason'}    | ${'standard free text'}
+  ${'Other:   extra spaces  '} | ${'Other: extra spaces'} | ${'whitespace trimmed'}
+  ${'Other:'}                  | ${'Other'}               | ${'empty after colon'}
+`(
+  'should format "$reason" as "$expected" ($description)',
+  ({ reason, expected }) => {
+    expect(formatReason(reason)).toBe(expected);
+  }
+);
+```
+
+### Extracting pure utility functions for testability
+
+Avoid testing complex component internals directly. Prefer extracting logic into a **pure utility function** in a `*.utils.ts` file alongside the component, then unit-test the utility in isolation. The component simply calls the utility.
+
+```
+TrialsTab.tsx           ← calls formatCancellationReason()
+trials-tab.utils.ts      ← pure function, no React/Relay deps
+trials-tab.utils.test.ts ← fast, isolated unit tests
+```
+
+### Frontend test conventions
+
+- Use `testRender` from `@/utils/test/test-render` to render components (wraps providers).
+- Mock `next-intl` with `useTranslations: () => (key: string) => key` so tests assert on i18n keys.
+- Mock `react-relay` mutations with `useMutation: () => [vi.fn(), {}]`.
+- Mock heavy UI components (e.g. `DataTable`) with simple `<div>` stubs when not under test.
+- Use `createMockEnvironment()` from `relay-test-utils` for Relay queries.
+
+### Backend test conventions
+
+- Integration tests hit a real `test_database` PostgreSQL instance (set when `VITEST_MODE=true`).
+- Use `describe` blocks to group by function/method, nest a second level for scenario groups.
+- Prefer `expect.any(Date)` / `expect.objectContaining()` for dynamic values.
 
 ## Pitfalls
 
@@ -396,4 +491,4 @@ yarn migrate:make <migration_name>    # creates JS file in src/migrations/
 - **TypeScript ESLint warning** about TS 5.9.3 vs supported <5.9.0: non-blocking, ignore it
 - **Frontend port**: Dev runs on 3002, Docker production runs on 3000 internally
 - **Test DB**: Backend tests use `test_database` DB (not `cloud-portal`) when `VITEST_MODE=true`
-- **Pre-commit hook**: Runs `lint-staged` in both portal-api and portal-front sequentially
+- **Pre-commit hook**: Runs `lint-staged` in both backend and frontend sequentially

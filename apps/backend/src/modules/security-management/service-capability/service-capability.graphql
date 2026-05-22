@@ -1,0 +1,18 @@
+scalar ServiceCapabilityId
+
+type GenericServiceCapability implements Node {
+  id: ID!
+  name: String
+}
+
+input EditServiceCapabilityInput {
+  user_service_id: UserServiceId
+  capabilities: [String]!
+}
+
+type Mutation {
+  editServiceCapability(
+    input: EditServiceCapabilityInput
+    serviceInstanceId: ServiceInstanceId
+  ): SubscriptionModel @auth
+}
