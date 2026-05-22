@@ -31,7 +31,7 @@ export interface HubspotPayloadMap {
 export const HUBSPOT_QUEUES = {
   LOGIN: 'hubspot.login',
   REACH_OUT_SALES: 'hubspot.reach_out_sales',
-  MAIL_SENT: 'hubspot.mailSent',
+  MAIL_SENT: 'hubspot.mail_sent',
   DEAD_LETTER: 'hubspot.deadletter',
 } as const;
 
