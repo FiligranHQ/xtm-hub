@@ -1,6 +1,10 @@
 import express from 'express';
 import { describe, expect, it, vi } from 'vitest';
-import { GRAPHQL_RESOLVE_INFO } from '../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  GRAPHQL_RESOLVE_INFO,
+} from '../../../tests/tests.const';
+import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
 import { UserLoadUserBy } from '../../model/user';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from './news-feed.app';
@@ -17,12 +21,6 @@ const makeMockContext = (platformId: string | null, token: string | null) => ({
   res: {} as express.Response,
   user: undefined as unknown as UserLoadUserBy,
 });
-
-const emptyContext = {
-  req: {} as express.Request,
-  res: {} as express.Response,
-  user: undefined as unknown as UserLoadUserBy,
-};
 
 describe('consume provisioned news feed items GraphQL mutation', () => {
   it('should consume provisioned news feed items with extracted platformId and token and return the result', async () => {
@@ -112,7 +110,7 @@ describe('newsFeedItems GraphQL query', () => {
     const result = await newsFeedResolver.Query!.newsFeedItems!(
       {},
       { first: 10, after: 'cursor-abc' },
-      emptyContext,
+      contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
@@ -134,7 +132,7 @@ describe('newsFeedItems GraphQL query', () => {
     const call = newsFeedResolver.Query!.newsFeedItems!(
       {},
       { first: 10 },
-      emptyContext,
+      contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
@@ -146,14 +144,14 @@ describe('newsFeedItems GraphQL query', () => {
 describe('deleteNewsFeedItem GraphQL mutation', () => {
   it('should call deleteNewsFeedItem with the provided id and return true', async () => {
     // Given
-    const id = 'news-feed-item-id-123';
+    const id = 'news-feed-item-id-123' as NewsFeedItemId;
     vi.spyOn(NewsFeedApp, 'deleteNewsFeedItem').mockResolvedValue(undefined);
 
     // When
     const result = await newsFeedResolver.Mutation!.deleteNewsFeedItem!(
       {},
       { id },
-      emptyContext,
+      contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
@@ -173,8 +171,8 @@ describe('deleteNewsFeedItem GraphQL mutation', () => {
     // When
     const call = newsFeedResolver.Mutation!.deleteNewsFeedItem!(
       {},
-      { id: 'some-id' },
-      emptyContext,
+      { id: 'some-id' as NewsFeedItemId },
+      contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
