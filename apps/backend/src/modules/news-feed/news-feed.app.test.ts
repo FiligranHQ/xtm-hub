@@ -22,6 +22,7 @@ import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ProvisionedNewsFeedItemPlatformId } from '../../model/kanel/public/ProvisionedNewsFeedItem';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
@@ -686,6 +687,185 @@ describe('newsFeedApp', () => {
           news_feed_item_id: softDeletedItem.id,
         });
         expect(provisioned).toHaveLength(0);
+      });
+    });
+
+    describe('upsertResourceNewsFeed', () => {
+      const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS
+        .ID as ServiceInstanceId;
+
+      it('should do nothing when the service definition is not configured', async () => {
+        // Given
+        vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(false);
+        const createResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
+          .mockResolvedValue();
+        const updateResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'updateResourceNewsFeedItem')
+          .mockResolvedValue();
+
+        // When
+        await NewsFeedApp.upsertResourceNewsFeed({
+          documentBeforeUpdate: undefined,
+          updatedDocument: { ...document, active: true },
+          serviceInstanceId,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiIntegrations,
+        });
+
+        // Then
+        expect(createResourceNewsFeedItemSpy).not.toHaveBeenCalled();
+        expect(updateResourceNewsFeedItemSpy).not.toHaveBeenCalled();
+      });
+
+      it('should create a news feed item when document is created as active', async () => {
+        // Given
+        vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
+        const createResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
+          .mockResolvedValue();
+        const updateResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'updateResourceNewsFeedItem')
+          .mockResolvedValue();
+
+        const updatedDocument = { ...document, active: true };
+
+        // When
+        await NewsFeedApp.upsertResourceNewsFeed({
+          documentBeforeUpdate: undefined,
+          updatedDocument,
+          serviceInstanceId,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        });
+
+        // Then
+        expect(createResourceNewsFeedItemSpy).toHaveBeenCalledOnce();
+        expect(createResourceNewsFeedItemSpy).toHaveBeenCalledWith({
+          document: updatedDocument,
+          serviceInstanceId,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        });
+        expect(updateResourceNewsFeedItemSpy).not.toHaveBeenCalled();
+      });
+
+      it('should update the existing news feed item when document stays active', async () => {
+        // Given
+        vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
+        const createResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
+          .mockResolvedValue();
+        const updateResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'updateResourceNewsFeedItem')
+          .mockResolvedValue();
+
+        const updatedDocument = { ...document, active: true };
+
+        // When
+        await NewsFeedApp.upsertResourceNewsFeed({
+          documentBeforeUpdate: { ...document, active: true },
+          updatedDocument,
+          serviceInstanceId,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        });
+
+        // Then
+        expect(updateResourceNewsFeedItemSpy).toHaveBeenCalledOnce();
+        expect(updateResourceNewsFeedItemSpy).toHaveBeenCalledWith({
+          document: updatedDocument,
+          serviceInstanceId,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        });
+        expect(createResourceNewsFeedItemSpy).not.toHaveBeenCalled();
+      });
+
+      it('should do nothing when updated document is inactive', async () => {
+        // Given
+        vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
+        const createResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
+          .mockResolvedValue();
+        const updateResourceNewsFeedItemSpy = vi
+          .spyOn(NewsFeedApp, 'updateResourceNewsFeedItem')
+          .mockResolvedValue();
+
+        // When
+        await NewsFeedApp.upsertResourceNewsFeed({
+          documentBeforeUpdate: { ...document, active: true },
+          updatedDocument: { ...document, active: false },
+          serviceInstanceId,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        });
+
+        // Then
+        expect(createResourceNewsFeedItemSpy).not.toHaveBeenCalled();
+        expect(updateResourceNewsFeedItemSpy).not.toHaveBeenCalled();
+      });
+
+      it('should log creation failure message when create branch fails during creation flow', async () => {
+        // Given
+        const error = new Error('create-failed');
+        vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
+        vi.spyOn(NewsFeedApp, 'createResourceNewsFeedItem').mockRejectedValue(
+          error
+        );
+        const logErrorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {
+          return;
+        });
+
+        // When
+        await NewsFeedApp.upsertResourceNewsFeed({
+          documentBeforeUpdate: undefined,
+          updatedDocument: { ...document, active: true },
+          serviceInstanceId,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        });
+
+        // Then
+        expect(logErrorSpy).toHaveBeenCalledWith(
+          'Unable to create news feed item',
+          {
+            error,
+            documentId: document.id,
+            source: 'creation',
+          }
+        );
+      });
+
+      it('should log update-branch failure message when update fails during update flow', async () => {
+        // Given
+        const error = new Error('update-failed');
+        vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
+        vi.spyOn(NewsFeedApp, 'updateResourceNewsFeedItem').mockRejectedValue(
+          error
+        );
+        const logErrorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {
+          return;
+        });
+
+        // When
+        await NewsFeedApp.upsertResourceNewsFeed({
+          documentBeforeUpdate: { ...document, active: true },
+          updatedDocument: { ...document, active: true },
+          serviceInstanceId,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        });
+
+        // Then
+        expect(logErrorSpy).toHaveBeenCalledWith(
+          'Unable to update news feed item',
+          {
+            error,
+            documentId: document.id,
+            source: 'update',
+          }
+        );
       });
     });
   });

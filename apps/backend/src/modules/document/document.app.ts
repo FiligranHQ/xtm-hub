@@ -170,21 +170,12 @@ export const DocumentApp = {
       });
     }
 
-    if (
-      createdDocument.active === true &&
-      NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)
-    ) {
-      NewsFeedApp.createResourceNewsFeedItem({
-        document: createdDocument,
-        serviceInstanceId,
-        serviceDefinitionIdentifier: serviceDefinition.identifier,
-      }).catch((error) =>
-        logApp.error('Unable to create news feed item on document creation', {
-          error,
-          documentId: createdDocument.id,
-        })
-      );
-    }
+    void NewsFeedApp.upsertResourceNewsFeed({
+      documentBeforeUpdate: undefined,
+      updatedDocument: createdDocument,
+      serviceInstanceId,
+      serviceDefinitionIdentifier: serviceDefinition.identifier,
+    });
 
     return createdDocument;
   },
@@ -350,34 +341,12 @@ export const DocumentApp = {
       return doc;
     });
 
-    if (NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)) {
-      if (
-        documentBeforeUpdate.active === false &&
-        updatedDocument.active === true
-      ) {
-        NewsFeedApp.createResourceNewsFeedItem({
-          document: updatedDocument,
-          serviceInstanceId,
-          serviceDefinitionIdentifier: serviceDefinition.identifier,
-        }).catch((error) =>
-          logApp.error('Unable to create news feed item on document update', {
-            error,
-            documentId: updatedDocument.id,
-          })
-        );
-      } else if (updatedDocument.active === true) {
-        NewsFeedApp.updateResourceNewsFeedItem({
-          document: updatedDocument,
-          serviceInstanceId,
-          serviceDefinitionIdentifier: serviceDefinition.identifier,
-        }).catch((error) =>
-          logApp.error('Unable to update news feed item on document update', {
-            error,
-            documentId: updatedDocument.id,
-          })
-        );
-      }
-    }
+    void NewsFeedApp.upsertResourceNewsFeed({
+      documentBeforeUpdate,
+      updatedDocument,
+      serviceInstanceId,
+      serviceDefinitionIdentifier: serviceDefinition.identifier,
+    });
 
     return updatedDocument;
   },

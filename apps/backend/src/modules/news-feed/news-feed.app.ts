@@ -185,6 +185,55 @@ export const NewsFeedApp = {
     });
   },
 
+  upsertResourceNewsFeed: async ({
+    documentBeforeUpdate,
+    updatedDocument,
+    serviceInstanceId,
+    serviceDefinitionIdentifier,
+  }: {
+    documentBeforeUpdate?: Document;
+    updatedDocument: Document;
+    serviceInstanceId: ServiceInstanceId;
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
+  }): Promise<void> => {
+    if (!NewsFeedApp.isNewsFeedConfigured(serviceDefinitionIdentifier)) {
+      return;
+    }
+
+    if (updatedDocument.active !== true) {
+      return;
+    }
+
+    const shouldCreateNewsFeedItem =
+      !documentBeforeUpdate || documentBeforeUpdate.active === false;
+    if (shouldCreateNewsFeedItem) {
+      await NewsFeedApp.createResourceNewsFeedItem({
+        document: updatedDocument,
+        serviceInstanceId,
+        serviceDefinitionIdentifier,
+      }).catch((error) =>
+        logApp.error('Unable to create news feed item', {
+          error,
+          documentId: updatedDocument.id,
+          source: documentBeforeUpdate ? 'update' : 'creation',
+        })
+      );
+      return;
+    }
+
+    await NewsFeedApp.updateResourceNewsFeedItem({
+      document: updatedDocument,
+      serviceInstanceId,
+      serviceDefinitionIdentifier,
+    }).catch((error) =>
+      logApp.error('Unable to update news feed item', {
+        error,
+        documentId: updatedDocument.id,
+        source: 'update',
+      })
+    );
+  },
+
   deleteNewsFeedItem: async ({
     newsFeedItemId,
   }: {
