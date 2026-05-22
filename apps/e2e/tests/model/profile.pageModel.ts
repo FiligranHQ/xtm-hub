@@ -61,6 +61,11 @@ export default class ProfilePage {
     await this.page.getByRole('menuitem', { name: 'Profile' }).click();
   }
 
+  async changeLanguage(label: string) {
+    await this.page.getByRole('combobox', { name: 'Language' }).click();
+    await this.page.getByRole('option', { name: label }).click();
+  }
+
   async uploadProfilePicture(filePath: string) {
     const fileInput = this.page.locator('input[type="file"]');
     await fileInput.setInputFiles(filePath);

@@ -298,6 +298,22 @@
     "Manage": "Gérer",
     "OpenManagement": "Aller vers la page de management"
   },
+  "PublicHomePage": {
+    "Title": "Découvrez nos ressources et notre expertise"
+  },
+  "PublicLayout": {
+    "SignIn": "Connexion",
+    "AllRightsReserved": "Tous droits réservés",
+    "FiligranWebsite": "Site Filigran",
+    "PrivacyPolicy": "Politique de confidentialité",
+    "TermsOfServices": "Conditions d'utilisation",
+    "Licenses": "Licences",
+    "Contact": "Contact"
+  },
+  "PublicResourcePage": {
+    "Download": "Télécharger",
+    "Overview": "Aperçu"
+  },
   "InviteUserServiceForm": {
     "Capabilities": "Capacités disponibles",
     "CapabilitiesDescription": "Vous pouvez ajouter des capacité spécifiques aux utilisateurs de {organizationName} pour leur souscription sur {serviceName}",
@@ -324,7 +340,8 @@
   "LocaleSwitcher": {
     "Label": "Langage",
     "en": "English",
-    "fr": "Français"
+    "fr": "Français",
+    "ja": "日本語"
   },
   "LoginPage": {
     "CreateYourAccount": "créer votre compte",
@@ -361,6 +378,19 @@
     "OpenCTITrials": "Essais OpenCTI",
     "OpenAEVTrials": "Essais OpenAEV",
     "Competitors": "Concurrents"
+  },
+  "Metadata": {
+    "Title": "Votre passerelle vers le Renseignement sur les Cybermenaces et la Simulation d'attaques | XTM Hub by Filigran",
+    "Description": "XTM Hub est votre passerelle vers les solutions de cybersécurité de Filigran : Renseignement sur les Cybermenaces et Simulation d'attaques. Détectez les menaces. Passez à l'action.",
+    "ShortTitle": "XTM Hub by Filigran - Plateforme de Renseignement sur les Cybermenaces",
+    "ShortDescription": "XTM Hub est votre passerelle vers les solutions de cybersécurité de Filigran.",
+    "SiteName": "XTM Hub by Filigran",
+    "ServiceFallbackDescription": "Découvrez notre solution de cybersécurité pour renforcer votre threat intelligence et votre protection.",
+    "DocumentFallbackDescriptionDashboard": "Explorez ce dashboard de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
+    "DocumentFallbackDescriptionIntegration": "Explorez cette intégration de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
+    "DocumentFallbackDescriptionScenario": "Explorez ce scénario d'attaque OpenAEV pour renforcer votre émulation d'adversaire et votre validation de sécurité.",
+    "DocumentFallbackDescriptionGeneric": "Explorez cette ressource sur XTM Hub by Filigran pour renforcer votre posture de cybersécurité.",
+    "ResourcePreviewAlt": "{name} - Aperçu de la ressource"
   },
   "CompetitorListPage": {
     "Name": "Nom",
@@ -685,6 +715,60 @@
       "ManageAccessDescription": "Vous pouvez accéder au service et inviter des utilisateurs à ce service",
       "ManageAccessName": "Manage access",
       "SelectCapabilities": "Sélectionner les capacités"
+    },
+    "Cards": {
+      "filigran-academy": {
+        "Name": "Filigran Academy",
+        "Description": "Maîtrisez OpenCTI et OpenAEV avec Filigran Academy — votre guide ultime vers le succès pour tous les niveaux !"
+      },
+      "filigran-blog": {
+        "Name": "Blog Filigran",
+        "Description": "Découvrez les derniers articles sur OpenCTI, OpenAEV et bien plus encore."
+      },
+      "openaev-101": {
+        "Name": "OpenAEV 101",
+        "Description": "Découvrez comment déployer et utiliser OpenAEV, la plateforme Filigran de simulation réaliste de cybermenaces, pour mettre en place des exercices concrets d'émulation d'adversaires."
+      },
+      "openaev-demo": {
+        "Name": "Démo OpenAEV",
+        "Description": "Accédez à une instance de démonstration OpenAEV en ligne et explorez toutes ses fonctionnalités."
+      },
+      "openaev-documentation": {
+        "Name": "Documentation OpenAEV",
+        "Description": "Retrouvez tous les documents pour démarrer avec notre plateforme de validation d'exposition aux adversaires, ainsi que les notes de version et les présentations."
+      },
+      "openaev-scenarios": {
+        "Name": "Bibliothèque de scénarios OpenAEV",
+        "Description": "Explorez une sélection de scénarios OpenAEV partagés par l'équipe Filigran."
+      },
+      "opencti-101": {
+        "Name": "OpenCTI 101",
+        "Description": "Les fondamentaux : découvrez les concepts essentiels à travers des cas d'usage et des workflows simples."
+      },
+      "opencti-custom-dashboards": {
+        "Name": "Bibliothèque de tableaux de bord OpenCTI",
+        "Description": "Explorez une sélection de tableaux de bord personnalisés pour la gestion des menaces, conçus pour tirer le meilleur parti d'OpenCTI."
+      },
+      "opencti-demo": {
+        "Name": "Démo OpenCTI",
+        "Description": "Accédez à une instance de démonstration OpenCTI en ligne et explorez toutes ses fonctionnalités."
+      },
+      "opencti-documentation": {
+        "Name": "Documentation OpenCTI",
+        "Description": "Retrouvez tous les documents pour démarrer avec notre plateforme de renseignement sur les menaces, ainsi que les notes de version et les présentations."
+      },
+      "opencti-integrations": {
+        "Name": "Bibliothèque d'intégrations OpenCTI",
+        "Description": "Explorez une sélection d'intégrations OpenCTI partagées par l'équipe Filigran."
+      },
+      "slack": {
+        "Name": "Slack",
+        "Description": "Rejoignez notre communauté de gestion des menaces en pleine croissance (plus de 5 000 membres). Partagez vos expériences et trouvez le soutien dont vous avez besoin."
+      },
+      "xtm-platform-roadmap": {
+        "Name": "Roadmap XTM Platform",
+        "Description": "Explorez et suivez la roadmap de la Filigran XTM Platform."
+      }
     },
     "ComingSoon": "Bientôt disponible",
     "Connectors": {
@@ -1091,6 +1175,34 @@
       },
       "StartTrial": "Commencez votre essai gratuit",
       "StartTrialWithName": "Commencez votre essai gratuit de {platformName}",
+      "OpenAEVPlatformBreadcrumb": "Plateforme d'essai OpenAEV",
+      "OpenCTIPlatformBreadcrumb": "Plateforme d'essai OpenCTI",
+      "PageHeader": {
+        "Welcome": "Bienvenue chez Filigran",
+        "Title": "Démarrons votre essai gratuit de {platformName} !"
+      },
+      "Storage": {
+        "Title": "Note importante sur le stockage de votre environnement d'essai",
+        "SaaSFeaturesLink": "fonctionnalités Enterprise Edition SaaS",
+        "NoSLA": "<strong>L'environnement d'essai gratuit n'inclut pas de SLA.</strong> En cas de panne du fournisseur cloud, le temps de restauration n'est pas garanti. Nous recommandons de ne pas stocker de données critiques ou irremplaçables dans votre environnement d'essai.",
+        "OpenCTIDescription": "L'essai gratuit OpenCTI fournit aux utilisateurs une instance SaaS « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec <strong>une puissance de calcul et un stockage réduits (jusqu'à 40 Go de stockage de données de threat intelligence et 3 Go de stockage de fichiers).</strong> L'ingestion de gros flux premium avec des jeux de données riches peut rapidement saturer votre stockage.",
+        "OpenAEVDescription": "L'essai gratuit OpenAEV fournit aux utilisateurs une instance « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec une puissance de calcul réduite et un stockage limité à <strong>16 Go</strong>."
+      },
+      "XTMPlatform": {
+        "Title": "Votre platform eXtended Threat Management (XTM)",
+        "Description": "{platformName} fait partie de la solution open-source de threat intelligence, de simulation avancée d'adversaires et de gestion stratégique des cyber-risques de Filigran, conçue pour aider votre organisation à anticiper et gérer les menaces de bout en bout.",
+        "OpenCTITagline": "Collecter, corréler et exploiter",
+        "OpenCTIDescription": "Une plateforme de threat intelligence open-source construite par des praticiens pour des praticiens — pour briser les silos de données et rendre la threat intelligence réellement actionnable.",
+        "OpenAEVTagline": "Prioriser, tester et corriger ce qui compte",
+        "OpenAEVDescription": "Défendez-vous proactivement contre les menaces avec l'Adversarial Exposure Validation (AEV), en simulant des scénarios d'attaque réels pour optimiser vos défenses.",
+        "LogoAlt": "Logo {name}",
+        "IllustrationAlt": "Illustration du service d'essai gratuit"
+      },
+      "QuickStart": {
+        "Title": "Guide de démarrage rapide",
+        "Subtitle": "Tirez le meilleur de votre plateforme {platformName} !",
+        "Description": "Explorez des guides pas-à-pas, des cours d'experts et les retours de la communauté pour résoudre des cas d'usage concrets et devenir un champion Filigran !"
+      },
       "GoToMyTrial": "Accéder à ma version d'évaluation",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
       "ReachOutToSales": "Contactez nous",

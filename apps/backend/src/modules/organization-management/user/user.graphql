@@ -27,6 +27,7 @@ type User implements Node {
   last_name: String
   picture: String
   country: String
+  selected_language: String
   disabled: Boolean
   selected_organization_id: OrganizationId
   organizations: [Organization!]
@@ -94,6 +95,7 @@ input EditMeUserInput {
   first_name: String
   last_name: String
   country: String
+  selected_language: String
 }
 
 input OrganizationCapabilitiesInput {

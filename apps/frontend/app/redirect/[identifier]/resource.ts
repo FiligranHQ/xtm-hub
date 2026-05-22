@@ -46,6 +46,7 @@ export const redirectToResource = async (
   // New param from now
   const platform_id = searchParams.get('platform_id');
   const tenant_id = searchParams.get('tenant_id');
+  const document_id = searchParams.get('document_id');
 
   // Build forwarded params: all params except the internal routing ones
   const internalParams = new Set([
@@ -53,6 +54,7 @@ export const redirectToResource = async (
     'oaev_instance_id',
     'platform_id',
     'tenant_id',
+    'document_id',
   ]);
   const forwardedParams = new URLSearchParams();
   searchParams.forEach((value, key) => {
@@ -84,6 +86,6 @@ export const redirectToResource = async (
     return NextResponse.redirect(new URL(`/${APP_PATH}`, baseUrlFront));
   }
 
-  const targetPath = `/${APP_PATH}/service/${identifier}/${serviceInstances[0].id}${queryString ? `?${queryString}` : ''}`;
+  const targetPath = `/${APP_PATH}/service/${identifier}/${serviceInstances[0].id}${queryString ? `?${queryString}` : ''}${document_id ? `/${document_id}` : ''}`;
   return NextResponse.redirect(new URL(targetPath, baseUrlFront));
 };

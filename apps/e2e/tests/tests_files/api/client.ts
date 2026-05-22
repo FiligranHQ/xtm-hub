@@ -32,8 +32,11 @@ export class ApiClient {
     `;
 
     const result = await this.callGraphQL(loginQuery, { email, password });
-    const headers = result.headers();
-    this.authCookie = headers['set-cookie'];
+    this.authCookie = result
+      .headersArray()
+      .filter((h) => h.name.toLowerCase() === 'set-cookie')
+      .map((h) => h.value.split(';')[0])
+      .join('; ');
   }
 
   async callGraphQL(

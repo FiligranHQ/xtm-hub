@@ -13,7 +13,7 @@ export class CybersecuritySolutionsPage {
   }
 
   async assertCurrentPage() {
-    await this.page.waitForURL('/');
+    await this.page.waitForURL('/en');
     await expect(
       this.page.getByRole('heading', {
         level: 1,

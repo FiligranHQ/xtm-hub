@@ -1,5 +1,21 @@
+import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/ShareableResourceConnectorSlugPublic';
+import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
+import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
+import type { PublicLocale } from '@/i18n/config';
+import { RelayProvider } from '@/relay/relay-provider';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { formatPersonNames } from '@/utils/format/name';
+import {
+  buildAlternates,
+  getAlternateLocaleTags,
+  getLocaleTag,
+} from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
@@ -19,20 +35,23 @@ import SeoServiceInstanceQuery, {
 } from '@generated/seoServiceInstanceQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MarkdownAsync } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/ShareableResourceConnectorSlugPublic';
-import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
-import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/BadgeOverflowCounter';
-import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+
+const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
+  [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
+    'Metadata.DocumentFallbackDescriptionIntegration',
+  [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
+    'Metadata.DocumentFallbackDescriptionDashboard',
+  [ServiceSlug.OPEN_AEV_SCENARIOS]:
+    'Metadata.DocumentFallbackDescriptionScenario',
+  [ServiceSlug.OPEN_CTI_PLAYBOOKS]:
+    'Metadata.DocumentFallbackDescriptionGeneric',
+};
 
 /**
  * Fetch the data for the page with caching to avoid multiple requests
@@ -73,14 +92,16 @@ const getPageData = async (serviceSlug: string, docSlug: string) => {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string; docSlug: string }>;
+  params: Promise<{ slug: string; docSlug: string; locale: PublicLocale }>;
 }): Promise<Metadata> {
   const awaitedParams = await params;
+  const { locale } = awaitedParams;
 
   const { baseUrl, serviceInstance, document } = await getPageData(
     awaitedParams.slug,
     awaitedParams.docSlug
   );
+  const t = await getTranslations({ locale });
   const serviceInformation = getServiceInfo(
     {
       id: serviceInstance.id,
@@ -89,19 +110,25 @@ export async function generateMetadata({
     document.id
   );
 
+  const pathname = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`;
+
+  const fallbackDescription = t(
+    FALLBACK_DESCRIPTION_KEYS[serviceInstance.slug as ServiceSlug] ??
+      'Metadata.DocumentFallbackDescriptionGeneric'
+  );
+
   const metadata: Metadata = {
     title: `${document.name} | ${serviceInstance.name} | XTM Hub by Filigran`,
     description: document.short_description
       ? `${document.short_description}${serviceInformation?.description}`
-      : document.description?.substring(0, 160) ||
-        `Explore this cybersecurity ${serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS ? 'dashboard' : 'integration'} for enhanced threat intelligence and monitoring.`,
+      : document.description?.substring(0, 160) || fallbackDescription,
     metadataBase: new URL(baseUrl),
     openGraph: {
       title: document!.name!,
       description: document.short_description
         ? `${document.short_description}${serviceInformation?.description}`
         : document.description?.substring(0, 160),
-      url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`,
+      url: `${baseUrl}/${locale}${pathname}`,
       type: 'article',
       siteName: 'XTM Hub by Filigran',
       publishedTime: document.created_at,
@@ -110,7 +137,10 @@ export async function generateMetadata({
         ? [formatPersonNames(document.uploader)]
         : undefined,
       tags: document.use_cases?.map((useCase) => useCase.name),
+      locale: getLocaleTag(locale),
+      alternateLocale: getAlternateLocaleTags(locale),
     },
+    alternates: buildAlternates(pathname, locale),
     twitter: {
       card: 'summary_large_image',
       title: document!.name!,
@@ -127,7 +157,7 @@ export async function generateMetadata({
     metadata.openGraph!.images = [
       {
         url: imageUrl,
-        alt: `${document.name} - Resource Preview`,
+        alt: t('Metadata.ResourcePreviewAlt', { name: document.name ?? '' }),
         width: 1200,
         height: 630,
         type: 'image/png',
@@ -145,9 +175,12 @@ export async function generateMetadata({
 const Page = async ({
   params,
 }: {
-  params: Promise<{ slug: string; docSlug: string }>;
+  params: Promise<{ slug: string; docSlug: string; locale: PublicLocale }>;
 }) => {
   const awaitedParams = await params;
+  const { locale } = awaitedParams;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale });
 
   let pageData: Awaited<ReturnType<typeof getPageData>> | undefined;
   try {
@@ -169,7 +202,9 @@ const Page = async ({
     document.id
   );
 
-  const pageUrl = `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`;
+  const servicePath = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
+  const localizedServicePath = `/${locale}${servicePath}`;
+  const pageUrl = `${baseUrl}${servicePath}/${document.slug}`;
 
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -198,7 +233,7 @@ const Page = async ({
       '@type': 'SoftwareApplication',
       name: serviceInstance.name,
       applicationCategory: 'SecurityApplication',
-      url: `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
+      url: `${baseUrl}${servicePath}`,
     },
     keywords: document.use_cases?.map((useCase) => useCase.name).join(', '),
     mainEntityOfPage: {
@@ -223,16 +258,16 @@ const Page = async ({
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
-      href: '/',
+      href: `/${locale}`,
     },
     {
-      label: serviceInstance.name,
-      href: `/cybersecurity-solutions/${serviceInstance.slug}`,
-      original: true,
+      label: `Service.Cards.${serviceInstance.slug}.Name`,
+      href: localizedServicePath,
+      fallback: serviceInstance.name,
     },
     {
-      label: `${document?.name}`,
-      original: true,
+      label: `Service.Documents.${document.slug}.Name`,
+      fallback: `${document?.name}`,
     },
   ];
 
@@ -288,17 +323,21 @@ const Page = async ({
             <h1 className="whitespace-nowrap mb-s">{document.name}</h1>
             <div className="flex items-center gap-s ml-auto">
               {
-                <ShareLinkButton
-                  documentId={document.id}
-                  url={`${pageUrl}`}
-                  tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
-                />
+                <RelayProvider>
+                  <ShareLinkButton
+                    documentId={document.id}
+                    url={`${pageUrl}`}
+                    tooltipText={`Service.${localeMap[serviceInstance.slug as ServiceSlug]}.Actions.Share`}
+                  />
+                </RelayProvider>
               }
               {isResourceDownloadable(document) && (
                 <Button
                   asChild
                   className="whitespace-nowrap">
-                  <Link href={serviceInformation?.link ?? ''}>Download</Link>
+                  <Link href={serviceInformation?.link ?? ''}>
+                    {t('PublicResourcePage.Download')}
+                  </Link>
                 </Button>
               )}
             </div>
@@ -320,7 +359,7 @@ const Page = async ({
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <div className="flex-[3_3_0%]">
           <h3 className="py-s txt-container-title truncate text-muted-foreground">
-            Overview
+            {t('PublicResourcePage.Overview')}
           </h3>
           <section className="border rounded border-border-light bg-page-background">
             <h2 className="p-l">{document?.short_description}</h2>
