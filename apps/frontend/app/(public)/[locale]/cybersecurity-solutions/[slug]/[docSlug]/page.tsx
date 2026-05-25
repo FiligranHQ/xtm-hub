@@ -39,8 +39,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MarkdownAsync } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 
 const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
@@ -363,11 +362,10 @@ const Page = async ({
           </h3>
           <section className="border rounded border-border-light bg-page-background">
             <h2 className="p-l">{document?.short_description}</h2>
-            <div className="p-l !bg-page-background markdown-content">
-              <MarkdownAsync remarkPlugins={[remarkGfm]}>
-                {document?.description ?? ''}
-              </MarkdownAsync>
-            </div>
+            <MarkdownRendererWithTheme
+              source={document?.description ?? ''}
+              className="p-l !bg-page-background markdown-content"
+            />
           </section>
         </div>
         {document && (

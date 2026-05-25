@@ -4,7 +4,7 @@ import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import Markdown from 'react-markdown';
+import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 
 interface EpicItemDetailedProps {
   epic: epic_fragment$data;
@@ -18,10 +18,12 @@ export const EpicItemDetailed = ({
   const t = useTranslations();
 
   return (
-    <div className="px-l bg-page-background markdown-content flex h-full min-h-0 flex-1 flex-col">
+    <div className="p-l bg-page-background markdown-content flex h-full min-h-0 flex-1 flex-col">
       <h2>{epic.title}</h2>
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <Markdown>{epic.description}</Markdown>
+        <MarkdownRendererWithTheme
+          source={epic.description}
+        />
       </div>
       <Separator />
       <div className="flex flex-row">
