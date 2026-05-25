@@ -256,8 +256,8 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
       href: `/${APP_PATH}`,
     },
     {
-      label: serviceInstance!.name,
-      original: true,
+      label: `Service.Cards.${serviceInstance!.slug}.Name`,
+      fallback: serviceInstance!.name,
     },
   ];
   const userCanUpdate = useServiceCapability(

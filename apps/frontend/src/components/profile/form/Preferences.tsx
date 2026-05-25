@@ -1,7 +1,8 @@
 'use client';
 
+import { MeEditUserMutation } from '@/components/me/me.graphql';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import { Locale } from '@/i18n/config';
+import { Locale, locales } from '@/i18n/config';
 import { setUserLocale } from '@/i18n/locale';
 import {
   Card,
@@ -17,6 +18,7 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useContext } from 'react';
+import { useMutation } from 'react-relay';
 
 export const ProfileFormPreferences = () => {
   const t = useTranslations();
@@ -25,9 +27,11 @@ export const ProfileFormPreferences = () => {
     settings?.environment && settings.environment !== 'production';
   const locale = useLocale();
   const { theme, setTheme } = useTheme();
+  const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
 
   const onLocaleChange = (value: string) => {
     void setUserLocale(value as Locale);
+    commitEditMeUserMutation({ variables: { selected_language: value } });
   };
 
   const currentTheme = theme ?? 'dark';
@@ -73,8 +77,13 @@ export const ProfileFormPreferences = () => {
               <SelectValue placeholder={t('LocaleSwitcher.Label')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="en">{t('LocaleSwitcher.en')}</SelectItem>
-              <SelectItem value="fr">{t('LocaleSwitcher.fr')}</SelectItem>
+              {locales.map((loc) => (
+                <SelectItem
+                  key={loc}
+                  value={loc}>
+                  {t(`LocaleSwitcher.${loc}`)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

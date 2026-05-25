@@ -38,17 +38,14 @@ export const RegistrationDetails = ({
   const { hasOrganizationCapability, hasCapability } =
     useContext(PortalContext);
 
-  const canUpdatePlatform: boolean =
-    // Allow BYPASS users to update platforms
-    !!hasCapability?.(PortalCapabilityEnum.BYPASS) ||
-    // Check standard organization capabilities
-    (!!hasOrganizationCapability &&
-      hasOrganizationCapability(
-        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
-      ) &&
-      hasOrganizationCapability(
-        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
-      ));
+  const canUpdatePlatform =
+    hasCapability?.(PortalCapabilityEnum.BYPASS) ||
+    hasOrganizationCapability?.(
+      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+    ) ||
+    hasOrganizationCapability?.(
+      OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+    );
 
   const platform =
     useFragment<registeredPlatformByServiceInstanceId_fragment$key>(

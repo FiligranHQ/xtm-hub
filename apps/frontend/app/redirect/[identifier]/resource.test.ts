@@ -188,7 +188,8 @@ describe('redirectToResource', () => {
     ${`/redirect/${IDENTIFIER}?platform_id=platform-1&tenant_id=tenant-1&oaev_instance_id=oaev-1`}       | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target`}                               | ${'strips all internal params, no extra params → no query string'}
     ${`/redirect/${IDENTIFIER}?platform_id=platform-1&tenant_id=tenant-1&label=foo&integrationType=bar`} | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?label=foo&integrationType=bar`} | ${'strips internal params, forwards multiple extra params'}
     ${`/redirect/${IDENTIFIER}?label=foo&label=bar`}                                                     | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?label=foo&label=bar`}           | ${'preserves repeated params'}
-    ${`/redirect/${IDENTIFIER}?document_id=doc-42`}                                                      | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?document_id=doc-42`}            | ${'forwards document_id'}
+    ${`/redirect/${IDENTIFIER}?document_id=doc-42`}                                                      | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target/doc-42`}                        | ${'maps document_id to path segment'}
+    ${`/redirect/${IDENTIFIER}?label=foo&document_id=doc-42`}                                            | ${`${BASE_URL}/app/service/${IDENTIFIER}/instance-target?label=foo/doc-42`}              | ${'keeps extra params and appends document_id path segment'}
   `(
     'forwards query params correctly to the instance redirect ($description)',
     async ({ pathAndQuery, expectedLocation }) => {
@@ -223,6 +224,22 @@ describe('redirectToResource', () => {
     const response = await redirectToResource(
       { identifier: IDENTIFIER },
       makeRequest(`/redirect/${IDENTIFIER}?label=foo&deployable=true`)
+    );
+
+    // Then
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/app`);
+  });
+
+  it('does not forward document_id to the fallback /app redirect when no instance exists', async () => {
+    // Given
+    vi.mocked(loadServiceInstances).mockResolvedValue(
+      [] as LoadServiceInstancesResult
+    );
+
+    // When
+    const response = await redirectToResource(
+      { identifier: IDENTIFIER },
+      makeRequest(`/redirect/${IDENTIFIER}?document_id=doc-42`)
     );
 
     // Then

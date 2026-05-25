@@ -88,8 +88,7 @@ const nextConfig = {
       {
         source:
           '/cybersecurity-solutions/(octi_custom_dashboards|open-cti-custom-dashboards)/:path*',
-        destination:
-          '/cybersecurity-solutions/opencti-custom-dashboards/:path*',
+        destination: '/cybersecurity-solutions/opencti-custom-dashboards/:path*',
         permanent: true,
       },
     ];
