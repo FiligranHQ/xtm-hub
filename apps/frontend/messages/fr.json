@@ -219,8 +219,8 @@
       "DOCUMENT_UNIQUE_SLUG_ERROR": "Le nom de la ressource est déjà utilisé.",
       "DOCUMENT_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de la ressource.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
-      "ADD_CAPABILITIES_ERROR": "Erreur lors de l'ajout des capacités",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
+      "ADD_CAPABILITIES_ERROR": "Erreur lors de l'ajout des capacités",
       "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
       "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
@@ -368,19 +368,19 @@
     "Backoffice": "Backoffice",
     "Connectors": "OpenCTI contrats Connecteurs",
     "Home": "Accueil",
-    "UseCases": "Cas d'usage",
-    "Organizations": "Organisations",
-    "Parameters": "Paramètres",
+    "UseCase": "Cas d'usage",
+    "Organization": "Organisation",
+    "Parameter": "Paramètre",
     "Profile": "Profile",
     "Security": "Sécurité",
-    "Services": "Services",
+    "Service": "Service",
     "Settings": "Réglages",
     "SettingsLabel": "Menu des paramètres",
     "Users": "Utilisateurs",
-    "OpenCTITrials": "Essais OpenCTI",
-    "OpenAEVTrials": "Essais OpenAEV",
-    "Competitors": "Concurrents",
-    "NewsFeeds": "Fils d'actualité"
+    "OpenCTITrial": "Essai OpenCTI",
+    "OpenAEVTrial": "Essai OpenAEV",
+    "Competitor": "Concurrent",
+    "NewsFeed": "Fil d'actualité"
   },
   "NewsFeedAdminPage": {
     "Title": "Titre",
@@ -1060,13 +1060,13 @@
       "LastName": "Nom",
       "ManageUsers": "Gérer les utilisateurs",
       "ManageUsersForOrganization": "Gérer les utilisateurs de {organizationName} dans le service {serviceName}",
+      "OneUserMax": "1 utilisateur max",
       "NoAvailableCapabilities": "Aucune capacité disponible",
       "AddSubscriptionCapabilities": {
         "Button": "Ajouter des capacités",
         "Title": "Ajouter des capacités aux abonnements",
         "Description": "Sélectionnez les capacités à ajouter aux {count} abonnement(s) sélectionné(s)."
       },
-      "OneUserMax": "1 utilisateur max",
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
       "ShowPersonalSpaces": "Montrer les espaces personnels seulement",
@@ -1322,7 +1322,7 @@
   "ServiceActions": {
     "OrganizationAdded": "L'organisation {name} a souscrit au service {serviceName}",
     "OrganizationDeleted": "L'organisation {name} a été supprimée",
-    "OrganizationsDeleted": "{count} organisations ont été supprimées",
+    "UserCapabilitiesModified": "les capacités de {email}'s ont été modifiées",
     "UserServiceAdded": "{email} a été invité au service {serviceName}"
   },
   "ServiceForm": {

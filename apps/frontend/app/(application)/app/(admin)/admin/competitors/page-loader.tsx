@@ -1,13 +1,13 @@
-import { useTranslations } from 'next-intl';
 import CompetitorList from '@/components/competitor/CompetitorList';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { useTranslations } from 'next-intl';
 
 const breadcrumbValue = [
   {
     label: 'MenuLinks.Settings',
   },
   {
-    label: 'MenuLinks.Competitors',
+    label: 'MenuLinks.Competitor',
   },
 ];
 const PageLoader = () => {
@@ -15,7 +15,7 @@ const PageLoader = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.Competitors')}</h1>
+      <h1 className="sr-only">{t('MenuLinks.Competitor')}</h1>
       <CompetitorList />
     </>
   );

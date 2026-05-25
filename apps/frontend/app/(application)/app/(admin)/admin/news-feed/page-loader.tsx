@@ -8,7 +8,7 @@ const breadcrumbValue = [
     label: 'MenuLinks.Settings',
   },
   {
-    label: 'MenuLinks.NewsFeeds',
+    label: 'MenuLinks.NewsFeed',
   },
 ];
 
@@ -17,7 +17,7 @@ const PageLoader = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.NewsFeeds')}</h1>
+      <h1 className="sr-only">{t('MenuLinks.NewsFeed')}</h1>
       <Suspense fallback={null}>
         <NewsFeedList />
       </Suspense>

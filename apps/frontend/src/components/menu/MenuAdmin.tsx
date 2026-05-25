@@ -107,7 +107,7 @@ const ClosedMenuAdmin = () => {
 const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/parameters`,
-    label: t('MenuLinks.Parameters'),
+    label: t('MenuLinks.Parameter'),
   },
   {
     href: `/${APP_PATH}/admin/user`,
@@ -115,34 +115,34 @@ const adminLinksData = (t: UseTranslationsProps) => [
   },
   {
     href: `/${APP_PATH}/admin/use-case`,
-    label: t('MenuLinks.UseCases'),
+    label: t('MenuLinks.UseCase'),
   },
   {
     href: `/${APP_PATH}/admin/organizations`,
-    label: t('MenuLinks.Organizations'),
+    label: t('MenuLinks.Organization'),
   },
   {
     href: `/${APP_PATH}/admin/service`,
-    label: t('MenuLinks.Services'),
+    label: t('MenuLinks.Service'),
   },
   {
     href: `/${APP_PATH}/admin/opencti-trials`,
-    label: t('MenuLinks.OpenCTITrials'),
+    label: t('MenuLinks.OpenCTITrial'),
     restriction: [PortalCapabilityEnum.READ_TRIALS],
   },
   {
     href: `/${APP_PATH}/admin/openaev-trials`,
-    label: t('MenuLinks.OpenAEVTrials'),
+    label: t('MenuLinks.OpenAEVTrial'),
     restriction: [PortalCapabilityEnum.READ_TRIALS],
   },
   {
     href: `/${APP_PATH}/admin/competitors`,
-    label: t('MenuLinks.Competitors'),
+    label: t('MenuLinks.Competitor'),
     restriction: [PortalCapabilityEnum.MODIFY_COMPETITORS],
   },
   {
     href: `/${APP_PATH}/admin/news-feed`,
-    label: t('MenuLinks.NewsFeeds'),
+    label: t('MenuLinks.NewsFeed'),
     restriction: [PortalCapabilityEnum.BYPASS],
   },
 ];
