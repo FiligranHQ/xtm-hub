@@ -92,12 +92,6 @@ export const registrationApp = {
     }
 
     if (!tenantId) {
-      if (!resolvedConfiguration.serviceDefinition) {
-        throw new Error(ErrorCode.ServiceDefinitionNotFound);
-      }
-      if (!resolvedConfiguration.platformIdentifier) {
-        throw new Error(ErrorCode.InvalidPlatformIdentifier);
-      }
       if (
         isTenantIdRequired(
           resolvedConfiguration.platformIdentifier,
@@ -312,9 +306,6 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    if (!resolvedConfiguration.serviceDefinition) {
-      throw new Error(ErrorCode.ServiceDefinitionNotFound);
-    }
     if (identifier !== resolvedConfiguration.platformIdentifier) {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
@@ -411,9 +402,6 @@ export const registrationApp = {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
-    if (!resolvedConfiguration.serviceDefinition) {
-      throw new Error(ErrorCode.ServiceDefinitionNotFound);
-    }
     const { user } = requestContext.require();
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
       user,

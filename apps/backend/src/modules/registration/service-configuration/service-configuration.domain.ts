@@ -26,30 +26,32 @@ const loadServiceContractBy = async (
   return db('Service_Contract').where(field).select('*').first();
 };
 
-export type ResolvedPlatformConfiguration = {
+export type FullPlatformConfiguration = {
   serviceConfiguration: ServiceConfiguration;
-  serviceDefinition: ServiceDefinition | null;
-  platformIdentifier: PlatformIdentifier | null;
+  serviceDefinition: ServiceDefinition;
+  platformIdentifier: PlatformIdentifier;
   config: PlatformConfiguration;
 };
 
-type JoinedConfigurationRow = ServiceConfiguration & {
+type ServiceConfigurationWithDefinition = ServiceConfiguration & {
   service_definition: (Partial<ServiceDefinition> & { id?: string }) | null;
 };
 
 const resolvePlatformFromJoinedRow = (
-  row: JoinedConfigurationRow
-): ResolvedPlatformConfiguration => {
+  row: ServiceConfigurationWithDefinition
+): FullPlatformConfiguration => {
   const { service_definition, ...serviceConfiguration } = row;
-  const serviceDefinition: ServiceDefinition | null = service_definition?.id
-    ? (service_definition as ServiceDefinition)
-    : null;
-  const platformIdentifier: PlatformIdentifier | null =
-    serviceDefinition?.identifier
-      ? (platformIdentifierMappedByServiceDefinitionIdentifier[
-          serviceDefinition.identifier
-        ] ?? null)
-      : null;
+  if (!service_definition?.id) {
+    throw new Error(ErrorCode.ServiceDefinitionNotFound);
+  }
+  const serviceDefinition = service_definition as ServiceDefinition;
+  const platformIdentifier =
+    platformIdentifierMappedByServiceDefinitionIdentifier[
+      serviceDefinition.identifier
+    ];
+  if (!platformIdentifier) {
+    throw new Error(ErrorCode.InvalidPlatformIdentifier);
+  }
   return {
     serviceConfiguration,
     serviceDefinition,
@@ -187,7 +189,7 @@ export const ServiceConfigurationDomain = {
   loadResolvedConfigurationByPlatform: async (
     platformId: string,
     options?: { tenantId?: string | null } & ServiceConfigurationMutator
-  ): Promise<ResolvedPlatformConfiguration | undefined> => {
+  ): Promise<FullPlatformConfiguration | undefined> => {
     const { tenantId, ...filter } = options ?? {};
 
     const prefixedFilter = Object.fromEntries(
@@ -208,7 +210,9 @@ export const ServiceConfigurationDomain = {
       qb.whereRaw(`"Service_Configuration".config->>'tenant_id' = ?`, tenantId);
     }
 
-    const row = (await qb.first()) as JoinedConfigurationRow | undefined;
+    const row = (await qb.first()) as
+      | ServiceConfigurationWithDefinition
+      | undefined;
     return row ? resolvePlatformFromJoinedRow(row) : undefined;
   },
 
@@ -222,7 +226,7 @@ export const ServiceConfigurationDomain = {
     token: string;
     tenant_id?: string;
     withoutTenantId?: boolean;
-  }): Promise<ResolvedPlatformConfiguration | undefined> => {
+  }): Promise<FullPlatformConfiguration | undefined> => {
     const qb = buildJoinedConfigurationQuery()
       .whereRaw(
         `"Service_Configuration".config->>'platform_id' = ?`,
@@ -239,7 +243,9 @@ export const ServiceConfigurationDomain = {
       qb.whereRaw(`"Service_Configuration".config->>'tenant_id' IS NULL`);
     }
 
-    const row = (await qb.first()) as JoinedConfigurationRow | undefined;
+    const row = (await qb.first()) as
+      | ServiceConfigurationWithDefinition
+      | undefined;
     return row ? resolvePlatformFromJoinedRow(row) : undefined;
   },
 

@@ -12,6 +12,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { ServiceDefinitionDomain } from '../../service/definition/service-definition.domain';
 import { ServiceConfigurationDomain } from './service-configuration.domain';
 
@@ -471,7 +472,7 @@ describe('serviceConfigurationDomain', () => {
       });
     });
 
-    it('should return null serviceDefinition and platformIdentifier when the instance has no service_definition_id', async () => {
+    it('should throw ServiceDefinitionNotFound when the instance has no service_definition_id', async () => {
       await TestHelper.serviceInstance.create({
         id: serviceInstanceId,
         service_definition_id: null,
@@ -482,14 +483,12 @@ describe('serviceConfigurationDomain', () => {
         config: { platform_id: platformId },
       });
 
-      const resolved =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+      const call =
+        ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId
         );
 
-      expect(resolved).toBeDefined();
-      expect(resolved?.serviceDefinition).toBeNull();
-      expect(resolved?.platformIdentifier).toBeNull();
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
 
     it('should filter by status when status option is provided', async () => {

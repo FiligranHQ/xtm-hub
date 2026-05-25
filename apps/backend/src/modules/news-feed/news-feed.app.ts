@@ -35,12 +35,6 @@ export const NewsFeedApp = {
     if (!resolvedConfiguration) {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
-    if (!resolvedConfiguration.serviceDefinition) {
-      throw new Error(ErrorCode.ServiceDefinitionNotFound);
-    }
-    if (!resolvedConfiguration.platformIdentifier) {
-      throw new Error(ErrorCode.InvalidPlatformIdentifier);
-    }
 
     const rawItems =
       await NewsFeedDomain.loadAndConsumeProvisionedNewsFeedItems(platformId);
