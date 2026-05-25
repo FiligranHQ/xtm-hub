@@ -94,7 +94,6 @@ export interface OneClickDeployEvent extends BaseTelemetryEvent {
   platform_version: string;
   resource_title: string;
   tenant_id?: string;
-  platform_contract?: string;
 }
 
 export interface UpdateOrganizationEvent extends BaseTelemetryEvent {

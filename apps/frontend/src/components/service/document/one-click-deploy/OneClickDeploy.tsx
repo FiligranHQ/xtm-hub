@@ -13,7 +13,6 @@ import { AlertDialog, AlertDialogContent, SimpleTooltip } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { OneClickDeployMutation as OneClickDeployMutationType } from '@generated/OneClickDeployMutation.graphql';
-import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
@@ -68,41 +67,37 @@ const OneClickDeploy = ({
   );
   const eeBlocked = requiresEe && !hasEeCapablePlatform;
 
-  const sendTelemetry = useCallback(
-    (platform: useRegisteredPlatformsFragment$data) => {
-      sendOneClickDeployEvent({
-        variables: {
-          input: {
-            platform_identifier: platformIdentifier,
-            service_instance_id: documentData.service_instance!.id,
-            resource_id: documentData.id,
-            resource_title: documentData.name ?? '',
-            platform_service_instance_id: platform.id,
-          },
-        },
-      });
-    },
-    [
-      sendOneClickDeployEvent,
-      platformIdentifier,
-      documentData.service_instance,
-      documentData.id,
-      documentData.name,
-    ]
-  );
-
   const onOneClickDeploy = useCallback(
     (basePath: string) => {
       const [platform] = platforms.filter(
         (platform) => platform.url === basePath
       );
       if (platform) {
-        sendTelemetry(platform);
+        sendOneClickDeployEvent({
+          variables: {
+            input: {
+              platform_identifier: platformIdentifier,
+              service_instance_id: documentData.service_instance!.id,
+              resource_id: documentData.id,
+              resource_title: documentData.name ?? '',
+              platform_service_instance_id: platform!.id,
+            },
+          },
+        });
       }
       setPlatformBasePath(basePath);
       setShouldOpenTab(true);
     },
-    [platforms, sendTelemetry, setPlatformBasePath, setShouldOpenTab]
+    [
+      platforms,
+      sendOneClickDeployEvent,
+      platformIdentifier,
+      documentData.service_instance,
+      documentData.id,
+      documentData.name,
+      setPlatformBasePath,
+      setShouldOpenTab,
+    ]
   );
 
   if (shouldOpenTab) {
@@ -111,11 +106,8 @@ const OneClickDeploy = ({
   }
 
   const openEeSheet = useCallback(() => {
-    if (platforms[0]) {
-      sendTelemetry(platforms[0]);
-    }
     setIsEeSheetOpen(true);
-  }, [platforms, sendTelemetry]);
+  }, []);
 
   const alertContent = useMemo(() => {
     if (platforms.length === 0) {
