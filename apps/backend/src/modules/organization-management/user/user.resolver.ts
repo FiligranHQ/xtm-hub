@@ -266,9 +266,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    login: async (_, args, context) => {
+    login: async (_, args, { req, res }) => {
       try {
-        const loggedUser = await UserAuthApp.login(context, args);
+        const loggedUser = await UserAuthApp.login(req, res, args);
         if (loggedUser) {
           return mapUserToGraphqlUser(loggedUser);
         }
@@ -282,8 +282,8 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    logout: async (_, __, context) => {
-      return UserAuthApp.logout(context);
+    logout: async (_, __, { user, req, res }) => {
+      return UserAuthApp.logout(user, req, res);
     },
     contactUs: async (
       _,
