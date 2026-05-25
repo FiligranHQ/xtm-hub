@@ -103,7 +103,7 @@ const EeLearnMoreSheet = ({
             </SheetTitle>
             <EeBadge />
           </div>
-          <SheetDescription className="text-[10px] font-normal leading-[16px] tracking-[0.0075em]">
+          <SheetDescription>
             {t('Service.ShareableResources.Deploy.EELearnMore.Subtitle')}
           </SheetDescription>
         </SheetHeader>
@@ -112,12 +112,12 @@ const EeLearnMoreSheet = ({
             <p className="text-sm font-semibold">
               {t('Service.ShareableResources.Deploy.EELearnMore.Heading')}
             </p>
-            <p className="text-sm font-normal leading-[21px] tracking-[0.0075em] text-text-secondary">
+            <p className="text-sm text-text-secondary">
               {t(
                 'Service.ShareableResources.Deploy.EELearnMore.FirstParagraph'
               )}
             </p>
-            <p className="text-sm font-normal leading-[21px] tracking-[0.0075em]">
+            <p className="text-sm">
               {t(
                 'Service.ShareableResources.Deploy.EELearnMore.SecondParagraph'
               )}
@@ -131,7 +131,7 @@ const EeLearnMoreSheet = ({
                   'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionTitle'
                 )}
               </h3>
-              <p className="text-sm font-normal leading-[21px] tracking-[0.0075em] text-text-secondary">
+              <p className="text-sm text-text-secondary">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionDescription'
                 )}

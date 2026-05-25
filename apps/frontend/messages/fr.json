@@ -1324,7 +1324,7 @@
   "ServiceActions": {
     "OrganizationAdded": "L'organisation {name} a souscrit au service {serviceName}",
     "OrganizationDeleted": "L'organisation {name} a été supprimée",
-    "UserCapabilitiesModified": "les capacités de {email}'s ont été modifiées",
+    "OrganizationsDeleted": "{count} organisations ont été supprimées",
     "UserServiceAdded": "{email} a été invité au service {serviceName}"
   },
   "ServiceForm": {

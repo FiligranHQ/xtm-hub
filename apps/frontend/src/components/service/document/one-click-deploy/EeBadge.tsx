@@ -19,8 +19,8 @@ const EeBadgeVisual = ({ interactive }: { interactive: boolean }) => {
   return (
     <span
       className={cn(
-        'flex h-4 w-4 items-center justify-center rounded-[2px]',
-        'bg-[#070D19]',
+        'flex h-4 w-4 items-center justify-center rounded-xs',
+        'bg-slate-950',
         interactive && 'group-hover:bg-transparent',
         'text-[8px] font-bold leading-none'
       )}>
@@ -28,7 +28,7 @@ const EeBadgeVisual = ({ interactive }: { interactive: boolean }) => {
         className={cn(
           EE_GRADIENT,
           'bg-clip-text text-transparent',
-          interactive && 'group-hover:text-[#18191B]'
+          interactive && 'group-hover:text-zinc-900'
         )}>
         {t('Service.ShareableResources.Deploy.EE.Tag')}
       </span>
@@ -41,7 +41,7 @@ const EeBadge = ({ onClick }: EeBadgeProps) => {
 
   if (!onClick) {
     return (
-      <span className={cn('inline-flex rounded-[2px] p-px', EE_GRADIENT)}>
+      <span className={cn('inline-flex rounded-xs p-px', EE_GRADIENT)}>
         <EeBadgeVisual interactive={false} />
       </span>
     );
@@ -54,7 +54,7 @@ const EeBadge = ({ onClick }: EeBadgeProps) => {
           align="end"
           alignOffset={-9}
           sideOffset={9}
-          className={cn(EE_GRADIENT, 'text-[#18191B]')}>
+          className={cn(EE_GRADIENT, 'text-zinc-900')}>
           <div className="flex flex-col">
             <span className="font-medium">
               {t('Service.ShareableResources.Deploy.EE.HoverTitle')}
@@ -68,10 +68,7 @@ const EeBadge = ({ onClick }: EeBadgeProps) => {
           <button
             type="button"
             onClick={onClick}
-            className={cn(
-              'group cursor-pointer rounded-[2px] p-px',
-              EE_GRADIENT
-            )}>
+            className={cn('group cursor-pointer rounded-xs p-px', EE_GRADIENT)}>
             <EeBadgeVisual interactive={true} />
           </button>
         </TooltipTrigger>
