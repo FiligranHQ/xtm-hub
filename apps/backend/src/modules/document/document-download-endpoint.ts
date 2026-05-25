@@ -7,15 +7,15 @@ import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy } from '../../model/user';
-import {
-  extractPlatformToken,
-  validateActivePlatformToken,
-} from '../../security/directive-graphql/validator/platform-token-validator';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import {
+  extractPlatformToken,
+  validateActivePlatformToken,
+} from '../security-management/token/platform-token.util';
 import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
