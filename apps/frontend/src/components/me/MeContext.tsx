@@ -1,6 +1,6 @@
 'use client';
 
-import ChatbotProvider from '@/components/ariane/ChatbotProvider';
+import Copilot from '@/components/external/Copilot';
 import { AppPortalContext } from '@/components/me/AppPortalContext';
 import { MeContextFragment, MeQuery } from '@/components/me/me.graphql';
 import UserEventSubscription from '@/components/me/UserEventSubscription';
@@ -22,7 +22,8 @@ const MeContext = ({ queryRef, children }: ContextProps) => {
   return (
     <AppPortalContext me={me}>
       <UserEventSubscription />
-      <ChatbotProvider>{children}</ChatbotProvider>
+      <Copilot user={me} />
+      {children}
     </AppPortalContext>
   );
 };
