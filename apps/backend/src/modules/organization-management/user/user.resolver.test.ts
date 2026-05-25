@@ -29,11 +29,9 @@ import {
 } from '../../../../tests/tests.const';
 import {
   AddUserInput,
-  AdminEditUserInput,
   FilterKey,
   OrderingMode,
   Organization,
-  OrganizationCapability,
   UserOrdering,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -47,6 +45,7 @@ import {
   deleteSubscription,
   insertSubscription,
 } from '../../subscription/subscription.helper';
+import { UserAdminApp } from './user-admin/user.admin.app';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
@@ -568,137 +567,25 @@ describe('user mutation resolver', () => {
   });
 
   describe('adminEditUser', () => {
-    let secondOrgaUser: UserLoadUserBy;
-
-    describe('existing user edition', async () => {
-      let fallbackUser: UserLoadUserBy;
-      let response: {
-        organization_capabilities: unknown[];
-        first_name: string;
-        email: string;
+    it('should delegate to UserAdminApp.editUser and return the result', async () => {
+      const mockUser = {
+        id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        email: 'user@test.com',
       };
-      beforeAll(async () => {
-        fallbackUser = await UserDomain.loadUserBy({ email: 'user15@test.fr' });
+      vi.spyOn(UserAdminApp, 'editUser').mockResolvedValue(mockUser as never);
 
-        // @ts-ignore
-        response = await usersResolver.Mutation!.adminEditUser!(
-          undefined,
-          {
-            id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-            input: {
-              organization_capabilities: [
-                {
-                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-                  capabilities: [
-                    OrganizationCapability.ManageAccess,
-                    OrganizationCapability.ManageSubscription,
-                  ],
-                },
-                {
-                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-                  capabilities: [
-                    OrganizationCapability.ManageAccess,
-                    OrganizationCapability.ManageSubscription,
-                  ],
-                },
-                {
-                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-                  capabilities: [],
-                },
-              ],
-            } as AdminEditUserInput,
-          },
-          contextBypassUser
-        );
+      // @ts-expect-error adminEditUser is not considered as callable
+      const result = await usersResolver.Mutation!.adminEditUser!(
+        undefined,
+        { id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID, input: {} },
+        contextBypassUser
+      );
 
-        expect(response).toBeTruthy();
+      expect(UserAdminApp.editUser).toHaveBeenCalledWith({
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        input: {},
       });
-
-      afterAll(async () => {
-        // @ts-ignore
-        await usersResolver.Mutation!.adminEditUser!(
-          undefined,
-          {
-            id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-            input: {
-              organization_capabilities: [
-                {
-                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-                  capabilities: [
-                    OrganizationCapability.ManageAccess,
-                    OrganizationCapability.ManageSubscription,
-                  ],
-                },
-                {
-                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-                  capabilities: [
-                    OrganizationCapability.ManageAccess,
-                    OrganizationCapability.ManageSubscription,
-                  ],
-                },
-              ],
-            } as AdminEditUserInput,
-          },
-          contextBypassUser
-        );
-      });
-
-      it('should have update organisations, first_name and last_name', async () => {
-        expect(response.organization_capabilities).toHaveLength(3);
-      });
-      it('should not have update other fields', async () => {
-        expect(fallbackUser.first_name).toEqual(response.first_name);
-        expect(fallbackUser.email).toEqual(response.email);
-      });
-    });
-
-    describe('administrator deletion', async () => {
-      beforeAll(async () => {
-        secondOrgaUser = await UserDomain.loadUserBy({
-          email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
-        });
-      });
-
-      afterEach(async () => {
-        // @ts-expect-error adminEditUser is not considered as callable
-        await usersResolver.Mutation!.adminEditUser!(
-          undefined,
-          {
-            id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-            input: {
-              organization_capabilities:
-                secondOrgaUser.organization_capabilities!.map(
-                  (organizationCapabilities) => ({
-                    organization_id: organizationCapabilities.organization.id,
-                    capabilities: organizationCapabilities.capabilities,
-                  })
-                ),
-            },
-          },
-          contextBypassUser
-        );
-      });
-
-      it('should prevent deletion of the last organization administrator', async () => {
-        // @ts-expect-error adminEditUser is not considered as callable
-        const call = usersResolver.Mutation!.adminEditUser!(
-          undefined,
-          {
-            id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-            input: {
-              organization_capabilities: [
-                {
-                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-                  capabilities: [],
-                },
-              ],
-            } as AdminEditUserInput,
-          },
-          contextBypassUser
-        );
-
-        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
-      });
+      expect(result).toEqual(mockUser);
     });
   });
 
