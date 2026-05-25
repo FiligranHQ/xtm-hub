@@ -2752,18 +2752,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/chatbot@npm:3.2.2":
-  version: 3.2.2
-  resolution: "@filigran/chatbot@npm:3.2.2"
-  peerDependencies:
-    react: ">=18"
-    react-dom: ">=18"
-    react-markdown: ">=10"
-    remark-gfm: ">=4"
-  checksum: 10/9f589977fd5f4a9f461ef84f5ce42f7d2adf45b6ca72e31529a1206fad8bd72cfb73df54cf8ba0bebd2c8733e328940e2f820f4875635523d4f3cf55ca058c4b
-  languageName: node
-  linkType: hard
-
 "@filigran/icon@npm:0.22.6":
   version: 0.22.6
   resolution: "@filigran/icon@npm:0.22.6"
@@ -8409,7 +8397,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/frontend@workspace:apps/frontend"
   dependencies:
-    "@filigran/chatbot": "npm:3.2.2"
     "@filigran/icon": "npm:0.22.6"
     "@filigran/ui": "npm:1.1.2"
     "@hookform/resolvers": "npm:5.2.2"
