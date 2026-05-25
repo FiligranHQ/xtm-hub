@@ -14,6 +14,7 @@ type NewsFeedItemMetadata {
   value: String
 }
 
+# Warning ! Used by OpenCTI, should be used by XTM Hub because of ID conflicts
 type ProvisionedNewsFeedItem implements Node {
   id: ID!
   is_deleted: Boolean!
@@ -54,6 +55,7 @@ extend type Query {
 }
 
 type Mutation {
+  # Warning ! Used by OpenCTI
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
     @platform_token
   deleteNewsFeedItem(id: NewsFeedItemId!): Boolean! @auth(portalCapa: BYPASS)
