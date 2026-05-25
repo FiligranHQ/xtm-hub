@@ -15,7 +15,6 @@ import {
 import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
-import { PortalContext } from './src/model/portal-context';
 import { DocumentHelper } from './src/modules/document/document.helper';
 import { INTEGRATION_METADATA_KEYS } from './src/modules/shareable-resource/opencti/integration/integration.model';
 import { logApp } from './src/utils/app-logger.util';
@@ -30,7 +29,6 @@ export interface SecuryQueryOpts {
 
 export interface KnexQueryBuilder extends Knex.QueryBuilder {
   _queryContext?: {
-    context: PortalContext;
     __typename: DatabaseType;
   };
 }
@@ -167,7 +165,6 @@ export function db<T>(
 
   const queryContext = database<T>(type).queryContext({
     __typename: type,
-    context: reqContext?.portalContext,
   });
 
   if (reqContext?.trx && !reqContext.trx.isCompleted()) {

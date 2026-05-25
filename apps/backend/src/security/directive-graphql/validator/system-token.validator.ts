@@ -77,7 +77,6 @@ export const createSystemTokenResolver = (
     };
     requestContext.update({
       user: scopedSystemUser,
-      portalContext: enhancedContext,
     });
 
     return originalResolve(source, args, enhancedContext, info);

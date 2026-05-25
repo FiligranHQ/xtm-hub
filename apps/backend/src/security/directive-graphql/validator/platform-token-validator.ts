@@ -90,7 +90,6 @@ export const createPlatformTokenResolver = (originalResolve) => {
     };
     requestContext.update({
       user: platformUser,
-      portalContext: enhancedContext,
     });
 
     return originalResolve(source, args, enhancedContext, info);

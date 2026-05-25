@@ -39,6 +39,7 @@ import {
 import { requestContext } from '../../../context/request.context';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';
+import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { loginFromProvider } from '../../security-management/authentication/auth-user';
@@ -1164,6 +1165,43 @@ describe('user mutation resolver', () => {
 
       await removeUser({ email: pendingUser.email });
       await subscriptionSpy.cleanup();
+    });
+  });
+
+  describe('changeSelectedOrganization', () => {
+    it('should update portalContext.user and session.user after switching organization', async () => {
+      // Given
+      const mockSessionSave = vi.fn();
+      const mockPortalContext = {
+        user: { ...contextSimpleUserSecondOrga.user },
+        req: {
+          session: {
+            user: { ...contextSimpleUserSecondOrga.user },
+            save: mockSessionSave,
+          },
+        },
+        res: {},
+      } as unknown as PortalContext;
+      requestContext.set(requestContextSimpleUserSecondOrga);
+      const targetOrgId =
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID;
+
+      // When
+      // @ts-ignore
+      const response = await usersResolver.Mutation.changeSelectedOrganization(
+        {},
+        { organization_id: targetOrgId },
+        mockPortalContext,
+        {} as GraphQLResolveInfo
+      );
+
+      // Then
+      expect(response).toBeTruthy();
+      expect(mockPortalContext.user.selected_organization_id).toBe(targetOrgId);
+      expect(mockPortalContext.req.session.user.selected_organization_id).toBe(
+        targetOrgId
+      );
+      expect(mockSessionSave).toHaveBeenCalledOnce();
     });
   });
 });

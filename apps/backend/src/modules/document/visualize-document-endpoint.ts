@@ -5,7 +5,6 @@ import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { PortalContext } from '../../model/portal-context';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
@@ -24,12 +23,7 @@ export const documentVisualizeEndpoint = (app) => {
         return;
       }
       try {
-        const context: PortalContext = {
-          user: user,
-          req,
-          res,
-        };
-        requestContext.update({ portalContext: context });
+        requestContext.update({ user: user });
         const document = await DocumentDomain.loadDocumentBy({
           id: extractId<DocumentId>(req.params.filename),
         });

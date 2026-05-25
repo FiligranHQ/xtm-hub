@@ -5,7 +5,6 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
-import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy } from '../../model/user';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
@@ -70,12 +69,7 @@ export const documentDownloadEndpoint = (app) => {
           return;
         }
 
-        const context: PortalContext = {
-          user: user,
-          req,
-          res,
-        };
-        requestContext.update({ portalContext: context });
+        requestContext.update({ user });
         const token = extractPlatformToken(req);
         // check only if token is present to keep old OpenCTI versions compatibility
         if (isLoadedFromUserPlatformToken && token) {
@@ -122,12 +116,12 @@ export const documentDownloadEndpoint = (app) => {
           try {
             if (shouldSendEventForService(serviceDefinition.identifier)) {
               const selectedOrga = await OrganizationDomain.loadOrganizationBy({
-                id: context.user.selected_organization_id,
+                id: user.selected_organization_id,
               });
 
               const downloadEvent = await buildDownloadEvent(
                 selectedOrga,
-                context.user.id,
+                user.id,
                 serviceDefinition.identifier,
                 document.id,
                 document.name

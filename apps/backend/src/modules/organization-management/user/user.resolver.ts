@@ -166,10 +166,18 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
       }
     },
-    changeSelectedOrganization: async (_, { organization_id }) => {
+    changeSelectedOrganization: async (
+      _,
+      { organization_id },
+      portalContext
+    ) => {
       try {
         const user =
           await UserOrganizationApp.changeSelectedOrganization(organization_id);
+
+        portalContext.req.session.user = user;
+        portalContext.req.session.save();
+        portalContext.user = user;
 
         return mapUserToGraphqlUser(user);
       } catch (error) {
