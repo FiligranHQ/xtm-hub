@@ -89,7 +89,6 @@ describe('user query resolver', () => {
         };
         requestContext.set({
           user: currentContext.user,
-          portalContext: currentContext,
         });
 
         const response =
@@ -116,7 +115,6 @@ describe('user query resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
@@ -184,7 +182,6 @@ describe('user query resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const response = await usersResolver.Query!.pendingUsers!(
         {},
@@ -230,7 +227,6 @@ describe('user query resolver', () => {
 
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const response = await usersResolver.Query!.pendingUsers!(
         {},
@@ -746,7 +742,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const call = usersResolver.Mutation!.editUserCapabilities!(
         {},
@@ -775,7 +770,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       await usersResolver.Mutation!.editUserCapabilities!(
         {},
@@ -820,7 +814,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const pendingUser = await loginFromProvider({
         email: `testPending${uuidv4()}@second-orga.com`,
@@ -983,7 +976,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
@@ -1025,7 +1017,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
@@ -1082,7 +1073,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
 
       await usersResolver.Mutation?.bulkRemovePendingUserFromOrganization!(
@@ -1126,7 +1116,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
 
       const organizationId = toGlobalId(

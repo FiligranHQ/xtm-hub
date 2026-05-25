@@ -1,7 +1,6 @@
 // lib/Context.test.ts
 import { Knex } from 'knex';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
 import { UnknownErrorCode } from '../utils/error/error.code';
 import { requestContext, RequestContext } from './request.context';
@@ -11,9 +10,6 @@ describe('requestContext', () => {
     id: 1,
     last_name: 'Test User',
   } as unknown as UserLoadUserBy;
-  const mockPortalContext = {
-    portalId: 'test-portal',
-  } as unknown as PortalContext;
   const mockTrx = {} as Knex.Transaction;
 
   beforeEach(() => {
@@ -36,7 +32,6 @@ describe('requestContext', () => {
       const testContext: RequestContext = {
         user: mockUser,
         trx: mockTrx,
-        portalContext: mockPortalContext,
       };
 
       requestContext.set(testContext);
@@ -56,7 +51,6 @@ describe('requestContext', () => {
     it('should return context when available', () => {
       const testContext: RequestContext = {
         user: mockUser,
-        portalContext: mockPortalContext,
       };
 
       requestContext.set(testContext);
@@ -87,7 +81,6 @@ describe('requestContext', () => {
 
       const secondContext: RequestContext = {
         user: { id: 2, last_name: 'Second User' } as unknown as UserLoadUserBy,
-        portalContext: mockPortalContext,
       };
 
       requestContext.set(firstContext);
@@ -108,7 +101,6 @@ describe('requestContext', () => {
 
       const updates = {
         trx: mockTrx,
-        portalContext: mockPortalContext,
       };
 
       requestContext.update(updates);
@@ -161,7 +153,6 @@ describe('requestContext', () => {
     it('should execute callback with provided context', () => {
       const testContext: RequestContext = {
         user: mockUser,
-        portalContext: mockPortalContext,
       };
 
       let contextInsideCallback: RequestContext | undefined;
@@ -231,7 +222,6 @@ describe('requestContext', () => {
     it('should maintain context across async operations when using run()', async () => {
       const testContext: RequestContext = {
         user: mockUser,
-        portalContext: mockPortalContext,
       };
 
       await new Promise<void>((resolve) => {
