@@ -10,10 +10,7 @@ import config from 'config';
 import Stream from 'node:stream';
 import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import {
-  getDocumentName,
-  normalizeDocumentName,
-} from '../../modules/document/document.helper';
+import { DocumentHelper } from '../../modules/document/document.helper';
 import { Upload } from '../../modules/document/document.uploads.helper';
 import { logApp } from '../../utils/app-logger.util';
 import { MinioFile, UploadedFile } from './types';
@@ -62,7 +59,9 @@ export const MinIOClient = {
     serviceInstanceId: ServiceInstanceId
   ): Promise<MinioFile> => {
     const { user } = requestContext.require();
-    const fileName = normalizeDocumentName(jsonFile.file.filename);
+    const fileName = DocumentHelper.normalizeDocumentName(
+      jsonFile.file.filename
+    );
     const { minioName, jsonContent } = await MinIOClient.sendFile(
       jsonFile.file,
       fileName,
@@ -123,7 +122,7 @@ export const MinIOClient = {
 
     const fileParams = {
       Bucket: config.get<string>('minio.bucketName'),
-      Key: getDocumentName(file.filename),
+      Key: DocumentHelper.getDocumentName(file.filename),
       // Need to pass jsonContent because a stream can't be read twice
       Body: jsonContent ? JSON.stringify(jsonContent) : stream,
       Metadata: fullMetadata,

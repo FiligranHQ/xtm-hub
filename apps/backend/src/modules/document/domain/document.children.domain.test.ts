@@ -12,8 +12,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID } from '../../../portal.const';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from '../document.model';
-import * as DocumentUploadsHelper from '../document.uploads.helper';
-import { Upload } from '../document.uploads.helper';
+import { DocumentUploadsHelper, Upload } from '../document.uploads.helper';
 import { DocumentChildrenDomain } from './document.children.domain';
 
 async function insertDocument({

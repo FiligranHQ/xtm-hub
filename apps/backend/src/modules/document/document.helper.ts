@@ -1,4 +1,3 @@
-import { db } from '../../../knexfile';
 import {
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
@@ -9,7 +8,6 @@ import { requestContext } from '../../context/request.context';
 import {
   DocumentId,
   default as DocumentModel,
-  DocumentMutator,
 } from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UseCaseId } from '../../model/kanel/public/UseCase';
@@ -178,7 +176,8 @@ export const DocumentHelper = {
       return metadata;
     }
 
-    const uri = extractUriFromIntegrationJsonFile(jsonFileContent);
+    const uri =
+      DocumentHelper.extractUriFromIntegrationJsonFile(jsonFileContent);
     if (!uri || !isValidUrl(uri)) {
       return metadata;
     }
@@ -263,6 +262,7 @@ export const DocumentHelper = {
 
     return !isFileProhibited;
   },
+
   assertDocumentFileIsNotMissing: ({
     hasDocument,
     documentType,
@@ -294,145 +294,135 @@ export const DocumentHelper = {
       )
     );
   },
-};
 
-export const getDocumentName = (documentName: string) => {
-  const splitName = documentName.split('.');
-  const nameWithoutExtension = splitName[0];
-  const extensionName = splitName[1];
-  return `${nameWithoutExtension}_${Date.now()}.${extensionName}`;
-};
+  getDocumentName: (documentName: string) => {
+    const splitName = documentName.split('.');
+    const nameWithoutExtension = splitName[0];
+    const extensionName = splitName[1];
+    return `${nameWithoutExtension}_${Date.now()}.${extensionName}`;
+  },
 
-export const normalizeDocumentName = (documentName: string = ''): string => {
-  return documentName
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\-_.]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-};
+  normalizeDocumentName: (documentName: string = ''): string => {
+    return documentName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\-_.]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  },
 
-export const checkDocumentExists = async (
-  documentName: string,
-  serviceInstanceId: ServiceInstanceId
-) => {
-  const document = await DocumentDomain.loadDocumentBy({
-    file_name: normalizeDocumentName(documentName),
-    active: true,
-    service_instance_id: serviceInstanceId,
-  });
-  return !!document;
-};
+  checkDocumentExists: async (
+    documentName: string,
+    serviceInstanceId: ServiceInstanceId
+  ) => {
+    const document = await DocumentDomain.loadDocumentBy({
+      file_name: DocumentHelper.normalizeDocumentName(documentName),
+      active: true,
+      service_instance_id: serviceInstanceId,
+    });
+    return !!document;
+  },
 
-export const uploadNewFile = async (
-  document: Upload,
-  serviceInstanceId: ServiceInstanceId
-) => {
-  if (!document || !document.file) {
-    return;
-  }
-  const { user } = requestContext.require();
-  const { minioName } = await MinIOClient.sendFile(
-    document.file,
-    document.file.filename,
-    user.id,
-    serviceInstanceId
-  );
+  uploadNewFile: async (
+    document: Upload,
+    serviceInstanceId: ServiceInstanceId
+  ) => {
+    if (!document || !document.file) {
+      return;
+    }
+    const { user } = requestContext.require();
+    const { minioName } = await MinIOClient.sendFile(
+      document.file,
+      document.file.filename,
+      user.id,
+      serviceInstanceId
+    );
 
-  const data: FullDocumentMutator = {
-    uploader_id: user.id,
-    name: serviceInstanceId,
-    minio_name: minioName,
-    file_name: document.file.filename,
-    service_instance_id: serviceInstanceId,
-    created_at: new Date(),
-    mime_type: document.file.mimetype,
-    type: 'service_picture',
-  };
+    const data: FullDocumentMutator = {
+      uploader_id: user.id,
+      name: serviceInstanceId,
+      minio_name: minioName,
+      file_name: document.file.filename,
+      service_instance_id: serviceInstanceId,
+      created_at: new Date(),
+      mime_type: document.file.mimetype,
+      type: 'service_picture',
+    };
 
-  return DocumentApp.createDocumentWithChildrenAndMetadata(data, []);
-};
+    return DocumentApp.createDocumentWithChildrenAndMetadata(data, []);
+  },
 
-export const deleteDocuments = async () => {
-  return db<Document>('Document').delete('*');
-};
+  updateDocumentWithCounters: async <T extends Document>(document: T) => {
+    let download_number = 0;
+    let share_number = 0;
+    try {
+      [download_number, share_number] = await Promise.all([
+        telemetryApp.countEventsByDocumentId(
+          TelemetryEventType.DOWNLOAD,
+          document.id
+        ),
+        telemetryApp.countEventsByDocumentId(
+          TelemetryEventType.SHARE,
+          document.id
+        ),
+      ]);
+    } catch (error) {
+      logApp.error('Unable to fetch counters from elastic search', { error });
+    }
 
-export const deleteDocumentBy = async (field: DocumentMutator) => {
-  return db<Document>('Document').where(field).delete('*');
-};
+    return {
+      ...document,
+      download_number,
+      share_number,
+    };
+  },
 
-export const updateDocumentWithCounters = async <T extends Document>(
-  document: T
-) => {
-  let download_number = 0;
-  let share_number = 0;
-  try {
-    [download_number, share_number] = await Promise.all([
-      telemetryApp.countEventsByDocumentId(
-        TelemetryEventType.DOWNLOAD,
-        document.id
-      ),
-      telemetryApp.countEventsByDocumentId(
-        TelemetryEventType.SHARE,
-        document.id
-      ),
-    ]);
-  } catch (error) {
-    logApp.error('Unable to fetch counters from elastic search', { error });
-  }
+  loadDocumentWithCountersById: async <T extends Document>(
+    id: string,
+    include_metadata: DocumentMetadataKeyCode[] = []
+  ) => {
+    const document: T = await DocumentDomain.loadDocumentWithMetadataById(
+      id,
+      include_metadata
+    );
+    if (!document) {
+      throw new Error(ErrorCode.DocumentNotFound);
+    }
 
-  return {
-    ...document,
-    download_number,
-    share_number,
-  };
-};
+    return DocumentHelper.updateDocumentWithCounters(document);
+  },
 
-export const loadDocumentWithCountersById = async <T extends Document>(
-  id: string,
-  include_metadata: DocumentMetadataKeyCode[] = []
-) => {
-  const document: T = await DocumentDomain.loadDocumentWithMetadataById(
-    id,
-    include_metadata
-  );
-  if (!document) {
-    throw new Error(ErrorCode.DocumentNotFound);
-  }
+  loadSeoDocumentWithCountersBySlug: async <T extends Document>(
+    type: DOCUMENT_TYPE,
+    slug: string,
+    include_metadata: DocumentMetadataKeyCode[] = []
+  ) => {
+    const document: T = await DocumentDomain.loadSeoDocumentBySlug(
+      type,
+      slug,
+      include_metadata
+    );
+    if (!document) {
+      throw new Error(ErrorCode.DocumentNotFound);
+    }
 
-  return updateDocumentWithCounters(document);
-};
+    return DocumentHelper.updateDocumentWithCounters(document);
+  },
 
-export const loadSeoDocumentWithCountersBySlug = async <T extends Document>(
-  type: DOCUMENT_TYPE,
-  slug: string,
-  include_metadata: DocumentMetadataKeyCode[] = []
-) => {
-  const document: T = await DocumentDomain.loadSeoDocumentBySlug(
-    type,
-    slug,
-    include_metadata
-  );
-  if (!document) {
-    throw new Error(ErrorCode.DocumentNotFound);
-  }
+  extractUriFromIntegrationJsonFile: (
+    jsonFileContent: MinioFile['jsonContent']
+  ) => {
+    const configuration = (jsonFileContent as { configuration?: unknown })
+      .configuration;
+    const uri =
+      configuration &&
+      typeof configuration === 'object' &&
+      'uri' in configuration &&
+      typeof (configuration as { uri: unknown }).uri === 'string'
+        ? (configuration as { uri: string }).uri
+        : undefined;
 
-  return updateDocumentWithCounters(document);
-};
-
-export const extractUriFromIntegrationJsonFile = (
-  jsonFileContent: MinioFile['jsonContent']
-) => {
-  const configuration = (jsonFileContent as { configuration?: unknown })
-    .configuration;
-  const uri =
-    configuration &&
-    typeof configuration === 'object' &&
-    'uri' in configuration &&
-    typeof (configuration as { uri: unknown }).uri === 'string'
-      ? (configuration as { uri: string }).uri
-      : undefined;
-
-  return uri;
+    return uri;
+  },
 };
