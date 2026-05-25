@@ -1,5 +1,5 @@
 'use client';
-import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
+import { buildContext, CopilotUser, getUserKey } from './copilot.utils';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
 
@@ -9,7 +9,7 @@ const COPILOT_TOKEN = 'jNJu1JTbbPwNqk1tqEOw-WjsKU4dEcgn';
 const COPILOT_SCRIPT_ID = 'filigran-copilot-widget';
 
 interface CopilotProps {
-  user?: meContext_fragment$data | null | undefined;
+  user?: CopilotUser | null | undefined;
 }
 
 const Copilot = ({ user }: CopilotProps) => {
@@ -17,39 +17,15 @@ const Copilot = ({ user }: CopilotProps) => {
   const lastUserRef = useRef<string>('');
   const pathname = usePathname();
 
-  const getUserKey = useCallback(
-    (u: meContext_fragment$data | null | undefined): string => {
-      if (!u) return 'anonymous';
-      return `${u.id || 'no-id'}-${u.first_name || ''}-${u.last_name || ''}`;
-    },
+  const getUserKeyFn = useCallback(
+    (u: CopilotUser | null | undefined): string => getUserKey(u),
     []
   );
 
-  const buildContext = useCallback(() => {
-    const context: Record<string, string> = {
-      product: 'XTM Hub',
-      page: pathname || '/',
-    };
-
-    if (user) {
-      context.username =
-        `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim() || 'Unknown';
-      context.email = user.email;
-
-      const selectedOrganization = user.organizations?.find(
-        (org) => org.id === user.selected_organization_id
-      );
-      context.organization = selectedOrganization?.name || 'Unknown';
-      context.isPersonalSpace = selectedOrganization?.personal_space
-        ? 'true'
-        : 'false';
-    } else {
-      context.username = 'Anonymous User';
-      context.organization = 'Unknown';
-    }
-
-    return JSON.stringify(context);
-  }, [user, pathname]);
+  const buildContextFn = useCallback(
+    () => buildContext(user, pathname),
+    [user, pathname]
+  );
 
   const cleanup = useCallback(() => {
     if (scriptRef.current) {
@@ -74,30 +50,30 @@ const Copilot = ({ user }: CopilotProps) => {
     script.id = COPILOT_SCRIPT_ID;
     script.src = COPILOT_WIDGET_URL;
     script.setAttribute('data-token', COPILOT_TOKEN);
-    script.setAttribute('data-context', buildContext());
+    script.setAttribute('data-context', buildContextFn());
     script.async = true;
 
     document.head.appendChild(script);
     scriptRef.current = script;
-  }, [cleanup, buildContext]);
+  }, [cleanup, buildContextFn]);
 
   const updateContext = useCallback(() => {
     const scriptEl =
       scriptRef.current || document.getElementById(COPILOT_SCRIPT_ID);
     if (scriptEl) {
-      scriptEl.setAttribute('data-context', buildContext());
+      scriptEl.setAttribute('data-context', buildContextFn());
     }
-  }, [buildContext]);
+  }, [buildContextFn]);
 
   // Full re-init when the user identity changes
   useEffect(() => {
-    const currentUserKey = getUserKey(user);
+    const currentUserKey = getUserKeyFn(user);
     if (lastUserRef.current !== currentUserKey) {
       lastUserRef.current = currentUserKey;
       const timer = setTimeout(() => initialize(), 300);
       return () => clearTimeout(timer);
     }
-  }, [initialize, getUserKey, user]);
+  }, [initialize, getUserKeyFn, user]);
 
   // Initial load
   useEffect(() => {
