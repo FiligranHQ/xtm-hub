@@ -14,7 +14,6 @@ import {
 } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
-import { requestContext } from './src/context/request.context';
 import { DocumentHelper } from './src/modules/document/document.helper';
 import { INTEGRATION_METADATA_KEYS } from './src/modules/shareable-resource/opencti/integration/integration.model';
 import { logApp } from './src/utils/app-logger.util';
@@ -161,15 +160,11 @@ export function db<T>(
   type: DatabaseType
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Knex.QueryBuilder<T, any> {
-  const reqContext = requestContext.get();
-
   const queryContext = database<T>(type).queryContext({
     __typename: type,
   });
 
-  if (reqContext?.trx && !reqContext.trx.isCompleted()) {
-    queryContext.transacting(reqContext.trx);
-  } else if (databaseContext.isInTransaction()) {
+  if (databaseContext.isInTransaction()) {
     queryContext.transacting(databaseContext.getTransaction());
   }
 

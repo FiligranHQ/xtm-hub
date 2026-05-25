@@ -1,11 +1,8 @@
-// lib/context.ts
 import { AsyncLocalStorage } from 'async_hooks';
-import { Knex } from 'knex';
 import { UserLoadUserBy } from '../model/user';
 import { UnknownErrorCode } from '../utils/error/error.code';
 export interface RequestContext {
   user: UserLoadUserBy;
-  trx?: Knex.Transaction;
   correlationId?: string;
 }
 
