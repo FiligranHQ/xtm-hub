@@ -12,8 +12,7 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { MarkdownAsync } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 
 interface ShareableResourceConnectorSlugPublicProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
@@ -91,11 +90,10 @@ const ShareableResourceConnectorSlugPublic = ({
           </h3>
           <section className="border rounded border-border-light bg-page-background overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>
-            <div className="p-l !bg-page-background markdown-content">
-              <MarkdownAsync remarkPlugins={[remarkGfm]}>
-                {documentData?.description ?? ''}
-              </MarkdownAsync>
-            </div>
+            <MarkdownRendererWithTheme
+              source={documentData?.description ?? ''}
+              className="p-l !bg-page-background markdown-content"
+            />
           </section>
         </div>
         <ShareableResourceConnectorDetails
