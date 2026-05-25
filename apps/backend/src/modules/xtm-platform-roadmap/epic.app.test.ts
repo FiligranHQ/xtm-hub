@@ -14,7 +14,7 @@ import { EpicId } from '../../model/kanel/public/Epic';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { DocumentApp } from '../document/document.app';
-import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import { DocumentUploadsHelper } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import * as ServiceInstanceDomain from '../service/instance/service-instance.domain';
 

@@ -15,13 +15,10 @@ import {
 import { mapToGraphQLError } from '../../../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { isValidEmail } from '../../../../utils/verify-email.util';
+import { DocumentHelper } from '../../../document/document.helper';
 import {
-  getDocumentName,
-  normalizeDocumentName,
-} from '../../../document/document.helper';
-import {
+  DocumentUploadsHelper,
   Upload,
-  waitForUploads,
 } from '../../../document/document.uploads.helper';
 import { updateSubscriptionBy } from '../../../subscription/subscription.domain';
 import { OrganizationDomain } from '../../organization/organization.domain';
@@ -38,8 +35,8 @@ const deletePicture = async (pictureMinio: string) => {
 };
 
 const uploadPictureToMinIO = async (userId: string, file: Upload['file']) => {
-  const fileName = normalizeDocumentName(file.filename);
-  const minioName = `picture/${getDocumentName(fileName)}`;
+  const fileName = DocumentHelper.normalizeDocumentName(file.filename);
+  const minioName = `picture/${DocumentHelper.getDocumentName(fileName)}`;
 
   await MinIOClient.uploadFile(file, minioName, userId, fileName);
 
@@ -76,7 +73,7 @@ export const userProfileApp = {
     return updateAndDispatchUser(meUser.id);
   },
   uploadUserPicture: async (meUser, document: Upload) => {
-    await waitForUploads(document);
+    await DocumentUploadsHelper.waitForUploads(document);
 
     if (meUser.picture_minio) {
       await deletePicture(meUser.picture_minio);

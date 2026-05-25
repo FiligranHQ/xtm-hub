@@ -17,7 +17,7 @@ import { dispatch } from '../../../pub';
 import { securityGuard } from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { NotFoundError } from '../../../utils/error/error.util';
-import { uploadNewFile } from '../../document/document.helper';
+import { DocumentHelper } from '../../document/document.helper';
 import { Upload } from '../../document/document.uploads.helper';
 import { PlatformConfiguration } from '../../registration/registration.domain';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
@@ -83,7 +83,10 @@ export const ServiceInstanceApp = {
     isLogo: boolean
   ): Promise<ServiceInstance> => {
     const updatedServiceInstance = await withTransaction(async () => {
-      const uploadedDocument = await uploadNewFile(document, serviceInstanceId);
+      const uploadedDocument = await DocumentHelper.uploadNewFile(
+        document,
+        serviceInstanceId
+      );
       const update = isLogo
         ? { logo_document_id: uploadedDocument.id }
         : { illustration_document_id: uploadedDocument.id };
@@ -133,7 +136,10 @@ export const ServiceInstanceApp = {
 
     // Handle illustration image upload if provided
     if (upload) {
-      const document = await uploadNewFile(upload, serviceInstance.id);
+      const document = await DocumentHelper.uploadNewFile(
+        upload,
+        serviceInstance.id
+      );
       updateData.illustration_document_id = document.id;
     }
 
