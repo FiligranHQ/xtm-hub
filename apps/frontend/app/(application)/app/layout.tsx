@@ -9,6 +9,7 @@ import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
 import { ContentLayout } from '@/components/ContentLayout';
 import HeaderComponent from '@/components/Header';
 import Menu from '@/components/menu/Menu';
+import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
@@ -58,24 +59,26 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
 
   return (
     <RelayProvider>
-      <div className="flex min-h-screen">
-        <PageLoader>
-          <div
-            id="app-shell"
-            className="flex flex-col w-full h-screen min-h-0">
-            <TestEnvBanner />
-            <AdminBanner />
-            <TryFiligranProductsBanner />
-            <div className="flex flex-row grow min-h-0">
-              <Menu />
-              <div className="flex flex-col w-full h-full min-h-0 min-w-0">
-                <HeaderComponent />
-                <ContentLayout>{children}</ContentLayout>
+      <ReactQueryProvider>
+        <div className="flex min-h-screen">
+          <PageLoader>
+            <div
+              id="app-shell"
+              className="flex flex-col w-full h-screen min-h-0">
+              <TestEnvBanner />
+              <AdminBanner />
+              <TryFiligranProductsBanner />
+              <div className="flex flex-row grow min-h-0">
+                <Menu />
+                <div className="flex flex-col w-full h-full min-h-0 min-w-0">
+                  <HeaderComponent />
+                  <ContentLayout>{children}</ContentLayout>
+                </div>
               </div>
             </div>
-          </div>
-        </PageLoader>
-      </div>
+          </PageLoader>
+        </div>
+      </ReactQueryProvider>
     </RelayProvider>
   );
 };

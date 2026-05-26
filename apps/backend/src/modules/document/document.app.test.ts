@@ -42,9 +42,8 @@ import {
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
-import { deleteDocuments } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from './document.model';
-import * as DocumentUploadsHelper from './document.uploads.helper';
+import { DocumentUploadsHelper } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import {
@@ -113,7 +112,7 @@ describe('documentApp', () => {
   });
 
   afterEach(async () => {
-    await deleteDocuments();
+    await TestHelper.document.delete({});
   });
 
   afterAll(async () => {

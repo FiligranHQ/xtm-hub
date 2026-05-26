@@ -16,7 +16,7 @@ import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
 import { requestContext } from './src/context/request.context';
 import { PortalContext } from './src/model/portal-context';
-import { normalizeDocumentName } from './src/modules/document/document.helper';
+import { DocumentHelper } from './src/modules/document/document.helper';
 import { INTEGRATION_METADATA_KEYS } from './src/modules/shareable-resource/opencti/integration/integration.model';
 import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
@@ -436,7 +436,7 @@ export const applySearch = async <T>(
 
   if (search.length > 0) {
     const normalizedSearchTerm = normalizeSearchTerm
-      ? normalizeDocumentName(searchTerm)
+      ? DocumentHelper.normalizeDocumentName(searchTerm)
       : searchTerm;
     const [first, ...others] = search;
     const metaAlias = 'metaSearch';

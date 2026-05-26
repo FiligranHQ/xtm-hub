@@ -25,7 +25,7 @@ import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import Document from '../../../model/kanel/public/Document';
 import { ADMIN_UUID } from '../../../portal.const';
-import * as DocumentUploadsHelper from '../document.uploads.helper';
+import { DocumentUploadsHelper } from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
 
 describe('document domain', () => {
