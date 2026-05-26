@@ -5,11 +5,15 @@ import { userServiceCapabilityApp } from './user-service-capability.app';
 
 const resolvers: Resolvers = {
   Mutation: {
-    AddCapabilitiesToUserServices: async (_, { input }) => {
+    addCapabilitiesToUserServices: async (
+      _,
+      { input, service_instance_id }
+    ) => {
       try {
         return userServiceCapabilityApp.addCapabilitiesToUserServices(
           input.userServiceIds,
-          input.capabilities
+          input.capabilities,
+          service_instance_id
         );
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddCapabilitiesError);

@@ -585,6 +585,58 @@ describe('userServiceDomain', () => {
     });
   });
 
+  describe('checkUserServiceIsInServiceInstance', () => {
+    it('should return true when the UserService belongs to the expected ServiceInstance', async () => {
+      const sub = await createTestSubscription({
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        start_date: new Date(),
+        end_date: undefined,
+      });
+      const userServiceId = await insertUserService(SIMPLE.ID, sub);
+
+      const result =
+        await UserServiceDomain.checkUserServiceIsInServiceInstance(
+          userServiceId,
+          SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
+        );
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when the UserService belongs to a different ServiceInstance', async () => {
+      const sub = await createTestSubscription();
+      const userServiceId = await insertUserService(SIMPLE.ID, sub);
+
+      const result =
+        await UserServiceDomain.checkUserServiceIsInServiceInstance(
+          userServiceId,
+          SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
+        );
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false for a UserService from a subscription on a different instance', async () => {
+      const secondSubId = await createTestSubscription({
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        start_date: new Date(),
+        end_date: undefined,
+      });
+      const userServiceId = await insertUserService(SIMPLE.ID, secondSubId);
+
+      const result =
+        await UserServiceDomain.checkUserServiceIsInServiceInstance(
+          userServiceId,
+          SERVICES.INSTANCES.INTEGRATIONS.ID
+        );
+
+      expect(result).toBe(false);
+
+      await cleanupUserServices(secondSubId);
+      await TestHelper.subscription.delete({ id: secondSubId });
+    });
+  });
+
   describe('loadUserServiceBySubscription', () => {
     const defaultOpts = {
       first: 50,

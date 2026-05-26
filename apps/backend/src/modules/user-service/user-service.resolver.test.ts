@@ -14,6 +14,7 @@ import {
   UserServiceEdge,
   UserServiceOrdering,
 } from '../../__generated__/resolvers-types';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserServiceId } from '../../model/kanel/public/UserService';
 import { UserWithOrganizationsAndRole } from '../../model/user';
@@ -227,6 +228,7 @@ describe('delete user service GraphQL mutation', () => {
   it('should delegate to UserServiceApp', async () => {
     // Given
     const userServiceId = uuidv4() as UserServiceId;
+    const serviceInstanceId = uuidv4() as ServiceInstanceId;
     const expected = {
       userServiceIds: [userServiceId],
     };
@@ -239,15 +241,19 @@ describe('delete user service GraphQL mutation', () => {
     // When
     const result = await userServiceResolver.Mutation!.deleteUserServices!(
       {},
-      { input: { userServiceIds: [userServiceId] } },
+      {
+        input: { userServiceIds: [userServiceId] },
+        service_instance_id: serviceInstanceId,
+      },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     // Then
-    expect(UserServiceApp.deleteUserServices).toHaveBeenCalledWith([
-      userServiceId,
-    ]);
+    expect(UserServiceApp.deleteUserServices).toHaveBeenCalledWith(
+      [userServiceId],
+      serviceInstanceId
+    );
     expect(result).toMatchObject({ userServiceIds: [userServiceId] });
   });
 

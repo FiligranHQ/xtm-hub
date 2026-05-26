@@ -190,7 +190,7 @@ export const UserServiceForm = ({
           email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,
         },
-        subscription_id: subscription.subscriptionById?.id ?? '',
+        subscription_id: subscription.subscriptionById!.id,
       },
       onCompleted() {
         toast({

@@ -151,7 +151,7 @@ const SubscriptionSlug = ({
             )))
       );
     });
-  }, [userData, me?.id]);
+  }, [userData, me?.id, hasOrganizationCapability]);
 
   const isBypass = useMemo(
     () =>
@@ -182,10 +182,7 @@ const SubscriptionSlug = ({
           },
         ];
       }),
-    [
-      queryDataSubscription.subscriptionById?.service_instance
-        ?.service_definition?.service_capability,
-    ]
+    [queryDataSubscription.subscriptionById]
   );
 
   const selectedUserServices = useMemo(() => {
@@ -317,13 +314,13 @@ const SubscriptionSlug = ({
     <>
       <BreadcrumbNav value={breadcrumbValue} />
 
-      {headerServiceInstance ? (
+      {headerServiceInstance && (
         <ServiceSlugHeader
           serviceInstance={
             headerServiceInstance as unknown as serviceInstanceForSubscriptions_fragment$data
           }
         />
-      ) : null}
+      )}
 
       <DataTable
         toolbar={toolbar}
@@ -395,7 +392,7 @@ const SubscriptionSlug = ({
         open={openAddCapabilities}
         setOpen={setOpenAddCapabilities}
         onCompleted={() => setSelection(emptySelectionState())}
-        serviceInstanceId={serviceInstance!.id}
+        serviceInstanceId={headerServiceInstance?.id ?? ''}
       />
     </>
   );

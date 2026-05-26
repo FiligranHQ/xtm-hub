@@ -94,7 +94,7 @@ export const userServicesFragment = graphql`
 export const UserServiceCreateMutation = graphql`
   mutation userServiceCreateMutation(
     $input: UserServiceAddInput!
-    $subscription_id: SubscriptionId
+    $subscription_id: SubscriptionId!
     $connections: [ID!]!
   ) {
     addUserService(input: $input, subscription_id: $subscription_id)
@@ -127,7 +127,7 @@ export const UserServiceCreateMutation = graphql`
 export const UserServiceEditMutation = graphql`
   mutation userServiceEditMutation(
     $input: UserServiceEditInput!
-    $subscription_id: SubscriptionId
+    $subscription_id: SubscriptionId!
   ) {
     editUserService(input: $input, subscription_id: $subscription_id) {
       id
@@ -159,7 +159,7 @@ export const UserServiceEditMutation = graphql`
 export const UserServiceDeleteMutation = graphql`
   mutation userServiceDeleteMutation(
     $input: UserServicesDeleteInput!
-    $service_instance_id: ServiceInstanceId
+    $service_instance_id: ServiceInstanceId!
     $connections: [ID!]!
   ) {
     deleteUserServices(
@@ -176,7 +176,7 @@ export const UserServicesAddCapabilitiesMutation = graphql`
     $input: UserServicesAddCapabilitiesInput!
     $service_instance_id: ServiceInstanceId!
   ) {
-    AddCapabilitiesToUserServices(
+    addCapabilitiesToUserServices(
       input: $input
       service_instance_id: $service_instance_id
     ) {

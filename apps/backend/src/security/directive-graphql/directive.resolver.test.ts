@@ -130,6 +130,47 @@ describe('createSecureFieldResolver', () => {
     });
   });
 
+  describe('auth-only + service capability check', () => {
+    it('should throw FORBIDDEN_ACCESS when authenticated but missing service capability (no portalCapa required)', async () => {
+      const resolver = createSecureFieldResolver(vi.fn(), {
+        isAuthenticatedFn: () => true,
+        hasCapabilityFn: () => true,
+        hasServiceCapabilityFn: vi.fn().mockResolvedValue(false),
+        authDirective: {},
+        serviceCapaDirective: { requires: ['UPLOAD'] },
+      });
+
+      await expect(
+        resolver(
+          {},
+          {},
+          { user: { id: '1', capabilities: [] } } as unknown as PortalContext,
+          GRAPHQL_RESOLVE_INFO
+        )
+      ).rejects.toMatchObject({ name: ErrorType.ForbiddenAccess });
+    });
+
+    it('should call the original resolver when authenticated and has service capability (no portalCapa required)', async () => {
+      const originalResolve = vi.fn().mockResolvedValue('ok');
+      const resolver = createSecureFieldResolver(originalResolve, {
+        isAuthenticatedFn: () => true,
+        hasCapabilityFn: () => true,
+        hasServiceCapabilityFn: vi.fn().mockResolvedValue(true),
+        authDirective: {},
+        serviceCapaDirective: { requires: ['UPLOAD'] },
+      });
+
+      const result = await resolver(
+        {},
+        {},
+        { user: { id: '1', capabilities: [] } } as unknown as PortalContext,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      expect(result).toBe('ok');
+    });
+  });
+
   describe('combined auth and service capability checks', () => {
     it.each`
       hasRoleCapability | hasServiceCapability | shouldThrow

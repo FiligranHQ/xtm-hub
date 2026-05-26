@@ -38,7 +38,7 @@ export const SubscriptionSlugAddCapabilities = ({
     Set<string>
   >(new Set());
 
-  const [commitAddCapabilities, isInFlight] =
+  const [commitAddCapabilities] =
     useMutation<userServicesAddCapabilitiesMutation>(
       UserServicesAddCapabilitiesMutation
     );
@@ -132,7 +132,7 @@ export const SubscriptionSlugAddCapabilities = ({
             {t('Utils.Cancel')}
           </Button>
           <Button
-            disabled={selectedCapabilityIds.size === 0 || isInFlight}
+            disabled={selectedCapabilityIds.size === 0}
             onClick={handleSubmit}>
             {t('Utils.Validate')}
           </Button>

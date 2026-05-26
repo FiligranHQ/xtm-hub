@@ -28,7 +28,7 @@ const validateServiceArgs = (args: ServiceCapabilityArgs): void => {
 /**
  * Normalizes service arguments to a consistent format
  */
-const normalizeServiceArgs = async (args: ServiceCapabilityArgs) => {
+const normalizeServiceArgs = (args: ServiceCapabilityArgs) => {
   if (args.serviceInstanceId) {
     return { service_instance_id: args.serviceInstanceId };
   }
@@ -52,7 +52,7 @@ export const hasServiceCapability = async (
   validateServiceArgs(args);
 
   // Normalize arguments
-  const normalizedArgs = await normalizeServiceArgs(args);
+  const normalizedArgs = normalizeServiceArgs(args);
 
   // Check user capabilities for the service
   const capabilityUser = await getCapabilityUser(user, normalizedArgs);

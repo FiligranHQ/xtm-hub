@@ -842,7 +842,7 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  AddCapabilitiesToUserServices?: Maybe<Array<Maybe<UserService>>>;
+  addCapabilitiesToUserServices?: Maybe<Array<Maybe<UserService>>>;
   addOrganization?: Maybe<Organization>;
   addServicePicture?: Maybe<ServiceInstance>;
   addSubscription?: Maybe<ServiceInstance>;
@@ -948,7 +948,7 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
-  subscription_id?: InputMaybe<Scalars['SubscriptionId']['input']>;
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 
@@ -1072,7 +1072,7 @@ export type MutationDeleteUseCaseArgs = {
 
 export type MutationDeleteUserServicesArgs = {
   input: UserServicesDeleteInput;
-  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1107,7 +1107,7 @@ export type MutationEditUserCapabilitiesArgs = {
 
 export type MutationEditUserServiceArgs = {
   input: UserServiceEditInput;
-  subscription_id?: InputMaybe<Scalars['SubscriptionId']['input']>;
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 
@@ -3447,14 +3447,14 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  AddCapabilitiesToUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddCapabilitiesToUserServicesArgs, 'input' | 'service_instance_id'>>;
+  addCapabilitiesToUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddCapabilitiesToUserServicesArgs, 'input' | 'service_instance_id'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'serviceInstanceId'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
   addSubscriptionCapability?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationAddSubscriptionCapabilityArgs, 'input'>>;
   addUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationAddUseCaseArgs, 'input'>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
-  addUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input'>>;
+  addUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input' | 'subscription_id'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<MutationAdminCancelDeploymentRequestArgs>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
@@ -3477,13 +3477,13 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
   deleteSubscriptions?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionsArgs, 'subscription_ids'>>;
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
-  deleteUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationDeleteUserServicesArgs, 'input'>>;
+  deleteUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationDeleteUserServicesArgs, 'input' | 'service_instance_id'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationEditUseCaseArgs, 'id' | 'input'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
-  editUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationEditUserServiceArgs, 'input'>>;
+  editUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationEditUserServiceArgs, 'input' | 'subscription_id'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;

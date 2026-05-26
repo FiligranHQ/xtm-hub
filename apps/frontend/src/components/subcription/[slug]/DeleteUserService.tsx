@@ -49,8 +49,6 @@ export const DeleteUserService = ({
     return null;
   }
 
-  const firstUserService = userServices[0];
-
   return (
     <AlertDialogComponent
       key={`delete-${userServices.map((userService) => userService.id).join('-')}`}
@@ -65,8 +63,8 @@ export const DeleteUserService = ({
             count: userServices.length,
           })
         : t('Service.Management.AreYouSureRemoveAccess', {
-            firstname: firstUserService?.user?.first_name ?? '',
-            lastname: firstUserService?.user?.last_name ?? '',
+            firstname: userServices[0]?.user?.first_name ?? '',
+            lastname: userServices[0]?.user?.last_name ?? '',
           })}
     </AlertDialogComponent>
   );

@@ -184,7 +184,7 @@ type Mutation {
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
-  AddCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
+  addCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
@@ -195,9 +195,9 @@ type Mutation {
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
   deleteUseCase(id: ID!): UseCase!
-  addUserService(input: UserServiceAddInput!, subscription_id: SubscriptionId): [UserService]
-  editUserService(input: UserServiceEditInput!, subscription_id: SubscriptionId): UserService
-  deleteUserServices(input: UserServicesDeleteInput!, service_instance_id: ServiceInstanceId): [UserService]
+  addUserService(input: UserServiceAddInput!, subscription_id: SubscriptionId!): [UserService]
+  editUserService(input: UserServiceEditInput!, subscription_id: SubscriptionId!): UserService
+  deleteUserServices(input: UserServicesDeleteInput!, service_instance_id: ServiceInstanceId!): [UserService]
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
   deleteEpic(id: ID!): Epic!

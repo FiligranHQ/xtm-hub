@@ -44,7 +44,11 @@ export const createSecureFieldResolver = (
       throw UnauthenticatedAccess('Not authorized: You are not authenticated');
     }
 
-    if (authDirective && serviceCapaDirective) {
+    if (
+      authDirective &&
+      (authDirective.portalCapa || authDirective.orgaCapa) &&
+      serviceCapaDirective
+    ) {
       const portalCapabilitiesRequired = authDirective.portalCapa || [];
       const orgaCapabilitiesRequired = authDirective.orgaCapa || [];
       const hasRoleCapability = hasCapabilityFn(user, {

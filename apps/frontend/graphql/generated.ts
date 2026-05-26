@@ -35,12 +35,11 @@ export type Scalars = {
   NewsFeedItemId: { input: any; output: any; }
   /** A Relay global ID for Organization, extracted to a branded OrganizationId string */
   OrganizationId: { input: any; output: any; }
+  ServiceCapabilityId: { input: any; output: any; }
   /** A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string */
   ServiceGroupId: { input: any; output: any; }
   /** A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string */
   ServiceInstanceId: { input: any; output: any; }
-  /** A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string */
-  Service_CapabilityId: { input: any; output: any; }
   /** A Relay global ID for Subscription, extracted to a branded SubscriptionId string */
   SubscriptionId: { input: any; output: any; }
   Upload: { input: any; output: any; }
@@ -62,7 +61,7 @@ export type AddServiceInput = {
 };
 
 export type AddSubscriptionCapabilityInput = {
-  capabilitiesId: Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>;
+  capabilitiesId: Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>;
   subscriptionsId: Array<Scalars['SubscriptionId']['input']>;
 };
 
@@ -241,7 +240,7 @@ export type CreateEpicInput = {
 };
 
 export type CreateSubscriptionsInput = {
-  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
+  capability_ids: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
   end_date: InputMaybe<Scalars['Date']['input']>;
   organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
@@ -850,6 +849,7 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addCapabilitiesToUserServices: Maybe<Array<Maybe<UserService>>>;
   addOrganization: Maybe<Organization>;
   addServicePicture: Maybe<ServiceInstance>;
   addSubscription: Maybe<ServiceInstance>;
@@ -879,12 +879,13 @@ export type Mutation = {
   deleteOrganization: Maybe<Organization>;
   deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
-  deleteUserService: Maybe<UserService>;
+  deleteUserServices: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization: Maybe<Organization>;
   editServiceCapability: Maybe<SubscriptionModel>;
   editUseCase: UseCase;
   editUserCapabilities: User;
+  editUserService: Maybe<UserService>;
   frontendErrorLog: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login: Maybe<User>;
@@ -911,6 +912,12 @@ export type Mutation = {
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
+};
+
+
+export type MutationAddCapabilitiesToUserServicesArgs = {
+  input: UserServicesAddCapabilitiesInput;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -948,6 +955,7 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 
@@ -1069,8 +1077,9 @@ export type MutationDeleteUseCaseArgs = {
 };
 
 
-export type MutationDeleteUserServiceArgs = {
-  input: UserServiceDeleteInput;
+export type MutationDeleteUserServicesArgs = {
+  input: UserServicesDeleteInput;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1100,6 +1109,12 @@ export type MutationEditUseCaseArgs = {
 export type MutationEditUserCapabilitiesArgs = {
   id: Scalars['ID']['input'];
   input: EditUserCapabilitiesInput;
+};
+
+
+export type MutationEditUserServiceArgs = {
+  input: UserServiceEditInput;
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 
@@ -2388,7 +2403,7 @@ export type UpdateServiceGroupsInputGroup = {
 };
 
 export type UpdateSubscriptionInput = {
-  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
+  capability_ids: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
   end_date: InputMaybe<Scalars['Date']['input']>;
   start_date: InputMaybe<Scalars['Date']['input']>;
 };
@@ -2480,7 +2495,6 @@ export type UserService = Node & {
 export type UserServiceAddInput = {
   capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Array<Scalars['String']['input']>;
-  subscriptionId: InputMaybe<Scalars['SubscriptionId']['input']>;
 };
 
 export type UserServiceAddYourselfInput = {
@@ -2503,12 +2517,6 @@ export type UserServiceConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type UserServiceDeleteInput = {
-  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  email: Scalars['String']['input'];
-  subscriptionId: Scalars['SubscriptionId']['input'];
-};
-
 export type UserServiceDeleted = Node & {
   __typename?: 'UserServiceDeleted';
   id: Scalars['ID']['output'];
@@ -2522,6 +2530,11 @@ export type UserServiceEdge = {
   node: Maybe<UserService>;
 };
 
+export type UserServiceEditInput = {
+  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  userServiceId: Scalars['User_ServiceId']['input'];
+};
+
 export enum UserServiceOrdering {
   Email = 'email',
   FirstName = 'first_name',
@@ -2533,6 +2546,15 @@ export enum UserServiceOrdering {
   ServiceType = 'service_type',
   SubscriptionStatus = 'subscription_status'
 }
+
+export type UserServicesAddCapabilitiesInput = {
+  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  userServiceIds: Array<Scalars['User_ServiceId']['input']>;
+};
+
+export type UserServicesDeleteInput = {
+  userServiceIds: Array<Scalars['User_ServiceId']['input']>;
+};
 
 export type UserSubscription = {
   __typename?: 'UserSubscription';

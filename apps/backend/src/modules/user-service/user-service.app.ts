@@ -1,3 +1,4 @@
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
   SubscriptionMutator,
@@ -6,7 +7,7 @@ import User from '../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, ForbiddenErrorCode } from '../../utils/error/error.code';
 import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
 import { UserServiceDomain } from './user-service.domain';
@@ -36,15 +37,31 @@ export const UserServiceApp = {
     );
   },
 
-  deleteUserServices: async (userServiceIds: UserServiceId[]) => {
+  deleteUserServices: async (
+    userServiceIds: UserServiceId[],
+    serviceInstanceId: ServiceInstanceId
+  ) => {
+    const userServiceIsInService =
+      await UserServiceDomain.checkUserServiceIsInServiceInstance(
+        userServiceIds[0],
+        serviceInstanceId
+      );
+    if (!userServiceIsInService) {
+      throw new Error(ForbiddenErrorCode.ServiceNotManageable);
+    }
     return UserServiceDomain.deleteUserServices(userServiceIds);
   },
   editUserService: async (
     userServiceId: UserServiceId,
-    capabilities: string[]
+    capabilities: string[],
+    subscriptionId: SubscriptionId
   ): Promise<UserService> => {
     const userService =
       await UserServiceDomain.loadUserServiceById(userServiceId);
+    // Check the provided subscription_id correspond to the correct userService
+    if (userService.subscription_id !== subscriptionId) {
+      throw new Error(ForbiddenErrorCode.ServiceNotManageable);
+    }
     await UserServiceDomain.deleteUserCapabilityById(userService.id);
     await insertCapabilities(capabilities, [userService]);
     return UserServiceDomain.loadUserServiceById(userServiceId);

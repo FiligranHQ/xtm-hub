@@ -39,14 +39,7 @@ export const SubscriptionSlugUserService: FunctionComponent<
         if (isEditMode) {
           return;
         }
-
         event.preventDefault();
-        setTimeout(() => {
-          const input = document.querySelector(
-            'div[role="dialog"][data-state="open"] form input'
-          ) as HTMLInputElement | null;
-          input?.focus();
-        }, 500);
       }}
       trigger={
         <Button>{t('Service.Management.InviteUser.TitleInviteUser')}</Button>

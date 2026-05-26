@@ -23,7 +23,7 @@ input UserServicesAddCapabilitiesInput {
 }
 
 type Mutation {
-  AddCapabilitiesToUserServices(
+  addCapabilitiesToUserServices(
     input: UserServicesAddCapabilitiesInput!
     service_instance_id: ServiceInstanceId!
   ): [UserService]
