@@ -37,6 +37,30 @@
     "ResetTable": "Reset table",
     "RowsPerPage": "Rows per page"
   },
+  "cookieConsent": {
+    "bannerText": "We use strictly necessary cookies and similar technologies to make the XTM Hub work and remember your privacy choices. With your consent, we also use optional cookies to remember your preferences, understand how the XTM Hub is used, monitor performance and diagnose technical issues, measure the effectiveness of our marketing and personalise content. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy and Privacy Policy for more information.",
+    "acceptAll": "Accept all",
+    "rejectAll": "Reject all",
+    "cookieSettings": "Cookie settings",
+    "categories": {
+      "necessary": {
+        "title": "Strictly necessary",
+        "description": "These cookies are needed for the XTM Hub to function properly. They support core features, such as authentication, security and remembering your cookie preferences."
+      },
+      "functional": {
+        "title": "Functional",
+        "description": "These cookies remember your preferences such as language or interface preferences and enable embedded features."
+      },
+      "analytics": {
+        "title": "Performance and analytics",
+        "description": "These cookies help us measure how the Hub performs and how it's used, and identify errors so we can improve it."
+      },
+      "marketing": {
+        "title": "Marketing",
+        "description": "These cookies help us measure the effectiveness of marketing campaigns, and where applicable, personalise content or advertising based on your interactions with the XTM Hub."
+      }
+    }
+  },
   "DeploymentRequestUseCase": {
     "threat_profiling_cti": "Threat Profiling (CTI)",
     "threat_profiling_fimi": "Threat Profiling (FIMI)",

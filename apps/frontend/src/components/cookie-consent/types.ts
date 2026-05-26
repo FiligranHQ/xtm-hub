@@ -5,6 +5,7 @@ declare global {
       job?: string[];
       services: Record<string, TarteaucitronService>;
       user: Record<string, unknown>;
+      lang: TarteaucitronLang;
     };
     tarteaucitronCustomText?: TarteaucitronCustomText;
     tarteaucitronForceLanguage?: string;
@@ -44,6 +45,32 @@ export interface TarteaucitronService {
   cookies: string[];
   js: () => void;
   fallback?: () => void;
+}
+
+interface TarteaucitronCategoryLang {
+  title: string;
+  details: string;
+}
+
+export interface TarteaucitronLang {
+  alertBigPrivacy?: string;
+  acceptAll?: string;
+  allowAll?: string;
+  denyAll?: string;
+  personalize?: string;
+  mandatoryTitle?: string;
+  mandatoryText?: string;
+  ads?: TarteaucitronCategoryLang;
+  analytic?: TarteaucitronCategoryLang;
+  api?: TarteaucitronCategoryLang;
+  // Autres types tarteaucitron qu'on ne customise pas mais qui existent
+  social?: TarteaucitronCategoryLang;
+  video?: TarteaucitronCategoryLang;
+  comment?: TarteaucitronCategoryLang;
+  support?: TarteaucitronCategoryLang;
+  other?: TarteaucitronCategoryLang;
+  google?: TarteaucitronCategoryLang;
+  [key: string]: unknown;  // ← permet à tarteaucitron d'avoir ses autres clés sans crier
 }
 
 export type TarteaucitronCustomText = Record<string, unknown>;

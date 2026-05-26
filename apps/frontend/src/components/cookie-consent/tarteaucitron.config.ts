@@ -41,7 +41,7 @@ const registerServices = (): void => {
   // We define a custom service that points directly to the EU endpoint.
   window.tarteaucitron.services.hubspotEu = {
     key: 'hubspotEu',
-    type: 'analytic',
+    type: 'ads',
     name: 'HubSpot',
     needConsent: true,
     cookies: [
@@ -69,10 +69,50 @@ const registerServices = (): void => {
   job.push('gtag');
 };
 
-export const initTarteaucitron = (locale: string): void => {
+interface CookieConsentTexts {
+  bannerText: string;
+  acceptAll: string;
+  rejectAll: string;
+  cookieSettings: string;
+  necessary: { title: string; description: string };
+  functional: { title: string; description: string };
+  analytics: { title: string; description: string };
+  marketing: { title: string; description: string };
+}
+
+export const initTarteaucitron = (
+  locale: string,
+  texts: CookieConsentTexts
+): void => {
   if (typeof window === 'undefined' || !window.tarteaucitron) return;
 
   window.tarteaucitronForceLanguage = locale;
+
+  // tarteaucitronCustomText is read by tarteaucitron AFTER loading its
+  // default language file, so it correctly overrides the defaults.
+  // Setting window.tarteaucitron.lang directly would be overwritten.
+  window.tarteaucitronCustomText = {
+    alertBigPrivacy: texts.bannerText,
+    acceptAll: texts.acceptAll,
+    allowAll: texts.acceptAll,
+    denyAll: texts.rejectAll,
+    personalize: texts.cookieSettings,
+    mandatoryTitle: texts.necessary.title,
+    mandatoryText: texts.necessary.description,
+    api: {
+      title: texts.functional.title,
+      details: texts.functional.description,
+    },
+    analytic: {
+      title: texts.analytics.title,
+      details: texts.analytics.description,
+    },
+    ads: {
+      title: texts.marketing.title,
+      details: texts.marketing.description,
+    },
+  };
+
   window.tarteaucitron.init(buildConfig());
   registerServices();
 };
