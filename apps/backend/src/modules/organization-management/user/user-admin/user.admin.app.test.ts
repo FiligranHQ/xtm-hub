@@ -192,7 +192,7 @@ describe('users admin app', () => {
           },
         });
 
-        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
+        await expect(call).rejects.toThrow(ErrorCode.CantRemoveLastAdministrator);
       });
     });
   });
