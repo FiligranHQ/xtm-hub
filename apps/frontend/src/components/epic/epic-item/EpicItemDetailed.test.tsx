@@ -72,7 +72,7 @@ describe('EpicItemDetailed', () => {
 
       // Then
       const communityLink = screen.getByRole('link', {
-        name: 'Stay in the loop on the Filigran Community',
+        name: 'Epic.JoinCommunity',
       });
 
       expect(communityLink).toHaveAttribute('href', expectedLink);

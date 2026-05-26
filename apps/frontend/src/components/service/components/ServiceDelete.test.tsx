@@ -1,10 +1,10 @@
+import { ServiceDelete } from '@/components/service/components/ServiceDelete';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import testRender from '@/utils/test/test-render';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { screen, within } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { ServiceDelete } from '@/components/service/components/ServiceDelete';
 
 describe('ServiceDelete', () => {
   it.each`
@@ -28,10 +28,10 @@ describe('ServiceDelete', () => {
       );
 
       // Then
-      const deleteButton = queryByRole('button', { name: 'Delete' });
+      const deleteButton = queryByRole('button', { name: 'Utils.Delete' });
 
       if (shouldRender) {
-        expect(deleteButton).toMatchObject({ textContent: 'Delete' });
+        expect(deleteButton).toHaveTextContent('Utils.Delete');
         return;
       }
 
@@ -40,18 +40,18 @@ describe('ServiceDelete', () => {
   );
 
   it.each`
-    shareableResourceType                             | type
-    ${IntegrationTypeEnum.CSV_FEED}                   | ${'CSV Feed'}
-    ${IntegrationTypeEnum.CONNECTOR}                  | ${'Connector'}
-    ${IntegrationTypeEnum.TAXII_FEED}                 | ${'TAXII Feed'}
-    ${IntegrationTypeEnum.RSS_FEED}                   | ${'RSS Feed'}
-    ${IntegrationTypeEnum.STREAM}                     | ${'Stream'}
-    ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}    | ${'Third Party Integration'}
-    ${ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD} | ${'dashboard'}
-    ${ShareableResourceType.OPENAEV_SCENARIO}         | ${'scenario'}
+    shareableResourceType                             | expectedTextKey
+    ${IntegrationTypeEnum.CSV_FEED}                   | ${'Service.CsvFeed.SureDeleteService'}
+    ${IntegrationTypeEnum.CONNECTOR}                  | ${'Service.Connector.SureDeleteService'}
+    ${IntegrationTypeEnum.TAXII_FEED}                 | ${'Service.TaxiiFeed.SureDeleteService'}
+    ${IntegrationTypeEnum.RSS_FEED}                   | ${'Service.RssFeed.SureDeleteService'}
+    ${IntegrationTypeEnum.STREAM}                     | ${'Service.Stream.SureDeleteService'}
+    ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}    | ${'Service.ThirdPartyIntegration.SureDeleteService'}
+    ${ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD} | ${'Service.OpenctiCustomDashboards.SureDeleteService'}
+    ${ShareableResourceType.OPENAEV_SCENARIO}         | ${'Service.OpenAEVScenario.SureDeleteService'}
   `(
     'maps deletion texts for shareableResourceType=shareableResourceType',
-    async ({ shareableResourceType, type }) => {
+    async ({ shareableResourceType, expectedTextKey }) => {
       // Given
       const environment = createMockEnvironment();
       const serviceName = 'another service name';
@@ -65,14 +65,10 @@ describe('ServiceDelete', () => {
       );
 
       // When
-      await user.click(screen.getByRole('button', { name: 'Delete' }));
+      await user.click(screen.getByRole('button', { name: 'Utils.Delete' }));
 
       // Then
-      expect(
-        await screen.findByText(
-          `Are you sure you want to delete the ${type} ${serviceName}?`
-        )
-      ).toBeInTheDocument();
+      expect(await screen.findByText(expectedTextKey)).toBeInTheDocument();
     }
   );
 
@@ -91,11 +87,11 @@ describe('ServiceDelete', () => {
     );
 
     // When
-    await user.click(screen.getByRole('button', { name: 'Delete' }));
+    await user.click(screen.getByRole('button', { name: 'Utils.Delete' }));
 
     const alertDialog = await screen.findByRole('alertdialog');
     await user.click(
-      within(alertDialog).getByRole('button', { name: 'Delete' })
+      within(alertDialog).getByRole('button', { name: 'Utils.Delete' })
     );
 
     // Then

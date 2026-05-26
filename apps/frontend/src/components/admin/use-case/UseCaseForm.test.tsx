@@ -30,7 +30,7 @@ describe('UseCaseForm', () => {
 
       await user.type(screen.getByLabelText(/Name/i), name);
       await user.type(colorInput, color);
-      await user.click(screen.getByRole('button', { name: /Validate/i }));
+      await user.click(screen.getByRole('button', { name: 'Utils.Validate' }));
     };
 
     it.each`
@@ -85,7 +85,7 @@ describe('UseCaseForm', () => {
         />
       );
 
-      await user.click(screen.getByRole('button', { name: /Cancel/i }));
+      await user.click(screen.getByRole('button', { name: 'Utils.Cancel' }));
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
@@ -100,8 +100,12 @@ describe('UseCaseForm', () => {
         />
       );
 
-      await user.click(screen.getByRole('button', { name: /^Delete$/i }));
-      await user.click(screen.getByRole('button', { name: /^Delete$/i }));
+      await user.click(
+        screen.getByRole('button', { name: 'MenuActions.Delete' })
+      );
+      await user.click(
+        screen.getByRole('button', { name: 'MenuActions.Delete' })
+      );
 
       expect(mockHandleDelete).toHaveBeenCalledTimes(1);
     });

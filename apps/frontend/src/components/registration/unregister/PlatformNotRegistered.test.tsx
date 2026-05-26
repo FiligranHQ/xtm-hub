@@ -1,12 +1,7 @@
+import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/PlatformNotRegistered';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { UnregisterPlatformNotRegistered } from '@/components/registration/unregister/PlatformNotRegistered';
-
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('next-intl')>()),
-  useTranslations: () => (key: string) => key,
-}));
 
 describe('UnregisterPlatformNotRegistered', () => {
   it('renders the not-registered title and description', () => {
