@@ -23,7 +23,7 @@ export const documentVisualizeEndpoint = (app) => {
         return;
       }
       try {
-        requestContext.update({ user: user });
+        requestContext.update({ user });
         const document = await DocumentDomain.loadDocumentBy({
           id: extractId<DocumentId>(req.params.filename),
         });
