@@ -106,6 +106,7 @@ const nextConfig = {
       "'self'",
       "'unsafe-inline'",
       'https://www.googletagmanager.com',
+      'https://copilot.filigran.ai',
       ...hubspotScriptHosts,
       ...(isDev ? ["'unsafe-eval'"] : []),
     ].join(' ');

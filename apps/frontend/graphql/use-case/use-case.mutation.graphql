@@ -1,0 +1,17 @@
+mutation UseCaseAdd($input: AddUseCaseInput!) {
+  addUseCase(input: $input) {
+    ...UseCaseRow
+  }
+}
+
+mutation UseCaseEdit($id: ID!, $input: EditUseCaseInput!) {
+  editUseCase(id: $id, input: $input) {
+    ...UseCaseRow
+  }
+}
+
+mutation UseCaseDelete($id: ID!) {
+  deleteUseCase(id: $id) {
+    id
+  }
+}

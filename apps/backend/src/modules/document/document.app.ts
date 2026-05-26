@@ -29,11 +29,9 @@ import {
   BOOLEAN_METADATA,
   DOCUMENT_TYPE,
   DocumentHelper,
-  loadDocumentWithCountersById,
-  loadSeoDocumentWithCountersBySlug,
   ManageableServiceDefinitionIdentifier,
 } from './document.helper';
-import { processUploads, Upload } from './document.uploads.helper';
+import { DocumentUploadsHelper, Upload } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentData, DocumentDomain } from './domain/document.domain';
 import {
@@ -65,12 +63,18 @@ export const DocumentApp = {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
     }
 
-    const [sourceDocumentFile] = await processUploads(
+    const [sourceDocumentFile] = await DocumentUploadsHelper.processUploads(
       sourceDocument,
       serviceInstanceId
     );
-    const imagesFiles = await processUploads(images, serviceInstanceId);
-    const [logoFile] = await processUploads(logo, serviceInstanceId);
+    const imagesFiles = await DocumentUploadsHelper.processUploads(
+      images,
+      serviceInstanceId
+    );
+    const [logoFile] = await DocumentUploadsHelper.processUploads(
+      logo,
+      serviceInstanceId
+    );
 
     const documentMetadata =
       DocumentHelper.buildCompleteMetadataFromDocumentFile({
@@ -170,21 +174,12 @@ export const DocumentApp = {
       });
     }
 
-    if (
-      createdDocument.active === true &&
-      NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)
-    ) {
-      NewsFeedApp.createResourceNewsFeedItem({
-        document: createdDocument,
-        serviceInstanceId,
-        serviceDefinitionIdentifier: serviceDefinition.identifier,
-      }).catch((error) =>
-        logApp.error('Unable to create news feed item on document creation', {
-          error,
-          documentId: createdDocument.id,
-        })
-      );
-    }
+    void NewsFeedApp.upsertResourceNewsFeed({
+      documentBeforeUpdate: undefined,
+      updatedDocument: createdDocument,
+      serviceInstanceId,
+      serviceDefinitionIdentifier: serviceDefinition.identifier,
+    });
 
     return createdDocument;
   },
@@ -232,12 +227,18 @@ export const DocumentApp = {
       DocumentHelper.retrieveDocumentTypeFromServiceDefinition(
         serviceDefinition.identifier as ManageableServiceDefinitionIdentifier
       );
-    const [sourceDocumentFile] = await processUploads(
+    const [sourceDocumentFile] = await DocumentUploadsHelper.processUploads(
       sourceDocument,
       serviceInstanceId
     );
-    const imagesFiles = await processUploads(images, serviceInstanceId);
-    const [logoFile] = await processUploads(logo, serviceInstanceId);
+    const imagesFiles = await DocumentUploadsHelper.processUploads(
+      images,
+      serviceInstanceId
+    );
+    const [logoFile] = await DocumentUploadsHelper.processUploads(
+      logo,
+      serviceInstanceId
+    );
 
     let documentMetadata = DocumentHelper.buildCompleteMetadataFromDocumentFile(
       {
@@ -350,22 +351,12 @@ export const DocumentApp = {
       return doc;
     });
 
-    if (
-      documentBeforeUpdate.active === false &&
-      updatedDocument.active === true &&
-      NewsFeedApp.isNewsFeedConfigured(serviceDefinition.identifier)
-    ) {
-      NewsFeedApp.createResourceNewsFeedItem({
-        document: updatedDocument,
-        serviceInstanceId,
-        serviceDefinitionIdentifier: serviceDefinition.identifier,
-      }).catch((error) =>
-        logApp.error('Unable to create news feed item on document update', {
-          error,
-          documentId: updatedDocument.id,
-        })
-      );
-    }
+    void NewsFeedApp.upsertResourceNewsFeed({
+      documentBeforeUpdate,
+      updatedDocument,
+      serviceInstanceId,
+      serviceDefinitionIdentifier: serviceDefinition.identifier,
+    });
 
     return updatedDocument;
   },
@@ -530,7 +521,11 @@ export const DocumentApp = {
     const { documentType, metadataKeys } =
       getMetadataKeysAndDocumentTypeFromServiceDefinition(serviceDefinition);
 
-    return loadSeoDocumentWithCountersBySlug(documentType, slug, metadataKeys);
+    return DocumentHelper.loadSeoDocumentWithCountersBySlug(
+      documentType,
+      slug,
+      metadataKeys
+    );
   },
 
   loadPublicDocuments: async (input: QueryPublicDocumentsArgs) => {
@@ -564,7 +559,10 @@ export const DocumentApp = {
   },
 
   loadDocument: async (documentId: DocumentId) => {
-    return loadDocumentWithCountersById(documentId, ALL_METADATA_KEYS);
+    return DocumentHelper.loadDocumentWithCountersById(
+      documentId,
+      ALL_METADATA_KEYS
+    );
   },
 };
 

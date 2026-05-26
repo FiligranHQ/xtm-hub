@@ -16,7 +16,10 @@ import { assertUserHasCapaOnService } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
-import { processUploads, Upload } from '../document/document.uploads.helper';
+import {
+  DocumentUploadsHelper,
+  Upload,
+} from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
 import {
   loadServiceInstanceBy,
@@ -33,7 +36,7 @@ const addImage = async (user: User, uploads: Upload[]) => {
     ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
   if (serviceInstance) {
-    const files = await processUploads(
+    const files = await DocumentUploadsHelper.processUploads(
       uploads,
       serviceInstance.service_instance_id
     );

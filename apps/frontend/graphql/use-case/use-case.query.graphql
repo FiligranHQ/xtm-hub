@@ -1,0 +1,22 @@
+fragment UseCaseRow on UseCase {
+  id
+  name
+  color
+}
+
+query UseCasesList(
+  $count: Int!
+  $orderBy: UseCaseOrdering!
+  $orderMode: OrderingMode!
+) {
+  useCases(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+    totalCount
+    edges {
+      node {
+        id
+        name
+        color
+      }
+    }
+  }
+}

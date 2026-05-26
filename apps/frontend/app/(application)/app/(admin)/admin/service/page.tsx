@@ -1,25 +1,25 @@
 'use client';
+import AdminServiceTab, {
+  ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS,
+} from '@/components/service/AdminServiceTab';
 import {
   ServiceListQuery,
   servicesListFragment,
 } from '@/components/service/service.graphql';
+import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import { useTranslations } from 'next-intl';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-import AdminServiceTab, {
-  ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS,
-} from '@/components/service/AdminServiceTab';
-import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 
 const breadcrumbValue = [
   {
     label: 'MenuLinks.Settings',
   },
   {
-    label: 'MenuLinks.Services',
+    label: 'MenuLinks.Service',
   },
 ];
 
@@ -48,7 +48,7 @@ const Page = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.Services')}</h1>
+      <h1 className="sr-only">{t('MenuLinks.Service')}</h1>
       <AdminServiceTab
         serviceData={serviceData}
         refetch={refetch}

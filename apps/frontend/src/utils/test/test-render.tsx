@@ -3,6 +3,7 @@ import { SettingsPortalContext } from '@/components/settings/EnvPortalContext';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import { settingsContext_fragment$data } from '@generated/settingsContext_fragment.graphql';
 import messages from '@messages/en.json';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
@@ -115,20 +116,30 @@ interface TestWrapperProps {
   children: ReactNode;
 }
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+
 export const TestWrapper = ({ options, children }: TestWrapperProps) => {
   const { relayConfig, me, settings } = options ?? {};
 
   return (
-    <ProvidersWrapper
-      relayConfig={relayConfig}
-      me={generateMockUser(me)}
-      settings={generateSettings(settings)}>
-      <NextIntlClientProvider
-        locale={'en'}
-        messages={messages}>
-        {children}
-      </NextIntlClientProvider>
-    </ProvidersWrapper>
+    <QueryClientProvider client={createTestQueryClient()}>
+      <ProvidersWrapper
+        relayConfig={relayConfig}
+        me={generateMockUser(me)}
+        settings={generateSettings(settings)}>
+        <NextIntlClientProvider
+          locale={'en'}
+          messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </ProvidersWrapper>
+    </QueryClientProvider>
   );
 };
 

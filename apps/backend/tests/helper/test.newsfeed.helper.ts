@@ -1,5 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../knexfile';
+import {
+  NewsFeedItemType,
+  PlatformIdentifier,
+} from '../../src/__generated__/resolvers-types';
 import NewsFeedItem, {
   NewsFeedItemId,
   NewsFeedItemInitializer,
@@ -15,11 +19,15 @@ import ProvisionedNewsFeedItem, {
 export const TestNewsfeedHelper = {
   newsFeed: {
     createItem: async (
-      data: Omit<NewsFeedItemInitializer, 'id'> & { id?: NewsFeedItemId }
+      data: Partial<NewsFeedItemInitializer>
     ): Promise<NewsFeedItem> => {
       const [item] = await db<NewsFeedItem>('NewsFeedItem')
         .insert({
           id: uuidv4() as NewsFeedItemId,
+          type: NewsFeedItemType.ResourceCustomDashboard,
+          platform_identifier: PlatformIdentifier.Opencti,
+          creation_date: new Date(),
+          tags: [],
           ...data,
         })
         .returning('*');
