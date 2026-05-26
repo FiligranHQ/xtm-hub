@@ -568,7 +568,8 @@ describe('sendMailAndNotifyHubspot', () => {
     });
 
     expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
-      event: {
+      type: 'mailSent',
+      payload: {
         subject: 'Your OpenCTI Free Trial Request',
         timestamp: now.toISOString(),
         deployment_id: deploymentId,

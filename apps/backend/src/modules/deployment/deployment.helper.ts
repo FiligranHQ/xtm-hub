@@ -13,9 +13,7 @@ import {
   MailTemplates,
   templateSubjects,
 } from '../../server/mail-template/mail';
-import { HUBSPOT_QUEUES } from '../../thirdparty/pgboss/hubspot.jobs';
-import { PgBossProducer } from '../../thirdparty/pgboss/producer';
-import { logApp } from '../../utils/app-logger.util';
+import { hubspotHook } from '../../thirdparty/hubspot/hubspot';
 import { AlreadyExistsErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployment.domain';
 
@@ -226,17 +224,12 @@ const notifyMailSentToHubspot = async <T extends keyof MailTemplates>({
 }): Promise<void> => {
   const subject = templateSubjects[mail_data.template](mail_data.params);
 
-  const event = {
+  await hubspotHook('mailSent', async () => ({
     subject,
     timestamp: new Date().toISOString(),
     deployment_id: deployment_request_id,
     deployment_status: deployment_request_status,
-  };
-  try {
-    await PgBossProducer.send(HUBSPOT_QUEUES.MAIL_SENT, { event });
-  } catch (error) {
-    logApp.error('Failed to notify hubspot for mailSent', { event, error });
-  }
+  }));
 };
 
 export const sendMailAndNotifyHubspot = async <T extends keyof MailTemplates>({

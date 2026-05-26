@@ -384,7 +384,8 @@ describe('deployment app', () => {
           expect(mockPgBossSend).toHaveBeenCalledWith(
             HUBSPOT_QUEUES.MAIL_SENT,
             {
-              event: {
+              type: 'mailSent',
+              payload: {
                 subject: 'Your OpenCTI Free Trial Request',
                 timestamp: expect.any(String),
                 deployment_id: expect.any(String),
@@ -433,7 +434,8 @@ describe('deployment app', () => {
           expect(mockPgBossSend).toHaveBeenCalledWith(
             HUBSPOT_QUEUES.MAIL_SENT,
             {
-              event: {
+              type: 'mailSent',
+              payload: {
                 subject: 'Your OpenCTI Free Trial Request',
                 timestamp: expect.any(String),
                 deployment_id: expect.any(String),
@@ -491,7 +493,8 @@ describe('deployment app', () => {
           expect(mockPgBossSend).toHaveBeenCalledWith(
             HUBSPOT_QUEUES.MAIL_SENT,
             {
-              event: {
+              type: 'mailSent',
+              payload: {
                 subject: 'Your OpenCTI Free Trial Request',
                 timestamp: expect.any(String),
                 deployment_id: expect.any(String),
@@ -542,7 +545,8 @@ describe('deployment app', () => {
           expect(mockPgBossSend).toHaveBeenCalledWith(
             HUBSPOT_QUEUES.MAIL_SENT,
             {
-              event: {
+              type: 'mailSent',
+              payload: {
                 subject: 'Your OpenCTI Free Trial Request',
                 timestamp: expect.any(String),
                 deployment_id: expect.any(String),
@@ -1059,7 +1063,8 @@ describe('deployment app', () => {
           },
         });
         expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
-          event: {
+          type: 'mailSent',
+          payload: {
             subject: 'Your OpenCTI Platform Is Being Provisioned',
             timestamp: expect.any(String),
             deployment_id: initialDeployment.id,
@@ -1112,7 +1117,8 @@ describe('deployment app', () => {
           },
         });
         expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
-          event: {
+          type: 'mailSent',
+          payload: {
             subject: 'Welcome to your OpenCTI free trial!',
             timestamp: expect.any(String),
             deployment_id: initialDeployment.id,
@@ -1527,7 +1533,8 @@ describe('deployment app', () => {
         },
       });
       expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
-        event: {
+        type: 'mailSent',
+        payload: {
           subject: 'Your OpenCTI Trial Has Been Cancelled',
           timestamp: expect.any(String),
           deployment_id: deployment.id,
@@ -2099,7 +2106,8 @@ describe('deployment app', () => {
         },
       });
       expect(mockPgBossSend).toHaveBeenCalledWith(HUBSPOT_QUEUES.MAIL_SENT, {
-        event: {
+        type: 'mailSent',
+        payload: {
           subject: 'Your OpenCTI Free Trial Has Expired',
           timestamp: date.toISOString(),
           deployment_id: expect.any(String),
