@@ -9,12 +9,28 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
+import { NewsFeedItemMetadataKey as NewsFeedItemMetadataKeyModel } from '../../model/kanel/public/NewsFeedItemMetadata';
 import { ProvisionedNewsFeedItemPlatformId } from '../../model/kanel/public/ProvisionedNewsFeedItem';
 import { BadRequestErrorCode } from '../../utils/error/error.code';
 import { NewsFeedDomain } from './news-feed.domain';
 
 describe('newsFeedDomain', () => {
   const tags = ['threat-intel', 'malware'];
+
+  const createDocumentWithNewsFeedItem = async (itemTags: string[] = []) => {
+    const document = await TestHelper.document.create({
+      name: 'custom dashboard',
+    });
+    const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
+      document,
+      serviceDefinitionIdentifier:
+        ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+      type: NewsFeedItemType.ResourceCustomDashboard,
+      platformIdentifier: PlatformIdentifier.Opencti,
+      tags: itemTags,
+    });
+    return { document, newsFeedItem };
+  };
 
   beforeEach(async () => {
     await TestHelper.newsFeed.deleteItem();
@@ -43,11 +59,7 @@ describe('newsFeedDomain', () => {
       // Given
       const platformId = uuidv4();
       const item = await TestHelper.newsFeed.createItem({
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platform_identifier: PlatformIdentifier.Opencti,
         title: 'Test dashboard',
-        creation_date: new Date(),
-        tags: [],
       });
 
       await NewsFeedDomain.provisionNewsFeedItem(item.id, [platformId]);
@@ -84,11 +96,7 @@ describe('newsFeedDomain', () => {
       const otherPlatformId = uuidv4();
 
       const item = await TestHelper.newsFeed.createItem({
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platform_identifier: PlatformIdentifier.Opencti,
         title: 'Test dashboard',
-        creation_date: new Date(),
-        tags: [],
       });
 
       await NewsFeedDomain.provisionNewsFeedItem(item.id, [otherPlatformId]);
@@ -111,19 +119,10 @@ describe('newsFeedDomain', () => {
       const platformId = uuidv4();
 
       const item1 = await TestHelper.newsFeed.createItem({
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platform_identifier: PlatformIdentifier.Opencti,
         title: 'Dashboard 1',
-        creation_date: new Date(),
-        tags: [],
       });
-
       const item2 = await TestHelper.newsFeed.createItem({
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platform_identifier: PlatformIdentifier.Opencti,
         title: 'Dashboard 2',
-        creation_date: new Date(),
-        tags: [],
       });
 
       await NewsFeedDomain.provisionNewsFeedItem(item1.id, [platformId]);
@@ -143,6 +142,96 @@ describe('newsFeedDomain', () => {
         platform_id: platformId as ProvisionedNewsFeedItemPlatformId,
       });
       expect(remainingProvisioned).toHaveLength(0);
+    });
+
+    describe('auto-cleanup of is_deleted items', () => {
+      it.each`
+        description                                                            | isDeleted | extraPlatforms | expectedToExist
+        ${'hard-delete a soft-deleted item with no remaining provisions'}      | ${true}   | ${0}           | ${false}
+        ${'keep a soft-deleted item still provisioned for another platform'}   | ${true}   | ${1}           | ${true}
+        ${'keep a non-deleted item even after its last provision is consumed'} | ${false}  | ${0}           | ${true}
+      `(
+        'should $description',
+        async ({
+          isDeleted,
+          extraPlatforms,
+          expectedToExist,
+        }: {
+          isDeleted: boolean;
+          extraPlatforms: number;
+          expectedToExist: boolean;
+        }) => {
+          // Given
+          const platformId = uuidv4();
+          const additionalIds = Array.from({ length: extraPlatforms }, () =>
+            uuidv4()
+          );
+          const item = await TestHelper.newsFeed.createItem({
+            title: 'Test dashboard',
+            is_deleted: isDeleted,
+          });
+          await NewsFeedDomain.provisionNewsFeedItem(item.id, [
+            platformId,
+            ...additionalIds,
+          ]);
+
+          // When
+          await NewsFeedDomain.loadAndConsumeProvisionedNewsFeedItems(
+            platformId
+          );
+
+          // Then
+          const dbItem = await TestHelper.newsFeed.loadFirstItem({
+            id: item.id,
+          });
+          if (expectedToExist) {
+            expect(dbItem).toBeDefined();
+          } else {
+            expect(dbItem).toBeUndefined();
+          }
+        }
+      );
+
+      it('should hard-delete only is_deleted items and keep non-deleted items when both are consumed together', async () => {
+        // Given
+        const platformId = uuidv4();
+        const deletedItem = await TestHelper.newsFeed.createItem({
+          title: 'Deleted dashboard',
+          is_deleted: true,
+        });
+        const activeItem = await TestHelper.newsFeed.createItem({
+          title: 'Active dashboard',
+          is_deleted: false,
+        });
+
+        await NewsFeedDomain.provisionNewsFeedItem(deletedItem.id, [
+          platformId,
+        ]);
+        await NewsFeedDomain.provisionNewsFeedItem(activeItem.id, [platformId]);
+
+        // When
+        const result =
+          await NewsFeedDomain.loadAndConsumeProvisionedNewsFeedItems(
+            platformId
+          );
+
+        // Then — both items are returned by the consume call
+        expect(result.map((r) => r.id)).toEqual(
+          expect.arrayContaining([deletedItem.id, activeItem.id])
+        );
+
+        // The deleted item must be hard-deleted from DB
+        const dbDeletedItem = await TestHelper.newsFeed.loadFirstItem({
+          id: deletedItem.id,
+        });
+        expect(dbDeletedItem).toBeUndefined();
+
+        // The active item must still exist
+        const dbActiveItem = await TestHelper.newsFeed.loadFirstItem({
+          id: activeItem.id,
+        });
+        expect(dbActiveItem).toBeDefined();
+      });
     });
   });
 
@@ -164,18 +253,8 @@ describe('newsFeedDomain', () => {
     });
 
     it('should create a news feed item with the document name as title', async () => {
-      const document = await TestHelper.document.create({
-        name: 'custom dashboard',
-      });
-
-      const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
-        document,
-        serviceDefinitionIdentifier:
-          ServiceDefinitionIdentifier.OpenctiCustomDashboards,
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platformIdentifier: PlatformIdentifier.Opencti,
-        tags,
-      });
+      const { document, newsFeedItem } =
+        await createDocumentWithNewsFeedItem(tags);
 
       expect(newsFeedItem).toMatchObject({
         type: NewsFeedItemType.ResourceCustomDashboard,
@@ -188,18 +267,7 @@ describe('newsFeedDomain', () => {
     });
 
     it('should persist the news feed item in the database', async () => {
-      const document = await TestHelper.document.create({
-        name: 'custom dashboard',
-      });
-
-      const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
-        document,
-        serviceDefinitionIdentifier:
-          ServiceDefinitionIdentifier.OpenctiCustomDashboards,
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platformIdentifier: PlatformIdentifier.Opencti,
-        tags,
-      });
+      const { newsFeedItem } = await createDocumentWithNewsFeedItem(tags);
 
       const dbItem = await TestHelper.newsFeed.loadFirstItem({
         id: newsFeedItem.id,
@@ -215,21 +283,11 @@ describe('newsFeedDomain', () => {
     });
 
     it('should insert metadata with the url_path', async () => {
-      const document = await TestHelper.document.create({
-        name: 'custom dashboard',
-      });
-
-      const newsFeedItem = await NewsFeedDomain.createResourceNewsFeedItem({
-        document,
-        serviceDefinitionIdentifier:
-          ServiceDefinitionIdentifier.OpenctiCustomDashboards,
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platformIdentifier: PlatformIdentifier.Opencti,
-        tags: [],
-      });
+      const { document, newsFeedItem } = await createDocumentWithNewsFeedItem();
 
       const metadata = await TestHelper.newsFeed.loadFirstMetadata({
         news_feed_item_id: newsFeedItem.id,
+        key: NewsFeedItemMetadataKey.UrlPath as NewsFeedItemMetadataKeyModel,
       });
 
       const expectedGlobalDocumentId = toGlobalId('Document', document.id);
@@ -243,17 +301,277 @@ describe('newsFeedDomain', () => {
     });
   });
 
+  describe('loadNewsFeedItemByDocumentId', () => {
+    it('should return undefined when no metadata matches the document id', async () => {
+      const result =
+        await NewsFeedDomain.loadNewsFeedItemByDocumentId(uuidv4());
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should return the news feed item linked to the given document id', async () => {
+      // Given
+      const { document, newsFeedItem } = await createDocumentWithNewsFeedItem();
+
+      // When
+      const result = await NewsFeedDomain.loadNewsFeedItemByDocumentId(
+        document.id
+      );
+
+      // Then
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(newsFeedItem.id);
+    });
+
+    it('should not return a news feed item linked to a different document id', async () => {
+      // Given
+      await createDocumentWithNewsFeedItem();
+
+      // When
+      const result =
+        await NewsFeedDomain.loadNewsFeedItemByDocumentId(uuidv4());
+
+      // Then
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when the linked news feed item is soft-deleted', async () => {
+      // Given
+      const { document, newsFeedItem } = await createDocumentWithNewsFeedItem();
+      await NewsFeedDomain.markNewsFeedItemAsDeleted(newsFeedItem.id);
+
+      // When
+      const result = await NewsFeedDomain.loadNewsFeedItemByDocumentId(
+        document.id
+      );
+
+      // Then
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('updateNewsFeedItem', () => {
+    it('should update the title of an existing news feed item', async () => {
+      // Given
+      const item = await TestHelper.newsFeed.createItem({
+        title: 'Original title',
+      });
+
+      // When
+      const updated = await NewsFeedDomain.updateNewsFeedItem(item.id, {
+        title: 'Updated title',
+        tags: [],
+      });
+
+      // Then
+      expect(updated.title).toBe('Updated title');
+      expect(updated.id).toBe(item.id);
+    });
+
+    it('should update the tags of an existing news feed item', async () => {
+      // Given
+      const item = await TestHelper.newsFeed.createItem({
+        title: 'Test item',
+        tags: ['old-tag'],
+      });
+
+      // When
+      const updated = await NewsFeedDomain.updateNewsFeedItem(item.id, {
+        title: item.title,
+        tags: ['new-tag-1', 'new-tag-2'],
+      });
+
+      // Then
+      expect(updated.tags).toEqual(['new-tag-1', 'new-tag-2']);
+    });
+
+    it('should persist the updated values in the database', async () => {
+      // Given
+      const item = await TestHelper.newsFeed.createItem({
+        title: 'Original title',
+        tags: ['old-tag'],
+      });
+
+      // When
+      await NewsFeedDomain.updateNewsFeedItem(item.id, {
+        title: 'Persisted title',
+        tags: ['persisted-tag'],
+      });
+
+      // Then
+      const dbItem = await TestHelper.newsFeed.loadFirstItem({ id: item.id });
+      expect(dbItem).toMatchObject({
+        title: 'Persisted title',
+        tags: ['persisted-tag'],
+      });
+    });
+
+    it.each`
+      description                        | newTitle        | newTags
+      ${'title and tags simultaneously'} | ${'Combined'}   | ${['tag-a', 'tag-b']}
+      ${'title to empty-ish string'}     | ${'  '}         | ${[]}
+      ${'tags to empty array'}           | ${'Some title'} | ${[]}
+    `(
+      'should update $description',
+      async ({
+        newTitle,
+        newTags,
+      }: {
+        newTitle: string;
+        newTags: string[];
+      }) => {
+        // Given
+        const item = await TestHelper.newsFeed.createItem({
+          title: 'Initial title',
+          tags: ['initial-tag'],
+        });
+
+        // When
+        const updated = await NewsFeedDomain.updateNewsFeedItem(item.id, {
+          title: newTitle,
+          tags: newTags,
+        });
+
+        // Then
+        expect(updated.title).toBe(newTitle);
+        expect(updated.tags).toEqual(newTags);
+      }
+    );
+
+    it('should not affect other news feed items when updating one', async () => {
+      // Given
+      const item1 = await TestHelper.newsFeed.createItem({
+        title: 'Item 1',
+        tags: ['tag-1'],
+      });
+      const item2 = await TestHelper.newsFeed.createItem({
+        title: 'Item 2',
+        tags: ['tag-2'],
+      });
+
+      // When
+      await NewsFeedDomain.updateNewsFeedItem(item1.id, {
+        title: 'Updated item 1',
+        tags: ['updated-tag'],
+      });
+
+      // Then
+      const dbItem2 = await TestHelper.newsFeed.loadFirstItem({ id: item2.id });
+      expect(dbItem2).toMatchObject({ title: 'Item 2', tags: ['tag-2'] });
+    });
+  });
+
+  describe('loadPaginatedNewsFeedItems', () => {
+    it.each`
+      description                            | itemCount | first | expectedEdges | expectedTotal | expectedHasNextPage
+      ${'no items exist'}                    | ${0}      | ${10} | ${0}          | ${0}          | ${false}
+      ${'item count is below the page size'} | ${2}      | ${10} | ${2}          | ${2}          | ${false}
+      ${'item count exceeds the page size'}  | ${3}      | ${2}  | ${2}          | ${3}          | ${true}
+    `(
+      'should return the correct connection when $description',
+      async ({
+        itemCount,
+        first,
+        expectedEdges,
+        expectedTotal,
+        expectedHasNextPage,
+      }: {
+        itemCount: number;
+        first: number;
+        expectedEdges: number;
+        expectedTotal: number;
+        expectedHasNextPage: boolean;
+      }) => {
+        // Given
+        for (let i = 0; i < itemCount; i++) {
+          await TestHelper.newsFeed.createItem({ title: `Item ${i + 1}` });
+        }
+
+        // When
+        const result = await NewsFeedDomain.loadPaginatedNewsFeedItems({
+          first,
+        });
+
+        // Then
+        expect(result.edges).toHaveLength(expectedEdges);
+        expect(result.totalCount).toBe(`${expectedTotal}`);
+        expect(result.pageInfo.hasNextPage).toBe(expectedHasNextPage);
+      }
+    );
+
+    it('should return items ordered by creation date descending', async () => {
+      // Given
+      await TestHelper.newsFeed.createItem({
+        title: 'Old item',
+        creation_date: new Date('2024-01-01T00:00:00Z'),
+      });
+      await TestHelper.newsFeed.createItem({
+        title: 'Recent item',
+        creation_date: new Date('2024-06-01T00:00:00Z'),
+      });
+
+      // When
+      const result = await NewsFeedDomain.loadPaginatedNewsFeedItems({
+        first: 10,
+      });
+
+      // Then
+      expect(result.edges[0]?.node.title).toBe('Recent item');
+      expect(result.edges[1]?.node.title).toBe('Old item');
+    });
+
+    it('should navigate to the second page using the after cursor', async () => {
+      // Given
+      const items = [
+        { title: 'Newest', creation_date: new Date('2024-03-01T00:00:00Z') },
+        { title: 'Middle', creation_date: new Date('2024-02-01T00:00:00Z') },
+        { title: 'Oldest', creation_date: new Date('2024-01-01T00:00:00Z') },
+      ];
+      for (const { title, creation_date } of items) {
+        await TestHelper.newsFeed.createItem({ title, creation_date });
+      }
+
+      // When — first page
+      const firstPage = await NewsFeedDomain.loadPaginatedNewsFeedItems({
+        first: 2,
+      });
+      expect(firstPage.edges).toHaveLength(2);
+
+      // When — second page
+      const secondPage = await NewsFeedDomain.loadPaginatedNewsFeedItems({
+        first: 2,
+        after: firstPage.pageInfo.endCursor,
+      });
+
+      // Then
+      expect(secondPage.edges).toHaveLength(1);
+      expect(secondPage.edges[0]?.node.title).toBe('Oldest');
+      expect(secondPage.pageInfo.hasNextPage).toBe(false);
+    });
+
+    it('should return correct cursors in edges', async () => {
+      // Given
+      await TestHelper.newsFeed.createItem({ title: 'Cursor test item' });
+
+      // When
+      const result = await NewsFeedDomain.loadPaginatedNewsFeedItems({
+        first: 10,
+      });
+
+      // Then
+      expect(result.pageInfo.startCursor).toBeDefined();
+      expect(result.pageInfo.endCursor).toBeDefined();
+      expect(result.edges[0]?.cursor).toBe(result.pageInfo.startCursor);
+    });
+  });
+
   describe('provisionNewsFeedItem', () => {
     let newsFeedItemId: NewsFeedItemId;
 
     beforeEach(async () => {
       const item = await TestHelper.newsFeed.createItem({
-        id: uuidv4() as NewsFeedItemId,
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platform_identifier: PlatformIdentifier.Opencti,
         title: 'Test Feed Item',
-        creation_date: new Date(),
-        tags: [],
+        id: uuidv4() as NewsFeedItemId,
       });
       expect(item).toBeDefined();
       newsFeedItemId = item.id;
