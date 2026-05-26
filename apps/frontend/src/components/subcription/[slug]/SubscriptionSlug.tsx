@@ -112,7 +112,7 @@ const SubscriptionSlug = ({
     breadcrumbValue = [
       { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
       { label: 'MenuLinks.Settings' },
-      { label: 'MenuLinks.Services', href: `/${APP_PATH}/admin/service` },
+      { label: 'MenuLinks.Service', href: `/${APP_PATH}/admin/service` },
       {
         label: queryDataSubscription.subscriptionById!.service_instance!.name,
         href: `/${APP_PATH}/admin/service/${queryDataSubscription.subscriptionById?.service_instance?.id}`,

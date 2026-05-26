@@ -19,6 +19,8 @@ export default interface NewsFeedItem {
   creation_date: Date;
 
   tags: string[];
+
+  is_deleted: boolean;
 }
 
 /** Represents the initializer for the table public.NewsFeedItem */
@@ -37,6 +39,9 @@ export interface NewsFeedItemInitializer {
 
   /** Default value: '{}'::text[] */
   tags?: string[];
+
+  /** Default value: false */
+  is_deleted?: boolean;
 }
 
 /** Represents the mutator for the table public.NewsFeedItem */
@@ -52,4 +57,6 @@ export interface NewsFeedItemMutator {
   creation_date?: Date;
 
   tags?: string[];
+
+  is_deleted?: boolean;
 }

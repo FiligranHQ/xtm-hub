@@ -80,6 +80,14 @@ describe('documentApp', () => {
     active: true,
   };
 
+  const documentUpdateData = {
+    short_description: documentData.short_description,
+    uploader_id: documentData.uploader_id,
+    name: documentData.name,
+    description: documentData.description,
+    active: documentData.active,
+  };
+
   const integrationMetadata = [
     {
       key: DocumentMetadataKeyCode.IntegrationType,
@@ -245,11 +253,10 @@ describe('documentApp', () => {
       });
     });
 
-    it('should call NewsFeedApp.createResourceNewsFeedItem when document is created as active and news feed is configured', async () => {
+    it('should delegate news feed synchronization to NewsFeedApp.upsertResourceNewsFeed on document creation', async () => {
       // Given
-      vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
-      const createResourceNewsFeedItemSpy = vi
-        .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
+      const upsertResourceNewsFeedSpy = vi
+        .spyOn(NewsFeedApp, 'upsertResourceNewsFeed')
         .mockResolvedValue();
 
       // When
@@ -263,62 +270,17 @@ describe('documentApp', () => {
       });
 
       // Then
-      expect(createResourceNewsFeedItemSpy).toHaveBeenCalledOnce();
-      expect(createResourceNewsFeedItemSpy).toHaveBeenCalledWith({
-        document: expect.objectContaining({ id: result!.id }),
+      expect(upsertResourceNewsFeedSpy).toHaveBeenCalledOnce();
+      expect(upsertResourceNewsFeedSpy).toHaveBeenCalledWith({
+        documentBeforeUpdate: undefined,
+        updatedDocument: expect.objectContaining({
+          id: result!.id,
+          active: true,
+        }),
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         serviceDefinitionIdentifier:
           ServiceDefinitionIdentifier.OpenctiCustomDashboards,
       });
-    });
-
-    it('should NOT call NewsFeedApp.createResourceNewsFeedItem when document is created as inactive', async () => {
-      // Given
-      vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
-      const createResourceNewsFeedItemSpy = vi
-        .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
-        .mockResolvedValue();
-
-      // When
-      await DocumentApp.createDocument({
-        input: {
-          ...documentData,
-          active: false,
-          slug: 'news-feed-inactive-slug',
-        },
-        metadata: [
-          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
-        ],
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        sourceDocument: mockUpload,
-      });
-
-      // Then
-      expect(createResourceNewsFeedItemSpy).not.toHaveBeenCalled();
-    });
-
-    it('should NOT call NewsFeedApp.createResourceNewsFeedItem when news feed is not configured', async () => {
-      // Given
-      vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(false);
-      const createResourceNewsFeedItemSpy = vi
-        .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
-        .mockResolvedValue();
-
-      // When
-      await DocumentApp.createDocument({
-        input: {
-          ...documentData,
-          slug: 'news-feed-not-configured-slug',
-        },
-        metadata: [
-          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
-        ],
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        sourceDocument: mockUpload,
-      });
-
-      // Then
-      expect(createResourceNewsFeedItemSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -534,7 +496,8 @@ describe('documentApp', () => {
           parentDocumentId: createdDocument!.id,
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
           metadata,
-          input: documentData,
+          input: documentUpdateData,
+          sourceDocument: mockUpload,
           existingImageIds: [],
         });
 
@@ -599,7 +562,7 @@ describe('documentApp', () => {
           parentDocumentId: createdDocument!.id,
           serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
           metadata,
-          input: { ...documentData, slug },
+          input: documentUpdateData,
           sourceDocument: mockUpload,
           existingImageIds: [],
         });
@@ -673,7 +636,7 @@ describe('documentApp', () => {
         parentDocumentId: createdDocument!.id,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         metadata: updatedMetadata,
-        input: { ...documentData, slug },
+        input: documentUpdateData,
         existingImageIds: [],
       });
 
@@ -711,11 +674,10 @@ describe('documentApp', () => {
       expect(updatedDocument.slug).toBe(originalSlug);
     });
 
-    it('should call NewsFeedApp.createResourceNewsFeedItem when document transitions from inactive to active', async () => {
+    it('should delegate news feed synchronization to NewsFeedApp.upsertResourceNewsFeed', async () => {
       // Given
-      vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
-      const createResourceNewsFeedItemSpy = vi
-        .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
+      const upsertResourceNewsFeedSpy = vi
+        .spyOn(NewsFeedApp, 'upsertResourceNewsFeed')
         .mockResolvedValue();
 
       const inactiveDoc = await DocumentApp.createDocument({
@@ -726,9 +688,10 @@ describe('documentApp', () => {
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         sourceDocument: mockUpload,
       });
+      upsertResourceNewsFeedSpy.mockClear();
 
       // When
-      await DocumentApp.updateDocument({
+      const updatedDocument = await DocumentApp.updateDocument({
         parentDocumentId: inactiveDoc!.id,
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         metadata: [
@@ -739,41 +702,20 @@ describe('documentApp', () => {
       });
 
       // Then
-      expect(createResourceNewsFeedItemSpy).toHaveBeenCalledOnce();
-    });
-
-    it('should NOT call NewsFeedApp.createResourceNewsFeedItem when document was already active before update', async () => {
-      // Given
-      vi.spyOn(NewsFeedApp, 'isNewsFeedConfigured').mockReturnValue(true);
-      const createResourceNewsFeedItemSpy = vi
-        .spyOn(NewsFeedApp, 'createResourceNewsFeedItem')
-        .mockResolvedValue();
-
-      const activeDoc = await DocumentApp.createDocument({
-        input: { ...documentData, active: true, slug: 'already-active' },
-        metadata: [
-          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
-        ],
+      expect(upsertResourceNewsFeedSpy).toHaveBeenCalledOnce();
+      expect(upsertResourceNewsFeedSpy).toHaveBeenCalledWith({
+        documentBeforeUpdate: expect.objectContaining({
+          id: inactiveDoc!.id,
+          active: false,
+        }),
+        updatedDocument: expect.objectContaining({
+          id: updatedDocument.id,
+          active: true,
+        }),
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        sourceDocument: mockUpload,
+        serviceDefinitionIdentifier:
+          ServiceDefinitionIdentifier.OpenctiCustomDashboards,
       });
-
-      // createDocument with active=true triggers the spy once — reset to isolate updateDocument behavior
-      createResourceNewsFeedItemSpy.mockClear();
-
-      // When
-      await DocumentApp.updateDocument({
-        parentDocumentId: activeDoc!.id,
-        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        metadata: [
-          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
-        ],
-        input: { active: true },
-        existingImageIds: [],
-      });
-
-      // Then
-      expect(createResourceNewsFeedItemSpy).not.toHaveBeenCalled();
     });
   });
 
