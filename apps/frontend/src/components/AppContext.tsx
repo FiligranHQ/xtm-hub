@@ -1,4 +1,5 @@
 'use client';
+import Copilot from '@/components/external/Copilot';
 import GoogleAnalytics from '@/components/external/GoogleAnalytics';
 import Hubspot from '@/components/external/Hubspot';
 import { APP_PATH } from '@/utils/path/constant';
@@ -58,6 +59,7 @@ const AppContext = ({ children }: AppProps) => {
           <Toaster />
           <Hubspot />
           <GoogleAnalytics />
+          <Copilot />
         </ThemeProvider>
       </body>
     </html>
