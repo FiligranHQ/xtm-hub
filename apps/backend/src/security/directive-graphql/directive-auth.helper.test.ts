@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   CAPABILITY_MODIFY_TRIALS,
   CAPABILITY_READ_TRIALS,
@@ -15,6 +15,10 @@ import { authDirectives } from './directive-auth';
 import { RoleType } from './directive.model';
 
 describe('auth directives', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('isAuthenticated', () => {
     it('should return false if user is disabled', () => {
       const user = {
@@ -120,7 +124,9 @@ describe('auth directives', () => {
           capabilities,
           selected_org_capabilities,
         } as UserLoadUserBy;
-        const input = areIdsMissing ? {} : { service_instance_id: 'fake' };
+        const input = areIdsMissing
+          ? { input: {} }
+          : { service_instance_id: 'fake', input: {} };
         const call = authDirectives.hasServiceCapability(user, input, [
           'UPLOAD',
         ]);
