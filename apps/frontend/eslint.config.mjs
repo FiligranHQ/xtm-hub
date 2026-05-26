@@ -110,6 +110,8 @@ const eslintConfig = [
       'out/**',
       'build/**',
       'next-env.d.ts',
+      'graphql/generated.ts',
+      'graphql/mocks.ts',
     ],
   },
 ];

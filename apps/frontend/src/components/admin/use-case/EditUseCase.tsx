@@ -1,31 +1,85 @@
-import {
-  DeleteUseCaseMutation,
-  EditUseCaseMutation,
-} from '@/components/admin/use-case/use-case.graphql';
+import UseCaseForm, {
+  UseCaseFormModel,
+} from '@/components/admin/use-case/UseCaseForm';
+import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { toast } from '@filigran/ui';
-import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';
+import {
+  OrderingMode,
+  UseCaseOrdering,
+  useUseCaseDeleteMutation,
+  useUseCaseEditMutation,
+  useUseCasesListQuery,
+} from '@graphql/generated';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useMutation } from 'react-relay';
-import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
 
 const EditUseCase = ({
   open,
   onClose,
   useCase,
-  connections,
 }: {
   open: boolean;
   onClose: () => void;
-  useCase: useCase_fragment$data;
-  connections: string[];
+  useCase: UseCaseFormModel;
 }) => {
   const t = useTranslations();
+  const queryClient = useQueryClient();
   const [openSheet, setOpenSheet] = useState<boolean>(open);
 
-  const [editUseCase] = useMutation(EditUseCaseMutation);
-  const [deleteUseCase] = useMutation(DeleteUseCaseMutation);
+  const { mutate: editUseCase } = useUseCaseEditMutation(portalGraphqlClient, {
+    onSuccess: () => {
+      toast({
+        title: t('Utils.Success'),
+      });
+      queryClient.invalidateQueries({
+        queryKey: useUseCasesListQuery.getKey({
+          count: 100,
+          orderMode: OrderingMode.Asc,
+          orderBy: UseCaseOrdering.Name,
+        }),
+      });
+      handleOpenSheet(false);
+    },
+    onError: (error) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'UnknownError';
+      toast({
+        variant: 'destructive',
+        title: t('Utils.Error'),
+        description: <>{t(`Error.Server.${errorMessage}`)}</>,
+      });
+    },
+  });
+
+  const { mutate: deleteUseCase } = useUseCaseDeleteMutation(
+    portalGraphqlClient,
+    {
+      onSuccess: () => {
+        toast({
+          title: t('Utils.Success'),
+        });
+        queryClient.invalidateQueries({
+          queryKey: useUseCasesListQuery.getKey({
+            count: 100,
+            orderMode: OrderingMode.Asc,
+            orderBy: UseCaseOrdering.Name,
+          }),
+        });
+        handleOpenSheet(false);
+      },
+      onError: (error) => {
+        const errorMessage =
+          error instanceof Error ? error.message : 'UnknownError';
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${errorMessage}`)}</>,
+        });
+      },
+    }
+  );
 
   const handleOpenSheet = (open: boolean) => {
     setOpenSheet((prevState) => {
@@ -39,45 +93,14 @@ const EditUseCase = ({
 
   const onDeleteUseCase = () => {
     deleteUseCase({
-      variables: {
-        id: useCase.id,
-        connections,
-      },
-      onCompleted: () => {
-        toast({
-          title: t('Utils.Success'),
-        });
-        handleOpenSheet(false);
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
-        });
-      },
+      id: useCase.id,
     });
   };
 
   const onUpdateUseCase = (input: { name: string; color: string }) => {
     editUseCase({
-      variables: {
-        id: useCase.id,
-        input,
-      },
-      onCompleted: () => {
-        toast({
-          title: t('Utils.Success'),
-        });
-        handleOpenSheet(false);
-      },
-      onError: (error) => {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
-        });
-      },
+      id: useCase.id,
+      input,
     });
   };
 

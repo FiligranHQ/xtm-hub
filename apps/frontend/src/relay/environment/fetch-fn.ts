@@ -1,4 +1,8 @@
 import { isDevelopment } from '@/lib/utils';
+import {
+  buildCookieHeader,
+  scrubSensitiveVariables,
+} from '@/relay/environment/fetch-fn.utils';
 import { createClient } from 'graphql-sse';
 import {
   GraphQLResponse,
@@ -6,7 +10,6 @@ import {
   RequestParameters,
   Variables,
 } from 'relay-runtime';
-import { buildCookieHeader, scrubSensitiveVariables } from '@/relay/environment/fetch-fn.utils';
 
 function prepareUri(uri: string | undefined) {
   if (uri) {
@@ -138,7 +141,7 @@ export function logGraphQLOperation(
       .match(/^(query|mutation|subscription)/i)?.[1]
       ?.toUpperCase() || 'QUERY';
   // eslint-disable-next-line no-console
-  console.log(`[GraphQL ${operationType}] ${operationName} → ${apiUri}`, {
+  console.log(`[GraphQL:Relay ${operationType}] ${operationName} → ${apiUri}`, {
     variables: scrubSensitiveVariables(variables ?? {}),
   });
 }
