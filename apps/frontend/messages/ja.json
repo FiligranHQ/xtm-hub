@@ -580,9 +580,21 @@
         "CE": "コミュニティ版",
         "EE": "エンタープライズ版"
       },
+      "ConnectionStatus": {
+        "Connected": "つながる",
+        "NotConnected": "接続が切れた",
+        "NotConnectedDetails": "プラットフォームを再登録してください。"
+      },
       "Description": "プライベート・プラットフォームへのアクセスはこちらをクリックしてください。",
       "PlatformID": "プラットフォームID",
+      "PlatformName": "プラットフォーム名",
       "PlatformURL": "プラットフォームURL",
+      "StartDate": "開始日",
+      "EndDate": "終了日",
+      "RegisteredOn": "登録日",
+      "Region": "地域",
+      "License": "ライセンス",
+      "Status": "ステータス",
       "PrivatePlatform": "プライベート・プラットフォーム"
     },
     "Error": {
