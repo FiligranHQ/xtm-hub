@@ -58,6 +58,7 @@ const basePlatform: registeredPlatformByServiceInstanceId_fragment$data = {
   ' $fragmentType': 'registeredPlatformByServiceInstanceId_fragment',
   id: 'platform-id',
   platform_id: 'pid',
+  myGroups: null,
   tenant_id: null,
   title: 'My Platform',
   url: 'https://platform.example.com',
@@ -81,6 +82,7 @@ const trialPlatform: registeredPlatformByServiceInstanceId_fragment$data = {
     region: 'eu_west',
     platform_identifier: PlatformIdentifierEnum.OPENCTI,
     counts_in_orga_quota: true,
+    requester_email: 'trial-admin@filigran.io',
   },
   subscription: {
     ...basePlatform.subscription!,
@@ -169,6 +171,78 @@ describe('RegistrationDetails', () => {
       expect(screen.getByText(/Registered on:/i)).toBeInTheDocument();
       expect(screen.queryByText(/Start date:/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/End date:/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Access row for trial', () => {
+    it.each`
+      myGroups                                   | expectedText
+      ${[{ name: 'Admin' }, { name: 'Reader' }]} | ${'Admin, Reader'}
+      ${[{ name: 'Manager' }]}                   | ${'Manager'}
+    `(
+      'should show group names when myGroups is provided',
+      ({ myGroups, expectedText }) => {
+        renderDetails({
+          ...trialPlatform,
+          myGroups,
+        });
+
+        expect(screen.getByText(/Access:/i)).toBeInTheDocument();
+        expect(screen.getByText(expectedText)).toBeInTheDocument();
+        expect(
+          screen.queryByText(
+            /No access please contact the trial administrator/i
+          )
+        ).not.toBeInTheDocument();
+      }
+    );
+
+    it.each`
+      myGroups     | description
+      ${[]}        | ${'empty array'}
+      ${null}      | ${'null value'}
+      ${undefined} | ${'undefined value'}
+    `(
+      'should show fallback message when myGroups is $description',
+      ({ myGroups }) => {
+        renderDetails({
+          ...trialPlatform,
+          myGroups,
+          deployment_request: {
+            ...trialPlatform.deployment_request!,
+            requester_email: 'admin@filigran.io',
+          },
+        });
+
+        expect(
+          screen.getByText(
+            /No access please contact the trial administrator at/i
+          )
+        ).toBeInTheDocument();
+        expect(screen.getByText(/admin@filigran\.io/i)).toBeInTheDocument();
+      }
+    );
+
+    it('should not render access row for non-trial', () => {
+      renderDetails({
+        ...basePlatform,
+        myGroups: [{ name: 'Admin' }],
+      });
+
+      expect(screen.queryByText(/Access:/i)).not.toBeInTheDocument();
+    });
+
+    it('should not render access row for trial that is not ACTIVE', () => {
+      renderDetails({
+        ...trialPlatform,
+        myGroups: [{ name: 'Admin' }],
+        deployment_request: {
+          ...trialPlatform.deployment_request!,
+          hub_status: DeploymentRequestHubStatusEnum.PENDING,
+        },
+      });
+
+      expect(screen.queryByText(/Access:/i)).not.toBeInTheDocument();
     });
   });
 
