@@ -1,46 +1,36 @@
-import {
-  useCaseFragment,
-  useCaseListFragment,
-  UseCaseListQuery,
-} from '@/components/admin/use-case/use-case.graphql';
+import AddUseCase from '@/components/admin/use-case/AddUseCase';
+import EditUseCase from '@/components/admin/use-case/EditUseCase';
+import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';
 import { Badge, DataTable } from '@filigran/ui';
-import { useCaseListQuery } from '@generated/useCaseListQuery.graphql';
 import {
-  useCase_fragment$data,
-  useCase_fragment$key,
-} from '@generated/useCase_fragment.graphql';
-import { useCase_list_fragment$key } from '@generated/useCase_list_fragment.graphql';
+  OrderingMode,
+  UseCaseOrdering,
+  UseCaseRowFragment,
+  useUseCasesListQuery,
+} from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
-import {
-  readInlineData,
-  useLazyLoadQuery,
-  useRefetchableFragment,
-} from 'react-relay';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
-import AddUseCase from '@/components/admin/use-case/AddUseCase';
-import EditUseCase from '@/components/admin/use-case/EditUseCase';
 
 const UseCases = () => {
   const t = useTranslations();
-  const queryData = useLazyLoadQuery<useCaseListQuery>(UseCaseListQuery, {
-    count: 100,
-    orderMode: 'asc',
-    orderBy: 'name',
-  });
-
-  const [data] = useRefetchableFragment<
-    useCaseListQuery,
-    useCase_list_fragment$key
-  >(useCaseListFragment, queryData);
   const [useCaseEdit, setUseCaseEdit] = useState<
-    useCase_fragment$data | undefined
+    UseCaseRowFragment | undefined
   >(undefined);
 
-  const columns: ColumnDef<useCase_fragment$data>[] = [
+  const { data: queryData, isError } = useUseCasesListQuery(
+    portalGraphqlClient,
+    {
+      count: 100,
+      orderMode: OrderingMode.Asc,
+      orderBy: UseCaseOrdering.Name,
+    }
+  );
+
+  const columns: ColumnDef<UseCaseRowFragment>[] = [
     {
       accessorKey: 'name',
       id: 'name',
@@ -65,16 +55,16 @@ const UseCases = () => {
     },
   ];
 
-  const useCasesData = useMemo<useCase_fragment$data[]>(
-    () =>
-      data.useCases?.edges?.map?.(({ node }) =>
-        readInlineData<useCase_fragment$key>(useCaseFragment, node)
-      ) as useCase_fragment$data[],
-    [data]
-  );
+  const useCasesData = useMemo<UseCaseRowFragment[]>(() => {
+    const edges = queryData?.useCases?.edges ?? [];
+    return edges.map(({ node }) => node);
+  }, [queryData]);
 
   return (
     <>
+      {isError && (
+        <div className="mb-s text-sm text-destructive">{t('Utils.Error')}</div>
+      )}
       <DataTable
         columns={columns}
         data={useCasesData}
@@ -85,14 +75,12 @@ const UseCases = () => {
           enableColumnPinning: false,
           enableHiding: false,
         }}
-        onClickRow={({ original }) =>
-          setUseCaseEdit(original as useCase_fragment$data)
-        }
+        onClickRow={({ original }) => setUseCaseEdit(original)}
         toolbar={
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
             <div />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">
-              <AddUseCase connectionId={data!.useCases!.__id} />
+              <AddUseCase />
             </div>
           </div>
         }
@@ -101,7 +89,6 @@ const UseCases = () => {
         <EditUseCase
           useCase={useCaseEdit}
           open={!!useCaseEdit}
-          connections={[data!.useCases!.__id]}
           onClose={() =>
             useExecuteAfterAnimation(() => setUseCaseEdit(undefined))
           }

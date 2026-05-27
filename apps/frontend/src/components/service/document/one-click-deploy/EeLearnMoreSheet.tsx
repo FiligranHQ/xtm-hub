@@ -117,7 +117,7 @@ const EeLearnMoreSheet = ({
                 'Service.ShareableResources.Deploy.EELearnMore.FirstParagraph'
               )}
             </p>
-            <p className="text-sm">
+            <p className="text-sm text-text-secondary">
               {t(
                 'Service.ShareableResources.Deploy.EELearnMore.SecondParagraph'
               )}

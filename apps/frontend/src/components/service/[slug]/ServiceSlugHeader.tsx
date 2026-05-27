@@ -26,7 +26,7 @@ const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
       ? [
           { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
           { label: 'MenuLinks.Settings' },
-          { label: 'MenuLinks.Services', href: `/${APP_PATH}/admin/service` },
+          { label: 'MenuLinks.Service', href: `/${APP_PATH}/admin/service` },
         ]
       : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
     {

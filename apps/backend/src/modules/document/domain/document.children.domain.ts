@@ -18,7 +18,7 @@ import { MinioFile } from '../../../thirdparty/minio/types';
 import { DocumentApp } from '../document.app';
 import { Document } from '../document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from '../document.model';
-import { processUploads, Upload } from '../document.uploads.helper';
+import { DocumentUploadsHelper, Upload } from '../document.uploads.helper';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
@@ -143,7 +143,7 @@ export const DocumentChildrenDomain = {
     doc: T,
     externalImageUpload: Upload
   ) => {
-    const [logoFile] = await processUploads(
+    const [logoFile] = await DocumentUploadsHelper.processUploads(
       externalImageUpload,
       doc.service_instance_id
     );

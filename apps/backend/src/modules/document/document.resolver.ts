@@ -26,10 +26,7 @@ import {
   shouldSendEventForService,
 } from '../telemetry/telemetry.helper';
 import { DocumentApp } from './document.app';
-import {
-  checkDocumentExists,
-  updateDocumentWithCounters,
-} from './document.helper';
+import { DocumentHelper } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
@@ -91,7 +88,8 @@ const resolvers: Resolvers = {
           documentId,
           []
         );
-        const documentWithCounters = await updateDocumentWithCounters(document);
+        const documentWithCounters =
+          await DocumentHelper.updateDocumentWithCounters(document);
         try {
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
@@ -182,7 +180,7 @@ const resolvers: Resolvers = {
   Query: {
     documentExists: async (_, input) => {
       try {
-        return checkDocumentExists(
+        return DocumentHelper.checkDocumentExists(
           input.documentName ?? '',
           input.service_instance_id
         );

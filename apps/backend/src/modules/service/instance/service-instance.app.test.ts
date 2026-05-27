@@ -40,7 +40,7 @@ import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import * as pub from '../../../pub';
 import * as securityGuardModule from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
-import * as documentHelper from '../../document/document.helper';
+import { DocumentHelper } from '../../document/document.helper';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import * as subscriptionDomain from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
@@ -287,7 +287,7 @@ describe('service Instance app', () => {
 
     beforeEach(async () => {
       dispatchSpy = vi.spyOn(pub, 'dispatch').mockResolvedValue(undefined);
-      uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
+      uploadNewFileSpy = vi.spyOn(DocumentHelper, 'uploadNewFile');
       vi.spyOn(
         securityGuardModule.securityGuard,
         'assertUserCanModifyPlatformService'
@@ -776,7 +776,7 @@ describe('service Instance app', () => {
     };
 
     beforeEach(() => {
-      uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
+      uploadNewFileSpy = vi.spyOn(DocumentHelper, 'uploadNewFile');
       updateServiceInstanceSpy = vi.spyOn(
         serviceInstanceDomain,
         'updateServiceInstance'

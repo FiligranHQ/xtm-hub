@@ -6,12 +6,13 @@ export default class OrganizationPage {
 
   async navigateToOrgaAdmin() {
     await this.page.getByRole('button', { name: 'Settings' }).click();
-    await expect(
-      this.page.getByRole('link', { name: 'Organizations' })
-    ).toBeVisible();
-    await this.page.getByText('Organizations').click();
+    const organizationLink = this.page.getByRole('link', {
+      name: 'Organization',
+    });
+    await expect(organizationLink).toBeVisible();
+    await organizationLink.click();
     await expect(this.page.getByRole('heading', { level: 1 })).toContainText(
-      'Organizations'
+      'Organization'
     );
   }
 

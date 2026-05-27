@@ -12,7 +12,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../shareable-resource/opencti/integration/integration.model';
 import { DocumentApp } from '../document.app';
-import * as DocumentUploadsHelper from '../document.uploads.helper';
+import { DocumentUploadsHelper } from '../document.uploads.helper';
 import { DocumentMetadataDomain } from './document.metadata.domain';
 
 describe('documentMetadataDomain', () => {

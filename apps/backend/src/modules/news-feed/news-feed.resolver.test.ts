@@ -1,9 +1,14 @@
 import express from 'express';
 import { describe, expect, it, vi } from 'vitest';
-import { GRAPHQL_RESOLVE_INFO } from '../../../tests/tests.const';
+import {
+  contextSimpleUserFiligran2,
+  GRAPHQL_RESOLVE_INFO,
+} from '../../../tests/tests.const';
+import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
 import { UserLoadUserBy } from '../../model/user';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from './news-feed.app';
+import { NewsFeedDomain } from './news-feed.domain';
 import newsFeedResolver from './news-feed.resolver';
 
 const makeMockContext = (platformId: string | null, token: string | null) => ({
@@ -76,6 +81,98 @@ describe('consume provisioned news feed items GraphQL mutation', () => {
       {},
       {},
       context,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toThrow(UnknownErrorCode.UnknownError);
+  });
+});
+
+describe('newsFeedItems GraphQL query', () => {
+  it('should call loadPaginatedNewsFeedItems with the provided args and return the result', async () => {
+    // Given
+    const mockConnection = {
+      edges: [],
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        startCursor: undefined,
+        endCursor: undefined,
+      },
+      totalCount: 0,
+    };
+    vi.spyOn(NewsFeedDomain, 'loadPaginatedNewsFeedItems').mockResolvedValue(
+      mockConnection
+    );
+
+    // When
+    const result = await newsFeedResolver.Query!.newsFeedItems!(
+      {},
+      { first: 10, after: 'cursor-abc' },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(NewsFeedDomain.loadPaginatedNewsFeedItems).toHaveBeenCalledWith({
+      first: 10,
+      after: 'cursor-abc',
+    });
+    expect(result).toBe(mockConnection);
+  });
+
+  it('should throw a mapped GraphQL error with UnknownError when the domain throws', async () => {
+    // Given
+    vi.spyOn(NewsFeedDomain, 'loadPaginatedNewsFeedItems').mockRejectedValue(
+      new Error('UNEXPECTED')
+    );
+
+    // When
+    const call = newsFeedResolver.Query!.newsFeedItems!(
+      {},
+      { first: 10 },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toThrow(UnknownErrorCode.UnknownError);
+  });
+});
+
+describe('deleteNewsFeedItem GraphQL mutation', () => {
+  it('should call deleteNewsFeedItem with the provided id and return true', async () => {
+    // Given
+    const id = 'news-feed-item-id-123' as NewsFeedItemId;
+    vi.spyOn(NewsFeedApp, 'deleteNewsFeedItem').mockResolvedValue(undefined);
+
+    // When
+    const result = await newsFeedResolver.Mutation!.deleteNewsFeedItem!(
+      {},
+      { id },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(NewsFeedApp.deleteNewsFeedItem).toHaveBeenCalledWith({
+      newsFeedItemId: id,
+    });
+    expect(result).toBe(true);
+  });
+
+  it('should throw a mapped GraphQL error with UnknownError when the app throws', async () => {
+    // Given
+    vi.spyOn(NewsFeedApp, 'deleteNewsFeedItem').mockRejectedValue(
+      new Error('UNEXPECTED')
+    );
+
+    // When
+    const call = newsFeedResolver.Mutation!.deleteNewsFeedItem!(
+      {},
+      { id: 'some-id' as NewsFeedItemId },
+      contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 

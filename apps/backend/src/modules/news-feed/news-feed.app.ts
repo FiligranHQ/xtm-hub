@@ -2,9 +2,11 @@ import config from 'config';
 import {
   ConsumeProvisionedNewsFeedItemsResponse,
   NewsFeedItemMetadataKey,
+  PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
+import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
@@ -21,6 +23,31 @@ import { loadServiceDefinitionByServiceInstance } from '../service/instance/serv
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
+
+const provisionNewsFeedItemForServiceInstance = async ({
+  newsFeedItemId,
+  serviceInstanceId,
+  platformIdentifier,
+}: {
+  newsFeedItemId: NewsFeedItemId;
+  serviceInstanceId: ServiceInstanceId;
+  platformIdentifier: PlatformIdentifier;
+}): Promise<void> => {
+  const organizations =
+    await OrganizationDomain.loadOrganizationsSubscribedToServiceInstance(
+      serviceInstanceId
+    );
+  const organizationIds = organizations.map((org) => org.id);
+  const registeredPlatforms =
+    await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+      organizationIds,
+      platformIdentifier
+    );
+  const platformIds = registeredPlatforms
+    .filter((platform) => platform.config?.platform_id)
+    .map((platform) => platform.config.platform_id);
+  await NewsFeedDomain.provisionNewsFeedItem(newsFeedItemId, platformIds);
+};
 
 export const NewsFeedApp = {
   consumeProvisionedNewsFeedItems: async ({
@@ -64,10 +91,12 @@ export const NewsFeedApp = {
 
     const newsFeedItems = rawItems.map((item) => ({
       ...item,
-      metadata: item.metadata.map((m) => ({
-        key: m.key as NewsFeedItemMetadataKey,
-        value: m.value,
-      })),
+      metadata: item.metadata
+        .filter((m) => m.key !== NewsFeedItemMetadataKey.DocumentId)
+        .map((m) => ({
+          key: m.key as NewsFeedItemMetadataKey,
+          value: m.value,
+        })),
     }));
 
     return {
@@ -112,19 +141,119 @@ export const NewsFeedApp = {
       tags,
     });
 
-    const organizations =
-      await OrganizationDomain.loadOrganizationsSubscribedToServiceInstance(
-        serviceInstanceId
-      );
+    await provisionNewsFeedItemForServiceInstance({
+      newsFeedItemId: newsFeedItem.id,
+      serviceInstanceId,
+      platformIdentifier,
+    });
+  },
 
-    const organizationIds = organizations.map((org) => org.id);
+  updateResourceNewsFeedItem: async ({
+    document,
+    serviceInstanceId,
+    serviceDefinitionIdentifier,
+  }: {
+    document: Document;
+    serviceInstanceId: ServiceInstanceId;
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
+  }): Promise<void> => {
+    const newsFeedConfiguration =
+      newsFeedConfigurationMapping[serviceDefinitionIdentifier];
+    if (!newsFeedConfiguration) {
+      return;
+    }
+
+    const existingItem = await NewsFeedDomain.loadNewsFeedItemByDocumentId(
+      document.id
+    );
+    if (!existingItem) {
+      return;
+    }
+
+    const useCases = await useCaseDomain.loadUseCasesByDocumentId(document.id);
+    const tags = useCases.map((useCase) => useCase.name);
+
+    await NewsFeedDomain.updateNewsFeedItem(existingItem.id, {
+      title: document.name ?? existingItem.title,
+      tags,
+    });
+
+    await provisionNewsFeedItemForServiceInstance({
+      newsFeedItemId: existingItem.id,
+      serviceInstanceId,
+      platformIdentifier: newsFeedConfiguration.platformIdentifier,
+    });
+  },
+
+  upsertResourceNewsFeed: async ({
+    documentBeforeUpdate,
+    updatedDocument,
+    serviceInstanceId,
+    serviceDefinitionIdentifier,
+  }: {
+    documentBeforeUpdate?: Document;
+    updatedDocument: Document;
+    serviceInstanceId: ServiceInstanceId;
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
+  }): Promise<void> => {
+    if (!NewsFeedApp.isNewsFeedConfigured(serviceDefinitionIdentifier)) {
+      return;
+    }
+
+    if (updatedDocument.active !== true) {
+      return;
+    }
+
+    const shouldCreateNewsFeedItem =
+      !documentBeforeUpdate || documentBeforeUpdate.active === false;
+    if (shouldCreateNewsFeedItem) {
+      await NewsFeedApp.createResourceNewsFeedItem({
+        document: updatedDocument,
+        serviceInstanceId,
+        serviceDefinitionIdentifier,
+      }).catch((error) =>
+        logApp.error('Unable to create news feed item', {
+          error,
+          documentId: updatedDocument.id,
+          source: documentBeforeUpdate ? 'update' : 'creation',
+        })
+      );
+      return;
+    }
+
+    await NewsFeedApp.updateResourceNewsFeedItem({
+      document: updatedDocument,
+      serviceInstanceId,
+      serviceDefinitionIdentifier,
+    }).catch((error) =>
+      logApp.error('Unable to update news feed item', {
+        error,
+        documentId: updatedDocument.id,
+        source: 'update',
+      })
+    );
+  },
+
+  deleteNewsFeedItem: async ({
+    newsFeedItemId,
+  }: {
+    newsFeedItemId: string;
+  }): Promise<void> => {
+    const newsFeedItem = await NewsFeedDomain.markNewsFeedItemAsDeleted(
+      newsFeedItemId as NewsFeedItemId
+    );
+
+    const platformIdentifier = Object.values(newsFeedConfigurationMapping).find(
+      (config) => config.newsFeedType === newsFeedItem.type
+    )?.platformIdentifier;
+    if (!platformIdentifier) {
+      return;
+    }
 
     const registeredPlatforms =
-      await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
-        organizationIds,
-        newsFeedConfiguration.platformIdentifier
+      await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+        platformIdentifier
       );
-
     const platformIds = registeredPlatforms
       .filter((platform) => platform.config?.platform_id)
       .map((platform) => platform.config.platform_id);

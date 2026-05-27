@@ -1,7 +1,7 @@
-import testRender from '@/utils/test/test-render';
-import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';
-import { screen } from '@testing-library/react';
 import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
+import testRender from '@/utils/test/test-render';
+import { UseCaseRowFragment } from '@graphql/generated';
+import { screen } from '@testing-library/react';
 
 describe('UseCaseForm', () => {
   describe('form validation', () => {
@@ -66,7 +66,7 @@ describe('UseCaseForm', () => {
     const mockHandleDelete = vi.fn();
     const mockOnClose = vi.fn();
 
-    const useCase: useCase_fragment$data = {
+    const useCase: UseCaseRowFragment = {
       id: 'use-case-id',
       name: 'Threat hunting',
       color: '#123456',
