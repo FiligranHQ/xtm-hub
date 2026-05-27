@@ -7,17 +7,6 @@ import { TrialCancelSheet } from './TrialCancelSheet';
 
 let lastCancelDeploymentRequestVariables: Record<string, unknown> | null = null;
 
-vi.mock('next/navigation', (importOriginal) => ({
-  ...importOriginal(),
-  useRouter: () => ({
-    push: vi.fn(),
-  }),
-}));
-
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useTranslations: () => (key: string) => key,
-}));
 vi.mock('@/components/service/trial-instances/useOrgaFreeTrials', () => ({
   useOrgaFreeTrial: () => ({ refetch: vi.fn() }),
 }));

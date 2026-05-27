@@ -29,7 +29,7 @@ describe('EditUseCase', () => {
     );
 
     // Then
-    expect(screen.getByLabelText('Name')).toBeTruthy();
+    expect(screen.getByLabelText('UseCaseForm.Name')).toBeTruthy();
     expect(screen.getByDisplayValue('Threat hunting')).toBeTruthy();
   });
 
@@ -58,10 +58,10 @@ describe('EditUseCase', () => {
       />
     );
 
-    const nameInput = screen.getByLabelText(/Name/i);
+    const nameInput = screen.getByLabelText(/UseCaseForm.Name/i);
     await user.clear(nameInput);
     await user.type(nameInput, 'Updated UseCase');
-    await user.click(screen.getByRole('button', { name: /Validate/i }));
+    await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalledTimes(1);
@@ -91,8 +91,8 @@ describe('EditUseCase', () => {
       />
     );
 
-    await user.click(screen.getByRole('button', { name: /^Delete$/i }));
-    await user.click(screen.getByRole('button', { name: /^Delete$/i }));
+    await user.click(screen.getByRole('button', { name: /^MenuActions.Delete$/i }));
+    await user.click(screen.getByRole('button', { name: /^MenuActions.Delete$/i }));
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalledTimes(1);

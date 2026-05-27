@@ -1,17 +1,10 @@
+import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
 import testRender from '@/utils/test/test-render';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { createMockEnvironment } from 'relay-test-utils';
-import { vi } from 'vitest';
-import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
-
-vi.mock('next/navigation', () => ({
-  useRouter: vi.fn(() => ({
-    push: vi.fn(),
-  })),
-}));
 
 describe('Display unregister button', () => {
   const registeredPlatform = {

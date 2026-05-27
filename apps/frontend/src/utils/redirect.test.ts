@@ -1,20 +1,11 @@
+import { logFrontendError } from '@/components/error-frontend-log.graphql';
+import { getClientEnvironment } from '@/relay/environment/registry';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   buildLoginRedirect,
   decodeSafeRedirect,
   isSafeRedirect,
 } from './redirect';
-
-vi.mock('@/components/error-frontend-log.graphql', () => ({
-  logFrontendError: vi.fn(),
-}));
-
-vi.mock('@/relay/environment/registry', () => ({
-  getClientEnvironment: vi.fn(() => null),
-}));
-
-import { logFrontendError } from '@/components/error-frontend-log.graphql';
-import { getClientEnvironment } from '@/relay/environment/registry';
 
 describe('isSafeRedirect', () => {
   it.each([

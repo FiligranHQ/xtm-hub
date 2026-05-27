@@ -52,7 +52,7 @@ describe('UseCases', () => {
       await screen.findByRole('row', { name: 'Incident Response #3344ff' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Add use case' })
+      screen.getByRole('button', { name: 'UseCaseActions.AddUseCase' })
     ).toBeInTheDocument();
   });
 
@@ -66,6 +66,6 @@ describe('UseCases', () => {
 
     renderComponent();
 
-    expect(await screen.findByText('Error')).toBeInTheDocument();
+    expect(await screen.findByText('Utils.Error')).toBeInTheDocument();
   });
 });

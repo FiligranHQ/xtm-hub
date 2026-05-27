@@ -1,27 +1,13 @@
+import { NavigationApp } from '@/components/Navigation';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
-import { describe, it, vi } from 'vitest';
-import { NavigationApp } from '@/components/Navigation';
-
-// Mock next/navigation properly for App Router
-vi.mock('next/navigation', () => ({
-  usePathname: vi.fn(() => '/mock'),
-  useRouter: vi.fn(() => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    prefetch: vi.fn(),
-    back: vi.fn(),
-    forward: vi.fn(),
-    refresh: vi.fn(),
-  })),
-  useParams: vi.fn(() => ({})),
-}));
+import { describe, it } from 'vitest';
 
 describe('NavigationApp display', () => {
   it('should not render admin panel without capabilities ', async () => {
     const { container } = testRender(<NavigationApp open={true} />);
     expect(container).toBeTruthy();
-    expect(screen.queryByText('Settings')).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Settings')).not.toBeInTheDocument();
   });
   it('should render admin panel with BYPASS capabilities', async () => {
     const { container } = testRender(<NavigationApp open={true} />, {
@@ -34,7 +20,7 @@ describe('NavigationApp display', () => {
       },
     });
     expect(container).toBeTruthy();
-    expect(screen.queryByText('Settings')).toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Settings')).toBeInTheDocument();
   });
   it('should render admin panel with READ_TRIALS capabilities', async () => {
     const { container } = testRender(<NavigationApp open={true} />, {
@@ -47,6 +33,6 @@ describe('NavigationApp display', () => {
       },
     });
     expect(container).toBeTruthy();
-    expect(screen.queryByText('Settings')).toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Settings')).toBeInTheDocument();
   });
 });

@@ -3,8 +3,6 @@ import { useSearchParams } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 import useDecodedQuery from './use-decoded-query';
 
-vi.mock('next/navigation');
-
 describe('useDecodedQuery', () => {
   it('should decode URL-encoded query parameters', () => {
     const mockSearchParams = new URLSearchParams(
