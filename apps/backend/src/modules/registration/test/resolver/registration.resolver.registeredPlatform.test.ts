@@ -140,7 +140,7 @@ describe('registeredPlatform type resolvers', () => {
 
       // Then
       expect(loadFullDeploymentRequestSpy).toHaveBeenCalledWith({
-        'DeploymentRequest.service_instance_id': serviceInstanceId,
+        service_instance_id: serviceInstanceId,
       });
       expect(result).toMatchObject(expectedRequest);
     });

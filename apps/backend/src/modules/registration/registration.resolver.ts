@@ -4,7 +4,6 @@ import {
   Resolvers,
 } from '../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import {
   BadRequestErrorCode,
@@ -29,7 +28,7 @@ const resolvers: Resolvers = {
     myGroups: ({ id }, _, context) =>
       ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
         id as ServiceInstanceId,
-        context.user.id as UserId
+        context.user.id
       ),
     deployment_request: ({ id }, _, __) =>
       DeploymentRequestDomain.loadFullDeploymentRequest({
