@@ -3,10 +3,6 @@ import { renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { useServiceFormFields } from './UseServiceFormFields';
 
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => key,
-}));
-
 vi.mock('../../ui/SheetWithPreventingDialog', () => ({
   useDialogContext: () => ({
     setIsDirty: vi.fn(),

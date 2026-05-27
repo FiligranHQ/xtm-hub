@@ -1,6 +1,6 @@
+import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 import testRender from '@/utils/test/test-render';
 import { createMockEnvironment } from 'relay-test-utils';
-import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 
 describe('Filigran product banner text on public pages', () => {
   it('should render the correct text on the banner', async () => {
@@ -12,9 +12,7 @@ describe('Filigran product banner text on public pages', () => {
     });
 
     // Then
-    const bannerText = await queryByText(
-      'Explore OpenCTI or OpenAEV platform with 30 days'
-    );
+    const bannerText = await queryByText('Service.Trials.ExploreProducts');
     expect(bannerText).toBeInTheDocument();
   });
 });

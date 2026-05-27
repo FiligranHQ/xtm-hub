@@ -1,16 +1,11 @@
+import { RegistrationContext } from '@/components/registration/Context';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { RegisterStateMissingCapability } from '@/components/registration/register/MissingCapability';
 import testRender from '@/utils/test/test-render';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrationContext } from '@/components/registration/Context';
-import { RegisterStateMissingCapability } from '@/components/registration/register/MissingCapability';
-
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('next-intl')>()),
-  useTranslations: () => (key: string) => key,
-}));
 
 vi.mock('react-relay', async (importOriginal) => ({
   ...(await importOriginal<typeof import('react-relay')>()),
