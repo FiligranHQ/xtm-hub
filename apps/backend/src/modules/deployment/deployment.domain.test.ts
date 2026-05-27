@@ -356,7 +356,7 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
-  describe('loadFullDeploymentRequestByPlatformId', () => {
+  describe('loadFullDeploymentRequest', () => {
     it('should return a full deployment request when platform id is defined in deployment request', async () => {
       const platformId = uuidv4();
       await insertDeploymentRequest({
@@ -365,10 +365,9 @@ describe('deploymentRequestDomain', () => {
         platform_id: platformId,
       });
 
-      const result =
-        await DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
-          platformId
-        );
+      const result = await DeploymentRequestDomain.loadFullDeploymentRequest({
+        platform_id: platformId,
+      });
 
       expect(result).toBeDefined();
       expect(result!.organization_name).toBe(TEST_ORGANIZATIONS.FILIGRAN.NAME);
@@ -391,10 +390,9 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should return undefined when platform id is an unknown deployment request platform id', async () => {
-      const result =
-        await DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
-          uuidv4()
-        );
+      const result = await DeploymentRequestDomain.loadFullDeploymentRequest({
+        platform_id: uuidv4(),
+      });
 
       expect(result).toBeUndefined();
     });

@@ -292,4 +292,108 @@ describe('serviceGroupDomain', () => {
       expect(result).toEqual([]);
     });
   });
+
+  describe('loadServiceGroupsByServiceInstanceAndUser', () => {
+    it.each([
+      {
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        serviceInstanceId: serviceInstanceId1,
+        expectedGroups: [
+          {
+            id: adminGroupId,
+            name: 'Admin',
+            service_instance_id: serviceInstanceId1,
+          },
+          {
+            id: analystGroupId,
+            name: 'Analyst',
+            service_instance_id: serviceInstanceId1,
+          },
+        ],
+      },
+      {
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        serviceInstanceId: serviceInstanceId2,
+        expectedGroups: [
+          {
+            id: readerGroupId,
+            name: 'Reader',
+            service_instance_id: serviceInstanceId2,
+          },
+        ],
+      },
+      {
+        userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        serviceInstanceId: serviceInstanceId1,
+        expectedGroups: [
+          {
+            id: analystGroupId,
+            name: 'Analyst',
+            service_instance_id: serviceInstanceId1,
+          },
+        ],
+      },
+    ])(
+      'should return only groups linked to the user and service instance',
+      async ({ userId, serviceInstanceId, expectedGroups }) => {
+        // Given
+        await TestHelper.serviceGroupUser.create({
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          group_id: adminGroupId,
+        });
+        await TestHelper.serviceGroupUser.create({
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          group_id: analystGroupId,
+        });
+        await TestHelper.serviceGroupUser.create({
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          group_id: readerGroupId,
+        });
+        await TestHelper.serviceGroupUser.create({
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          group_id: analystGroupId,
+        });
+
+        // When
+        const groups =
+          await ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
+            serviceInstanceId,
+            userId
+          );
+
+        // Then
+        const sortedGroups = groups
+          .map(({ id, name, service_instance_id }) => ({
+            id,
+            name,
+            service_instance_id,
+          }))
+          .sort((left, right) => left.name.localeCompare(right.name));
+        const sortedExpectedGroups = [...expectedGroups].sort((left, right) =>
+          left.name.localeCompare(right.name)
+        );
+
+        expect(groups).toHaveLength(expectedGroups.length);
+        expect(sortedGroups).toMatchObject(sortedExpectedGroups);
+      }
+    );
+
+    it('should return empty array when user has no group on the service instance', async () => {
+      // Given
+      await TestHelper.serviceGroupUser.create({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+        group_id: readerGroupId,
+      });
+
+      // When
+      const groups =
+        await ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
+          serviceInstanceId1,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
+        );
+
+      // Then
+      expect(groups).toMatchObject([]);
+    });
+  });
 });

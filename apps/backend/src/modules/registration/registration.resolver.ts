@@ -4,6 +4,7 @@ import {
   Resolvers,
 } from '../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import {
   BadRequestErrorCode,
@@ -13,6 +14,7 @@ import {
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { BadRequestError } from '../../utils/error/error.util';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
+import { ServiceGroupDomain } from '../deployment/group/service-group.domain';
 import { loadSubscriptionByServiceInstanceAndOrganization } from '../service/instance/service-instance.domain';
 import { registrationApp } from './registration.app';
 import { registrationConnectivityApp } from './registration.connectivity.app';
@@ -24,8 +26,13 @@ const resolvers: Resolvers = {
         context.user.selected_organization_id,
         id as ServiceInstanceId
       ),
+    myGroups: ({ id }, _, context) =>
+      ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
+        id as ServiceInstanceId,
+        context.user.id as UserId
+      ),
     deployment_request: ({ id }, _, __) =>
-      DeploymentRequestDomain.loadDeploymentRequestBy({
+      DeploymentRequestDomain.loadFullDeploymentRequest({
         service_instance_id: id as ServiceInstanceId,
       }),
   },

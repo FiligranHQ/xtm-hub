@@ -18,6 +18,7 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
+import { prefixObjectKeys } from '../../utils/utils';
 import {
   ServiceGroupDomain,
   ServiceGroupName,
@@ -100,17 +101,11 @@ export const DeploymentRequestDomain = {
     );
   },
 
-  loadFullDeploymentRequestById: async (id: DeploymentRequestId) => {
-    const query = getDeploymentRequestWithUserDataQuery();
-    query.where('DeploymentRequest.id', '=', id);
-    return query.first();
-  },
-
-  loadFullDeploymentRequestByPlatformId: async (
-    platformId: string
+  loadFullDeploymentRequest: async (
+    conditions: DeploymentRequestMutator
   ): Promise<FullyQualifiedDeploymentRequest | undefined> => {
     return getDeploymentRequestWithUserDataQuery()
-      .where('DeploymentRequest.platform_id', '=', platformId)
+      .where(prefixObjectKeys(conditions, 'DeploymentRequest.'))
       .first();
   },
 
@@ -250,7 +245,7 @@ export const DeploymentRequestDomain = {
       platform_id,
       user_requester_id,
       service_instance_id,
-    } = await DeploymentRequestDomain.loadFullDeploymentRequestById(id);
+    } = await DeploymentRequestDomain.loadFullDeploymentRequest({ id });
 
     try {
       await auth0Client.createAudienceAPI(organization_name, platform_id);
