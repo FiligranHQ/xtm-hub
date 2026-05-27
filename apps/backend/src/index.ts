@@ -267,7 +267,6 @@ const middlewareExpress = expressMiddleware(server, {
 
     const portalContext: PortalContext = { user, req, res };
 
-    requestContext.update({ portalContext: portalContext });
     return portalContext;
   },
 });

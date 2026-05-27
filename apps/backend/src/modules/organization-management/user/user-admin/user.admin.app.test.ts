@@ -4,17 +4,199 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
+  // eslint-disable-next-line no-restricted-imports -- needed to test platform admin bypass behavior in editUser authorization
+  requestContextAdminUser,
+  requestContextSimpleUserSecondOrga,
 } from '../../../../../tests/tests.const';
-import { FilterKey } from '../../../../__generated__/resolvers-types';
+import {
+  FilterKey,
+  OrganizationCapability,
+} from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
+import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import User from '../../../../model/kanel/public/User';
+import { UserLoadUserBy } from '../../../../model/user';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { OrganizationDomain } from '../../organization/organization.domain';
+import { UserDomain } from '../user-domain/user.domain';
 import * as UsersHelper from '../user.helper';
 import { createNewUserWithPendingOrga, removeUser } from '../user.helper';
 import { UserAdminApp } from './user.admin.app';
 
 describe('users admin app', () => {
+  describe('editUser', () => {
+    describe('authorization', () => {
+      it('should reject a user without org capabilities', async () => {
+        requestContext.set(requestContextSimpleUserSecondOrga);
+
+        const call = UserAdminApp.editUser({
+          userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+          input: { organization_capabilities: [] },
+        });
+
+        await expect(call).rejects.toThrow(
+          ErrorCode.MissingCapabilityOnOrganization
+        );
+      });
+
+      it('should reject an org admin trying to edit a user from a different organization', async () => {
+        requestContext.set(requestContextAdminSecondOrga);
+
+        const call = UserAdminApp.editUser({
+          userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+          input: { organization_capabilities: [] },
+        });
+
+        await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+      });
+
+      it('should reject an org admin trying to set capabilities on an organization they do not control', async () => {
+        requestContext.set(requestContextAdminSecondOrga);
+
+        const call = UserAdminApp.editUser({
+          userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+          input: {
+            organization_capabilities: [
+              {
+                organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+                capabilities: [],
+              },
+              {
+                organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+                capabilities: [OrganizationCapability.AdministrateOrganization],
+              },
+            ],
+          },
+        });
+
+        await expect(call).rejects.toThrow(
+          ErrorCode.MissingCapabilityOnOrganization
+        );
+      });
+
+      it('should allow a platform admin to edit a user from any organization', async () => {
+        requestContext.set(requestContextAdminUser);
+
+        const call = UserAdminApp.editUser({
+          userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+          input: { organization_capabilities: [], first_name: 'Updated' },
+        });
+
+        await expect(call).rejects.not.toThrow(
+          ErrorCode.UserIsNotInOrganization
+        );
+      });
+    });
+
+    describe('organization capabilities update', () => {
+      let simpleUser: UserLoadUserBy;
+
+      beforeEach(async () => {
+        requestContext.set(requestContextAdminUser);
+        simpleUser = await UserDomain.loadUserBy({
+          'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        });
+      });
+
+      afterEach(async () => {
+        requestContext.set(requestContextAdminUser);
+        await UserAdminApp.editUser({
+          userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+          input: {
+            organization_capabilities: (
+              simpleUser.organization_capabilities ?? []
+            ).map((oc) => ({
+              organization_id: oc.organization.id,
+              capabilities: oc.capabilities,
+            })),
+          },
+        });
+      });
+
+      it('should update organization_capabilities', async () => {
+        await UserAdminApp.editUser({
+          userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+          input: {
+            organization_capabilities: [
+              {
+                organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE
+                  .ID as unknown as OrganizationId,
+                capabilities: [
+                  OrganizationCapability.ManageAccess,
+                  OrganizationCapability.ManageSubscription,
+                ],
+              },
+              {
+                organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+                capabilities: [
+                  OrganizationCapability.ManageAccess,
+                  OrganizationCapability.ManageSubscription,
+                ],
+              },
+              {
+                organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+                capabilities: [],
+              },
+            ],
+          },
+        });
+        const result = await UserDomain.loadUserBy({
+          'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        });
+
+        expect(result.organization_capabilities).toHaveLength(3);
+      });
+
+      it('should not update other user fields', async () => {
+        const result = await UserAdminApp.editUser({
+          userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+          input: {
+            organization_capabilities: [
+              {
+                organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE
+                  .ID as unknown as OrganizationId,
+                capabilities: [
+                  OrganizationCapability.ManageAccess,
+                  OrganizationCapability.ManageSubscription,
+                ],
+              },
+              {
+                organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+                capabilities: [
+                  OrganizationCapability.ManageAccess,
+                  OrganizationCapability.ManageSubscription,
+                ],
+              },
+            ],
+          },
+        });
+
+        expect(result.first_name).toBe(simpleUser.first_name);
+        expect(result.email).toBe(simpleUser.email);
+      });
+    });
+
+    describe('last administrator protection', () => {
+      it('should prevent deletion of the last organization administrator', async () => {
+        requestContext.set(requestContextAdminUser);
+
+        const call = UserAdminApp.editUser({
+          userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+          input: {
+            organization_capabilities: [
+              {
+                organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+                capabilities: [],
+              },
+            ],
+          },
+        });
+
+        await expect(call).rejects.toThrow(ErrorCode.CantRemoveLastAdministrator);
+      });
+    });
+  });
+
   describe('bulkAcceptPendingUserInOrganization', () => {
     let createdUsers: User[];
     let mockAcceptPendingUser: MockInstance<
