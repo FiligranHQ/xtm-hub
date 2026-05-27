@@ -125,7 +125,7 @@ const nextConfig = {
       "default-src 'self'",
       `script-src ${scriptSrc}`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://res.cloudinary.com https://perf-eu1.hsforms.com https://s.gravatar.com https://secure.gravatar.com https://cdn.auth0.com https://i1.wp.com https://i2.wp.com https://track-eu1.hubspot.com",
+      "img-src 'self' data: blob: https://res.cloudinary.com https://perf-eu1.hsforms.com https://s.gravatar.com https://secure.gravatar.com https://cdn.auth0.com https://i1.wp.com https://i2.wp.com https://track-eu1.hubspot.com https://*.filigran.io",
       "font-src 'self' data:",
       `connect-src 'self' https:${!isProductionOrStaging ? ' http:' : ''}`,
       "frame-src 'self' https://www.youtube.com",
