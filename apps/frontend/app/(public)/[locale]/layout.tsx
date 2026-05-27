@@ -1,3 +1,4 @@
+import Copilot from '@/components/external/Copilot';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 import { publicLocales, type PublicLocale } from '@/i18n/config';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
@@ -110,6 +111,7 @@ const RootLayout = async ({
           </ul>
         </div>
       </footer>
+      <Copilot />
     </div>
   );
 };
