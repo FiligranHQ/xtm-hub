@@ -4,11 +4,6 @@ import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { ShareableResourceDetailMetadataItem } from './ShareableResourceDetailMetadataItem';
 
-// Mock useTranslations from next-intl
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => `translated:${key}`,
-}));
-
 // Mock ShareableResourceDetailsLink
 vi.mock('../ShareableResourceDetailsLink', () => ({
   ShareableResourceDetailsLink: ({ url }: { url: string }) => (
@@ -58,7 +53,7 @@ describe('ShareableResourceDetailMetadataItem', () => {
       />
     );
     expect(screen.getByTestId('label')).toHaveTextContent(
-      'translated:Service.ShareableResources.Details.label'
+      'Service.ShareableResources.Details.label'
     );
     expect(screen.getByTestId('content')).toHaveTextContent('Some text');
   });

@@ -3,8 +3,6 @@ import { useParams } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 import useDecodedParams from './use-decoded-params';
 
-vi.mock('next/navigation');
-
 describe('useDecodedParams', () => {
   it('should decode URL-encoded parameter values', () => {
     vi.mocked(useParams).mockReturnValue({

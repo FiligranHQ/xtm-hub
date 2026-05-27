@@ -1,9 +1,9 @@
+import { ServiceListIntegrationDropdown } from '@/components/service/components/header/ServiceListIntegrationDropdown';
 import testRender from '@/utils/test/test-render';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { screen, waitFor } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { ServiceListIntegrationDropdown } from '@/components/service/components/header/ServiceListIntegrationDropdown';
 
 describe('Button with dropdown to add any kind of integration in the lib', () => {
   it('renders the trigger button', async () => {
@@ -22,7 +22,9 @@ describe('Button with dropdown to add any kind of integration in the lib', () =>
     );
 
     // Then
-    const dropdownButton = await queryByText('Add new Integration');
+    const dropdownButton = await queryByText(
+      'Service.OpenctiIntegrations.AddService'
+    );
     expect(dropdownButton).toBeInTheDocument();
   });
 
@@ -31,7 +33,7 @@ describe('Button with dropdown to add any kind of integration in the lib', () =>
     const environment = createMockEnvironment();
     const onIntegrationTypeSelect = vi.fn();
 
-    const { user, getByRole, getByText } = testRender(
+    const { user, getByRole } = testRender(
       <ServiceListIntegrationDropdown
         onIntegrationTypeSelect={onIntegrationTypeSelect}
       />,
@@ -39,21 +41,25 @@ describe('Button with dropdown to add any kind of integration in the lib', () =>
     );
 
     // When
-    await user.click(getByRole('button', { name: 'Add new Integration' }));
+    await user.click(
+      getByRole('button', { name: 'Service.OpenctiIntegrations.AddService' })
+    );
 
     // Then
     await waitFor(() => {
-      expect(getByText('Integration type')).toBeInTheDocument();
+      expect(
+        screen.getByText('Service.OpenctiIntegrations.IntegrationType')
+      ).toBeInTheDocument();
     });
   });
 
   it.each`
-    label                         | expectedEnum
-    ${'CSV Feeds'}                | ${IntegrationTypeEnum.CSV_FEED}
-    ${'TAXII Feeds'}              | ${IntegrationTypeEnum.TAXII_FEED}
-    ${'OpenCTI Streams'}          | ${IntegrationTypeEnum.STREAM}
-    ${'Third party integrations'} | ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}
-    ${'RSS Feeds'}                | ${IntegrationTypeEnum.RSS_FEED}
+    label                                                         | expectedEnum
+    ${'Service.OpenctiIntegrations.Type.csv_feed'}                | ${IntegrationTypeEnum.CSV_FEED}
+    ${'Service.OpenctiIntegrations.Type.taxii_feed'}              | ${IntegrationTypeEnum.TAXII_FEED}
+    ${'Service.OpenctiIntegrations.Type.stream'}                  | ${IntegrationTypeEnum.STREAM}
+    ${'Service.OpenctiIntegrations.Type.third_party_integration'} | ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}
+    ${'Service.OpenctiIntegrations.Type.rss_feed'}                | ${IntegrationTypeEnum.RSS_FEED}
   `(
     'clicking "$label" calls onIntegrationTypeSelect with $expectedEnum',
     async ({ label, expectedEnum }) => {
@@ -70,7 +76,9 @@ describe('Button with dropdown to add any kind of integration in the lib', () =>
 
       // When
       await user.click(
-        screen.getByRole('button', { name: 'Add new Integration' })
+        screen.getByRole('button', {
+          name: 'Service.OpenctiIntegrations.AddService',
+        })
       );
 
       await screen.findByText(label);
@@ -96,14 +104,20 @@ describe('Button with dropdown to add any kind of integration in the lib', () =>
 
     // When
     await user.click(
-      screen.getByRole('button', { name: 'Add new Integration' })
+      screen.getByRole('button', {
+        name: 'Service.OpenctiIntegrations.AddService',
+      })
     );
 
     await waitFor(() => {
-      expect(screen.getByText('JSON Feeds (coming soon)')).toBeInTheDocument();
+      expect(
+        screen.getByText('Service.OpenctiIntegrations.Type.json_feed')
+      ).toBeInTheDocument();
     });
 
-    const disabledItem = screen.getByText('JSON Feeds (coming soon)');
+    const disabledItem = screen.getByText(
+      'Service.OpenctiIntegrations.Type.json_feed'
+    );
 
     // Then
     expect(disabledItem.closest('[aria-disabled="true"]')).toBeInTheDocument();

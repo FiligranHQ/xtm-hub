@@ -96,7 +96,7 @@ describe('EpicItemCard', () => {
     );
 
     // When
-    await user.click(screen.getByRole('button', { name: 'Open menu' }));
+    await user.click(screen.getByRole('button', { name: 'Utils.OpenMenu' }));
 
     // Then
     expect(setIsOpen).not.toHaveBeenCalled();

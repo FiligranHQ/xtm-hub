@@ -1,16 +1,9 @@
+import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
-import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
-
-vi.mock('next/navigation', (importOriginal) => ({
-  ...importOriginal(),
-  useRouter: () => ({
-    push: vi.fn(),
-  }),
-}));
 
 describe('Start trial button in the banner', () => {
   it('should display dropdown menu when no trial', async () => {
@@ -42,7 +35,7 @@ describe('Start trial button in the banner', () => {
 
     // WHEN
     // The user clicks on start a trial
-    const startTrialButton = await findByText(/Start your free trial/i);
+    const startTrialButton = await findByText('Service.Trials.StartTrial');
     const user = userEvent.setup();
     await user.click(startTrialButton);
 
@@ -93,7 +86,7 @@ describe('Start trial button in the banner', () => {
     // THEN
     // The button should be disabled
     const startTrialButton = getByRole('button', {
-      name: /Start your free trial/i,
+      name: 'Service.Trials.StartTrial',
     });
     expect(startTrialButton).toBeDisabled();
   });
@@ -127,7 +120,7 @@ describe('Start trial button in the banner', () => {
     });
     // WHEN
     // The user clicks on start a trial
-    const startTrialButton = await findByText(/Start your free trial/i);
+    const startTrialButton = await findByText('Service.Trials.StartTrial');
     const user = userEvent.setup();
     await user.click(startTrialButton);
 

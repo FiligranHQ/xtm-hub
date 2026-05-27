@@ -8,22 +8,11 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { screen } from '@testing-library/react';
+import { useSearchParams } from 'next/navigation';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
-
-const mockUseSearchParams = vi.fn(() => new URLSearchParams());
-
-vi.mock('next/navigation', () => ({
-  useSearchParams: () => mockUseSearchParams(),
-  useRouter: vi.fn(() => ({ push: vi.fn() })),
-}));
-
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useTranslations: () => (key: string) => key,
-}));
 
 vi.mock('@/components/service/components/PlatformUpdateSheet', () => ({
   PlatformUpdateSheet: () => null,
@@ -312,7 +301,11 @@ describe('RegistrationDetails', () => {
 
   describe('openForm search param', () => {
     it('should pass defaultOpen=true to TrialsManageUsersDialog when openForm=true', () => {
-      mockUseSearchParams.mockReturnValue(new URLSearchParams('openForm=true'));
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams('openForm=true') as unknown as ReturnType<
+          typeof useSearchParams
+        >
+      );
       renderDetails(trialPlatform, {
         selected_org_capabilities: [
           OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
@@ -324,7 +317,9 @@ describe('RegistrationDetails', () => {
     });
 
     it('should pass defaultOpen=false to TrialsManageUsersDialog when openForm is absent', () => {
-      mockUseSearchParams.mockReturnValue(new URLSearchParams());
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>
+      );
       renderDetails(trialPlatform, {
         selected_org_capabilities: [
           OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,

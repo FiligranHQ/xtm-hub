@@ -1,9 +1,9 @@
+import { DeleteEpic } from '@/components/epic/epic-item/DeleteEpic';
 import testRender from '@/utils/test/test-render';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { DeleteEpic } from '@/components/epic/epic-item/DeleteEpic';
 const commitDeleteEpicMutationMock = vi.fn();
 vi.mock('react-relay', async () => {
   const actual =
@@ -35,7 +35,7 @@ describe('DeleteEpic', () => {
       { relayConfig: environment }
     );
     // When
-    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    await user.click(screen.getByRole('button', { name: 'Utils.Cancel' }));
 
     // Then
     expect(setOpen).toHaveBeenCalledOnce();
@@ -59,7 +59,7 @@ describe('DeleteEpic', () => {
     );
 
     // When
-    await user.click(screen.getByRole('button', { name: 'Delete' }));
+    await user.click(screen.getByRole('button', { name: 'Utils.Delete' }));
 
     // Then
     expect(commitDeleteEpicMutationMock).toHaveBeenCalledExactlyOnceWith(

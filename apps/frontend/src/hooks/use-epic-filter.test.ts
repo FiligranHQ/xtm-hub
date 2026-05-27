@@ -4,8 +4,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useEpicFilter } from './use-epic-filter';
 
-vi.mock('next/navigation');
-
 describe('useEpicFilter', () => {
   const mockReplace = vi.fn();
 

@@ -10,11 +10,6 @@ import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
 import { TryFiligranProductForm } from './TryFiligranProductForm';
 
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useTranslations: () => (key: string) => key,
-}));
-
 vi.mock('react-relay', async (importOriginal) => ({
   ...(await importOriginal()),
   usePreloadedQuery: () => ({ deploymentRequestsAvailable: [] }),

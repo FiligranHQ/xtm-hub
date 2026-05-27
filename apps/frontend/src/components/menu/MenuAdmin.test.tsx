@@ -17,9 +17,11 @@ describe('render MenuAdmin', () => {
       },
     });
     expect(container).toBeTruthy();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Settings')).toBeInTheDocument();
 
-    const settingsButton = screen.getByRole('button', { name: /settings/i });
+    const settingsButton = screen.getByRole('button', {
+      name: 'MenuLinks.Settings',
+    });
 
     // Click it
     await user.click(settingsButton);
@@ -29,15 +31,14 @@ describe('render MenuAdmin', () => {
       expect(settingsButton).toHaveAttribute('aria-expanded', 'true');
       expect(settingsButton).toHaveAttribute('data-state', 'open');
     });
-    expect(screen.getByText('Parameter')).toBeInTheDocument();
-    expect(screen.getByText('Security')).toBeInTheDocument();
-    expect(screen.getByText('Use Case')).toBeInTheDocument();
-    expect(screen.getByText('Organization')).toBeInTheDocument();
-    expect(screen.getByText('Service')).toBeInTheDocument();
-    expect(screen.getByText('OpenCTI Trial')).toBeInTheDocument();
-    expect(screen.getByText('OpenAEV Trial')).toBeInTheDocument();
-    expect(screen.getByText('Competitor')).toBeInTheDocument();
-    expect(screen.getByText('News Feed')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Parameter')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Security')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.UseCase')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Organization')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Service')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.OpenCTITrial')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.OpenAEVTrial')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Competitor')).toBeInTheDocument();
   });
 
   it('should render admin panel with only Trials dashboard in the menu with READ_TRIALS capabilities', async () => {
@@ -52,9 +53,11 @@ describe('render MenuAdmin', () => {
       },
     });
     expect(container).toBeTruthy();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Settings')).toBeInTheDocument();
 
-    const settingsButton = screen.getByRole('button', { name: /settings/i });
+    const settingsButton = screen.getByRole('button', {
+      name: 'MenuLinks.Settings',
+    });
 
     // Click it
     await user.click(settingsButton);
@@ -64,15 +67,16 @@ describe('render MenuAdmin', () => {
       expect(settingsButton).toHaveAttribute('aria-expanded', 'true');
       expect(settingsButton).toHaveAttribute('data-state', 'open');
     });
-    expect(screen.queryByText('Parameter')).not.toBeInTheDocument();
-    expect(screen.queryByText('Security')).not.toBeInTheDocument();
-    expect(screen.queryByText('Use Case')).not.toBeInTheDocument();
-    expect(screen.queryByText('Organization')).not.toBeInTheDocument();
-    expect(screen.queryByText('Service')).not.toBeInTheDocument();
-    expect(screen.getByText('OpenCTI Trial')).toBeInTheDocument();
-    expect(screen.getByText('OpenAEV Trial')).toBeInTheDocument();
-    expect(screen.queryByText('Competitor')).not.toBeInTheDocument();
-    expect(screen.queryByText('News Feed')).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Parameter')).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Security')).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.UseCase')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('MenuLinks.Organization')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Service')).not.toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.OpenCTITrial')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.OpenAEVTrial')).toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Competitor')).not.toBeInTheDocument();
   });
   it('should render admin panel with only Trials dashboards and competitors in the menu with MANAGE_COMPETITOR capabilities', async () => {
     const user = userEvent.setup();
@@ -86,9 +90,11 @@ describe('render MenuAdmin', () => {
       },
     });
     expect(container).toBeTruthy();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Settings')).toBeInTheDocument();
 
-    const settingsButton = screen.getByRole('button', { name: /settings/i });
+    const settingsButton = screen.getByRole('button', {
+      name: 'MenuLinks.Settings',
+    });
 
     // Click it
     await user.click(settingsButton);
@@ -98,14 +104,19 @@ describe('render MenuAdmin', () => {
       expect(settingsButton).toHaveAttribute('aria-expanded', 'true');
       expect(settingsButton).toHaveAttribute('data-state', 'open');
     });
-    expect(screen.queryByText('Parameter')).not.toBeInTheDocument();
-    expect(screen.queryByText('Security')).not.toBeInTheDocument();
-    expect(screen.queryByText('Use Case')).not.toBeInTheDocument();
-    expect(screen.queryByText('Organization')).not.toBeInTheDocument();
-    expect(screen.queryByText('Service')).not.toBeInTheDocument();
-    expect(screen.queryByText('OpenCTI Trial')).not.toBeInTheDocument();
-    expect(screen.queryByText('OpenAEV Trial')).not.toBeInTheDocument();
-    expect(screen.getByText('Competitor')).toBeInTheDocument();
-    expect(screen.queryByText('News Feed')).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Parameter')).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Security')).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.UseCase')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('MenuLinks.Organization')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks.Service')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('MenuLinks.OpenCTITrial')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('MenuLinks.OpenAEVTrial')
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('MenuLinks.Competitor')).toBeInTheDocument();
   });
 });

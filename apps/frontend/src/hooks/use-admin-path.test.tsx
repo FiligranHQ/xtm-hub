@@ -1,16 +1,13 @@
+import useAdminPath from '@/hooks/use-admin-path';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { APP_PATH } from '@/utils/path/constant';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { renderHook } from '@testing-library/react';
 import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
-import useAdminPath from '@/hooks/use-admin-path';
-import { useAdminByPass } from '@/hooks/use-portal-capability';
 
 vi.mock('./use-portal-capability', () => ({
   useAdminByPass: vi.fn(),
-}));
-vi.mock('next/navigation', () => ({
-  usePathname: vi.fn(),
 }));
 
 describe('useAdminPath', () => {

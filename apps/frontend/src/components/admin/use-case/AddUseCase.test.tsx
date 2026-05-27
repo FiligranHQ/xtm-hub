@@ -13,14 +13,18 @@ describe('AddUseCase', () => {
     const { user } = testRender(<AddUseCase />);
 
     // Given
-    const addButton = screen.getByRole('button', { name: 'Add use case' });
+    const addButton = screen.getByRole('button', {
+      name: 'UseCaseActions.AddUseCase',
+    });
 
     // When
     await user.click(addButton);
 
     // Then
-    expect(screen.getByRole('heading', { name: 'Add use case' })).toBeTruthy();
-    expect(screen.getByLabelText('Name')).toBeTruthy();
+    expect(
+      screen.getByRole('heading', { name: 'UseCaseActions.AddUseCase' })
+    ).toBeTruthy();
+    expect(screen.getByLabelText('UseCaseForm.Name')).toBeTruthy();
   });
 
   it('should submit UseCaseAdd mutation and close sheet on success', async () => {
@@ -41,15 +45,17 @@ describe('AddUseCase', () => {
 
     const { user } = testRender(<AddUseCase />);
 
-    await user.click(screen.getByRole('button', { name: 'Add use case' }));
+    await user.click(
+      screen.getByRole('button', { name: 'UseCaseActions.AddUseCase' })
+    );
 
     const colorInput = screen.getByDisplayValue('#FFFFFF');
-    await user.type(screen.getByLabelText(/Name/i), 'Threat Hunting');
+    await user.type(screen.getByLabelText(/UseCaseForm.Name/i), 'Threat Hunting');
     fireEvent.change(colorInput, { target: { value: '#11aa22' } });
-    await user.click(screen.getByRole('button', { name: /Validate/i }));
+    await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));
 
     await waitFor(() => {
-      expect(screen.queryByLabelText(/Name/i)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/UseCaseForm.Name/i)).not.toBeInTheDocument();
     });
   });
 
@@ -63,13 +69,15 @@ describe('AddUseCase', () => {
 
     const { user } = testRender(<AddUseCase />);
 
-    await user.click(screen.getByRole('button', { name: 'Add use case' }));
+    await user.click(
+      screen.getByRole('button', { name: 'UseCaseActions.AddUseCase' })
+    );
 
     const colorInput = screen.getByDisplayValue('#FFFFFF');
-    await user.type(screen.getByLabelText(/Name/i), 'Threat Hunting');
+    await user.type(screen.getByLabelText(/UseCaseForm.Name/i), 'Threat Hunting');
     fireEvent.change(colorInput, { target: { value: '#11aa22' } });
-    await user.click(screen.getByRole('button', { name: /Validate/i }));
+    await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));
 
-    expect(await screen.findByLabelText(/Name/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/UseCaseForm.Name/i)).toBeInTheDocument();
   });
 });

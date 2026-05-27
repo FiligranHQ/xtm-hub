@@ -19,12 +19,6 @@ const mocks = vi.hoisted(() => ({
   newsFeedItems: [] as NewsFeedItem[],
 }));
 
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useTranslations: () => (key: string, values?: { title?: string }) =>
-    values?.title ? `${key}:${values.title}` : key,
-}));
-
 vi.mock('@/utils/date', () => ({
   formatDate: (date: string) => `formatted:${date}`,
 }));
@@ -219,9 +213,7 @@ describe('NewsFeedList', () => {
 
     const dialog = await screen.findByRole('alertdialog');
     expect(
-      within(dialog).getByText(
-        'NewsFeedAdminPage.DeleteDialog.Text:Active news'
-      )
+      within(dialog).getByText('NewsFeedAdminPage.DeleteDialog.Text')
     ).toBeInTheDocument();
 
     await user.click(
@@ -245,7 +237,7 @@ describe('NewsFeedList', () => {
 
     await waitFor(() => {
       expect(mocks.toast).toHaveBeenCalledWith({
-        title: 'NewsFeedAdminPage.DeleteSuccess:Active news',
+        title: 'NewsFeedAdminPage.DeleteSuccess',
       });
       expect(mocks.refetch).toHaveBeenCalledWith(
         {
