@@ -155,9 +155,13 @@ export const RegistrationDetails = ({
                     .join(', ')}
                 </span>
               ) : (
-                <span className="text-red-500">
-                  No access please contact the trial administrator at{' '}
-                  {platform.deployment_request?.requester_email}
+                <span>
+                  <span className="text-red-500">
+                    {t('RegistrationDetails.NoAccess')}
+                  </span>{' '}
+                  {t('RegistrationDetails.NoAccessContact', {
+                    email: platform.deployment_request?.requester_email ?? '',
+                  })}
                 </span>
               )}
             </span>

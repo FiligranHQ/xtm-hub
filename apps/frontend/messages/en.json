@@ -511,6 +511,10 @@
       "Title": "Are you sure?"
     }
   },
+  "RegistrationDetails": {
+    "NoAccess": "No access",
+    "NoAccessContact": "please contact the trial administrator at {email}"
+  },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",

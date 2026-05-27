@@ -190,9 +190,10 @@ describe('RegistrationDetails', () => {
         expect(screen.getByText(/Access:/i)).toBeInTheDocument();
         expect(screen.getByText(expectedText)).toBeInTheDocument();
         expect(
-          screen.queryByText(
-            /No access please contact the trial administrator/i
-          )
+          screen.queryByText('RegistrationDetails.NoAccess')
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('RegistrationDetails.NoAccessContact')
         ).not.toBeInTheDocument();
       }
     );
@@ -215,13 +216,30 @@ describe('RegistrationDetails', () => {
         });
 
         expect(
-          screen.getByText(
-            /No access please contact the trial administrator at/i
-          )
+          screen.getByText('RegistrationDetails.NoAccess')
         ).toBeInTheDocument();
-        expect(screen.getByText(/admin@filigran\.io/i)).toBeInTheDocument();
+        expect(
+          screen.getByText('RegistrationDetails.NoAccessContact')
+        ).toBeInTheDocument();
       }
     );
+
+    it('should render "No access" in red and contact info without red styling', () => {
+      renderDetails({
+        ...trialPlatform,
+        myGroups: [],
+        deployment_request: {
+          ...trialPlatform.deployment_request!,
+          requester_email: 'admin@filigran.io',
+        },
+      });
+
+      const noAccessEl = screen.getByText('RegistrationDetails.NoAccess');
+      expect(noAccessEl).toHaveClass('text-red-500');
+
+      const contactEl = screen.getByText('RegistrationDetails.NoAccessContact');
+      expect(contactEl).not.toHaveClass('text-red-500');
+    });
 
     it('should not render access row for non-trial', () => {
       renderDetails({
