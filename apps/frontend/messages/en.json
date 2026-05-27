@@ -115,7 +115,14 @@
       "now": "Now",
       "next": "Next",
       "under_consideration": "Under consideration",
-      "finished": "Finished in the last 3 months"
+      "finished": "Finished in the last 3 months",
+      "Details": {
+        "draft": "Use cases in draft mode, not visible without UPLOAD capability",
+        "finished": "Use cases that are available",
+        "now": "Use cases currently in development",
+        "next": "Use cases planned for future releases",
+        "under_consideration": "Use cases under strong consideration"
+      }
     },
     "Form": {
       "Epic": "Epic",
