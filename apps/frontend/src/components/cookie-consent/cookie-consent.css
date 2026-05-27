@@ -495,3 +495,12 @@
         align-items: flex-start !important;
     }
 }
+
+/* Align the master "Preference for all services" toggle with the per-category
+   toggles below. Tarteaucitron adds .tarteaucitronScrollbarAdjust which
+   pre-compensates for a potential scrollbar, but it leaves the master toggle
+   visually offset to the right when no scrollbar is present. */
+#tarteaucitronScrollbarAdjust {
+    padding-right: 0 !important;
+    margin-right: 30px !important;
+}

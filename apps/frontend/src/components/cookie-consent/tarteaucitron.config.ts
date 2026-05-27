@@ -15,7 +15,7 @@ const buildConfig = (): TarteaucitronConfig => ({
   serviceDefaultState: 'wait',
   showAlertSmall: false,
   cookieslist: false,
-  showIcon: true,
+  showIcon: false,
   iconPosition: 'BottomRight',
   adblocker: false,
   DenyAllCta: true,

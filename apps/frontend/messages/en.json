@@ -38,7 +38,7 @@
     "RowsPerPage": "Rows per page"
   },
   "cookieConsent": {
-    "bannerText": "We use strictly necessary cookies and similar technologies to make the XTM Hub work and remember your privacy choices. With your consent, we also use optional cookies to remember your preferences, understand how the XTM Hub is used, monitor performance and diagnose technical issues, measure the effectiveness of our marketing and personalise content. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy and Privacy Policy for more information.",
+    "bannerText": "We use cookies to make the XTM Hub work, understand how it's used and improve your experience. Strictly necessary cookies are always on. With your consent, we also use optional cookies for functionality, performance and analytics, and marketing. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy for more information.",
     "acceptAll": "Accept all",
     "rejectAll": "Reject all",
     "cookieSettings": "Cookie settings",
@@ -53,7 +53,7 @@
       },
       "analytics": {
         "title": "Performance and analytics",
-        "description": "These cookies help us measure how the Hub performs and how it's used, and identify errors so we can improve it."
+        "description": "These cookies help us measure how the XTM Hub performs and how it's used, and identify errors so we can improve it."
       },
       "marketing": {
         "title": "Marketing",
