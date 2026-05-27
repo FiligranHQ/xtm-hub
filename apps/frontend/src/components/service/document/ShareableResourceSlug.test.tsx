@@ -1,3 +1,5 @@
+import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
@@ -5,8 +7,6 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { screen } from '@testing-library/react';
 import { ComponentPropsWithoutRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////// Mock hooks /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19,14 +19,6 @@ vi.mock('../../../hooks/use-decoded-params', () => ({
     serviceInstanceId: 'test-service-id',
   }),
 }));
-
-vi.mock('next-intl', async () => {
-  const actual = await vi.importActual('next-intl');
-  return {
-    ...actual,
-    useTranslations: () => (key: string) => key,
-  };
-});
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////// Mock children components ///////////////////////////////////////

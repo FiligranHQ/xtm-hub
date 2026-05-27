@@ -1,6 +1,6 @@
+import CompetitorForm from '@/components/competitor/CompetitorForm';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
-import CompetitorForm from '@/components/competitor/CompetitorForm';
 
 describe('CompetitorForm', () => {
   describe('domain field validation', () => {
@@ -19,9 +19,17 @@ describe('CompetitorForm', () => {
         />
       );
 
-      await user.type(screen.getByLabelText(/Name/i), 'Acme Corp');
-      await user.type(screen.getByLabelText(/Domain/i), domainValue);
-      await user.click(screen.getByRole('button', { name: /Add competitor/i }));
+      await user.type(
+        screen.getByLabelText(/CompetitorForm.Name/i),
+        'Acme Corp'
+      );
+      await user.type(
+        screen.getByLabelText(/CompetitorForm.Domain/i),
+        domainValue
+      );
+      await user.click(
+        screen.getByRole('button', { name: 'CompetitorForm.AddButton' })
+      );
     };
 
     it.each([['example.com'], ['my-company.io'], ['sub.example.co.uk']])(

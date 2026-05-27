@@ -1,8 +1,6 @@
 'use client';
-import Copilot from '@/components/external/Copilot';
 import GoogleAnalytics from '@/components/external/GoogleAnalytics';
 import Hubspot from '@/components/external/Hubspot';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import { APP_PATH } from '@/utils/path/constant';
 import { geologica, ibmPlexSans } from '@app/font';
 import { Toaster } from '@filigran/ui';
@@ -11,7 +9,6 @@ import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
-import { useContext } from 'react';
 
 // Component interface
 interface AppProps {
@@ -32,9 +29,6 @@ const AppContext = ({ children }: AppProps) => {
   const pathname = usePathname();
   const t = useTranslations();
   const forcedTheme = isThemeSwitchablePath(pathname) ? undefined : 'dark';
-  const { settings } = useContext(SettingsContext);
-  const isProductionSetting =
-    settings?.environment && settings.environment === 'production';
   return (
     <html
       suppressHydrationWarning
@@ -64,7 +58,6 @@ const AppContext = ({ children }: AppProps) => {
           <Toaster />
           <Hubspot />
           <GoogleAnalytics />
-          {isProductionSetting && <Copilot />}
         </ThemeProvider>
       </body>
     </html>

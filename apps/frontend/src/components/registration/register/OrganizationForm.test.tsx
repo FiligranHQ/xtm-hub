@@ -1,17 +1,12 @@
+import { RegistrationContext } from '@/components/registration/Context';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrationContext } from '@/components/registration/Context';
-import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
-
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('next-intl')>()),
-  useTranslations: () => (key: string) => key,
-}));
 
 vi.mock('@filigran/ui/clients', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@filigran/ui/clients')>()),
