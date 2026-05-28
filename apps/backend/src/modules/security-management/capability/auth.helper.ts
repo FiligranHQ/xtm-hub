@@ -11,7 +11,7 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { SubscriptionMutator } from '../../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../../model/user';
 import { ServiceCapabilityArgs } from '../../../security/directive-graphql/validator/service-capability.validator';
-import { loadUserOrganization } from '../../common/user-organization.domain';
+import { UserOrganizationDomain } from '../../organization-management/user/user-organization/user-organization.domain';
 import { loadUserOrganizationCapabilities } from '../user-organization-capability/user-organization-capability.domain';
 
 export const loadCapabilitiesByServiceId = async (
@@ -153,7 +153,7 @@ export const isUserAllowedOnOrganization = async (
     };
   }
 
-  const [userOrganization] = await loadUserOrganization({
+  const [userOrganization] = await UserOrganizationDomain.loadUserOrganization({
     user_id: user.id,
     organization_id: organizationId as OrganizationId,
   });

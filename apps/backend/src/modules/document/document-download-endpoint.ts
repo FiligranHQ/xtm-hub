@@ -5,17 +5,16 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
-import { PortalContext } from '../../model/portal-context';
 import { UserLoadUserBy } from '../../model/user';
-import {
-  extractPlatformToken,
-  validateActivePlatformToken,
-} from '../../security/directive-graphql/validator/platform-token-validator';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
-import { loadUserBy } from '../organization-management/user/user-domain/user.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import {
+  extractPlatformToken,
+  validateActivePlatformToken,
+} from '../security-management/token/platform-token.util';
 import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
@@ -46,7 +45,7 @@ const loadUser = async (
     return { user: null };
   }
 
-  const userLoadFromUserPlatformToken = await loadUserBy({
+  const userLoadFromUserPlatformToken = await UserDomain.loadUserBy({
     'User.platform_token': user_platform_token,
   });
   return {
@@ -70,12 +69,7 @@ export const documentDownloadEndpoint = (app) => {
           return;
         }
 
-        const context: PortalContext = {
-          user: user,
-          req,
-          res,
-        };
-        requestContext.update({ portalContext: context });
+        requestContext.update({ user });
         const token = extractPlatformToken(req);
         // check only if token is present to keep old OpenCTI versions compatibility
         if (isLoadedFromUserPlatformToken && token) {
@@ -121,13 +115,13 @@ export const documentDownloadEndpoint = (app) => {
 
           try {
             if (shouldSendEventForService(serviceDefinition.identifier)) {
-              const selectedOrga = await loadOrganizationBy({
-                id: context.user.selected_organization_id,
+              const selectedOrga = await OrganizationDomain.loadOrganizationBy({
+                id: user.selected_organization_id,
               });
 
               const downloadEvent = await buildDownloadEvent(
                 selectedOrga,
-                context.user.id,
+                user.id,
                 serviceDefinition.identifier,
                 document.id,
                 document.name

@@ -20,7 +20,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { FullyQualifiedDeploymentRequest } from '../deployment/deployment.domain';
-import { loadOrganizationsByUser } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
@@ -117,7 +117,8 @@ export const registrationDomain = {
     }
 
     if (subscription.organization_id !== targetOrganizationId) {
-      const userOrganizations = await loadOrganizationsByUser(user.id);
+      const userOrganizations =
+        await OrganizationDomain.loadOrganizationsByUser(user.id);
       if (userOrganizations.length > 2) {
         throw new Error(ErrorCode.RegistrationOnAnotherOrganizationForbidden);
       }
@@ -179,6 +180,39 @@ export const registrationDomain = {
       )
       .where('ServiceInstance.creation_status', '!=', 'DISABLED')
       .whereIn('Subscription.organization_id', organizationIds)
+      .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
+      .where(
+        'Service_Configuration.status',
+        '=',
+        ServiceConfigurationStatus.Active
+      )
+      .select([
+        'Service_Configuration.config',
+        'ServiceDefinition.identifier',
+        'ServiceInstance.*',
+      ]) as unknown as Promise<DomainRegisteredPlatform[]>;
+  },
+
+  loadAllActiveRegisteredPlatformsByPlatformIdentifier: async (
+    platformIdentifier: PlatformIdentifier
+  ): Promise<DomainRegisteredPlatform[]> => {
+    const serviceDefinitionIdentifier =
+      serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
+
+    return db<ServiceInstance>('ServiceInstance')
+      .leftJoin(
+        'Service_Configuration',
+        'Service_Configuration.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .leftJoin(
+        'ServiceDefinition',
+        'ServiceDefinition.id',
+        '=',
+        'ServiceInstance.service_definition_id'
+      )
+      .where('ServiceInstance.creation_status', '!=', 'DISABLED')
       .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
       .where(
         'Service_Configuration.status',

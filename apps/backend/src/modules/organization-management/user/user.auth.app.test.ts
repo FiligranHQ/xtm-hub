@@ -1,8 +1,9 @@
 import config from 'config';
+import express from 'express';
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserLoadUserBy } from '../../../model/user';
 import * as UserSecurity from '../../../security/util/user';
-import * as UserDomain from './user-domain/user.domain';
+import { UserDomain } from './user-domain/user.domain';
 import { UserAuthApp } from './user.auth.app';
 
 vi.mock('config', () => ({
@@ -10,23 +11,25 @@ vi.mock('config', () => ({
 }));
 
 vi.mock('./user-domain/user.domain', () => ({
-  loadUserBy: vi.fn(),
-  updateUserAtLogin: vi.fn(),
+  UserDomain: {
+    loadUserBy: vi.fn(),
+    updateUserAtLogin: vi.fn(),
+  },
 }));
 
 vi.mock('../../../security/util/user', () => ({
   validatePassword: vi.fn(),
 }));
 
-const mockContext = {
-  req: { session: {} },
-} as never;
+const mockReq = { session: {} } as unknown as express.Request;
+const mockRes = { cookie: vi.fn() } as unknown as express.Response;
 
 const mockUser = {
   id: 'user-id',
   email: 'user@company.com',
   salt: 'somesalt',
   password: 'somehash',
+  selected_language: 'en',
 } as UserLoadUserBy;
 
 const SSO_ONLY_SETTINGS = [{ provider: 'oidc' }];
@@ -43,7 +46,7 @@ describe('usersAuthApp', () => {
         (config.get as Mock).mockReturnValue(SSO_ONLY_SETTINGS);
 
         await expect(
-          UserAuthApp.login(mockContext, {
+          UserAuthApp.login(mockReq, mockRes, {
             email: 'user@company.com',
             password: '',
           })
@@ -54,7 +57,7 @@ describe('usersAuthApp', () => {
         (config.get as Mock).mockReturnValue([]);
 
         await expect(
-          UserAuthApp.login(mockContext, {
+          UserAuthApp.login(mockReq, mockRes, {
             email: 'user@company.com',
             password: 'somepassword',
           })
@@ -72,13 +75,13 @@ describe('usersAuthApp', () => {
         vi.mocked(UserDomain.updateUserAtLogin).mockResolvedValue(mockUser);
         vi.mocked(UserSecurity.validatePassword).mockReturnValue(true);
 
-        const result = await UserAuthApp.login(mockContext, {
+        const result = await UserAuthApp.login(mockReq, mockRes, {
           email: 'user@company.com',
           password: 'correctpassword',
         });
 
         expect(result).toBe(mockUser);
-        expect(mockContext.req.session).toMatchObject({ user: mockUser });
+        expect(mockReq.session).toMatchObject({ user: mockUser });
       });
 
       it.each`
@@ -93,7 +96,7 @@ describe('usersAuthApp', () => {
             passwordValid
           );
 
-          const result = await UserAuthApp.login(mockContext, {
+          const result = await UserAuthApp.login(mockReq, mockRes, {
             email: 'user@company.com',
             password: 'wrongpassword',
           });

@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { ServiceRestriction } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
-import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import * as ServiceCapaDomain from './service-capability.domain';
@@ -35,7 +34,6 @@ describe('willManageAccessBeConserved', () => {
       const result = async () => {
         requestContext.set({
           user: { id: 'theSame' } as UserLoadUserBy,
-          portalContext: { user: { id: 'theSame' } } as PortalContext,
         });
         await willManageAccessBeConserved(
           'userServiceId' as UserServiceId,

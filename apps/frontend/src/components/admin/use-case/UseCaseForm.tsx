@@ -1,3 +1,4 @@
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import {
   Button,
   ColorPicker,
@@ -9,12 +10,16 @@ import {
   Input,
   SheetFooter,
 } from '@filigran/ui';
-import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+
+export interface UseCaseFormModel {
+  id: string;
+  name: string;
+  color: string;
+}
 
 export const useCaseFormSchema = z.object({
   name: z.string().min(2, {
@@ -31,7 +36,7 @@ const UseCaseForm = ({
   handleDelete,
   onClose,
 }: {
-  useCase?: useCase_fragment$data;
+  useCase?: UseCaseFormModel;
   handleDelete?: () => void;
   handleSubmit: (values: z.infer<typeof useCaseFormSchema>) => void;
   onClose: () => void;

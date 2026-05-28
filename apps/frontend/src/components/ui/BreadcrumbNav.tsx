@@ -20,14 +20,25 @@ export interface BreadcrumbNavLink {
   href?: string;
   label: string;
   original?: boolean;
+  fallback?: string;
 }
 
 export const BreadcrumbNav = ({ value }: BreadcrumbProps) => {
   const t = useTranslations();
+  const renderLabel = ({ label, original, fallback }: BreadcrumbNavLink) => {
+    if (original) {
+      return label;
+    }
+    if (fallback !== undefined && !t.has(label)) {
+      return fallback;
+    }
+    return t(label);
+  };
   return (
     <Breadcrumb className="pb-s sm:pb-l">
       <BreadcrumbList className="pl-0">
-        {value.map(({ href, label, original }, index) => {
+        {value.map((link, index) => {
+          const { href } = link;
           const lastIndex = value.length - 1 === index;
           return (
             <Fragment key={index}>
@@ -38,7 +49,7 @@ export const BreadcrumbNav = ({ value }: BreadcrumbProps) => {
                       <Link
                         className="hover:underline"
                         href={href}>
-                        {original ? label : t(label)}
+                        {renderLabel(link)}
                       </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
@@ -47,7 +58,7 @@ export const BreadcrumbNav = ({ value }: BreadcrumbProps) => {
                 <BreadcrumbItem>
                   <BreadcrumbPage
                     className={cn(!lastIndex && 'text-muted-foreground')}>
-                    {original ? label : t(label)}
+                    {renderLabel(link)}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               )}

@@ -1,0 +1,40 @@
+import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
+import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import SeoServiceInstancesQuery, {
+  seoServiceInstancesQuery,
+} from '@generated/seoServiceInstancesQuery.graphql';
+import { getTranslations } from 'next-intl/server';
+
+const Page = async () => {
+  const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
+    SeoServiceInstancesQuery,
+    {},
+    { cache: undefined, next: { revalidate: 3600 } }
+  );
+  const services = response.data
+    .seoServiceInstances as unknown as seoServiceInstanceFragment$data[];
+
+  const t = await getTranslations();
+  return (
+    <>
+      <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
+        {t('PublicHomePage.Title')}
+      </h1>
+      <ul
+        className={
+          'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l'
+        }>
+        {services.map((service) => (
+          <ServiceInstanceCard
+            key={service.id}
+            serviceInstance={seoServiceInstanceToInstanceCardData(service, t)}
+          />
+        ))}
+      </ul>
+    </>
+  );
+};
+
+export default Page;

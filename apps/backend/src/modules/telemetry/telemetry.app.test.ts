@@ -29,6 +29,7 @@ import {
 
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
@@ -38,8 +39,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { DocumentApp } from '../document/document.app';
-import { deleteDocuments } from '../document/document.helper';
-import * as DocumentUploadsHelper from '../document/document.uploads.helper';
+import { DocumentUploadsHelper } from '../document/document.uploads.helper';
 import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
 import { INTEGRATION_SERVICE_INSTANCE_ID } from '../shareable-resource/opencti/integration/integration.model';
 
@@ -91,7 +91,7 @@ describe('telemetryApp', () => {
     vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
       minioFileMock,
     ]);
-    await deleteDocuments();
+    await TestHelper.document.delete({});
   });
 
   describe('sendOneClickDeployEvent', () => {

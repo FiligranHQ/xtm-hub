@@ -8,7 +8,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
 import { UserId } from '../../model/kanel/public/User';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 
 import { requestContext } from '../../context/request.context';
 import { DocumentMetadataDomain } from '../document/domain/document.metadata.domain';
@@ -73,6 +73,10 @@ const ServiceIdentifierToEventService = new Map<
   [
     ServiceDefinitionIdentifier.OpenctiCustomDashboards,
     TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
+  ],
+  [
+    ServiceDefinitionIdentifier.OpenctiPlaybooks,
+    TelemetryEventService.OPENCTI_PLAYBOOKS_LIBRARY,
   ],
 ]);
 
@@ -193,7 +197,7 @@ export async function buildCreateEvent(
   timestamp?: Date
 ): Promise<CreateEvent> {
   const { user } = requestContext.require();
-  const selectedOrga = await loadOrganizationBy({
+  const selectedOrga = await OrganizationDomain.loadOrganizationBy({
     id: user.selected_organization_id,
   });
 

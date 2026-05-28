@@ -22,13 +22,13 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@graphql/*": ["./graphql/*"],
       "@generated/*": ["./__generated__/*"],
       "@styles/*": ["./styles/*"],
       "@public/*": ["./public/*"],
       "@app/*": ["./app/*"],
       "@messages/*": ["./messages/*"]
-    },
-    "types": ["vitest/globals"]
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -37,5 +37,13 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "setup-vitest.ts",
+    "vitest.config.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }

@@ -16,17 +16,9 @@ import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { extractId } from '../../../utils/utils';
-import { userAdminApp } from './user-admin/user.admin.app';
-import {
-  getCapabilities,
-  getOrganizations,
-  getRolesPortal,
-  loadUserConnection,
-  loadUsersByCapabilitiesInOrganization,
-  resetPassword,
-  userHasOrganizationWithSubscription,
-} from './user-domain/user.domain';
-import { UserOrganizationApp } from './user-organization/user.organization.app';
+import { UserAdminApp } from './user-admin/user.admin.app';
+import { UserDomain } from './user-domain/user.domain';
+import { UserOrganizationApp } from './user-organization/user-organization.app';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { userProfileApp } from './user-profile/user.profile.app';
 import { UserAuthApp } from './user.auth.app';
@@ -35,9 +27,9 @@ import { mapUserToGraphqlUser } from './user.helper';
 const resolvers: Resolvers = {
   UserId: createRelayIdScalar<UserId>('User'),
   User: {
-    organizations: ({ id }, _) => getOrganizations(id),
-    capabilities: ({ id }, _) => getCapabilities(id),
-    roles_portal: ({ id }, _) => getRolesPortal(id),
+    organizations: ({ id }, _) => UserDomain.getOrganizations(id),
+    capabilities: ({ id }, _) => UserDomain.getCapabilities(id),
+    roles_portal: ({ id }, _) => UserDomain.getRolesPortal(id),
   },
   Query: {
     me: async (_, __, context) => {
@@ -49,7 +41,7 @@ const resolvers: Resolvers = {
     },
 
     usersWithCapabilitiesInOrganization: async (_, { input }) => {
-      return loadUsersByCapabilitiesInOrganization(
+      return UserDomain.loadUsersByCapabilitiesInOrganization(
         input.organizationId,
         input.capabilities
       );
@@ -58,7 +50,7 @@ const resolvers: Resolvers = {
       _,
       { first, after, orderMode, orderBy, searchTerm, filters }
     ) => {
-      return loadUserConnection({
+      return UserDomain.loadUserConnection({
         first,
         after,
         orderMode,
@@ -81,7 +73,7 @@ const resolvers: Resolvers = {
       });
     },
     userHasOrganizationWithSubscription: async (_, __) => {
-      return userHasOrganizationWithSubscription();
+      return UserDomain.userHasOrganizationWithSubscription();
     },
   },
   Mutation: {
@@ -101,7 +93,7 @@ const resolvers: Resolvers = {
     // Admin
     adminAddUser: async (_, { input }) => {
       try {
-        const user = await userAdminApp.addUser(input);
+        const user = await UserAdminApp.addUser(input);
         return mapUserToGraphqlUser(user);
       } catch (error) {
         if (error.message.includes(ErrorCode.UserDisabled)) {
@@ -114,7 +106,7 @@ const resolvers: Resolvers = {
     },
     editUserCapabilities: async (_, { id, input }) => {
       try {
-        return await userAdminApp.editUserCapabilities({
+        return await UserAdminApp.editUserCapabilities({
           userId: id as UserId,
           input,
         });
@@ -124,7 +116,7 @@ const resolvers: Resolvers = {
     },
     adminEditUser: async (_, { id, input }) => {
       try {
-        return await userAdminApp.editUser({
+        return await UserAdminApp.editUser({
           userId: id as UserId,
           input,
         });
@@ -148,7 +140,7 @@ const resolvers: Resolvers = {
       }
     },
     resetPassword: async (_, __) => {
-      await resetPassword();
+      await UserDomain.resetPassword();
       return { success: true };
     },
     requestTransferPersonalSpace: async (_, { new_email }, context) => {
@@ -174,10 +166,18 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
       }
     },
-    changeSelectedOrganization: async (_, { organization_id }) => {
+    changeSelectedOrganization: async (
+      _,
+      { organization_id },
+      portalContext
+    ) => {
       try {
         const user =
           await UserOrganizationApp.changeSelectedOrganization(organization_id);
+
+        portalContext.req.session.user = user;
+        portalContext.req.session.save();
+        portalContext.user = user;
 
         return mapUserToGraphqlUser(user);
       } catch (error) {
@@ -205,7 +205,7 @@ const resolvers: Resolvers = {
     ) => {
       try {
         const { ids, searchTerm, filters, excludedIds } = input;
-        await userAdminApp.bulkRemovePendingUserFromOrganization(
+        await UserAdminApp.bulkRemovePendingUserFromOrganization(
           context.user.selected_organization_id,
           ids,
           searchTerm,
@@ -229,7 +229,7 @@ const resolvers: Resolvers = {
       try {
         const { ids, searchTerm, filters, excludedIds } = input;
 
-        await userAdminApp.bulkAcceptPendingUserInOrganization(
+        await UserAdminApp.bulkAcceptPendingUserInOrganization(
           context.user.selected_organization_id,
           ids,
           searchTerm,
@@ -274,9 +274,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    login: async (_, args, context) => {
+    login: async (_, args, { req, res }) => {
       try {
-        const loggedUser = await UserAuthApp.login(context, args);
+        const loggedUser = await UserAuthApp.login(req, res, args);
         if (loggedUser) {
           return mapUserToGraphqlUser(loggedUser);
         }
@@ -290,8 +290,8 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    logout: async (_, __, context) => {
-      return UserAuthApp.logout(context);
+    logout: async (_, __, { user, req, res }) => {
+      return UserAuthApp.logout(user, req, res);
     },
     contactUs: async (
       _,

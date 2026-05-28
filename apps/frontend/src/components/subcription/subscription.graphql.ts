@@ -27,25 +27,47 @@ export const subscriptionFragment = graphql`
 
 export const SubscriptionDeleteMutation = graphql`
   mutation subscriptionDeleteMutation(
-    $subscription_id: SubscriptionId!
+    $subscription_ids: [SubscriptionId!]!
     $connections: [ID!]!
   ) {
-    deleteSubscription(subscription_id: $subscription_id) {
+    deleteSubscriptions(subscription_ids: $subscription_ids) {
       id @deleteEdge(connections: $connections)
+    }
+  }
+`;
+
+export const UpdateSubscriptionInServiceMutation = graphql`
+  mutation subscriptionInServiceUpdateMutation(
+    $subscription_id: SubscriptionId!
+    $input: UpdateSubscriptionInput!
+  ) {
+    updateSubscription(subscription_id: $subscription_id, input: $input) {
+      ...subscription_fragment
     }
   }
 `;
 
 export const AddSubscriptionInServiceMutation = graphql`
   mutation subscriptionInServiceCreateMutation(
-    $input: CreateSubscriptionInput!
+    $input: CreateSubscriptionsInput!
     $connections: [ID!]!
   ) {
-    createSubscription(input: $input)
+    createSubscriptions(input: $input)
       @prependNode(
         connections: $connections
         edgeTypeName: "SubscriptionEdge"
       ) {
+      ...subscription_fragment
+    }
+  }
+`;
+
+export const SubscriptionUpdateMutation = graphql`
+  mutation subscriptionUpdateMutation(
+    $subscription_id: SubscriptionId!
+    $input: UpdateSubscriptionInput!
+  ) {
+    updateSubscription(subscription_id: $subscription_id, input: $input) {
       ...subscription_fragment
     }
   }
@@ -83,6 +105,16 @@ export const subscriptionListFragment = graphql`
           ...subscription_fragment
         }
       }
+    }
+  }
+`;
+
+export const AddSubscriptionCapabilityMutation = graphql`
+  mutation subscriptionAddCapabilityMutation(
+    $input: AddSubscriptionCapabilityInput!
+  ) {
+    addSubscriptionCapability(input: $input) {
+      ...subscription_fragment
     }
   }
 `;

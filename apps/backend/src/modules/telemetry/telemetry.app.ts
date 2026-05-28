@@ -7,7 +7,7 @@ import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import {
   loadPlatformConfigurationByServiceInstanceId,
   loadServiceDefinitionByServiceInstance,
@@ -85,7 +85,7 @@ export const telemetryApp = {
     const { user } = requestContext.require();
     const selected_organization_id = user.selected_organization_id;
 
-    const selectedOrga = await loadOrganizationBy({
+    const selectedOrga = await OrganizationDomain.loadOrganizationBy({
       id: selected_organization_id,
     });
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(

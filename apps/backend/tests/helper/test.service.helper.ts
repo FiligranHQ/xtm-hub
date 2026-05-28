@@ -28,6 +28,9 @@ import ServiceInstance, {
   ServiceInstanceId,
   ServiceInstanceMutator,
 } from '../../src/model/kanel/public/ServiceInstance';
+import SubscriptionCapability, {
+  SubscriptionCapabilityMutator,
+} from '../../src/model/kanel/public/SubscriptionCapability';
 import { PlatformConfiguration } from '../../src/modules/registration/registration.domain';
 import { contextRegistererUserSecondOrga } from '../tests.const';
 
@@ -194,6 +197,13 @@ export const TestServiceHelper = {
     },
     delete: async (field: ServiceGroupUserMutator) => {
       await db<ServiceGroupUser>('ServiceGroup_User').where(field).del();
+    },
+  },
+  subscriptionCapability: {
+    delete: async (field: SubscriptionCapabilityMutator) => {
+      await db<SubscriptionCapability>('Subscription_Capability')
+        .where(field)
+        .delete();
     },
   },
 };

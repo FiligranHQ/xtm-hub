@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import {
-  contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
   requestContextRegistererUserSecondOrga,
   SERVICES,
@@ -28,7 +27,7 @@ import { PortalContext } from '../../model/portal-context';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import * as organizationDomain from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
 import * as subscriptionDomain from '../subscription/subscription.domain';
 import {
@@ -54,9 +53,6 @@ describe('registration domain', () => {
     it('save registration data', async () => {
       const testContext = {
         user: requestContextRegistererUserSecondOrga.user,
-        portalContext: {
-          ...contextRegistererUserSecondOrga,
-        },
       };
       requestContext.set(testContext);
       await registrationDomain.registerNewPlatform({
@@ -172,7 +168,7 @@ describe('registration domain', () => {
       );
 
       loadOrganizationsByUserSpy = vi.spyOn(
-        organizationDomain,
+        OrganizationDomain,
         'loadOrganizationsByUser'
       );
 
@@ -458,6 +454,132 @@ describe('registration domain', () => {
 
       // Then
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('loadAllActiveRegisteredPlatformsByPlatformIdentifier', () => {
+    const openAEVServiceDefinitionId =
+      SERVICES.DEFINITIONS.OPENAEV_REGISTRATION.ID;
+    let secondOrgServiceInstanceId: ServiceInstanceId;
+
+    beforeEach(async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      secondOrgServiceInstanceId = await registrationDomain.registerNewPlatform(
+        {
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          serviceDefinitionId,
+          configuration: {
+            registerer_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+            platform_id: platformId,
+            platform_url: platformUrl,
+            platform_title: platformTitle,
+            platform_contract: platformContract,
+            platform_version: platformOpenCTI,
+            token,
+          },
+          platformIdentifier: PlatformIdentifier.Opencti,
+        }
+      );
+    });
+
+    afterEach(async () => {
+      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      if (secondOrgServiceInstanceId) {
+        await deleteServiceInstanceBy({ id: secondOrgServiceInstanceId });
+      }
+    });
+
+    it.each`
+      description                                                | registerExtraOpenAEV
+      ${'with only OpenCTI registered'}                          | ${false}
+      ${'while ignoring a platform with a different identifier'} | ${true}
+    `(
+      'should return only the matching OpenCTI platform $description',
+      async ({ registerExtraOpenAEV }: { registerExtraOpenAEV: boolean }) => {
+        // Given
+        if (registerExtraOpenAEV) {
+          await registrationDomain.registerNewPlatform({
+            organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            serviceDefinitionId: openAEVServiceDefinitionId,
+            configuration: {
+              registerer_id:
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+              platform_id: uuidv4(),
+              platform_url: platformUrl,
+              platform_title: platformTitle,
+              platform_contract: platformContract,
+              platform_version: platformOpenCTI,
+              token: uuidv4(),
+            },
+            platformIdentifier: PlatformIdentifier.Openaev,
+          });
+        }
+
+        // When
+        const result =
+          await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+            PlatformIdentifier.Opencti
+          );
+
+        // Then
+        expect(result).toHaveLength(1);
+        expect(result[0]?.config.platform_id).toBe(platformId);
+      }
+    );
+
+    it('should return all platforms matching the identifier', async () => {
+      // Given — register a second platform
+      const secondPlatformId = uuidv4();
+      await registrationDomain.registerNewPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        serviceDefinitionId,
+        configuration: {
+          registerer_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          platform_id: secondPlatformId,
+          platform_url: platformUrl,
+          platform_title: platformTitle,
+          platform_contract: platformContract,
+          platform_version: platformOpenCTI,
+          token: uuidv4(),
+        },
+        platformIdentifier: PlatformIdentifier.Opencti,
+      });
+
+      // When
+      const result =
+        await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+          PlatformIdentifier.Opencti
+        );
+
+      // Then
+      expect(result.some((p) => p.config.platform_id === platformId)).toBe(
+        true
+      );
+      expect(
+        result.some((p) => p.config.platform_id === secondPlatformId)
+      ).toBe(true);
+    });
+
+    it('should not return platforms with inactive configuration', async () => {
+      // Given
+      await ServiceConfigurationDomain.updateConfiguration(
+        secondOrgServiceInstanceId,
+        {
+          status: ServiceConfigurationStatus.Inactive,
+        }
+      );
+
+      // When
+      const result =
+        await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+          PlatformIdentifier.Opencti
+        );
+
+      // Then
+      expect(result).toHaveLength(0);
     });
   });
 

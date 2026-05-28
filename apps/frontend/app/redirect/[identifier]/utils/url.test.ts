@@ -1,15 +1,7 @@
 import { decodeSafeRedirect } from '@/utils/redirect';
 import { NextRequest } from 'next/server';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { getLoginRedirectionURL } from './url';
-
-vi.mock('@/components/error-frontend-log.graphql', () => ({
-  logFrontendError: vi.fn(),
-}));
-
-vi.mock('@/relay/environment/registry', () => ({
-  getClientEnvironment: vi.fn(() => null),
-}));
 
 const BASE_URL = 'http://localhost:3002';
 

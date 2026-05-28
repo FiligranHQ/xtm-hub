@@ -10,7 +10,7 @@ import {
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { createRelayIdScalar } from '../../utils/scalar.util';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import {
@@ -28,21 +28,44 @@ const resolvers: Resolvers = {
       loadServiceInstanceBy({ id: service_instance_id }),
     user_service: ({ id }, _) => getUserService(id),
     organization: ({ organization_id }, _) =>
-      loadOrganizationBy({ id: organization_id }),
+      OrganizationDomain.loadOrganizationBy({ id: organization_id }),
   },
   SubscriptionCapability: {
     service_capability: ({ id }, _) => getServiceCapability(id),
   },
   Mutation: {
-    createSubscription: async (_, { input }, context) => {
+    createSubscriptions: async (_, { input }) => {
       try {
-        const organizationId =
-          input.organization_id ?? context.user.selected_organization_id;
-        const serviceInstanceId = input.service_instance_id;
-
-        return (await subscriptionApp.subscribeOrganizationToService({
-          organizationId,
-          serviceInstanceId,
+        return (await subscriptionApp.subscribeOrganizationsToService({
+          organizationIds: input.organization_id,
+          serviceInstanceId: input.service_instance_id,
+          startDate: input.start_date,
+          endDate: input.end_date,
+          capabilityIds: input.capability_ids ?? [],
+        })) as unknown as SubscriptionModel[];
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.ServiceSubscriptionError
+        );
+      }
+    },
+    deleteSubscriptions: async (_, { subscription_ids }) => {
+      try {
+        return (await subscriptionApp.deleteSubscriptions(
+          subscription_ids
+        )) as unknown as SubscriptionModel[];
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeleteSubscriptionError
+        );
+      }
+    },
+    updateSubscription: async (_, { subscription_id, input }) => {
+      try {
+        return (await subscriptionApp.updateSubscription({
+          id: subscription_id,
           startDate: input.start_date,
           endDate: input.end_date,
           capabilityIds: input.capability_ids,
@@ -51,18 +74,6 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(
           error,
           UnknownErrorCode.ServiceSubscriptionError
-        );
-      }
-    },
-    deleteSubscription: async (_, { subscription_id }) => {
-      try {
-        return (await subscriptionApp.deleteSubscription(
-          subscription_id
-        )) as unknown as SubscriptionModel;
-      } catch (error) {
-        throw mapToGraphQLError(
-          error,
-          UnknownErrorCode.DeleteSubscriptionError
         );
       }
     },

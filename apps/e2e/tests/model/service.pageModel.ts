@@ -11,7 +11,7 @@ export default class ServicePage {
 
   async navigateToServiceListAdmin() {
     await this.page.getByRole('button', { name: 'Settings' }).click();
-    await this.page.getByRole('link', { name: 'Services' }).click();
+    await this.page.getByRole('link', { name: 'Service' }).click();
     await this.page.getByText('Name', { exact: true }).click();
     await expect(this.page).toHaveScreenshot();
   }
@@ -29,24 +29,44 @@ export default class ServicePage {
     await this.page
       .getByRole('button', { name: 'Subscribe organization' })
       .click();
-    const drawer = this.getActiveDrawer();
+
+    const drawer = this.page.locator('body > [role="dialog"]').last();
     await expect(drawer).toBeVisible();
-    await drawer.getByRole('combobox').click();
-    await this.page.getByRole('option', { name: organizationName }).click();
-    await drawer.getByRole('button', { name: 'Validate' }).click();
+
+    await drawer.getByRole('button', { name: 'Organization' }).click();
+    const organizationOption = this.page
+      .getByRole('listbox', { name: /Suggestions/i })
+      .getByRole('option', { name: organizationName, exact: true });
+    await expect(organizationOption).toBeVisible();
+    await organizationOption.click();
+    await this.page.keyboard.press('Escape');
+
+    const validateButton = drawer.getByRole('button', { name: 'Validate' });
+    await expect(validateButton).toBeEnabled();
+    await validateButton.click();
     await waitForDrawerToClose(this.page);
   }
   async addOrganizationIntoServiceWithCapabilities(organizationName: string) {
     await this.page
       .getByRole('button', { name: 'Subscribe organization' })
       .click();
-    const drawer = this.getActiveDrawer();
+
+    const drawer = this.page.locator('body > [role="dialog"]').last();
     await expect(drawer).toBeVisible();
-    await drawer.getByRole('combobox').click();
-    await this.page.getByRole('option', { name: organizationName }).click();
-    await drawer.getByText('DELETE access:').click();
-    await drawer.getByLabel('UPLOAD access:').click();
-    await drawer.getByRole('button', { name: 'Validate' }).click();
+
+    await drawer.getByRole('button', { name: 'Organization' }).click();
+    const organizationOption = this.page
+      .getByRole('listbox', { name: /Suggestions/i })
+      .getByRole('option', { name: organizationName, exact: true });
+    await expect(organizationOption).toBeVisible();
+    await organizationOption.click();
+    await this.page.keyboard.press('Escape');
+    await drawer.getByRole('checkbox', { name: 'DELETE access:' }).click();
+    await drawer.getByRole('checkbox', { name: 'UPLOAD access:' }).click();
+
+    const validateButton = drawer.getByRole('button', { name: 'Validate' });
+    await expect(validateButton).toBeEnabled();
+    await validateButton.click();
     await waitForDrawerToClose(this.page);
   }
 

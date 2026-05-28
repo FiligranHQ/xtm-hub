@@ -9,7 +9,7 @@ const breadcrumbValue = [
     label: 'MenuLinks.Settings',
   },
   {
-    label: 'MenuLinks.Parameters',
+    label: 'MenuLinks.Parameter',
   },
 ];
 
@@ -20,7 +20,7 @@ const Page = () => {
   return (
     <GuardCapacityComponent displayError>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.Parameters')}</h1>
+      <h1 className="sr-only">{t('MenuLinks.Parameter')}</h1>
       <Parameters />
     </GuardCapacityComponent>
   );

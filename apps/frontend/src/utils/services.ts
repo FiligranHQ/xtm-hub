@@ -1,4 +1,5 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
 import { daysUntil } from '@/utils/date';
 import {
   APP_PATH,
@@ -14,7 +15,6 @@ import { registerRegisteredPlatformListFragment$data } from '@generated/register
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
 
 export const isExternalService = (
   service_definition_identifier: ServiceDefinitionIdentifierEnum
@@ -33,6 +33,7 @@ export const platformIdentifierMappedByShareableResourceType: Record<
     PlatformIdentifierEnum.OPENCTI,
   [ShareableResourceType.OPENCTI_INTEGRATION]: PlatformIdentifierEnum.OPENCTI,
   [ShareableResourceType.OPENAEV_SCENARIO]: PlatformIdentifierEnum.OPENAEV,
+  [ShareableResourceType.OPENCTI_PLAYBOOK]: PlatformIdentifierEnum.OPENCTI,
 };
 
 export const isExpired = (endDate: Date | undefined | null): boolean => {
@@ -202,15 +203,32 @@ const computeIllustrationDocumentUrl = (
   return null;
 };
 
+const localizedCardName = (
+  instance: { slug?: string | null; name: string },
+  t: ReturnType<typeof useTranslations>
+) => {
+  const key = `Service.Cards.${instance.slug}.Name`;
+  return instance.slug && t.has(key) ? t(key) : instance.name;
+};
+
+const localizedCardDescription = (
+  instance: { slug?: string | null; description?: string | null },
+  t: ReturnType<typeof useTranslations>
+) => {
+  const key = `Service.Cards.${instance.slug}.Description`;
+  return instance.slug && t.has(key) ? t(key) : instance.description!;
+};
+
 export const publicServiceInstanceToInstanceCardData = (
-  instance: serviceList_fragment$data
+  instance: serviceList_fragment$data,
+  t: ReturnType<typeof useTranslations>
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
     isLinkDisabled:
       instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
-    name: instance.name,
-    description: instance.description!,
+    name: localizedCardName(instance, t),
+    description: localizedCardDescription(instance, t),
     displayLinkArrow: isExternalService(
       instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
     ),
@@ -228,13 +246,14 @@ export const publicServiceInstanceToInstanceCardData = (
 };
 
 export const seoServiceInstanceToInstanceCardData = (
-  instance: seoServiceInstanceFragment$data
+  instance: seoServiceInstanceFragment$data,
+  t: ReturnType<typeof useTranslations>
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,
-    name: instance.name,
+    name: localizedCardName(instance, t),
     slug: instance.slug as string,
-    description: instance.description!,
+    description: localizedCardDescription(instance, t),
     displayLinkArrow: isExternalService(
       instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
     ),

@@ -1,3 +1,4 @@
+import { RegistrationDetails } from '@/components/service/registration/RegistrationDetails';
 import testRender from '@/utils/test/test-render';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
@@ -7,23 +8,11 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { screen } from '@testing-library/react';
+import { useSearchParams } from 'next/navigation';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import { RegistrationDetails } from '@/components/service/registration/RegistrationDetails';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
-
-const mockUseSearchParams = vi.fn(() => new URLSearchParams());
-
-vi.mock('next/navigation', () => ({
-  useSearchParams: () => mockUseSearchParams(),
-  useRouter: vi.fn(() => ({ push: vi.fn() })),
-}));
-
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useTranslations: () => (key: string) => key,
-}));
 
 vi.mock('@/components/service/components/PlatformUpdateSheet', () => ({
   PlatformUpdateSheet: () => null,
@@ -265,10 +254,9 @@ describe('RegistrationDetails', () => {
 
     it.each`
       label                                             | platform         | capabilities                                                 | shouldShow
-      ${'non-trial, both update capabilities'}          | ${basePlatform}  | ${updateCapabilities}                                        | ${true}
-      ${'trial, both update capabilities'}              | ${trialPlatform} | ${updateCapabilities}                                        | ${false}
-      ${'non-trial, only ADMINISTRATE_ORGANIZATION'}    | ${basePlatform}  | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}    | ${false}
-      ${'non-trial, only MANAGE_PLATFORM_REGISTRATION'} | ${basePlatform}  | ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]} | ${false}
+      ${'trial, with update capabilities'}              | ${trialPlatform} | ${updateCapabilities}                                        | ${false}
+      ${'non-trial, only ADMINISTRATE_ORGANIZATION'}    | ${basePlatform}  | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}    | ${true}
+      ${'non-trial, only MANAGE_PLATFORM_REGISTRATION'} | ${basePlatform}  | ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]} | ${true}
       ${'non-trial, no capabilities'}                   | ${basePlatform}  | ${[]}                                                        | ${false}
     `(
       'should show=$shouldShow for $label',
@@ -313,7 +301,11 @@ describe('RegistrationDetails', () => {
 
   describe('openForm search param', () => {
     it('should pass defaultOpen=true to TrialsManageUsersDialog when openForm=true', () => {
-      mockUseSearchParams.mockReturnValue(new URLSearchParams('openForm=true'));
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams('openForm=true') as unknown as ReturnType<
+          typeof useSearchParams
+        >
+      );
       renderDetails(trialPlatform, {
         selected_org_capabilities: [
           OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
@@ -325,7 +317,9 @@ describe('RegistrationDetails', () => {
     });
 
     it('should pass defaultOpen=false to TrialsManageUsersDialog when openForm is absent', () => {
-      mockUseSearchParams.mockReturnValue(new URLSearchParams());
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>
+      );
       renderDetails(trialPlatform, {
         selected_org_capabilities: [
           OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,

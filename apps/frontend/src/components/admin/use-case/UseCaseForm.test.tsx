@@ -1,7 +1,7 @@
-import testRender from '@/utils/test/test-render';
-import { useCase_fragment$data } from '@generated/useCase_fragment.graphql';
-import { screen } from '@testing-library/react';
 import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
+import testRender from '@/utils/test/test-render';
+import { UseCaseRowFragment } from '@graphql/generated';
+import { screen } from '@testing-library/react';
 
 describe('UseCaseForm', () => {
   describe('form validation', () => {
@@ -30,7 +30,7 @@ describe('UseCaseForm', () => {
 
       await user.type(screen.getByLabelText(/Name/i), name);
       await user.type(colorInput, color);
-      await user.click(screen.getByRole('button', { name: /Validate/i }));
+      await user.click(screen.getByRole('button', { name: 'Utils.Validate' }));
     };
 
     it.each`
@@ -66,7 +66,7 @@ describe('UseCaseForm', () => {
     const mockHandleDelete = vi.fn();
     const mockOnClose = vi.fn();
 
-    const useCase: useCase_fragment$data = {
+    const useCase: UseCaseRowFragment = {
       id: 'use-case-id',
       name: 'Threat hunting',
       color: '#123456',
@@ -85,7 +85,7 @@ describe('UseCaseForm', () => {
         />
       );
 
-      await user.click(screen.getByRole('button', { name: /Cancel/i }));
+      await user.click(screen.getByRole('button', { name: 'Utils.Cancel' }));
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
@@ -100,8 +100,12 @@ describe('UseCaseForm', () => {
         />
       );
 
-      await user.click(screen.getByRole('button', { name: /^Delete$/i }));
-      await user.click(screen.getByRole('button', { name: /^Delete$/i }));
+      await user.click(
+        screen.getByRole('button', { name: 'MenuActions.Delete' })
+      );
+      await user.click(
+        screen.getByRole('button', { name: 'MenuActions.Delete' })
+      );
 
       expect(mockHandleDelete).toHaveBeenCalledTimes(1);
     });

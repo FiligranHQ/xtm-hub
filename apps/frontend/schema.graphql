@@ -106,6 +106,7 @@ type Query {
   publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
   document(documentId: DocumentId, serviceInstanceId: ServiceInstanceId): Document
+  newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
   userOrganizations: [Organization!]!
@@ -153,6 +154,7 @@ type Mutation {
   incrementShareNumberDocument(documentId: DocumentId): Document!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
+  deleteNewsFeedItem(id: NewsFeedItemId!): Boolean!
   addOrganization(input: OrganizationInput!): Organization
   editOrganization(id: ID!, input: OrganizationInput!): Organization
   deleteOrganization(id: ID!): Organization
@@ -181,11 +183,13 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
+  addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  createSubscription(input: CreateSubscriptionInput): SubscriptionModel
-  deleteSubscription(subscription_id: SubscriptionId!): SubscriptionModel
+  createSubscriptions(input: CreateSubscriptionsInput): [SubscriptionModel!]!
+  updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
+  deleteSubscriptions(subscription_ids: [SubscriptionId!]!): [SubscriptionModel!]!
   sendTelemetryEvent: SendTelemetryMutation
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
@@ -254,6 +258,14 @@ enum DeploymentRequestUseCase {
   centralizing_knowledge
   sharing_knowledge
   hosting_threat_community
+  oaev_attack_simulation
+  oaev_penetration_testing
+  oaev_atomic_testing
+  oaev_platform_validation
+  oaev_tabletop_exercise
+  oaev_purple_team
+  oaev_opencti_coverage
+  oaev_ctem_framework
 }
 
 enum DeploymentRequestActivitySector {
@@ -633,12 +645,18 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
+"""
+A Relay global ID for NewsFeedItem, extracted to a branded NewsFeedItemId string
+"""
+scalar NewsFeedItemId
+
 enum NewsFeedItemType {
   RESOURCE_CUSTOM_DASHBOARD
 }
 
 enum NewsFeedItemMetadataKey {
   url_path
+  document_id
 }
 
 type NewsFeedItemMetadata {
@@ -646,7 +664,9 @@ type NewsFeedItemMetadata {
   value: String
 }
 
-type ProvisionedNewsFeedItem {
+type ProvisionedNewsFeedItem implements Node {
+  id: ID!
+  is_deleted: Boolean!
   title: String!
   type: NewsFeedItemType!
   tags: [String!]!
@@ -657,6 +677,25 @@ type ProvisionedNewsFeedItem {
 type ConsumeProvisionedNewsFeedItemsResponse {
   news_feed_items: [ProvisionedNewsFeedItem!]!
   available_news_feed_types: [NewsFeedItemType!]!
+}
+
+type NewsFeedItem implements Node {
+  id: ID!
+  title: String!
+  creation_date: Date!
+  tags: [String!]!
+  is_deleted: Boolean!
+}
+
+type NewsFeedItemEdge {
+  cursor: String!
+  node: NewsFeedItem!
+}
+
+type NewsFeedItemConnection {
+  totalCount: Int!
+  edges: [NewsFeedItemEdge!]!
+  pageInfo: PageInfo!
 }
 
 enum OrganizationOrdering {
@@ -726,6 +765,7 @@ type User implements Node {
   last_name: String
   picture: String
   country: String
+  selected_language: String
   disabled: Boolean
   selected_organization_id: OrganizationId
   organizations: [Organization!]
@@ -769,6 +809,7 @@ input EditMeUserInput {
   first_name: String
   last_name: String
   country: String
+  selected_language: String
 }
 
 input OrganizationCapabilitiesInput {
@@ -906,7 +947,7 @@ type CanUnregisterResponse {
   isPlatformRegistered: Boolean!
   isAllowed: Boolean
   isInOrganization: Boolean
-  organizationId: ID
+  organizationId: OrganizationId
 }
 
 input UnregisterPlatformInput {
@@ -1005,8 +1046,13 @@ type GenericServiceCapability implements Node {
 }
 
 input EditServiceCapabilityInput {
-  user_service_id: String
+  user_service_id: User_ServiceId
   capabilities: [String]!
+}
+
+input AddSubscriptionCapabilityInput {
+  subscriptionsId: [SubscriptionId!]!
+  capabilitiesId: [Service_CapabilityId]!
 }
 
 type UserServiceCapability implements Node {
@@ -1040,6 +1086,7 @@ enum ServiceDefinitionIdentifier {
   link
   opencti_custom_dashboards
   opencti_integrations
+  opencti_playbooks
   openaev_scenarios
   opencti_registration
   openaev_registration
@@ -1516,6 +1563,31 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   demo_url: String
 }
 
+type OpenCTIPlaybook implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  minio_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId!
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
+}
+
 """
 A Relay global ID for Subscription, extracted to a branded SubscriptionId string
 """
@@ -1549,12 +1621,18 @@ type SubscriptionEdge {
   node: SubscriptionModel!
 }
 
-input CreateSubscriptionInput {
+input CreateSubscriptionsInput {
   service_instance_id: ServiceInstanceId!
-  organization_id: OrganizationId!
+  organization_id: [OrganizationId!]!
   capability_ids: [Service_CapabilityId]
   start_date: Date!
   end_date: Date
+}
+
+input UpdateSubscriptionInput {
+  start_date: Date
+  end_date: Date
+  capability_ids: [Service_CapabilityId]
 }
 
 type SubscriptionConnection {
@@ -1624,6 +1702,11 @@ input EditUseCaseInput {
   name: String
   color: String
 }
+
+"""
+A Relay global ID for User_Service, extracted to a branded User_ServiceId string
+"""
+scalar User_ServiceId
 
 enum UserServiceOrdering {
   first_name

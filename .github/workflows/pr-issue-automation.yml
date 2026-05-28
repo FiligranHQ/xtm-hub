@@ -37,7 +37,7 @@ jobs:
       - name: Check if PR is from Renovate
         id: check_renovate
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
@@ -55,7 +55,7 @@ jobs:
 
       - name: Assign PR to creator
         if: github.event_name == 'pull_request' && github.event.action == 'opened' && steps.check_renovate.outputs.result != 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -77,7 +77,7 @@ jobs:
       - name: Check if creator is in FiligranHQ organization
         if: github.event_name == 'pull_request' && github.event.action == 'opened'
         id: check_org_membership
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -96,7 +96,7 @@ jobs:
 
       - name: Add Filigran Team label
         if: steps.check_org_membership.outputs.result == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -109,7 +109,7 @@ jobs:
 
       - name: Extract issue numbers from PR body and title
         id: extract_issues
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -209,7 +209,7 @@ jobs:
       - name: Check if feature env should be deployed
         id: check_feature_env
         if: (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'pull_request_target' && github.event.action == 'unlabeled' && github.event.label.name == 'skip-feature-env')
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
@@ -233,7 +233,7 @@ jobs:
 
       - name: Update Feature env field when feature env is being deployed
         if: steps.check_feature_env.outputs.result == 'true' && steps.extract_issues.outputs.issue_numbers != ''
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -347,7 +347,7 @@ jobs:
 
       - name: Update issues status and start date in project
         if: steps.extract_issues.outputs.issue_numbers != '' && github.event.action != 'closed'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -608,7 +608,7 @@ jobs:
 
       - name: Update issues status to Ready to be deployed and set Effective end date on merge
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && steps.extract_issues.outputs.issue_numbers != ''
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -618,6 +618,13 @@ jobs:
               console.log('No issues to update');
               return;
             }
+
+            // List of statuses we should NOT modify (immutable statuses)
+            const immutableStatuses = [
+              'done',
+              'cancelled',
+              'archived'
+            ];
 
             const newStatus = 'Ready to be deployed';
             console.log(`PR merged! Updating ${issueNumbers.length} issue(s) to status: "${newStatus}" and setting Effective end date`);
@@ -701,6 +708,20 @@ jobs:
                                 id
                                 number
                               }
+                              fieldValues(first: 40) {
+                                nodes {
+                                  __typename
+                                  ... on ProjectV2ItemFieldSingleSelectValue {
+                                    field {
+                                      ... on ProjectV2SingleSelectField {
+                                        id
+                                        name
+                                      }
+                                    }
+                                    name
+                                  }
+                                }
+                              }
                             }
                           }
                         }
@@ -729,7 +750,22 @@ jobs:
                     continue;
                   }
 
-                  // When PR is merged, always update to "Ready to be deployed" regardless of current status
+                  // Find current status from field values
+                  const currentStatusField = projectItem.fieldValues.nodes.find(fv =>
+                    fv.__typename === 'ProjectV2ItemFieldSingleSelectValue' &&
+                    fv.field?.name === 'Status'
+                  );
+                  const currentStatus = currentStatusField?.name?.toLowerCase() || '';
+                  console.log(`Issue #${issueNumber} current status: "${currentStatus}"`);
+
+                  // Check if the current status is immutable (should not be modified)
+                  if (immutableStatuses.some(immutableStatus =>
+                    currentStatus.toLowerCase() === immutableStatus.toLowerCase()
+                  )) {
+                    console.log(`⚠️ Issue #${issueNumber} is in "${currentStatus}" status and should not be modified. Skipping...`);
+                    continue;
+                  }
+
                   await github.graphql(`
                     mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                       updateProjectV2ItemFieldValue(
@@ -793,7 +829,7 @@ jobs:
 
       - name: Check for approval and label
         if: github.event_name == 'pull_request_review' || github.event_name == 'pull_request_target' || github.event_name == 'workflow_run'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |

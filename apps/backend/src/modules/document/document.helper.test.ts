@@ -33,12 +33,10 @@ import { DocumentApp } from './document.app';
 import {
   type Document,
   DocumentHelper,
-  loadDocumentWithCountersById,
-  loadSeoDocumentWithCountersBySlug,
   ManageableServiceDefinitionIdentifier,
   VAULT_DOCUMENT_TYPE,
 } from './document.helper';
-import * as DocumentUploadsHelper from './document.uploads.helper';
+import { DocumentUploadsHelper } from './document.uploads.helper';
 import { DocumentDomain } from './domain/document.domain';
 
 describe('documentHelper', () => {
@@ -117,14 +115,15 @@ describe('documentHelper', () => {
         }
       );
 
-      const documentLoaded = await loadDocumentWithCountersById(documentId);
+      const documentLoaded =
+        await DocumentHelper.loadDocumentWithCountersById(documentId);
 
       expect(documentLoaded.download_number).toBe(5);
       expect(documentLoaded.share_number).toBe(12);
     });
 
     it('should throw an error document is not found', async () => {
-      const call = loadDocumentWithCountersById(uuidv4());
+      const call = DocumentHelper.loadDocumentWithCountersById(uuidv4());
 
       await expect(call).rejects.toThrow(ErrorCode.DocumentNotFound);
     });
@@ -368,7 +367,7 @@ describe('documentHelper', () => {
 
   describe('loadSeoDocumentWithCountersBySlug', () => {
     it('should throw an error when document is not found', async () => {
-      const call = loadSeoDocumentWithCountersBySlug(
+      const call = DocumentHelper.loadSeoDocumentWithCountersBySlug(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         'slug'
       );
@@ -396,7 +395,7 @@ describe('documentHelper', () => {
         []
       );
 
-      const result = await loadSeoDocumentWithCountersBySlug(
+      const result = await DocumentHelper.loadSeoDocumentWithCountersBySlug(
         OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
         slug
       );

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { GRAPHQL_RESOLVE_INFO } from '../../../tests/tests.const';
 import { PortalContext } from '../../model/portal-context';
-import * as usersDomain from '../../modules/organization-management/user/user-domain/user.domain';
+import { UserDomain } from '../../modules/organization-management/user/user-domain/user.domain';
 import { ErrorType } from '../../utils/error/error.type';
 import { createSecureFieldResolver } from './directive.resolver';
 
@@ -67,9 +67,9 @@ describe('createSecureFieldResolver', () => {
 
     it('should lazily load capabilities when user.capabilities is undefined', async () => {
       const caps = [{ name: 'BYPASS' }] as unknown as Awaited<
-        ReturnType<typeof usersDomain.getCapabilities>
+        ReturnType<typeof UserDomain.getCapabilities>
       >;
-      vi.spyOn(usersDomain, 'getCapabilities').mockResolvedValue(caps);
+      vi.spyOn(UserDomain, 'getCapabilities').mockResolvedValue(caps);
       const originalResolve = vi.fn().mockResolvedValue('result');
       const resolver = createSecureFieldResolver(originalResolve, {
         isAuthenticatedFn: () => true,
@@ -87,7 +87,7 @@ describe('createSecureFieldResolver', () => {
         GRAPHQL_RESOLVE_INFO
       );
 
-      expect(usersDomain.getCapabilities).toHaveBeenCalledWith('user-1');
+      expect(UserDomain.getCapabilities).toHaveBeenCalledWith('user-1');
     });
   });
 

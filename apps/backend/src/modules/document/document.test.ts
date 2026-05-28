@@ -9,8 +9,10 @@ import {
   it,
   vi,
 } from 'vitest';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
+  GRAPHQL_RESOLVE_INFO,
   requestContextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
@@ -20,7 +22,7 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
-import { DocumentId, DocumentMutator } from '../../model/kanel/public/Document';
+import { DocumentId } from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../model/portal-context';
@@ -39,13 +41,7 @@ import {
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
-import {
-  checkDocumentExists,
-  deleteDocumentBy,
-  deleteDocuments,
-  getDocumentName,
-  normalizeDocumentName,
-} from './document.helper';
+import { DocumentHelper } from './document.helper';
 import documentResolver from './document.resolver';
 
 describe('should call S3 to send file', () => {
@@ -74,7 +70,7 @@ describe('should call S3 to send file', () => {
 
     const expectedResult = {
       Bucket: 'xtmhubbucket',
-      Key: getDocumentName(fileMock.filename),
+      Key: DocumentHelper.getDocumentName(fileMock.filename),
       Body: fileMock.createReadStream(),
       Metadata: {
         mimetype: 'mimeType',
@@ -84,9 +80,9 @@ describe('should call S3 to send file', () => {
       },
     };
     expect(mockInsertFileInMinio).toHaveBeenCalledTimes(1);
-    const callArguments = mockInsertFileInMinio.mock.calls[0][0];
-    expect(callArguments.Bucket).toBe(expectedResult.Bucket);
-    expect(callArguments.Metadata).toMatchObject(expectedResult.Metadata);
+    const callArguments = mockInsertFileInMinio?.mock?.calls?.[0]?.[0];
+    expect(callArguments?.Bucket).toBe(expectedResult.Bucket);
+    expect(callArguments?.Metadata).toMatchObject(expectedResult.Metadata);
   });
 });
 
@@ -108,14 +104,14 @@ describe('should modify document', () => {
     );
   });
   afterAll(async () => {
-    await deleteDocuments();
+    await TestHelper.document.delete({});
   });
 
   it('should delete document', async () => {
-    await deleteDocumentBy({
-      id: 'bc348e84-3635-46de-9b56-38db09c35f4d',
-    } as DocumentMutator);
-    const result = await checkDocumentExists(
+    await TestHelper.document.delete({
+      id: 'bc348e84-3635-46de-9b56-38db09c35f4d' as DocumentId,
+    });
+    const result = await DocumentHelper.checkDocumentExists(
       'filename',
       'c6343882-f609-4a3f-abe0-a34f8cb11302' as ServiceInstanceId
     );
@@ -128,14 +124,14 @@ describe('getFileName', () => {
     vi.spyOn(Date, 'now').mockReturnValue(
       new Date('2023-01-01T00:00:00Z').getTime()
     );
-    const result = getDocumentName('test.pdf');
+    const result = DocumentHelper.getDocumentName('test.pdf');
     expect(result).toEqual('test_1672531200000.pdf');
   });
 });
 
 describe('should normalize filename', () => {
   it('should send a normalized fileName', () => {
-    const result = normalizeDocumentName('Naîà-méE&mo!');
+    const result = DocumentHelper.normalizeDocumentName('Naîà-méE&mo!');
     expect(result).toStrictEqual('naia-mee-mo');
   });
 });
@@ -156,7 +152,7 @@ describe('should check if file already exists', () => {
   });
 
   afterAll(async () => {
-    await deleteDocuments();
+    await TestHelper.document.delete({});
   });
 
   it.each`
@@ -167,7 +163,10 @@ describe('should check if file already exists', () => {
   `(
     'should return $expected if filename $title',
     async ({ expected, fileName, serviceInstanceId }) => {
-      const result = await checkDocumentExists(fileName, serviceInstanceId);
+      const result = await DocumentHelper.checkDocumentExists(
+        fileName,
+        serviceInstanceId
+      );
       expect(result).toEqual(expected);
     }
   );
@@ -202,7 +201,7 @@ describe('documents loading', () => {
   });
 
   it('should load all documents', async () => {
-    const response = await documentResolver.Query.documents(
+    const response = await documentResolver.Query!.documents!(
       {},
       {
         first: 50,
@@ -211,11 +210,12 @@ describe('documents loading', () => {
         orderMode: 'asc',
         serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       },
-      contextSimpleUserSecondOrga as PortalContext
+      contextSimpleUserSecondOrga as PortalContext,
+      GRAPHQL_RESOLVE_INFO
     );
     expect(response?.totalCount).toStrictEqual('2');
-    expect(response?.edges[0].node.file_name).toStrictEqual('filename');
-    expect(response?.edges[1].node.file_name).toStrictEqual('xfilename');
+    expect(response?.edges[0]?.node.file_name).toStrictEqual('filename');
+    expect(response?.edges[1]?.node.file_name).toStrictEqual('xfilename');
   });
 
   it('should load all documents by desc order', async () => {
@@ -258,10 +258,6 @@ describe('increment shared counter', () => {
   beforeEach(async () => {
     const testContext = {
       user: requestContextSimpleUserSecondOrga.user,
-      portalContext: {
-        ...contextSimpleUserSecondOrga,
-        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-      },
     };
     requestContext.set(testContext);
     await DocumentApp.createDocumentWithChildrenAndMetadata<CsvFeed>(
@@ -293,7 +289,7 @@ describe('increment shared counter', () => {
   });
 
   afterEach(async () => {
-    await deleteDocuments();
+    await TestHelper.document.delete({});
     vi.useRealTimers();
   });
 

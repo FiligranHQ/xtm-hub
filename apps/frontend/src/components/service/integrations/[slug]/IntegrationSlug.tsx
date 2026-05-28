@@ -1,8 +1,8 @@
 import { AppServiceContext } from '@/components/service/components/ServiceContext';
 import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
 import ShareableResourceConnectorSlug from '@/components/service/document/connector/ShareableResourceConnectorSlug';
+import DeleteShareableResourceSlug from '@/components/service/document/DeleteShareableResourceSlug';
 import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
-import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import {
   APP_PATH,
@@ -50,13 +50,13 @@ const IntegrationSlug = ({
       href: `/${APP_PATH}`,
     },
     {
-      label: serviceInstance.name,
+      label: `Service.Cards.${serviceInstance.slug}.Name`,
       href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
-      original: true,
+      fallback: serviceInstance.name,
     },
     {
-      label: documentData!.name!,
-      original: true,
+      label: `Service.Documents.${documentData!.slug}.Name`,
+      fallback: documentData!.name!,
     },
   ];
 
@@ -93,7 +93,7 @@ const IntegrationSlug = ({
             documentData={documentData}
             updateActions={
               <>
-                <DeleteIntegrationSlug document={documentData} />
+                <DeleteShareableResourceSlug document={documentData} />
                 <ServiceManageSheet
                   document={documentData}
                   variant={'button'}

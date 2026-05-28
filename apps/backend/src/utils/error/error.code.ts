@@ -64,6 +64,7 @@ export enum UnknownErrorCode {
   ServiceSubscriptionError = 'SERVICE_SUBSCRIPTION_ERROR',
   DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
   EditCapabilitiesError = 'EDIT_CAPABILITIES_ERROR',
+  AddCapabilitiesError = 'ADD_CAPABILITIES_ERROR',
   AddUserServiceError = 'ADD_USER_SERVICE_ERROR',
   AddingUserError = 'ADDING_USER_ERROR',
   EditUserError = 'EDIT_USER_ERROR',
@@ -100,6 +101,7 @@ export enum NotFoundErrorCode {
   DeploymentRequestNotFound = 'DEPLOYMENT_REQUEST_NOT_FOUND',
   DeploymentRequestQuotaNotFound = 'DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND',
   DocumentNotFound = 'DOCUMENT_NOT_FOUND',
+  NewsFeedItemNotFound = 'NEWS_FEED_ITEM_NOT_FOUND',
 }
 
 export const ErrorCode = {

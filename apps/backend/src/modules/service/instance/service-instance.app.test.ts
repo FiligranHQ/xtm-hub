@@ -1,5 +1,4 @@
 import { MockInstance } from '@vitest/spy';
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { FileUpload } from 'graphql-upload/processRequest.mjs';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -41,9 +40,8 @@ import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import * as pub from '../../../pub';
 import * as securityGuardModule from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
-import * as documentHelper from '../../document/document.helper';
+import { DocumentHelper } from '../../document/document.helper';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
-import { subscriptionApp } from '../../subscription/subscription.app';
 import * as subscriptionDomain from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { ServiceInstanceApp } from './service-instance.app';
@@ -55,7 +53,6 @@ describe('service Instance app', () => {
     let loadUserServiceBySpy: MockInstance;
     let loadServiceInstanceBySpy: MockInstance;
     let grantServiceAccessSpy: MockInstance;
-    let subscribeOrganizationToServiceSpy: MockInstance;
 
     const mockServiceInstanceId = uuidv4() as ServiceInstanceId;
     const mockSubscriptionId = uuidv4() as SubscriptionId;
@@ -100,10 +97,6 @@ describe('service Instance app', () => {
         serviceInstanceDomain,
         'grantServiceAccess'
       );
-      subscribeOrganizationToServiceSpy = vi.spyOn(
-        subscriptionApp,
-        'subscribeOrganizationToService'
-      );
     });
 
     it('should load service instance when user already has access', async () => {
@@ -132,7 +125,6 @@ describe('service Instance app', () => {
         id: mockServiceInstanceId,
       });
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
     });
 
     it('should auto-join user when user has no access', async () => {
@@ -149,7 +141,6 @@ describe('service Instance app', () => {
       );
 
       // Then
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
@@ -207,7 +198,6 @@ describe('service Instance app', () => {
         organization_id: userOrganizationId,
       });
 
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
         [GenericServiceCapabilityIds.AccessId],
         [mockUserId],
@@ -239,7 +229,6 @@ describe('service Instance app', () => {
       );
 
       // Then
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
     });
 
@@ -258,7 +247,6 @@ describe('service Instance app', () => {
 
       // Then
       expect(loadUserServiceBySpy).not.toHaveBeenCalled();
-      expect(subscribeOrganizationToServiceSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
     });
 
@@ -299,7 +287,7 @@ describe('service Instance app', () => {
 
     beforeEach(async () => {
       dispatchSpy = vi.spyOn(pub, 'dispatch').mockResolvedValue(undefined);
-      uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
+      uploadNewFileSpy = vi.spyOn(DocumentHelper, 'uploadNewFile');
       vi.spyOn(
         securityGuardModule.securityGuard,
         'assertUserCanModifyPlatformService'
@@ -329,10 +317,7 @@ describe('service Instance app', () => {
     it('should update name, sync config title, dispatch, and return RegisteredPlatform', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         name: 'Updated Platform Name',
       };
 
@@ -370,10 +355,7 @@ describe('service Instance app', () => {
         mime_type: 'image/png',
       });
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         name: 'Updated Platform Name',
       };
 
@@ -396,10 +378,7 @@ describe('service Instance app', () => {
     it('should not update service instance or config when no fields to update', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
       };
 
       // When
@@ -421,10 +400,7 @@ describe('service Instance app', () => {
     it('should return null illustration_document_id when service instance has none', async () => {
       // Given
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         name: 'Updated Name',
       };
 
@@ -450,10 +426,7 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           nonExistentId,
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              nonExistentId
-            ) as ServiceInstanceId,
+            serviceInstanceId: nonExistentId,
             name: 'Name',
           },
           null
@@ -483,10 +456,7 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              mockId
-            ) as ServiceInstanceId,
+            serviceInstanceId: mockId,
             name: 'Name',
           },
           null
@@ -520,10 +490,7 @@ describe('service Instance app', () => {
           contextSimpleUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              mockId
-            ) as ServiceInstanceId,
+            serviceInstanceId: mockId,
             name: 'Name',
           },
           null
@@ -535,10 +502,7 @@ describe('service Instance app', () => {
       // Given
       uploadNewFileSpy.mockRejectedValue(new Error('Upload failed'));
       const input: UpdatePlatformServiceMetadataInput = {
-        serviceInstanceId: toGlobalId(
-          'ServiceInstance',
-          serviceInstance.id
-        ) as ServiceInstanceId,
+        serviceInstanceId: serviceInstance.id,
         name: 'Updated Name',
       };
 
@@ -614,10 +578,7 @@ describe('service Instance app', () => {
           contextRegistererUserSecondOrga.user,
           mockId,
           {
-            serviceInstanceId: toGlobalId(
-              'ServiceInstance',
-              mockId
-            ) as ServiceInstanceId,
+            serviceInstanceId: mockId,
             name: 'Updated',
           },
           null
@@ -664,7 +625,7 @@ describe('service Instance app', () => {
       // Given
       const slug = 'test-seo-slug-with-docs';
       const logoId = uuidv4() as DocumentId;
-      const illustrationId = uuidv4();
+      const illustrationId = uuidv4() as DocumentId;
 
       // logo_document_id has a FK to Document, so insert the document first
       await TestHelper.document.create({ id: logoId, type: 'logo' });
@@ -714,7 +675,7 @@ describe('service Instance app', () => {
 
   describe('loadSeoServiceInstances', () => {
     const logoId = uuidv4() as DocumentId;
-    const illustrationId = uuidv4();
+    const illustrationId = uuidv4() as DocumentId;
     const firstServiceInstancePublicId = uuidv4() as ServiceInstanceId;
     const secondServiceInstancePublicId = uuidv4() as ServiceInstanceId;
     const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
@@ -815,7 +776,7 @@ describe('service Instance app', () => {
     };
 
     beforeEach(() => {
-      uploadNewFileSpy = vi.spyOn(documentHelper, 'uploadNewFile');
+      uploadNewFileSpy = vi.spyOn(DocumentHelper, 'uploadNewFile');
       updateServiceInstanceSpy = vi.spyOn(
         serviceInstanceDomain,
         'updateServiceInstance'

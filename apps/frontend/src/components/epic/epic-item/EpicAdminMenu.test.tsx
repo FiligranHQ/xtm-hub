@@ -1,9 +1,9 @@
+import { EpicAdminMenu } from '@/components/epic/epic-item/EpicAdminMenu';
 import testRender from '@/utils/test/test-render';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { EpicAdminMenu } from '@/components/epic/epic-item/EpicAdminMenu';
 
 const useEpicListContextMock = vi.fn();
 const useEpicFilterMock = vi.fn();
@@ -62,7 +62,7 @@ describe('EpicAdminMenu', () => {
       );
 
       // When
-      const menuButton = queryByRole('button', { name: 'Open menu' });
+      const menuButton = queryByRole('button', { name: 'Utils.OpenMenu' });
 
       if (shouldRender) {
         expect(menuButton).toBeInTheDocument();
@@ -87,7 +87,7 @@ describe('EpicAdminMenu', () => {
     );
 
     // Then
-    expect(screen.getByText('Draft')).toBeInTheDocument();
+    expect(screen.getByText('Epic.Timeline.draft')).toBeInTheDocument();
   });
 
   it('opens update sheet when clicking on update action', async () => {
@@ -104,11 +104,13 @@ describe('EpicAdminMenu', () => {
     );
 
     // When
-    await user.click(screen.getByRole('button', { name: 'Open menu' }));
-    await user.click(await screen.findByRole('menuitem', { name: 'Update' }));
+    await user.click(screen.getByRole('button', { name: 'Utils.OpenMenu' }));
+    await user.click(
+      await screen.findByRole('menuitem', { name: 'Utils.Update' })
+    );
 
     // Then
-    expect(screen.getByText(/Update an epic/i)).toBeInTheDocument();
+    expect(screen.getByText('Epic.EpicActions.UpdateEpic')).toBeInTheDocument();
   });
 
   it('opens delete dialog when clicking on delete action', async () => {
@@ -120,11 +122,13 @@ describe('EpicAdminMenu', () => {
       />
     );
 
-    await user.click(screen.getByRole('button', { name: 'Open menu' }));
-    await user.click(await screen.findByRole('menuitem', { name: 'Delete' }));
+    await user.click(screen.getByRole('button', { name: 'Utils.OpenMenu' }));
+    await user.click(
+      await screen.findByRole('menuitem', { name: 'Utils.Delete' })
+    );
 
     expect(
-      screen.getByText(/are you sure you want to delete/i)
+      screen.getByText('Epic.EpicActions.SureDeleteEpic')
     ).toBeInTheDocument();
   });
 });

@@ -1,17 +1,51 @@
+import config from 'config';
 import {
   ConsumeProvisionedNewsFeedItemsResponse,
   NewsFeedItemMetadataKey,
+  PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
+import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { organizationDomain } from '../organization-management/organization/organization.domain';
+import {
+  INTERVAL_UNITS,
+  IntervalUnit,
+  subtractInterval,
+} from '../common/interval.helper';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { registrationDomain } from '../registration/registration.domain';
 import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
+
+const provisionNewsFeedItemForServiceInstance = async ({
+  newsFeedItemId,
+  serviceInstanceId,
+  platformIdentifier,
+}: {
+  newsFeedItemId: NewsFeedItemId;
+  serviceInstanceId: ServiceInstanceId;
+  platformIdentifier: PlatformIdentifier;
+}): Promise<void> => {
+  const organizations =
+    await OrganizationDomain.loadOrganizationsSubscribedToServiceInstance(
+      serviceInstanceId
+    );
+  const organizationIds = organizations.map((org) => org.id);
+  const registeredPlatforms =
+    await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+      organizationIds,
+      platformIdentifier
+    );
+  const platformIds = registeredPlatforms
+    .filter((platform) => platform.config?.platform_id)
+    .map((platform) => platform.config.platform_id);
+  await NewsFeedDomain.provisionNewsFeedItem(newsFeedItemId, platformIds);
+};
 
 export const NewsFeedApp = {
   consumeProvisionedNewsFeedItems: async ({
@@ -41,10 +75,12 @@ export const NewsFeedApp = {
 
     const newsFeedItems = rawItems.map((item) => ({
       ...item,
-      metadata: item.metadata.map((m) => ({
-        key: m.key as NewsFeedItemMetadataKey,
-        value: m.value,
-      })),
+      metadata: item.metadata
+        .filter((m) => m.key !== NewsFeedItemMetadataKey.DocumentId)
+        .map((m) => ({
+          key: m.key as NewsFeedItemMetadataKey,
+          value: m.value,
+        })),
     }));
 
     return {
@@ -90,23 +126,162 @@ export const NewsFeedApp = {
       tags,
     });
 
-    const organizations =
-      await organizationDomain.loadOrganizationsSubscribedToServiceInstance(
-        serviceInstanceId
-      );
+    await provisionNewsFeedItemForServiceInstance({
+      newsFeedItemId: newsFeedItem.id,
+      serviceInstanceId,
+      platformIdentifier,
+    });
+  },
 
-    const organizationIds = organizations.map((org) => org.id);
+  updateResourceNewsFeedItem: async ({
+    document,
+    serviceInstanceId,
+    serviceDefinitionIdentifier,
+  }: {
+    document: Document;
+    serviceInstanceId: ServiceInstanceId;
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
+  }): Promise<void> => {
+    const newsFeedConfiguration =
+      newsFeedConfigurationMapping[serviceDefinitionIdentifier];
+    if (!newsFeedConfiguration) {
+      return;
+    }
+
+    const existingItem = await NewsFeedDomain.loadNewsFeedItemByDocumentId(
+      document.id
+    );
+    if (!existingItem) {
+      return;
+    }
+
+    const useCases = await useCaseDomain.loadUseCasesByDocumentId(document.id);
+    const tags = useCases.map((useCase) => useCase.name);
+
+    await NewsFeedDomain.updateNewsFeedItem(existingItem.id, {
+      title: document.name ?? existingItem.title,
+      tags,
+    });
+
+    await provisionNewsFeedItemForServiceInstance({
+      newsFeedItemId: existingItem.id,
+      serviceInstanceId,
+      platformIdentifier: newsFeedConfiguration.platformIdentifier,
+    });
+  },
+
+  upsertResourceNewsFeed: async ({
+    documentBeforeUpdate,
+    updatedDocument,
+    serviceInstanceId,
+    serviceDefinitionIdentifier,
+  }: {
+    documentBeforeUpdate?: Document;
+    updatedDocument: Document;
+    serviceInstanceId: ServiceInstanceId;
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
+  }): Promise<void> => {
+    if (!NewsFeedApp.isNewsFeedConfigured(serviceDefinitionIdentifier)) {
+      return;
+    }
+
+    if (updatedDocument.active !== true) {
+      return;
+    }
+
+    const shouldCreateNewsFeedItem =
+      !documentBeforeUpdate || documentBeforeUpdate.active === false;
+    if (shouldCreateNewsFeedItem) {
+      await NewsFeedApp.createResourceNewsFeedItem({
+        document: updatedDocument,
+        serviceInstanceId,
+        serviceDefinitionIdentifier,
+      }).catch((error) =>
+        logApp.error('Unable to create news feed item', {
+          error,
+          documentId: updatedDocument.id,
+          source: documentBeforeUpdate ? 'update' : 'creation',
+        })
+      );
+      return;
+    }
+
+    await NewsFeedApp.updateResourceNewsFeedItem({
+      document: updatedDocument,
+      serviceInstanceId,
+      serviceDefinitionIdentifier,
+    }).catch((error) =>
+      logApp.error('Unable to update news feed item', {
+        error,
+        documentId: updatedDocument.id,
+        source: 'update',
+      })
+    );
+  },
+
+  deleteNewsFeedItem: async ({
+    newsFeedItemId,
+  }: {
+    newsFeedItemId: string;
+  }): Promise<void> => {
+    const newsFeedItem = await NewsFeedDomain.markNewsFeedItemAsDeleted(
+      newsFeedItemId as NewsFeedItemId
+    );
+
+    const platformIdentifier = Object.values(newsFeedConfigurationMapping).find(
+      (config) => config.newsFeedType === newsFeedItem.type
+    )?.platformIdentifier;
+    if (!platformIdentifier) {
+      return;
+    }
 
     const registeredPlatforms =
-      await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
-        organizationIds,
-        newsFeedConfiguration.platformIdentifier
+      await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+        platformIdentifier
       );
-
     const platformIds = registeredPlatforms
       .filter((platform) => platform.config?.platform_id)
       .map((platform) => platform.config.platform_id);
 
     await NewsFeedDomain.provisionNewsFeedItem(newsFeedItem.id, platformIds);
+  },
+
+  cleanExpiredNewsFeedItems: async (): Promise<void> => {
+    const rawValue = config.get('news_feed.cleanup_interval_value');
+    const rawUnit = config.get('news_feed.cleanup_interval_unit');
+
+    if (
+      typeof rawValue !== 'number' ||
+      !Number.isFinite(rawValue) ||
+      rawValue <= 0
+    ) {
+      throw new Error(
+        `Invalid config "news_feed.cleanup_interval_value": expected positive number, got ${typeof rawValue} (${rawValue})`
+      );
+    }
+    if (
+      typeof rawUnit !== 'string' ||
+      !INTERVAL_UNITS.includes(rawUnit as IntervalUnit)
+    ) {
+      throw new Error(
+        `Invalid config "news_feed.cleanup_interval_unit": expected one of ${INTERVAL_UNITS.join(', ')}, got ${rawUnit}`
+      );
+    }
+
+    const cutoffDate = subtractInterval(
+      new Date(),
+      rawValue,
+      rawUnit as IntervalUnit
+    );
+
+    const deletedCount =
+      await NewsFeedDomain.deleteNewsFeedItemsOlderThan(cutoffDate);
+
+    logApp.info('Cleaned expired news feed items', {
+      deletedCount,
+      cutoffDate: cutoffDate.toISOString(),
+      intervalValue: rawValue,
+      intervalUnit: rawUnit,
+    });
   },
 };

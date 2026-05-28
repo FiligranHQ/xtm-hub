@@ -88,8 +88,7 @@ const nextConfig = {
       {
         source:
           '/cybersecurity-solutions/(octi_custom_dashboards|open-cti-custom-dashboards)/:path*',
-        destination:
-          '/cybersecurity-solutions/opencti-custom-dashboards/:path*',
+        destination: '/cybersecurity-solutions/opencti-custom-dashboards/:path*',
         permanent: true,
       },
     ];
@@ -107,6 +106,7 @@ const nextConfig = {
       "'self'",
       "'unsafe-inline'",
       'https://www.googletagmanager.com',
+      'https://copilot.filigran.ai',
       ...hubspotScriptHosts,
       ...(isDev ? ["'unsafe-eval'"] : []),
     ].join(' ');
@@ -125,10 +125,10 @@ const nextConfig = {
       "default-src 'self'",
       `script-src ${scriptSrc}`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://res.cloudinary.com https://perf-eu1.hsforms.com https://s.gravatar.com https://secure.gravatar.com https://cdn.auth0.com https://i1.wp.com https://track-eu1.hubspot.com",
+      "img-src 'self' data: blob: https://res.cloudinary.com https://perf-eu1.hsforms.com https://s.gravatar.com https://secure.gravatar.com https://cdn.auth0.com https://i1.wp.com https://i2.wp.com https://track-eu1.hubspot.com https://*.filigran.io https://*.filigran.ai",
       "font-src 'self' data:",
       `connect-src 'self' https:${!isProductionOrStaging ? ' http:' : ''}`,
-      "frame-src 'none'",
+      "frame-src 'self' https://www.youtube.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

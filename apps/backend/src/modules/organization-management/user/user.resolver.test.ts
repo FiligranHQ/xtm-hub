@@ -19,6 +19,7 @@ import {
   contextBypassUser,
   contextSimpleUserFiligran2,
   contextSimpleUserSecondOrga,
+  GRAPHQL_RESOLVE_INFO,
   requestContextAdminSecondOrga,
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
@@ -28,28 +29,25 @@ import {
 } from '../../../../tests/tests.const';
 import {
   AddUserInput,
-  AdminEditUserInput,
+  FilterKey,
   OrderingMode,
   Organization,
-  OrganizationCapability,
   UserOrdering,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';
+import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
-import * as UserOrganizationDomain from '../../common/user-organization.domain';
 import { loginFromProvider } from '../../security-management/authentication/auth-user';
 import {
   deleteSubscription,
   insertSubscription,
 } from '../../subscription/subscription.helper';
-import {
-  deleteUserById,
-  loadUser,
-  loadUserBy,
-} from './user-domain/user.domain';
+import { UserAdminApp } from './user-admin/user.admin.app';
+import { UserDomain } from './user-domain/user.domain';
+import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { removeUser } from './user.helper';
 import usersResolver from './user.resolver';
@@ -90,7 +88,6 @@ describe('user query resolver', () => {
         };
         requestContext.set({
           user: currentContext.user,
-          portalContext: currentContext,
         });
 
         const response =
@@ -117,7 +114,6 @@ describe('user query resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
@@ -134,14 +130,14 @@ describe('user query resolver', () => {
         filters: [],
       };
 
-      const response = await usersResolver.Query.pendingUsers(
-        undefined,
+      const response = await usersResolver.Query!.pendingUsers!(
+        {},
         options,
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
       expect(response.totalCount).toBe('1');
-      expect(response.edges[0].node.id).toBe(pendingUser.id);
+      expect(response.edges[0]!.node.id).toBe(pendingUser.id);
 
       requestContext.set(requestContextAdminUser);
       await removeUser({ email: pendingUser.email });
@@ -173,7 +169,7 @@ describe('user query resolver', () => {
         orderBy: UserOrdering.FirstName,
         filters: [
           {
-            key: 'organization_id',
+            key: FilterKey.OrganizationId,
             value: [
               toGlobalId(
                 'Organization',
@@ -185,17 +181,16 @@ describe('user query resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
-      const response = await usersResolver.Query.pendingUsers(
-        undefined,
+      const response = await usersResolver.Query!.pendingUsers!(
+        {},
         options,
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(response.totalCount).toBe('1');
-      expect(response.edges[0].node.id).toBe(pendingUserSecondOrga.id);
+      expect(response.edges[0]!.node.id).toBe(pendingUserSecondOrga.id);
 
       requestContext.set(requestContextAdminUser);
       await removeUser({ email: pendingUserSecondOrga.email });
@@ -231,17 +226,16 @@ describe('user query resolver', () => {
 
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
-      const response = await usersResolver.Query.pendingUsers(
-        undefined,
+      const response = await usersResolver.Query!.pendingUsers!(
+        {},
         options,
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
 
       expect(response.totalCount).toBe('1');
-      expect(response.edges[0].node.id).toBe(pendingUserSecondOrga.id);
+      expect(response.edges[0]!.node.id).toBe(pendingUserSecondOrga.id);
 
       requestContext.set(requestContextAdminUser);
       await removeUser({ email: pendingUserSecondOrga.email });
@@ -265,6 +259,9 @@ describe('user mutation resolver', () => {
           session: {
             user: {},
           },
+        },
+        res: {
+          cookie: vi.fn(),
         },
       }
     );
@@ -307,7 +304,7 @@ describe('user mutation resolver', () => {
         const testEmail = 'testRollback@company.com';
         // When
         // @ts-ignore
-        await mutationResolver.adminAddUser(
+        await usersResolver.Mutation.adminAddUser(
           undefined,
           {
             input: {
@@ -324,7 +321,7 @@ describe('user mutation resolver', () => {
         // otherwise it would be send in the graphql response as an error.
         expect(error).toBeTruthy();
       }
-      const user = await loadUserBy({ 'User.email': testEmail });
+      const user = await UserDomain.loadUserBy({ 'User.email': testEmail });
       expect(user).toBeUndefined();
     });
 
@@ -334,7 +331,7 @@ describe('user mutation resolver', () => {
       const secondOrgaSpy = new SubscriptionSpy();
       // @ts-ignore
       await filigranSpy.spy(
-        usersResolver.Subscription.User,
+        usersResolver.Subscription!.User,
         {
           organizationId: toGlobalId(
             'Organization',
@@ -346,7 +343,7 @@ describe('user mutation resolver', () => {
       );
 
       await secondOrgaSpy.spy(
-        usersResolver.Subscription.User,
+        usersResolver.Subscription!.User,
         {
           organizationId: toGlobalId(
             'Organization',
@@ -407,13 +404,16 @@ describe('user mutation resolver', () => {
         );
         expect(response).toBeTruthy();
 
-        user = await loadUserBy({ 'User.id': response.id });
-        // @ts-expect-error organizations is not considered as callable
-        organizations = await usersResolver.User.organizations(
-          user,
-          undefined,
+        user = await UserDomain.loadUserBy({
+          'User.id': response!.id as UserId,
+        });
+        // @ts-ignore
+        organizations = await usersResolver.User!.organizations!(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          user as any,
+          {},
           contextBypassUser,
-          undefined
+          GRAPHQL_RESOLVE_INFO
         );
       });
       it('should have only one organization Personal space', async () => {
@@ -421,12 +421,12 @@ describe('user mutation resolver', () => {
       });
 
       it('should User.Id is equal to Organization.Id', async () => {
-        expect(user.id).toEqual(organizations[0].id);
+        expect(user.id).toEqual(organizations[0]!.id);
       });
     });
 
     describe('as Admin - should create user with personal space and add to internal organization', async () => {
-      let response;
+      let response: { id: string } | undefined;
       let organizations: Organization[];
       let user: UserLoadUserBy;
       beforeAll(async () => {
@@ -451,17 +451,21 @@ describe('user mutation resolver', () => {
           contextBypassUser
         );
         expect(response).toBeTruthy();
-        user = await loadUserBy({ 'User.id': response.id });
-        organizations = await usersResolver.User.organizations(
-          user,
-          undefined,
+        user = await UserDomain.loadUserBy({
+          'User.id': response!.id as UserId,
+        });
+        // @ts-ignore
+        organizations = await usersResolver.User!.organizations!(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          user as any,
+          {},
           contextBypassUser,
-          undefined
+          GRAPHQL_RESOLVE_INFO
         );
       });
 
       afterAll(async () => {
-        if (response) await deleteUserById(response.id as UserId);
+        if (response) await UserDomain.deleteUserById(response.id as UserId);
       });
 
       it('should have Personal space and Internal as organization', async () => {
@@ -480,7 +484,7 @@ describe('user mutation resolver', () => {
       try {
         requestContext.set(requestContextAdminSecondOrga);
         // @ts-ignore
-        await mutationResolver.adminAddUser(
+        await usersResolver.Mutation.adminAddUser(
           undefined,
           {
             input: {
@@ -488,10 +492,7 @@ describe('user mutation resolver', () => {
               password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
               organization_capabilities: [
                 {
-                  organization_id: toGlobalId(
-                    'Organization',
-                    TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-                  ),
+                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
                   capabilities: [],
                 },
               ],
@@ -500,7 +501,7 @@ describe('user mutation resolver', () => {
           contextAdminSecondOrga
         );
       } catch (error) {
-        const user = await loadUserBy({ 'User.email': testMail });
+        const user = await UserDomain.loadUserBy({ 'User.email': testMail });
         expect(user).toBeFalsy();
         expect(error).toBeTruthy();
       }
@@ -508,7 +509,7 @@ describe('user mutation resolver', () => {
     describe('as Admin orga - should create user with personal space and add to ORGANIZATIONS_TEST.SECOND_ORGANIZATION.NAME organization', async () => {
       let user: UserLoadUserBy;
       let organizations: Organization[];
-      let response;
+      let response: { id: string } | undefined;
       beforeAll(async () => {
         const testMail = `testAddUser${uuidv4()}@second-orga.com`;
         requestContext.set(requestContextAdminSecondOrga);
@@ -529,21 +530,25 @@ describe('user mutation resolver', () => {
           },
           contextAdminSecondOrga
         );
-        user = await loadUserBy({ 'User.id': response.id });
+        user = await UserDomain.loadUserBy({
+          'User.id': response!.id as UserId,
+        });
 
         requestContext.set(requestContextAdminUser);
-        organizations = await usersResolver.User.organizations(
-          user,
-          undefined,
+        // @ts-ignore
+        organizations = await usersResolver.User!.organizations!(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          user as any,
+          {},
           contextAdminSecondOrga,
-          undefined
+          GRAPHQL_RESOLVE_INFO
         );
 
         expect(response).toBeTruthy();
       });
 
       afterAll(async () => {
-        await deleteUserById(response.id as UserId);
+        await UserDomain.deleteUserById(response!.id as UserId);
       });
 
       it('should have Personal space and ORGANIZATIONS_TEST.SECOND_ORGANIZATION.NAME as organization', async () => {
@@ -562,133 +567,25 @@ describe('user mutation resolver', () => {
   });
 
   describe('adminEditUser', () => {
-    let secondOrgaUser: UserLoadUserBy;
+    it('should delegate to UserAdminApp.editUser and return the result', async () => {
+      const mockUser = {
+        id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        email: 'user@test.com',
+      };
+      vi.spyOn(UserAdminApp, 'editUser').mockResolvedValue(mockUser as never);
 
-    describe('existing user edition', async () => {
-      let fallbackUser: UserLoadUserBy;
-      let response;
-      beforeAll(async () => {
-        fallbackUser = await loadUserBy({ email: 'user15@test.fr' });
+      // @ts-expect-error adminEditUser is not considered as callable
+      const result = await usersResolver.Mutation!.adminEditUser!(
+        undefined,
+        { id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID, input: {} },
+        contextBypassUser
+      );
 
-        // @ts-ignore
-        response = await usersResolver.Mutation.adminEditUser(
-          undefined,
-          {
-            id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-            input: {
-              organization_capabilities: [
-                {
-                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-                  capabilities: [
-                    OrganizationCapability.ManageAccess,
-                    OrganizationCapability.ManageSubscription,
-                  ],
-                },
-                {
-                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-                  capabilities: [
-                    OrganizationCapability.ManageAccess,
-                    OrganizationCapability.ManageSubscription,
-                  ],
-                },
-                {
-                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-                  capabilities: [],
-                },
-              ],
-            } as AdminEditUserInput,
-          },
-          contextBypassUser
-        );
-
-        expect(response).toBeTruthy();
+      expect(UserAdminApp.editUser).toHaveBeenCalledWith({
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        input: {},
       });
-
-      afterAll(async () => {
-        // @ts-ignore
-        await usersResolver.Mutation.adminEditUser(
-          undefined,
-          {
-            id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-            input: {
-              organization_capabilities: [
-                {
-                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-                  capabilities: [
-                    OrganizationCapability.ManageAccess,
-                    OrganizationCapability.ManageSubscription,
-                  ],
-                },
-                {
-                  organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-                  capabilities: [
-                    OrganizationCapability.ManageAccess,
-                    OrganizationCapability.ManageSubscription,
-                  ],
-                },
-              ],
-            } as AdminEditUserInput,
-          },
-          contextBypassUser
-        );
-      });
-
-      it('should have update organisations, first_name and last_name', async () => {
-        expect(response.organization_capabilities).toHaveLength(3);
-      });
-      it('should not have update other fields', async () => {
-        expect(fallbackUser.first_name).toEqual(response.first_name);
-        expect(fallbackUser.email).toEqual(response.email);
-      });
-    });
-
-    describe('administrator deletion', async () => {
-      beforeAll(async () => {
-        secondOrgaUser = await loadUserBy({
-          email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
-        });
-      });
-
-      afterEach(async () => {
-        // @ts-expect-error adminEditUser is not considered as callable
-        await usersResolver.Mutation.adminEditUser(
-          undefined,
-          {
-            id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-            input: {
-              organization_capabilities:
-                secondOrgaUser.organization_capabilities.map(
-                  (organizationCapabilities) => ({
-                    organization_id: organizationCapabilities.organization.id,
-                    capabilities: organizationCapabilities.capabilities,
-                  })
-                ),
-            },
-          },
-          contextBypassUser
-        );
-      });
-
-      it('should prevent deletion of the last organization administrator', async () => {
-        // @ts-expect-error adminEditUser is not considered as callable
-        const call = usersResolver.Mutation.adminEditUser(
-          undefined,
-          {
-            id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-            input: {
-              organization_capabilities: [
-                {
-                  organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-                  capabilities: [],
-                },
-              ],
-            } as AdminEditUserInput,
-          },
-          contextBypassUser
-        );
-
-        await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
-      });
+      expect(result).toEqual(mockUser);
     });
   });
 
@@ -696,20 +593,20 @@ describe('user mutation resolver', () => {
     let secondOrgaUser: UserLoadUserBy;
 
     beforeAll(async () => {
-      secondOrgaUser = await loadUserBy({
+      secondOrgaUser = await UserDomain.loadUserBy({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
       });
     });
 
     afterEach(async () => {
       requestContext.set(requestContextAdminUser);
-      await usersResolver.Mutation.adminEditUser(
-        undefined,
+      await usersResolver.Mutation!.adminEditUser!(
+        {},
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: {
             organization_capabilities:
-              secondOrgaUser.organization_capabilities.map(
+              secondOrgaUser.organization_capabilities!.map(
                 (organizationCapabilities) => ({
                   organization_id: organizationCapabilities.organization.id,
                   capabilities: organizationCapabilities.capabilities,
@@ -718,7 +615,7 @@ describe('user mutation resolver', () => {
           },
         },
         contextBypassUser,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
     });
 
@@ -732,16 +629,15 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
-      const call = usersResolver.Mutation.editUserCapabilities(
-        undefined,
+      const call = usersResolver.Mutation!.editUserCapabilities!(
+        {},
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: { capabilities: [] },
         },
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
 
       await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
@@ -761,10 +657,9 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
-      await usersResolver.Mutation.editUserCapabilities(
-        undefined,
+      await usersResolver.Mutation!.editUserCapabilities!(
+        {},
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: {
@@ -775,17 +670,17 @@ describe('user mutation resolver', () => {
           },
         },
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
-      secondOrgaUser = await loadUserBy({
+      secondOrgaUser = await UserDomain.loadUserBy({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
       });
       expect(secondOrgaUser.selected_org_capabilities).toContain(
         'MANAGE_PLATFORM_REGISTRATION'
       );
       // Put back the original capabilities
-      await usersResolver.Mutation.editUserCapabilities(
-        undefined,
+      await usersResolver.Mutation!.editUserCapabilities!(
+        {},
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: {
@@ -793,7 +688,7 @@ describe('user mutation resolver', () => {
           },
         },
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
     });
     it('should accept a pending user to the organization', async () => {
@@ -806,7 +701,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const pendingUser = await loginFromProvider({
         email: `testPending${uuidv4()}@second-orga.com`,
@@ -815,8 +709,8 @@ describe('user mutation resolver', () => {
         roles: [],
       });
 
-      await usersResolver.Mutation.editUserCapabilities(
-        undefined,
+      await usersResolver.Mutation!.editUserCapabilities!(
+        {},
         {
           id: pendingUser.id,
           input: {
@@ -827,9 +721,11 @@ describe('user mutation resolver', () => {
           },
         },
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
-      const updatedUser = await loadUserBy({ email: pendingUser.email });
+      const updatedUser = await UserDomain.loadUserBy({
+        email: pendingUser.email,
+      });
 
       expect(updatedUser.selected_org_capabilities).toContain(
         'ADMINISTRATE_ORGANIZATION'
@@ -847,7 +743,7 @@ describe('user mutation resolver', () => {
     let simpleUserSecondOrga: UserLoadUserBy;
     let auth0Spy: MockInstance;
     beforeAll(async () => {
-      simpleUserSecondOrga = await loadUserBy({
+      simpleUserSecondOrga = await UserDomain.loadUserBy({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
       });
       if (!simpleUserSecondOrga) {
@@ -906,7 +802,7 @@ describe('user mutation resolver', () => {
       });
 
       // assert database
-      const [dbUser] = await loadUser({
+      const [dbUser] = await UserDomain.loadUser({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
       });
       expect(dbUser).toMatchObject({
@@ -967,7 +863,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
@@ -979,14 +874,14 @@ describe('user mutation resolver', () => {
 
       const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       // When
-      await usersResolver.Mutation.removePendingUserFromOrganization(
-        undefined,
+      await usersResolver.Mutation!.removePendingUserFromOrganization!(
+        {},
         {
           user_id: pendingUser.id,
           organization_id: organizationId,
         },
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
 
       const usersPendingOrg =
@@ -1009,7 +904,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
       const email = `testPending${uuidv4()}@second-orga.com`;
       const pendingUser = await loginFromProvider({
@@ -1029,14 +923,14 @@ describe('user mutation resolver', () => {
         ['delete']
       );
 
-      await usersResolver.Mutation.removePendingUserFromOrganization(
-        undefined,
+      await usersResolver.Mutation!.removePendingUserFromOrganization!(
+        {},
         {
           user_id: pendingUser.id,
           organization_id: organizationId,
         },
         testContext,
-        undefined
+        GRAPHQL_RESOLVE_INFO
       );
 
       const events = await subscriptionSpy.waitForEvents(1);
@@ -1066,7 +960,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
 
       await usersResolver.Mutation?.bulkRemovePendingUserFromOrganization!(
@@ -1110,7 +1003,6 @@ describe('user mutation resolver', () => {
       };
       requestContext.set({
         user: testContext.user,
-        portalContext: testContext,
       });
 
       const organizationId = toGlobalId(
@@ -1149,6 +1041,43 @@ describe('user mutation resolver', () => {
 
       await removeUser({ email: pendingUser.email });
       await subscriptionSpy.cleanup();
+    });
+  });
+
+  describe('changeSelectedOrganization', () => {
+    it('should update portalContext.user and session.user after switching organization', async () => {
+      // Given
+      const mockSessionSave = vi.fn();
+      const mockPortalContext = {
+        user: { ...contextSimpleUserSecondOrga.user },
+        req: {
+          session: {
+            user: { ...contextSimpleUserSecondOrga.user },
+            save: mockSessionSave,
+          },
+        },
+        res: {},
+      } as unknown as PortalContext;
+      requestContext.set(requestContextSimpleUserSecondOrga);
+      const targetOrgId =
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID;
+
+      // When
+      // @ts-ignore
+      const response = await usersResolver.Mutation.changeSelectedOrganization(
+        {},
+        { organization_id: targetOrgId },
+        mockPortalContext,
+        {} as GraphQLResolveInfo
+      );
+
+      // Then
+      expect(response).toBeTruthy();
+      expect(mockPortalContext.user.selected_organization_id).toBe(targetOrgId);
+      expect(mockPortalContext.req.session.user.selected_organization_id).toBe(
+        targetOrgId
+      );
+      expect(mockSessionSave).toHaveBeenCalledOnce();
     });
   });
 });

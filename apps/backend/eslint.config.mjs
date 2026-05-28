@@ -27,6 +27,33 @@ export default defineConfig([
     '**/src/utils/error/error.util.ts',
   ]),
   {
+    files: ['**/*.ts'],
+    ignores: [
+      '**/model/portal-context.ts',
+      '**/*.resolver.ts',
+      '**/*.resolver.test.ts',
+      '**/security/directive-graphql/**',
+      '**/portal.const.ts',
+      '**/index.ts',
+      '**/pub.ts',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/model/portal-context'],
+              importNames: ['PortalContext'],
+              message:
+                'PortalContext must only be used in the graphql layers (*.resolver.ts, security/directive-graphql/).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.test.ts', '**/*.test.utils.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',

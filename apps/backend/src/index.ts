@@ -40,7 +40,6 @@ import platformInit, { minioInit } from './server/initialize';
 import { seedDevelopmentConnectors } from './server/initialize.helper';
 import { getSessionStoreInstance } from './session-store-manager';
 import { initShutdown, registerShutdownHook } from './shutdown';
-import { chatbotProxyEndpoint } from './thirdparty/copilot/chatbot-proxy';
 import { runESMigrations } from './thirdparty/elasticsearch/migrate';
 import { PgBossApp } from './thirdparty/pgboss/pgboss';
 import { logApp } from './utils/app-logger.util';
@@ -268,7 +267,6 @@ const middlewareExpress = expressMiddleware(server, {
 
     const portalContext: PortalContext = { user, req, res };
 
-    requestContext.update({ portalContext: portalContext });
     return portalContext;
   },
 });
@@ -327,7 +325,6 @@ documentDownloadEndpoint(app);
 documentVisualizeEndpoint(app);
 healthEndpoint(app);
 userPictureEndpoint(app);
-chatbotProxyEndpoint(app);
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema

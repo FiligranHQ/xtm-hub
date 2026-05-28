@@ -5,48 +5,6 @@
     "CollapseSidebar": "Réduire la sidebar",
     "Title": "XTM Hub"
   },
-  "Ariane": {
-    "AnalyzingResults": "Analyse des résultats…",
-    "Ask": "Demander à Ariane",
-    "AskQuestion": "Poser une question...",
-    "background task": "tâche en arrière-plan",
-    "background tasks": "tâches en arrière-plan",
-    "Browse agents": "Parcourir les agents",
-    "Close": "Fermer",
-    "Collecting results from": "Collecte des résultats de",
-    "ComposingAnswer": "Rédaction de la réponse…",
-    "Consulting": "Consultation de",
-    "Create agent": "Créer un agent",
-    "Delegating": "Délégation",
-    "Delegating task": "Délégation de la tâche",
-    "Disclaimer": "Utilise l'IA. Vérifiez les résultats.",
-    "ErrorOccurred": "Désolé, une erreur est survenue. Veuillez réessayer.",
-    "Floating": "Flottant",
-    "Full screen": "Plein écran",
-    "New chat": "Nouvelle conversation",
-    "PromptSuggestion1": "Qu'est-ce que la plateforme Filigran XTM?",
-    "PromptSuggestion2": "Comment OpenCTI améliore-t-il la cybersécurité?",
-    "PromptSuggestion3": "Pouvez-vous expliquer les principales fonctionnalités d'OpenAEV?",
-    "PromptSuggestion4": "Où puis-je trouver la documentation d'OpenGRC?",
-    "Reasoning details": "Détails du raisonnement",
-    "Sidebar": "Barre latérale",
-    "Stop generating": "Arrêter la génération",
-    "Suggestions": "Suggestions",
-    "Switch to": "Basculer vers",
-    "Switch to another agent": "Basculer vers un autre agent",
-    "Switch view": "Changer de vue",
-    "task": "tâche",
-    "tasks": "tâches",
-    "Thinking": "Réflexion en cours...",
-    "tool call": "appel d'outil",
-    "tool calls": "appels d'outils",
-    "Transferred from": "Transféré depuis",
-    "Transferring to": "Transfert vers",
-    "UnableToConnect": "Connexion impossible. Veuillez vérifier la configuration.",
-    "UsingTools": "Utilisation des outils…",
-    "Waiting for": "En attente de",
-    "WelcomeMessage": "Comment puis-je vous aider, "
-  },
   "Badge": {
     "Disabled": "Désactivé",
     "Draft": "Brouillon",
@@ -95,7 +53,15 @@
     "vulnerability_management": "Gestion des vulnérabilités",
     "centralizing_knowledge": "Centralisation des connaissances",
     "sharing_knowledge": "Partage des connaissances",
-    "hosting_threat_community": "Hébergement d'une communauté de partage des menaces"
+    "hosting_threat_community": "Hébergement d'une communauté de partage des menaces",
+    "oaev_attack_simulation": "Exécuter la simulation de brèche et d'attaque (BAS)",
+    "oaev_penetration_testing": "Effectuer des tests de pénétration",
+    "oaev_atomic_testing": "Exécution de tests atomiques individuels",
+    "oaev_platform_validation": "Valider que mes plates-formes de sécurité fonctionnent comme prévu",
+    "oaev_tabletop_exercise": "Effectuer des exercices contextuels sur table pour la simulation de crise",
+    "oaev_purple_team": "Activation de l'équipe Purple : Améliorer les défenses en fonction des attaques",
+    "oaev_opencti_coverage": "Activer la couverture de sécurité OpenCTI",
+    "oaev_ctem_framework": "Opérationnaliser un cadre CTEM"
   },
   "DeploymentRequestActivitySector": {
     "computer_network_security": "Sécurité des ordinateurs et des réseaux",
@@ -150,8 +116,13 @@
       "next": "Après",
       "under_consideration": "En considération",
       "finished": "Terminé au cours des 3 derniers mois",
-      "IsLimited": "Limité à {maxChars} charactères",
-      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
+      "Details": {
+        "draft": "Cas d'utilisation en mode brouillon, non visible sans la capacité UPLOAD",
+        "finished": "Cas d'utilisation disponibles",
+        "now": "Cas d'utilisation en cours de développement",
+        "next": "Cas d'utilisation prévus pour les prochaines versions",
+        "under_consideration": "Cas d'utilisation fortement envisagés"
+      }
     },
     "Form": {
       "Epic": "Epic",
@@ -163,7 +134,9 @@
       "FiligranProductPlaceholder": "OpenCTI",
       "Timeline": "Ligne de temps",
       "IsActive": "Cet EPIC est-il publié ? (Par défaut votre EPIC est en mode brouillon)",
-      "Integration": "Est une intégration"
+      "Integration": "Est une intégration",
+      "IsLimited": "Limité à {maxChars} caractères",
+      "AutomaticallyAdded": "Ajouté automatiquement (non modifiable)"
     },
     "EpicActions": {
       "CreateEpic": "Créer un nouvel épic",
@@ -196,6 +169,7 @@
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "Il existe déjà un concurrent avec le même domaine",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error lors de la creation de la requête de deploiement",
       "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
+      "DELETE_EPIC_ERROR": "Une erreur s'est produite lors de la suppression de l'épic.",
       "DELETE_ORGANIZATION_ERROR": "Erreur lors de la suppression de l'organisation",
       "DELETE_SUBSCRIPTION_ERROR": "Erreur lors de la suppression de la souscription",
       "DEPLOYMENT_REQUEST_HUB_STATUS_NOT_QUEUED": "Vous ne pouvez réorganiser que les demandes de déploiement en file d'attente.",
@@ -209,16 +183,16 @@
       "DOCUMENT_NOT_FOUND": "La ressource n'a pas été trouvée.",
       "DOCUMENT_UNIQUE_SLUG_ERROR": "Le nom de la ressource est déjà utilisé.",
       "DOCUMENT_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de la ressource.",
-      "EPIC_CREATE_ERROR": "Une erreur s'est produite lors de l'ajout de l'épic.",
-      "EPIC_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de l'épic.",
-      "DELETE_EPIC_ERROR": "Une erreur s'est produite lors de la suppression de l'épic.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Vous ne pouvez pas retirer le dernier utilisateur avec la capacité MANAGE_ACCESS",
       "EDIT_CAPABILITIES_ERROR": "Erreur lors de la modification des capacités",
+      "ADD_CAPABILITIES_ERROR": "Erreur lors de l'ajout des capacités",
       "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
       "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
       "EDIT_USER_SESSION_ERROR": "Une erreur inconnue s'est produite",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
+      "EPIC_CREATE_ERROR": "Une erreur s'est produite lors de l'ajout de l'épic.",
+      "EPIC_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de l'épic.",
       "FREE_TRIAL_ALREADY_EXISTS": "Une instance de test existe déjà pour votre organisation",
       "GRANT_CAPABILITIES_ON_ORGANIZATION_FIRST": "Vous devez d'abord accorder des capacités à l'organisation",
       "HUBSPOT_ERROR": "Une erreur s'est produite lors de la prise de contact",
@@ -233,11 +207,13 @@
       "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
+      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Argument d'enregistrement automatique de la plate-forme manquant",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
       "NEWS_FEED_ITEM_MISSING_TITLE": "Le titre de l'article du fil d'actualité est manquant",
+      "NEWS_FEED_ITEM_NOT_FOUND": "L'article du fil d'actualité n'a pas été trouvé",
       "NO_ASYNC_CONTEXT_AVAILABLE": "Une erreur inconnue s'est produite",
       "NOT_ALLOWED_BY_DEPLOYMENT_STATUS": "Une erreur inconnue s'est produite",
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "Une organisation ayant le même domaine existe déjà",
@@ -289,6 +265,22 @@
     "Manage": "Gérer",
     "OpenManagement": "Aller vers la page de management"
   },
+  "PublicHomePage": {
+    "Title": "Découvrez nos ressources et notre expertise"
+  },
+  "PublicLayout": {
+    "SignIn": "Connexion",
+    "AllRightsReserved": "Tous droits réservés",
+    "FiligranWebsite": "Site Filigran",
+    "PrivacyPolicy": "Politique de confidentialité",
+    "TermsOfServices": "Conditions d'utilisation",
+    "Licenses": "Licences",
+    "Contact": "Contact"
+  },
+  "PublicResourcePage": {
+    "Download": "Télécharger",
+    "Overview": "Aperçu"
+  },
   "InviteUserServiceForm": {
     "Capabilities": "Capacités disponibles",
     "CapabilitiesDescription": "Vous pouvez ajouter des capacité spécifiques aux utilisateurs de {organizationName} pour leur souscription sur {serviceName}",
@@ -315,7 +307,8 @@
   "LocaleSwitcher": {
     "Label": "Langage",
     "en": "English",
-    "fr": "Français"
+    "fr": "Français",
+    "ja": "日本語"
   },
   "LoginPage": {
     "CreateYourAccount": "créer votre compte",
@@ -340,18 +333,47 @@
     "Backoffice": "Backoffice",
     "Connectors": "OpenCTI contrats Connecteurs",
     "Home": "Accueil",
-    "UseCases": "Cas d'usage",
-    "Organizations": "Organisations",
-    "Parameters": "Paramètres",
+    "UseCase": "Cas d'usage",
+    "Organization": "Organisation",
+    "Parameter": "Paramètre",
     "Profile": "Profile",
     "Security": "Sécurité",
-    "Services": "Services",
+    "Service": "Service",
     "Settings": "Réglages",
     "SettingsLabel": "Menu des paramètres",
     "Users": "Utilisateurs",
-    "OpenCTITrials": "Essais OpenCTI",
-    "OpenAEVTrials": "Essais OpenAEV",
-    "Competitors": "Concurrents"
+    "OpenCTITrial": "Essai OpenCTI",
+    "OpenAEVTrial": "Essai OpenAEV",
+    "Competitor": "Concurrent",
+    "NewsFeed": "Fil d'actualité"
+  },
+  "NewsFeedAdminPage": {
+    "Title": "Titre",
+    "CreationDate": "Date de création",
+    "Tags": "Tags",
+    "IsDeleted": "Supprimé",
+    "IsDeletedYes": "Supprimé",
+    "Delete": "Supprimer",
+    "DeleteSuccess": "L'élément de fil d'actualité \"{title}\" a été supprimé avec succès",
+    "DeleteError": "Une erreur est survenue lors de la suppression de l'élément",
+    "DeleteDialog": {
+      "Title": "Supprimer l'élément du fil d'actualité",
+      "Text": "Êtes-vous sûr de vouloir supprimer l'élément \"{title}\" ?",
+      "Confirm": "Supprimer"
+    }
+  },
+  "Metadata": {
+    "Title": "Votre passerelle vers le Renseignement sur les Cybermenaces et la Simulation d'attaques | XTM Hub by Filigran",
+    "Description": "XTM Hub est votre passerelle vers les solutions de cybersécurité de Filigran : Renseignement sur les Cybermenaces et Simulation d'attaques. Détectez les menaces. Passez à l'action.",
+    "ShortTitle": "XTM Hub by Filigran - Plateforme de Renseignement sur les Cybermenaces",
+    "ShortDescription": "XTM Hub est votre passerelle vers les solutions de cybersécurité de Filigran.",
+    "SiteName": "XTM Hub by Filigran",
+    "ServiceFallbackDescription": "Découvrez notre solution de cybersécurité pour renforcer votre threat intelligence et votre protection.",
+    "DocumentFallbackDescriptionDashboard": "Explorez ce dashboard de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
+    "DocumentFallbackDescriptionIntegration": "Explorez cette intégration de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
+    "DocumentFallbackDescriptionScenario": "Explorez ce scénario d'attaque OpenAEV pour renforcer votre émulation d'adversaire et votre validation de sécurité.",
+    "DocumentFallbackDescriptionGeneric": "Explorez cette ressource sur XTM Hub by Filigran pour renforcer votre posture de cybersécurité.",
+    "ResourcePreviewAlt": "{name} - Aperçu de la ressource"
   },
   "CompetitorListPage": {
     "Name": "Nom",
@@ -664,6 +686,7 @@
       "openaev_scenarios": "OpenAEV Scenarios",
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
       "opencti_integrations": "OpenCTI Integrations",
+      "opencti_playbooks": "OpenCTI Playbooks",
       "opencti_registration": "OpenCTI Registration",
       "vault": "Vault",
       "xtm_platform_roadmap": "XTM Platform Roadmap"
@@ -675,6 +698,60 @@
       "ManageAccessDescription": "Vous pouvez accéder au service et inviter des utilisateurs à ce service",
       "ManageAccessName": "Manage access",
       "SelectCapabilities": "Sélectionner les capacités"
+    },
+    "Cards": {
+      "filigran-academy": {
+        "Name": "Filigran Academy",
+        "Description": "Maîtrisez OpenCTI et OpenAEV avec Filigran Academy — votre guide ultime vers le succès pour tous les niveaux !"
+      },
+      "filigran-blog": {
+        "Name": "Blog Filigran",
+        "Description": "Découvrez les derniers articles sur OpenCTI, OpenAEV et bien plus encore."
+      },
+      "openaev-101": {
+        "Name": "OpenAEV 101",
+        "Description": "Découvrez comment déployer et utiliser OpenAEV, la plateforme Filigran de simulation réaliste de cybermenaces, pour mettre en place des exercices concrets d'émulation d'adversaires."
+      },
+      "openaev-demo": {
+        "Name": "Démo OpenAEV",
+        "Description": "Accédez à une instance de démonstration OpenAEV en ligne et explorez toutes ses fonctionnalités."
+      },
+      "openaev-documentation": {
+        "Name": "Documentation OpenAEV",
+        "Description": "Retrouvez tous les documents pour démarrer avec notre plateforme de validation d'exposition aux adversaires, ainsi que les notes de version et les présentations."
+      },
+      "openaev-scenarios": {
+        "Name": "Bibliothèque de scénarios OpenAEV",
+        "Description": "Explorez une sélection de scénarios OpenAEV partagés par l'équipe Filigran."
+      },
+      "opencti-101": {
+        "Name": "OpenCTI 101",
+        "Description": "Les fondamentaux : découvrez les concepts essentiels à travers des cas d'usage et des workflows simples."
+      },
+      "opencti-custom-dashboards": {
+        "Name": "Bibliothèque de tableaux de bord OpenCTI",
+        "Description": "Explorez une sélection de tableaux de bord personnalisés pour la gestion des menaces, conçus pour tirer le meilleur parti d'OpenCTI."
+      },
+      "opencti-demo": {
+        "Name": "Démo OpenCTI",
+        "Description": "Accédez à une instance de démonstration OpenCTI en ligne et explorez toutes ses fonctionnalités."
+      },
+      "opencti-documentation": {
+        "Name": "Documentation OpenCTI",
+        "Description": "Retrouvez tous les documents pour démarrer avec notre plateforme de renseignement sur les menaces, ainsi que les notes de version et les présentations."
+      },
+      "opencti-integrations": {
+        "Name": "Bibliothèque d'intégrations OpenCTI",
+        "Description": "Explorez une sélection d'intégrations OpenCTI partagées par l'équipe Filigran."
+      },
+      "slack": {
+        "Name": "Slack",
+        "Description": "Rejoignez notre communauté de gestion des menaces en pleine croissance (plus de 5 000 membres). Partagez vos expériences et trouvez le soutien dont vous avez besoin."
+      },
+      "xtm-platform-roadmap": {
+        "Name": "Roadmap XTM Platform",
+        "Description": "Explorez et suivez la roadmap de la Filigran XTM Platform."
+      }
     },
     "ComingSoon": "Bientôt disponible",
     "Connectors": {
@@ -898,6 +975,20 @@
       "NonActive": "Brouillon",
       "Active": "Publié"
     },
+    "OpenCTIPlaybook": {
+      "Actions": {
+        "Added": "Le playbook {name} a été ajouté avec succès",
+        "Deleted": "Le playbook {name} a été supprimé avec succès",
+        "Updated": "Le playbook {name} a été modifié avec succès",
+        "Share": "Partager le playbook"
+      },
+      "AddService": "Ajouter un nouveau playbook",
+      "UpdateService": "Mettre à jour le playbook {name}",
+      "DeleteService": "Supprimer le playbook {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le playbook {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
+    },
     "Description": "Description",
     "GoTo": "Aller au service",
     "GoToAdminLabel": "Administrer",
@@ -918,9 +1009,11 @@
       }
     },
     "Management": {
+      "AvailableCapabilities": "Capacités disponibles",
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
       "AreYouSureRemoveOrganizationAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'organisation {organizationName} pour ce service ?",
-      "Description": "Retrouvez la liste des organisations qui ont souscrit à ce service",
+      "AreYouSureRemoveOrganizationsAccess": "Êtes-vous sûr de vouloir retirer les accès pour {count} organizations pour ce service ?",
+      "Description": "Organisations qui ont rejoint le service",
       "Email": "Email",
       "FirstName": "Prénom",
       "InviteUser": {
@@ -933,11 +1026,16 @@
       "ManageUsers": "Gérer les utilisateurs",
       "ManageUsersForOrganization": "Gérer les utilisateurs de {organizationName} dans le service {serviceName}",
       "OneUserMax": "1 utilisateur max",
+      "NoAvailableCapabilities": "Aucune capacité disponible",
+      "AddSubscriptionCapabilities": {
+        "Button": "Ajouter des capacités",
+        "Title": "Ajouter des capacités aux abonnements",
+        "Description": "Sélectionnez les capacités à ajouter aux {count} abonnement(s) sélectionné(s)."
+      },
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
-      "ShowPersonalSpaces": "Montrer les espaces personnels",
-      "SearchOrganization": "Rechercher une organisation",
-      "Subscription": "Souscription"
+      "ShowPersonalSpaces": "Montrer les espaces personnels seulement",
+      "SearchOrganization": "Rechercher une organisation"
     },
     "Name": "Nom",
     "NoOwnedService": "Vous n'avez pas encore de service.",
@@ -959,7 +1057,27 @@
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
         "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
-        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" ; car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer."
+        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" ; car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer.",
+        "EE": {
+          "Tag": "EE",
+          "HoverTitle": "Disponible dans l'Enterprise Edition",
+          "HoverSubtitle": "cliquez pour en savoir plus",
+          "PlatformRequiresEE": "Votre plateforme \"{platformTitle}\" est en Community Edition. Le déploiement en un clic des playbooks nécessite l'Enterprise Edition d'OpenCTI."
+        },
+        "EELearnMore": {
+          "Title": "Déploiement en un clic",
+          "Subtitle": "Disponible dans OpenCTI Enterprise Edition",
+          "Heading": "Déployez vos playbooks directement sur votre instance OpenCTI en un seul clic",
+          "FirstParagraph": "Le déploiement en un clic vous permet de pousser instantanément n'importe quel playbook du XTM Hub directement vers votre plateforme OpenCTI. Aucune configuration manuelle ni gestion de fichiers requise.",
+          "SecondParagraph": "Choisissez un playbook, cliquez sur déployer, et il est prêt à être exécuté dans votre instance en quelques secondes.",
+          "EnterpriseEditionTitle": "OpenCTI Enterprise Edition (EE)",
+          "EnterpriseEditionDescription": "OpenCTI Enterprise Edition fournit des fonctionnalités avancées, une scalabilité de niveau entreprise et un support dédié aux organisations qui souhaitent faire évoluer leurs opérations de threat intelligence.",
+          "Link": "En savoir plus",
+          "InterestedTitle": "Vous souhaitez en savoir plus ?",
+          "InterestedSubtitle": "Faites-le nous savoir ci-dessous, quelqu'un vous recontactera bientôt !",
+          "DefaultMessage": "Je souhaite obtenir plus d'informations sur OpenCTI Enterprise Edition.",
+          "SendButton": "Envoyer"
+        }
       },
       "Details": {
         "Author": "Auteur",
@@ -1060,6 +1178,34 @@
       },
       "StartTrial": "Commencez votre essai gratuit",
       "StartTrialWithName": "Commencez votre essai gratuit de {platformName}",
+      "OpenAEVPlatformBreadcrumb": "Plateforme d'essai OpenAEV",
+      "OpenCTIPlatformBreadcrumb": "Plateforme d'essai OpenCTI",
+      "PageHeader": {
+        "Welcome": "Bienvenue chez Filigran",
+        "Title": "Démarrons votre essai gratuit de {platformName} !"
+      },
+      "Storage": {
+        "Title": "Note importante sur le stockage de votre environnement d'essai",
+        "SaaSFeaturesLink": "fonctionnalités Enterprise Edition SaaS",
+        "NoSLA": "<strong>L'environnement d'essai gratuit n'inclut pas de SLA.</strong> En cas de panne du fournisseur cloud, le temps de restauration n'est pas garanti. Nous recommandons de ne pas stocker de données critiques ou irremplaçables dans votre environnement d'essai.",
+        "OpenCTIDescription": "L'essai gratuit OpenCTI fournit aux utilisateurs une instance SaaS « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec <strong>une puissance de calcul et un stockage réduits (jusqu'à 40 Go de stockage de données de threat intelligence et 3 Go de stockage de fichiers).</strong> L'ingestion de gros flux premium avec des jeux de données riches peut rapidement saturer votre stockage.",
+        "OpenAEVDescription": "L'essai gratuit OpenAEV fournit aux utilisateurs une instance « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec une puissance de calcul réduite et un stockage limité à <strong>16 Go</strong>."
+      },
+      "XTMPlatform": {
+        "Title": "Votre platform eXtended Threat Management (XTM)",
+        "Description": "{platformName} fait partie de la solution open-source de threat intelligence, de simulation avancée d'adversaires et de gestion stratégique des cyber-risques de Filigran, conçue pour aider votre organisation à anticiper et gérer les menaces de bout en bout.",
+        "OpenCTITagline": "Collecter, corréler et exploiter",
+        "OpenCTIDescription": "Une plateforme de threat intelligence open-source construite par des praticiens pour des praticiens — pour briser les silos de données et rendre la threat intelligence réellement actionnable.",
+        "OpenAEVTagline": "Prioriser, tester et corriger ce qui compte",
+        "OpenAEVDescription": "Défendez-vous proactivement contre les menaces avec l'Adversarial Exposure Validation (AEV), en simulant des scénarios d'attaque réels pour optimiser vos défenses.",
+        "LogoAlt": "Logo {name}",
+        "IllustrationAlt": "Illustration du service d'essai gratuit"
+      },
+      "QuickStart": {
+        "Title": "Guide de démarrage rapide",
+        "Subtitle": "Tirez le meilleur de votre plateforme {platformName} !",
+        "Description": "Explorez des guides pas-à-pas, des cours d'experts et les retours de la communauté pour résoudre des cas d'usage concrets et devenir un champion Filigran !"
+      },
       "GoToMyTrial": "Accéder à ma version d'évaluation",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
       "ReachOutToSales": "Contactez nous",
@@ -1161,7 +1307,7 @@
   "ServiceActions": {
     "OrganizationAdded": "L'organisation {name} a souscrit au service {serviceName}",
     "OrganizationDeleted": "L'organisation {name} a été supprimée",
-    "UserCapabilitiesModified": "Les capacités de {email}'s ont été modifiées",
+    "UserCapabilitiesModified": "les capacités de {email}'s ont été modifiées",
     "UserServiceAdded": "{email} a été invité au service {serviceName}"
   },
   "ServiceForm": {
@@ -1327,6 +1473,7 @@
     "Delete": "Supprimer",
     "Deleted": "a été supprimé",
     "Details": "Details",
+    "DocumentNotFound": "Document introuvable",
     "Download": "Télécharger",
     "Edit": "Modifier",
     "Error": "Erreur",
@@ -1340,6 +1487,7 @@
     "NotFound": "Non trouvé",
     "OpenMenu": "Ouvrir le menu",
     "Reset": "Effacer",
+    "ServiceNotFound": "Service introuvable",
     "Success": "Succès",
     "Update": "Editer",
     "Updating": "Mise à jour...",

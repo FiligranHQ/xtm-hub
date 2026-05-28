@@ -1,7 +1,8 @@
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../knexfile';
+import { db, paginate } from '../../../knexfile';
 import {
+  NewsFeedItemConnection,
   NewsFeedItemMetadataKey,
   NewsFeedItemType,
   PlatformIdentifier,
@@ -66,6 +67,24 @@ export const NewsFeedDomain = {
         return acc;
       }, new Map<NewsFeedItemId, NewsFeedItemMetadata[]>());
 
+      // Auto-cleanup: hard-delete is_deleted items with no remaining provisioned rows
+      const deletedItemIds = newsFeedItems
+        .filter((item) => item.is_deleted)
+        .map((item) => item.id);
+      if (deletedItemIds.length > 0) {
+        await db('NewsFeedItem')
+          .whereIn('id', deletedItemIds)
+          .whereNotExists(
+            db('ProvisionedNewsFeedItem')
+              .whereRaw('?? = ??', [
+                'ProvisionedNewsFeedItem.news_feed_item_id',
+                'NewsFeedItem.id',
+              ])
+              .select('news_feed_item_id')
+          )
+          .delete();
+      }
+
       return newsFeedItems.map((item) => ({
         ...item,
         metadata: metadataByItemId.get(item.id) ?? [],
@@ -102,13 +121,79 @@ export const NewsFeedDomain = {
 
     const globalDocumentId = toGlobalId('Document', document.id);
 
-    await db('NewsFeedItemMetadata').insert({
-      news_feed_item_id: newsFeedItem.id,
-      key: NewsFeedItemMetadataKey.UrlPath,
-      value: `redirect/${serviceDefinitionIdentifier}?document_id=${globalDocumentId}`,
-    });
+    await db('NewsFeedItemMetadata').insert([
+      {
+        news_feed_item_id: newsFeedItem.id,
+        key: NewsFeedItemMetadataKey.UrlPath,
+        value: `redirect/${serviceDefinitionIdentifier}?document_id=${globalDocumentId}`,
+      },
+      {
+        news_feed_item_id: newsFeedItem.id,
+        key: NewsFeedItemMetadataKey.DocumentId,
+        value: document.id,
+      },
+    ]);
 
     return newsFeedItem;
+  },
+
+  loadNewsFeedItemByDocumentId: async (
+    documentId: string
+  ): Promise<NewsFeedItem | undefined> => {
+    return db<NewsFeedItem>('NewsFeedItem')
+      .innerJoin(
+        'NewsFeedItemMetadata',
+        'NewsFeedItemMetadata.news_feed_item_id',
+        'NewsFeedItem.id'
+      )
+      .where({
+        'NewsFeedItemMetadata.key': NewsFeedItemMetadataKey.DocumentId,
+        'NewsFeedItemMetadata.value': documentId,
+        'NewsFeedItem.is_deleted': false,
+      })
+      .orderBy('NewsFeedItem.creation_date', 'desc')
+      .orderBy('NewsFeedItem.id', 'desc')
+      .select('NewsFeedItem.*')
+      .first();
+  },
+
+  updateNewsFeedItem: async (
+    id: NewsFeedItemId,
+    { title, tags }: { title: string; tags: string[] }
+  ): Promise<NewsFeedItem> => {
+    const [updated] = await db<NewsFeedItem>('NewsFeedItem')
+      .where({ id })
+      .update({ title, tags })
+      .returning('*');
+    return updated;
+  },
+
+  markNewsFeedItemAsDeleted: async (
+    id: NewsFeedItemId
+  ): Promise<NewsFeedItem> => {
+    const [updated] = await db<NewsFeedItem>('NewsFeedItem')
+      .where({ id })
+      .update({ is_deleted: true })
+      .returning('*');
+    if (!updated) {
+      throw new Error(ErrorCode.NewsFeedItemNotFound);
+    }
+    return updated;
+  },
+
+  loadPaginatedNewsFeedItems: async ({
+    first,
+    after,
+  }: {
+    first: number;
+    after?: string | null;
+  }): Promise<NewsFeedItemConnection> => {
+    return paginate<NewsFeedItem, NewsFeedItemConnection>('NewsFeedItem', {
+      first,
+      after: after ?? undefined,
+      orderBy: 'creation_date',
+      orderMode: 'desc',
+    });
   },
 
   provisionNewsFeedItem: async (
@@ -129,5 +214,13 @@ export const NewsFeedDomain = {
       )
       .onConflict(['news_feed_item_id', 'platform_id'])
       .ignore();
+  },
+
+  deleteNewsFeedItemsOlderThan: async (cutoffDate: Date): Promise<number> => {
+    const deletedRows: { id: NewsFeedItemId }[] = await db('NewsFeedItem')
+      .where('creation_date', '<', cutoffDate)
+      .delete()
+      .returning('id');
+    return deletedRows.length;
   },
 };

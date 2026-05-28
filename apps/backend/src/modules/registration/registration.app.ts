@@ -39,13 +39,10 @@ import {
 } from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
 import { isValidVersion } from '../../utils/versioning';
-import { loadUserOrganization } from '../common/user-organization.domain';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import { loadOrganizationBy } from '../organization-management/organization/organization.domain';
-import {
-  loadUsersByCapabilitiesInOrganization,
-  updateUser,
-} from '../organization-management/user/user-domain/user.domain';
+import { OrganizationDomain } from '../organization-management/organization/organization.domain';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import { UserOrganizationDomain } from '../organization-management/user/user-organization/user-organization.domain';
 import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
@@ -110,16 +107,19 @@ export const registrationApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const [userOrganization] = await loadUserOrganization({
-      organization_id: subscription.organization_id,
-      user_id: user.id,
-    });
+    const [userOrganization] =
+      await UserOrganizationDomain.loadUserOrganization({
+        organization_id: subscription.organization_id,
+        user_id: user.id,
+      });
 
     if (!userOrganization) {
       throw new Error(ErrorCode.UserIsNotInOrganization);
     }
 
-    return loadOrganizationBy({ id: subscription.organization_id });
+    return OrganizationDomain.loadOrganizationBy({
+      id: subscription.organization_id,
+    });
   },
 
   loadRegisteredPlatform: async (
@@ -233,10 +233,13 @@ export const registrationApp = {
       }
     });
 
-    const users = await loadUsersByCapabilitiesInOrganization(organizationId, [
-      OrganizationCapability.AdministrateOrganization,
-      OrganizationCapability.ManagePlatformRegistration,
-    ]);
+    const users = await UserDomain.loadUsersByCapabilitiesInOrganization(
+      organizationId,
+      [
+        OrganizationCapability.AdministrateOrganization,
+        OrganizationCapability.ManagePlatformRegistration,
+      ]
+    );
 
     await Promise.all(
       users.map((user) =>
@@ -252,7 +255,7 @@ export const registrationApp = {
     );
 
     try {
-      const selectedOrga = await loadOrganizationBy({
+      const selectedOrga = await OrganizationDomain.loadOrganizationBy({
         id: organizationId as OrganizationId,
       });
 
@@ -320,7 +323,7 @@ export const registrationApp = {
       { status: ServiceConfigurationStatus.Inactive }
     );
 
-    const users = await loadUsersByCapabilitiesInOrganization(
+    const users = await UserDomain.loadUsersByCapabilitiesInOrganization(
       subscription.organization_id,
       [
         OrganizationCapability.AdministrateOrganization,
@@ -422,7 +425,7 @@ export const registrationApp = {
     userId: UserId
   ): Promise<RefreshUserPlatformTokenResponse> => {
     const token = uuidv4();
-    await updateUser(userId, { platform_token: token });
+    await UserDomain.updateUser(userId, { platform_token: token });
 
     return { token };
   },
@@ -466,7 +469,7 @@ export const registrationApp = {
       ]);
 
       try {
-        const selectedOrga = await loadOrganizationBy({
+        const selectedOrga = await OrganizationDomain.loadOrganizationBy({
           id: deploymentRequest.organization_requester_id,
         });
 

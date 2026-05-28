@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import {
@@ -14,10 +13,9 @@ import { serviceCapabilityApp } from './service-capability.app';
 import serviceCapabilityResolver from './service-capability.resolver';
 
 describe('edit service capability GraphQL mutation', () => {
-  it('should decode user_service_id from global ID and delegate to serviceCapabilityApp', async () => {
+  it('should delegate to serviceCapabilityApp', async () => {
     // Given
-    const rawUserServiceId = uuidv4() as UserServiceId;
-    const globalUserServiceId = toGlobalId('UserService', rawUserServiceId);
+    const userServiceId = uuidv4() as UserServiceId;
     const serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS.ID;
     const capabilities = ['MANAGE_ACCESS'];
     const expected = { id: uuidv4() } as unknown as SubscriptionModel;
@@ -30,7 +28,7 @@ describe('edit service capability GraphQL mutation', () => {
       .editServiceCapability!(
       {},
       {
-        input: { user_service_id: globalUserServiceId, capabilities },
+        input: { user_service_id: userServiceId, capabilities },
         serviceInstanceId,
       },
       contextSimpleUserFiligran2,
@@ -39,7 +37,7 @@ describe('edit service capability GraphQL mutation', () => {
 
     // Then
     expect(serviceCapabilityApp.editServiceCapability).toHaveBeenCalledWith(
-      rawUserServiceId,
+      userServiceId,
       capabilities,
       serviceInstanceId
     );
@@ -48,8 +46,7 @@ describe('edit service capability GraphQL mutation', () => {
 
   it('should map to ForbiddenAccess for EditCapabilitiesCantRemoveLastManageAccess error', async () => {
     // Given
-    const rawUserServiceId = uuidv4() as UserServiceId;
-    const globalUserServiceId = toGlobalId('UserService', rawUserServiceId);
+    const userServiceId = uuidv4() as UserServiceId;
     const serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS.ID;
     vi.spyOn(serviceCapabilityApp, 'editServiceCapability').mockRejectedValue(
       new Error(ForbiddenErrorCode.EditCapabilitiesCantRemoveLastManageAccess)
@@ -59,7 +56,7 @@ describe('edit service capability GraphQL mutation', () => {
     const call = serviceCapabilityResolver.Mutation!.editServiceCapability!(
       {},
       {
-        input: { user_service_id: globalUserServiceId, capabilities: [] },
+        input: { user_service_id: userServiceId, capabilities: [] },
         serviceInstanceId,
       },
       contextSimpleUserFiligran2,

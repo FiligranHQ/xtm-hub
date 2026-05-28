@@ -1,4 +1,4 @@
-FROM node:24.15.0-alpine3.22 AS base
+FROM node:24.16.0-alpine3.22 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -12,18 +12,18 @@ COPY apps/frontend/package.json ./apps/frontend/package.json
 
 # Install all dependencies at the workspace level
 RUN corepack enable && \
-    yarn install
+    yarn install --immutable
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY apps/backend/. ./apps/backend/
 COPY .yarnrc.yml package.json yarn.lock ./
 RUN corepack enable
 
 # Copy root node_modules for proper dependencies resolution
 COPY --from=deps /app/node_modules ./node_modules
+
 
 # Run tests from the backend directory
 WORKDIR /app/apps/backend

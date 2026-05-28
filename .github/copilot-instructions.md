@@ -19,7 +19,7 @@ XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace fo
 | Workspace          | Path                    | Stack | Dev Port |
 |--------------------|-------------------------|---|---|
 | `backend`          | `apps/backend`          | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `frontend`         | `apps/frontend`     | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 3, `@filigran/ui` | 3002 |
+| `frontend`         | `apps/frontend`     | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 4, `@filigran/ui` | 3002 |
 | `e2e`              | `apps/e2e`              | Playwright | — |
 
 ## Setup
@@ -212,6 +212,7 @@ eslint.config.mjs               # ESLint flat config (typescript-eslint strict)
 test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image
 ```
+When you create a new file in the backend, follow the template in generate-new-module.ts.
 
 ### Frontend — `apps/frontend/`
 
@@ -274,6 +275,7 @@ eslint.config.mjs               # ESLint config (next/core-web-vitals + prettier
 test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image (standalone Next.js)
 ```
+When you create a new file in the frontend, follow the template in generate-component.ts.
 
 ### Path Aliases (Frontend)
 
@@ -322,8 +324,8 @@ The `db()` function from `knexfile.ts` is the primary database accessor. It:
 ## UI Component System
 
 - **Design system**: `@filigran/ui` is Filigran's in-house React component library, built to match our design system. **Always use `@filigran/ui` components first** for any UI work (buttons, inputs, tables, dialogs, etc.). Only fall back to raw TailwindCSS or shadcn/ui primitives when `@filigran/ui` does not provide the needed component.
-- **Icons**: `@filigran/icon` (Filigran's icon set) + `lucide-react` as fallback
-- **Styling**: TailwindCSS 3 with `@filigran/ui`'s Tailwind plugin (`FiligranUIPlugin` in `tailwind.config.ts`)
+- **Icons**: `@filigran/icon` (Filigran's icon set)
+- **Styling**: TailwindCSS 4 with `@filigran/ui`'s Tailwind plugin (`FiligranUIPlugin` in `tailwind.config.ts`)
 - **Forms**: `react-hook-form` + `zod` validation (zod v4)
 - **Markdown**: `@uiw/react-md-editor`
 

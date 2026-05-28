@@ -1,12 +1,12 @@
 import { AppServiceContext } from '@/components/service/components/ServiceContext';
 import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
+import DeleteShareableResourceSlug from '@/components/service/document/DeleteShareableResourceSlug';
 import {
   documentItem,
   DocumentsItemQuery,
 } from '@/components/service/document/document.graphql';
 import ShareableResourceSlug from '@/components/service/document/ShareableResourceSlug';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
-import DeleteIntegrationSlug from '@/components/service/integrations/[slug]/DeleteIntegrationSlug';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
@@ -34,13 +34,13 @@ const DashboardSlug = ({ queryRef, serviceInstance }: DashboardSlugProps) => {
       href: `/${APP_PATH}`,
     },
     {
-      label: serviceInstance.name,
+      label: `Service.Cards.${serviceInstance.slug}.Name`,
       href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
-      original: true,
+      fallback: serviceInstance.name,
     },
     {
-      label: documentData!.name!,
-      original: true,
+      label: `Service.Documents.${documentData!.slug}.Name`,
+      fallback: documentData!.name!,
     },
   ];
 
@@ -58,7 +58,7 @@ const DashboardSlug = ({ queryRef, serviceInstance }: DashboardSlugProps) => {
           documentData={documentData}
           updateActions={
             <>
-              <DeleteIntegrationSlug document={documentData} />
+              <DeleteShareableResourceSlug document={documentData} />
               <ServiceManageSheet
                 document={documentData}
                 variant={'button'}

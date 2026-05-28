@@ -1,0 +1,2699 @@
+import type { GraphQLClient, RequestOptions } from "graphql-request";
+type GraphQLClientRequestHeaders = RequestOptions["requestHeaders"];
+import { useMutation, useQuery, useInfiniteQuery, UseMutationOptions, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData } from '@tanstack/react-query';
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+
+function fetcher<TData, TVariables extends { [key: string]: any }>(client: GraphQLClient, query: string, variables?: TVariables, requestHeaders?: RequestInit['headers']) {
+  return async (): Promise<TData> => client.request({
+    document: query,
+    variables,
+    requestHeaders
+  });
+}
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  /** A Relay global ID for Competitor, extracted to a branded CompetitorId string */
+  CompetitorId: { input: any; output: any; }
+  Date: { input: any; output: any; }
+  /** A Relay global ID for DeploymentRequest, extracted to a branded DeploymentRequestId string */
+  DeploymentRequestId: { input: any; output: any; }
+  /** A Relay global ID for Document, extracted to a branded DocumentId string */
+  DocumentId: { input: any; output: any; }
+  JSON: { input: any; output: any; }
+  /** A Relay global ID for Organization, extracted to a branded OrganizationId string */
+  OrganizationId: { input: any; output: any; }
+  /** A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string */
+  ServiceGroupId: { input: any; output: any; }
+  /** A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string */
+  ServiceInstanceId: { input: any; output: any; }
+  /** A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string */
+  Service_CapabilityId: { input: any; output: any; }
+  /** A Relay global ID for Subscription, extracted to a branded SubscriptionId string */
+  SubscriptionId: { input: any; output: any; }
+  Upload: { input: any; output: any; }
+  /** A Relay global ID for UseCase, extracted to a branded UseCaseId string */
+  UseCaseId: { input: any; output: any; }
+  /** A Relay global ID for User, extracted to a branded UserId string */
+  UserId: { input: any; output: any; }
+  /** A Relay global ID for User_Service, extracted to a branded User_ServiceId string */
+  User_ServiceId: { input: any; output: any; }
+};
+
+export type AddServiceInput = {
+  fee_type: InputMaybe<Scalars['String']['input']>;
+  organization_id: InputMaybe<Scalars['String']['input']>;
+  price: InputMaybe<Scalars['Int']['input']>;
+  service_instance_description: InputMaybe<Scalars['String']['input']>;
+  service_instance_name: InputMaybe<Scalars['String']['input']>;
+  url: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddSubscriptionCapabilityInput = {
+  capabilitiesId: Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>;
+  subscriptionsId: Array<Scalars['SubscriptionId']['input']>;
+};
+
+export type AddUseCaseInput = {
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type AddUserInput = {
+  capabilities: InputMaybe<Array<Scalars['String']['input']>>;
+  email: Scalars['String']['input'];
+  password: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AdminAddUserInput = {
+  email: Scalars['String']['input'];
+  first_name: InputMaybe<Scalars['String']['input']>;
+  last_name: InputMaybe<Scalars['String']['input']>;
+  organization_capabilities: InputMaybe<Array<OrganizationCapabilitiesInput>>;
+  password: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AdminEditUserInput = {
+  disabled: InputMaybe<Scalars['Boolean']['input']>;
+  email: InputMaybe<Scalars['String']['input']>;
+  first_name: InputMaybe<Scalars['String']['input']>;
+  last_name: InputMaybe<Scalars['String']['input']>;
+  organization_capabilities: InputMaybe<Array<OrganizationCapabilitiesInput>>;
+};
+
+export type AutoRegisterPlatformInput = {
+  existing_users_count: InputMaybe<Scalars['Int']['input']>;
+  platform: PlatformInput;
+};
+
+export type BulkPendingUserFromOrganizationInput = {
+  excludedIds: InputMaybe<Array<Scalars['UserId']['input']>>;
+  filters: InputMaybe<Array<Filter>>;
+  ids: InputMaybe<Array<Scalars['UserId']['input']>>;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CanUnregisterPlatformInput = {
+  platformId: Scalars['String']['input'];
+  tenantId: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CanUnregisterResponse = {
+  __typename?: 'CanUnregisterResponse';
+  isAllowed: Maybe<Scalars['Boolean']['output']>;
+  isInOrganization: Maybe<Scalars['Boolean']['output']>;
+  isPlatformRegistered: Scalars['Boolean']['output'];
+  organizationId: Maybe<Scalars['OrganizationId']['output']>;
+};
+
+export type Capability = Node & {
+  __typename?: 'Capability';
+  id: Scalars['ID']['output'];
+  name: PortalCapability;
+};
+
+export type Competitor = Node & {
+  __typename?: 'Competitor';
+  domain: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  tier: CompetitorTier;
+};
+
+export type CompetitorConnection = {
+  __typename?: 'CompetitorConnection';
+  edges: Array<CompetitorEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type CompetitorEdge = {
+  __typename?: 'CompetitorEdge';
+  cursor: Scalars['String']['output'];
+  node: Competitor;
+};
+
+export enum CompetitorOrdering {
+  Domain = 'domain',
+  Name = 'name',
+  Tier = 'tier'
+}
+
+export enum CompetitorTier {
+  Tier1 = 'tier1',
+  Tier2 = 'tier2',
+  Tier3 = 'tier3'
+}
+
+export type Connector = Document & Integration & Node & {
+  __typename?: 'Connector';
+  active: Scalars['Boolean']['output'];
+  blogpost_url: Maybe<Scalars['String']['output']>;
+  children_documents: Maybe<Array<ShareableResource>>;
+  container_image: Maybe<Scalars['String']['output']>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url: Maybe<Scalars['String']['output']>;
+  demo_url: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_subtype: IntegrationSubType;
+  integration_type: IntegrationType;
+  manager_supported: Scalars['Boolean']['output'];
+  minimum_deployable_version: Maybe<Scalars['String']['output']>;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  playbook_supported: Scalars['Boolean']['output'];
+  product_version: Maybe<Scalars['String']['output']>;
+  remover_id: Maybe<Scalars['ID']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  source_code: Maybe<Scalars['String']['output']>;
+  subscription: Maybe<SubscriptionModel>;
+  subscription_link: Maybe<Scalars['String']['output']>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+  verified: Scalars['Boolean']['output'];
+};
+
+export type ConsumeProvisionedNewsFeedItemsResponse = {
+  __typename?: 'ConsumeProvisionedNewsFeedItemsResponse';
+  available_news_feed_types: Array<NewsFeedItemType>;
+  news_feed_items: Array<ProvisionedNewsFeedItem>;
+};
+
+export type CreateCompetitorInput = {
+  domain: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tier: CompetitorTier;
+};
+
+export type CreateDeploymentRequestInput = {
+  activity_sector: InputMaybe<DeploymentRequestActivitySector>;
+  job_title: InputMaybe<DeploymentRequestJobTitle>;
+  platform_identifier: PlatformIdentifier;
+  region: DeploymentRequestPlatformRegion;
+  source: DeploymentRequestSource;
+  type: DeploymentRequestDeploymentType;
+  use_case: InputMaybe<DeploymentRequestUseCase>;
+};
+
+export type CreateDocumentInput = {
+  active: Scalars['Boolean']['input'];
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  short_description: Scalars['String']['input'];
+  slug: Scalars['String']['input'];
+  uploader_id: Scalars['UserId']['input'];
+  use_cases: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
+};
+
+export type CreateEpicInput = {
+  active: InputMaybe<Scalars['Boolean']['input']>;
+  description: Scalars['String']['input'];
+  edition_type: EditionType;
+  illustration_document: InputMaybe<Scalars['Upload']['input']>;
+  is_integration: InputMaybe<Scalars['Boolean']['input']>;
+  product: FiligranProduct;
+  short_description: Scalars['String']['input'];
+  timeline: Timeline;
+  title: Scalars['String']['input'];
+};
+
+export type CreateSubscriptionsInput = {
+  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
+  end_date: InputMaybe<Scalars['Date']['input']>;
+  organization_id: Array<Scalars['OrganizationId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+  start_date: Scalars['Date']['input'];
+};
+
+export type CsvFeed = Document & Integration & Node & {
+  __typename?: 'CsvFeed';
+  active: Scalars['Boolean']['output'];
+  blogpost_url: Maybe<Scalars['String']['output']>;
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url: Maybe<Scalars['String']['output']>;
+  demo_url: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  feed_url: Maybe<Scalars['String']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_type: IntegrationType;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  remover_id: Maybe<Scalars['ID']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type CustomDashboard = Document & Node & {
+  __typename?: 'CustomDashboard';
+  active: Scalars['Boolean']['output'];
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  product_version: Maybe<Scalars['String']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+/**
+ * /!\ WARNING Do not use this type.
+ * It exists only to cover cases where we failed to map to a specific Document.
+ */
+export type DefaultDocument = Document & Node & {
+  __typename?: 'DefaultDocument';
+  active: Scalars['Boolean']['output'];
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  minio_name: Scalars['String']['output'];
+  name: Maybe<Scalars['String']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Maybe<Scalars['String']['output']>;
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type DeployedPlatform = {
+  __typename?: 'DeployedPlatform';
+  platformIdentifier: PlatformIdentifier;
+  serviceInstanceId: Scalars['ServiceInstanceId']['output'];
+};
+
+export type DeploymentAvailability = {
+  __typename?: 'DeploymentAvailability';
+  availableCount: Scalars['Int']['output'];
+  capacity: Scalars['Int']['output'];
+  platform_identifier: PlatformIdentifier;
+  region: DeploymentRequestPlatformRegion;
+};
+
+export type DeploymentRequest = Node & {
+  __typename?: 'DeploymentRequest';
+  activity_sector: Maybe<DeploymentRequestActivitySector>;
+  cancellation_date: Maybe<Scalars['Date']['output']>;
+  cancellation_reason: Maybe<Scalars['String']['output']>;
+  cancellation_user_email: Maybe<Scalars['String']['output']>;
+  counts_in_orga_quota: Scalars['Boolean']['output'];
+  end_date: Maybe<Scalars['Date']['output']>;
+  hub_status: DeploymentRequestHubStatus;
+  id: Scalars['ID']['output'];
+  job_title: Maybe<DeploymentRequestJobTitle>;
+  ordering: Scalars['Int']['output'];
+  organization_name: Maybe<Scalars['String']['output']>;
+  organization_requester_id: Scalars['OrganizationId']['output'];
+  platform_id: Maybe<Scalars['String']['output']>;
+  platform_identifier: PlatformIdentifier;
+  platform_url: Maybe<Scalars['String']['output']>;
+  region: DeploymentRequestPlatformRegion;
+  request_date: Scalars['Date']['output'];
+  requester_email: Maybe<Scalars['String']['output']>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  start_date: Maybe<Scalars['Date']['output']>;
+  type: DeploymentRequestDeploymentType;
+  use_case: Maybe<DeploymentRequestUseCase>;
+};
+
+export enum DeploymentRequestActivitySector {
+  ComputerGames = 'computer_games',
+  ComputerNetworkSecurity = 'computer_network_security',
+  ComputerSoftware = 'computer_software',
+  DefenseSpace = 'defense_space',
+  Entertainment = 'entertainment',
+  FinancialServices = 'financial_services',
+  GovernmentAdministration = 'government_administration',
+  GovernmentRelations = 'government_relations',
+  HigherEducation = 'higher_education',
+  HospitalHealthCare = 'hospital_health_care',
+  Hospitality = 'hospitality',
+  InformationTechnology = 'information_technology',
+  Insurance = 'insurance',
+  LegalServices = 'legal_services',
+  LuxuryGoodsJewelry = 'luxury_goods_jewelry',
+  ManagementConsulting = 'management_consulting',
+  MarketingAdvertising = 'marketing_advertising',
+  Military = 'military',
+  NonProfit = 'non_profit',
+  OilEnergy = 'oil_energy',
+  Pharmaceuticals = 'pharmaceuticals',
+  Photography = 'photography',
+  Retail = 'retail',
+  SecurityInvestigations = 'security_investigations',
+  Semiconductors = 'semiconductors',
+  Telecommunications = 'telecommunications',
+  Transportation = 'transportation',
+  Utilities = 'utilities',
+  Wireless = 'wireless'
+}
+
+export type DeploymentRequestConnection = {
+  __typename?: 'DeploymentRequestConnection';
+  edges: Array<DeploymentRequestEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export enum DeploymentRequestDeploymentType {
+  Trial = 'trial'
+}
+
+export type DeploymentRequestEdge = {
+  __typename?: 'DeploymentRequestEdge';
+  cursor: Scalars['String']['output'];
+  node: DeploymentRequest;
+};
+
+export type DeploymentRequestFilter = {
+  key: InputMaybe<DeploymentRequestFilterKey>;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum DeploymentRequestFilterKey {
+  ActualState = 'actual_state',
+  HubStatus = 'hub_status',
+  PlatformIdentifier = 'platform_identifier',
+  Region = 'region',
+  TargetState = 'target_state',
+  Type = 'type'
+}
+
+export enum DeploymentRequestHubStatus {
+  Active = 'active',
+  Cancelled = 'cancelled',
+  Expired = 'expired',
+  Failed = 'failed',
+  Pending = 'pending',
+  Provisioning = 'provisioning',
+  Queued = 'queued'
+}
+
+export enum DeploymentRequestJobTitle {
+  ApplicationSecuritySpecialist = 'application_security_specialist',
+  CLevel = 'c_level',
+  Ceo = 'ceo',
+  CisoCsoCio = 'ciso_cso_cio',
+  CloudSecuritySpecialist = 'cloud_security_specialist',
+  Consultant = 'consultant',
+  CybersecurityArchitect = 'cybersecurity_architect',
+  CybersecurityEngineer = 'cybersecurity_engineer',
+  CybersecurityTeamLead = 'cybersecurity_team_lead',
+  DfirSpecialist = 'dfir_specialist',
+  DirectorHeadCybersecurity = 'director_head_cybersecurity',
+  GeneralManagerVp = 'general_manager_vp',
+  GrcSpecialist = 'grc_specialist',
+  IamSpecialist = 'iam_specialist',
+  Other = 'other',
+  PenetrationTester = 'penetration_tester',
+  SocAnalyst = 'soc_analyst',
+  ThreatIntelligenceAnalyst = 'threat_intelligence_analyst',
+  VulnerabilityAnalyst = 'vulnerability_analyst'
+}
+
+export enum DeploymentRequestOrdering {
+  CancellationDate = 'cancellation_date',
+  CancellationReason = 'cancellation_reason',
+  CancellationUserEmail = 'cancellation_user_email',
+  EndDate = 'end_date',
+  HubStatus = 'hub_status',
+  Ordering = 'ordering',
+  OrganizationName = 'organization_name',
+  Region = 'region',
+  RequestDate = 'request_date',
+  RequesterEmail = 'requester_email',
+  StartDate = 'start_date'
+}
+
+export enum DeploymentRequestPlatformRegion {
+  ApacAu = 'apac_au',
+  ApacSg = 'apac_sg',
+  EuWest = 'eu_west',
+  UsEast = 'us_east'
+}
+
+export enum DeploymentRequestPlatformState {
+  Active = 'active',
+  Provisioning = 'provisioning',
+  Removed = 'removed',
+  Removing = 'removing',
+  Unprovisioned = 'unprovisioned'
+}
+
+export enum DeploymentRequestSource {
+  OpenaevDemo = 'openaev_demo',
+  OpenctiDemo = 'opencti_demo',
+  Xtmhub = 'xtmhub'
+}
+
+export enum DeploymentRequestUseCase {
+  AttackSimulation = 'attack_simulation',
+  CentralizingKnowledge = 'centralizing_knowledge',
+  CrisisSimulation = 'crisis_simulation',
+  DetectionEngineering = 'detection_engineering',
+  HostingThreatCommunity = 'hosting_threat_community',
+  IncidentResponse = 'incident_response',
+  OaevAtomicTesting = 'oaev_atomic_testing',
+  OaevAttackSimulation = 'oaev_attack_simulation',
+  OaevCtemFramework = 'oaev_ctem_framework',
+  OaevOpenctiCoverage = 'oaev_opencti_coverage',
+  OaevPenetrationTesting = 'oaev_penetration_testing',
+  OaevPlatformValidation = 'oaev_platform_validation',
+  OaevPurpleTeam = 'oaev_purple_team',
+  OaevTabletopExercise = 'oaev_tabletop_exercise',
+  SecurityStack = 'security_stack',
+  SharingKnowledge = 'sharing_knowledge',
+  StrategicReporting = 'strategic_reporting',
+  TechnicalReporting = 'technical_reporting',
+  ThreatHunting = 'threat_hunting',
+  ThreatProfilingCti = 'threat_profiling_cti',
+  ThreatProfilingFaml = 'threat_profiling_faml',
+  ThreatProfilingFimi = 'threat_profiling_fimi',
+  ThreatProfilingLeo = 'threat_profiling_leo',
+  VulnerabilityManagement = 'vulnerability_management'
+}
+
+export type Document = {
+  active: Scalars['Boolean']['output'];
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  minio_name: Scalars['String']['output'];
+  name: Maybe<Scalars['String']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Maybe<Scalars['String']['output']>;
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type DocumentConnection = {
+  __typename?: 'DocumentConnection';
+  edges: Array<DocumentEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type DocumentEdge = {
+  __typename?: 'DocumentEdge';
+  cursor: Scalars['String']['output'];
+  node: Document;
+};
+
+export enum DocumentImageType {
+  Image = 'image',
+  Logo = 'logo'
+}
+
+export type DocumentMetadata = {
+  key: DocumentMetadataKeyCode;
+  value: Scalars['String']['input'];
+};
+
+export enum DocumentMetadataKeyCode {
+  BlogpostUrl = 'blogpost_url',
+  ContainerImage = 'container_image',
+  DatasheetUrl = 'datasheet_url',
+  DemoUrl = 'demo_url',
+  FeedUrl = 'feed_url',
+  GithubUrl = 'github_url',
+  ImageType = 'image_type',
+  IntegrationSubtype = 'integration_subtype',
+  IntegrationType = 'integration_type',
+  ManagerSupported = 'manager_supported',
+  MinimumDeployableVersion = 'minimum_deployable_version',
+  PlaybookSupported = 'playbook_supported',
+  ProductVersion = 'product_version',
+  SourceCode = 'source_code',
+  SubscriptionLink = 'subscription_link',
+  VendorUrl = 'vendor_url',
+  Verified = 'verified'
+}
+
+export enum DocumentOrdering {
+  CreatedAt = 'created_at',
+  Description = 'description',
+  DownloadNumber = 'download_number',
+  FileName = 'file_name',
+  Name = 'name',
+  UpdatedAt = 'updated_at'
+}
+
+export enum DocumentSourceType {
+  External = 'external',
+  Internal = 'internal'
+}
+
+export type EditMeUserInput = {
+  country: InputMaybe<Scalars['String']['input']>;
+  first_name: InputMaybe<Scalars['String']['input']>;
+  last_name: InputMaybe<Scalars['String']['input']>;
+  selected_language: InputMaybe<Scalars['String']['input']>;
+};
+
+export type EditServiceCapabilityInput = {
+  capabilities: Array<InputMaybe<Scalars['String']['input']>>;
+  user_service_id: InputMaybe<Scalars['User_ServiceId']['input']>;
+};
+
+export type EditUseCaseInput = {
+  color: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+};
+
+export type EditUserCapabilitiesInput = {
+  capabilities: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export enum EditionType {
+  CommunityEdition = 'community_edition',
+  EnterpriseEdition = 'enterprise_edition',
+  PartialEe = 'partial_ee'
+}
+
+export type Epic = Node & {
+  __typename?: 'Epic';
+  active: Scalars['Boolean']['output'];
+  created_at: Scalars['Date']['output'];
+  description: Scalars['String']['output'];
+  document: Maybe<Document>;
+  document_id: Maybe<Scalars['DocumentId']['output']>;
+  edition_type: EditionType;
+  epic_type: EpicType;
+  id: Scalars['ID']['output'];
+  product: FiligranProduct;
+  short_description: Scalars['String']['output'];
+  timeline: Timeline;
+  title: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader_id: Scalars['String']['output'];
+};
+
+export type EpicConnection = {
+  __typename?: 'EpicConnection';
+  edges: Array<EpicEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type EpicEdge = {
+  __typename?: 'EpicEdge';
+  cursor: Scalars['String']['output'];
+  node: Epic;
+};
+
+export enum EpicOrdering {
+  Title = 'title'
+}
+
+export enum EpicType {
+  Integration = 'integration',
+  Other = 'other'
+}
+
+export enum FeatureFlag {
+  Dummy = 'DUMMY'
+}
+
+export enum FiligranProduct {
+  Openaev = 'openaev',
+  Opencti = 'opencti',
+  Xtmhub = 'xtmhub',
+  Xtmone = 'xtmone'
+}
+
+export type Filter = {
+  key: InputMaybe<FilterKey>;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum FilterKey {
+  FeedUrl = 'feed_url',
+  IntegrationSubtype = 'integration_subtype',
+  IntegrationType = 'integration_type',
+  Label = 'label',
+  ManagerSupported = 'manager_supported',
+  OrganizationId = 'organization_id',
+  PersonalSpace = 'personal_space',
+  ProductVersion = 'product_version',
+  Slug = 'slug',
+  Verified = 'verified'
+}
+
+export type GenericServiceCapability = Node & {
+  __typename?: 'GenericServiceCapability';
+  id: Scalars['ID']['output'];
+  name: Maybe<Scalars['String']['output']>;
+};
+
+export type Integration = {
+  active: Scalars['Boolean']['output'];
+  blogpost_url: Maybe<Scalars['String']['output']>;
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url: Maybe<Scalars['String']['output']>;
+  demo_url: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_type: IntegrationType;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  remover_id: Maybe<Scalars['ID']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type IntegrationHack = Document & Integration & Node & {
+  __typename?: 'IntegrationHack';
+  active: Scalars['Boolean']['output'];
+  blogpost_url: Maybe<Scalars['String']['output']>;
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url: Maybe<Scalars['String']['output']>;
+  demo_url: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_type: IntegrationType;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  remover_id: Maybe<Scalars['ID']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export enum IntegrationSubType {
+  CaseManagement = 'CASE_MANAGEMENT',
+  CyberIndustry = 'CYBER_INDUSTRY',
+  Darkweb = 'DARKWEB',
+  Detection = 'DETECTION',
+  ExternalImport = 'EXTERNAL_IMPORT',
+  FederalOrganization = 'FEDERAL_ORGANIZATION',
+  InternalEnrichment = 'INTERNAL_ENRICHMENT',
+  InternalExportFile = 'INTERNAL_EXPORT_FILE',
+  InternalImportFile = 'INTERNAL_IMPORT_FILE',
+  Journalists = 'JOURNALISTS',
+  Malware = 'MALWARE',
+  Native = 'NATIVE',
+  NotForProfitOrganization = 'NOT_FOR_PROFIT_ORGANIZATION',
+  Orchestration = 'ORCHESTRATION',
+  PeriodicBriefing = 'PERIODIC_BRIEFING',
+  SecurityResearcher = 'SECURITY_RESEARCHER',
+  SocialMedia = 'SOCIAL_MEDIA',
+  Stream = 'STREAM',
+  ThreatActors = 'THREAT_ACTORS',
+  Vendors = 'VENDORS'
+}
+
+export enum IntegrationType {
+  Connector = 'connector',
+  CsvFeed = 'csv_feed',
+  JsonFeed = 'json_feed',
+  RssFeed = 'rss_feed',
+  Stream = 'stream',
+  TaxiiFeed = 'taxii_feed',
+  ThirdPartyIntegration = 'third_party_integration'
+}
+
+export type IsPlatformRegisteredInput = {
+  platformId: Scalars['String']['input'];
+  tenantId: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IsPlatformRegisteredOrganization = Node & {
+  __typename?: 'IsPlatformRegisteredOrganization';
+  id: Scalars['ID']['output'];
+};
+
+export type IsPlatformRegisteredResponse = {
+  __typename?: 'IsPlatformRegisteredResponse';
+  organization: Maybe<IsPlatformRegisteredOrganization>;
+  platformTitle: Maybe<Scalars['String']['output']>;
+  status: PlatformRegistrationStatus;
+};
+
+export type LogicalFilterInput = {
+  children: InputMaybe<Array<LogicalFilterInput>>;
+  leaf: InputMaybe<Filter>;
+  operator: InputMaybe<LogicalOperator>;
+};
+
+export enum LogicalOperator {
+  And = 'AND',
+  Or = 'OR'
+}
+
+export type MeUserSubscription = {
+  __typename?: 'MeUserSubscription';
+  delete: Maybe<User>;
+  edit: Maybe<User>;
+};
+
+export type MergeEvent = Node & {
+  __typename?: 'MergeEvent';
+  from: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  target: Scalars['ID']['output'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  addOrganization: Maybe<Organization>;
+  addServicePicture: Maybe<ServiceInstance>;
+  addSubscription: Maybe<ServiceInstance>;
+  addSubscriptionCapability: Array<SubscriptionModel>;
+  addUseCase: UseCase;
+  addUser: Maybe<User>;
+  addUserService: Maybe<Array<Maybe<UserService>>>;
+  adminAddUser: Maybe<User>;
+  adminCancelDeploymentRequest: Maybe<DeploymentRequest>;
+  adminEditUser: User;
+  autoRegisterPlatform: Success;
+  bulkAcceptPendingUserInOrganization: Maybe<Success>;
+  bulkRemovePendingUserFromOrganization: Maybe<Success>;
+  cancelDeploymentRequest: Maybe<DeploymentRequest>;
+  changeSelectedOrganization: Maybe<User>;
+  consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse;
+  contactUs: Success;
+  createCompetitor: Competitor;
+  createDeploymentRequest: DeploymentRequest;
+  createDocument: Document;
+  createEpic: Epic;
+  createSubscriptions: Array<SubscriptionModel>;
+  deleteCompetitor: Competitor;
+  deleteDocument: Document;
+  deleteEpic: Epic;
+  deleteOrganization: Maybe<Organization>;
+  deleteSubscriptions: Array<SubscriptionModel>;
+  deleteUseCase: UseCase;
+  deleteUserService: Maybe<UserService>;
+  editMeUser: User;
+  editOrganization: Maybe<Organization>;
+  editServiceCapability: Maybe<SubscriptionModel>;
+  editUseCase: UseCase;
+  editUserCapabilities: User;
+  frontendErrorLog: Maybe<Scalars['Boolean']['output']>;
+  incrementShareNumberDocument: Document;
+  login: Maybe<User>;
+  logout: Scalars['ID']['output'];
+  refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
+  refreshPlatformRegistrationConnectivityStatusAllTenants: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse;
+  refreshPlatformRegistrationConnectivityStatusSingleTenant: RefreshPlatformRegistrationConnectivityStatusResponse;
+  refreshUserPlatformToken: RefreshUserPlatformTokenResponse;
+  registerPlatform: RegistrationResponse;
+  removePendingUserFromOrganization: Maybe<User>;
+  removeUserFromOrganization: Maybe<User>;
+  reorderDeploymentRequestInQueue: Success;
+  requestTransferPersonalSpace: Success;
+  resetPassword: Success;
+  sendTelemetryEvent: Maybe<SendTelemetryMutation>;
+  transferPersonalSpace: Success;
+  unregisterPlatform: Success;
+  updateCompetitor: Competitor;
+  updateDeploymentQuotaCapacity: Success;
+  updateDeploymentRequest: PlatformDeploymentRequest;
+  updateDocument: Document;
+  updateEpic: Epic;
+  updatePlatformServiceMetadata: Maybe<RegisteredPlatform>;
+  updateServiceGroups: Array<ServiceGroup>;
+  updateSubscription: Maybe<SubscriptionModel>;
+  uploadUserPicture: User;
+};
+
+
+export type MutationAddOrganizationArgs = {
+  input: OrganizationInput;
+};
+
+
+export type MutationAddServicePictureArgs = {
+  document: InputMaybe<Scalars['Upload']['input']>;
+  isLogo: InputMaybe<Scalars['Boolean']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationAddSubscriptionArgs = {
+  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type MutationAddSubscriptionCapabilityArgs = {
+  input: AddSubscriptionCapabilityInput;
+};
+
+
+export type MutationAddUseCaseArgs = {
+  input: AddUseCaseInput;
+};
+
+
+export type MutationAddUserArgs = {
+  input: AddUserInput;
+};
+
+
+export type MutationAddUserServiceArgs = {
+  input: UserServiceAddInput;
+};
+
+
+export type MutationAdminAddUserArgs = {
+  input: AdminAddUserInput;
+};
+
+
+export type MutationAdminCancelDeploymentRequestArgs = {
+  deploymentRequestId: InputMaybe<Scalars['DeploymentRequestId']['input']>;
+};
+
+
+export type MutationAdminEditUserArgs = {
+  id: Scalars['ID']['input'];
+  input: AdminEditUserInput;
+};
+
+
+export type MutationAutoRegisterPlatformArgs = {
+  input: InputMaybe<AutoRegisterPlatformInput>;
+  platform: InputMaybe<PlatformInput>;
+};
+
+
+export type MutationBulkAcceptPendingUserInOrganizationArgs = {
+  input: InputMaybe<BulkPendingUserFromOrganizationInput>;
+};
+
+
+export type MutationBulkRemovePendingUserFromOrganizationArgs = {
+  input: InputMaybe<BulkPendingUserFromOrganizationInput>;
+};
+
+
+export type MutationCancelDeploymentRequestArgs = {
+  cancellationReason: InputMaybe<Scalars['String']['input']>;
+  deploymentRequestId: Scalars['DeploymentRequestId']['input'];
+};
+
+
+export type MutationChangeSelectedOrganizationArgs = {
+  organization_id: Scalars['OrganizationId']['input'];
+};
+
+
+export type MutationContactUsArgs = {
+  message: InputMaybe<Scalars['String']['input']>;
+  platformId: InputMaybe<Scalars['ID']['input']>;
+  platformIdentifier: InputMaybe<PlatformIdentifier>;
+};
+
+
+export type MutationCreateCompetitorArgs = {
+  input: CreateCompetitorInput;
+};
+
+
+export type MutationCreateDeploymentRequestArgs = {
+  input: InputMaybe<CreateDeploymentRequestInput>;
+};
+
+
+export type MutationCreateDocumentArgs = {
+  images: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: CreateDocumentInput;
+  logo: InputMaybe<Scalars['Upload']['input']>;
+  metadata: Array<DocumentMetadata>;
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  sourceDocument: InputMaybe<Scalars['Upload']['input']>;
+};
+
+
+export type MutationCreateEpicArgs = {
+  document: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: CreateEpicInput;
+};
+
+
+export type MutationCreateSubscriptionsArgs = {
+  input: InputMaybe<CreateSubscriptionsInput>;
+};
+
+
+export type MutationDeleteCompetitorArgs = {
+  id: Scalars['CompetitorId']['input'];
+};
+
+
+export type MutationDeleteDocumentArgs = {
+  documentId: InputMaybe<Scalars['DocumentId']['input']>;
+  forceDelete: InputMaybe<Scalars['Boolean']['input']>;
+  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type MutationDeleteEpicArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteOrganizationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteSubscriptionsArgs = {
+  subscription_ids: Array<Scalars['SubscriptionId']['input']>;
+};
+
+
+export type MutationDeleteUseCaseArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteUserServiceArgs = {
+  input: UserServiceDeleteInput;
+};
+
+
+export type MutationEditMeUserArgs = {
+  input: EditMeUserInput;
+};
+
+
+export type MutationEditOrganizationArgs = {
+  id: Scalars['ID']['input'];
+  input: OrganizationInput;
+};
+
+
+export type MutationEditServiceCapabilityArgs = {
+  input: InputMaybe<EditServiceCapabilityInput>;
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type MutationEditUseCaseArgs = {
+  id: Scalars['ID']['input'];
+  input: EditUseCaseInput;
+};
+
+
+export type MutationEditUserCapabilitiesArgs = {
+  id: Scalars['ID']['input'];
+  input: EditUserCapabilitiesInput;
+};
+
+
+export type MutationFrontendErrorLogArgs = {
+  codeStack: InputMaybe<Scalars['String']['input']>;
+  componentStack: InputMaybe<Scalars['String']['input']>;
+  message: Scalars['String']['input'];
+};
+
+
+export type MutationIncrementShareNumberDocumentArgs = {
+  documentId: InputMaybe<Scalars['DocumentId']['input']>;
+};
+
+
+export type MutationLoginArgs = {
+  email: Scalars['String']['input'];
+  password: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationRefreshPlatformRegistrationConnectivityStatusArgs = {
+  input: RefreshPlatformRegistrationConnectivityStatusInput;
+};
+
+
+export type MutationRefreshPlatformRegistrationConnectivityStatusAllTenantsArgs = {
+  input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
+};
+
+
+export type MutationRefreshPlatformRegistrationConnectivityStatusSingleTenantArgs = {
+  input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput;
+};
+
+
+export type MutationRegisterPlatformArgs = {
+  input: RegisterPlatformInput;
+};
+
+
+export type MutationRemovePendingUserFromOrganizationArgs = {
+  organization_id: Scalars['OrganizationId']['input'];
+  user_id: Scalars['UserId']['input'];
+};
+
+
+export type MutationRemoveUserFromOrganizationArgs = {
+  organization_id: Scalars['OrganizationId']['input'];
+  user_id: Scalars['UserId']['input'];
+};
+
+
+export type MutationReorderDeploymentRequestInQueueArgs = {
+  input: ReorderDeploymentRequestInQueueInput;
+};
+
+
+export type MutationRequestTransferPersonalSpaceArgs = {
+  new_email: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationTransferPersonalSpaceArgs = {
+  requestId: Scalars['ID']['input'];
+};
+
+
+export type MutationUnregisterPlatformArgs = {
+  input: InputMaybe<UnregisterPlatformInput>;
+};
+
+
+export type MutationUpdateCompetitorArgs = {
+  input: UpdateCompetitorInput;
+};
+
+
+export type MutationUpdateDeploymentQuotaCapacityArgs = {
+  input: UpdateDeploymentQuotaCapacityInput;
+};
+
+
+export type MutationUpdateDeploymentRequestArgs = {
+  input: UpdateDeploymentRequestInput;
+};
+
+
+export type MutationUpdateDocumentArgs = {
+  documentId: Scalars['DocumentId']['input'];
+  existingImageIds: InputMaybe<Array<Scalars['DocumentId']['input']>>;
+  images: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: UpdateDocumentInput;
+  logo: InputMaybe<Scalars['Upload']['input']>;
+  metadata: Array<DocumentMetadata>;
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  sourceDocument: InputMaybe<Scalars['Upload']['input']>;
+};
+
+
+export type MutationUpdateEpicArgs = {
+  document: InputMaybe<Array<Scalars['Upload']['input']>>;
+  id: Scalars['ID']['input'];
+  input: UpdateEpicInput;
+};
+
+
+export type MutationUpdatePlatformServiceMetadataArgs = {
+  document: InputMaybe<Scalars['Upload']['input']>;
+  input: UpdatePlatformServiceMetadataInput;
+};
+
+
+export type MutationUpdateServiceGroupsArgs = {
+  input: UpdateServiceGroupsInput;
+};
+
+
+export type MutationUpdateSubscriptionArgs = {
+  input: UpdateSubscriptionInput;
+  subscription_id: Scalars['SubscriptionId']['input'];
+};
+
+
+export type MutationUploadUserPictureArgs = {
+  document: Scalars['Upload']['input'];
+};
+
+export type NewsFeedItemMetadata = {
+  __typename?: 'NewsFeedItemMetadata';
+  key: NewsFeedItemMetadataKey;
+  value: Maybe<Scalars['String']['output']>;
+};
+
+export enum NewsFeedItemMetadataKey {
+  UrlPath = 'url_path'
+}
+
+export enum NewsFeedItemType {
+  ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD'
+}
+
+export type Node = {
+  id: Scalars['ID']['output'];
+};
+
+export type OneClickDeployInput = {
+  platform_identifier: PlatformIdentifier;
+  platform_service_instance_id: Scalars['ID']['input'];
+  resource_id: Scalars['DocumentId']['input'];
+  resource_title: Scalars['String']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+export type OpenAevScenario = Document & Node & {
+  __typename?: 'OpenAEVScenario';
+  active: Scalars['Boolean']['output'];
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  product_version: Maybe<Scalars['String']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type OpenCtiPlatformRegistrationStatusInput = {
+  platformId: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
+export type OpenCtiPlatformRegistrationStatusResponse = {
+  __typename?: 'OpenCTIPlatformRegistrationStatusResponse';
+  status: PlatformRegistrationConnectivityStatus;
+};
+
+export type OpenCtiPlaybook = Document & Node & {
+  __typename?: 'OpenCTIPlaybook';
+  active: Scalars['Boolean']['output'];
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  product_version: Maybe<Scalars['String']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export enum OrderingMode {
+  Asc = 'asc',
+  Desc = 'desc'
+}
+
+export type Organization = Node & {
+  __typename?: 'Organization';
+  capabilityUser: Maybe<Array<Maybe<Capability>>>;
+  domains: Maybe<Array<Scalars['String']['output']>>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  personal_space: Scalars['Boolean']['output'];
+};
+
+export type OrganizationCapabilities = Node & {
+  __typename?: 'OrganizationCapabilities';
+  capabilities: Maybe<Array<OrganizationCapability>>;
+  id: Scalars['ID']['output'];
+  organization: Organization;
+};
+
+export type OrganizationCapabilitiesInput = {
+  capabilities: InputMaybe<Array<Scalars['String']['input']>>;
+  organization_id: Scalars['OrganizationId']['input'];
+};
+
+export enum OrganizationCapability {
+  AdministrateOrganization = 'ADMINISTRATE_ORGANIZATION',
+  ManageAccess = 'MANAGE_ACCESS',
+  ManagePlatformRegistration = 'MANAGE_PLATFORM_REGISTRATION',
+  ManageSubscription = 'MANAGE_SUBSCRIPTION'
+}
+
+export type OrganizationConnection = {
+  __typename?: 'OrganizationConnection';
+  edges: Array<OrganizationEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type OrganizationEdge = {
+  __typename?: 'OrganizationEdge';
+  cursor: Scalars['String']['output'];
+  node: Organization;
+};
+
+export type OrganizationInput = {
+  domains: InputMaybe<Array<Scalars['String']['input']>>;
+  name: Scalars['String']['input'];
+};
+
+export enum OrganizationOrdering {
+  Name = 'name'
+}
+
+export type OrganizationRef = Node & {
+  __typename?: 'OrganizationRef';
+  id: Scalars['ID']['output'];
+};
+
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor: Maybe<Scalars['String']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  startCursor: Maybe<Scalars['String']['output']>;
+};
+
+export enum PlatformContract {
+  Ce = 'CE',
+  Ee = 'EE',
+  Trial = 'trial'
+}
+
+export type PlatformDeploymentRequest = {
+  __typename?: 'PlatformDeploymentRequest';
+  activity_sector: Maybe<DeploymentRequestActivitySector>;
+  actual_state: Maybe<DeploymentRequestPlatformState>;
+  end_date: Maybe<Scalars['Date']['output']>;
+  failure_reason: Maybe<Scalars['String']['output']>;
+  hub_status: DeploymentRequestHubStatus;
+  id: Scalars['ID']['output'];
+  job_title: Maybe<DeploymentRequestJobTitle>;
+  ordering: Scalars['Int']['output'];
+  organization_domains: Maybe<Array<Scalars['String']['output']>>;
+  organization_name: Scalars['String']['output'];
+  platform_id: Maybe<Scalars['String']['output']>;
+  platform_identifier: PlatformIdentifier;
+  platform_token: Scalars['String']['output'];
+  platform_url: Maybe<Scalars['String']['output']>;
+  region: DeploymentRequestPlatformRegion;
+  requester_email: Scalars['String']['output'];
+  requester_first_name: Maybe<Scalars['String']['output']>;
+  requester_last_name: Maybe<Scalars['String']['output']>;
+  start_date: Maybe<Scalars['Date']['output']>;
+  target_state: Maybe<DeploymentRequestPlatformState>;
+  type: DeploymentRequestDeploymentType;
+  use_case: Maybe<DeploymentRequestUseCase>;
+};
+
+export type PlatformDeploymentRequestConnection = {
+  __typename?: 'PlatformDeploymentRequestConnection';
+  edges: Array<PlatformDeploymentRequestEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PlatformDeploymentRequestEdge = {
+  __typename?: 'PlatformDeploymentRequestEdge';
+  cursor: Scalars['String']['output'];
+  node: PlatformDeploymentRequest;
+};
+
+export enum PlatformIdentifier {
+  Openaev = 'openaev',
+  Opencti = 'opencti'
+}
+
+export type PlatformInput = {
+  contract: PlatformContract;
+  id: Scalars['ID']['input'];
+  tenantId: InputMaybe<Scalars['String']['input']>;
+  tenantName: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+  version: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PlatformProvider = {
+  __typename?: 'PlatformProvider';
+  name: Scalars['String']['output'];
+  provider: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export enum PlatformRegistrationConnectivityStatus {
+  Active = 'active',
+  Inactive = 'inactive',
+  NotFound = 'not_found'
+}
+
+export enum PlatformRegistrationStatus {
+  NeverRegistered = 'never_registered',
+  Registered = 'registered',
+  Unregistered = 'unregistered'
+}
+
+export enum PortalCapability {
+  Bypass = 'BYPASS',
+  ManageConnectorsIngestions = 'MANAGE_CONNECTORS_INGESTIONS',
+  ManageDeployment = 'MANAGE_DEPLOYMENT',
+  ModifyCompetitors = 'MODIFY_COMPETITORS',
+  ModifyTrials = 'MODIFY_TRIALS',
+  ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
+  ReadTrials = 'READ_TRIALS'
+}
+
+export type ProvisionedNewsFeedItem = {
+  __typename?: 'ProvisionedNewsFeedItem';
+  creation_date: Scalars['Date']['output'];
+  metadata: Array<NewsFeedItemMetadata>;
+  tags: Array<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  type: NewsFeedItemType;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  canUnregisterPlatform: CanUnregisterResponse;
+  competitors: CompetitorConnection;
+  deploymentRequests: PlatformDeploymentRequestConnection;
+  deploymentRequestsAvailable: Array<DeploymentAvailability>;
+  deploymentRequestsList: DeploymentRequestConnection;
+  document: Maybe<Document>;
+  documentExists: Maybe<Scalars['Boolean']['output']>;
+  documents: DocumentConnection;
+  epics: Maybe<EpicConnection>;
+  isPlatformRegistered: IsPlatformRegisteredResponse;
+  me: Maybe<User>;
+  node: Maybe<Node>;
+  /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
+  openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
+  organization: Maybe<Organization>;
+  organizations: OrganizationConnection;
+  pendingUsers: UserConnection;
+  platformAssociatedOrganization: Maybe<Organization>;
+  publicDocumentBySlug: Maybe<Document>;
+  publicDocuments: DocumentConnection;
+  publicDocumentsByServiceSlug: Array<Document>;
+  registeredPlatform: Maybe<RegisteredPlatform>;
+  registeredPlatforms: Array<RegisteredPlatform>;
+  seoServiceInstance: SeoServiceInstance;
+  seoServiceInstances: Array<SeoServiceInstance>;
+  serviceGroups: Array<ServiceGroup>;
+  serviceInstanceById: Maybe<ServiceInstance>;
+  serviceInstanceByIdAndGrantAccess: Maybe<ServiceInstance>;
+  serviceInstanceLinksByTags: Array<SeoServiceInstance>;
+  serviceInstances: ServiceConnection;
+  settings: Settings;
+  subscriptionById: Maybe<SubscriptionModel>;
+  subscriptions: SubscriptionConnection;
+  trialDeployments: TrialsDeployments;
+  updateOpenCTIManifest: Success;
+  useCases: Maybe<UseCaseConnection>;
+  userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
+  userOrganizations: Array<Organization>;
+  userServiceFromSubscription: Maybe<UserServiceConnection>;
+  users: UserConnection;
+  usersWithCapabilitiesInOrganization: Array<User>;
+};
+
+
+export type QueryCanUnregisterPlatformArgs = {
+  input: CanUnregisterPlatformInput;
+};
+
+
+export type QueryCompetitorsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: CompetitorOrdering;
+  orderMode: OrderingMode;
+};
+
+
+export type QueryDeploymentRequestsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  filters: InputMaybe<Array<DeploymentRequestFilter>>;
+  first: Scalars['Int']['input'];
+};
+
+
+export type QueryDeploymentRequestsAvailableArgs = {
+  platformIdentifier: InputMaybe<PlatformIdentifier>;
+};
+
+
+export type QueryDeploymentRequestsListArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  filters: InputMaybe<Array<DeploymentRequestFilter>>;
+  first: Scalars['Int']['input'];
+  orderBy: DeploymentRequestOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryDocumentArgs = {
+  documentId: InputMaybe<Scalars['DocumentId']['input']>;
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type QueryDocumentExistsArgs = {
+  documentName: InputMaybe<Scalars['String']['input']>;
+  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type QueryDocumentsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  logicalFilters: InputMaybe<LogicalFilterInput>;
+  orderBy: DocumentOrdering;
+  orderMode: OrderingMode;
+  parentsOnly: InputMaybe<Scalars['Boolean']['input']>;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type QueryEpicsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: EpicOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryIsPlatformRegisteredArgs = {
+  input: IsPlatformRegisteredInput;
+};
+
+
+export type QueryNodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryOpenCtiPlatformRegistrationStatusArgs = {
+  input: OpenCtiPlatformRegistrationStatusInput;
+};
+
+
+export type QueryOrganizationArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryOrganizationsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy: OrganizationOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPendingUsersArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  filters: InputMaybe<Array<Filter>>;
+  first: Scalars['Int']['input'];
+  orderBy: UserOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPlatformAssociatedOrganizationArgs = {
+  platformId: Scalars['String']['input'];
+  tenantId: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPublicDocumentBySlugArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryPublicDocumentsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  logicalFilters: InputMaybe<LogicalFilterInput>;
+  orderBy: DocumentOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryPublicDocumentsByServiceSlugArgs = {
+  serviceInstanceSlug: Scalars['String']['input'];
+};
+
+
+export type QueryRegisteredPlatformArgs = {
+  input: RegisteredPlatformInput;
+};
+
+
+export type QueryRegisteredPlatformsArgs = {
+  input: InputMaybe<RegisteredPlatformsInput>;
+};
+
+
+export type QuerySeoServiceInstanceArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryServiceGroupsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type QueryServiceInstanceByIdArgs = {
+  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type QueryServiceInstanceByIdAndGrantAccessArgs = {
+  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type QueryServiceInstanceLinksByTagsArgs = {
+  tags: Array<ServiceInstanceTag>;
+};
+
+
+export type QueryServiceInstancesArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  filters: InputMaybe<Array<ServiceInstanceFilter>>;
+  first: Scalars['Int']['input'];
+  orderBy: ServiceInstanceOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySubscriptionByIdArgs = {
+  subscription_id: InputMaybe<Scalars['SubscriptionId']['input']>;
+};
+
+
+export type QuerySubscriptionsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  filters: InputMaybe<Array<SubscriptionFilter>>;
+  first: Scalars['Int']['input'];
+  orderBy: SubscriptionOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryTrialDeploymentsArgs = {
+  input: InputMaybe<TrialDeploymentsInput>;
+};
+
+
+export type QueryUpdateOpenCtiManifestArgs = {
+  tag: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryUseCasesArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  documentType: InputMaybe<Scalars['String']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: UseCaseOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryUserServiceFromSubscriptionArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: UserServiceOrdering;
+  orderMode: OrderingMode;
+  subscription_id: Scalars['SubscriptionId']['input'];
+};
+
+
+export type QueryUsersArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  filters: InputMaybe<Array<Filter>>;
+  first: Scalars['Int']['input'];
+  orderBy: UserOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryUsersWithCapabilitiesInOrganizationArgs = {
+  input: UsersWithCapabilitiesInOrganizationInput;
+};
+
+export type RefreshPlatformRegistrationConnectivityStatusAllTenantsInput = {
+  platformId: Scalars['String']['input'];
+  platformIdentifier: PlatformIdentifier;
+  platformVersion: Scalars['String']['input'];
+  tenants: Array<TenantDetails>;
+};
+
+export type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse = {
+  __typename?: 'RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse';
+  statuses: Array<TenantStatus>;
+};
+
+export type RefreshPlatformRegistrationConnectivityStatusInput = {
+  platformId: Scalars['String']['input'];
+  platformIdentifier: InputMaybe<PlatformIdentifier>;
+  platformVersion: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
+export type RefreshPlatformRegistrationConnectivityStatusResponse = {
+  __typename?: 'RefreshPlatformRegistrationConnectivityStatusResponse';
+  status: PlatformRegistrationConnectivityStatus;
+};
+
+export type RefreshPlatformRegistrationConnectivityStatusSingleTenantInput = {
+  platformId: Scalars['String']['input'];
+  platformIdentifier: PlatformIdentifier;
+  platformVersion: Scalars['String']['input'];
+  tenantId: Scalars['String']['input'];
+  tenantName: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+};
+
+export type RefreshUserPlatformTokenResponse = {
+  __typename?: 'RefreshUserPlatformTokenResponse';
+  token: Scalars['String']['output'];
+};
+
+export type RegisterPlatformInput = {
+  identifier: PlatformIdentifier;
+  organizationId: Scalars['ID']['input'];
+  platform: PlatformInput;
+};
+
+export type RegisteredPlatform = Node & {
+  __typename?: 'RegisteredPlatform';
+  contract: PlatformContract;
+  deployment_request: Maybe<DeploymentRequest>;
+  id: Scalars['ID']['output'];
+  identifier: ServiceDefinitionIdentifier;
+  illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
+  platform_id: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  tenant_id: Maybe<Scalars['String']['output']>;
+  tenant_name: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+  version: Maybe<Scalars['String']['output']>;
+};
+
+export type RegisteredPlatformInput = {
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+export type RegisteredPlatformsInput = {
+  identifier: InputMaybe<PlatformIdentifier>;
+  onlyActive: InputMaybe<Scalars['Boolean']['input']>;
+  onlyTrial: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type RegistrationResponse = {
+  __typename?: 'RegistrationResponse';
+  token: Scalars['String']['output'];
+};
+
+export enum ReorderDeploymentRequestInQueueDirection {
+  Top = 'top',
+  Up = 'up'
+}
+
+export type ReorderDeploymentRequestInQueueInput = {
+  direction: ReorderDeploymentRequestInQueueDirection;
+  id: Scalars['DeploymentRequestId']['input'];
+};
+
+export type RolePortal = Node & {
+  __typename?: 'RolePortal';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type RssFeed = Document & Integration & Node & {
+  __typename?: 'RssFeed';
+  active: Scalars['Boolean']['output'];
+  blogpost_url: Maybe<Scalars['String']['output']>;
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url: Maybe<Scalars['String']['output']>;
+  demo_url: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  feed_url: Maybe<Scalars['String']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_subtype: IntegrationSubType;
+  integration_type: IntegrationType;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  remover_id: Maybe<Scalars['ID']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type SendTelemetryMutation = {
+  __typename?: 'SendTelemetryMutation';
+  oneClickDeploy: Maybe<TelemetryResponse>;
+};
+
+
+export type SendTelemetryMutationOneClickDeployArgs = {
+  input: OneClickDeployInput;
+};
+
+export type SeoServiceInstance = Node & {
+  __typename?: 'SeoServiceInstance';
+  description: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
+  links: Maybe<Array<Maybe<ServiceLink>>>;
+  logo_document_id: Maybe<Scalars['DocumentId']['output']>;
+  name: Scalars['String']['output'];
+  service_definition: ServiceDefinition;
+  slug: Maybe<Scalars['String']['output']>;
+  tags: Maybe<Array<ServiceInstanceTag>>;
+};
+
+export type ServiceCapability = Node & {
+  __typename?: 'ServiceCapability';
+  description: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Maybe<Scalars['String']['output']>;
+  service_definition_id: Maybe<Scalars['ID']['output']>;
+};
+
+export enum ServiceConfigurationStatus {
+  Active = 'active',
+  Inactive = 'inactive'
+}
+
+export type ServiceConnection = {
+  __typename?: 'ServiceConnection';
+  edges: Array<ServiceInstanceEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ServiceDefinition = Node & {
+  __typename?: 'ServiceDefinition';
+  description: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  identifier: ServiceDefinitionIdentifier;
+  name: Scalars['String']['output'];
+  public: Maybe<Scalars['Boolean']['output']>;
+  service_capability: Maybe<Array<Maybe<ServiceCapability>>>;
+};
+
+export enum ServiceDefinitionIdentifier {
+  Link = 'link',
+  OpenaevRegistration = 'openaev_registration',
+  OpenaevScenarios = 'openaev_scenarios',
+  OpenctiCustomDashboards = 'opencti_custom_dashboards',
+  OpenctiIntegrations = 'opencti_integrations',
+  OpenctiPlaybooks = 'opencti_playbooks',
+  OpenctiRegistration = 'opencti_registration',
+  Vault = 'vault',
+  XtmPlatformRoadmap = 'xtm_platform_roadmap'
+}
+
+export type ServiceGroup = Node & {
+  __typename?: 'ServiceGroup';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  users: Maybe<Array<User>>;
+};
+
+export type ServiceInstance = Node & {
+  __typename?: 'ServiceInstance';
+  capabilities: Array<Maybe<Scalars['String']['output']>>;
+  creation_status: Maybe<ServiceInstanceCreationStatus>;
+  description: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
+  links: Maybe<Array<Maybe<ServiceLink>>>;
+  logo_document_id: Maybe<Scalars['DocumentId']['output']>;
+  name: Scalars['String']['output'];
+  ordering: Scalars['Int']['output'];
+  organization: Maybe<Array<Maybe<Organization>>>;
+  organization_subscribed: Maybe<Scalars['Boolean']['output']>;
+  public: Maybe<Scalars['Boolean']['output']>;
+  service_definition: Maybe<ServiceDefinition>;
+  slug: Maybe<Scalars['String']['output']>;
+  subscriptions: Maybe<Array<Maybe<SubscriptionModel>>>;
+  tags: Maybe<Array<ServiceInstanceTag>>;
+  user_joined: Maybe<Scalars['Boolean']['output']>;
+};
+
+export enum ServiceInstanceCreationStatus {
+  Created = 'CREATED',
+  Disabled = 'DISABLED',
+  Pending = 'PENDING',
+  Ready = 'READY'
+}
+
+export type ServiceInstanceEdge = {
+  __typename?: 'ServiceInstanceEdge';
+  cursor: Scalars['String']['output'];
+  node: Maybe<ServiceInstance>;
+};
+
+export type ServiceInstanceFilter = {
+  key: InputMaybe<ServiceInstanceFilterKey>;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum ServiceInstanceFilterKey {
+  Id = 'id',
+  Public = 'public',
+  ServiceDefinitionIdentifier = 'service_definition_identifier',
+  Tags = 'tags'
+}
+
+export enum ServiceInstanceOrdering {
+  Description = 'description',
+  Name = 'name',
+  Ordering = 'ordering'
+}
+
+export type ServiceInstanceSubscription = {
+  __typename?: 'ServiceInstanceSubscription';
+  add: Maybe<ServiceInstance>;
+  delete: Maybe<ServiceInstance>;
+  edit: Maybe<ServiceInstance>;
+};
+
+export enum ServiceInstanceTag {
+  OpenAev = 'openAEV',
+  OpenCti = 'openCTI',
+  Others = 'others',
+  Trial = 'trial'
+}
+
+export type ServiceLink = Node & {
+  __typename?: 'ServiceLink';
+  id: Scalars['ID']['output'];
+  name: Maybe<Scalars['String']['output']>;
+  service_instance_id: Maybe<Scalars['ID']['output']>;
+  url: Maybe<Scalars['String']['output']>;
+};
+
+export enum ServiceRestriction {
+  Access = 'ACCESS',
+  AccessUser = 'ACCESS_USER',
+  Delete = 'DELETE',
+  ManageAccess = 'MANAGE_ACCESS',
+  Upload = 'UPLOAD',
+  Upsert = 'UPSERT'
+}
+
+export type Settings = {
+  __typename?: 'Settings';
+  base_url_front: Scalars['String']['output'];
+  environment: Scalars['String']['output'];
+  platform_feature_flags: Array<FeatureFlag>;
+  platform_providers: Array<PlatformProvider>;
+};
+
+export type ShareableResource = {
+  __typename?: 'ShareableResource';
+  active: Scalars['Boolean']['output'];
+  created_at: Scalars['Date']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  image_type: Maybe<DocumentImageType>;
+  name: Maybe<Scalars['String']['output']>;
+  source_type: DocumentSourceType;
+};
+
+export type Stream = Document & Integration & Node & {
+  __typename?: 'Stream';
+  active: Scalars['Boolean']['output'];
+  blogpost_url: Maybe<Scalars['String']['output']>;
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url: Maybe<Scalars['String']['output']>;
+  demo_url: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  feed_url: Maybe<Scalars['String']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_subtype: IntegrationSubType;
+  integration_type: IntegrationType;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  remover_id: Maybe<Scalars['ID']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type SubscribedServiceInstanceConfiguration = {
+  __typename?: 'SubscribedServiceInstanceConfiguration';
+  platform_contract: PlatformContract;
+  platform_id: Scalars['String']['output'];
+  platform_title: Scalars['String']['output'];
+  platform_url: Scalars['String']['output'];
+  registerer_id: Scalars['String']['output'];
+  token: Scalars['String']['output'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  MeUser: Maybe<MeUserSubscription>;
+  ServiceInstance: Maybe<ServiceInstanceSubscription>;
+  User: Maybe<UserSubscription>;
+  UserPending: Maybe<UserPendingSubscription>;
+};
+
+
+export type SubscriptionUserArgs = {
+  organizationId: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type SubscriptionUserPendingArgs = {
+  organizationId: Scalars['ID']['input'];
+};
+
+export type SubscriptionCapability = Node & {
+  __typename?: 'SubscriptionCapability';
+  id: Scalars['ID']['output'];
+  service_capability: Maybe<ServiceCapability>;
+};
+
+export type SubscriptionConnection = {
+  __typename?: 'SubscriptionConnection';
+  edges: Array<SubscriptionEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type SubscriptionEdge = {
+  __typename?: 'SubscriptionEdge';
+  cursor: Scalars['String']['output'];
+  node: SubscriptionModel;
+};
+
+export type SubscriptionFilter = {
+  key: SubscriptionFilterKey;
+  value: Array<Scalars['String']['input']>;
+};
+
+export enum SubscriptionFilterKey {
+  OrganizationName = 'organization_name',
+  ServiceInstanceId = 'service_instance_id'
+}
+
+export type SubscriptionModel = Node & {
+  __typename?: 'SubscriptionModel';
+  end_date: Maybe<Scalars['Date']['output']>;
+  id: Scalars['ID']['output'];
+  organization: Organization;
+  organization_id: Scalars['OrganizationId']['output'];
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_url: Scalars['String']['output'];
+  start_date: Maybe<Scalars['Date']['output']>;
+  subscription_capability: Maybe<Array<Maybe<SubscriptionCapability>>>;
+  user_service: Array<Maybe<UserService>>;
+};
+
+export enum SubscriptionOrdering {
+  EndDate = 'end_date',
+  OrganizationName = 'organization_name',
+  ServiceDescription = 'service_description',
+  ServiceName = 'service_name',
+  ServiceProvider = 'service_provider',
+  ServiceType = 'service_type',
+  StartDate = 'start_date'
+}
+
+export type Success = {
+  __typename?: 'Success';
+  success: Scalars['Boolean']['output'];
+};
+
+export type TaxiiFeed = Document & Integration & Node & {
+  __typename?: 'TaxiiFeed';
+  active: Scalars['Boolean']['output'];
+  blogpost_url: Maybe<Scalars['String']['output']>;
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url: Maybe<Scalars['String']['output']>;
+  demo_url: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  feed_url: Maybe<Scalars['String']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_subtype: IntegrationSubType;
+  integration_type: IntegrationType;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  remover_id: Maybe<Scalars['ID']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type TelemetryResponse = {
+  __typename?: 'TelemetryResponse';
+  message: Maybe<Scalars['String']['output']>;
+  result: Scalars['Boolean']['output'];
+};
+
+export type TenantDetails = {
+  tenantId: Scalars['String']['input'];
+  tenantName: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+};
+
+export type TenantStatus = {
+  __typename?: 'TenantStatus';
+  status: PlatformRegistrationConnectivityStatus;
+  tenantId: Scalars['String']['output'];
+};
+
+export type ThirdPartyIntegration = Document & Integration & Node & {
+  __typename?: 'ThirdPartyIntegration';
+  active: Scalars['Boolean']['output'];
+  blogpost_url: Maybe<Scalars['String']['output']>;
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  datasheet_url: Maybe<Scalars['String']['output']>;
+  demo_url: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Maybe<Scalars['String']['output']>;
+  github_url: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration_subtype: IntegrationSubType;
+  integration_type: IntegrationType;
+  minio_name: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  product_version: Maybe<Scalars['String']['output']>;
+  remover_id: Maybe<Scalars['ID']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+  vendor_url: Scalars['String']['output'];
+};
+
+export enum Timeline {
+  Finished = 'finished',
+  Next = 'next',
+  Now = 'now',
+  UnderConsideration = 'under_consideration'
+}
+
+export type TrialDeploymentsInput = {
+  organizationId: Scalars['OrganizationId']['input'];
+  platformIdentifiers: InputMaybe<Array<PlatformIdentifier>>;
+};
+
+export type TrialsDeployments = {
+  __typename?: 'TrialsDeployments';
+  availableTrials: Array<PlatformIdentifier>;
+  deployed: Array<DeployedPlatform>;
+  isBlacklisted: Scalars['Boolean']['output'];
+};
+
+export type UnregisterPlatformInput = {
+  identifier: PlatformIdentifier;
+  platformId: Scalars['String']['input'];
+  tenantId: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateCompetitorInput = {
+  domain: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['CompetitorId']['input'];
+  name: InputMaybe<Scalars['String']['input']>;
+  tier: InputMaybe<CompetitorTier>;
+};
+
+export type UpdateDeploymentQuotaCapacityInput = {
+  newCapacity: Scalars['Int']['input'];
+  platformIdentifier: PlatformIdentifier;
+  region: DeploymentRequestPlatformRegion;
+};
+
+export type UpdateDeploymentRequestInput = {
+  actual_state: InputMaybe<DeploymentRequestPlatformState>;
+  end_date: InputMaybe<Scalars['Date']['input']>;
+  failure_reason: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['DeploymentRequestId']['input'];
+  ordering: InputMaybe<Scalars['Int']['input']>;
+  platform_id: InputMaybe<Scalars['String']['input']>;
+  start_date: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type UpdateDocumentInput = {
+  active: InputMaybe<Scalars['Boolean']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+  short_description: InputMaybe<Scalars['String']['input']>;
+  uploader_id: InputMaybe<Scalars['UserId']['input']>;
+  uploader_organization_id: InputMaybe<Scalars['OrganizationId']['input']>;
+  use_cases: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
+};
+
+export type UpdateEpicInput = {
+  active: InputMaybe<Scalars['Boolean']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
+  edition_type: EditionType;
+  illustration_document: InputMaybe<Scalars['Upload']['input']>;
+  is_integration: InputMaybe<Scalars['Boolean']['input']>;
+  product: InputMaybe<FiligranProduct>;
+  short_description: InputMaybe<Scalars['String']['input']>;
+  timeline: InputMaybe<Timeline>;
+  title: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdatePlatformServiceMetadataInput = {
+  name: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
+
+export type UpdateServiceGroupsInput = {
+  groups: Array<UpdateServiceGroupsInputGroup>;
+};
+
+export type UpdateServiceGroupsInputGroup = {
+  id: Scalars['ServiceGroupId']['input'];
+  userIds: Array<Scalars['UserId']['input']>;
+};
+
+export type UpdateSubscriptionInput = {
+  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
+  end_date: InputMaybe<Scalars['Date']['input']>;
+  start_date: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type UseCase = Node & {
+  __typename?: 'UseCase';
+  color: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type UseCaseConnection = {
+  __typename?: 'UseCaseConnection';
+  edges: Array<UseCaseEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type UseCaseEdge = {
+  __typename?: 'UseCaseEdge';
+  cursor: Scalars['String']['output'];
+  node: UseCase;
+};
+
+export enum UseCaseOrdering {
+  Color = 'color',
+  Name = 'name'
+}
+
+export type User = Node & {
+  __typename?: 'User';
+  capabilities: Maybe<Array<Capability>>;
+  country: Maybe<Scalars['String']['output']>;
+  disabled: Maybe<Scalars['Boolean']['output']>;
+  email: Scalars['String']['output'];
+  first_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  last_login: Maybe<Scalars['Date']['output']>;
+  last_name: Maybe<Scalars['String']['output']>;
+  organization_capabilities: Maybe<Array<OrganizationCapabilities>>;
+  organizations: Maybe<Array<Organization>>;
+  pending_organization_id: Maybe<Scalars['OrganizationId']['output']>;
+  picture: Maybe<Scalars['String']['output']>;
+  roles_portal: Maybe<Array<RolePortal>>;
+  selected_language: Maybe<Scalars['String']['output']>;
+  selected_org_capabilities: Maybe<Array<OrganizationCapability>>;
+  selected_organization_id: Maybe<Scalars['OrganizationId']['output']>;
+};
+
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  edges: Array<UserEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type UserEdge = {
+  __typename?: 'UserEdge';
+  cursor: Scalars['String']['output'];
+  node: User;
+};
+
+export enum UserOrdering {
+  Country = 'country',
+  Disabled = 'disabled',
+  Email = 'email',
+  FirstName = 'first_name',
+  LastLogin = 'last_login',
+  LastName = 'last_name'
+}
+
+export type UserPendingSubscription = {
+  __typename?: 'UserPendingSubscription';
+  delete: Maybe<User>;
+  invalidate: Maybe<OrganizationRef>;
+};
+
+export type UserService = Node & {
+  __typename?: 'UserService';
+  id: Scalars['ID']['output'];
+  ordering: Maybe<Scalars['Int']['output']>;
+  subscription: Maybe<SubscriptionModel>;
+  subscription_id: Scalars['ID']['output'];
+  user: Maybe<User>;
+  user_id: Scalars['ID']['output'];
+  user_service_capability: Maybe<Array<Maybe<UserServiceCapability>>>;
+};
+
+export type UserServiceAddInput = {
+  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  email: Array<Scalars['String']['input']>;
+  subscriptionId: InputMaybe<Scalars['SubscriptionId']['input']>;
+};
+
+export type UserServiceAddYourselfInput = {
+  email: Array<Scalars['String']['input']>;
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+export type UserServiceCapability = Node & {
+  __typename?: 'UserServiceCapability';
+  generic_service_capability: Maybe<GenericServiceCapability>;
+  id: Scalars['ID']['output'];
+  subscription_capability: Maybe<SubscriptionCapability>;
+  user_service_id: Scalars['ID']['output'];
+};
+
+export type UserServiceConnection = {
+  __typename?: 'UserServiceConnection';
+  edges: Array<UserServiceEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type UserServiceDeleteInput = {
+  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  email: Scalars['String']['input'];
+  subscriptionId: Scalars['SubscriptionId']['input'];
+};
+
+export type UserServiceDeleted = Node & {
+  __typename?: 'UserServiceDeleted';
+  id: Scalars['ID']['output'];
+  subscription_id: Scalars['ID']['output'];
+  user_id: Scalars['ID']['output'];
+};
+
+export type UserServiceEdge = {
+  __typename?: 'UserServiceEdge';
+  cursor: Scalars['String']['output'];
+  node: Maybe<UserService>;
+};
+
+export enum UserServiceOrdering {
+  Email = 'email',
+  FirstName = 'first_name',
+  LastName = 'last_name',
+  Ordering = 'ordering',
+  ServiceDescription = 'service_description',
+  ServiceName = 'service_name',
+  ServiceProvider = 'service_provider',
+  ServiceType = 'service_type',
+  SubscriptionStatus = 'subscription_status'
+}
+
+export type UserSubscription = {
+  __typename?: 'UserSubscription';
+  add: Maybe<User>;
+  delete: Maybe<User>;
+  edit: Maybe<User>;
+  merge: Maybe<MergeEvent>;
+};
+
+export type UsersWithCapabilitiesInOrganizationInput = {
+  capabilities: Array<OrganizationCapability>;
+  organizationId: Scalars['OrganizationId']['input'];
+};
+
+export type UseCaseAddMutationVariables = Exact<{
+  input: AddUseCaseInput;
+}>;
+
+
+export type UseCaseAddMutation = { __typename?: 'Mutation', addUseCase: { __typename?: 'UseCase', id: string, name: string, color: string } };
+
+export type UseCaseEditMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  input: EditUseCaseInput;
+}>;
+
+
+export type UseCaseEditMutation = { __typename?: 'Mutation', editUseCase: { __typename?: 'UseCase', id: string, name: string, color: string } };
+
+export type UseCaseDeleteMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type UseCaseDeleteMutation = { __typename?: 'Mutation', deleteUseCase: { __typename?: 'UseCase', id: string } };
+
+export type UseCaseRowFragment = { __typename?: 'UseCase', id: string, name: string, color: string };
+
+export type UseCasesListQueryVariables = Exact<{
+  count: Scalars['Int']['input'];
+  orderBy: UseCaseOrdering;
+  orderMode: OrderingMode;
+}>;
+
+
+export type UseCasesListQuery = { __typename?: 'Query', useCases: { __typename?: 'UseCaseConnection', totalCount: number, edges: Array<{ __typename?: 'UseCaseEdge', node: { __typename?: 'UseCase', id: string, name: string, color: string } }> } | null };
+
+
+export const UseCaseRowFragmentDoc = `
+    fragment UseCaseRow on UseCase {
+  id
+  name
+  color
+}
+    `;
+export const UseCaseAddDocument = `
+    mutation UseCaseAdd($input: AddUseCaseInput!) {
+  addUseCase(input: $input) {
+    ...UseCaseRow
+  }
+}
+    ${UseCaseRowFragmentDoc}`;
+
+export const useUseCaseAddMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UseCaseAddMutation, TError, UseCaseAddMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<UseCaseAddMutation, TError, UseCaseAddMutationVariables, TContext>(
+      {
+    mutationKey: ['UseCaseAdd'],
+    mutationFn: (variables?: UseCaseAddMutationVariables) => fetcher<UseCaseAddMutation, UseCaseAddMutationVariables>(client, UseCaseAddDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useUseCaseAddMutation.getKey = () => ['UseCaseAdd'];
+
+
+useUseCaseAddMutation.fetcher = (client: GraphQLClient, variables: UseCaseAddMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseAddMutation, UseCaseAddMutationVariables>(client, UseCaseAddDocument, variables, headers);
+
+export const UseCaseEditDocument = `
+    mutation UseCaseEdit($id: ID!, $input: EditUseCaseInput!) {
+  editUseCase(id: $id, input: $input) {
+    ...UseCaseRow
+  }
+}
+    ${UseCaseRowFragmentDoc}`;
+
+export const useUseCaseEditMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UseCaseEditMutation, TError, UseCaseEditMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<UseCaseEditMutation, TError, UseCaseEditMutationVariables, TContext>(
+      {
+    mutationKey: ['UseCaseEdit'],
+    mutationFn: (variables?: UseCaseEditMutationVariables) => fetcher<UseCaseEditMutation, UseCaseEditMutationVariables>(client, UseCaseEditDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useUseCaseEditMutation.getKey = () => ['UseCaseEdit'];
+
+
+useUseCaseEditMutation.fetcher = (client: GraphQLClient, variables: UseCaseEditMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseEditMutation, UseCaseEditMutationVariables>(client, UseCaseEditDocument, variables, headers);
+
+export const UseCaseDeleteDocument = `
+    mutation UseCaseDelete($id: ID!) {
+  deleteUseCase(id: $id) {
+    id
+  }
+}
+    `;
+
+export const useUseCaseDeleteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UseCaseDeleteMutation, TError, UseCaseDeleteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<UseCaseDeleteMutation, TError, UseCaseDeleteMutationVariables, TContext>(
+      {
+    mutationKey: ['UseCaseDelete'],
+    mutationFn: (variables?: UseCaseDeleteMutationVariables) => fetcher<UseCaseDeleteMutation, UseCaseDeleteMutationVariables>(client, UseCaseDeleteDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useUseCaseDeleteMutation.getKey = () => ['UseCaseDelete'];
+
+
+useUseCaseDeleteMutation.fetcher = (client: GraphQLClient, variables: UseCaseDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseDeleteMutation, UseCaseDeleteMutationVariables>(client, UseCaseDeleteDocument, variables, headers);
+
+export const UseCasesListDocument = `
+    query UseCasesList($count: Int!, $orderBy: UseCaseOrdering!, $orderMode: OrderingMode!) {
+  useCases(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+    totalCount
+    edges {
+      node {
+        id
+        name
+        color
+      }
+    }
+  }
+}
+    `;
+
+export const useUseCasesListQuery = <
+      TData = UseCasesListQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: UseCasesListQueryVariables,
+      options?: Omit<UseQueryOptions<UseCasesListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<UseCasesListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<UseCasesListQuery, TError, TData>(
+      {
+    queryKey: ['UseCasesList', variables],
+    queryFn: fetcher<UseCasesListQuery, UseCasesListQueryVariables>(client, UseCasesListDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useUseCasesListQuery.getKey = (variables: UseCasesListQueryVariables) => ['UseCasesList', variables];
+
+export const useInfiniteUseCasesListQuery = <
+      TData = InfiniteData<UseCasesListQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: UseCasesListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<UseCasesListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<UseCasesListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<UseCasesListQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['UseCasesList.infinite', variables],
+      queryFn: (metaData) => fetcher<UseCasesListQuery, UseCasesListQueryVariables>(client, UseCasesListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteUseCasesListQuery.getKey = (variables: UseCasesListQueryVariables) => ['UseCasesList.infinite', variables];
+
+
+useUseCasesListQuery.fetcher = (client: GraphQLClient, variables: UseCasesListQueryVariables, headers?: RequestInit['headers']) => fetcher<UseCasesListQuery, UseCasesListQueryVariables>(client, UseCasesListDocument, variables, headers);

@@ -9,7 +9,7 @@ import { requestContext } from '../context/request.context';
 import { OrganizationId } from '../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../model/user';
-import { loadUserOrganization } from '../modules/common/user-organization.domain';
+import { UserOrganizationDomain } from '../modules/organization-management/user/user-organization/user-organization.domain';
 import { isUserAllowedOnOrganization } from '../modules/security-management/capability/auth.helper';
 import { loadSubscriptionBy } from '../modules/subscription/subscription.domain';
 import { UserServiceDomain } from '../modules/user-service/user-service.domain';
@@ -22,10 +22,11 @@ export const securityGuard = {
     user: UserLoadUserBy,
     organizationId: OrganizationId
   ) => {
-    const [userOrganization] = await loadUserOrganization({
-      user_id: user.id,
-      organization_id: organizationId,
-    });
+    const [userOrganization] =
+      await UserOrganizationDomain.loadUserOrganization({
+        user_id: user.id,
+        organization_id: organizationId,
+      });
 
     if (!userOrganization) {
       throw new Error(ErrorCode.UserIsNotInOrganization);

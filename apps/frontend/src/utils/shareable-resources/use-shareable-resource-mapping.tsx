@@ -1,8 +1,4 @@
 'use client';
-import {
-  ServiceSlug,
-  ShareableResourceType,
-} from '@/utils/shareable-resources/shareable-resources.types';
 import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
   ServiceListFilterKey,
@@ -15,6 +11,10 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
+import {
+  ServiceSlug,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 
 export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const localStorageKeyMapping: Record<
@@ -27,6 +27,8 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       ServiceListLocalStorageKey.OpenCTICustomDashboards,
     [ServiceSlug.OPEN_AEV_SCENARIOS]:
       ServiceListLocalStorageKey.OpenAEVScenarios,
+    [ServiceSlug.OPEN_CTI_PLAYBOOKS]:
+      ServiceListLocalStorageKey.OpenCTIPlaybooks,
   };
   const localStorageKey = localStorageKeyMapping[slug];
   const typeFeed: Record<ServiceSlug, ShareableResourceType> = {
@@ -35,6 +37,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
     [ServiceSlug.OPEN_AEV_SCENARIOS]: ShareableResourceType.OPENAEV_SCENARIO,
+    [ServiceSlug.OPEN_CTI_PLAYBOOKS]: ShareableResourceType.OPENCTI_PLAYBOOK,
   };
   const {
     removeLabels,
@@ -68,6 +71,9 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       [ServiceListFilterKey.Label]: labelFilter,
     },
     [ServiceSlug.OPEN_AEV_SCENARIOS]: {
+      [ServiceListFilterKey.Label]: labelFilter,
+    },
+    [ServiceSlug.OPEN_CTI_PLAYBOOKS]: {
       [ServiceListFilterKey.Label]: labelFilter,
     },
   };

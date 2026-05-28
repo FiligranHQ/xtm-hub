@@ -15,17 +15,17 @@
     "dev:front": "yarn workspace  @xtm-hub/frontend dev"
   },
   "devDependencies": {
-    "eslint": "^9.30.1",
-    "eslint-config-prettier": "^10.1.5",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
     "stylus": "github:stylus/stylus#0.64.0",
-    "typescript": "5.9.3"
+    "typescript": "catalog:"
   },
   "dependencies": {
-    "@types/node": "24.12.2",
+    "@types/node": "catalog:",
     "eslint-plugin-unicorn": "64.0.0",
-    "tsx": "4.21.0",
-    "typescript": "5.9.3"
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   },
   "tsConfig": "tsconfig.json",
-  "packageManager": "yarn@4.14.1"
+  "packageManager": "yarn@4.15.0"
 }

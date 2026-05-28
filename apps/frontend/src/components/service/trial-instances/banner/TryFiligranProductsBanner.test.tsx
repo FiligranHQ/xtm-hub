@@ -1,16 +1,9 @@
+import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
-import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
-
-vi.mock('next/navigation', (importOriginal) => ({
-  ...importOriginal(),
-  useRouter: () => ({
-    push: vi.fn(),
-  }),
-}));
 
 const OpenCTITrial = {
   serviceInstanceId: 'id',
@@ -23,10 +16,10 @@ const OpenAEVTrial = {
 
 describe('Filigran product banner text', () => {
   it.each`
-    availableTrials                                                     | registeredPlatforms | expectedText                                           | nonExpectedText
-    ${[PlatformIdentifierEnum.OPENAEV]}                                 | ${[OpenCTITrial]}   | ${/Explore OpenAEV platform with 30 days/i}            | ${'OpenCTI'}
-    ${[PlatformIdentifierEnum.OPENCTI]}                                 | ${[OpenAEVTrial]}   | ${/Explore OpenCTI platform with 30 days/i}            | ${'OpenAEV'}
-    ${[PlatformIdentifierEnum.OPENCTI, PlatformIdentifierEnum.OPENAEV]} | ${[]}               | ${/Explore OpenCTI or OpenAEV platform with 30 days/i} | ${null}
+    availableTrials                                                     | registeredPlatforms | expectedText                        | nonExpectedText
+    ${[PlatformIdentifierEnum.OPENAEV]}                                 | ${[OpenCTITrial]}   | ${'Service.Trials.ExplorePlatform'} | ${'Service.Trials.ExploreProducts'}
+    ${[PlatformIdentifierEnum.OPENCTI]}                                 | ${[OpenAEVTrial]}   | ${'Service.Trials.ExplorePlatform'} | ${'Service.Trials.ExploreProducts'}
+    ${[PlatformIdentifierEnum.OPENCTI, PlatformIdentifierEnum.OPENAEV]} | ${[]}               | ${'Service.Trials.ExploreProducts'} | ${null}
   `(
     'should render the correct text depending the registration',
     async ({
@@ -130,7 +123,9 @@ describe('Filigran product banner text', () => {
 
     // WHEN
     // The user clicks on learn more
-    const learnMoreButton = await findByRole('button', { name: /Learn more/i });
+    const learnMoreButton = await findByRole('button', {
+      name: 'Service.Trials.LearnMore.Link',
+    });
     const user = userEvent.setup();
     await user.click(learnMoreButton);
 
@@ -177,7 +172,7 @@ describe('Filigran product banner text', () => {
 
       // Then
       const learnMoreLink = getByRole('link', {
-        name: /Learn more/i,
+        name: 'Service.Trials.LearnMore.Link',
       });
       const href = learnMoreLink.getAttribute('href');
       expect(href).toContain(linkToLearnMore);
@@ -224,7 +219,7 @@ describe('Filigran product banner text', () => {
       });
 
       // Then
-      const startTrialButton = await queryByText(/Start your free trial/i);
+      const startTrialButton = await queryByText('Service.Trials.StartTrial');
       shouldDisplayStartTrialButton
         ? expect(startTrialButton).toBeInTheDocument()
         : expect(startTrialButton).not.toBeInTheDocument();

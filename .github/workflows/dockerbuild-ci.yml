@@ -143,10 +143,11 @@ jobs:
           cp ./apps/backend/tests/test-utils.ts ./apps/e2e/test-utils.ts
 
       - name: Build and push portal image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ${{ matrix.dockerfile }}
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -457,10 +458,11 @@ jobs:
           fi
 
       - name: Build and push images
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ${{ matrix.dockerfile }}
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |

@@ -30,7 +30,7 @@ import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/op
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
 import * as subscriptionDomain from '../subscription/subscription.domain';
 import { DocumentApp } from './document.app';
-import * as documentHelper from './document.helper';
+import { DocumentHelper } from './document.helper';
 import documentResolver from './document.resolver';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
@@ -216,12 +216,12 @@ describe('increment share number document GraphQL mutation', () => {
       ReturnType<typeof DocumentDomain.loadDocumentWithMetadataById>
     >;
     const updated = { ...doc, share_number: 1 } as unknown as Awaited<
-      ReturnType<typeof documentHelper.updateDocumentWithCounters>
+      ReturnType<typeof DocumentHelper.updateDocumentWithCounters>
     >;
     vi.spyOn(DocumentDomain, 'loadDocumentWithMetadataById').mockResolvedValue(
       doc
     );
-    vi.spyOn(documentHelper, 'updateDocumentWithCounters').mockResolvedValue(
+    vi.spyOn(DocumentHelper, 'updateDocumentWithCounters').mockResolvedValue(
       updated
     );
     vi.spyOn(
@@ -424,7 +424,7 @@ describe('document field resolvers', () => {
 
 describe('document exists GraphQL query', () => {
   it('should delegate to checkDocumentExists and return result', async () => {
-    vi.spyOn(documentHelper, 'checkDocumentExists').mockResolvedValue(false);
+    vi.spyOn(DocumentHelper, 'checkDocumentExists').mockResolvedValue(false);
 
     const result = await documentResolver.Query!.documentExists!(
       {},
@@ -436,7 +436,7 @@ describe('document exists GraphQL query', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(documentHelper.checkDocumentExists).toHaveBeenCalledWith(
+    expect(DocumentHelper.checkDocumentExists).toHaveBeenCalledWith(
       'test.md',
       SERVICES.INSTANCES.EPIC.ID
     );
