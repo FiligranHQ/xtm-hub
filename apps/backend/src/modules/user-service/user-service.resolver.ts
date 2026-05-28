@@ -35,25 +35,26 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    addUserService: async (_, { input, subscription_id }, context) => {
+    addUserService: async (_, { input, service_instance_id }, context) => {
       try {
         const user = context.user;
         return await UserServiceApp.addUserService(
           user,
-          subscription_id,
+          input.subscription_id,
           input.email,
-          input.capabilities
+          input.capabilities,
+          service_instance_id
         );
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);
       }
     },
-    editUserService: async (_, { input, subscription_id }) => {
+    editUserService: async (_, { input, service_instance_id }) => {
       try {
         return await UserServiceApp.editUserService(
           input.userServiceId,
           input.capabilities,
-          subscription_id
+          service_instance_id
         );
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddUserServiceError);

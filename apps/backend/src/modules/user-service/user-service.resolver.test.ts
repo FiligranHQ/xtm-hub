@@ -169,9 +169,11 @@ describe('add user service GraphQL mutation', () => {
   it('should delegate to UserServiceApp', async () => {
     // Given
     const subscriptionId = uuidv4() as SubscriptionId;
+    const serviceInstanceId = uuidv4() as ServiceInstanceId;
     const input = {
       email: ['user@test.com'],
       capabilities: ['MANAGE_ACCESS'],
+      subscription_id: subscriptionId,
     };
     const expected = [] as unknown as Awaited<
       ReturnType<typeof UserServiceApp.addUserService>
@@ -181,7 +183,7 @@ describe('add user service GraphQL mutation', () => {
     // When
     const result = await userServiceResolver.Mutation!.addUserService!(
       {},
-      { input, subscription_id: subscriptionId },
+      { input, service_instance_id: serviceInstanceId },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -191,7 +193,8 @@ describe('add user service GraphQL mutation', () => {
       contextSimpleUserFiligran2.user,
       subscriptionId,
       input.email,
-      input.capabilities
+      input.capabilities,
+      serviceInstanceId
     );
     expect(result).toEqual(expected);
   });
@@ -208,10 +211,11 @@ describe('add user service GraphQL mutation', () => {
       {},
       {
         input: {
-          subscriptionId: subscriptionId,
+          subscription_id: subscriptionId,
           email: ['user@test.com'],
           capabilities: [],
         },
+        service_instance_id: uuidv4() as ServiceInstanceId,
       },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -259,7 +263,6 @@ describe('delete user service GraphQL mutation', () => {
 
   it('should map to NotFound for SubscriptionNotFound error', async () => {
     // Given
-    const subscriptionId = uuidv4() as SubscriptionId;
     vi.spyOn(UserServiceApp, 'deleteUserServices').mockRejectedValue(
       new Error(NotFoundErrorCode.SubscriptionNotFound)
     );
@@ -268,7 +271,8 @@ describe('delete user service GraphQL mutation', () => {
     const call = userServiceResolver.Mutation!.deleteUserServices!(
       {},
       {
-        input: { email: 'user@test.com', subscriptionId: subscriptionId },
+        input: { userServiceIds: [uuidv4() as UserServiceId] },
+        service_instance_id: uuidv4() as ServiceInstanceId,
       },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO

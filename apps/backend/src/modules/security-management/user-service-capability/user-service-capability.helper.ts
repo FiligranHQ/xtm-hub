@@ -79,54 +79,14 @@ export const insertUserServiceCapability = async (
     return;
   }
 
-  const toCapabilityKey = (
-    capability: Pick<
-      UserServiceCapabilityInitializer,
-      | 'user_service_id'
-      | 'generic_service_capability_id'
-      | 'subscription_capability_id'
-    >
-  ) => {
-    return [
-      capability.user_service_id ?? '__NULL__',
-      capability.generic_service_capability_id ?? '__NULL__',
-      capability.subscription_capability_id ?? '__NULL__',
-    ].join('|');
-  };
-
-  const userServiceIds = data
-    .map((capability) => capability.user_service_id)
-    .filter((id): id is NonNullable<typeof id> => Boolean(id));
-
-  const existingRows = userServiceIds.length
-    ? await db<UserServiceCapability>('UserService_Capability')
-        .whereIn('user_service_id', userServiceIds)
-        .select(
-          'user_service_id',
-          'generic_service_capability_id',
-          'subscription_capability_id'
-        )
-    : [];
-
-  const existingKeys = new Set(existingRows.map(toCapabilityKey));
-  const rowsToInsert: UserServiceCapabilityInitializer[] = [];
-
-  for (const capability of data) {
-    const key = toCapabilityKey(capability);
-    if (existingKeys.has(key)) {
-      continue;
-    }
-
-    existingKeys.add(key);
-    rowsToInsert.push(capability);
-  }
-
-  if (rowsToInsert.length === 0) {
-    return;
-  }
-
   await db<UserServiceCapability>('UserService_Capability')
-    .insert(rowsToInsert)
+    .insert(data)
+    .onConflict([
+      'user_service_id',
+      'generic_service_capability_id',
+      'subscription_capability_id',
+    ])
+    .ignore()
     .returning('*');
 };
 

@@ -56,7 +56,7 @@
     "hosting_threat_community": "脅威共有コミュニティの主催",
     "oaev_attack_simulation": "侵入・攻撃シミュレーション（BAS）の実行",
     "oaev_penetration_testing": "侵入テストの実行",
-    "oaev_atomic_testing": "個別アトミック・テストの実行",
+    "oaev_atomic_testing": "個別のアトミック・テストの実行",
     "oaev_platform_validation": "セキュリティ・プラットフォームが 期待通りに機能するか検証する",
     "oaev_tabletop_exercise": "#__# 危機シミュレーションのための、状況に応じた卓上演習を実行する #__#",
     "oaev_purple_team": "パープルチームの有効化攻撃に基づいて防御を改善する",
@@ -1015,8 +1015,9 @@
     "Management": {
       "AvailableCapabilities": "利用可能な機能",
       "AreYouSureRemoveAccess": "本当にこのサービスのユーザー {firstname} {lastname} のアクセスを削除してもよろしいですか？",
-      "AreYouSureRemoveOrganizationAccess": "このサービスから組織{organizationName}のアクセスを削除してもよろしいですか？",
-      "AreYouSureRemoveOrganizationsAccess": "このサービスから組織 {count} のアクセスを削除してもよろしいですか？",
+      "AreYouSureRemoveUsersAccess": "このサービスから {count} ユーザーのアクセスを削除してもよろしいですか？",
+      "AreYouSureRemoveOrganizationAccess": "このサービスから組織 {organizationName} のアクセスを削除してもよろしいですか？",
+      "AreYouSureRemoveOrganizationsAccess": "このサービスから {count} 組織へのアクセスを削除しますか？",
       "Description": "このサービスに加入している組織のリストを以下に表示します。",
       "Email": "電子メール",
       "FirstName": "ファーストネーム",
@@ -1035,6 +1036,17 @@
         "Button": "機能を追加する",
         "Title": "購読機能の追加",
         "Description": "選択した{count}購読に追加する機能を選択します。"
+      },
+      "NoAvailableCapabilities": "利用可能な機能はありません",
+      "AddSubscriptionCapabilities": {
+        "Button": "機能を追加する",
+        "Title": "購読機能の追加",
+        "Description": "選択した{count}購読に追加する機能を選択します。"
+      },
+      "AddUserServiceCapabilities": {
+        "Button": "機能の追加",
+        "Title": "ユーザーサービス機能の追加",
+        "Description": "選択した{count}ユーザーサービスに追加する機能を選択します。"
       },
       "RemoveAccess": "アクセス削除",
       "RemoveRights": "権限削除",

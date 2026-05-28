@@ -35,11 +35,12 @@ export type Scalars = {
   NewsFeedItemId: { input: any; output: any; }
   /** A Relay global ID for Organization, extracted to a branded OrganizationId string */
   OrganizationId: { input: any; output: any; }
-  ServiceCapabilityId: { input: any; output: any; }
   /** A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string */
   ServiceGroupId: { input: any; output: any; }
   /** A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string */
   ServiceInstanceId: { input: any; output: any; }
+  /** A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string */
+  Service_CapabilityId: { input: any; output: any; }
   /** A Relay global ID for Subscription, extracted to a branded SubscriptionId string */
   SubscriptionId: { input: any; output: any; }
   Upload: { input: any; output: any; }
@@ -61,7 +62,7 @@ export type AddServiceInput = {
 };
 
 export type AddSubscriptionCapabilityInput = {
-  capabilitiesId: Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>;
+  capabilitiesId: Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>;
   subscriptionsId: Array<Scalars['SubscriptionId']['input']>;
 };
 
@@ -240,7 +241,7 @@ export type CreateEpicInput = {
 };
 
 export type CreateSubscriptionsInput = {
-  capability_ids: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
+  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
   end_date: InputMaybe<Scalars['Date']['input']>;
   organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
@@ -955,7 +956,7 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
-  subscription_id: Scalars['SubscriptionId']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1114,7 +1115,7 @@ export type MutationEditUserCapabilitiesArgs = {
 
 export type MutationEditUserServiceArgs = {
   input: UserServiceEditInput;
-  subscription_id: Scalars['SubscriptionId']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2403,7 +2404,7 @@ export type UpdateServiceGroupsInputGroup = {
 };
 
 export type UpdateSubscriptionInput = {
-  capability_ids: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
+  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
   end_date: InputMaybe<Scalars['Date']['input']>;
   start_date: InputMaybe<Scalars['Date']['input']>;
 };
@@ -2495,6 +2496,7 @@ export type UserService = Node & {
 export type UserServiceAddInput = {
   capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Array<Scalars['String']['input']>;
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 export type UserServiceAddYourselfInput = {

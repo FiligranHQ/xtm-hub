@@ -1,9 +1,6 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
-import ServiceCapability, {
-  ServiceCapabilityId,
-} from '../../../model/kanel/public/ServiceCapability';
+import ServiceCapability from '../../../model/kanel/public/ServiceCapability';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
 import Subscription from '../../../model/kanel/public/Subscription';
@@ -15,9 +12,6 @@ import {
   loadSubscriptionCapabilitiesBy,
   replaceCapabilitiesForSubscription,
 } from './subscription-capability.domain';
-
-const toCapabilityGlobalId = (capabilityId: ServiceCapabilityId) =>
-  toGlobalId('Service_Capability', capabilityId) as ServiceCapabilityId;
 
 describe('subscription capability domain', () => {
   let serviceDefinition: ServiceDefinition;
@@ -84,7 +78,7 @@ describe('subscription capability domain', () => {
     it('should load by id', async () => {
       const [createdCapability] = await addCapabilitiesToSubscription(
         subscription.id,
-        [toCapabilityGlobalId(capability1.id)]
+        [capability1.id]
       );
 
       if (!createdCapability) {
@@ -106,8 +100,8 @@ describe('subscription capability domain', () => {
     });
     it('should load by subscription_id', async () => {
       await addCapabilitiesToSubscription(subscription.id, [
-        toCapabilityGlobalId(capability1.id),
-        toCapabilityGlobalId(capability2.id),
+        capability1.id,
+        capability2.id,
       ]);
 
       const capabilities: SubscriptionCapability[] =
@@ -131,10 +125,7 @@ describe('subscription capability domain', () => {
     it('should insert capabilities for a subscription', async () => {
       const capabilities = await addCapabilitiesToSubscription(
         subscription.id,
-        [
-          toCapabilityGlobalId(capability1.id),
-          toCapabilityGlobalId(capability2.id),
-        ]
+        [capability1.id, capability2.id]
       );
       expect(capabilities).toHaveLength(2);
       expect(
@@ -151,7 +142,7 @@ describe('subscription capability domain', () => {
     it('should return an empty array when subscription list is empty', async () => {
       const capabilities = await addCapabilitiesToSubscriptions(
         [],
-        [toCapabilityGlobalId(capability1.id)]
+        [capability1.id]
       );
       expect(capabilities).toEqual([]);
     });
@@ -159,10 +150,7 @@ describe('subscription capability domain', () => {
     it('should insert capabilities for multiple subscriptions in one call', async () => {
       const capabilities = await addCapabilitiesToSubscriptions(
         [subscription.id, subscription2.id],
-        [
-          toCapabilityGlobalId(capability1.id),
-          toCapabilityGlobalId(capability2.id),
-        ]
+        [capability1.id, capability2.id]
       );
 
       expect(capabilities).toHaveLength(4);
@@ -181,12 +169,12 @@ describe('subscription capability domain', () => {
   describe('replaceCapabilitiesForSubscription', () => {
     it('should replace existing capabilities for a subscription', async () => {
       await addCapabilitiesToSubscription(subscription.id, [
-        toCapabilityGlobalId(capability1.id),
-        toCapabilityGlobalId(capability2.id),
+        capability1.id,
+        capability2.id,
       ]);
       const replacedCapabilities = await replaceCapabilitiesForSubscription(
         subscription.id,
-        [toCapabilityGlobalId(capability3.id)]
+        [capability3.id]
       );
       expect(replacedCapabilities).toHaveLength(1);
       expect(replacedCapabilities[0]).toMatchObject(
@@ -207,9 +195,7 @@ describe('subscription capability domain', () => {
   });
   describe('loadSubscriptionCapabilities', () => {
     it('should return subscription capabilities with joined service_capability field', async () => {
-      await addCapabilitiesToSubscription(subscription.id, [
-        toCapabilityGlobalId(capability1.id),
-      ]);
+      await addCapabilitiesToSubscription(subscription.id, [capability1.id]);
       const capabilities = await loadSubscriptionCapabilities(subscription.id);
       expect(capabilities).toHaveLength(1);
       expect(capabilities[0]).toMatchObject(

@@ -195,8 +195,8 @@ type Mutation {
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
   deleteUseCase(id: ID!): UseCase!
-  addUserService(input: UserServiceAddInput!, subscription_id: SubscriptionId!): [UserService]
-  editUserService(input: UserServiceEditInput!, subscription_id: SubscriptionId!): UserService
+  addUserService(input: UserServiceAddInput!, service_instance_id: ServiceInstanceId!): [UserService]
+  editUserService(input: UserServiceEditInput!, service_instance_id: ServiceInstanceId!): UserService
   deleteUserServices(input: UserServicesDeleteInput!, service_instance_id: ServiceInstanceId!): [UserService]
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
@@ -1038,7 +1038,10 @@ type RolePortal implements Node {
   name: String!
 }
 
-scalar ServiceCapabilityId
+"""
+A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string
+"""
+scalar Service_CapabilityId
 
 type GenericServiceCapability implements Node {
   id: ID!
@@ -1052,7 +1055,7 @@ input EditServiceCapabilityInput {
 
 input AddSubscriptionCapabilityInput {
   subscriptionsId: [SubscriptionId!]!
-  capabilitiesId: [ServiceCapabilityId]!
+  capabilitiesId: [Service_CapabilityId]!
 }
 
 type UserServiceCapability implements Node {
@@ -1629,7 +1632,7 @@ type SubscriptionEdge {
 input CreateSubscriptionsInput {
   service_instance_id: ServiceInstanceId!
   organization_id: [OrganizationId!]!
-  capability_ids: [ServiceCapabilityId]
+  capability_ids: [Service_CapabilityId]
   start_date: Date!
   end_date: Date
 }
@@ -1637,7 +1640,7 @@ input CreateSubscriptionsInput {
 input UpdateSubscriptionInput {
   start_date: Date
   end_date: Date
-  capability_ids: [ServiceCapabilityId]
+  capability_ids: [Service_CapabilityId]
 }
 
 type SubscriptionConnection {
@@ -1728,6 +1731,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
+  subscription_id: SubscriptionId!
 }
 
 input UserServiceAddYourselfInput {

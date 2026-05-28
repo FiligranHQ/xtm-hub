@@ -9,7 +9,6 @@ import {
 import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import { GenericServiceCapabilityId } from '../../model/kanel/public/GenericServiceCapability';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import DBSubscriptionModel, {
   SubscriptionId,
 } from '../../model/kanel/public/Subscription';
@@ -198,6 +197,26 @@ export const UserServiceDomain = {
       | UserServiceMutator
   ): Promise<UserService[]> => {
     return db<UserService>('User_Service').where(field);
+  },
+
+  loadUserServiceWithSubscriptionBy: async (
+    field:
+      | addPrefixToObject<UserServiceMutator, 'User_Service.'>
+      | UserServiceMutator
+  ) => {
+    return db<UserService>('User_Service')
+      .where(field)
+      .leftJoin(
+        'Subscription',
+        'User_Service.subscription_id',
+        'Subscription.id'
+      )
+      .leftJoin(
+        'UserService_Capability',
+        'User_Service.id',
+        'UserService_Capability.user_service_id'
+      )
+      .select('*');
   },
 
   loadUserServicesByIds: async (
@@ -522,13 +541,5 @@ export const UserServiceDomain = {
         subscription_id,
       });
     return !!existingUserService;
-  },
-  checkUserServiceIsInServiceInstance: async (
-    userServiceId: UserServiceId,
-    serviceInstanceId: ServiceInstanceId
-  ) => {
-    const userService =
-      await UserServiceDomain.loadUserServiceById(userServiceId);
-    return userService.subscription.service_instance_id === serviceInstanceId;
   },
 };

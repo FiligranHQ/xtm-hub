@@ -9,6 +9,7 @@ import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { ErrorCode, ForbiddenErrorCode } from '../../utils/error/error.code';
+import { checkUserServiceIsInServiceInstance } from '../security-management/capability/auth.helper';
 import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
 import { UserServiceDomain } from './user-service.domain';
@@ -18,7 +19,8 @@ export const UserServiceApp = {
     user: User,
     subscriptionId: SubscriptionId,
     emails: string[],
-    capabilities: string[]
+    capabilities: string[],
+    serviceInstanceId: ServiceInstanceId
   ): Promise<UserService[]> => {
     if (emails.some((email) => email === user.email)) {
       throw new Error(ErrorCode.CantSubscribeYourself);
@@ -29,6 +31,10 @@ export const UserServiceApp = {
       } as SubscriptionMutator);
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
+    }
+
+    if (subscription.service_instance_id !== serviceInstanceId) {
+      throw new Error(ForbiddenErrorCode.ServiceNotManageable);
     }
 
     return UserServiceDomain.addServiceToUsers(
@@ -42,11 +48,10 @@ export const UserServiceApp = {
     userServiceIds: UserServiceId[],
     serviceInstanceId: ServiceInstanceId
   ) => {
-    const userServiceIsInService =
-      await UserServiceDomain.checkUserServiceIsInServiceInstance(
-        userServiceIds[0],
-        serviceInstanceId
-      );
+    const userServiceIsInService = await checkUserServiceIsInServiceInstance(
+      userServiceIds[0],
+      serviceInstanceId
+    );
     if (!userServiceIsInService) {
       throw new Error(ForbiddenErrorCode.ServiceNotManageable);
     }
@@ -55,12 +60,12 @@ export const UserServiceApp = {
   editUserService: async (
     userServiceId: UserServiceId,
     capabilities: string[],
-    subscriptionId: SubscriptionId
+    serviceInstanceId: ServiceInstanceId
   ): Promise<UserService> => {
     const userService =
       await UserServiceDomain.loadUserServiceById(userServiceId);
-    // Check the provided subscription_id correspond to the correct userService
-    if (userService.subscription_id !== subscriptionId) {
+
+    if (userService.subscription.service_instance_id !== serviceInstanceId) {
       throw new Error(ForbiddenErrorCode.ServiceNotManageable);
     }
     await withTransaction(async () => {

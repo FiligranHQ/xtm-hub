@@ -15,6 +15,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
+  subscription_id: SubscriptionId!
 }
 
 input UserServiceAddYourselfInput {
@@ -33,7 +34,7 @@ input UserServiceEditInput {
 type Mutation {
   addUserService(
     input: UserServiceAddInput!
-    subscription_id: SubscriptionId!
+    service_instance_id: ServiceInstanceId!
   ): [UserService]
     @auth(
       portalCapa: [BYPASS]
@@ -42,7 +43,7 @@ type Mutation {
     @service_capa(requires: [MANAGE_ACCESS])
   editUserService(
     input: UserServiceEditInput!
-    subscription_id: SubscriptionId!
+    service_instance_id: ServiceInstanceId!
   ): UserService
     @auth(
       portalCapa: [BYPASS]

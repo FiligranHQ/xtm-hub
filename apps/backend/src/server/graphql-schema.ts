@@ -11,6 +11,7 @@ import newsFeedResolver from '../modules/news-feed/news-feed.resolver';
 import organizationResolver from '../modules/organization-management/organization/organization.resolver';
 import userResolver from '../modules/organization-management/user/user.resolver';
 import registrationResolver from '../modules/registration/registration.resolver';
+import serviceCapabilityResolver from '../modules/security-management/service-capability/service-capability.resolver';
 import subscriptionCapabilityResolver from '../modules/security-management/subscription-capability/subscription-capability.resolver';
 import userServiceCapabilityResolver from '../modules/security-management/user-service-capability/user-service-capability.resolver';
 import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';
@@ -48,6 +49,7 @@ const resolvers = mergeResolvers([
   subscriptionsResolver,
   subscriptionCapabilityResolver,
   userServiceCapabilityResolver,
+  serviceCapabilityResolver,
   userServiceResolver,
   logResolver,
   useCaseResolver,

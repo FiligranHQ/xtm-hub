@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
@@ -14,9 +13,6 @@ import {
 } from '../security-management/subscription-capability/subscription-capability.domain';
 import { subscriptionApp } from './subscription.app';
 import { createSubscription } from './subscription.domain';
-
-const toCapabilityGlobalId = (capabilityId: ServiceCapabilityId) =>
-  toGlobalId('Service_Capability', capabilityId) as ServiceCapabilityId;
 
 describe('subscription app', () => {
   describe('subscribeOrganizationsToService', async () => {
@@ -114,12 +110,8 @@ describe('subscription app', () => {
         end_date: endDate,
       });
       await addCapabilitiesToSubscription(id, [
-        toCapabilityGlobalId(
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
-        ),
-        toCapabilityGlobalId(
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID
-        ),
+        SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
       ]);
 
       await subscriptionApp.updateSubscription({
@@ -154,18 +146,12 @@ describe('subscription app', () => {
         end_date: endDate,
       });
       await addCapabilitiesToSubscription(id, [
-        toCapabilityGlobalId(
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
-        ),
+        SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
       ]);
 
       await subscriptionApp.updateSubscription({
         id,
-        capabilityIds: [
-          toCapabilityGlobalId(
-            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID
-          ),
-        ],
+        capabilityIds: [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID],
       });
 
       const updatedSubscription = await TestHelper.subscription.load({ id });
@@ -193,9 +179,7 @@ describe('subscription app', () => {
         end_date: new Date('2026-04-30'),
       });
       await addCapabilitiesToSubscription(id, [
-        toCapabilityGlobalId(
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
-        ),
+        SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
       ]);
 
       const call = subscriptionApp.updateSubscription({
@@ -287,9 +271,7 @@ describe('subscription app', () => {
         end_date: null,
       });
       await addCapabilitiesToSubscription(id, [
-        toCapabilityGlobalId(
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
-        ),
+        SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
       ]);
 
       await subscriptionApp.deleteSubscriptions([id]);

@@ -1,4 +1,3 @@
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
@@ -16,9 +15,6 @@ import {
   transferSubscriptionToOrganization,
   updateSubscriptionBy,
 } from './subscription.domain';
-
-const toCapabilityGlobalId = (capabilityId: ServiceCapabilityId) =>
-  toGlobalId('Service_Capability', capabilityId) as ServiceCapabilityId;
 
 describe('subscription domain', () => {
   let serviceInstanceId: ServiceInstanceId;
@@ -189,12 +185,8 @@ describe('subscription domain', () => {
         end_date: null,
       });
       await addCapabilitiesToSubscription(id, [
-        toCapabilityGlobalId(
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
-        ),
-        toCapabilityGlobalId(
-          SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID
-        ),
+        SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
+        SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
       ]);
 
       const result = await getSubscriptionCapability(id);
@@ -240,11 +232,7 @@ describe('subscription domain', () => {
       });
       const [subscriptionCapability] = await addCapabilitiesToSubscription(
         subscriptionId,
-        [
-          toCapabilityGlobalId(
-            SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
-          ),
-        ]
+        [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID]
       );
 
       const result = await getServiceCapability(subscriptionCapability!.id);

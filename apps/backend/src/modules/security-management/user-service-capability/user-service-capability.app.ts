@@ -4,6 +4,7 @@ import UserService, {
 } from '../../../model/kanel/public/UserService';
 import { ForbiddenErrorCode } from '../../../utils/error/error.code';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
+import { checkUserServiceIsInServiceInstance } from '../capability/auth.helper';
 import { insertCapabilities } from './user-service-capability.helper';
 
 export const userServiceCapabilityApp = {
@@ -16,7 +17,7 @@ export const userServiceCapabilityApp = {
       await UserServiceDomain.loadUserServicesByIds(userServiceIds);
 
     const isUserServiceInCorrectService =
-      await UserServiceDomain.checkUserServiceIsInServiceInstance(
+      await checkUserServiceIsInServiceInstance(
         userServices[0].id,
         serviceInstanceId
       );

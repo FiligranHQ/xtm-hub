@@ -152,16 +152,20 @@ export const UserServiceForm = ({
   const onSubmitCapabilitiesSchema = (
     values: z.infer<typeof capabilitiesFormSchema>
   ) => {
+    if (!userService || !userService.user) {
+      return;
+    }
     const editCapaValues = {
       capabilities: values.capabilities,
     };
     commitUserServiceEditMutation({
       variables: {
         input: {
-          userServiceId: userService!.id,
+          userServiceId: userService.id,
           ...editCapaValues,
         },
-        subscription_id: subscription.subscriptionById!.id,
+        service_instance_id:
+          subscription.subscriptionById!.service_instance!.id,
       },
       onCompleted() {
         toast({
@@ -183,14 +187,21 @@ export const UserServiceForm = ({
   };
 
   const onSubmitExtendSchema = (values: z.infer<typeof extendedSchema>) => {
+    if (
+      !subscription.subscriptionById ||
+      !subscription.subscriptionById.service_instance
+    ) {
+      return;
+    }
     commitUserServiceMutation({
       variables: {
         connections: [connectionId ?? ''],
         input: {
           email: values.email.map(({ text }) => text),
           capabilities: values.capabilities,
+          subscription_id: subscription.subscriptionById.id,
         },
-        subscription_id: subscription.subscriptionById!.id,
+        service_instance_id: subscription.subscriptionById.service_instance.id,
       },
       onCompleted() {
         toast({

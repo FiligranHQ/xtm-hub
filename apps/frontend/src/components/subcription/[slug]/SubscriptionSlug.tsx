@@ -136,8 +136,8 @@ const SubscriptionSlug = ({
   const canManageService = useCallback(() => {
     return userData.some((userService) => {
       return (
-        (userService?.user?.id === me?.id &&
-          userService?.user_service_capability?.some(
+        (userService.user?.id === me?.id &&
+          userService.user_service_capability?.some(
             (user_service_capa) =>
               user_service_capa?.generic_service_capability?.name ===
               ServiceRestrictionEnum.MANAGE_ACCESS

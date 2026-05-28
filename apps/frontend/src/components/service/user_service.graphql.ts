@@ -94,10 +94,10 @@ export const userServicesFragment = graphql`
 export const UserServiceCreateMutation = graphql`
   mutation userServiceCreateMutation(
     $input: UserServiceAddInput!
-    $subscription_id: SubscriptionId!
     $connections: [ID!]!
+    $service_instance_id: ServiceInstanceId!
   ) {
-    addUserService(input: $input, subscription_id: $subscription_id)
+    addUserService(input: $input, service_instance_id: $service_instance_id)
       @prependNode(connections: $connections, edgeTypeName: "UserServiceEdge") {
       id
       user {
@@ -121,15 +121,20 @@ export const UserServiceCreateMutation = graphql`
           }
         }
       }
+      subscription {
+        service_instance {
+          id
+        }
+      }
     }
   }
 `;
 export const UserServiceEditMutation = graphql`
   mutation userServiceEditMutation(
     $input: UserServiceEditInput!
-    $subscription_id: SubscriptionId!
+    $service_instance_id: ServiceInstanceId!
   ) {
-    editUserService(input: $input, subscription_id: $subscription_id) {
+    editUserService(input: $input, service_instance_id: $service_instance_id) {
       id
       user {
         id
