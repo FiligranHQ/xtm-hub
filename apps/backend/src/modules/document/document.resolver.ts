@@ -4,7 +4,7 @@ import {
   ShareableResource,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
-import Document, { DocumentId } from '../../model/kanel/public/Document';
+import { DocumentId } from '../../model/kanel/public/Document';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
@@ -127,7 +127,7 @@ const resolvers: Resolvers = {
     },
   },
   Document: {
-    async __resolveType(document: Document) {
+    async __resolveType(document) {
       const TYPE_MAPPINGS = {
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'CustomDashboard',
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
