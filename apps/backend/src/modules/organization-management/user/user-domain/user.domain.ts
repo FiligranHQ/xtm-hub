@@ -18,8 +18,6 @@ import {
   UserWithOrganizationsAndRole,
 } from '../../../../model/user';
 import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../../../portal.const';
-import { isUserAdminPlatform } from '../../../../security/access';
-import { checkUserCapabilities } from '../../../../security/util/user';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../../../utils/app-logger.util';
@@ -327,13 +325,6 @@ export const UserDomain = {
   updateUser: async (id: UserId, input: UserMutator): Promise<User> => {
     if (isEmpty(input)) {
       return;
-    }
-    const { user } = requestContext.require();
-    if (!isUserAdminPlatform(user)) {
-      await checkUserCapabilities([
-        OrganizationCapability.AdministrateOrganization,
-        OrganizationCapability.ManageAccess,
-      ]);
     }
 
     const [updatedUser] = await db<User>('User')

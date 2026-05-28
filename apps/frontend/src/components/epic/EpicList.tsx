@@ -11,6 +11,12 @@ import {
 } from '@/components/epic/epic-list-utils';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/ui';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
@@ -151,9 +157,21 @@ export const EpicList = ({
               />
             </div>
             <div className="flex-1 mt-l">
-              <p className={`m-s font-semibold text-${timelineColor}`}>
-                {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
-              </p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p
+                      className={`m-s inline-block font-semibold text-${timelineColor}`}>
+                      {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    align="start">
+                    {t(`Epic.Timeline.Details.${timeline.title.toLowerCase()}`)}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <ul
                 className={
                   'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-l'

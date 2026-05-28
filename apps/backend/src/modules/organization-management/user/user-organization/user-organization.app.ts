@@ -93,7 +93,7 @@ export const UserOrganizationApp = {
   changeSelectedOrganization: async (
     organization_id: OrganizationId
   ): Promise<UserLoadUserBy> => {
-    const { user, portalContext } = requestContext.require();
+    const { user } = requestContext.require();
 
     await securityGuard.assertUserIsInOrganization(user, organization_id);
 
@@ -103,9 +103,6 @@ export const UserOrganizationApp = {
     const updatedUserLoadUserBy = await UserDomain.loadUserBy({
       'User.id': updatedUser.id,
     });
-    portalContext.req.session.user = updatedUserLoadUserBy;
-    portalContext.req.session.save();
-    portalContext.user = updatedUserLoadUserBy;
     requestContext.update({ user: updatedUserLoadUserBy });
 
     return updatedUserLoadUserBy;

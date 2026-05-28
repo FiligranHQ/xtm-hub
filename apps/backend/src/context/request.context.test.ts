@@ -1,7 +1,5 @@
 // lib/Context.test.ts
-import { Knex } from 'knex';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PortalContext } from '../model/portal-context';
 import { UserLoadUserBy } from '../model/user';
 import { UnknownErrorCode } from '../utils/error/error.code';
 import { requestContext, RequestContext } from './request.context';
@@ -11,10 +9,7 @@ describe('requestContext', () => {
     id: 1,
     last_name: 'Test User',
   } as unknown as UserLoadUserBy;
-  const mockPortalContext = {
-    portalId: 'test-portal',
-  } as unknown as PortalContext;
-  const mockTrx = {} as Knex.Transaction;
+  const mockCorrelationId = 'test-correlation-id';
 
   beforeEach(() => {
     // Restore original implementations
@@ -35,8 +30,7 @@ describe('requestContext', () => {
     it('should return the current context when set', () => {
       const testContext: RequestContext = {
         user: mockUser,
-        trx: mockTrx,
-        portalContext: mockPortalContext,
+        correlationId: mockCorrelationId,
       };
 
       requestContext.set(testContext);
@@ -56,7 +50,6 @@ describe('requestContext', () => {
     it('should return context when available', () => {
       const testContext: RequestContext = {
         user: mockUser,
-        portalContext: mockPortalContext,
       };
 
       requestContext.set(testContext);
@@ -70,7 +63,7 @@ describe('requestContext', () => {
     it('should set a new context', () => {
       const testContext: RequestContext = {
         user: mockUser,
-        trx: mockTrx,
+        correlationId: mockCorrelationId,
       };
 
       requestContext.set(testContext);
@@ -82,12 +75,11 @@ describe('requestContext', () => {
     it('should replace existing context', () => {
       const firstContext: RequestContext = {
         user: mockUser,
-        trx: mockTrx,
+        correlationId: mockCorrelationId,
       };
 
       const secondContext: RequestContext = {
         user: { id: 2, last_name: 'Second User' } as unknown as UserLoadUserBy,
-        portalContext: mockPortalContext,
       };
 
       requestContext.set(firstContext);
@@ -107,8 +99,7 @@ describe('requestContext', () => {
       requestContext.set(initialContext);
 
       const updates = {
-        trx: mockTrx,
-        portalContext: mockPortalContext,
+        correlationId: mockCorrelationId,
       };
 
       requestContext.update(updates);
@@ -120,25 +111,23 @@ describe('requestContext', () => {
     it('should overwrite existing fields when updating', () => {
       const initialContext: RequestContext = {
         user: mockUser,
-        trx: mockTrx,
+        correlationId: mockCorrelationId,
       };
 
       requestContext.set(initialContext);
 
-      const newTrx = {
-        different: 'transaction',
-      } as unknown as Knex.Transaction;
-      requestContext.update({ trx: newTrx });
+      const newCorrelationId = 'new-correlation-id';
+      requestContext.update({ correlationId: newCorrelationId });
 
       const updatedContext = requestContext.get();
       expect(updatedContext?.user).toBe(mockUser);
-      expect(updatedContext?.trx).toBe(newTrx);
+      expect(updatedContext?.correlationId).toBe(newCorrelationId);
     });
 
     it('should handle empty updates gracefully', () => {
       const initialContext: RequestContext = {
         user: mockUser,
-        trx: mockTrx,
+        correlationId: mockCorrelationId,
       };
 
       requestContext.set(initialContext);
@@ -149,11 +138,9 @@ describe('requestContext', () => {
     });
 
     it('should throw without initial context', () => {
-      // This might throw or handle gracefully depending on implementation
-      // Adjust expectation based on your desired behavior
-      expect(() => requestContext.update({ trx: mockTrx })).toThrow(
-        UnknownErrorCode.NoAsyncContextAvailableError
-      );
+      expect(() =>
+        requestContext.update({ correlationId: mockCorrelationId })
+      ).toThrow(UnknownErrorCode.NoAsyncContextAvailableError);
     });
   });
 
@@ -161,7 +148,6 @@ describe('requestContext', () => {
     it('should execute callback with provided context', () => {
       const testContext: RequestContext = {
         user: mockUser,
-        portalContext: mockPortalContext,
       };
 
       let contextInsideCallback: RequestContext | undefined;
@@ -231,7 +217,6 @@ describe('requestContext', () => {
     it('should maintain context across async operations when using run()', async () => {
       const testContext: RequestContext = {
         user: mockUser,
-        portalContext: mockPortalContext,
       };
 
       await new Promise<void>((resolve) => {

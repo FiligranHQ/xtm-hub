@@ -26,7 +26,6 @@ describe('upsertConnectors', () => {
     beforeAll(async () => {
       requestContext.set({
         user: SYSTEM_USER_CONTEXT.user,
-        portalContext: SYSTEM_USER_CONTEXT,
       });
       result = await upsertConnectors(
         sampleExtractedManifest as ManifestInformation[]
@@ -167,7 +166,6 @@ describe('upsertConnectors', () => {
       // First creation
       requestContext.set({
         user: SYSTEM_USER_CONTEXT.user,
-        portalContext: SYSTEM_USER_CONTEXT,
       });
       firstResult = await upsertConnectors(
         sampleExtractedManifest as ManifestInformation[]

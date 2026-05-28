@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import {
-  contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
   requestContextRegistererUserSecondOrga,
   SERVICES,
@@ -54,9 +53,6 @@ describe('registration domain', () => {
     it('save registration data', async () => {
       const testContext = {
         user: requestContextRegistererUserSecondOrga.user,
-        portalContext: {
-          ...contextRegistererUserSecondOrga,
-        },
       };
       requestContext.set(testContext);
       await registrationDomain.registerNewPlatform({
