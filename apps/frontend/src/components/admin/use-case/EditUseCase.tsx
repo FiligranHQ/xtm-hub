@@ -2,16 +2,9 @@ import UseCaseForm, {
   UseCaseFormModel,
 } from '@/components/admin/use-case/UseCaseForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { portalGraphqlClient } from '@/lib/graphql-client';
 import { toast } from '@filigran/ui';
-import {
-  OrderingMode,
-  UseCaseOrdering,
-  useUseCaseDeleteMutation,
-  useUseCaseEditMutation,
-  useUseCasesListQuery,
-} from '@graphql/generated';
-import { useQueryClient } from '@tanstack/react-query';
+import { useEditUseCase } from '@graphql/use-case/hooks/useEditUseCase';
+import { useDeleteUseCase } from '@graphql/use-case/hooks/useDeleteUseCase';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -25,20 +18,22 @@ const EditUseCase = ({
   useCase: UseCaseFormModel;
 }) => {
   const t = useTranslations();
-  const queryClient = useQueryClient();
   const [openSheet, setOpenSheet] = useState<boolean>(open);
 
-  const { mutate: editUseCase } = useUseCaseEditMutation(portalGraphqlClient, {
+  const handleOpenSheet = (open: boolean) => {
+    setOpenSheet((prevState) => {
+      const sheetIsClosing = prevState !== open && !open;
+      if (sheetIsClosing && onClose) {
+        onClose();
+      }
+      return open;
+    });
+  };
+
+  const { mutate: editUseCase } = useEditUseCase({
     onSuccess: () => {
       toast({
         title: t('Utils.Success'),
-      });
-      queryClient.invalidateQueries({
-        queryKey: useUseCasesListQuery.getKey({
-          count: 100,
-          orderMode: OrderingMode.Asc,
-          orderBy: UseCaseOrdering.Name,
-        }),
       });
       handleOpenSheet(false);
     },
@@ -53,43 +48,23 @@ const EditUseCase = ({
     },
   });
 
-  const { mutate: deleteUseCase } = useUseCaseDeleteMutation(
-    portalGraphqlClient,
-    {
-      onSuccess: () => {
-        toast({
-          title: t('Utils.Success'),
-        });
-        queryClient.invalidateQueries({
-          queryKey: useUseCasesListQuery.getKey({
-            count: 100,
-            orderMode: OrderingMode.Asc,
-            orderBy: UseCaseOrdering.Name,
-          }),
-        });
-        handleOpenSheet(false);
-      },
-      onError: (error) => {
-        const errorMessage =
-          error instanceof Error ? error.message : 'UnknownError';
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${errorMessage}`)}</>,
-        });
-      },
-    }
-  );
-
-  const handleOpenSheet = (open: boolean) => {
-    setOpenSheet((prevState) => {
-      const sheetIsClosing = prevState !== open && !open;
-      if (sheetIsClosing && onClose) {
-        onClose();
-      }
-      return open;
-    });
-  };
+  const { mutate: deleteUseCase } = useDeleteUseCase({
+    onSuccess: () => {
+      toast({
+        title: t('Utils.Success'),
+      });
+      handleOpenSheet(false);
+    },
+    onError: (error) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'UnknownError';
+      toast({
+        variant: 'destructive',
+        title: t('Utils.Error'),
+        description: <>{t(`Error.Server.${errorMessage}`)}</>,
+      });
+    },
+  });
 
   const onDeleteUseCase = () => {
     deleteUseCase({

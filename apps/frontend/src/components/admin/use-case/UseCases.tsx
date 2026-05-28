@@ -1,16 +1,11 @@
 import AddUseCase from '@/components/admin/use-case/AddUseCase';
 import EditUseCase from '@/components/admin/use-case/EditUseCase';
 import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
-import { portalGraphqlClient } from '@/lib/graphql-client';
 import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';
 import { Badge, DataTable } from '@filigran/ui';
-import {
-  OrderingMode,
-  UseCaseOrdering,
-  UseCaseRowFragment,
-  useUseCasesListQuery,
-} from '@graphql/generated';
+import { type UseCaseRowFragment } from '@graphql/generated';
+import { useUseCases } from '@graphql/use-case/hooks/useUseCases';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -21,14 +16,7 @@ const UseCases = () => {
     UseCaseRowFragment | undefined
   >(undefined);
 
-  const { data: queryData, isError } = useUseCasesListQuery(
-    portalGraphqlClient,
-    {
-      count: 100,
-      orderMode: OrderingMode.Asc,
-      orderBy: UseCaseOrdering.Name,
-    }
-  );
+  const { data: queryData, isError } = useUseCases();
 
   const columns: ColumnDef<UseCaseRowFragment>[] = [
     {

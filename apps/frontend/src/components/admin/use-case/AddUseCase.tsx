@@ -1,36 +1,20 @@
 import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { portalGraphqlClient } from '@/lib/graphql-client';
 import { Button, toast } from '@filigran/ui';
-import {
-  OrderingMode,
-  UseCaseOrdering,
-  useUseCaseAddMutation,
-  useUseCasesListQuery,
-} from '@graphql/generated';
-import { useQueryClient } from '@tanstack/react-query';
+import { useAddUseCase } from '@graphql/use-case/hooks/useAddUseCase';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 const AddUseCase = () => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
-  const queryClient = useQueryClient();
-  const { mutate: createUseCase } = useUseCaseAddMutation(portalGraphqlClient, {
+
+  const { mutate: createUseCase } = useAddUseCase({
     onSuccess: () => {
       setOpenSheet(false);
-      queryClient.invalidateQueries({
-        queryKey: useUseCasesListQuery.getKey({
-          count: 100,
-          orderMode: OrderingMode.Asc,
-          orderBy: UseCaseOrdering.Name,
-        }),
-      });
-      toast({
-        title: t('Utils.Success'),
-      });
+      toast({ title: t('Utils.Success') });
     },
-    onError: (error: unknown) => {
+    onError: (error) => {
       const errorMessage =
         error instanceof Error ? error.message : 'UnknownError';
       toast({
