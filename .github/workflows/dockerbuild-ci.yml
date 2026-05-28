@@ -147,6 +147,7 @@ jobs:
         with:
           context: .
           file: ${{ matrix.dockerfile }}
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -461,6 +462,7 @@ jobs:
         with:
           context: .
           file: ${{ matrix.dockerfile }}
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |

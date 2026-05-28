@@ -1,228 +1,154 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
-import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
+import Organization from '../../../model/kanel/public/Organization';
 import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import type { PortalContext } from '../../../model/portal-context';
+import type { UserLoadUserBy } from '../../../model/user';
 import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.domain';
+import { OrganizationDomain } from '../../../modules/organization-management/organization/organization.domain';
 import { ServiceConfigurationDomain } from '../../../modules/registration/service-configuration/service-configuration.domain';
 import {
   PLATFORM_ID_HEADER,
   PLATFORM_TOKEN_HEADER,
-  validateActivePlatformToken,
-  validateAndGetRequestedPlatformToken,
-} from './platform-token-validator';
+} from '../../../modules/security-management/token/platform-token.util';
+import { createPlatformTokenResolver } from './platform-token-validator';
 
-describe('platform Token Validation', () => {
-  describe('validateActivePlatformToken', () => {
-    it('should return false when platform token header is missing', async () => {
-      const req: express.Request = {
-        headers: {},
-      } as unknown as express.Request;
+const platformId = uuidv4();
+const platformToken = uuidv4();
 
-      const result = await validateActivePlatformToken(req);
+const validHeaders = {
+  [PLATFORM_TOKEN_HEADER]: platformToken,
+  [PLATFORM_ID_HEADER]: platformId,
+};
 
-      expect(result).toBe(false);
-    });
+const makePortalContext = (
+  headers: Record<string, string> = {}
+): PortalContext => ({
+  user: {} as UserLoadUserBy,
+  req: { headers, session: {} } as unknown as express.Request,
+  res: {} as express.Response,
+});
 
-    it('should return false when platform id header is missing', async () => {
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: 'anything',
-        },
-      } as unknown as express.Request;
-
-      const result = await validateActivePlatformToken(req);
-
-      expect(result).toBe(false);
-    });
-    it('should return false when headers are valid but no matching platform found', async () => {
-      const platformId = uuidv4();
-      const platformToken = uuidv4();
-      vi.spyOn(
-        ServiceConfigurationDomain,
-        'loadConfigurationByPlatformAndToken'
-      ).mockResolvedValue(undefined);
-
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
-
-      const result = await validateActivePlatformToken(req);
-
-      expect(result).toBe(false);
-    });
-    it('should return false when platform is found but inactive', async () => {
-      const platformId = uuidv4();
-      const platformToken = uuidv4();
-      vi.spyOn(
-        ServiceConfigurationDomain,
-        'loadConfigurationByPlatformAndToken'
-      ).mockResolvedValue({
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Inactive,
-      } as unknown as ServiceConfiguration);
-
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
-
-      const result = await validateActivePlatformToken(req);
-
-      expect(result).toBe(false);
-    });
-    it('should return true when valid header for registered platform are provided', async () => {
-      const platformId = uuidv4();
-      const platformToken = uuidv4();
-      vi.spyOn(
-        ServiceConfigurationDomain,
-        'loadConfigurationByPlatformAndToken'
-      ).mockResolvedValue({
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
-      } as unknown as ServiceConfiguration);
-
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
-
-      const result = await validateActivePlatformToken(req);
-
-      expect(result).toBe(true);
+const runResolver = <T>(
+  resolver: (
+    source: unknown,
+    args: unknown,
+    ctx: PortalContext,
+    info: unknown
+  ) => Promise<T>,
+  context: PortalContext
+): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
+    requestContext.run({ user: {} as UserLoadUserBy }, async () => {
+      try {
+        resolve(await resolver({}, {}, context, {}));
+      } catch (error) {
+        reject(error);
+      }
     });
   });
-  describe('validateAndGetRequestedPlatformToken', () => {
-    it('should return null when headers are missing', async () => {
-      const req: express.Request = {
-        headers: {},
-      } as unknown as express.Request;
 
-      const result = await validateAndGetRequestedPlatformToken(req);
+describe('createPlatformTokenResolver', () => {
+  describe('loadOrganizationFromPlatformIdAndTokenHeaders', () => {
+    it('should throw when platform token header is missing', async () => {
+      const resolver = createPlatformTokenResolver(vi.fn());
+      const context = makePortalContext({ [PLATFORM_ID_HEADER]: platformId });
 
-      expect(result).toBe(null);
+      await expect(runResolver(resolver, context)).rejects.toThrow(
+        'Invalid platform token provided'
+      );
     });
 
-    it('should return null when platform id header is missing', async () => {
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: 'anything',
-        },
-      } as unknown as express.Request;
+    it('should throw when platform id header is missing', async () => {
+      const resolver = createPlatformTokenResolver(vi.fn());
+      const context = makePortalContext({
+        [PLATFORM_TOKEN_HEADER]: platformToken,
+      });
 
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
+      await expect(runResolver(resolver, context)).rejects.toThrow(
+        'Invalid platform token provided'
+      );
     });
 
-    it('should return null when platform token header is missing', async () => {
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_ID_HEADER]: 'anything',
-        },
-      } as unknown as express.Request;
-
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
-    });
-
-    it('should return true when valid header for requested are provided', async () => {
-      const platformId = uuidv4();
-      const platformToken = uuidv4();
+    it('should load org via deployment request when a matching request is found', async () => {
+      const orgId = uuidv4();
+      const org = { id: orgId } as Organization;
 
       vi.spyOn(
         DeploymentRequestDomain,
         'loadDeploymentRequestBy'
       ).mockResolvedValue({
         platform_id: platformId,
-      } as DeploymentRequest);
+        organization_requester_id: orgId,
+      } as unknown as DeploymentRequest);
 
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
+      vi.spyOn(OrganizationDomain, 'loadOrganizationBy').mockResolvedValue(org);
 
-      const result = await validateAndGetRequestedPlatformToken(req);
+      const resolverSpy = vi.fn(async (_s, _a, ctx: PortalContext) => ctx.user);
+      const resolver = createPlatformTokenResolver(resolverSpy);
+      const context = makePortalContext(validHeaders);
 
-      expect(result).toBeTruthy();
+      const result = await runResolver(resolver, context);
+
+      expect(OrganizationDomain.loadOrganizationBy).toHaveBeenCalledWith({
+        id: orgId,
+      });
+      expect(result.selected_organization_id).toBe(orgId);
     });
 
-    it('should return null when platform id header provided is unknown', async () => {
-      const platformId = uuidv4();
-      const platformToken = uuidv4();
+    it('should load org via service configuration when no deployment request matches', async () => {
+      const serviceInstanceId = uuidv4();
+      const orgId = uuidv4();
+      const org = { id: orgId } as Organization;
 
       vi.spyOn(
         DeploymentRequestDomain,
         'loadDeploymentRequestBy'
       ).mockResolvedValue(undefined);
 
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
+      vi.spyOn(
+        ServiceConfigurationDomain,
+        'loadConfigurationByPlatformAndToken'
+      ).mockResolvedValue({
+        service_instance_id: serviceInstanceId,
+      } as ServiceConfiguration);
 
-      const result = await validateAndGetRequestedPlatformToken(req);
+      vi.spyOn(
+        OrganizationDomain,
+        'loadOrganizationSubscribedToServiceInstance'
+      ).mockResolvedValue(org);
 
-      expect(result).toBe(null);
+      const resolverSpy = vi.fn(async (_s, _a, ctx: PortalContext) => ctx.user);
+      const resolver = createPlatformTokenResolver(resolverSpy);
+      const context = makePortalContext(validHeaders);
+
+      const result = await runResolver(resolver, context);
+
+      expect(
+        OrganizationDomain.loadOrganizationSubscribedToServiceInstance
+      ).toHaveBeenCalledWith(serviceInstanceId);
+      expect(result.selected_organization_id).toBe(orgId);
     });
 
-    it('should return null when platform id header provided is not matching token', async () => {
-      const platformId = uuidv4();
-      const platformToken = uuidv4();
-
+    it('should throw when neither a deployment request nor a service configuration is found', async () => {
       vi.spyOn(
         DeploymentRequestDomain,
         'loadDeploymentRequestBy'
-      ).mockResolvedValue({
-        platform_id: uuidv4(),
-      } as DeploymentRequest);
-
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
-
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
-    });
-
-    it('should return null when deployment request has no platform_id yet', async () => {
-      const platformId = uuidv4();
-      const platformToken = uuidv4();
-
+      ).mockResolvedValue(undefined);
       vi.spyOn(
-        DeploymentRequestDomain,
-        'loadDeploymentRequestBy'
-      ).mockResolvedValue({
-        platform_id: null,
-      } as DeploymentRequest);
+        ServiceConfigurationDomain,
+        'loadConfigurationByPlatformAndToken'
+      ).mockResolvedValue(undefined);
 
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
+      const resolver = createPlatformTokenResolver(vi.fn());
+      const context = makePortalContext(validHeaders);
 
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
+      await expect(runResolver(resolver, context)).rejects.toThrow(
+        'Invalid token provided'
+      );
     });
   });
 });

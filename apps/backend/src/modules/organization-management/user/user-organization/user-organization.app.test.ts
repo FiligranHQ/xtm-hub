@@ -9,7 +9,6 @@ import {
 import portalConfig from '../../../../config';
 import { requestContext } from '../../../../context/request.context';
 import User, { UserId } from '../../../../model/kanel/public/User';
-import { PortalContext } from '../../../../model/portal-context';
 import * as MailService from '../../../../server/mail-service';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
@@ -310,14 +309,8 @@ describe('usersOrganizationApp', () => {
   });
   describe('changeSelectedOrganization', () => {
     it('should allow user to switch to an organization they belong to', async () => {
-      const testContext = {
-        ...contextAdminSecondOrga,
-        req: { session: { user: null, save: vi.fn() } },
-      } as unknown as PortalContext;
-
       requestContext.set({
-        user: testContext.user,
-        portalContext: testContext,
+        user: contextAdminSecondOrga.user,
       });
 
       const updatedUser = await UserOrganizationApp.changeSelectedOrganization(
@@ -332,7 +325,6 @@ describe('usersOrganizationApp', () => {
     it('should reject switching to an organization the user does not belong to', async () => {
       requestContext.set({
         user: contextSimpleUserSecondOrga.user,
-        portalContext: contextSimpleUserSecondOrga,
       });
 
       await expect(

@@ -166,10 +166,18 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.TransferMeError);
       }
     },
-    changeSelectedOrganization: async (_, { organization_id }) => {
+    changeSelectedOrganization: async (
+      _,
+      { organization_id },
+      portalContext
+    ) => {
       try {
         const user =
           await UserOrganizationApp.changeSelectedOrganization(organization_id);
+
+        portalContext.req.session.user = user;
+        portalContext.req.session.save();
+        portalContext.user = user;
 
         return mapUserToGraphqlUser(user);
       } catch (error) {
@@ -266,9 +274,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    login: async (_, args, context) => {
+    login: async (_, args, { req, res }) => {
       try {
-        const loggedUser = await UserAuthApp.login(context, args);
+        const loggedUser = await UserAuthApp.login(req, res, args);
         if (loggedUser) {
           return mapUserToGraphqlUser(loggedUser);
         }
@@ -282,8 +290,8 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    logout: async (_, __, context) => {
-      return UserAuthApp.logout(context);
+    logout: async (_, __, { user, req, res }) => {
+      return UserAuthApp.logout(user, req, res);
     },
     contactUs: async (
       _,

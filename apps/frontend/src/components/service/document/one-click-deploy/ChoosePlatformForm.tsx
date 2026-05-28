@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { isEeCapableContract } from '@/utils/platform';
 import { SHAREABLE_RESOURCE_TYPE_NAME_MAPPING } from '@/utils/shareable-resources/shareable-resources.types';
 import { doesVersionSatisfy } from '@/utils/versioning';
 import {
@@ -27,6 +28,7 @@ interface ChoosePlatformFormProps {
   oneClickDeploy: (platformUrl: string) => void;
   setIsOpen: (isOpen: boolean) => void;
   requiredProductVersion?: string | null;
+  requiresEe?: boolean;
 }
 
 export const selectPlatformFormSchema = z.object({
@@ -40,8 +42,10 @@ const ChoosePlatformForm = ({
   oneClickDeploy,
   setIsOpen,
   requiredProductVersion,
+  requiresEe,
 }: ChoosePlatformFormProps) => {
   const t = useTranslations();
+
   return (
     <div className="flex flex-col h-full justify-between gap-m">
       <div className="space-y-m">
@@ -76,12 +80,16 @@ const ChoosePlatformForm = ({
                       requiredVersion: requiredProductVersion ?? '0.0.0',
                     });
 
+                    const isEeBlocked =
+                      requiresEe && !isEeCapableContract(platform.contract);
+                    const isDisabled = !isPlatformCompatible || isEeBlocked;
+
                     const input = (
                       <div className="flex items-center gap-2">
                         <Input
                           id={platform.id}
                           type="radio"
-                          disabled={!isPlatformCompatible}
+                          disabled={isDisabled}
                           onChange={() => field.onChange(platform.url)}
                           checked={field.value === platform.url}
                           value={platform.url}
@@ -89,17 +97,17 @@ const ChoosePlatformForm = ({
                         />
                         <FormLabel
                           htmlFor={platform.id}
-                          className={cn(
-                            !isPlatformCompatible && 'text-gray/60'
-                          )}>
+                          className={cn(isDisabled && 'text-gray/60')}>
                           {platform.title}
                         </FormLabel>
                       </div>
                     );
 
-                    return isPlatformCompatible ? (
-                      <div key={platform.id}>{input}</div>
-                    ) : (
+                    if (!isDisabled) {
+                      return <div key={platform.id}>{input}</div>;
+                    }
+
+                    return (
                       <TooltipProvider key={platform.id}>
                         <Tooltip>
                           <TooltipTrigger
@@ -109,10 +117,15 @@ const ChoosePlatformForm = ({
                           </TooltipTrigger>
                           <TooltipContent className="max-w-xl">
                             <p>
-                              {t(
-                                'Service.ShareableResources.Deploy.DeployIncompatibleVersion',
-                                { platformTitle: platform.title }
-                              )}
+                              {isEeBlocked
+                                ? t(
+                                    'Service.ShareableResources.Deploy.EE.PlatformRequiresEE',
+                                    { platformTitle: platform.title }
+                                  )
+                                : t(
+                                    'Service.ShareableResources.Deploy.DeployIncompatibleVersion',
+                                    { platformTitle: platform.title }
+                                  )}
                             </p>
                           </TooltipContent>
                         </Tooltip>

@@ -5,11 +5,11 @@ import {
 } from '../../__generated__/resolvers-types';
 import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
 import { PortalContext } from '../../model/portal-context';
+import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import {
   extractPlatformId,
   extractPlatformToken,
-} from '../../security/directive-graphql/validator/platform-token-validator';
-import { mapToGraphQLError } from '../../utils/error/error.mapping';
+} from '../security-management/token/platform-token.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
 import { NewsFeedApp } from './news-feed.app';
 import { NewsFeedDomain } from './news-feed.domain';
