@@ -115,7 +115,14 @@
       "now": "Maintenant",
       "next": "Après",
       "under_consideration": "En considération",
-      "finished": "Terminé au cours des 3 derniers mois"
+      "finished": "Terminé au cours des 3 derniers mois",
+      "Details": {
+        "draft": "Cas d'utilisation en mode brouillon, non visible sans la capacité UPLOAD",
+        "finished": "Cas d'utilisation disponibles",
+        "now": "Cas d'utilisation en cours de développement",
+        "next": "Cas d'utilisation prévus pour les prochaines versions",
+        "under_consideration": "Cas d'utilisation fortement envisagés"
+      }
     },
     "Form": {
       "Epic": "Epic",
