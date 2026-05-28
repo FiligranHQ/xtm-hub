@@ -80,7 +80,9 @@ export const RegistrationDetails = ({
     platform.deployment_request?.hub_status ===
       DeploymentRequestHubStatusEnum.ACTIVE;
 
+  const userHasTrialAccess = Boolean(platform.myGroups?.length);
   const displayAccessPlatformButtonForTrial =
+    userHasTrialAccess &&
     platform.url &&
     platform.deployment_request?.hub_status ===
       DeploymentRequestHubStatusEnum.ACTIVE;
@@ -147,9 +149,9 @@ export const RegistrationDetails = ({
           {isTrialActive && (
             <span>
               <span className="text-gray/60">Access:</span>{' '}
-              {platform.myGroups?.length ? (
+              {userHasTrialAccess ? (
                 <span>
-                  {platform.myGroups
+                  {(platform.myGroups ?? [])
                     .map((group) => group.name)
                     .filter(Boolean)
                     .join(', ')}

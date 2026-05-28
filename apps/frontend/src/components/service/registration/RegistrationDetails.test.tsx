@@ -90,6 +90,12 @@ const trialPlatform: registeredPlatformByServiceInstanceId_fragment$data = {
   },
 };
 
+const trialPlatformWithAccess: registeredPlatformByServiceInstanceId_fragment$data =
+  {
+    ...trialPlatform,
+    myGroups: [{ name: 'Admin' }],
+  };
+
 const renderDetails = (
   platform: registeredPlatformByServiceInstanceId_fragment$data,
   me?: NonNullable<Parameters<typeof testRender>[1]>['me']
@@ -106,11 +112,12 @@ const renderDetails = (
 describe('RegistrationDetails', () => {
   describe('Access button', () => {
     it.each`
-      label                                | platform                                                                                                                                 | shouldShow
-      ${'trial, ACTIVE status, with url'}  | ${trialPlatform}                                                                                                                         | ${true}
-      ${'trial, PENDING status, with url'} | ${{ ...trialPlatform, deployment_request: { ...trialPlatform.deployment_request, hub_status: DeploymentRequestHubStatusEnum.PENDING } }} | ${false}
-      ${'trial, ACTIVE status, no url'}    | ${{ ...trialPlatform, url: '' }}                                                                                                         | ${false}
-      ${'non-trial with url'}              | ${basePlatform}                                                                                                                          | ${true}
+      label                                             | platform                                                                                                                                                     | shouldShow
+      ${'trial, ACTIVE status, with url, no myGroups'}  | ${trialPlatform}                                                                                                                                             | ${false}
+      ${'trial, ACTIVE status, with url and myGroups'}  | ${trialPlatformWithAccess}                                                                                                                                   | ${true}
+      ${'trial, PENDING status, with url and myGroups'} | ${{ ...trialPlatformWithAccess, deployment_request: { ...trialPlatformWithAccess.deployment_request, hub_status: DeploymentRequestHubStatusEnum.PENDING } }} | ${false}
+      ${'trial, ACTIVE status, no url'}                 | ${{ ...trialPlatformWithAccess, url: '' }}                                                                                                                   | ${false}
+      ${'non-trial with url'}                           | ${basePlatform}                                                                                                                                              | ${true}
     `('should show=$shouldShow for $label', ({ platform, shouldShow }) => {
       renderDetails(platform);
       const accessLink = screen.queryByRole('link', { name: /Access/i });
@@ -271,9 +278,9 @@ describe('RegistrationDetails', () => {
       ${'MANAGE_PLATFORM_REGISTRATION'} | ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]} | ${true}
       ${'no capability'}                | ${[]}                                                        | ${false}
     `(
-      'should show=$shouldShow on trial + ACTIVE when user has $label',
+      'should show=$shouldShow on trial + ACTIVE + myGroups when user has $label',
       ({ capabilities, shouldShow }) => {
-        renderDetails(trialPlatform, {
+        renderDetails(trialPlatformWithAccess, {
           selected_org_capabilities: capabilities,
         });
         if (shouldShow) {
@@ -289,9 +296,9 @@ describe('RegistrationDetails', () => {
     it('should not show when trial but deployment is not ACTIVE', () => {
       renderDetails(
         {
-          ...trialPlatform,
+          ...trialPlatformWithAccess,
           deployment_request: {
-            ...trialPlatform.deployment_request!,
+            ...trialPlatformWithAccess.deployment_request!,
             hub_status: DeploymentRequestHubStatusEnum.PENDING,
           },
         },
@@ -301,6 +308,17 @@ describe('RegistrationDetails', () => {
           ],
         }
       );
+      expect(
+        screen.queryByTestId('manage-users-dialog')
+      ).not.toBeInTheDocument();
+    });
+
+    it('should not show when trial + ACTIVE + capability but no myGroups', () => {
+      renderDetails(trialPlatform, {
+        selected_org_capabilities: [
+          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+        ],
+      });
       expect(
         screen.queryByTestId('manage-users-dialog')
       ).not.toBeInTheDocument();
@@ -317,12 +335,12 @@ describe('RegistrationDetails', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('should not show when trial + ACTIVE + capability but no serviceInstanceId', () => {
+    it('should not show when trial + ACTIVE + myGroups + capability but no serviceInstanceId', () => {
       renderDetails(
         {
-          ...trialPlatform,
+          ...trialPlatformWithAccess,
           subscription: {
-            ...trialPlatform.subscription!,
+            ...trialPlatformWithAccess.subscription!,
             service_instance: null,
           },
         },
@@ -398,7 +416,7 @@ describe('RegistrationDetails', () => {
           typeof useSearchParams
         >
       );
-      renderDetails(trialPlatform, {
+      renderDetails(trialPlatformWithAccess, {
         selected_org_capabilities: [
           OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
         ],
@@ -412,7 +430,7 @@ describe('RegistrationDetails', () => {
       vi.mocked(useSearchParams).mockReturnValue(
         new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>
       );
-      renderDetails(trialPlatform, {
+      renderDetails(trialPlatformWithAccess, {
         selected_org_capabilities: [
           OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
         ],
