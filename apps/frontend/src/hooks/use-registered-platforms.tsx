@@ -9,6 +9,7 @@ export const UseRegisteredPlatformsFragment = graphql`
     version
     title
     url
+    contract
   }
 `;
 
