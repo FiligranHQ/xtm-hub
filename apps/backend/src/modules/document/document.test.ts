@@ -258,10 +258,6 @@ describe('increment shared counter', () => {
   beforeEach(async () => {
     const testContext = {
       user: requestContextSimpleUserSecondOrga.user,
-      portalContext: {
-        ...contextSimpleUserSecondOrga,
-        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
-      },
     };
     requestContext.set(testContext);
     await DocumentApp.createDocumentWithChildrenAndMetadata<CsvFeed>(

@@ -1,7 +1,7 @@
 import config from 'config';
+import express from 'express';
 import { MutationLoginArgs } from '../../../__generated__/resolvers-types';
 import portalConfig from '../../../config';
-import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { validatePassword } from '../../../security/util/user';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
@@ -19,14 +19,14 @@ const isLocalAuthEnabled = (): boolean => {
 
 export const UserAuthApp = {
   login: async (
-    context: PortalContext,
+    req: express.Request,
+    res: express.Response,
     { email, password }: MutationLoginArgs
   ) => {
     if (!isLocalAuthEnabled()) {
       throw ForbiddenAccess('Local authentication is not enabled');
     }
 
-    const { req, res } = context;
     const loggedUser = await UserDomain.loadUserBy({ email });
     if (loggedUser && validPassword(loggedUser, password)) {
       req.session.user = await UserDomain.updateUserAtLogin(loggedUser);
@@ -39,7 +39,11 @@ export const UserAuthApp = {
     return undefined;
   },
 
-  logout: async ({ user, req, res }: PortalContext): Promise<string> => {
+  logout: async (
+    user: UserLoadUserBy,
+    req: express.Request,
+    res: express.Response
+  ): Promise<string> => {
     return new Promise((resolve) => {
       res.clearCookie(portalConfig.session.name);
       req.session.destroy(() => {
