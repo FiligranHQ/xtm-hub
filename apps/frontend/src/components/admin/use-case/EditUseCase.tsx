@@ -3,8 +3,8 @@ import UseCaseForm, {
 } from '@/components/admin/use-case/UseCaseForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { toast } from '@filigran/ui';
-import { useEditUseCase } from '@graphql/use-case/hooks/useEditUseCase';
-import { useDeleteUseCase } from '@graphql/use-case/hooks/useDeleteUseCase';
+import { useEditUseCase } from '@graphql/use-case/hooks/use-edit-use-case';
+import { useDeleteUseCase } from '@graphql/use-case/hooks/use-delete-use-case';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 

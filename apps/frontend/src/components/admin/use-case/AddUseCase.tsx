@@ -1,7 +1,7 @@
 import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { Button, toast } from '@filigran/ui';
-import { useAddUseCase } from '@graphql/use-case/hooks/useAddUseCase';
+import { useAddUseCase } from '@graphql/use-case/hooks/use-add-use-case';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 

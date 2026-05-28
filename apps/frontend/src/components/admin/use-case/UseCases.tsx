@@ -5,7 +5,7 @@ import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';
 import { Badge, DataTable } from '@filigran/ui';
 import { type UseCaseRowFragment } from '@graphql/generated';
-import { useUseCases } from '@graphql/use-case/hooks/useUseCases';
+import { useUseCases } from '@graphql/use-case/hooks/use-use-cases';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
