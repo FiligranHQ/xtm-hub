@@ -1,3 +1,4 @@
+import { withTransaction } from '../../context/database.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
@@ -62,8 +63,10 @@ export const UserServiceApp = {
     if (userService.subscription_id !== subscriptionId) {
       throw new Error(ForbiddenErrorCode.ServiceNotManageable);
     }
-    await UserServiceDomain.deleteUserCapabilityById(userService.id);
-    await insertCapabilities(capabilities, [userService]);
+    await withTransaction(async () => {
+      await UserServiceDomain.deleteUserCapabilityById(userService.id);
+      await insertCapabilities(capabilities, [userService]);
+    });
     return UserServiceDomain.loadUserServiceById(userServiceId);
   },
 };

@@ -42,9 +42,9 @@ import {
 import { PortalContext } from '@/components/me/AppPortalContext';
 import ServiceSlugHeader from '@/components/service/[slug]/ServiceSlugHeader';
 import { SubscriptionSlugAddCapabilities } from '@/components/subcription/[slug]/SubscriptionSlugAddCapabilities';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { APP_PATH } from '@/utils/path/constant';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -153,13 +153,7 @@ const SubscriptionSlug = ({
     });
   }, [userData, me?.id, hasOrganizationCapability]);
 
-  const isBypass = useMemo(
-    () =>
-      me?.capabilities?.some(
-        (capa) => capa?.name === PortalCapabilityEnum.BYPASS
-      ) ?? false,
-    [me?.capabilities]
-  );
+  const isBypass = useAdminByPass();
 
   const canManageUserServices = isBypass || canManageService();
 

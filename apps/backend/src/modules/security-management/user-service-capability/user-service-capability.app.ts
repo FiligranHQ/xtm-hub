@@ -13,7 +13,7 @@ export const userServiceCapabilityApp = {
     serviceInstanceId: ServiceInstanceId
   ): Promise<UserService[]> => {
     const userServices =
-      await UserServiceDomain.loadUserServicesBy(userServiceIds);
+      await UserServiceDomain.loadUserServicesByIds(userServiceIds);
 
     const isUserServiceInCorrectService =
       await UserServiceDomain.checkUserServiceIsInServiceInstance(
@@ -30,6 +30,6 @@ export const userServiceCapabilityApp = {
 
     await insertCapabilities(capabilities, userServices);
 
-    return UserServiceDomain.loadUserServicesBy(userServiceIds);
+    return UserServiceDomain.loadUserServicesByIds(userServiceIds);
   },
 };

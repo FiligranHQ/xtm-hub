@@ -200,7 +200,9 @@ export const UserServiceDomain = {
     return db<UserService>('User_Service').where(field);
   },
 
-  loadUserServicesBy: async (ids: UserServiceId[]): Promise<UserService[]> => {
+  loadUserServicesByIds: async (
+    ids: UserServiceId[]
+  ): Promise<UserService[]> => {
     return db<UserService[]>('User_Service').whereIn('id', ids).select('*');
   },
 
