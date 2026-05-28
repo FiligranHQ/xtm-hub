@@ -1092,7 +1092,27 @@
         "DeployPlatform": "{platformName} にデプロイしますか？",
         "DeployQuestionTag": "どの {platformType} プラットフォームに配置しますか？",
         "DeployResourceDescription": "あなたは {resourceName} {resourceType} をデプロイしようとしています。",
-        "DeployIncompatibleVersion": "このリソースは OpenCTI プラットフォームにデプロイできません \"{platformTitle}\" なぜならプラットフォームのバージョンはもうこのリソースと互換性がないからです。先に進む前に、プラットフォームをアップデートするか、互換性のあるリソースのバージョンを使う必要があります。"
+        "DeployIncompatibleVersion": "このリソースは OpenCTI プラットフォームにデプロイできません \"{platformTitle}\" なぜならプラットフォームのバージョンはもうこのリソースと互換性がないからです。先に進む前に、プラットフォームをアップデートするか、互換性のあるリソースのバージョンを使う必要があります。",
+        "EE": {
+          "Tag": "EE",
+          "HoverTitle": "エンタープライズ版で利用可能",
+          "HoverSubtitle": "クリックして詳細を見る",
+          "PlatformRequiresEE": "プラットフォーム \"{platformTitle}\" は Community Edition です。プレイブックをワンクリックでデプロイするには、OpenCTIのEnterprise Editionが必要です。"
+        },
+        "EELearnMore": {
+          "Title": "ワンクリックデプロイ",
+          "Subtitle": "OpenCTI Enterprise Edition で利用可能",
+          "Heading": "ワンクリックでプレイブックを OpenCTI インスタンスに直接デプロイ",
+          "FirstParagraph": "ワンクリックデプロイにより、XTMハブからOpenCTIプラットフォームにプレイブックを即座に直接プッシュできます。手動での設定やファイル操作は必要ありません。",
+          "SecondParagraph": "プレイブックを選択し、デプロイをクリックすると、数秒以内にインスタンスで実行する準備が整います。",
+          "EnterpriseEditionTitle": "OpenCTI エンタープライズ版 (EE)",
+          "EnterpriseEditionDescription": "OpenCTI Enterprise Editionは、脅威インテリジェンス運用の高度化を目指す企業向けに、高度な機能、エンタープライズグレードの拡張性、専用サポートを提供します。",
+          "Link": "詳細はこちら",
+          "InterestedTitle": "もっと知りたいですか？",
+          "InterestedSubtitle": "すぐに担当者がご連絡いたします！",
+          "DefaultMessage": "OpenCTI Enterprise Editionの詳細について興味があります。",
+          "SendButton": "送信"
+        }
       },
       "Details": {
         "Author": "著者",
