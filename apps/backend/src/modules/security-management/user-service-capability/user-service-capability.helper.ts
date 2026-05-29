@@ -7,6 +7,7 @@ import { SubscriptionCapabilityId } from '../../../model/kanel/public/Subscripti
 import UserService from '../../../model/kanel/public/UserService';
 import UserServiceCapability, {
   UserServiceCapabilityId,
+  UserServiceCapabilityInitializer,
 } from '../../../model/kanel/public/UserServiceCapability';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loadGenericServiceCapabilityBy } from '../service-capability/generic-service-capability.helper';
@@ -15,7 +16,7 @@ import { loadSubscriptionCapabilitiesBy } from '../subscription-capability/subsc
 
 export const insertCapabilities = async (
   capabilities: string[],
-  userService: UserService
+  userServices: UserService[]
 ) => {
   for (const insertingCapability of capabilities) {
     const [genericCapability] = await loadGenericServiceCapabilityBy({
@@ -23,11 +24,15 @@ export const insertCapabilities = async (
     });
 
     if (genericCapability) {
-      await insertUserServiceCapability({
-        id: uuidv4() as UserServiceCapabilityId,
-        user_service_id: userService.id,
-        generic_service_capability_id: genericCapability.id,
+      const data = userServices.map((us) => {
+        return {
+          id: uuidv4() as UserServiceCapabilityId,
+          user_service_id: us.id,
+          generic_service_capability_id: genericCapability.id,
+          subscription_capability_id: null,
+        };
       });
+      await insertUserServiceCapability(data);
     } else {
       const [serviceCapability] = await loadServiceCapabilitiesBy({
         id: fromGlobalId(insertingCapability).id as ServiceCapabilityId,
@@ -35,10 +40,10 @@ export const insertCapabilities = async (
 
       const [subscriptionCapability] = await loadSubscriptionCapabilitiesBy({
         service_capability_id: serviceCapability.id,
-        subscription_id: userService.subscription_id,
+        subscription_id: userServices[0].subscription_id,
       });
       const subscriptionCapabilities = await loadSubscriptionCapabilitiesBy({
-        subscription_id: userService.subscription_id,
+        subscription_id: userServices[0].subscription_id,
       });
       const isCapabilityGrantedForOrganization = subscriptionCapabilities.some(
         (subscriptionCapability) => {
@@ -48,13 +53,18 @@ export const insertCapabilities = async (
           );
         }
       );
+
       if (isCapabilityGrantedForOrganization) {
-        await db<UserServiceCapability>('UserService_Capability').insert({
-          id: uuidv4() as UserServiceCapabilityId,
-          user_service_id: userService.id,
-          subscription_capability_id:
-            subscriptionCapability.id as SubscriptionCapabilityId,
+        const data = userServices.map((us) => {
+          return {
+            id: uuidv4() as UserServiceCapabilityId,
+            user_service_id: us.id,
+            generic_service_capability_id: null,
+            subscription_capability_id:
+              subscriptionCapability.id as SubscriptionCapabilityId,
+          };
         });
+        await insertUserServiceCapability(data);
       } else {
         throw new Error(ErrorCode.GrantCapabilitiesOnOrganizationFirst);
       }
@@ -62,9 +72,21 @@ export const insertCapabilities = async (
   }
 };
 
-export const insertUserServiceCapability = async (data) => {
+export const insertUserServiceCapability = async (
+  data: UserServiceCapabilityInitializer[]
+) => {
+  if (data.length === 0) {
+    return;
+  }
+
   await db<UserServiceCapability>('UserService_Capability')
     .insert(data)
+    .onConflict([
+      'user_service_id',
+      'generic_service_capability_id',
+      'subscription_capability_id',
+    ])
+    .ignore()
     .returning('*');
 };
 

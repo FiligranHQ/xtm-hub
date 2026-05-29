@@ -44,6 +44,33 @@ export const createSecureFieldResolver = (
       throw UnauthenticatedAccess('Not authorized: You are not authenticated');
     }
 
+    if (
+      authDirective &&
+      (authDirective.portalCapa || authDirective.orgaCapa) &&
+      serviceCapaDirective
+    ) {
+      const portalCapabilitiesRequired = authDirective.portalCapa || [];
+      const orgaCapabilitiesRequired = authDirective.orgaCapa || [];
+      const hasRoleCapability = hasCapabilityFn(user, {
+        [RoleType.PORTAL]: portalCapabilitiesRequired,
+        [RoleType.ORGA]: orgaCapabilitiesRequired,
+      });
+      const serviceCapabilitiesRequired = serviceCapaDirective.requires || [];
+      const hasServiceCapability = await hasServiceCapabilityFn(
+        user,
+        args,
+        serviceCapabilitiesRequired
+      );
+
+      if (!hasRoleCapability && !hasServiceCapability) {
+        throw ForbiddenAccess(
+          'Not authorized: The provided role does not meet schema requirements and you do not have access to this service'
+        );
+      }
+
+      return originalResolve(source, args, portalContext, info);
+    }
+
     // Authorization check
     if (authDirective) {
       const portalCapabilitiesRequired = authDirective.portalCapa || [];

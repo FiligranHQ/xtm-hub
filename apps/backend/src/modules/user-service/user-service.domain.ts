@@ -37,7 +37,10 @@ import {
 } from '../organization-management/user/user.helper';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
 import { insertServiceCapability } from '../security-management/service-capability/service-capability.helper';
-import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
+import {
+  insertCapabilities,
+  insertUserServiceCapability,
+} from '../security-management/user-service-capability/user-service-capability.helper';
 import {
   loadServiceDefinitionByServiceInstance,
   loadServiceInstanceBy,
@@ -141,16 +144,15 @@ export const UserServiceDomain = {
         .insert(user_service)
         .returning('*');
 
-      await insertCapabilities(capabilities, addedUserService);
+      await insertCapabilities(capabilities, [addedUserService]);
       const user_service_capa: UserServiceCapabilityInitializer = {
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: addedUserService.id,
         generic_service_capability_id:
           GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
+        subscription_capability_id: null,
       };
-      await db<UserServiceCapability>('UserService_Capability')
-        .insert(user_service_capa)
-        .returning('*');
+      await insertUserServiceCapability([user_service_capa]);
       return addedUserService;
     });
 
@@ -195,6 +197,32 @@ export const UserServiceDomain = {
       | UserServiceMutator
   ): Promise<UserService[]> => {
     return db<UserService>('User_Service').where(field);
+  },
+
+  loadUserServiceWithSubscriptionBy: async (
+    field:
+      | addPrefixToObject<UserServiceMutator, 'User_Service.'>
+      | UserServiceMutator
+  ) => {
+    return db<UserService>('User_Service')
+      .where(field)
+      .leftJoin(
+        'Subscription',
+        'User_Service.subscription_id',
+        'Subscription.id'
+      )
+      .leftJoin(
+        'UserService_Capability',
+        'User_Service.id',
+        'UserService_Capability.user_service_id'
+      )
+      .select('*');
+  },
+
+  loadUserServicesByIds: async (
+    ids: UserServiceId[]
+  ): Promise<UserService[]> => {
+    return db<UserService[]>('User_Service').whereIn('id', ids).select('*');
   },
 
   loadUserServiceWithCapabilitiesBy: async (field: UserServiceMutator) => {
@@ -491,16 +519,10 @@ export const UserServiceDomain = {
     );
   },
 
-  deleteUserService: async (
-    userId: UserId,
-    subscriptionId: SubscriptionId
-  ): Promise<UserService | undefined> => {
-    const [deletedUserService] = await db<UserService>('User_Service')
-      .where('user_id', '=', userId)
-      .where('subscription_id', '=', subscriptionId)
-      .delete('*')
-      .returning('*');
-    return deletedUserService;
+  deleteUserServices: async (
+    ids: UserServiceId[]
+  ): Promise<UserService[] | null> => {
+    return db<UserService>('User_Service').whereIn('id', ids).delete('*');
   },
 
   deleteUserCapabilityById: async (userServiceId: UserServiceId) => {

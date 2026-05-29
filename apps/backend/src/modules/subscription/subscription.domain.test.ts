@@ -192,7 +192,11 @@ describe('subscription domain', () => {
       const result = await getSubscriptionCapability(id);
 
       expect(result).toHaveLength(2);
-      const capabilityIds = result.map((r) => r.service_capability_id);
+      const capabilityIds = result.map(
+        (subscriptionCapability: {
+          service_capability_id: ServiceCapabilityId;
+        }) => subscriptionCapability.service_capability_id
+      );
       expect(capabilityIds).toEqual(
         expect.arrayContaining([
           SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,

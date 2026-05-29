@@ -46,7 +46,6 @@ const PageLoader = ({ subscriptionId, serviceInstance }: PreloaderProps) => {
           queryRef={queryRef}
           serviceInstance={serviceInstance}
           queryRefSubscription={queryRefSubscription}
-          subscriptionId={subscriptionId}
         />
       ) : (
         <Loader />

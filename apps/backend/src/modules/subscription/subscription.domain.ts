@@ -9,13 +9,7 @@ import Subscription, {
   SubscriptionInitializer,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import { UserMutator } from '../../model/kanel/public/User';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
-import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import { UserDomain } from '../organization-management/user/user-domain/user.domain';
-import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
-import { UserServiceDomain } from '../user-service/user-service.domain';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 export const SubscriptionDomain = {
   deleteSubscriptions: async (
@@ -49,56 +43,6 @@ export const getServiceCapability = async (id) => {
     .where('Subscription_Capability.id', '=', id)
     .select('Service_Capability.*')
     .first();
-};
-
-export const fillSubscriptionWithOrgaServiceAndUserService = async (
-  subscriptionId: SubscriptionId
-) => {
-  const [sub] = await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-    'Subscription.id': subscriptionId,
-  } as SubscriptionMutator);
-
-  const organization = await OrganizationDomain.loadOrganizationBy({
-    id: sub.organization_id,
-  });
-
-  const serviceInstance = await loadServiceInstanceBy({
-    id: sub.service_instance_id,
-  });
-  const userServices =
-    await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
-      subscription_id: subscriptionId,
-    });
-  const populatedUserServices = await fillUserServiceData(userServices);
-
-  return {
-    ...sub,
-    organization,
-    serviceInstance,
-    user_service: populatedUserServices,
-  };
-};
-export const fillUserServiceData = async (userServices: UserService[]) => {
-  const userServicesData = [];
-  for (const userService of userServices) {
-    const user = await UserDomain.loadUserBy({
-      'User.id': userService.user_id,
-    } as UserMutator);
-
-    const userServiceData = {
-      id: userService.id,
-      user: {
-        email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        id: user.id,
-        __typename: 'User',
-      },
-      user_service_capability: userService.user_service_capability,
-    };
-    userServicesData.push(userServiceData);
-  }
-  return userServicesData;
 };
 
 export const transferSubscriptionToOrganization = async ({

@@ -174,10 +174,12 @@ describe('userServiceDomain', () => {
       const result = await addSimpleUser();
 
       expect(result).toHaveLength(1);
-      expect(result[0]).toMatchObject({
-        subscription_id: sub.id,
-        user_id: SIMPLE.ID,
-      });
+      expect(result).toMatchObject([
+        {
+          subscription_id: sub.id,
+          user_id: SIMPLE.ID,
+        },
+      ]);
 
       const persisted = await TestHelper.user_Service.load({
         id: result[0]!.id,
@@ -397,11 +399,13 @@ describe('userServiceDomain', () => {
     it('should return UserService objects with the correct shape', async () => {
       const result = await addSimpleUser();
 
-      expect(result[0]).toMatchObject({
-        id: expect.any(String),
-        user_id: SIMPLE.ID,
-        subscription_id: sub.id,
-      });
+      expect(result).toMatchObject([
+        {
+          id: expect.any(String),
+          user_id: SIMPLE.ID,
+          subscription_id: sub.id,
+        },
+      ]);
     });
 
     it('should handle duplicate emails in the same call gracefully', async () => {
@@ -427,17 +431,18 @@ describe('userServiceDomain', () => {
     it('should delete the matching User_Service row and return it', async () => {
       const userServiceId = await insertUserService(SIMPLE.ID, sub.id);
 
-      const result = await UserServiceDomain.deleteUserService(
-        SIMPLE.ID,
-        sub.id
-      );
+      const result = await UserServiceDomain.deleteUserServices([
+        userServiceId,
+      ]);
 
-      expect(result).toBeDefined();
-      expect(result).toMatchObject({
-        id: userServiceId,
-        user_id: SIMPLE.ID,
-        subscription_id: sub.id,
-      });
+      expect(result).toHaveLength(1);
+      expect(result).toMatchObject([
+        {
+          id: userServiceId,
+          user_id: SIMPLE.ID,
+          subscription_id: sub.id,
+        },
+      ]);
 
       const remaining = await TestHelper.user_Service.load({
         id: userServiceId,
@@ -454,7 +459,7 @@ describe('userServiceDomain', () => {
       });
       expect(before).toBeDefined();
 
-      await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
+      await UserServiceDomain.deleteUserServices([userServiceId]);
 
       const deletedService = await TestHelper.user_Service.load({
         id: userServiceId,
@@ -485,7 +490,7 @@ describe('userServiceDomain', () => {
           GenericServiceCapabilityIds.ManageAccessId as GenericServiceCapabilityId,
       });
 
-      await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
+      await UserServiceDomain.deleteUserServices([userServiceId]);
 
       // eslint-disable-next-line no-restricted-syntax
       const survivors = await db<UserServiceCapability>(
@@ -496,55 +501,19 @@ describe('userServiceDomain', () => {
       expect(survivors).toHaveLength(0);
     });
 
-    it('should return undefined when userId does not match any row', async () => {
-      await insertUserService(SIMPLE.ID, sub.id);
-      const ghostId = uuidv4() as UserId;
+    it('should return an empty array and delete nothing when the id is non-existent', async () => {
+      const ghostId = uuidv4() as UserServiceId;
 
-      const result = await UserServiceDomain.deleteUserService(ghostId, sub.id);
+      const result = await UserServiceDomain.deleteUserServices([ghostId]);
 
-      expect(result).toBeUndefined();
-
-      const remaining = await TestHelper.user_Service.loadAll({
-        subscription_id: sub.id,
-      });
-      expect(remaining).toHaveLength(1);
-    });
-
-    it('should return undefined when subscriptionId does not match any row', async () => {
-      await insertUserService(SIMPLE.ID, sub.id);
-      const ghostSubId = uuidv4() as SubscriptionId;
-
-      const result = await UserServiceDomain.deleteUserService(
-        SIMPLE.ID,
-        ghostSubId
-      );
-
-      expect(result).toBeUndefined();
-
-      const remaining = await TestHelper.user_Service.load({
-        user_id: SIMPLE.ID,
-        subscription_id: sub.id,
-      });
-      expect(remaining).toBeDefined();
-    });
-
-    it('should return undefined and delete nothing when both ids are non-existent', async () => {
-      const ghostId = uuidv4() as UserId;
-      const ghostSubId = uuidv4() as SubscriptionId;
-
-      const result = await UserServiceDomain.deleteUserService(
-        ghostId,
-        ghostSubId
-      );
-
-      expect(result).toBeUndefined();
+      expect(result).toEqual([]);
     });
 
     it('should only delete the targeted row when multiple users share the same subscription', async () => {
-      await insertUserService(SIMPLE.ID, sub.id);
+      const userServiceId = await insertUserService(SIMPLE.ID, sub.id);
       const adminServiceId = await insertUserService(ADMIN.ID, sub.id);
 
-      await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
+      await UserServiceDomain.deleteUserServices([userServiceId]);
 
       const adminService = await TestHelper.user_Service.load({
         id: adminServiceId,
@@ -565,10 +534,10 @@ describe('userServiceDomain', () => {
         end_date: undefined,
       });
 
-      await insertUserService(SIMPLE.ID, sub.id);
+      const userServiceId = await insertUserService(SIMPLE.ID, sub.id);
       const secondServiceId = await insertUserService(SIMPLE.ID, secondSubId);
 
-      await UserServiceDomain.deleteUserService(SIMPLE.ID, sub.id);
+      await UserServiceDomain.deleteUserServices([userServiceId]);
 
       const secondService = await TestHelper.user_Service.load({
         id: secondServiceId,
@@ -581,37 +550,37 @@ describe('userServiceDomain', () => {
       await TestHelper.subscription.delete({ id: secondSubId });
     });
 
-    it('should be idempotent — second call returns undefined without throwing', async () => {
-      await insertUserService(SIMPLE.ID, sub.id);
+    it('should be idempotent — second call returns empty array without throwing', async () => {
+      const userServiceId = await insertUserService(SIMPLE.ID, sub.id);
 
-      const first = await UserServiceDomain.deleteUserService(
-        SIMPLE.ID,
-        sub.id
-      );
-      expect(first).toBeDefined();
+      const first = await UserServiceDomain.deleteUserServices([userServiceId]);
+      expect(first).toHaveLength(1);
 
-      const second = await UserServiceDomain.deleteUserService(
-        SIMPLE.ID,
-        sub.id
-      );
-      expect(second).toBeUndefined();
+      const second = await UserServiceDomain.deleteUserServices([
+        userServiceId,
+      ]);
+      expect(second).toEqual([]);
     });
 
     it('should return an object matching the UserService shape', async () => {
       const userServiceId = await insertUserService(SIMPLE.ID, sub.id);
 
-      const result = await UserServiceDomain.deleteUserService(
-        SIMPLE.ID,
-        sub.id
-      );
+      const result = await UserServiceDomain.deleteUserServices([
+        userServiceId,
+      ]);
 
-      expect(result).toMatchObject({
-        id: userServiceId,
-        user_id: SIMPLE.ID,
-        subscription_id: sub.id,
-      });
+      expect(result).toMatchObject([
+        {
+          id: userServiceId,
+          user_id: SIMPLE.ID,
+          subscription_id: sub.id,
+        },
+      ]);
       expect(
-        Object.prototype.hasOwnProperty.call(result, 'service_personal_data')
+        Object.prototype.hasOwnProperty.call(
+          result?.[0],
+          'service_personal_data'
+        )
       ).toBe(true);
     });
   });

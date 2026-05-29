@@ -1,12 +1,16 @@
+import { withTransaction } from '../../context/database.context';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import User from '../../model/kanel/public/User';
-import UserService from '../../model/kanel/public/UserService';
-import { ErrorCode } from '../../utils/error/error.code';
-import { UserDomain } from '../organization-management/user/user-domain/user.domain';
-import { SubscriptionDomain } from '../subscription/subscription.domain';
+import UserService, {
+  UserServiceId,
+} from '../../model/kanel/public/UserService';
+import { ErrorCode, ForbiddenErrorCode } from '../../utils/error/error.code';
+import { checkUserServiceIsInServiceInstance } from '../security-management/capability/auth.helper';
+import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
 import { UserServiceDomain } from './user-service.domain';
 
@@ -15,7 +19,8 @@ export const UserServiceApp = {
     user: User,
     subscriptionId: SubscriptionId,
     emails: string[],
-    capabilities: string[]
+    capabilities: string[],
+    serviceInstanceId: ServiceInstanceId
   ): Promise<UserService[]> => {
     if (emails.some((email) => email === user.email)) {
       throw new Error(ErrorCode.CantSubscribeYourself);
@@ -28,6 +33,10 @@ export const UserServiceApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
+    if (subscription.service_instance_id !== serviceInstanceId) {
+      throw new Error(ForbiddenErrorCode.ServiceNotManageable);
+    }
+
     return UserServiceDomain.addServiceToUsers(
       subscription,
       emails,
@@ -35,29 +44,34 @@ export const UserServiceApp = {
     );
   },
 
-  deleteUserService: async (email: string, subscriptionId: SubscriptionId) => {
-    const userToDelete = await UserDomain.loadUserBy({ email });
-    const deletedUserService = await UserServiceDomain.deleteUserService(
-      userToDelete.id,
-      subscriptionId
+  deleteUserServices: async (
+    userServiceIds: UserServiceId[],
+    serviceInstanceId: ServiceInstanceId
+  ) => {
+    const userServiceIsInService = await checkUserServiceIsInServiceInstance(
+      userServiceIds[0],
+      serviceInstanceId
     );
-    if (!deletedUserService) {
-      return;
+    if (!userServiceIsInService) {
+      throw new Error(ForbiddenErrorCode.ServiceNotManageable);
     }
-    // Find subscription and remove it if no other userServices
-    const usersServices =
-      await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
-        subscription_id: deletedUserService?.subscription_id,
-      });
+    return UserServiceDomain.deleteUserServices(userServiceIds);
+  },
+  editUserService: async (
+    userServiceId: UserServiceId,
+    capabilities: string[],
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<UserService> => {
+    const userService =
+      await UserServiceDomain.loadUserServiceById(userServiceId);
 
-    if (usersServices.length === 0) {
-      const [subscription] =
-        await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-          'Subscription.id': deletedUserService?.subscription_id,
-        } as SubscriptionMutator);
-      await SubscriptionDomain.deleteSubscriptions([subscription.id]);
+    if (userService.subscription.service_instance_id !== serviceInstanceId) {
+      throw new Error(ForbiddenErrorCode.ServiceNotManageable);
     }
-
-    return deletedUserService;
+    await withTransaction(async () => {
+      await UserServiceDomain.deleteUserCapabilityById(userService.id);
+      await insertCapabilities(capabilities, [userService]);
+    });
+    return UserServiceDomain.loadUserServiceById(userServiceId);
   },
 };
