@@ -93,7 +93,7 @@ export const DeploymentRequestDomain = {
       });
     }
 
-    return paginate<DeploymentRequest, T>(
+    return paginate<FullyQualifiedDeploymentRequest, T>(
       'DeploymentRequest',
       opts,
       undefined,

@@ -72,9 +72,9 @@ export const isNodeAccessible = async (
   }
   type AccessibilityChecker = (opt: {
     user: UserLoadUserBy;
-    data?: { [action in ActionType]: TypedNode };
-    type?: string;
-    topic?: string;
+    data: { [action in ActionType]: TypedNode };
+    type: string;
+    topic: string;
   }) => boolean;
 
   const mapping: Partial<Record<AccessibleTopics, AccessibilityChecker>> = {

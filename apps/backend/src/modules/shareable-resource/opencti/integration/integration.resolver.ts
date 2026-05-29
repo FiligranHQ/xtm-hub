@@ -8,11 +8,10 @@ import { DocumentDomain } from '../../../document/domain/document.domain';
 import { getServiceInstance } from '../../../service/instance/service-instance.domain';
 import { subscriptionApp } from '../../../subscription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
-import { Integration } from './integration.model';
 
 const resolvers: Resolvers = {
   Integration: {
-    __resolveType(feed: Integration) {
+    __resolveType(feed) {
       const mapping = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
