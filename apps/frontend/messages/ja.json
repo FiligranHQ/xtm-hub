@@ -518,6 +518,10 @@
       "Title": "よろしいですか？"
     }
   },
+  "RegistrationDetails": {
+    "NoAccess": "アクセス禁止",
+    "NoAccessContact": "トライアル管理者{email}までご連絡ください。"
+  },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "オープンCTI",

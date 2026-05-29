@@ -132,9 +132,9 @@ export const hubspotReachOutSalesHook = async ({
     let deploymentRequest: FullyQualifiedDeploymentRequest | undefined;
     if (platformId) {
       deploymentRequest =
-        await DeploymentRequestDomain.loadFullDeploymentRequestByPlatformId(
-          platformId
-        );
+        await DeploymentRequestDomain.loadFullDeploymentRequest({
+          platform_id: platformId,
+        });
 
       if (!deploymentRequest) {
         throw new Error(

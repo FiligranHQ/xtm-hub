@@ -31,6 +31,8 @@ export type Scalars = {
   /** A Relay global ID for Document, extracted to a branded DocumentId string */
   DocumentId: { input: any; output: any; }
   JSON: { input: any; output: any; }
+  /** A Relay global ID for NewsFeedItem, extracted to a branded NewsFeedItemId string */
+  NewsFeedItemId: { input: any; output: any; }
   /** A Relay global ID for Organization, extracted to a branded OrganizationId string */
   OrganizationId: { input: any; output: any; }
   /** A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string */
@@ -873,6 +875,7 @@ export type Mutation = {
   deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic: Epic;
+  deleteNewsFeedItem: Scalars['Boolean']['output'];
   deleteOrganization: Maybe<Organization>;
   deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
@@ -1043,6 +1046,11 @@ export type MutationDeleteDocumentArgs = {
 
 export type MutationDeleteEpicArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteNewsFeedItemArgs = {
+  id: Scalars['NewsFeedItemId']['input'];
 };
 
 
@@ -1220,6 +1228,28 @@ export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
 };
 
+export type NewsFeedItem = Node & {
+  __typename?: 'NewsFeedItem';
+  creation_date: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  is_deleted: Scalars['Boolean']['output'];
+  tags: Array<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type NewsFeedItemConnection = {
+  __typename?: 'NewsFeedItemConnection';
+  edges: Array<NewsFeedItemEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type NewsFeedItemEdge = {
+  __typename?: 'NewsFeedItemEdge';
+  cursor: Scalars['String']['output'];
+  node: NewsFeedItem;
+};
+
 export type NewsFeedItemMetadata = {
   __typename?: 'NewsFeedItemMetadata';
   key: NewsFeedItemMetadataKey;
@@ -1227,6 +1257,7 @@ export type NewsFeedItemMetadata = {
 };
 
 export enum NewsFeedItemMetadataKey {
+  DocumentId = 'document_id',
   UrlPath = 'url_path'
 }
 
@@ -1465,9 +1496,11 @@ export enum PortalCapability {
   ReadTrials = 'READ_TRIALS'
 }
 
-export type ProvisionedNewsFeedItem = {
+export type ProvisionedNewsFeedItem = Node & {
   __typename?: 'ProvisionedNewsFeedItem';
   creation_date: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  is_deleted: Scalars['Boolean']['output'];
   metadata: Array<NewsFeedItemMetadata>;
   tags: Array<Scalars['String']['output']>;
   title: Scalars['String']['output'];
@@ -1487,6 +1520,7 @@ export type Query = {
   epics: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me: Maybe<User>;
+  newsFeedItems: NewsFeedItemConnection;
   node: Maybe<Node>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
@@ -1590,6 +1624,12 @@ export type QueryEpicsArgs = {
 
 export type QueryIsPlatformRegisteredArgs = {
   input: IsPlatformRegisteredInput;
+};
+
+
+export type QueryNewsFeedItemsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
 };
 
 
@@ -1811,6 +1851,7 @@ export type RegisteredPlatform = Node & {
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
+  myGroups: Maybe<Array<ServiceGroup>>;
   platform_id: Scalars['String']['output'];
   subscription: Maybe<SubscriptionModel>;
   tenant_id: Maybe<Scalars['String']['output']>;

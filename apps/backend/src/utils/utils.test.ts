@@ -7,6 +7,7 @@ import {
   isNotEmptyField,
   parseKeyValueArrayToObject,
   parseKeyValueArrayToObjectReverse,
+  prefixObjectKeys,
   ucfirst,
 } from './utils';
 
@@ -230,6 +231,35 @@ describe('utils', () => {
       ${'123abc'}      | ${'123abc'}
     `('should return $expected for input $input', ({ input, expected }) => {
       expect(ucfirst(input)).toBe(expected);
+    });
+  });
+
+  describe('prefixObjectKeys', () => {
+    it.each`
+      description                    | obj                         | prefix         | expected
+      ${'single key'}                | ${{ id: '1' }}              | ${'Table.'}    | ${{ 'Table.id': '1' }}
+      ${'multiple keys'}             | ${{ id: '1', name: 'foo' }} | ${'Table.'}    | ${{ 'Table.id': '1', 'Table.name': 'foo' }}
+      ${'empty object'}              | ${{}}                       | ${'Table.'}    | ${{}}
+      ${'empty prefix'}              | ${{ id: '1' }}              | ${''}          | ${{ id: '1' }}
+      ${'null value preserved'}      | ${{ reason: null }}         | ${'T.'}        | ${{ 'T.reason': null }}
+      ${'undefined value preserved'} | ${{ end_date: undefined }}  | ${'T.'}        | ${{ 'T.end_date': undefined }}
+      ${'boolean value preserved'}   | ${{ active: true }}         | ${'T.'}        | ${{ 'T.active': true }}
+      ${'number value preserved'}    | ${{ ordering: 42 }}         | ${'T.'}        | ${{ 'T.ordering': 42 }}
+      ${'complex prefix'}            | ${{ user_id: 'u1' }}        | ${'User_Org.'} | ${{ 'User_Org.user_id': 'u1' }}
+    `('should prefix keys — $description', ({ obj, prefix, expected }) => {
+      expect(prefixObjectKeys(obj, prefix)).toEqual(expected);
+    });
+
+    it('should not mutate the original object', () => {
+      const obj = { id: '1', name: 'foo' };
+      prefixObjectKeys(obj, 'Table.');
+      expect(obj).toEqual({ id: '1', name: 'foo' });
+    });
+
+    it('should prefix only own enumerable keys', () => {
+      const obj = { id: '1', status: 'active' };
+      const result = prefixObjectKeys(obj, 'DR.');
+      expect(Object.keys(result)).toEqual(['DR.id', 'DR.status']);
     });
   });
 });

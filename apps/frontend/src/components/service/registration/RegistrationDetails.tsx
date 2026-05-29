@@ -75,7 +75,14 @@ export const RegistrationDetails = ({
     platform.identifier
   );
 
+  const isTrialActive =
+    isTrial &&
+    platform.deployment_request?.hub_status ===
+      DeploymentRequestHubStatusEnum.ACTIVE;
+
+  const userHasTrialAccess = Boolean(platform.myGroups?.length);
   const displayAccessPlatformButtonForTrial =
+    userHasTrialAccess &&
     platform.url &&
     platform.deployment_request?.hub_status ===
       DeploymentRequestHubStatusEnum.ACTIVE;
@@ -137,6 +144,30 @@ export const RegistrationDetails = ({
         )}
         <li>
           <span className="text-gray/60">License:</span> Enterprise Edition
+        </li>
+        <li>
+          {isTrialActive && (
+            <span>
+              <span className="text-gray/60">Access:</span>{' '}
+              {userHasTrialAccess ? (
+                <span>
+                  {(platform.myGroups ?? [])
+                    .map((group) => group.name)
+                    .filter(Boolean)
+                    .join(', ')}
+                </span>
+              ) : (
+                <span>
+                  <span className="text-red-500">
+                    {t('RegistrationDetails.NoAccess')}
+                  </span>{' '}
+                  {t('RegistrationDetails.NoAccessContact', {
+                    email: platform.deployment_request?.requester_email ?? '',
+                  })}
+                </span>
+              )}
+            </span>
+          )}
         </li>
       </ul>
 
