@@ -55,7 +55,6 @@ import {
 } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import * as authHelper from '../security-management/capability/auth.helper';
-import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -1014,35 +1013,39 @@ describe('registration app', () => {
     const platformId = uuidv4();
 
     let isUserAllowedOnOrganizationSpy: MockInstance;
-    let loadConfigurationByPlatformSpy: MockInstance;
+    let loadResolvedConfigurationByPlatformSpy: MockInstance;
     let loadSubscriptionBySpy: MockInstance;
-    let loadServiceDefinitionByServiceInstanceSpy: MockInstance;
+
+    const buildResolved = (overrides = {}) => ({
+      serviceConfiguration: { service_instance_id: uuidv4() },
+      serviceDefinition: {
+        id: uuidv4(),
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+      },
+      platformIdentifier: PlatformIdentifier.Opencti,
+      config: {},
+      ...overrides,
+    });
 
     beforeEach(() => {
       isUserAllowedOnOrganizationSpy = vi.spyOn(
         authHelper,
         'isUserAllowedOnOrganization'
       );
-      loadConfigurationByPlatformSpy = vi.spyOn(
+      loadResolvedConfigurationByPlatformSpy = vi.spyOn(
         ServiceConfigurationDomain,
-        'loadConfigurationByPlatform'
+        'loadResolvedConfigurationByPlatform'
       );
       loadSubscriptionBySpy = vi.spyOn(
         subscriptionDomain,
         'loadSubscriptionBy'
       );
-      loadServiceDefinitionByServiceInstanceSpy = vi.spyOn(
-        serviceInstanceDomain,
-        'loadServiceDefinitionByServiceInstance'
-      );
-
-      loadServiceDefinitionByServiceInstanceSpy.mockResolvedValue({
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-      });
     });
 
     it('should throw an error when configuration for platform does not exist', async () => {
-      loadConfigurationByPlatformSpy.mockReturnValue(Promise.resolve(null));
+      loadResolvedConfigurationByPlatformSpy.mockReturnValue(
+        Promise.resolve(undefined)
+      );
 
       const call = registrationApp.canUnregisterPlatform({
         platformId,
@@ -1052,8 +1055,8 @@ describe('registration app', () => {
     });
 
     it('should throw an error when subscription does not exist', async () => {
-      loadConfigurationByPlatformSpy.mockReturnValue(
-        Promise.resolve({ service_instance_id: uuidv4() })
+      loadResolvedConfigurationByPlatformSpy.mockReturnValue(
+        Promise.resolve(buildResolved())
       );
       loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
@@ -1069,8 +1072,8 @@ describe('registration app', () => {
       isUserAllowedOnOrganizationSpy.mockReturnValue(
         Promise.resolve({ isAllowed: true })
       );
-      loadConfigurationByPlatformSpy.mockReturnValue(
-        Promise.resolve({ service_instance_id: uuidv4() })
+      loadResolvedConfigurationByPlatformSpy.mockReturnValue(
+        Promise.resolve(buildResolved())
       );
       loadSubscriptionBySpy.mockReturnValue(
         Promise.resolve({ organization_id: organizationId })
@@ -1086,8 +1089,8 @@ describe('registration app', () => {
 
     it('should not allow user to register when he does not have the required capabilities', async () => {
       const organizationId = uuidv4();
-      loadConfigurationByPlatformSpy.mockReturnValue(
-        Promise.resolve({ service_instance_id: uuidv4() })
+      loadResolvedConfigurationByPlatformSpy.mockReturnValue(
+        Promise.resolve(buildResolved())
       );
       loadSubscriptionBySpy.mockReturnValue(
         Promise.resolve({ organization_id: organizationId })
