@@ -66,6 +66,32 @@ if (!portalCookieSecret || portalCookieSecret === 'changeMe') {
 
 const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
+const PORTAL_CORS_ALLOWED_ORIGINS = [
+  'https://dev-pr-2426.hub.staging.filigran.io',
+  'https://hub.prerelease.filigran.io',
+  'https://hub.filigran.io',
+] as const;
+
+const PORTAL_CORS_OPTIONS: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    // if (portalConfig.environment === 'development') {
+    //   callback(null, true);
+    //   return;
+    // }
+
+    if (
+      !origin ||
+      PORTAL_CORS_ALLOWED_ORIGINS.includes(
+        origin as (typeof PORTAL_CORS_ALLOWED_ORIGINS)[number]
+      )
+    ) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error(`CORS origin denied: ${origin}`));
+  },
+  credentials: true,
+};
 
 const app = express();
 const SESSION_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
@@ -306,11 +332,16 @@ const handler = createHandler({
   },
 });
 
-app.use(PORTAL_WEBSOCKET_PATH, cors<cors.CorsRequest>(), json(), handler);
+app.use(
+  PORTAL_WEBSOCKET_PATH,
+  cors<cors.CorsRequest>(PORTAL_CORS_OPTIONS),
+  json(),
+  handler
+);
 app.use(
   PORTAL_GRAPHQL_PATH,
   sessionMiddleware,
-  cors<cors.CorsRequest>(),
+  cors<cors.CorsRequest>(PORTAL_CORS_OPTIONS),
   json(),
   middlewareExpress
 );
