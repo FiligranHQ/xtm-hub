@@ -88,7 +88,8 @@ const nextConfig = {
       {
         source:
           '/cybersecurity-solutions/(octi_custom_dashboards|open-cti-custom-dashboards)/:path*',
-        destination: '/cybersecurity-solutions/opencti-custom-dashboards/:path*',
+        destination:
+          '/cybersecurity-solutions/opencti-custom-dashboards/:path*',
         permanent: true,
       },
     ];
@@ -128,7 +129,7 @@ const nextConfig = {
       "img-src 'self' data: blob: https://res.cloudinary.com https://perf-eu1.hsforms.com https://s.gravatar.com https://secure.gravatar.com https://cdn.auth0.com https://i1.wp.com https://i2.wp.com https://track-eu1.hubspot.com https://*.filigran.io https://*.filigran.ai",
       "font-src 'self' data:",
       `connect-src 'self' https:${!isProductionOrStaging ? ' http:' : ''}`,
-      "frame-src 'self' https://www.youtube.com",
+      "frame-src 'self' https://www.youtube.com http://localhost:3000",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

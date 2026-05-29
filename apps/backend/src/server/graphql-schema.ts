@@ -10,6 +10,7 @@ import logResolver from '../modules/log/log.resolver';
 import newsFeedResolver from '../modules/news-feed/news-feed.resolver';
 import organizationResolver from '../modules/organization-management/organization/organization.resolver';
 import userResolver from '../modules/organization-management/user/user.resolver';
+import grafanaResolver from '../modules/registration/grafana/grafana.resolver';
 import registrationResolver from '../modules/registration/registration.resolver';
 import serviceCapabilityResolver from '../modules/security-management/service-capability/service-capability.resolver';
 import subscriptionCapabilityResolver from '../modules/security-management/subscription-capability/subscription-capability.resolver';
@@ -38,6 +39,7 @@ const typeDefFiles = await getGlobContent('src/**/*.graphql');
 const typeDefs = mergeTypeDefs(typeDefFiles);
 
 const resolvers = mergeResolvers([
+  grafanaResolver,
   nodesResolver,
   ServiceInstanceResolver,
   ServiceDefinitionResolver,

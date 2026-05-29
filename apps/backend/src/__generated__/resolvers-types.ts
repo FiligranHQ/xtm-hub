@@ -1511,6 +1511,7 @@ export type Query = {
   documents: DocumentConnection;
   epics?: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
+  loadGrafanaToken: Scalars['String']['output'];
   me?: Maybe<User>;
   newsFeedItems: NewsFeedItemConnection;
   node?: Maybe<Node>;
@@ -3690,6 +3691,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
+  loadGrafanaToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   newsFeedItems?: Resolver<ResolversTypes['NewsFeedItemConnection'], ParentType, ContextType, RequireFields<QueryNewsFeedItemsArgs, 'first'>>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
