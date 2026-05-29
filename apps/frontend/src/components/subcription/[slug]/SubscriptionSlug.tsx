@@ -157,27 +157,32 @@ const SubscriptionSlug = ({
 
   const canManageUserServices = isBypass || canManageService();
 
-  const availableCapabilities: BadgeOverflow[] = useMemo(
-    () =>
-      (
-        queryDataSubscription.subscriptionById?.subscription_capability ?? []
-      ).flatMap((subscription_capability) => {
-        if (
-          !subscription_capability?.service_capability?.id ||
-          !subscription_capability?.service_capability?.name
-        ) {
-          return [];
-        }
+  const availableCapabilities: BadgeOverflow[] = useMemo(() => {
+    const capabilities = (
+      queryDataSubscription.subscriptionById?.subscription_capability ?? []
+    ).flatMap((subscription_capability) => {
+      if (
+        !subscription_capability?.service_capability?.id ||
+        !subscription_capability?.service_capability?.name
+      ) {
+        return [];
+      }
 
-        return [
-          {
-            id: subscription_capability?.service_capability?.id,
-            name: subscription_capability?.service_capability?.name,
-          },
-        ];
-      }),
-    [queryDataSubscription.subscriptionById]
-  );
+      return [
+        {
+          id: subscription_capability.service_capability.id,
+          name: subscription_capability.service_capability.name,
+        },
+      ];
+    });
+
+    const manageAccessCapability: BadgeOverflow = {
+      id: ServiceRestrictionEnum.MANAGE_ACCESS,
+      name: ServiceRestrictionEnum.MANAGE_ACCESS,
+    };
+
+    return [manageAccessCapability, ...capabilities];
+  }, [queryDataSubscription.subscriptionById]);
 
   const selectedUserServices = useMemo(() => {
     if (selection.selectAll) {

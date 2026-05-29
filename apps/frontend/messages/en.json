@@ -1039,8 +1039,8 @@
       },
       "AddUserServiceCapabilities": {
         "Button": "Add capabilities",
-        "Title": "Add userService capabilities",
-        "Description": "Select the capabilities to add to the {count} selected userService(s)."
+        "Title": "Add user service capabilities",
+        "Description": "Select the capabilities to add to the {count} selected access."
       },
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",
