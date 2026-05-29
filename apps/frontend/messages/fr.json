@@ -518,6 +518,10 @@
       "Title": "Êtes-vous sûr ?"
     }
   },
+  "RegistrationDetails": {
+    "NoAccess": "Pas d'accès",
+    "NoAccessContact": "veuillez contacter l'administrateur de l'essai à {email}"
+  },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",

@@ -102,13 +102,18 @@ const nextConfig = {
       'https://js-eu1.hs-analytics.net',
       'https://js-eu1.hs-banner.com',
     ];
+    const apolloCdnHosts = [
+      'https://embeddable-sandbox.cdn.apollographql.com',
+      'https://apollo-server-landing-page.cdn.apollographql.com',
+    ];
+
     const scriptSrc = [
       "'self'",
       "'unsafe-inline'",
       'https://www.googletagmanager.com',
       'https://copilot.filigran.ai',
       ...hubspotScriptHosts,
-      ...(isDev ? ["'unsafe-eval'"] : []),
+      ...(isDev ? ["'unsafe-eval'", ...apolloCdnHosts] : []),
     ].join(' ');
     // Explanation of CSP directives:
     // default-src 'self': block everything except my domain
@@ -121,18 +126,46 @@ const nextConfig = {
     // rest at the end: protects against XSS, clickjacking and injection
     // upgrade-insecure-requests: force to https
 
+    const imgSrc = [
+      "'self'",
+      'data:',
+      'blob:',
+      'https://res.cloudinary.com',
+      'https://perf-eu1.hsforms.com',
+      'https://s.gravatar.com',
+      'https://secure.gravatar.com',
+      'https://cdn.auth0.com',
+      'https://i1.wp.com',
+      'https://i2.wp.com',
+      'https://track-eu1.hubspot.com',
+      'https://*.filigran.io',
+      'https://*.filigran.ai',
+      ...(!isProductionOrStaging ? apolloCdnHosts : []),
+    ].join(' ');
+
+    const styleSrc = [
+      "'self'",
+      "'unsafe-inline'",
+      ...(!isProductionOrStaging ? ['https://fonts.googleapis.com'] : []),
+    ].join(' ');
+
+    const manifestSrc = !isProductionOrStaging
+      ? apolloCdnHosts.join(' ')
+      : "'self'";
+
     const cspDirectives = [
-      "default-src 'self'",
+      `default-src 'self'${!isProductionOrStaging ? ` ${apolloCdnHosts.join(' ')}` : ''}`,
       `script-src ${scriptSrc}`,
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://res.cloudinary.com https://perf-eu1.hsforms.com https://s.gravatar.com https://secure.gravatar.com https://cdn.auth0.com https://i1.wp.com https://i2.wp.com https://track-eu1.hubspot.com https://*.filigran.io https://*.filigran.ai",
-      "font-src 'self' data:",
+      `style-src ${styleSrc}`,
+      `img-src ${imgSrc}`,
+      `font-src 'self' data:${!isProductionOrStaging ? ' https://fonts.gstatic.com' : ''}`,
       `connect-src 'self' https:${!isProductionOrStaging ? ' http:' : ''}`,
-      "frame-src 'self' https://www.youtube.com",
+      `frame-src 'self' https://www.youtube.com${!isProductionOrStaging ? ' https://sandbox.embed.apollographql.com' : ''}`,
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
       "object-src 'none'",
+      `manifest-src ${manifestSrc}`,
       ...(!isProductionOrStaging ? ['upgrade-insecure-requests'] : []),
     ];
 

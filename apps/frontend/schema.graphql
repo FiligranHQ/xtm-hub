@@ -890,6 +890,7 @@ type RegisteredPlatform implements Node {
   illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
   subscription: SubscriptionModel
+  myGroups: [ServiceGroup!]
 }
 
 input PlatformInput {

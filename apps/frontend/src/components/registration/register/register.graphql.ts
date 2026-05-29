@@ -113,6 +113,10 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
       region
       counts_in_orga_quota
       platform_identifier
+      requester_email
+    }
+    myGroups {
+      name
     }
   }
 `;
