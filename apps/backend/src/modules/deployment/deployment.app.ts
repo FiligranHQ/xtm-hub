@@ -47,8 +47,8 @@ import { formatName } from '../../utils/format';
 import { ucfirst } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import { registrationDomain } from '../registration/registration.domain';
-import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
 import { updateSubscriptionBy } from '../subscription/subscription.domain';
@@ -851,7 +851,7 @@ const sendActivePlatformEmail = async (
     });
 
     const platformConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(
+      await PlatformConfigurationDomain.loadConfigurationByPlatform(
         deploymentRequest.platform_id
       );
 

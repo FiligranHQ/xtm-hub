@@ -88,7 +88,7 @@ const buildJoinedConfigurationQuery = () =>
       ),
     ]);
 
-export const ServiceConfigurationDomain = {
+export const PlatformConfigurationDomain = {
   isPlatformConfigurationValid: async (
     config: Record<string, unknown>
   ): Promise<boolean> => {

@@ -67,9 +67,9 @@ import {
   TelemetryTargetProduct,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { registrationApp } from './registration.app';
 import { registrationDomain } from './registration.domain';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 describe('registration app', () => {
   afterAll(async () => {
@@ -533,7 +533,7 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -563,7 +563,7 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId
           );
         expect(configuration?.tenant_id).toBeNull();
@@ -607,12 +607,12 @@ describe('registration app', () => {
 
         // Then
         const config1 =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId: tenantId1 }
           );
         const config2 =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId: tenantId2 }
           );
@@ -651,7 +651,7 @@ describe('registration app', () => {
           identifier: PlatformIdentifier.Openaev,
         });
         const firstConfig =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -669,7 +669,7 @@ describe('registration app', () => {
 
         // Then — same service instance is reused, title is updated
         const secondConfig =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -824,7 +824,7 @@ describe('registration app', () => {
 
         // Then — the new configuration has tenant_id stored
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -918,7 +918,7 @@ describe('registration app', () => {
       });
 
       const platformConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId
         );
 
@@ -958,7 +958,7 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -977,7 +977,7 @@ describe('registration app', () => {
 
         // Then — original tenant configuration is still active
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -1031,7 +1031,7 @@ describe('registration app', () => {
         'isUserAllowedOnOrganization'
       );
       loadResolvedConfigurationByPlatformSpy = vi.spyOn(
-        ServiceConfigurationDomain,
+        PlatformConfigurationDomain,
         'loadResolvedConfigurationByPlatform'
       );
       loadSubscriptionBySpy = vi.spyOn(
@@ -1242,7 +1242,7 @@ describe('registration app', () => {
     });
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      await PlatformConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
@@ -1293,7 +1293,7 @@ describe('registration app', () => {
         id: deploymentRequest.service_instance_id,
       });
       const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       expect(serviceInstance.creation_status).toBe(
@@ -1331,11 +1331,11 @@ describe('registration app', () => {
       );
 
       const oldConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       const newConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           newPlatformConfiguration.id
         );
       expect(oldConfiguration).toBeUndefined();
@@ -1498,7 +1498,7 @@ describe('registration app', () => {
 
       // Then
       const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id,
           { tenantId }
         );

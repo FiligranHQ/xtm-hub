@@ -14,7 +14,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { OrganizationDomain } from '../../organization-management/organization/organization.domain';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
-import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../../registration/platform-configuration/platform-configuration.domain';
 import { userHasBypassCapability } from '../../security-management/capability/auth.helper';
 import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
@@ -89,7 +89,7 @@ export const ServiceGroupApp = {
           });
         if (deploymentRequest?.platform_id) {
           const platformConfiguration =
-            await ServiceConfigurationDomain.loadConfigurationByPlatform(
+            await PlatformConfigurationDomain.loadConfigurationByPlatform(
               deploymentRequest.platform_id
             );
           if (

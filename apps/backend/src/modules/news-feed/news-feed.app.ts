@@ -16,8 +16,8 @@ import {
   subtractInterval,
 } from '../common/interval.helper';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
+import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import { registrationDomain } from '../registration/registration.domain';
-import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
@@ -60,7 +60,7 @@ export const NewsFeedApp = {
     }
 
     const resolvedConfiguration =
-      await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
         {
           platform_id: platformId,
           token,

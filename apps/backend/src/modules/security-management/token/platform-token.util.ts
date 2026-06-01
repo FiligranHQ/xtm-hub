@@ -2,7 +2,7 @@ import express from 'express';
 import { PlatformConfigurationStatus } from '../../../__generated__/resolvers-types';
 import { logApp } from '../../../utils/app-logger.util';
 import { DeploymentRequestDomain } from '../../deployment/deployment.domain';
-import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../../registration/platform-configuration/platform-configuration.domain';
 
 export const PLATFORM_TOKEN_HEADER = 'xtm-hub-platform-token';
 export const PLATFORM_ID_HEADER = 'xtm-hub-platform-id';
@@ -36,7 +36,7 @@ export const validateActivePlatformToken = async (
   if (!validateExistsToken(req)) return false;
 
   const platformConfiguration =
-    await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+    await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id: extractPlatformId(req),
       token: extractPlatformToken(req),
     });

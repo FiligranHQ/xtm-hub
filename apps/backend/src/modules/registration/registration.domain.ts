@@ -28,8 +28,8 @@ import {
   loadSubscriptionBy,
   transferSubscriptionToOrganization,
 } from '../subscription/subscription.domain';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 export type PlatformConfigurationInput = {
   registerer_id: string;
@@ -93,7 +93,7 @@ export const registrationDomain = {
     });
 
     if (configuration) {
-      await ServiceConfigurationDomain.createConfiguration(
+      await PlatformConfigurationDomain.createConfiguration(
         serviceInstanceId,
         configuration
       );
@@ -140,7 +140,7 @@ export const registrationDomain = {
       });
     }
 
-    await ServiceConfigurationDomain.updateConfiguration(serviceInstanceId, {
+    await PlatformConfigurationDomain.updateConfiguration(serviceInstanceId, {
       ...configuration,
       status: PlatformConfigurationStatus.Active,
     });

@@ -12,9 +12,9 @@ import {
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { BadRequestErrorCode, ErrorCode } from '../../utils/error/error.code';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { registrationApp } from './registration.app';
 import { registrationConnectivityApp } from './registration.connectivity.app';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 describe('registration connectivity app', () => {
   beforeEach(() => {
@@ -217,7 +217,7 @@ describe('registration connectivity app', () => {
       );
 
       const config =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           { tenantId }
         );
@@ -255,7 +255,7 @@ describe('registration connectivity app', () => {
       );
 
       const config =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           { tenantId }
         );
@@ -328,7 +328,7 @@ describe('registration connectivity app', () => {
 
       expect(result.status).toBe(PlatformRegistrationConnectivityStatus.Active);
       const updatedConfig =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           { tenantId }
         );
@@ -606,7 +606,7 @@ describe('registration connectivity app', () => {
       });
 
       const staleConfig =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           { tenantId: tenantId2 }
         );

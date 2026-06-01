@@ -30,11 +30,11 @@ import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
 import * as subscriptionDomain from '../subscription/subscription.domain';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import {
   PlatformConfigurationInput,
   registrationDomain,
 } from './registration.domain';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 describe('registration domain', () => {
   let platformId: string;
@@ -66,6 +66,7 @@ describe('registration domain', () => {
           platform_contract: platformContract,
           platform_version: platformOpenCTI,
           token,
+          last_connectivity_check: new Date(),
         },
         platformIdentifier: PlatformIdentifier.Opencti,
       });
@@ -146,6 +147,7 @@ describe('registration domain', () => {
       platform_url: 'https://example.com',
       platform_version: '6',
       token: uuidv4(),
+      last_connectivity_check: new Date(),
     };
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
     const targetOrganizationId = uuidv4() as OrganizationId;
@@ -178,7 +180,7 @@ describe('registration domain', () => {
       );
 
       updateConfigurationSpy = vi.spyOn(
-        ServiceConfigurationDomain,
+        PlatformConfigurationDomain,
         'updateConfiguration'
       );
     });
@@ -332,6 +334,7 @@ describe('registration domain', () => {
           platform_contract: platformContract,
           platform_version: platformOpenCTI,
           token,
+          last_connectivity_check: new Date(),
         },
         platformIdentifier: PlatformIdentifier.Opencti,
       });
@@ -348,13 +351,14 @@ describe('registration domain', () => {
           platform_contract: openAEVplatformContract,
           platform_version: openAEVplatformVersion,
           token: openAEVToken,
+          last_connectivity_check: new Date(),
         },
         platformIdentifier: PlatformIdentifier.Openaev,
       });
     });
     afterEach(async () => {
       await TestHelper.deploymentRequest.delete({});
-      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      await PlatformConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
 
@@ -386,13 +390,14 @@ describe('registration domain', () => {
           platform_contract: platformContract,
           platform_version: platformOpenCTI,
           token,
+          last_connectivity_check: new Date(),
         },
         platformIdentifier: PlatformIdentifier.Opencti,
       });
     });
 
     afterEach(async () => {
-      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      await PlatformConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
 
@@ -441,7 +446,7 @@ describe('registration domain', () => {
 
     it('should not return platforms with inactive configuration', async () => {
       // Given
-      await ServiceConfigurationDomain.updateConfiguration(serviceInstanceId, {
+      await PlatformConfigurationDomain.updateConfiguration(serviceInstanceId, {
         status: PlatformConfigurationStatus.Inactive,
       });
 
@@ -478,6 +483,7 @@ describe('registration domain', () => {
             platform_contract: platformContract,
             platform_version: platformOpenCTI,
             token,
+            last_connectivity_check: new Date(),
           },
           platformIdentifier: PlatformIdentifier.Opencti,
         }
@@ -485,7 +491,7 @@ describe('registration domain', () => {
     });
 
     afterEach(async () => {
-      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      await PlatformConfigurationDomain.deleteConfigurationBy({});
       if (secondOrgServiceInstanceId) {
         await deleteServiceInstanceBy({ id: secondOrgServiceInstanceId });
       }
@@ -512,6 +518,7 @@ describe('registration domain', () => {
               platform_contract: platformContract,
               platform_version: platformOpenCTI,
               token: uuidv4(),
+              last_connectivity_check: new Date(),
             },
             platformIdentifier: PlatformIdentifier.Openaev,
           });
@@ -544,6 +551,7 @@ describe('registration domain', () => {
           platform_contract: platformContract,
           platform_version: platformOpenCTI,
           token: uuidv4(),
+          last_connectivity_check: new Date(),
         },
         platformIdentifier: PlatformIdentifier.Opencti,
       });
@@ -561,7 +569,7 @@ describe('registration domain', () => {
 
     it('should not return platforms with inactive configuration', async () => {
       // Given
-      await ServiceConfigurationDomain.updateConfiguration(
+      await PlatformConfigurationDomain.updateConfiguration(
         secondOrgServiceInstanceId,
         {
           status: PlatformConfigurationStatus.Inactive,
@@ -606,6 +614,7 @@ describe('registration domain', () => {
           platform_contract: platformContract,
           platform_version: platformOpenCTI,
           token,
+          last_connectivity_check: new Date(),
         },
         platformIdentifier: PlatformIdentifier.Opencti,
       });
@@ -622,13 +631,14 @@ describe('registration domain', () => {
           platform_contract: openAEVplatformContract,
           platform_version: openAEVplatformVersion,
           token: openAEVToken,
+          last_connectivity_check: new Date(),
         },
         platformIdentifier: PlatformIdentifier.Openaev,
       });
     });
     afterEach(async () => {
       await TestHelper.deploymentRequest.delete({});
-      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      await PlatformConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
     it('should return all registered platform without platformIdentifier in input ', async () => {
@@ -659,7 +669,7 @@ describe('registration domain', () => {
       ).toBe(true);
     });
     it('should not return inactive platforms ', async () => {
-      await ServiceConfigurationDomain.updateConfiguration(
+      await PlatformConfigurationDomain.updateConfiguration(
         openCTIServiceInstanceId,
         {
           status: PlatformConfigurationStatus.Inactive,

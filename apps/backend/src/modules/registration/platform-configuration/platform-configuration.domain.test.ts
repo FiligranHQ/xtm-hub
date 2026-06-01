@@ -12,13 +12,13 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { ServiceConfigurationDomain } from './service-configuration.domain';
+import { PlatformConfigurationDomain } from './platform-configuration.domain';
 
 describe('platformConfigurationDomain', () => {
   describe('isPlatformConfigurationValid', () => {
     it('returns true for valid platform configuration', async () => {
       const result =
-        await ServiceConfigurationDomain.isPlatformConfigurationValid({
+        await PlatformConfigurationDomain.isPlatformConfigurationValid({
           registerer_id: contextSimpleUserSecondOrga.user.id,
           platform_id: uuidv4(),
           platform_url: 'http://example.com/',
@@ -34,7 +34,7 @@ describe('platformConfigurationDomain', () => {
 
     it('returns false for invalid platform configuration', async () => {
       const result =
-        await ServiceConfigurationDomain.isPlatformConfigurationValid({});
+        await PlatformConfigurationDomain.isPlatformConfigurationValid({});
 
       expect(result).toBe(false);
     });
@@ -56,7 +56,7 @@ describe('platformConfigurationDomain', () => {
 
     it('loads by platform and token', async () => {
       const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+        await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
           platform_id: platformId,
           token,
         });
@@ -84,7 +84,7 @@ describe('platformConfigurationDomain', () => {
 
     it('loads by platform id', async () => {
       const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId
         );
       expect(configuration?.platform_id).toBe(platformId);
@@ -114,7 +114,7 @@ describe('platformConfigurationDomain', () => {
 
     it('excludes requested tenants', async () => {
       const configurations =
-        await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
+        await PlatformConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
           platformId,
           [tenantAId]
         );
@@ -142,7 +142,7 @@ describe('platformConfigurationDomain', () => {
 
     it('should return undefined when no configuration matches the platformId', async () => {
       const resolved =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
           uuidv4()
         );
 
@@ -162,7 +162,7 @@ describe('platformConfigurationDomain', () => {
       });
 
       const resolved =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId
         );
 
@@ -194,7 +194,7 @@ describe('platformConfigurationDomain', () => {
       });
 
       const call =
-        ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId
         );
 
@@ -213,12 +213,12 @@ describe('platformConfigurationDomain', () => {
       });
 
       const resolvedInactive =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId,
           { status: PlatformConfigurationStatus.Inactive }
         );
       const resolvedActive =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId,
           { status: PlatformConfigurationStatus.Active }
         );
@@ -241,12 +241,12 @@ describe('platformConfigurationDomain', () => {
       });
 
       const resolvedWithTenant =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId,
           { tenantId }
         );
       const resolvedWithOtherTenant =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId,
           { tenantId: uuidv4() }
         );
@@ -289,7 +289,7 @@ describe('platformConfigurationDomain', () => {
       });
 
       const resolved =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
           { platform_id: platformId, token }
         );
 
@@ -316,7 +316,7 @@ describe('platformConfigurationDomain', () => {
       });
 
       const resolved =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
           { platform_id: platformId, token: uuidv4() }
         );
 
@@ -337,7 +337,7 @@ describe('platformConfigurationDomain', () => {
       });
 
       const resolved =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
           { platform_id: platformId, token, withoutTenantId: true }
         );
 
@@ -359,11 +359,11 @@ describe('platformConfigurationDomain', () => {
       });
 
       const resolvedMatching =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
           { platform_id: platformId, token, tenant_id: tenantId }
         );
       const resolvedMismatch =
-        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+        await PlatformConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
           { platform_id: platformId, token, tenant_id: uuidv4() }
         );
 

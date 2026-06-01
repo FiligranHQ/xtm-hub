@@ -12,8 +12,8 @@ import { logApp } from '../../utils/app-logger.util';
 import { BadRequestErrorCode, ErrorCode } from '../../utils/error/error.code';
 import { RequiredPlatformVersions } from '../../utils/required-platform-version';
 import { doesVersionSatisfy, isValidVersion } from '../../utils/versioning';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { isTenantIdRequired } from './registration.helper';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 const handleTenantUpgrade = async ({
   platform_id,
@@ -29,7 +29,7 @@ const handleTenantUpgrade = async ({
   platform_identifier: PlatformIdentifier;
 }): Promise<PlatformConfiguration | null> => {
   const configWithoutTenant =
-    await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+    await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id,
       token,
       withoutTenantId: true,
@@ -42,7 +42,7 @@ const handleTenantUpgrade = async ({
       configWithoutTenant.platform_version
     )
   ) {
-    await ServiceConfigurationDomain.updateConfiguration(
+    await PlatformConfigurationDomain.updateConfiguration(
       configWithoutTenant.service_instance_id,
       { tenant_id, tenant_name }
     );
@@ -97,7 +97,7 @@ const saveConfig = async ({
     (tenant_name && platformConfiguration.tenant_name !== tenant_name);
 
   if (hasConfigChanged) {
-    await ServiceConfigurationDomain.updateConfiguration(
+    await PlatformConfigurationDomain.updateConfiguration(
       platformConfiguration.service_instance_id,
       {
         last_connectivity_check: new Date(),
@@ -108,7 +108,7 @@ const saveConfig = async ({
     );
     return;
   }
-  await ServiceConfigurationDomain.updateConfiguration(
+  await PlatformConfigurationDomain.updateConfiguration(
     platformConfiguration.service_instance_id,
     {
       last_connectivity_check: new Date(),
@@ -146,7 +146,7 @@ const refreshConnectivityStatus = async ({
   }
 
   let platformConfiguration =
-    await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+    await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id,
       token,
       tenant_id,
@@ -244,14 +244,14 @@ export const registrationConnectivityApp = {
 
     const knownTenantIds = input.tenants.map((t) => t.tenantId);
     const staleConfigurations =
-      await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
+      await PlatformConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
         input.platformId,
         knownTenantIds
       );
 
     await Promise.all(
       staleConfigurations.map((config) =>
-        ServiceConfigurationDomain.updateConfiguration(
+        PlatformConfigurationDomain.updateConfiguration(
           config.service_instance_id,
           { status: PlatformConfigurationStatus.Inactive }
         ).catch((error) => {
