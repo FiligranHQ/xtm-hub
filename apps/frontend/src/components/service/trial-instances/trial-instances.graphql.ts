@@ -55,7 +55,7 @@ export const TrialsForOrgaFragment = graphql`
 `;
 
 export const TrialsForOrga = graphql`
-  query trialInstancesTrialsForOrgaQuery($input: TrialDeploymentsInput) {
+  query trialInstancesTrialsForOrgaQuery($input: TrialDeploymentsInput!) {
     ...trialInstancesTrialsForOrgaFragment
   }
 `;
