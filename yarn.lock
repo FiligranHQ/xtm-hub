@@ -8802,7 +8802,7 @@ __metadata:
     extract-files: "npm:13.0.0"
     graphql: "catalog:"
     graphql-codegen-typescript-mock-data: "npm:5.1.1"
-    graphql-request: "npm:6.1.0"
+    graphql-request: "npm:7.4.0"
     graphql-sse: "catalog:"
     husky: "catalog:"
     i18n-auto-translation: "npm:2.2.3"
@@ -12863,7 +12863,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-request@npm:6.1.0, graphql-request@npm:^6.0.0":
+"graphql-request@npm:7.4.0":
+  version: 7.4.0
+  resolution: "graphql-request@npm:7.4.0"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.2.0"
+  peerDependencies:
+    graphql: 14 - 16
+  checksum: 10/bdf657ffd2017a4c404f2b18fc21dabb7094866059e80312632c38c21f3936cd790c1c635de5dba568f90c096725eaf50d6ec98db75229f260a5b9d6717744c5
+  languageName: node
+  linkType: hard
+
+"graphql-request@npm:^6.0.0":
   version: 6.1.0
   resolution: "graphql-request@npm:6.1.0"
   dependencies:
