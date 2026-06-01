@@ -64,6 +64,13 @@
       "description": "Update AWS SDK v3 every 2 weeks only",
       "matchPackagePatterns": ["^@aws-sdk/"],
       "schedule": ["* * 1 * *"]
+    },
+    {
+      "description": "Keep graphql-request on v6",
+      "matchPackageNames": [
+        "graphql-request"
+      ],
+      "allowedVersions": "<7"
     }
   ],
   "lockFileMaintenance": {
