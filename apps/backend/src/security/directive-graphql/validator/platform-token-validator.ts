@@ -39,14 +39,14 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
     });
   }
 
-  const serviceConfiguration =
+  const platformConfiguration =
     await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id: extractPlatformId(req),
       token: extractPlatformToken(req),
     });
-  if (serviceConfiguration) {
+  if (platformConfiguration) {
     return OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
-      serviceConfiguration.service_instance_id
+      platformConfiguration.service_instance_id
     );
   }
 

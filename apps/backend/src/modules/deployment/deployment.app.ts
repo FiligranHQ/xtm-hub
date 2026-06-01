@@ -850,21 +850,17 @@ const sendActivePlatformEmail = async (
       id: deploymentRequest.user_requester_id,
     });
 
-    const serviceConfiguration =
+    const platformConfiguration =
       await ServiceConfigurationDomain.loadConfigurationByPlatform(
         deploymentRequest.platform_id
       );
-
-    const parsedConfig = JSON.parse(
-      JSON.stringify(serviceConfiguration.config)
-    );
 
     await sendMail({
       to: user.email,
       template: 'free_trial_registered',
       params: {
         firstName: formatName(user.first_name ?? ''),
-        platformUrl: parsedConfig.platform_url,
+        platformUrl: platformConfiguration?.platform_url,
         platformIdentifier: deploymentRequest.platform_identifier,
         globalServiceInstanceId: toGlobalId(
           'ServiceInstance',

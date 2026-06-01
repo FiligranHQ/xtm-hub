@@ -1029,7 +1029,7 @@ input AutoRegisterPlatformInput {
   existing_users_count: Int
 }
 
-enum ServiceConfigurationStatus {
+enum PlatformConfigurationStatus {
   active
   inactive
 }

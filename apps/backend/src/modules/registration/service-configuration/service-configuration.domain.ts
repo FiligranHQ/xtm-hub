@@ -1,46 +1,50 @@
 import z from 'zod';
 import { db, dbRaw } from '../../../../knexfile';
 import {
+  PlatformConfigurationStatus,
+  PlatformContract,
   PlatformIdentifier,
-  ServiceConfigurationStatus,
 } from '../../../__generated__/resolvers-types';
-import ServiceConfiguration, {
-  ServiceConfigurationMutator,
-} from '../../../model/kanel/public/ServiceConfiguration';
-import ServiceContract, {
-  ServiceContractMutator,
-} from '../../../model/kanel/public/ServiceContract';
-import ServiceDefinition, {
-  ServiceDefinitionId,
-} from '../../../model/kanel/public/ServiceDefinition';
+import PlatformConfiguration, {
+  PlatformConfigurationMutator,
+} from '../../../model/kanel/public/PlatformConfiguration';
+import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
-import type { PlatformConfiguration } from '../registration.domain';
+import type { PlatformConfigurationInput } from '../registration.domain';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from '../registration.mapping';
 
-const loadServiceContractBy = async (
-  field: ServiceContractMutator
-): Promise<ServiceContract> => {
-  return db('Service_Contract').where(field).select('*').first();
-};
+const PlatformConfigurationValidationSchema = z
+  .object({
+    registerer_id: z.uuid(),
+    platform_id: z.uuid(),
+    tenant_id: z.string().min(1).optional(),
+    tenant_name: z.string().min(1).optional(),
+    platform_url: z.url(),
+    platform_title: z.string().min(1),
+    platform_version: z.string().min(1).optional(),
+    platform_contract: z.enum(PlatformContract),
+    last_connectivity_check: z.date().optional(),
+    token: z.uuid(),
+  })
+  .strict();
 
 export type FullPlatformConfiguration = {
-  serviceConfiguration: ServiceConfiguration;
+  platformConfiguration: PlatformConfiguration;
   serviceDefinition: ServiceDefinition;
   platformIdentifier: PlatformIdentifier;
-  config: PlatformConfiguration;
 };
 
-type ServiceConfigurationWithDefinition = ServiceConfiguration & {
+type PlatformConfigurationWithDefinition = PlatformConfiguration & {
   service_definition: (Partial<ServiceDefinition> & { id?: string }) | null;
 };
 
 const resolvePlatformFromJoinedRow = (
-  row: ServiceConfigurationWithDefinition
+  row: PlatformConfigurationWithDefinition
 ): FullPlatformConfiguration => {
-  const { service_definition, ...serviceConfiguration } = row;
+  const { service_definition, ...platformConfiguration } = row;
   if (!service_definition?.id) {
     throw new Error(ErrorCode.ServiceDefinitionNotFound);
   }
@@ -53,20 +57,19 @@ const resolvePlatformFromJoinedRow = (
     throw new Error(ErrorCode.InvalidPlatformIdentifier);
   }
   return {
-    serviceConfiguration,
+    platformConfiguration,
     serviceDefinition,
     platformIdentifier,
-    config: serviceConfiguration.config as PlatformConfiguration,
   };
 };
 
 const buildJoinedConfigurationQuery = () =>
-  db('Service_Configuration')
+  db('PlatformConfiguration')
     .leftJoin(
       'ServiceInstance',
       'ServiceInstance.id',
       '=',
-      'Service_Configuration.service_instance_id'
+      'PlatformConfiguration.service_instance_id'
     )
     .leftJoin(
       'ServiceDefinition',
@@ -75,7 +78,7 @@ const buildJoinedConfigurationQuery = () =>
       'ServiceInstance.service_definition_id'
     )
     .select([
-      'Service_Configuration.*',
+      'PlatformConfiguration.*',
       dbRaw(
         formatRawObject({
           columnName: 'ServiceDefinition',
@@ -86,29 +89,13 @@ const buildJoinedConfigurationQuery = () =>
     ]);
 
 export const ServiceConfigurationDomain = {
-  isServiceConfigurationValid: async (
-    serviceDefinitionId: ServiceDefinitionId,
+  isPlatformConfigurationValid: async (
     config: Record<string, unknown>
   ): Promise<boolean> => {
-    const serviceContract = await loadServiceContractBy({
-      service_definition_id: serviceDefinitionId,
-    });
-    if (!serviceContract) {
-      throw new Error(ErrorCode.ServiceContractNotFound);
-    }
-
-    const schema = z.fromJSONSchema(
-      serviceContract.schema as Parameters<typeof z.fromJSONSchema>[0]
-    );
-    const serializedConfig = Object.fromEntries(
-      Object.entries(config).map(([key, value]) => [
-        key,
-        value instanceof Date ? value.toISOString() : value,
-      ])
-    );
-    const { success, error } = schema.safeParse(serializedConfig);
+    const { success, error } =
+      PlatformConfigurationValidationSchema.safeParse(config);
     if (!success) {
-      logApp.error('Invalid service configuration', { error });
+      logApp.error('Invalid platform configuration', { error });
     }
     return success;
   },
@@ -123,15 +110,15 @@ export const ServiceConfigurationDomain = {
     token: string;
     tenant_id?: string;
     withoutTenantId?: boolean;
-  }): Promise<ServiceConfiguration | undefined> => {
-    const qb = db('Service_Configuration')
-      .whereRaw("config->>'platform_id' = ?", platform_id)
-      .whereRaw("config->>'token' = ?", token);
+  }): Promise<PlatformConfiguration | undefined> => {
+    const qb = db<PlatformConfiguration>('PlatformConfiguration')
+      .where('platform_id', '=', platform_id)
+      .where('token', '=', token);
 
     if (tenant_id) {
-      qb.whereRaw("config->>'tenant_id' = ?", tenant_id);
+      qb.where('tenant_id', '=', tenant_id);
     } else if (withoutTenantId) {
-      qb.whereRaw("config->>'tenant_id' IS NULL");
+      qb.whereNull('tenant_id');
     }
 
     return qb.first();
@@ -139,18 +126,18 @@ export const ServiceConfigurationDomain = {
 
   loadConfigurationByPlatform: async (
     platformId: string,
-    options?: { tenantId?: string | null } & ServiceConfigurationMutator
-  ): Promise<ServiceConfiguration | undefined> => {
+    options?: { tenantId?: string | null } & PlatformConfigurationMutator
+  ): Promise<PlatformConfiguration | undefined> => {
     const { tenantId, ...filter } = options ?? {};
 
-    const qb = db('Service_Configuration')
-      .whereRaw("config->>'platform_id' = ?", platformId)
+    const qb = db<PlatformConfiguration>('PlatformConfiguration')
+      .where('platform_id', '=', platformId)
       .where(filter)
       .first()
       .select('*');
 
     if (tenantId) {
-      qb.whereRaw("config->>'tenant_id' = ?", options?.tenantId);
+      qb.where('tenant_id', '=', tenantId);
     }
 
     return qb;
@@ -158,66 +145,69 @@ export const ServiceConfigurationDomain = {
 
   updateConfiguration: async (
     serviceInstanceId: ServiceInstanceId,
-    mutator: ServiceConfigurationMutator
+    mutator: PlatformConfigurationMutator
   ) => {
-    await db('Service_Configuration')
+    await db<PlatformConfiguration>('PlatformConfiguration')
       .update(mutator)
       .where('service_instance_id', '=', serviceInstanceId);
   },
 
   createConfiguration: async (
-    serviceInstanceId: string,
-    config: Record<string, unknown>
+    serviceInstanceId: ServiceInstanceId,
+    config: PlatformConfigurationInput
   ) => {
-    await db('Service_Configuration').insert({
+    await db<PlatformConfiguration>('PlatformConfiguration').insert({
       service_instance_id: serviceInstanceId,
-      config,
+      ...config,
+      tenant_id: config.tenant_id ?? null,
+      tenant_name: config.tenant_name ?? null,
     });
   },
 
   upsertConfiguration: async (
-    serviceInstanceId: string,
-    config: Record<string, unknown>
+    serviceInstanceId: ServiceInstanceId,
+    config: PlatformConfigurationInput
   ) => {
-    await db('Service_Configuration')
+    await db<PlatformConfiguration>('PlatformConfiguration')
       .insert({
         service_instance_id: serviceInstanceId,
-        config,
+        ...config,
+        tenant_id: config.tenant_id ?? null,
+        tenant_name: config.tenant_name ?? null,
       })
       .onConflict('service_instance_id')
       .merge();
   },
 
-  deleteConfigurationBy: async (conditions: ServiceConfigurationMutator) => {
-    await db('Service_Configuration').where(conditions).delete();
+  deleteConfigurationBy: async (conditions: PlatformConfigurationMutator) => {
+    await db<PlatformConfiguration>('PlatformConfiguration')
+      .where(conditions)
+      .delete();
   },
 
   loadResolvedConfigurationByPlatform: async (
     platformId: string,
-    options?: { tenantId?: string | null } & ServiceConfigurationMutator
+    options?: { tenantId?: string | null } & PlatformConfigurationMutator
   ): Promise<FullPlatformConfiguration | undefined> => {
     const { tenantId, ...filter } = options ?? {};
 
     const prefixedFilter = Object.fromEntries(
       Object.entries(filter).map(([key, value]) => [
-        `Service_Configuration.${key}`,
+        `PlatformConfiguration.${key}`,
         value,
       ])
     );
 
     const qb = buildJoinedConfigurationQuery()
-      .whereRaw(
-        `"Service_Configuration".config->>'platform_id' = ?`,
-        platformId
-      )
+      .where('PlatformConfiguration.platform_id', '=', platformId)
       .where(prefixedFilter);
 
     if (tenantId) {
-      qb.whereRaw(`"Service_Configuration".config->>'tenant_id' = ?`, tenantId);
+      qb.where('PlatformConfiguration.tenant_id', '=', tenantId);
     }
 
     const row = (await qb.first()) as
-      | ServiceConfigurationWithDefinition
+      | PlatformConfigurationWithDefinition
       | undefined;
     return row ? resolvePlatformFromJoinedRow(row) : undefined;
   },
@@ -234,23 +224,17 @@ export const ServiceConfigurationDomain = {
     withoutTenantId?: boolean;
   }): Promise<FullPlatformConfiguration | undefined> => {
     const qb = buildJoinedConfigurationQuery()
-      .whereRaw(
-        `"Service_Configuration".config->>'platform_id' = ?`,
-        platform_id
-      )
-      .whereRaw(`"Service_Configuration".config->>'token' = ?`, token);
+      .where('PlatformConfiguration.platform_id', '=', platform_id)
+      .where('PlatformConfiguration.token', '=', token);
 
     if (tenant_id) {
-      qb.whereRaw(
-        `"Service_Configuration".config->>'tenant_id' = ?`,
-        tenant_id
-      );
+      qb.where('PlatformConfiguration.tenant_id', '=', tenant_id);
     } else if (withoutTenantId) {
-      qb.whereRaw(`"Service_Configuration".config->>'tenant_id' IS NULL`);
+      qb.whereNull('PlatformConfiguration.tenant_id');
     }
 
     const row = (await qb.first()) as
-      | ServiceConfigurationWithDefinition
+      | PlatformConfigurationWithDefinition
       | undefined;
     return row ? resolvePlatformFromJoinedRow(row) : undefined;
   },
@@ -258,19 +242,15 @@ export const ServiceConfigurationDomain = {
   loadActiveConfigurationsByPlatformExcludingTenants: async (
     platformId: string,
     excludedTenantIds: string[]
-  ): Promise<ServiceConfiguration[]> => {
-    const qb = db('Service_Configuration')
-      .whereRaw("config->>'platform_id' = ?", platformId)
-      .where('status', ServiceConfigurationStatus.Active)
-      .whereRaw("config->>'tenant_id' IS NOT NULL")
+  ): Promise<PlatformConfiguration[]> => {
+    const qb = db<PlatformConfiguration[]>('PlatformConfiguration')
+      .where('platform_id', '=', platformId)
+      .where('status', '=', PlatformConfigurationStatus.Active)
+      .whereNotNull('tenant_id')
       .select('*');
 
     if (excludedTenantIds.length > 0) {
-      const placeholders = excludedTenantIds.map(() => '?').join(', ');
-      qb.whereRaw(
-        `config->>'tenant_id' NOT IN (${placeholders})`,
-        excludedTenantIds
-      );
+      qb.whereNotIn('tenant_id', excludedTenantIds);
     }
 
     return qb;

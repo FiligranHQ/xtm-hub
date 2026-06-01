@@ -6,89 +6,55 @@ import {
   SERVICES,
 } from '../../../../tests/tests.const';
 import {
+  PlatformConfigurationStatus,
   PlatformIdentifier,
-  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
-import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { ServiceDefinitionDomain } from '../../service/definition/service-definition.domain';
 import { ServiceConfigurationDomain } from './service-configuration.domain';
 
-describe('serviceConfigurationDomain', () => {
-  describe('isServiceConfigurationValid', () => {
-    const context = contextSimpleUserSecondOrga;
-    it('should throw an error when service contract is not found', async () => {
-      const call = ServiceConfigurationDomain.isServiceConfigurationValid(
-        uuidv4() as ServiceDefinitionId,
-        {}
-      );
-
-      await expect(call).rejects.toThrow('SERVICE_CONTRACT_NOT_FOUND');
-    });
-
-    it('should return true when configuration match the schema specifications', async () => {
-      const serviceDefinition =
-        await ServiceDefinitionDomain.loadServiceDefinitionBy({
-          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+describe('platformConfigurationDomain', () => {
+  describe('isPlatformConfigurationValid', () => {
+    it('returns true for valid platform configuration', async () => {
+      const result =
+        await ServiceConfigurationDomain.isPlatformConfigurationValid({
+          registerer_id: contextSimpleUserSecondOrga.user.id,
+          platform_id: uuidv4(),
+          platform_url: 'http://example.com/',
+          platform_title: 'Platform title',
+          token: uuidv4(),
+          platform_contract: 'EE',
+          platform_version: '1.0.0',
+          last_connectivity_check: new Date(),
         });
 
-      const configuration = {
-        registerer_id: context.user.id,
-        platform_id: uuidv4(),
-        platform_url: 'http://example.com/',
-        platform_title: 'Platform title',
-        token: uuidv4(),
-        platform_contract: 'EE',
-        last_connectivity_check: new Date(),
-      };
-
-      const result =
-        await ServiceConfigurationDomain.isServiceConfigurationValid(
-          serviceDefinition!.id,
-          configuration
-        );
-
-      expect(result).toBeTruthy();
+      expect(result).toBe(true);
     });
 
-    it('should return false when configuration does not match the schema specifications', async () => {
-      const serviceDefinition =
-        await ServiceDefinitionDomain.loadServiceDefinitionBy({
-          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-        });
-
+    it('returns false for invalid platform configuration', async () => {
       const result =
-        await ServiceConfigurationDomain.isServiceConfigurationValid(
-          serviceDefinition!.id,
-          {}
-        );
+        await ServiceConfigurationDomain.isPlatformConfigurationValid({});
 
-      expect(result).toBeFalsy();
+      expect(result).toBe(false);
     });
   });
 
   describe('loadConfigurationByPlatformAndToken', () => {
-    let platformId: string;
-    let token: string;
+    const platformId = uuidv4();
+    const token = uuidv4();
 
     beforeEach(async () => {
-      token = uuidv4();
-      platformId = uuidv4();
-
-      await TestHelper.serviceConfiguration.delete({});
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.delete({});
+      await TestHelper.platformConfiguration.create({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: {
-          token,
-          platform_id: platformId,
-        },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        token,
       });
     });
 
-    it('should return configuration when platform and token is found in its config', async () => {
+    it('loads by platform and token', async () => {
       const configuration =
         await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
           platform_id: platformId,
@@ -97,320 +63,64 @@ describe('serviceConfigurationDomain', () => {
 
       expect(configuration).toMatchObject({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: {
-          token,
-          platform_id: platformId,
-        },
-      });
-    });
-
-    it.each([
-      { platformId: () => platformId, token: () => uuidv4() },
-      { platformId: () => uuidv4(), token: () => token },
-      { platformId: () => uuidv4(), token: () => uuidv4() },
-    ])(
-      'should return undefined when platformId is $platformId and token is $token',
-      async ({ platformId, token }) => {
-        const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-            platform_id: platformId(),
-            token: token(),
-          });
-
-        expect(configuration).toBeUndefined();
-      }
-    );
-
-    describe('withoutTenantId option', () => {
-      it('should return configuration when withoutTenantId is true and config has no tenant_id', async () => {
-        const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-            platform_id: platformId,
-            token,
-            withoutTenantId: true,
-          });
-
-        expect(configuration).toMatchObject({
-          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          config: { platform_id: platformId, token },
-        });
-      });
-
-      describe('when config has a tenant_id', () => {
-        let tenantId: string;
-
-        beforeEach(async () => {
-          tenantId = uuidv4();
-          await TestHelper.serviceConfiguration.delete({});
-          await TestHelper.serviceConfiguration.create({
-            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-            status: ServiceConfigurationStatus.Active,
-            config: { token, platform_id: platformId, tenant_id: tenantId },
-          });
-        });
-
-        afterEach(async () => {
-          await TestHelper.serviceConfiguration.delete({});
-        });
-
-        it('should return undefined when withoutTenantId is true', async () => {
-          const configuration =
-            await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
-              {
-                platform_id: platformId,
-                token,
-                withoutTenantId: true,
-              }
-            );
-
-          expect(configuration).toBeUndefined();
-        });
-
-        it('should return configuration when withoutTenantId is false', async () => {
-          const configuration =
-            await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
-              {
-                platform_id: platformId,
-                token,
-                withoutTenantId: false,
-              }
-            );
-
-          expect(configuration).toMatchObject({
-            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-            config: { platform_id: platformId, token, tenant_id: tenantId },
-          });
-        });
-
-        it('should return configuration when withoutTenantId is not provided', async () => {
-          const configuration =
-            await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken(
-              {
-                platform_id: platformId,
-                token,
-              }
-            );
-
-          expect(configuration).toMatchObject({
-            service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-            config: { platform_id: platformId, token, tenant_id: tenantId },
-          });
-        });
+        platform_id: platformId,
+        token,
       });
     });
   });
 
   describe('loadConfigurationByPlatform', () => {
-    let token: string;
-    let platformId: string;
+    const platformId = uuidv4();
 
     beforeEach(async () => {
-      token = uuidv4();
-      platformId = uuidv4();
-
-      await TestHelper.serviceConfiguration.delete({});
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.delete({});
+      await TestHelper.platformConfiguration.create({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: {
-          token,
-          platform_id: platformId,
-        },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        token: uuidv4(),
       });
     });
 
-    it('should return configuration when platform is found in its config', async () => {
+    it('loads by platform id', async () => {
       const configuration =
         await ServiceConfigurationDomain.loadConfigurationByPlatform(
           platformId
         );
-
-      expect(configuration).toMatchObject({
-        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: {
-          token,
-          platform_id: platformId,
-        },
-      });
-    });
-
-    it('should return configuration when platform is found and active, and filter is active', async () => {
-      const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
-          platformId,
-          { status: ServiceConfigurationStatus.Active }
-        );
-
-      expect(configuration).toMatchObject({
-        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: {
-          token,
-          platform_id: platformId,
-        },
-      });
-    });
-
-    it('should return undefined when configuration is active and inactive filter is used', async () => {
-      const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
-          platformId,
-          { status: ServiceConfigurationStatus.Inactive }
-        );
-
-      expect(configuration).toBeUndefined();
-    });
-
-    it('should return undefined when platform is not found', async () => {
-      const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(uuidv4());
-
-      expect(configuration).toBeUndefined();
-    });
-  });
-
-  describe('loadConfigurationByPlatform with tenantId disambiguation', () => {
-    let platformId: string;
-    const tenantId1 = 'tenant-alpha';
-    const tenantId2 = 'tenant-beta';
-
-    beforeEach(async () => {
-      platformId = uuidv4();
-
-      await TestHelper.serviceConfiguration.delete({});
-      await TestHelper.serviceConfiguration.create({
-        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, tenant_id: tenantId1 },
-      });
-      await TestHelper.serviceConfiguration.create({
-        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, tenant_id: tenantId2 },
-      });
-    });
-
-    it.each`
-      tenantId     | description
-      ${tenantId1} | ${'first tenant'}
-      ${tenantId2} | ${'second tenant'}
-    `(
-      'should return the configuration matching $description when tenantId is provided',
-      async ({ tenantId }: { tenantId: string }) => {
-        const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
-            platformId,
-            { tenantId }
-          );
-
-        expect(configuration).toMatchObject({
-          config: { platform_id: platformId, tenant_id: tenantId },
-        });
-      }
-    );
-
-    it('should return undefined when tenantId does not match any configuration', async () => {
-      const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
-          platformId,
-          { tenantId: 'unknown-tenant' }
-        );
-
-      expect(configuration).toBeUndefined();
+      expect(configuration?.platform_id).toBe(platformId);
     });
   });
 
   describe('loadActiveConfigurationsByPlatformExcludingTenants', () => {
-    let platformId: string;
-    const tenantId1 = 'tenant-alpha';
-    const tenantId2 = 'tenant-beta';
-    const tenantId3 = 'tenant-gamma';
+    const platformId = uuidv4();
+    const tenantAId = uuidv4();
+    const tenantBId = uuidv4();
 
     beforeEach(async () => {
-      platformId = uuidv4();
-
-      await TestHelper.serviceConfiguration.delete({});
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.delete({});
+      await TestHelper.platformConfiguration.create({
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, tenant_id: tenantId1 },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        tenant_id: tenantAId,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, tenant_id: tenantId2 },
-      });
-      await TestHelper.serviceConfiguration.create({
-        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, tenant_id: tenantId3 },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        tenant_id: tenantBId,
       });
     });
 
-    it('should return all tenants when excluded list is empty', async () => {
+    it('excludes requested tenants', async () => {
       const configurations =
         await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
           platformId,
-          []
-        );
-
-      expect(configurations).toHaveLength(3);
-    });
-
-    it('should exclude the provided tenantIds and return the others', async () => {
-      const configurations =
-        await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
-          platformId,
-          [tenantId1, tenantId2]
+          [tenantAId]
         );
 
       expect(configurations).toHaveLength(1);
-      expect(configurations[0]?.config).toMatchObject({
-        tenant_id: tenantId3,
-      });
-    });
-
-    it('should return empty when all tenantIds are excluded', async () => {
-      const configurations =
-        await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
-          platformId,
-          [tenantId1, tenantId2, tenantId3]
-        );
-
-      expect(configurations).toHaveLength(0);
-    });
-
-    it('should not return inactive configurations', async () => {
-      await TestHelper.serviceConfiguration.create({
-        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
-        status: ServiceConfigurationStatus.Inactive,
-        config: { platform_id: platformId, tenant_id: 'tenant-inactive' },
-      });
-
-      const configurations =
-        await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
-          platformId,
-          []
-        );
-
-      expect(configurations).toHaveLength(3);
-      expect(
-        configurations.every(
-          (c) => c.status === ServiceConfigurationStatus.Active
-        )
-      ).toBe(true);
-    });
-
-    it('should not return configurations from a different platformId', async () => {
-      const configurations =
-        await ServiceConfigurationDomain.loadActiveConfigurationsByPlatformExcludingTenants(
-          uuidv4(),
-          []
-        );
-
-      expect(configurations).toHaveLength(0);
+      expect(configurations[0]?.tenant_id).toBe(tenantBId);
     });
   });
 
@@ -424,7 +134,7 @@ describe('serviceConfigurationDomain', () => {
     });
 
     afterEach(async () => {
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: serviceInstanceId,
       });
       await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
@@ -444,10 +154,11 @@ describe('serviceConfigurationDomain', () => {
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      const { token } = await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, token: 'abc' },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        token: uuidv4(),
       });
 
       const resolved =
@@ -456,9 +167,11 @@ describe('serviceConfigurationDomain', () => {
         );
 
       expect(resolved).toBeDefined();
-      expect(resolved?.serviceConfiguration).toMatchObject({
+      expect(resolved?.platformConfiguration).toMatchObject({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Active,
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        token,
       });
       expect(resolved?.serviceDefinition?.id).toBe(
         SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID
@@ -467,10 +180,6 @@ describe('serviceConfigurationDomain', () => {
         ServiceDefinitionIdentifier.OpenctiRegistration
       );
       expect(resolved?.platformIdentifier).toBe(PlatformIdentifier.Opencti);
-      expect(resolved?.config).toMatchObject({
-        platform_id: platformId,
-        token: 'abc',
-      });
     });
 
     it('should throw ServiceDefinitionNotFound when the instance has no service_definition_id', async () => {
@@ -478,10 +187,10 @@ describe('serviceConfigurationDomain', () => {
         id: serviceInstanceId,
         service_definition_id: null,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
       });
 
       const call =
@@ -497,21 +206,21 @@ describe('serviceConfigurationDomain', () => {
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Inactive,
-        config: { platform_id: platformId },
+        status: PlatformConfigurationStatus.Inactive,
+        platform_id: platformId,
       });
 
       const resolvedInactive =
         await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId,
-          { status: ServiceConfigurationStatus.Inactive }
+          { status: PlatformConfigurationStatus.Inactive }
         );
       const resolvedActive =
         await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
           platformId,
-          { status: ServiceConfigurationStatus.Active }
+          { status: PlatformConfigurationStatus.Active }
         );
 
       expect(resolvedInactive).toBeDefined();
@@ -524,10 +233,11 @@ describe('serviceConfigurationDomain', () => {
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, tenant_id: tenantId },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        tenant_id: tenantId,
       });
 
       const resolvedWithTenant =
@@ -541,7 +251,9 @@ describe('serviceConfigurationDomain', () => {
           { tenantId: uuidv4() }
         );
 
-      expect(resolvedWithTenant?.config.tenant_id).toBe(tenantId);
+      expect(resolvedWithTenant?.platformConfiguration.tenant_id).toBe(
+        tenantId
+      );
       expect(resolvedWithOtherTenant).toBeUndefined();
     });
   });
@@ -558,7 +270,7 @@ describe('serviceConfigurationDomain', () => {
     });
 
     afterEach(async () => {
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: serviceInstanceId,
       });
       await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
@@ -569,10 +281,11 @@ describe('serviceConfigurationDomain', () => {
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENAEV_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, token },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        token,
       });
 
       const resolved =
@@ -581,7 +294,7 @@ describe('serviceConfigurationDomain', () => {
         );
 
       expect(resolved).toBeDefined();
-      expect(resolved?.serviceConfiguration.service_instance_id).toBe(
+      expect(resolved?.platformConfiguration.service_instance_id).toBe(
         serviceInstanceId
       );
       expect(resolved?.serviceDefinition?.identifier).toBe(
@@ -595,10 +308,11 @@ describe('serviceConfigurationDomain', () => {
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, token },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        token,
       });
 
       const resolved =
@@ -614,10 +328,12 @@ describe('serviceConfigurationDomain', () => {
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, token, tenant_id: uuidv4() },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        token,
+        tenant_id: uuidv4(),
       });
 
       const resolved =
@@ -634,10 +350,12 @@ describe('serviceConfigurationDomain', () => {
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        status: ServiceConfigurationStatus.Active,
-        config: { platform_id: platformId, token, tenant_id: tenantId },
+        status: PlatformConfigurationStatus.Active,
+        platform_id: platformId,
+        token,
+        tenant_id: tenantId,
       });
 
       const resolvedMatching =
@@ -649,7 +367,7 @@ describe('serviceConfigurationDomain', () => {
           { platform_id: platformId, token, tenant_id: uuidv4() }
         );
 
-      expect(resolvedMatching?.config.tenant_id).toBe(tenantId);
+      expect(resolvedMatching?.platformConfiguration.tenant_id).toBe(tenantId);
       expect(resolvedMismatch).toBeUndefined();
     });
   });

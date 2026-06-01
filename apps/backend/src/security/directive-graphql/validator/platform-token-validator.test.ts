@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import Organization from '../../../model/kanel/public/Organization';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import PlatformConfiguration from '../../../model/kanel/public/PlatformConfiguration';
 import type { PortalContext } from '../../../model/portal-context';
 import type { UserLoadUserBy } from '../../../model/user';
 import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.domain';
@@ -114,7 +114,7 @@ describe('createPlatformTokenResolver', () => {
         'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue({
         service_instance_id: serviceInstanceId,
-      } as ServiceConfiguration);
+      } as PlatformConfiguration);
 
       vi.spyOn(
         OrganizationDomain,

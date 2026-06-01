@@ -1,9 +1,9 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
-import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
+import { PlatformConfigurationStatus } from '../../../__generated__/resolvers-types';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import PlatformConfiguration from '../../../model/kanel/public/PlatformConfiguration';
 import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.domain';
 import { ServiceConfigurationDomain } from '../../../modules/registration/service-configuration/service-configuration.domain';
 import {
@@ -62,9 +62,9 @@ describe('platform Token Validation', () => {
         ServiceConfigurationDomain,
         'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue({
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Inactive,
-      } as unknown as ServiceConfiguration);
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Inactive,
+      } as unknown as PlatformConfiguration);
 
       const req: express.Request = {
         headers: {
@@ -84,9 +84,9 @@ describe('platform Token Validation', () => {
         ServiceConfigurationDomain,
         'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue({
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
-      } as unknown as ServiceConfiguration);
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
+      } as unknown as PlatformConfiguration);
 
       const req: express.Request = {
         headers: {

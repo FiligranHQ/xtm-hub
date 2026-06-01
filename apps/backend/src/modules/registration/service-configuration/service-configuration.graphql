@@ -1,4 +1,4 @@
-enum ServiceConfigurationStatus {
+enum PlatformConfigurationStatus {
   active
   inactive
 }

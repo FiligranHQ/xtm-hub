@@ -1,5 +1,5 @@
 import express from 'express';
-import { ServiceConfigurationStatus } from '../../../__generated__/resolvers-types';
+import { PlatformConfigurationStatus } from '../../../__generated__/resolvers-types';
 import { logApp } from '../../../utils/app-logger.util';
 import { DeploymentRequestDomain } from '../../deployment/deployment.domain';
 import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
@@ -35,13 +35,13 @@ export const validateActivePlatformToken = async (
 ): Promise<boolean> => {
   if (!validateExistsToken(req)) return false;
 
-  const serviceConfiguration =
+  const platformConfiguration =
     await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id: extractPlatformId(req),
       token: extractPlatformToken(req),
     });
 
-  return serviceConfiguration?.status === ServiceConfigurationStatus.Active;
+  return platformConfiguration?.status === PlatformConfigurationStatus.Active;
 };
 
 export const validateAndGetRequestedPlatformToken = async (

@@ -1415,6 +1415,11 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export enum PlatformConfigurationStatus {
+  Active = 'active',
+  Inactive = 'inactive'
+}
+
 export enum PlatformContract {
   Ce = 'CE',
   Ee = 'EE',
@@ -1963,11 +1968,6 @@ export type ServiceCapability = Node & {
   name?: Maybe<Scalars['String']['output']>;
   service_definition_id?: Maybe<Scalars['ID']['output']>;
 };
-
-export enum ServiceConfigurationStatus {
-  Active = 'active',
-  Inactive = 'inactive'
-}
 
 export type ServiceConnection = {
   __typename?: 'ServiceConnection';
@@ -2748,6 +2748,7 @@ export type ResolversTypes = ResolversObject<{
   OrganizationOrdering: OrganizationOrdering;
   OrganizationRef: ResolverTypeWrapper<OrganizationRef>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
+  PlatformConfigurationStatus: PlatformConfigurationStatus;
   PlatformContract: PlatformContract;
   PlatformDeploymentRequest: ResolverTypeWrapper<PlatformDeploymentRequest>;
   PlatformDeploymentRequestConnection: ResolverTypeWrapper<PlatformDeploymentRequestConnection>;
@@ -2779,7 +2780,6 @@ export type ResolversTypes = ResolversObject<{
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceCapabilityId: ResolverTypeWrapper<Scalars['ServiceCapabilityId']['output']>;
-  ServiceConfigurationStatus: ServiceConfigurationStatus;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;

@@ -5,10 +5,10 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
+  PlatformConfigurationStatus,
   PlatformContract,
   PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
-  ServiceConfigurationStatus,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { BadRequestErrorCode, ErrorCode } from '../../utils/error/error.code';
@@ -221,7 +221,7 @@ describe('registration connectivity app', () => {
           platformId,
           { tenantId }
         );
-      expect((config?.config as Record<string, unknown>)['url']).toBe(newUrl);
+      expect(config?.platform_url).toBe(newUrl);
     });
 
     it('should update the tenant_name in the configuration when tenant_name changes', async () => {
@@ -259,9 +259,7 @@ describe('registration connectivity app', () => {
           platformId,
           { tenantId }
         );
-      expect((config?.config as Record<string, unknown>)['tenant_name']).toBe(
-        updatedTenantName
-      );
+      expect(config?.tenant_name).toBe(updatedTenantName);
     });
 
     it('should return not found when platform is registered with tenant_id but wrong tenant_id is provided', async () => {
@@ -334,7 +332,7 @@ describe('registration connectivity app', () => {
           platformId,
           { tenantId }
         );
-      expect(updatedConfig?.config).toMatchObject({
+      expect(updatedConfig).toMatchObject({
         tenant_id: tenantId,
         tenant_name: tenantName,
       });
@@ -612,7 +610,7 @@ describe('registration connectivity app', () => {
           platformId,
           { tenantId: tenantId2 }
         );
-      expect(staleConfig?.status).toBe(ServiceConfigurationStatus.Inactive);
+      expect(staleConfig?.status).toBe(PlatformConfigurationStatus.Inactive);
     });
   });
 });

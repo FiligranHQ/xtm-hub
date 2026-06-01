@@ -41,9 +41,9 @@ const provisionNewsFeedItemForServiceInstance = async ({
       organizationIds,
       platformIdentifier
     );
-  const platformIds = registeredPlatforms
-    .filter((platform) => platform.config?.platform_id)
-    .map((platform) => platform.config.platform_id);
+  const platformIds = registeredPlatforms.map(
+    (platform) => platform.platform_id
+  );
   await NewsFeedDomain.provisionNewsFeedItem(newsFeedItemId, platformIds);
 };
 
@@ -239,9 +239,9 @@ export const NewsFeedApp = {
       await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
         platformIdentifier
       );
-    const platformIds = registeredPlatforms
-      .filter((platform) => platform.config?.platform_id)
-      .map((platform) => platform.config.platform_id);
+    const platformIds = registeredPlatforms.map(
+      (platform) => platform.platform_id
+    );
 
     await NewsFeedDomain.provisionNewsFeedItem(newsFeedItem.id, platformIds);
   },

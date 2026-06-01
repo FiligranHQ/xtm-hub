@@ -30,11 +30,11 @@ export default interface User {
 
   country: string | null;
 
-  selected_language: string;
-
   platform_token: string | null;
 
   picture_minio: string | null;
+
+  selected_language: string;
 }
 
 /** Represents the initializer for the table public.User */
@@ -61,11 +61,12 @@ export interface UserInitializer {
 
   country?: string | null;
 
-  selected_language?: string;
-
   platform_token?: string | null;
 
   picture_minio?: string | null;
+
+  /** Default value: 'en'::character varying */
+  selected_language?: string;
 }
 
 /** Represents the mutator for the table public.User */
@@ -92,9 +93,9 @@ export interface UserMutator {
 
   country?: string | null;
 
-  selected_language?: string;
-
   platform_token?: string | null;
 
   picture_minio?: string | null;
+
+  selected_language?: string;
 }
