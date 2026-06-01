@@ -1,6 +1,6 @@
 const LAST_CONNECTION_CHECK_PROPERTY = {
   type: 'string',
-  format: 'string',
+  format: 'date-time',
 };
 
 const addConnectionPropertiesToSchema = (schema) => {

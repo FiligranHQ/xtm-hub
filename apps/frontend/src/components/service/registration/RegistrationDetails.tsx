@@ -191,10 +191,7 @@ export const RegistrationDetails = ({
         <li>
           <span className="text-gray/60">Last connection check:</span>{' '}
           {platform.last_connection_check
-            ? formatDate(
-                new Date(platform.last_connection_check),
-                'DATETIME_NUMERIC'
-              )
+            ? formatDate(platform.last_connection_check)
             : '-'}
         </li>
         <li>

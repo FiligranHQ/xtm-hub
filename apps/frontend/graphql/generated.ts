@@ -1867,7 +1867,7 @@ export type RegisteredPlatform = Node & {
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
-  last_connection_check: Scalars['String']['output'];
+  last_connection_check: Scalars['Date']['output'];
   myGroups: Maybe<Array<ServiceGroup>>;
   platform_id: Scalars['String']['output'];
   subscription: Maybe<SubscriptionModel>;

@@ -106,7 +106,7 @@ const saveConfig = async ({
       {
         config: {
           ...(existingConfig as object),
-          last_connection_check: new Date().toISOString(),
+          last_connection_check: new Date(),
           platform_version,
           ...(url ? { url } : {}),
           ...(tenant_name ? { tenant_name } : {}),
@@ -120,7 +120,7 @@ const saveConfig = async ({
     {
       config: {
         ...(existingConfig as object),
-        last_connection_check: new Date().toISOString(),
+        last_connection_check: new Date(),
       },
     }
   );
