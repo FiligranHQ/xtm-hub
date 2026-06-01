@@ -92,7 +92,7 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
   fragment registeredPlatformByServiceInstanceId_fragment on RegisteredPlatform {
     id
     platform_id
-    last_connection_check
+    last_connectivity_check
     tenant_id
     title
     contract

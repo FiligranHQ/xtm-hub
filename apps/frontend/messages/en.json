@@ -581,6 +581,7 @@
         "EE": "Enterprise Edition"
       },
       "ConnectionStatus": {
+        "Title": "Connection status",
         "Connected": "Connected",
         "NotConnected": "Connection lost",
         "NotConnectedDetails": "You should register your platform again."
@@ -595,7 +596,9 @@
       "Region": "Region",
       "License": "License",
       "Status": "Status",
-      "PrivatePlatform": "Private platform"
+      "PrivatePlatform": "Private platform",
+      "LastConnectionCheck": "Last connection check",
+      "Access": "Access"
     },
     "Error": {
       "Capability": {

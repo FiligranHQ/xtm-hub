@@ -581,6 +581,7 @@
         "EE": "Édition Entreprise"
       },
       "ConnectionStatus": {
+        "Title": "Statut de connexion",
         "Connected": "Connecté",
         "NotConnected": "Connexion perdue",
         "NotConnectedDetails": "Vous devez à nouveau enregistrer votre plateforme."
@@ -595,7 +596,9 @@
       "Region": "Région",
       "License": "Licence",
       "Status": "Statut",
-      "PrivatePlatform": "Plateforme privée"
+      "PrivatePlatform": "Plateforme privée",
+      "LastConnectionCheck": "Dernier contrôle de connexion",
+      "Access": "Accès"
     },
     "Error": {
       "Capability": {

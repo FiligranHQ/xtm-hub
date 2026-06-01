@@ -581,6 +581,7 @@
         "EE": "エンタープライズ版"
       },
       "ConnectionStatus": {
+        "Title": "接続状況",
         "Connected": "つながる",
         "NotConnected": "接続が切れた",
         "NotConnectedDetails": "プラットフォームを再登録してください。"
@@ -595,7 +596,9 @@
       "Region": "地域",
       "License": "ライセンス",
       "Status": "ステータス",
-      "PrivatePlatform": "プライベート・プラットフォーム"
+      "PrivatePlatform": "プライベート・プラットフォーム",
+      "LastConnectionCheck": "最終接続チェック",
+      "Access": "アクセス"
     },
     "Error": {
       "Capability": {
@@ -1043,12 +1046,6 @@
       "ManageUsers": "ユーザー管理",
       "ManageUsersForOrganization": "{serviceName} サービスでの {organizationName} のユーザーを管理する",
       "OneUserMax": "最大1ユーザーを追加",
-      "NoAvailableCapabilities": "利用可能な機能はありません",
-      "AddSubscriptionCapabilities": {
-        "Button": "機能を追加する",
-        "Title": "購読機能の追加",
-        "Description": "選択した{count}購読に追加する機能を選択します。"
-      },
       "NoAvailableCapabilities": "利用可能な機能はありません",
       "AddSubscriptionCapabilities": {
         "Button": "機能を追加する",

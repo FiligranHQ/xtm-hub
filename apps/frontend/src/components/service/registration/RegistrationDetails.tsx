@@ -88,7 +88,7 @@ export const RegistrationDetails = ({
       DeploymentRequestHubStatusEnum.ACTIVE;
 
   const isConnectionStatusOk = isWithinLastMonths(
-    new Date(platform.last_connection_check),
+    new Date(platform.last_connectivity_check),
     1
   );
 
@@ -168,7 +168,9 @@ export const RegistrationDetails = ({
             : t('Register.Details.Contracts.EE')}
         </li>
         <li>
-          <span className="text-gray/60">Connection status:</span>{' '}
+          <span className="text-gray/60">
+            {t('Register.Details.ConnectionStatus.Title')}:
+          </span>{' '}
           <span
             className={
               isConnectionStatusOk ? 'text-green-500' : 'text-red-500'
@@ -189,15 +191,19 @@ export const RegistrationDetails = ({
           )}
         </li>
         <li>
-          <span className="text-gray/60">Last connection check:</span>{' '}
-          {platform.last_connection_check
-            ? formatDate(platform.last_connection_check)
+          <span className="text-gray/60">
+            {t('Register.Details.LastConnectionCheck')}:
+          </span>{' '}
+          {platform.last_connectivity_check
+            ? formatDate(platform.last_connectivity_check)
             : '-'}
         </li>
         <li>
           {isTrialActive && (
             <span>
-              <span className="text-gray/60">Access:</span>{' '}
+              <span className="text-gray/60">
+                {t('Register.Details.Access')}:
+              </span>{' '}
               {userHasTrialAccess ? (
                 <span>
                   {(platform.myGroups ?? [])
@@ -227,7 +233,7 @@ export const RegistrationDetails = ({
               target="_blank"
               rel="noopener noreferrer"
               href={platform.url}>
-              Access {displayedIdentifier}
+              {t('Register.Details.Access')} {displayedIdentifier}
             </Link>
           </Button>
         )}

@@ -41,7 +41,7 @@ export const mockPlatformConfig: PlatformConfiguration = {
   platform_url: 'https://test.com',
   platform_contract: PlatformContract.Ee,
   platform_version: '1.0.0',
-  last_connection_check: new Date(),
+  last_connectivity_check: new Date(),
   token: 'test-token',
 };
 

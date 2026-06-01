@@ -1,9 +1,9 @@
-const LAST_CONNECTION_CHECK_PROPERTY = {
+const LAST_CONNECTIVITY_CHECK_PROPERTY = {
   type: 'string',
   format: 'date-time',
 };
 
-const addConnectionPropertiesToSchema = (schema) => {
+const addConnectivityPropertiesToSchema = (schema) => {
   const properties =
     schema?.properties && typeof schema.properties === 'object'
       ? schema.properties
@@ -11,26 +11,26 @@ const addConnectionPropertiesToSchema = (schema) => {
 
   return {
     ...schema,
-    required: [...schema.required, 'last_connection_check'],
+    required: [...schema.required, 'last_connectivity_check'],
     properties: {
       ...properties,
-      last_connection_check: LAST_CONNECTION_CHECK_PROPERTY,
+      last_connectivity_check: LAST_CONNECTIVITY_CHECK_PROPERTY,
     },
   };
 };
 
-const removeConnectionPropertiesFromSchema = (schema) => {
+const removeConnectivityPropertiesFromSchema = (schema) => {
   if (!schema?.properties || typeof schema.properties !== 'object') {
     return schema;
   }
 
-  const { last_connection_check: _last_connection_check, ...properties } =
+  const { last_connectivity_check: _last_connectivity_check, ...properties } =
     schema.properties;
 
   return {
     ...schema,
     required: Array.isArray(schema.required)
-      ? schema.required.filter((field) => field !== 'last_connection_check')
+      ? schema.required.filter((field) => field !== 'last_connectivity_check')
       : schema.required,
     properties,
   };
@@ -45,7 +45,7 @@ export async function up(knex) {
 
   await Promise.all(
     serviceContracts.map(({ service_definition_id, schema }) => {
-      const newSchema = addConnectionPropertiesToSchema(schema);
+      const newSchema = addConnectivityPropertiesToSchema(schema);
       return knex('Service_Contract')
         .update({ schema: newSchema })
         .where('service_definition_id', '=', service_definition_id);
@@ -62,7 +62,7 @@ export async function down(knex) {
 
   await Promise.all(
     serviceContracts.map(({ service_definition_id, schema }) => {
-      const oldSchema = removeConnectionPropertiesFromSchema(schema);
+      const oldSchema = removeConnectivityPropertiesFromSchema(schema);
       return knex('Service_Contract')
         .update({ schema: oldSchema })
         .where('service_definition_id', '=', service_definition_id);
