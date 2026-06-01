@@ -35,7 +35,7 @@
     "clsx": "2.1.1",
     "extract-files": "13.0.0",
     "graphql": "catalog:",
-    "graphql-request": "6.1.0",
+    "graphql-request": "7.4.0",
     "graphql-sse": "catalog:",
     "next": "16.2.6",
     "next-intl": "4.12.0",
