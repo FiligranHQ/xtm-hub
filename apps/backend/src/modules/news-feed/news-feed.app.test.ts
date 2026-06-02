@@ -254,7 +254,10 @@ describe('newsFeedApp', () => {
       });
 
       expect(result.available_news_feed_types).toEqual(
-        expect.arrayContaining([NewsFeedItemType.ResourceCustomDashboard])
+        expect.arrayContaining([
+          NewsFeedItemType.ResourceCustomDashboard,
+          NewsFeedItemType.ResourcePlaybook,
+        ])
       );
     });
 
@@ -302,6 +305,7 @@ describe('newsFeedApp', () => {
     it.each`
       identifier                                             | expected | description
       ${ServiceDefinitionIdentifier.OpenctiCustomDashboards} | ${true}  | ${'configured service definition'}
+      ${ServiceDefinitionIdentifier.OpenctiPlaybooks}        | ${true}  | ${'playbooks service definition'}
       ${ServiceDefinitionIdentifier.OpenctiIntegrations}     | ${false} | ${'non-configured service definition'}
       ${ServiceDefinitionIdentifier.OpenctiRegistration}     | ${false} | ${'registration identifier'}
       ${ServiceDefinitionIdentifier.Vault}                   | ${false} | ${'vault identifier'}

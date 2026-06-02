@@ -42,7 +42,12 @@ describe('newsFeedDomain', () => {
         PlatformIdentifier.Opencti
       );
 
-      expect(result).toContain(NewsFeedItemType.ResourceCustomDashboard);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          NewsFeedItemType.ResourceCustomDashboard,
+          NewsFeedItemType.ResourcePlaybook,
+        ])
+      );
     });
 
     it('should return empty array for a platform with no configured news feed types', () => {

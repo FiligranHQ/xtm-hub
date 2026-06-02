@@ -1262,7 +1262,8 @@ export enum NewsFeedItemMetadataKey {
 }
 
 export enum NewsFeedItemType {
-  ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD'
+  ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD',
+  ResourcePlaybook = 'RESOURCE_PLAYBOOK'
 }
 
 export type Node = {
