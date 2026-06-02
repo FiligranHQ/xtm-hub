@@ -891,6 +891,7 @@ type RegisteredPlatform implements Node {
   version: String
   illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
+  last_connectivity_check: Date!
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
 }

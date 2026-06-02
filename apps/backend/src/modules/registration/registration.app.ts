@@ -70,6 +70,7 @@ const buildPlatformConfiguration = (
   platform_title: platform.title,
   platform_contract: platform.contract,
   platform_version: platform.version,
+  last_connectivity_check: new Date(),
   token,
 });
 
@@ -512,6 +513,7 @@ const mapDomainRegisteredPlatformToGraphQL = (
     __typename: 'RegisteredPlatform',
     id: platform.id,
     platform_id: platform.config?.platform_id ?? platform.id,
+    last_connectivity_check: platform.config?.last_connectivity_check ?? null,
     tenant_id: platform.config?.tenant_id,
     tenant_name: platform.config?.tenant_name,
     title: platform.config?.platform_title ?? defaultTitle,

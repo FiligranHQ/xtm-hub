@@ -41,6 +41,7 @@ describe('serviceConfigurationDomain', () => {
         platform_title: 'Platform title',
         token: uuidv4(),
         platform_contract: 'EE',
+        last_connectivity_check: new Date(),
       };
 
       const result =
