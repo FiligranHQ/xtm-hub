@@ -15,7 +15,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
-  subscriptionId: SubscriptionId
+  subscription_id: SubscriptionId!
 }
 
 input UserServiceAddYourselfInput {
@@ -23,15 +23,42 @@ input UserServiceAddYourselfInput {
   serviceInstanceId: ServiceInstanceId
 }
 
-input UserServiceDeleteInput {
-  email: String!
+input UserServicesDeleteInput {
+  userServiceIds: [UserServiceId!]!
+}
+input UserServiceEditInput {
+  userServiceId: UserServiceId!
   capabilities: [String]
-  subscriptionId: SubscriptionId!
 }
 
 type Mutation {
-  addUserService(input: UserServiceAddInput!): [UserService] @auth
-  deleteUserService(input: UserServiceDeleteInput!): UserService @auth
+  addUserService(
+    input: UserServiceAddInput!
+    service_instance_id: ServiceInstanceId!
+  ): [UserService]
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+    )
+    @service_capa(requires: [MANAGE_ACCESS])
+  editUserService(
+    input: UserServiceEditInput!
+    service_instance_id: ServiceInstanceId!
+  ): UserService
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+    )
+    @service_capa(requires: [MANAGE_ACCESS])
+  deleteUserServices(
+    input: UserServicesDeleteInput!
+    service_instance_id: ServiceInstanceId!
+  ): [UserService]
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+    )
+    @service_capa(requires: [MANAGE_ACCESS])
 }
 type Query {
   userServiceFromSubscription(

@@ -95,9 +95,46 @@ export const UserServiceCreateMutation = graphql`
   mutation userServiceCreateMutation(
     $input: UserServiceAddInput!
     $connections: [ID!]!
+    $service_instance_id: ServiceInstanceId!
   ) {
-    addUserService(input: $input)
+    addUserService(input: $input, service_instance_id: $service_instance_id)
       @prependNode(connections: $connections, edgeTypeName: "UserServiceEdge") {
+      id
+      user {
+        id
+        first_name
+        last_name
+        email
+      }
+      user_service_capability {
+        id
+        generic_service_capability {
+          id
+          name
+        }
+        subscription_capability {
+          id
+          service_capability {
+            id
+            description
+            name
+          }
+        }
+      }
+      subscription {
+        service_instance {
+          id
+        }
+      }
+    }
+  }
+`;
+export const UserServiceEditMutation = graphql`
+  mutation userServiceEditMutation(
+    $input: UserServiceEditInput!
+    $service_instance_id: ServiceInstanceId!
+  ) {
+    editUserService(input: $input, service_instance_id: $service_instance_id) {
       id
       user {
         id
@@ -126,11 +163,43 @@ export const UserServiceCreateMutation = graphql`
 
 export const UserServiceDeleteMutation = graphql`
   mutation userServiceDeleteMutation(
-    $input: UserServiceDeleteInput!
+    $input: UserServicesDeleteInput!
+    $service_instance_id: ServiceInstanceId!
     $connections: [ID!]!
   ) {
-    deleteUserService(input: $input) {
+    deleteUserServices(
+      input: $input
+      service_instance_id: $service_instance_id
+    ) {
       id @deleteEdge(connections: $connections)
+    }
+  }
+`;
+
+export const UserServicesAddCapabilitiesMutation = graphql`
+  mutation userServicesAddCapabilitiesMutation(
+    $input: UserServicesAddCapabilitiesInput!
+    $service_instance_id: ServiceInstanceId!
+  ) {
+    addCapabilitiesToUserServices(
+      input: $input
+      service_instance_id: $service_instance_id
+    ) {
+      id
+      user_service_capability {
+        id
+        generic_service_capability {
+          id
+          name
+        }
+        subscription_capability {
+          id
+          service_capability {
+            id
+            name
+          }
+        }
+      }
     }
   }
 `;

@@ -580,10 +580,25 @@
         "CE": "Community Edition",
         "EE": "Enterprise Edition"
       },
+      "ConnectionStatus": {
+        "Title": "Connection status",
+        "Connected": "Connected",
+        "NotConnected": "Connection lost",
+        "NotConnectedDetails": "You should register your platform again."
+      },
       "Description": "Click here to access your Private Platform.",
       "PlatformID": "Platform ID",
+      "PlatformName": "Platform name",
       "PlatformURL": "Platform URL",
-      "PrivatePlatform": "Private platform"
+      "StartDate": "Start date",
+      "EndDate": "End date",
+      "RegisteredOn": "Registered on",
+      "Region": "Region",
+      "License": "License",
+      "Status": "Status",
+      "PrivatePlatform": "Private platform",
+      "LastConnectionCheck": "Last connection check",
+      "Access": "Access"
     },
     "Error": {
       "Capability": {
@@ -1015,6 +1030,7 @@
     "Management": {
       "AvailableCapabilities": "Available capabilities",
       "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
+      "AreYouSureRemoveUsersAccess": "Are you sure you want to remove access for {count} users from this service?",
       "AreYouSureRemoveOrganizationAccess": "Are you sure you want to remove access for organization {organizationName} from this service?",
       "AreYouSureRemoveOrganizationsAccess": "Are you sure you want to remove access for {count} organizations from this service?",
       "Description": "Organizations that have joined this service",
@@ -1035,6 +1051,11 @@
         "Button": "Add capabilities",
         "Title": "Add subscription capabilities",
         "Description": "Select the capabilities to add to the {count} selected subscription(s)."
+      },
+      "AddUserServiceCapabilities": {
+        "Button": "Add capabilities",
+        "Title": "Add user service capabilities",
+        "Description": "Select the capabilities to add to the {count} selected access."
       },
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",

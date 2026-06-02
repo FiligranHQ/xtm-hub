@@ -7,11 +7,16 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
 import {
+  BreadcrumbNav,
+  BreadcrumbNavLink,
+} from '@/components/ui/BreadcrumbNav';
+import {
   IconActions,
   IconActionsItem,
   IconActionsLink,
 } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
+import useAdminPath from '@/hooks/use-admin-path';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
@@ -93,6 +98,23 @@ const ServiceSlug = ({
     pageIndex: 0,
     pageSize: 500,
   });
+
+  const isAdminPath = useAdminPath();
+
+  const breadcrumbValue: BreadcrumbNavLink[] = [
+    ...(isAdminPath
+      ? [
+          { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
+          { label: 'MenuLinks.Settings' },
+          { label: 'MenuLinks.Services', href: `/${APP_PATH}/admin/service` },
+        ]
+      : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
+    {
+      label: serviceInstance.name,
+      original: true,
+    },
+  ];
+
   const columns: ColumnDef<subscription_fragment$data>[] = [
     {
       accessorKey: 'organization.name',
@@ -246,6 +268,8 @@ const ServiceSlug = ({
 
   return (
     <>
+      <BreadcrumbNav value={breadcrumbValue} />
+
       <div>
         <ServiceSlugHeader serviceInstance={serviceInstance} />
         <div className="border rounded bg-page-background p-m">

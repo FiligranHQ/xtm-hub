@@ -16,3 +16,20 @@ type ServiceCapability implements Node {
   description: String
   service_definition_id: ID
 }
+
+input UserServicesAddCapabilitiesInput {
+  userServiceIds: [UserServiceId!]!
+  capabilities: [String]
+}
+
+type Mutation {
+  addCapabilitiesToUserServices(
+    input: UserServicesAddCapabilitiesInput!
+    service_instance_id: ServiceInstanceId!
+  ): [UserService]
+    @service_capa(requires: [MANAGE_ACCESS])
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+    )
+}

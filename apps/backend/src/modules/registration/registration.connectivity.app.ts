@@ -83,7 +83,7 @@ const resolveStatusWhenNoConfiguration = ({
   };
 };
 
-const saveConfigIfChanged = async ({
+const saveConfig = async ({
   serviceConfiguration,
   platform_version,
   url,
@@ -106,13 +106,24 @@ const saveConfigIfChanged = async ({
       {
         config: {
           ...(existingConfig as object),
+          last_connectivity_check: new Date(),
           platform_version,
           ...(url ? { url } : {}),
           ...(tenant_name ? { tenant_name } : {}),
         },
       }
     );
+    return;
   }
+  await ServiceConfigurationDomain.updateConfiguration(
+    serviceConfiguration.service_instance_id,
+    {
+      config: {
+        ...(existingConfig as object),
+        last_connectivity_check: new Date(),
+      },
+    }
+  );
 };
 
 const refreshConnectivityStatus = async ({
@@ -170,7 +181,7 @@ const refreshConnectivityStatus = async ({
     });
   }
 
-  await saveConfigIfChanged({
+  await saveConfig({
     serviceConfiguration,
     platform_version,
     url,
