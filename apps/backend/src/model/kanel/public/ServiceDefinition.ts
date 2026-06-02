@@ -10,13 +10,13 @@ export type ServiceDefinitionId = string & { __brand: 'public.ServiceDefinition'
 export default interface ServiceDefinition {
   id: ServiceDefinitionId;
 
-  name: string | null;
+  name: string;
 
   description: string | null;
 
   public: boolean | null;
 
-  identifier: ServiceDefinitionIdentifier | null;
+  identifier: ServiceDefinitionIdentifier;
 }
 
 /** Represents the initializer for the table public.ServiceDefinition */
@@ -24,25 +24,25 @@ export interface ServiceDefinitionInitializer {
   /** Default value: gen_random_uuid() */
   id?: ServiceDefinitionId;
 
-  name?: string | null;
+  name: string;
 
   description?: string | null;
 
   /** Default value: true */
   public?: boolean | null;
 
-  identifier?: ServiceDefinitionIdentifier | null;
+  identifier: ServiceDefinitionIdentifier;
 }
 
 /** Represents the mutator for the table public.ServiceDefinition */
 export interface ServiceDefinitionMutator {
   id?: ServiceDefinitionId;
 
-  name?: string | null;
+  name?: string;
 
   description?: string | null;
 
   public?: boolean | null;
 
-  identifier?: ServiceDefinitionIdentifier | null;
+  identifier?: ServiceDefinitionIdentifier;
 }

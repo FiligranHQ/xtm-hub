@@ -608,6 +608,7 @@ const upsertDocument = async <T extends DocumentModel>(
       for (const name of documentData.use_cases) {
         const useCase = await useCaseApp.loadOrCreateUseCase({
           name,
+          color: '#0099cc',
         });
         insertObjectUseCase.push({
           object_id: document.id as unknown as ObjectUseCaseObjectId,
