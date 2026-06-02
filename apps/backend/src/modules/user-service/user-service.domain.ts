@@ -26,7 +26,7 @@ import { isUserAdminPlatform } from '../../security/access';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { formatRawObject } from '../../utils/query-raw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
@@ -143,6 +143,10 @@ export const UserServiceDomain = {
       const [addedUserService] = await db<UserService>('User_Service')
         .insert(user_service)
         .returning('*');
+
+      if (!addedUserService) {
+        throw new Error(UnknownErrorCode.AddUserServiceError);
+      }
 
       await insertCapabilities(capabilities, [addedUserService]);
       const user_service_capa: UserServiceCapabilityInitializer = {

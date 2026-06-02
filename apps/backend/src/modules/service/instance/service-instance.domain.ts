@@ -32,6 +32,7 @@ import { UserServiceCapabilityId } from '../../../model/kanel/public/UserService
 import { isUserAdminPlatform } from '../../../security/access';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import {
@@ -572,10 +573,13 @@ export const loadPlatformServiceInstance = async (
 
 export const insertServiceInstance = async (
   data: ServiceInstanceInitializer
-) => {
+): Promise<ServiceInstance> => {
   const [serviceInstance] = await db<ServiceInstance>('ServiceInstance')
     .insert(data)
     .returning('*');
+  if (!serviceInstance) {
+    throw new Error(UnknownErrorCode.UnknownError);
+  }
   return serviceInstance;
 };
 

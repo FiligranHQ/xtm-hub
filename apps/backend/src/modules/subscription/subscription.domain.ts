@@ -10,6 +10,7 @@ import Subscription, {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 
 export const SubscriptionDomain = {
   deleteSubscriptions: async (
@@ -63,7 +64,9 @@ export const createSubscription = async (
   const [createdSubscription] = await db<Subscription>('Subscription')
     .insert(data)
     .returning('*');
-
+  if (!createdSubscription) {
+    throw new Error(UnknownErrorCode.ServiceSubscriptionError);
+  }
   return createdSubscription;
 };
 

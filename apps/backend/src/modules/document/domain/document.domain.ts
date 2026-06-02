@@ -14,6 +14,7 @@ import {
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { omit } from '../../../utils/utils';
 import { Document } from '../document.helper';
@@ -68,6 +69,9 @@ export const DocumentDomain = {
       })
       .returning('*');
 
+    if (!document) {
+      throw new Error(UnknownErrorCode.DocumentCreateError);
+    }
     return document;
   },
 
@@ -393,6 +397,9 @@ export const DocumentDomain = {
       })
       .returning('*');
 
+    if (!document) {
+      throw new Error(UnknownErrorCode.DocumentCreateError);
+    }
     return document;
   },
 

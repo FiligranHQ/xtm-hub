@@ -12,6 +12,7 @@ import Organization, {
 } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { extractDomain } from '../../../utils/verify-email.util';
 
 export const OrganizationDomain = {
@@ -143,6 +144,9 @@ export const OrganizationDomain = {
       .insert(data)
       .returning('*');
 
+    if (!createdOrganization) {
+      throw new Error(UnknownErrorCode.AddOrganizationError);
+    }
     return createdOrganization;
   },
 

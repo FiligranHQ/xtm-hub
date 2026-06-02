@@ -8,10 +8,14 @@ import UseCase, {
   UseCaseInitializer,
   UseCaseMutator,
 } from '../../model/kanel/public/UseCase';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 
 export const useCaseDomain = {
   insertUseCase: async (input: UseCaseInitializer): Promise<UseCase> => {
     const [useCase] = await db<UseCase>('UseCase').insert(input).returning('*');
+    if (!useCase) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     return useCase;
   },
 
@@ -61,8 +65,11 @@ export const useCaseDomain = {
     return db<UseCase>('UseCase').where(field).first();
   },
 
-  loadUseCaseByLikeName: (name: string): Promise<UseCase | null> => {
-    return db('UseCase').where('name', 'ILIKE', name).select('*').first();
+  loadUseCaseByLikeName: (name: string): Promise<UseCase | undefined> => {
+    return db<UseCase>('UseCase')
+      .where('name', 'ILIKE', name)
+      .select('*')
+      .first();
   },
 
   deleteUseCase: async (field: UseCaseMutator): Promise<UseCase> => {
