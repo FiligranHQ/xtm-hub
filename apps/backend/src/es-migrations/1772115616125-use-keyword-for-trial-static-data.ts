@@ -109,14 +109,14 @@ async function applyMapping(
   }
 }
 
-export const up = async function (next) {
+export const up = async function (next: () => void) {
   await applyMapping('use_case', useCaseMapping);
   await applyMapping('activity_sector', activitySectorMapping);
   await applyMapping('job_title', jobTitleMapping, 'text');
   next();
 };
 
-export const down = async function (next) {
+export const down = async function (next: () => void) {
   await applyMapping('use_case', invertMapping(useCaseMapping));
   await applyMapping('activity_sector', invertMapping(activitySectorMapping));
   await applyMapping('job_title', invertMapping(jobTitleMapping), 'text');

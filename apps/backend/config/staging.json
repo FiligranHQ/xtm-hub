@@ -9,9 +9,5 @@
     }
   ],
 
-  "base_url_front": "https://hub.staging.filigran.io",
-
-  "init_service_definitions": [],
-  "init_services": [],
-  "init_service_capabilities": []
+  "base_url_front": "https://hub.staging.filigran.io"
 }

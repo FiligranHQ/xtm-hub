@@ -51,8 +51,8 @@ export const DeploymentRequestDomain = {
   loadTrialsForOrganization: async (
     organizationId: OrganizationId,
     identifiers?: PlatformIdentifier[]
-  ) => {
-    return db<DeploymentRequest[]>('DeploymentRequest')
+  ): Promise<DeploymentRequest[]> => {
+    return db<DeploymentRequest>('DeploymentRequest')
       .where('organization_requester_id', '=', organizationId)
       .modify((qb) => {
         if (identifiers?.length) {

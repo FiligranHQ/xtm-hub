@@ -25,9 +25,6 @@ import {
   ensurePersonalSpaceExist,
   ensureRoleExists,
   ensureRoleHasCapability,
-  ensureServiceCapabilityExists,
-  ensureServiceDefinitionExists,
-  ensureServiceExists,
   ensureUserOrganizationExist,
   ensureUserRoleExist,
   initializeDevUsers,
@@ -88,7 +85,11 @@ const initPlatformUser = () =>
     password: portalConfig.admin.password,
   });
 
-const completeUserInitialization = async (user_id, email, data) => {
+const completeUserInitialization = async (
+  user_id: UserId,
+  email: string,
+  data: { salt: string; password: string }
+) => {
   await withTransaction(async () => {
     // Check the platform organization
 
@@ -135,21 +136,8 @@ const logEnabledFeatureFlags = () => {
   }
 };
 
-const initializeDefaultServices = async () => {
-  for (const serviceDefinition of portalConfig.service_definitions) {
-    await ensureServiceDefinitionExists(serviceDefinition);
-  }
-  for (const service of portalConfig.services) {
-    await ensureServiceExists(service);
-  }
-  for (const serviceCapa of portalConfig.serviceCapabilities) {
-    await ensureServiceCapabilityExists(serviceCapa);
-  }
-};
-
 const platformInit = async () => {
   logEnabledFeatureFlags();
-  await initializeDefaultServices();
   await initializeBuiltInAdministrator();
   await initializeDevUsers();
 };

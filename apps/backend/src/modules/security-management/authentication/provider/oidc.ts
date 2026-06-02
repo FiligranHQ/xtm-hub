@@ -111,6 +111,7 @@ export const addOIDCStrategy = async (
 export const getOidcConfig = () => {
   const oidcConfigFromLocal = config.get('oidc_provider') as ClientMetadata & {
     issuer: string;
+    redirect_uris?: string[];
   };
   const oidcConfigFromCi = {
     issuer: process.env.OIDC_ISSUER,

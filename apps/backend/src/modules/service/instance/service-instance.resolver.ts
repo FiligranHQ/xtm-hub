@@ -20,12 +20,15 @@ import { ServiceInstanceDomain } from './service-instance.domain';
 const resolvers: Resolvers = {
   ServiceInstanceId: createRelayIdScalar<ServiceInstanceId>('ServiceInstance'),
   ServiceInstance: {
-    __resolveType(service_instance) {
-      const integrationMapping = {
+    __resolveType(service_instance: {
+      type?: string;
+      integration_type?: string;
+    }) {
+      const integrationMapping: Record<string, string> = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
       };
-      const typeMapping = {
+      const typeMapping: Record<string, string> = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
         [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegration',
@@ -53,7 +56,7 @@ const resolvers: Resolvers = {
       ),
     capabilities: ({ id }, _, context) =>
       loadCapabilities(
-        id,
+        id as ServiceInstanceId,
         context.user.id,
         context.user.selected_organization_id
       ),

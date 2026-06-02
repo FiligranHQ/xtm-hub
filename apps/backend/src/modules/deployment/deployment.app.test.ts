@@ -42,9 +42,7 @@ import {
 import DeploymentRequest, {
   DeploymentRequestId,
 } from '../../model/kanel/public/DeploymentRequest';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../model/kanel/public/ServiceInstance';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   SYSTEM_USER_UUID,
   XTM_HUB_DEV_TEAM_EMAIL,
@@ -127,10 +125,11 @@ describe('deployment app', () => {
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
         });
-      const serviceInstance: ServiceInstance =
-        await ServiceInstanceDomain.loadServiceInstanceBy({
+      const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy(
+        {
           id: dbDeploymentRequest!.service_instance_id,
-        });
+        }
+      );
 
       // Then
       expect(dbDeploymentRequest).toMatchObject({
@@ -152,7 +151,7 @@ describe('deployment app', () => {
         use_case: DeploymentRequestUseCase.ThreatHunting,
         source: DeploymentRequestSource.Xtmhub,
       });
-      expect(serviceInstance.creation_status).toBe(
+      expect(serviceInstance?.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
     });
@@ -174,10 +173,11 @@ describe('deployment app', () => {
           id: deployment.id as DeploymentRequestId,
         });
 
-      const serviceInstance: ServiceInstance =
-        await ServiceInstanceDomain.loadServiceInstanceBy({
+      const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy(
+        {
           id: dbDeploymentRequest!.service_instance_id,
-        });
+        }
+      );
 
       // Then
       expect(dbDeploymentRequest).toMatchObject({
@@ -199,7 +199,7 @@ describe('deployment app', () => {
         use_case: DeploymentRequestUseCase.ThreatHunting,
         source: DeploymentRequestSource.Xtmhub,
       });
-      expect(serviceInstance.creation_status).toBe(
+      expect(serviceInstance?.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
     });
@@ -732,10 +732,11 @@ describe('deployment app', () => {
 
       if (!dbDeploymentRequest) return;
 
-      const serviceInstance: ServiceInstance =
-        await ServiceInstanceDomain.loadServiceInstanceBy({
+      const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy(
+        {
           id: dbDeploymentRequest!.service_instance_id,
-        });
+        }
+      );
       const subscription = await SubscriptionDomain.loadSubscriptionBy({
         service_instance_id: dbDeploymentRequest.service_instance_id,
       });
@@ -763,7 +764,7 @@ describe('deployment app', () => {
         failure_reason: 'not failed',
         source: DeploymentRequestSource.Xtmhub,
       });
-      expect(serviceInstance.creation_status).toBe(
+      expect(serviceInstance?.creation_status).toBe(
         ServiceInstanceCreationStatus.Pending
       );
       expect(subscription).toBeDefined();
@@ -1350,11 +1351,11 @@ describe('deployment app', () => {
           cancellation_reason: isAdmin ? null : cancellationReason,
         });
 
-        const serviceInstance: ServiceInstance =
+        const serviceInstance =
           await ServiceInstanceDomain.loadServiceInstanceBy({
             id: initialDeployment.service_instance_id,
           });
-        expect(serviceInstance.creation_status).toBe(
+        expect(serviceInstance?.creation_status).toBe(
           counts_in_orga_quota
             ? ServiceInstanceCreationStatus.Pending
             : ServiceInstanceCreationStatus.Disabled

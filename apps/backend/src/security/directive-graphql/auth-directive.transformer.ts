@@ -1,7 +1,7 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { AuthFn, RoleFn, ServiceFn } from './directive.model';
-import { createSecureFieldResolver } from './directive.resolver';
+import { createSecureFieldResolver, ResolverFn } from './directive.resolver';
 import { AUTH_DIRECTIVE_NAME } from './validator/auth.validator';
 import {
   createPlatformTokenResolver,
@@ -111,7 +111,8 @@ export const createAuthDirectiveTransformer = (
         }
 
         // Replace resolver with secure version
-        const { resolve = defaultFieldResolver } = fieldConfig;
+        const resolve = (fieldConfig.resolve ??
+          defaultFieldResolver) as ResolverFn;
         if (systemTokenDirective) {
           fieldConfig.resolve = createSystemTokenResolver(
             resolve,

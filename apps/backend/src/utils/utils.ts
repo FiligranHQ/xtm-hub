@@ -70,11 +70,21 @@ export const isImgUrl = async (url: string): Promise<boolean> => {
 
 export const now = () => new Date().getUTCDate();
 
-export const getNestedPropertyValue = (obj: object, paths: string) => {
+export const getNestedPropertyValue = (
+  obj: Record<string, unknown>,
+  paths: string
+) => {
   if (!paths || paths.length === 0) {
     return obj;
   }
-  return paths.split('.').reduce((acc, path) => acc && acc[path], obj) ?? [];
+  return (
+    paths.split('.').reduce<unknown>((acc, path) => {
+      if (acc && typeof acc === 'object') {
+        return (acc as Record<string, unknown>)[path];
+      }
+      return undefined;
+    }, obj) ?? []
+  );
 };
 
 export const parseKeyValueArrayToObject = (array: string[]) =>

@@ -1,4 +1,5 @@
 import config from 'config';
+import { GraphQLFieldResolver } from 'graphql';
 import { PortalCapability } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { CapabilityPortalId } from '../../../model/kanel/public/CapabilityPortal';
@@ -16,6 +17,21 @@ export const SYSTEM_TOKEN_DIRECTIVE_NAME = 'system_token';
 export type SystemTokenDirectiveArgs = {
   portalCapa?: PortalCapability[];
 };
+
+type ResolverArgumentValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ResolverArgumentValue[]
+  | { [key: string]: ResolverArgumentValue };
+
+type ResolverFn = GraphQLFieldResolver<
+  object | null,
+  PortalContext,
+  Record<string, ResolverArgumentValue>
+>;
 
 const buildScopedSystemUser = (
   requiredCapabilities: PortalCapability[] = []
@@ -56,15 +72,10 @@ export const validateSystemToken = (context: PortalContext): boolean => {
 };
 
 export const createSystemTokenResolver = (
-  originalResolve,
+  originalResolve: ResolverFn,
   directiveArgs: SystemTokenDirectiveArgs = {}
-) => {
-  return async function secureResolver(
-    source,
-    args,
-    portalContext: PortalContext,
-    info
-  ) {
+): ResolverFn => {
+  return async function secureResolver(source, args, portalContext, info) {
     validateSystemToken(portalContext);
 
     const scopedSystemUser = buildScopedSystemUser(

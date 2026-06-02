@@ -56,7 +56,7 @@ async function buildDocumentList(
     buckets.map((bucket) => [bucket.key, bucket.doc_count])
   );
 
-  return downloaded_docs.flatMap((doc) => {
+  return downloaded_docs.flatMap((doc: Doc) => {
     const alreadyCreated = already_created_events.get(doc.id) || 0;
     const totalCount = event_type ? doc.download_number : doc.share_number;
     const newEventsCount = Math.max(0, totalCount - alreadyCreated);
@@ -96,7 +96,7 @@ async function buildDocumentList(
   });
 }
 
-export const up = async function (next) {
+export const up = async function (next: () => void) {
   const database = knex(baseConfig);
 
   const columnExists = await database.schema.hasColumn(
@@ -125,7 +125,7 @@ export const up = async function (next) {
   next();
 };
 
-export const down = async function (next) {
+export const down = async function (next: () => void) {
   await esDbClient.deleteByQuery({
     index: 'telemetry_v1',
     query: {

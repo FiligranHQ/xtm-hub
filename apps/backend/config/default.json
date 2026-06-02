@@ -63,9 +63,6 @@
       "provider": "oidc"
     }
   ],
-  "init_services": [],
-  "init_service_capabilities": [],
-  "init_service_definitions": [],
   "user_management": {
     "token_reference": "access_token",
     "read_userinfo": false,

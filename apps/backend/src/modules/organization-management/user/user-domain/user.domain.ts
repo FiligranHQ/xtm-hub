@@ -10,6 +10,7 @@ import {
   User as UserGenerated,
 } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
+import CapabilityPortal from '../../../../model/kanel/public/CapabilityPortal';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import User, {
   UserId,
@@ -95,7 +96,7 @@ export const UserDomain = {
       .groupBy('CapabilityPortal.id')
       .select('CapabilityPortal.*');
     if (id === ADMIN_UUID) {
-      const capabilityIds = capabilities.map((c) => c.id);
+      const capabilityIds = capabilities.map((c: CapabilityPortal) => c.id);
       if (!capabilityIds.includes(CAPABILITY_BYPASS.id)) {
         capabilities.push(CAPABILITY_BYPASS);
       }
