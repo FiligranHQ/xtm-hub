@@ -68,7 +68,7 @@ const resolvers: Resolvers = {
           id: subscription_id,
           startDate: input.start_date,
           endDate: input.end_date,
-          capabilityIds: input.capability_ids,
+          capabilityIds: input.capability_ids ?? undefined,
         })) as unknown as SubscriptionModel;
       } catch (error) {
         throw mapToGraphQLError(

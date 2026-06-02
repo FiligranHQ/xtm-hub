@@ -220,8 +220,8 @@ export const DeploymentApp = {
                 : `${user.email}`,
             userEmail: user.email,
             region: input.region,
-            activitySector: input.activity_sector,
-            useCase: input.use_case,
+            activitySector: input.activity_sector ?? undefined,
+            useCase: input.use_case ?? undefined,
             platformIdentifier: input.platform_identifier,
             deploymentType: ucfirst(input.type),
           },
@@ -669,7 +669,7 @@ export const DeploymentApp = {
     const deploymentRequests =
       await DeploymentRequestDomain.loadTrialsForOrganization(
         user.selected_organization_id,
-        input.platformIdentifiers
+        input.platformIdentifiers ?? undefined
       );
 
     const deployedIdentifiers = new Set(
@@ -799,7 +799,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
         platform_id: input.platform_id,
         failure_reason: input.failure_reason,
         actual_state: input.actual_state,
-        ordering: input.ordering,
+        ordering: input.ordering ?? undefined,
         hub_status: newStatus,
       };
 

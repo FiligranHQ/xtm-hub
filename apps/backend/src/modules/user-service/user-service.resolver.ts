@@ -42,7 +42,7 @@ const resolvers: Resolvers = {
           user,
           input.subscription_id,
           input.email,
-          input.capabilities,
+          input.capabilities ?? [],
           service_instance_id
         );
       } catch (error) {
@@ -53,7 +53,7 @@ const resolvers: Resolvers = {
       try {
         return await UserServiceApp.editUserService(
           input.userServiceId,
-          input.capabilities,
+          input.capabilities ?? [],
           service_instance_id
         );
       } catch (error) {

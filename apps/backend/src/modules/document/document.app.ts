@@ -105,6 +105,7 @@ export const DocumentApp = {
 
     const documentData: DocumentData<Document> = {
       ...input,
+      use_cases: input.use_cases ?? undefined,
       service_instance_id: serviceInstanceId,
       type: documentType,
       ...(sourceDocumentFile && isDocumentFileRequired

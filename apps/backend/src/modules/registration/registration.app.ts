@@ -69,7 +69,7 @@ const buildPlatformConfiguration = (
   platform_url: platform.url,
   platform_title: platform.title,
   platform_contract: platform.contract,
-  platform_version: platform.version,
+  platform_version: platform.version ?? undefined,
   last_connectivity_check: new Date(),
   token,
 });
@@ -136,7 +136,7 @@ export const registrationApp = {
     input: RegisteredPlatformsInput
   ): Promise<RegisteredPlatform[]> => {
     const platforms = await registrationDomain.loadRegisteredPlatforms({
-      platformIdentifier: input?.identifier,
+      platformIdentifier: input?.identifier ?? undefined,
       onlyActive: input?.onlyActive ?? false,
       onlyTrial: input?.onlyTrial ?? false,
     });

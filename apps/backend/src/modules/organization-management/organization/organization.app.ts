@@ -43,7 +43,7 @@ export const OrganizationApp = {
     }
 
     const overlappingDomains = await OrganizationDomain.hasDomainOverlap(
-      input.domains
+      input.domains ?? []
     );
     if (overlappingDomains.length > 0) {
       throw new Error(ErrorCode.OrganizationSameDomainExists);
