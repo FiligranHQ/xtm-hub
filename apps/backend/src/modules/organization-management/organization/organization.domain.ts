@@ -153,7 +153,7 @@ export const OrganizationDomain = {
   updateOrganizationBy: async (
     field: OrganizationMutator,
     data: OrganizationMutator
-  ): Promise<Organization> => {
+  ): Promise<Organization | undefined> => {
     const [updatedOrganization] = await db<Organization>('Organization')
       .where(field)
       .update(data)
@@ -164,13 +164,13 @@ export const OrganizationDomain = {
 
   deleteOrganizationBy: async (
     conditions: OrganizationMutator
-  ): Promise<Organization> => {
+  ): Promise<Organization | undefined> => {
+    let deletedOrganization: Organization | undefined;
     try {
-      const [deletedOrganization] = await db<Organization>('Organization')
+      [deletedOrganization] = await db<Organization>('Organization')
         .where(conditions)
         .delete()
         .returning('*');
-      return deletedOrganization;
     } catch (error) {
       const regexErrorName = /is still referenced from table "([^"]+)"/;
       const match =
@@ -180,8 +180,8 @@ export const OrganizationDomain = {
         const tableName = match[1];
         throw new Error(`${tableName.toUpperCase()}_STILL_IN_ORGANIZATION`);
       }
-
       throw error;
     }
+    return deletedOrganization;
   },
 };

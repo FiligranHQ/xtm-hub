@@ -58,7 +58,10 @@ import {
   buildUpdateDeploymentEvent,
 } from '../telemetry/telemetry.helper';
 import { CompetitorApp } from './competitor/competitor.app';
-import { DeploymentRequestDomain } from './deployment.domain';
+import {
+  DeploymentRequestDomain,
+  FullyQualifiedDeploymentRequest,
+} from './deployment.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
@@ -235,6 +238,10 @@ export const DeploymentApp = {
 
       return DeploymentRequestDomain.loadDeploymentRequestBy({
         id: createdDeploymentRequest.id,
+      }).then((result) => {
+        if (!result)
+          throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+        return result;
       });
     } catch (error) {
       logApp.error('unable to create deployment request', { error });
@@ -273,6 +280,10 @@ export const DeploymentApp = {
         id: deploymentRequestId,
       });
 
+    if (!updatedDeploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
     await sendUpdateDeploymentTelemetryEvent(
       updatedDeploymentRequest,
       updatedDeploymentRequest.user_requester_id,
@@ -283,13 +294,13 @@ export const DeploymentApp = {
       newStatus === DeploymentRequestHubStatus.Provisioning &&
       newStatus !== deploymentRequest.hub_status
     ) {
-      await sendProvisioningPlatformEmail(deploymentRequest);
+      await sendProvisioningPlatformEmail(updatedDeploymentRequest);
     }
     if (
       newStatus === DeploymentRequestHubStatus.Active &&
       newStatus !== deploymentRequest.hub_status
     ) {
-      await sendActivePlatformEmail(deploymentRequest);
+      await sendActivePlatformEmail(updatedDeploymentRequest);
     }
 
     return updatedDeploymentRequest;
@@ -508,20 +519,30 @@ export const DeploymentApp = {
         id: deploymentRequestId,
       });
 
+    if (!updatedDeploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
     await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
       const [requester] = await UserDomain.loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
-      await sendMail({
-        to: requester.email,
-        template: 'free_trial_cancelled',
-        params: {
-          firstName: formatName(requester.first_name ?? ''),
-          platformIdentifier: updatedDeploymentRequest.platform_identifier,
-        },
-      });
+      if (requester) {
+        await sendMail({
+          to: requester.email,
+          template: 'free_trial_cancelled',
+          params: {
+            firstName: formatName(requester.first_name ?? ''),
+            platformIdentifier: updatedDeploymentRequest.platform_identifier,
+          },
+        });
+      } else {
+        logApp.warn('Requester not found for trial cancellation mail', {
+          deploymentRequestId: updatedDeploymentRequest.id,
+        });
+      }
     } catch (error) {
       logApp.error('Unable to send mail for trial cancellation', {
         error,
@@ -568,6 +589,10 @@ export const DeploymentApp = {
                 }
               );
 
+            if (!updatedDeploymentRequest) {
+              throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+            }
+
             await DeploymentApp.releaseDeploymentRequestPlace(
               previousHubStatus,
               trial.platform_identifier,
@@ -585,14 +610,20 @@ export const DeploymentApp = {
           const [requester] = await UserDomain.loadUser({
             id: trial.user_requester_id,
           });
-          await sendMail({
-            to: requester.email,
-            template: 'free_trial_expired',
-            params: {
-              firstName: formatName(requester.first_name ?? ''),
-              platformIdentifier: trial.platform_identifier,
-            },
-          });
+          if (requester) {
+            await sendMail({
+              to: requester.email,
+              template: 'free_trial_expired',
+              params: {
+                firstName: formatName(requester.first_name ?? ''),
+                platformIdentifier: trial.platform_identifier,
+              },
+            });
+          } else {
+            logApp.warn('Requester not found for trial expiration mail', {
+              trialId: trial.id,
+            });
+          }
         } catch (error) {
           logApp.error('Unable to send mail for trial expiration', {
             error,
@@ -825,15 +856,20 @@ const sendProvisioningPlatformEmail = async (
     const [user] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
-
-    await sendMail({
-      to: user.email,
-      template: 'free_trial_provisioning',
-      params: {
-        firstName: formatName(user.first_name ?? ''),
-        platformIdentifier: deploymentRequest.platform_identifier,
-      },
-    });
+    if (user) {
+      await sendMail({
+        to: user.email,
+        template: 'free_trial_provisioning',
+        params: {
+          firstName: formatName(user.first_name ?? ''),
+          platformIdentifier: deploymentRequest.platform_identifier,
+        },
+      });
+    } else {
+      logApp.warn('Requester not found for provisioning platform mail', {
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
   } catch (error) {
     logApp.error('Unable to send mail', {
       error,
@@ -843,17 +879,42 @@ const sendProvisioningPlatformEmail = async (
 };
 
 const sendActivePlatformEmail = async (
-  deploymentRequest: DeploymentRequestModel
+  deploymentRequest: FullyQualifiedDeploymentRequest
 ) => {
   try {
-    const [user] = await UserDomain.loadUser({
-      id: deploymentRequest.user_requester_id,
-    });
+    if (!deploymentRequest.platform_id) {
+      logApp.error('Unable to send mail after deployment request is active', {
+        error: 'platform_id not set for active platform',
+        deploymentRequestId: deploymentRequest.id,
+      });
+      return;
+    }
 
     const platformConfiguration =
       await PlatformConfigurationDomain.loadConfigurationByPlatform(
         deploymentRequest.platform_id
       );
+
+    if (!platformConfiguration) {
+      logApp.error('Unable to send mail after deployment request is active', {
+        error: NotFoundErrorCode.PlatformConfigurationNotFound,
+        deploymentRequestId: deploymentRequest.id,
+        platformId: deploymentRequest.platform_id,
+      });
+      return;
+    }
+
+    const [user] = await UserDomain.loadUser({
+      id: deploymentRequest.user_requester_id,
+    });
+
+    if (!user) {
+      logApp.error('Unable to send mail after deployment request is active', {
+        error: 'Requester not found',
+        deploymentRequestId: deploymentRequest.id,
+      });
+      return;
+    }
 
     await sendMail({
       to: user.email,
@@ -870,7 +931,7 @@ const sendActivePlatformEmail = async (
     });
   } catch (error) {
     logApp.error('Unable to send mail after deployment request is active', {
-      error: error,
+      error,
       deploymentRequestId: deploymentRequest.id,
     });
   }

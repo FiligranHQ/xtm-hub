@@ -21,11 +21,14 @@ export const EpicDomain = {
     }
     return createdEpic;
   },
-  updateEpic: async (id: EpicId, input: EpicMutator) => {
+  updateEpic: async (id: EpicId, input: EpicMutator): Promise<Epic> => {
     const [updated] = await db<Epic>('Epic')
       .where({ id })
       .update(input)
       .returning('*');
+    if (!updated) {
+      throw new Error(UnknownErrorCode.EpicUpdateError);
+    }
     return updated;
   },
   deleteEpicBy: async (field: EpicMutator) => {

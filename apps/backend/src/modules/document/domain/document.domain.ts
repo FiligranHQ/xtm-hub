@@ -53,7 +53,7 @@ export const DocumentDomain = {
   createDocument: async <T extends DocumentModel>(
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T>
-  ) => {
+  ): Promise<T> => {
     const { user } = requestContext.require();
     const uploader_id = documentData.uploader_id ?? user.id;
     const [document] = await db<DocumentModel>('Document')
@@ -72,7 +72,7 @@ export const DocumentDomain = {
     if (!document) {
       throw new Error(UnknownErrorCode.DocumentCreateError);
     }
-    return document;
+    return document as T;
   },
 
   loadDocumentBy: async (
@@ -342,7 +342,7 @@ export const DocumentDomain = {
     };
     uploader_organization_id: OrganizationId;
     uploader_id: UserId;
-  }): Promise<DocumentModel> => {
+  }): Promise<DocumentModel | undefined> => {
     const { user } = requestContext.require();
     const completeDocumentData = {
       ...document.data,

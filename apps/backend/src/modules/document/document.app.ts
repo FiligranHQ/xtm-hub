@@ -17,7 +17,7 @@ import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -293,6 +293,10 @@ export const DocumentApp = {
         uploader_organization_id,
         uploader_id,
       });
+
+      if (!doc) {
+        throw new Error(UnknownErrorCode.DocumentUpdateError);
+      }
 
       // If use_cases is null => that mean we want to update the field to empty
       if (input.use_cases !== undefined) {

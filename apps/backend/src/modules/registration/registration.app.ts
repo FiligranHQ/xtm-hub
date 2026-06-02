@@ -434,6 +434,10 @@ export const registrationApp = {
         platform_token: token,
       });
 
+    if (!deploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
     assertValidDeploymentRequest(deploymentRequest, input.platform.id);
 
     if (

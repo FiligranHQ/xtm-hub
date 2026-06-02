@@ -4,7 +4,7 @@ import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { dispatch } from '../../../pub';
 import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import {
   buildCreateOrganizationEvent,
@@ -18,6 +18,10 @@ export const OrganizationApp = {
       { id },
       { ...input }
     );
+
+    if (!updatedOrganization) {
+      throw new Error(UnknownErrorCode.EditOrganizationError);
+    }
 
     try {
       const { user } = requestContext.require();
@@ -74,6 +78,10 @@ export const OrganizationApp = {
     const deletedOrganization = await OrganizationDomain.deleteOrganizationBy({
       id,
     });
+
+    if (!deletedOrganization) {
+      throw new Error(UnknownErrorCode.DeleteOrganizationError);
+    }
 
     await dispatch('Organization', 'delete', deletedOrganization);
 

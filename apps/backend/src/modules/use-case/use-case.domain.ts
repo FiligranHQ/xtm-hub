@@ -22,7 +22,7 @@ export const useCaseDomain = {
   updateUseCase: async (
     id: UseCaseId,
     fields: UseCaseMutator
-  ): Promise<UseCase> => {
+  ): Promise<UseCase | undefined> => {
     const [useCase] = await db<UseCase>('UseCase')
       .where({ id })
       .update(fields)
@@ -72,7 +72,9 @@ export const useCaseDomain = {
       .first();
   },
 
-  deleteUseCase: async (field: UseCaseMutator): Promise<UseCase> => {
+  deleteUseCase: async (
+    field: UseCaseMutator
+  ): Promise<UseCase | undefined> => {
     const [deletedUseCase] = await db<UseCase>('UseCase')
       .where(field)
       .delete('*');

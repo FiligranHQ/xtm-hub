@@ -12,7 +12,7 @@ const resolvers: Resolvers = {
   Mutation: {
     addUseCase: (_, { input }) => useCaseDomain.insertUseCase(input),
     editUseCase: (_, { id, input }) =>
-      useCaseDomain.updateUseCase(id as UseCaseId, input),
+      useCaseApp.editUseCaseById(id as UseCaseId, input),
     deleteUseCase: (_, { id }) =>
       useCaseApp.deleteUseCaseBy({ id } as UseCaseMutator),
   },
