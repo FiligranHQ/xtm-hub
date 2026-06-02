@@ -12,6 +12,7 @@ import UserOrganization, {
   UserOrganizationInitializer,
   UserOrganizationMutator,
 } from '../../../../model/kanel/public/UserOrganization';
+import UserOrganizationPending from '../../../../model/kanel/public/UserOrganizationPending';
 import { securityGuard } from '../../../../security/guard';
 import { sendMail } from '../../../../server/mail-service';
 import { isEmpty } from '../../../../utils/utils';
@@ -25,7 +26,9 @@ export const UserOrganizationDomain = {
   insertNewUserOrganization: (
     field: UserOrganizationInitializer | UserOrganizationInitializer[]
   ): Promise<UserOrganization[]> => {
-    return db('User_Organization').insert(field).returning('*');
+    return db<UserOrganization>('User_Organization')
+      .insert(field)
+      .returning('*');
   },
 
   createUserOrganizationRelationAndRemovePending: async ({
@@ -188,7 +191,7 @@ export const UserOrganizationDomain = {
     user_id: UserId;
     organization_id: OrganizationId;
   }) => {
-    return db('User_Organization_Pending')
+    return db<UserOrganizationPending>('User_Organization_Pending')
       .where({
         user_id,
         organization_id,

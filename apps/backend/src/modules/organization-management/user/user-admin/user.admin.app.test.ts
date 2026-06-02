@@ -93,9 +93,9 @@ describe('users admin app', () => {
 
       beforeEach(async () => {
         requestContext.set(requestContextAdminUser);
-        simpleUser = await UserDomain.loadUserBy({
+        simpleUser = (await UserDomain.loadUserBy({
           'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-        });
+        }))!;
       });
 
       afterEach(async () => {
@@ -140,10 +140,9 @@ describe('users admin app', () => {
             ],
           },
         });
-        const result = await UserDomain.loadUserBy({
+        const result = (await UserDomain.loadUserBy({
           'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
-        });
-
+        }))!;
         expect(result.organization_capabilities).toHaveLength(3);
       });
 

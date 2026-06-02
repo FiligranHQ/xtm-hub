@@ -457,6 +457,12 @@ export const seedDevelopmentConnectors = async () => {
 
   logApp.info('[SEEDING] Ingesting OpenCTI connectors manifest...');
   const user = await UserDomain.loadUserBy({ 'User.id': ADMIN_UUID });
+  if (!user) {
+    logApp.error(
+      '[SEEDING] Admin user not found, skipping OpenCTI connectors seeding'
+    );
+    return;
+  }
   requestContext.run({ user }, async () => {
     await IngestManifestApp.updateOpenCTIManifest('6.8.3');
   });

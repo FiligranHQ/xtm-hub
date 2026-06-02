@@ -161,6 +161,9 @@ export const UserServiceDomain = {
     });
 
     const user = await UserDomain.loadUserBy({ 'User.id': user_id });
+    if (!user) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
     const serviceInstance = await loadServiceInstanceBy({
       id: subscription.service_instance_id,
     });
@@ -395,7 +398,7 @@ export const UserServiceDomain = {
     subscriptionId: SubscriptionId,
     capability: ServiceRestriction
   ) => {
-    return db('User_Service')
+    return db<UserService>('User_Service')
       .leftJoin(
         'UserService_Capability',
         'User_Service.id',

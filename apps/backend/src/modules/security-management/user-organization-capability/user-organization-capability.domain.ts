@@ -22,7 +22,9 @@ export const createUserOrganizationCapability = async ({
       name,
     })
   );
-  return db('UserOrganization_Capability').insert(usersOrgCapa).returning('*');
+  return db<UserOrganizationCapability>('UserOrganization_Capability')
+    .insert(usersOrgCapa)
+    .returning('*');
 };
 
 export const updateUserOrganizationCapability = async ({
@@ -32,7 +34,7 @@ export const updateUserOrganizationCapability = async ({
   user_organization_id: UserOrganizationId;
   capabilities_name?: string[] | null;
 }): Promise<UserOrganizationCapability[]> => {
-  await db('UserOrganization_Capability')
+  await db<UserOrganizationCapability>('UserOrganization_Capability')
     .where({ user_organization_id })
     .delete();
 
@@ -46,7 +48,9 @@ export const updateUserOrganizationCapability = async ({
       name,
     })
   );
-  return db('UserOrganization_Capability').insert(usersOrgCapa).returning('*');
+  return db<UserOrganizationCapability>('UserOrganization_Capability')
+    .insert(usersOrgCapa)
+    .returning('*');
 };
 
 export const loadUserOrganizationCapabilities = async (
