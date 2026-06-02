@@ -159,8 +159,6 @@ export const PlatformConfigurationDomain = {
     await db<PlatformConfiguration>('PlatformConfiguration').insert({
       service_instance_id: serviceInstanceId,
       ...config,
-      tenant_id: config.tenant_id ?? null,
-      tenant_name: config.tenant_name ?? null,
     });
   },
 
@@ -172,8 +170,6 @@ export const PlatformConfigurationDomain = {
       .insert({
         service_instance_id: serviceInstanceId,
         ...config,
-        tenant_id: config.tenant_id ?? null,
-        tenant_name: config.tenant_name ?? null,
       })
       .onConflict('service_instance_id')
       .merge();

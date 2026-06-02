@@ -601,6 +601,23 @@ describe('newsFeedApp', () => {
         });
       });
 
+      it('should not provision when no organizations are subscribed to the service instance', async () => {
+        // Given
+        await NewsFeedApp.createResourceNewsFeedItem({
+          document,
+          serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+        });
+
+        // When
+        await updateCustomDashboardNewsFeedItem();
+
+        // Then
+        const provisioned = await TestHelper.newsFeed.loadProvisioned({});
+        expect(provisioned).toHaveLength(0);
+      });
+
       it('should not reprovision or update a soft-deleted item linked to the document', async () => {
         const platformId = uuidv4();
         // Given

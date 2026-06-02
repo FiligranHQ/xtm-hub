@@ -864,6 +864,11 @@ type Subscription {
   ServiceInstance: ServiceInstanceSubscription
 }
 
+enum PlatformConfigurationStatus {
+  active
+  inactive
+}
+
 input OpenCTIPlatformRegistrationStatusInput {
   platformId: String!
   token: String!
@@ -891,7 +896,7 @@ type RegisteredPlatform implements Node {
   version: String
   illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
-  last_connectivity_check: Date!
+  last_connectivity_check: Date
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
 }
@@ -1027,11 +1032,6 @@ input RegisteredPlatformInput {
 input AutoRegisterPlatformInput {
   platform: PlatformInput!
   existing_users_count: Int
-}
-
-enum PlatformConfigurationStatus {
-  active
-  inactive
 }
 
 type RolePortal implements Node {
