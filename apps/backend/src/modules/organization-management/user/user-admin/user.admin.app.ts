@@ -17,6 +17,7 @@ import { updateUserSession } from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
+import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
@@ -87,6 +88,29 @@ export const UserAdminApp = {
     userId: UserId;
     input: AdminEditUserInput;
   }) => {
+    const { user: contextUser } = requestContext.require();
+    if (!isUserAdminPlatform(contextUser)) {
+      await securityGuard.assertUserCapabilities(
+        [
+          OrganizationCapability.AdministrateOrganization,
+          OrganizationCapability.ManageAccess,
+        ],
+        contextUser.selected_organization_id
+      );
+      const targetUser = await UserDomain.loadUserBy({ 'User.id': userId });
+      await securityGuard.assertUserIsInOrganization(
+        targetUser,
+        contextUser.selected_organization_id
+      );
+
+      const unauthorizedOrg = (input.organization_capabilities ?? []).find(
+        (orgCapa) =>
+          orgCapa.organization_id !== contextUser.selected_organization_id
+      );
+      if (unauthorizedOrg) {
+        throw ForbiddenAccess(ErrorCode.MissingCapabilityOnOrganization);
+      }
+    }
     const { organization_capabilities, ...userInput } = input;
     const mappedCapabilities = (organization_capabilities ?? []).map(
       (orgCapability) => ({

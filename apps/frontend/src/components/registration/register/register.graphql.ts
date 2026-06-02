@@ -92,6 +92,7 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
   fragment registeredPlatformByServiceInstanceId_fragment on RegisteredPlatform {
     id
     platform_id
+    last_connectivity_check
     tenant_id
     title
     contract
@@ -113,6 +114,10 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
       region
       counts_in_orga_quota
       platform_identifier
+      requester_email
+    }
+    myGroups {
+      name
     }
   }
 `;

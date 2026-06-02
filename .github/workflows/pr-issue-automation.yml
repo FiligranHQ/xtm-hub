@@ -619,6 +619,13 @@ jobs:
               return;
             }
 
+            // List of statuses we should NOT modify (immutable statuses)
+            const immutableStatuses = [
+              'done',
+              'cancelled',
+              'archived'
+            ];
+
             const newStatus = 'Ready to be deployed';
             console.log(`PR merged! Updating ${issueNumbers.length} issue(s) to status: "${newStatus}" and setting Effective end date`);
 
@@ -701,6 +708,20 @@ jobs:
                                 id
                                 number
                               }
+                              fieldValues(first: 40) {
+                                nodes {
+                                  __typename
+                                  ... on ProjectV2ItemFieldSingleSelectValue {
+                                    field {
+                                      ... on ProjectV2SingleSelectField {
+                                        id
+                                        name
+                                      }
+                                    }
+                                    name
+                                  }
+                                }
+                              }
                             }
                           }
                         }
@@ -729,7 +750,22 @@ jobs:
                     continue;
                   }
 
-                  // When PR is merged, always update to "Ready to be deployed" regardless of current status
+                  // Find current status from field values
+                  const currentStatusField = projectItem.fieldValues.nodes.find(fv =>
+                    fv.__typename === 'ProjectV2ItemFieldSingleSelectValue' &&
+                    fv.field?.name === 'Status'
+                  );
+                  const currentStatus = currentStatusField?.name?.toLowerCase() || '';
+                  console.log(`Issue #${issueNumber} current status: "${currentStatus}"`);
+
+                  // Check if the current status is immutable (should not be modified)
+                  if (immutableStatuses.some(immutableStatus =>
+                    currentStatus.toLowerCase() === immutableStatus.toLowerCase()
+                  )) {
+                    console.log(`⚠️ Issue #${issueNumber} is in "${currentStatus}" status and should not be modified. Skipping...`);
+                    continue;
+                  }
+
                   await github.graphql(`
                     mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                       updateProjectV2ItemFieldValue(

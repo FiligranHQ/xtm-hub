@@ -55,7 +55,7 @@ export const DeadLetterWorkers = {
 
       await boss.work(
         dlqName,
-        { batchSize: 1, includeMetadata: true, ...options },
+        { ...options, batchSize: 1, includeMetadata: true as const },
         handleDeadLetterJobs
       );
     }

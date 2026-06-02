@@ -184,6 +184,7 @@ type Mutation {
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
+  addCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
@@ -194,8 +195,9 @@ type Mutation {
   addUseCase(input: AddUseCaseInput!): UseCase!
   editUseCase(id: ID!, input: EditUseCaseInput!): UseCase!
   deleteUseCase(id: ID!): UseCase!
-  addUserService(input: UserServiceAddInput!): [UserService]
-  deleteUserService(input: UserServiceDeleteInput!): UserService
+  addUserService(input: UserServiceAddInput!, service_instance_id: ServiceInstanceId!): [UserService]
+  editUserService(input: UserServiceEditInput!, service_instance_id: ServiceInstanceId!): UserService
+  deleteUserServices(input: UserServicesDeleteInput!, service_instance_id: ServiceInstanceId!): [UserService]
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
   deleteEpic(id: ID!): Epic!
@@ -889,7 +891,9 @@ type RegisteredPlatform implements Node {
   version: String
   illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
+  last_connectivity_check: Date!
   subscription: SubscriptionModel
+  myGroups: [ServiceGroup!]
 }
 
 input PlatformInput {
@@ -1072,6 +1076,11 @@ type ServiceCapability implements Node {
   name: String
   description: String
   service_definition_id: ID
+}
+
+input UserServicesAddCapabilitiesInput {
+  userServiceIds: [User_ServiceId!]!
+  capabilities: [String]
 }
 
 type ServiceLink implements Node {
@@ -1723,7 +1732,7 @@ enum UserServiceOrdering {
 input UserServiceAddInput {
   email: [String!]!
   capabilities: [String]
-  subscriptionId: SubscriptionId
+  subscription_id: SubscriptionId!
 }
 
 input UserServiceAddYourselfInput {
@@ -1731,10 +1740,13 @@ input UserServiceAddYourselfInput {
   serviceInstanceId: ServiceInstanceId
 }
 
-input UserServiceDeleteInput {
-  email: String!
+input UserServicesDeleteInput {
+  userServiceIds: [User_ServiceId!]!
+}
+
+input UserServiceEditInput {
+  userServiceId: User_ServiceId!
   capabilities: [String]
-  subscriptionId: SubscriptionId!
 }
 
 type UserServiceConnection {

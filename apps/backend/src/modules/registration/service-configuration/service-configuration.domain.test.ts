@@ -6,10 +6,13 @@ import {
   SERVICES,
 } from '../../../../tests/tests.const';
 import {
+  PlatformIdentifier,
   ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { ServiceDefinitionDomain } from '../../service/definition/service-definition.domain';
 import { ServiceConfigurationDomain } from './service-configuration.domain';
 
@@ -38,6 +41,7 @@ describe('serviceConfigurationDomain', () => {
         platform_title: 'Platform title',
         token: uuidv4(),
         platform_contract: 'EE',
+        last_connectivity_check: new Date(),
       };
 
       const result =
@@ -407,6 +411,246 @@ describe('serviceConfigurationDomain', () => {
         );
 
       expect(configurations).toHaveLength(0);
+    });
+  });
+
+  describe('loadResolvedConfigurationByPlatform', () => {
+    let platformId: string;
+    let serviceInstanceId: ServiceInstanceId;
+
+    beforeEach(async () => {
+      platformId = uuidv4();
+      serviceInstanceId = uuidv4() as ServiceInstanceId;
+    });
+
+    afterEach(async () => {
+      await TestHelper.serviceConfiguration.delete({
+        service_instance_id: serviceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+    });
+
+    it('should return undefined when no configuration matches the platformId', async () => {
+      const resolved =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+          uuidv4()
+        );
+
+      expect(resolved).toBeUndefined();
+    });
+
+    it('should return resolved configuration with joined definition and mapped identifier', async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId, token: 'abc' },
+      });
+
+      const resolved =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+          platformId
+        );
+
+      expect(resolved).toBeDefined();
+      expect(resolved?.serviceConfiguration).toMatchObject({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Active,
+      });
+      expect(resolved?.serviceDefinition?.id).toBe(
+        SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID
+      );
+      expect(resolved?.serviceDefinition?.identifier).toBe(
+        ServiceDefinitionIdentifier.OpenctiRegistration
+      );
+      expect(resolved?.platformIdentifier).toBe(PlatformIdentifier.Opencti);
+      expect(resolved?.config).toMatchObject({
+        platform_id: platformId,
+        token: 'abc',
+      });
+    });
+
+    it('should throw ServiceDefinitionNotFound when the instance has no service_definition_id', async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: null,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId },
+      });
+
+      const call =
+        ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+          platformId
+        );
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it('should filter by status when status option is provided', async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Inactive,
+        config: { platform_id: platformId },
+      });
+
+      const resolvedInactive =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+          platformId,
+          { status: ServiceConfigurationStatus.Inactive }
+        );
+      const resolvedActive =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+          platformId,
+          { status: ServiceConfigurationStatus.Active }
+        );
+
+      expect(resolvedInactive).toBeDefined();
+      expect(resolvedActive).toBeUndefined();
+    });
+
+    it('should filter by tenantId when tenantId option is provided', async () => {
+      const tenantId = uuidv4();
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId, tenant_id: tenantId },
+      });
+
+      const resolvedWithTenant =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+          platformId,
+          { tenantId }
+        );
+      const resolvedWithOtherTenant =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+          platformId,
+          { tenantId: uuidv4() }
+        );
+
+      expect(resolvedWithTenant?.config.tenant_id).toBe(tenantId);
+      expect(resolvedWithOtherTenant).toBeUndefined();
+    });
+  });
+
+  describe('loadResolvedConfigurationByPlatformAndToken', () => {
+    let platformId: string;
+    let token: string;
+    let serviceInstanceId: ServiceInstanceId;
+
+    beforeEach(async () => {
+      platformId = uuidv4();
+      token = uuidv4();
+      serviceInstanceId = uuidv4() as ServiceInstanceId;
+    });
+
+    afterEach(async () => {
+      await TestHelper.serviceConfiguration.delete({
+        service_instance_id: serviceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+    });
+
+    it('should return resolved configuration when platformId and token match', async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENAEV_REGISTRATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId, token },
+      });
+
+      const resolved =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+          { platform_id: platformId, token }
+        );
+
+      expect(resolved).toBeDefined();
+      expect(resolved?.serviceConfiguration.service_instance_id).toBe(
+        serviceInstanceId
+      );
+      expect(resolved?.serviceDefinition?.identifier).toBe(
+        ServiceDefinitionIdentifier.OpenaevRegistration
+      );
+      expect(resolved?.platformIdentifier).toBe(PlatformIdentifier.Openaev);
+    });
+
+    it('should return undefined when token does not match', async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId, token },
+      });
+
+      const resolved =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+          { platform_id: platformId, token: uuidv4() }
+        );
+
+      expect(resolved).toBeUndefined();
+    });
+
+    it('should return undefined when withoutTenantId is true and config has a tenant_id', async () => {
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId, token, tenant_id: uuidv4() },
+      });
+
+      const resolved =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+          { platform_id: platformId, token, withoutTenantId: true }
+        );
+
+      expect(resolved).toBeUndefined();
+    });
+
+    it('should filter by tenant_id when provided', async () => {
+      const tenantId = uuidv4();
+      await TestHelper.serviceInstance.create({
+        id: serviceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+      });
+      await TestHelper.serviceConfiguration.create({
+        service_instance_id: serviceInstanceId,
+        status: ServiceConfigurationStatus.Active,
+        config: { platform_id: platformId, token, tenant_id: tenantId },
+      });
+
+      const resolvedMatching =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+          { platform_id: platformId, token, tenant_id: tenantId }
+        );
+      const resolvedMismatch =
+        await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+          { platform_id: platformId, token, tenant_id: uuidv4() }
+        );
+
+      expect(resolvedMatching?.config.tenant_id).toBe(tenantId);
+      expect(resolvedMismatch).toBeUndefined();
     });
   });
 });

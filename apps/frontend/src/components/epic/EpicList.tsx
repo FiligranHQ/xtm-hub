@@ -9,15 +9,27 @@ import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
 } from '@/components/epic/epic-list-utils';
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { DEBOUNCE_TIME } from '@/utils/constant';
+import { APP_PATH } from '@/utils/path/constant';
+import {
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/ui';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { TimelineEnum } from '@generated/models/Timeline.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { useCallback, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 
 interface EpicListProps {
@@ -30,6 +42,10 @@ interface EpicListProps {
   onSearch: (searchTerm: string) => void;
 }
 
+const isServiceInstanceWithSubscriptions = (
+  instance: serviceInstance_fragment$data | seoServiceInstanceFragment$data
+): instance is serviceInstance_fragment$data => 'subscriptions' in instance;
+
 export const EpicList = ({
   epics,
   serviceInstance,
@@ -40,14 +56,37 @@ export const EpicList = ({
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
   const [showFinished, setShowFinished] = useState(false);
+  const detailedServiceInstance = isServiceInstanceWithSubscriptions(
+    serviceInstance
+  )
+    ? serviceInstance
+    : undefined;
+
   const userCanUpdate = useServiceCapability(
     ServiceRestrictionEnum.UPSERT,
-    serviceInstance as serviceInstance_fragment$data
+    detailedServiceInstance
   );
   const userCanDelete = useServiceCapability(
     ServiceRestrictionEnum.DELETE,
-    serviceInstance as serviceInstance_fragment$data
+    detailedServiceInstance
   );
+  const { me, hasOrganizationCapability } = useContext(PortalContext);
+
+  const canManageService =
+    useServiceCapability(
+      ServiceRestrictionEnum.MANAGE_ACCESS,
+      detailedServiceInstance
+    ) ||
+    (hasOrganizationCapability &&
+      (hasOrganizationCapability(
+        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      ) ||
+        hasOrganizationCapability(
+          OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION
+        )));
+
+  const isBypass = useAdminByPass();
+
   const filteredEpics =
     !selectedProduct || selectedProduct === 'all'
       ? epics
@@ -99,18 +138,33 @@ export const EpicList = ({
     DEBOUNCE_TIME
   );
 
+  const currentSubscription = detailedServiceInstance?.subscriptions?.find(
+    (sub) => sub?.organization_id === me?.selected_organization_id
+  );
+
   return (
     <>
       <div className="flex m-s">
         <h1>{t('Epic.XTMRoadmap')}</h1>
-        {userCanUpdate && (
-          <div className="ml-auto">
+        <div className="ml-auto flex items-center justify-center gap-s">
+          {userCanUpdate && (
             <EpicFormSheet
               open={openSheet}
               setOpen={setOpenSheet}
             />
-          </div>
-        )}
+          )}
+          {(canManageService || isBypass) && currentSubscription?.id && (
+            <Button
+              asChild
+              variant="outline"
+              className="">
+              <Link
+                href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentSubscription.id}`}>
+                {t('Service.Capabilities.ManageAccessName')}
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
       <EpicFilter
         selectedFilter={selectedProduct}
@@ -151,9 +205,21 @@ export const EpicList = ({
               />
             </div>
             <div className="flex-1 mt-l">
-              <p className={`m-s font-semibold text-${timelineColor}`}>
-                {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
-              </p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p
+                      className={`m-s inline-block font-semibold text-${timelineColor}`}>
+                      {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    align="start">
+                    {t(`Epic.Timeline.Details.${timeline.title.toLowerCase()}`)}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <ul
                 className={
                   'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-l'

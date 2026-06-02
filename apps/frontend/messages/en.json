@@ -115,7 +115,14 @@
       "now": "Now",
       "next": "Next",
       "under_consideration": "Under consideration",
-      "finished": "Finished in the last 3 months"
+      "finished": "Finished in the last 3 months",
+      "Details": {
+        "draft": "Use cases in draft mode, not visible without UPLOAD capability",
+        "finished": "Use cases that are available",
+        "now": "Use cases currently in development",
+        "next": "Use cases planned for future releases",
+        "under_consideration": "Use cases under strong consideration"
+      }
     },
     "Form": {
       "Epic": "Epic",
@@ -511,6 +518,10 @@
       "Title": "Are you sure?"
     }
   },
+  "RegistrationDetails": {
+    "NoAccess": "No access",
+    "NoAccessContact": "please contact the trial administrator at {email}"
+  },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",
@@ -569,10 +580,25 @@
         "CE": "Community Edition",
         "EE": "Enterprise Edition"
       },
+      "ConnectionStatus": {
+        "Title": "Connection status",
+        "Connected": "Connected",
+        "NotConnected": "Connection lost",
+        "NotConnectedDetails": "You should register your platform again."
+      },
       "Description": "Click here to access your Private Platform.",
       "PlatformID": "Platform ID",
+      "PlatformName": "Platform name",
       "PlatformURL": "Platform URL",
-      "PrivatePlatform": "Private platform"
+      "StartDate": "Start date",
+      "EndDate": "End date",
+      "RegisteredOn": "Registered on",
+      "Region": "Region",
+      "License": "License",
+      "Status": "Status",
+      "PrivatePlatform": "Private platform",
+      "LastConnectionCheck": "Last connection check",
+      "Access": "Access"
     },
     "Error": {
       "Capability": {
@@ -1004,6 +1030,7 @@
     "Management": {
       "AvailableCapabilities": "Available capabilities",
       "AreYouSureRemoveAccess": "Are you sure you want to remove the access for the user {firstname} {lastname} for this service?",
+      "AreYouSureRemoveUsersAccess": "Are you sure you want to remove access for {count} users from this service?",
       "AreYouSureRemoveOrganizationAccess": "Are you sure you want to remove access for organization {organizationName} from this service?",
       "AreYouSureRemoveOrganizationsAccess": "Are you sure you want to remove access for {count} organizations from this service?",
       "Description": "Organizations that have joined this service",
@@ -1024,6 +1051,11 @@
         "Button": "Add capabilities",
         "Title": "Add subscription capabilities",
         "Description": "Select the capabilities to add to the {count} selected subscription(s)."
+      },
+      "AddUserServiceCapabilities": {
+        "Button": "Add capabilities",
+        "Title": "Add user service capabilities",
+        "Description": "Select the capabilities to add to the {count} selected access."
       },
       "RemoveAccess": "Remove access",
       "RemoveRights": "Remove rights",
@@ -1050,7 +1082,27 @@
         "DeployPlatform": "Deploy in {platformName}",
         "DeployQuestionTag": "In which {platformType} platform do you want to deploy it?",
         "DeployResourceDescription": "You're about to deploy the {resourceName} {resourceType}.",
-        "DeployIncompatibleVersion": "The resource can't be deployed to your OpenCTI platform \"{platformTitle}\" because the platform version is no longer compatible with this resource. You’ll need to update the platform or use a compatible resource version before proceeding."
+        "DeployIncompatibleVersion": "The resource can't be deployed to your OpenCTI platform \"{platformTitle}\" because the platform version is no longer compatible with this resource. You’ll need to update the platform or use a compatible resource version before proceeding.",
+        "EE": {
+          "Tag": "EE",
+          "HoverTitle": "Available in Enterprise Edition",
+          "HoverSubtitle": "click to learn more",
+          "PlatformRequiresEE": "Your platform \"{platformTitle}\" is on the Community Edition. One-click deploy of playbooks requires the Enterprise Edition of OpenCTI."
+        },
+        "EELearnMore": {
+          "Title": "One click Deploy",
+          "Subtitle": "Available in OpenCTI Enterprise Edition",
+          "Heading": "Deploy playbooks directly to your OpenCTI instance in a single click",
+          "FirstParagraph": "One Click Deploy enables you to instantly push any playbook from the XTM Hub directly into your OpenCTI platform. No manual configuration or file handling required.",
+          "SecondParagraph": "Pick a playbook, click deploy, and it's ready to run in your instance within seconds.",
+          "EnterpriseEditionTitle": "OpenCTI Enterprise Edition (EE)",
+          "EnterpriseEditionDescription": "OpenCTI Enterprise Edition provides advanced features, enterprise-grade scalability, and dedicated support for organizations looking to elevate their threat intelligence operations.",
+          "Link": "Learn more",
+          "InterestedTitle": "Interested in learning more ?",
+          "InterestedSubtitle": "Let us know below, someone will reach out soon!",
+          "DefaultMessage": "I'm interested in getting more information about OpenCTI Enterprise Edition.",
+          "SendButton": "Send"
+        }
       },
       "Details": {
         "Author": "Author",

@@ -115,7 +115,14 @@
       "now": "Maintenant",
       "next": "Après",
       "under_consideration": "En considération",
-      "finished": "Terminé au cours des 3 derniers mois"
+      "finished": "Terminé au cours des 3 derniers mois",
+      "Details": {
+        "draft": "Cas d'utilisation en mode brouillon, non visible sans la capacité UPLOAD",
+        "finished": "Cas d'utilisation disponibles",
+        "now": "Cas d'utilisation en cours de développement",
+        "next": "Cas d'utilisation prévus pour les prochaines versions",
+        "under_consideration": "Cas d'utilisation fortement envisagés"
+      }
     },
     "Form": {
       "Epic": "Epic",
@@ -200,7 +207,7 @@
       "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
-      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Argument d'enregistrement automatique de la plate-forme manquant",
+      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Argument d'enregistrement automatique de la plateforme manquant",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
@@ -511,6 +518,10 @@
       "Title": "Êtes-vous sûr ?"
     }
   },
+  "RegistrationDetails": {
+    "NoAccess": "Pas d'accès",
+    "NoAccessContact": "veuillez contacter l'administrateur de l'essai à {email}"
+  },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",
@@ -569,10 +580,25 @@
         "CE": "Édition communautaire",
         "EE": "Édition Entreprise"
       },
+      "ConnectionStatus": {
+        "Title": "Statut de connexion",
+        "Connected": "Connecté",
+        "NotConnected": "Connexion perdue",
+        "NotConnectedDetails": "Vous devez à nouveau enregistrer votre plateforme."
+      },
       "Description": "Cliquez ici pour accéder à votre plateforme privée.",
       "PlatformID": "ID de la plateforme",
+      "PlatformName": "Nom de la plateforme",
       "PlatformURL": "URL de la plateforme",
-      "PrivatePlatform": "Plateforme privée"
+      "StartDate": "Date de début",
+      "EndDate": "Date de fin",
+      "RegisteredOn": "Enregistré le",
+      "Region": "Région",
+      "License": "Licence",
+      "Status": "Statut",
+      "PrivatePlatform": "Plateforme privée",
+      "LastConnectionCheck": "Dernier contrôle de connexion",
+      "Access": "Accès"
     },
     "Error": {
       "Capability": {
@@ -1004,6 +1030,7 @@
     "Management": {
       "AvailableCapabilities": "Capacités disponibles",
       "AreYouSureRemoveAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'utilisateur {firstname} {lastname} pour ce service ?",
+      "AreYouSureRemoveUsersAccess": "Êtes-vous sûr de vouloir retirer les accès pour {count} utilisateurs pour ce service ?",
       "AreYouSureRemoveOrganizationAccess": "Êtes-vous sûr de vouloir retirer les accès pour l'organisation {organizationName} pour ce service ?",
       "AreYouSureRemoveOrganizationsAccess": "Êtes-vous sûr de vouloir retirer les accès pour {count} organizations pour ce service ?",
       "Description": "Organisations qui ont rejoint le service",
@@ -1022,8 +1049,13 @@
       "NoAvailableCapabilities": "Aucune capacité disponible",
       "AddSubscriptionCapabilities": {
         "Button": "Ajouter des capacités",
-        "Title": "Ajouter des capacités aux abonnements",
+        "Title": "Ajouter des capacités aux souscriptions",
         "Description": "Sélectionnez les capacités à ajouter aux {count} abonnement(s) sélectionné(s)."
+      },
+      "AddUserServiceCapabilities": {
+        "Button": "Ajouter des capacités",
+        "Title": "Ajouter des capacités aux accès",
+        "Description": "Sélectionnez les capacités à ajouter aux {count} accès sélectionné(s)."
       },
       "RemoveAccess": "Retirer les accès",
       "RemoveRights": "Supprimer les droits",
@@ -1050,7 +1082,27 @@
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
         "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
-        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" ; car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer."
+        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" ; car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer.",
+        "EE": {
+          "Tag": "EE",
+          "HoverTitle": "Disponible dans l'Enterprise Edition",
+          "HoverSubtitle": "cliquez pour en savoir plus",
+          "PlatformRequiresEE": "Votre plateforme \"{platformTitle}\" est en Community Edition. Le déploiement en un clic des playbooks nécessite l'Enterprise Edition d'OpenCTI."
+        },
+        "EELearnMore": {
+          "Title": "Déploiement en un clic",
+          "Subtitle": "Disponible dans OpenCTI Enterprise Edition",
+          "Heading": "Déployez vos playbooks directement sur votre instance OpenCTI en un seul clic",
+          "FirstParagraph": "Le déploiement en un clic vous permet de pousser instantanément n'importe quel playbook du XTM Hub directement vers votre plateforme OpenCTI. Aucune configuration manuelle ni gestion de fichiers requise.",
+          "SecondParagraph": "Choisissez un playbook, cliquez sur déployer, et il est prêt à être exécuté dans votre instance en quelques secondes.",
+          "EnterpriseEditionTitle": "OpenCTI Enterprise Edition (EE)",
+          "EnterpriseEditionDescription": "OpenCTI Enterprise Edition fournit des fonctionnalités avancées, une scalabilité de niveau entreprise et un support dédié aux organisations qui souhaitent faire évoluer leurs opérations de threat intelligence.",
+          "Link": "En savoir plus",
+          "InterestedTitle": "Vous souhaitez en savoir plus ?",
+          "InterestedSubtitle": "Faites-le nous savoir ci-dessous, quelqu'un vous recontactera bientôt !",
+          "DefaultMessage": "Je souhaite obtenir plus d'informations sur OpenCTI Enterprise Edition.",
+          "SendButton": "Envoyer"
+        }
       },
       "Details": {
         "Author": "Auteur",
@@ -1136,7 +1188,7 @@
           "Blocks": {
             "First": {
               "Title": "Ingestion",
-              "Description": "Consolidez et enrichissez les renseignements sur les menaces à partir de n'importe quel flux - commercial, open-source, interne - dans une plate-forme centralisée, en tirant parti de plus de 300 intégrations et en vous appuyant sur le cadre STIX 2.1. Utilisez l'importation assistée par l'IA des rapports CTI pour économiser d'innombrables heures d'analyse."
+              "Description": "Consolidez et enrichissez les renseignements sur les menaces à partir de n'importe quel flux - commercial, open-source, interne - dans une plateforme centralisée, en tirant parti de plus de 300 intégrations et en vous appuyant sur le cadre STIX 2.1. Utilisez l'importation assistée par l'IA des rapports CTI pour économiser d'innombrables heures d'analyse."
             },
             "Second": {
               "Title": "Traitement",

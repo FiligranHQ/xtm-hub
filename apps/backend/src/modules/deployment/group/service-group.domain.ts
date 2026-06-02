@@ -65,6 +65,22 @@ export const ServiceGroupDomain = {
     return db<ServiceGroup[]>('ServiceGroup').select('*').where(field);
   },
 
+  loadServiceGroupsByServiceInstanceAndUser: async (
+    serviceInstanceId: ServiceInstanceId,
+    userId: UserId
+  ): Promise<ServiceGroup[]> => {
+    return db<ServiceGroup[]>('ServiceGroup')
+      .leftJoin(
+        'ServiceGroup_User',
+        'ServiceGroup.id',
+        '=',
+        'ServiceGroup_User.group_id'
+      )
+      .where('ServiceGroup.service_instance_id', '=', serviceInstanceId)
+      .where('ServiceGroup_User.user_id', '=', userId)
+      .select('ServiceGroup.*');
+  },
+
   loadGroupUsers: async (groupId: ServiceGroupId): Promise<User[]> => {
     return db<User[]>('ServiceGroup')
       .leftJoin(

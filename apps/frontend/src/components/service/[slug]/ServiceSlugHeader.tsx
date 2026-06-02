@@ -1,13 +1,7 @@
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
-import {
-  BreadcrumbNav,
-  BreadcrumbNavLink,
-} from '@/components/ui/BreadcrumbNav';
-import useAdminPath from '@/hooks/use-admin-path';
 import { formatName } from '@/utils/format/name';
-import { APP_PATH } from '@/utils/path/constant';
 import { Badge } from '@filigran/ui';
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { useTranslations } from 'next-intl';
@@ -19,21 +13,6 @@ interface ServiceSlugHeaderProps {
 
 const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
   const t = useTranslations();
-  const isAdminPath = useAdminPath();
-
-  const breadcrumbValue: BreadcrumbNavLink[] = [
-    ...(isAdminPath
-      ? [
-          { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
-          { label: 'MenuLinks.Settings' },
-          { label: 'MenuLinks.Service', href: `/${APP_PATH}/admin/service` },
-        ]
-      : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
-    {
-      label: serviceInstance.name,
-      original: true,
-    },
-  ];
 
   const availableCapabilities: BadgeOverflow[] = useMemo(
     () =>
@@ -67,7 +46,6 @@ const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
 
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue} />
       <div>
         <div className="flex flex-col gap-m mb-m">
           <div className="flex flex-row gap-m">

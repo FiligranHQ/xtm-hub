@@ -131,6 +131,7 @@ export const SubscriptionById = graphql`
         id
         name
         description
+        tags
         service_definition {
           service_capability {
             id

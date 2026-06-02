@@ -5,48 +5,6 @@
     "CollapseSidebar": "サイドバーを折りたたむ",
     "Title": "XTMハブ"
   },
-  "Ariane": {
-    "AnalyzingResults": "結果を分析中...",
-    "Ask": "アリアンに聞く",
-    "AskQuestion": "質問する...",
-    "background task": "背景タスク",
-    "background tasks": "バックグラウンドタスク",
-    "Browse agents": "ブラウズエージェント",
-    "Close": "閉じる",
-    "Collecting results from": "結果を収集する",
-    "ComposingAnswer": "回答をまとめる",
-    "Consulting": "コンサルティング",
-    "Create agent": "エージェントを作る",
-    "Delegating": "委任",
-    "Delegating task": "タスクの委任",
-    "Disclaimer": "AIを使う結果を検証する",
-    "ErrorOccurred": "エラーが発生しました。再試行してください。",
-    "Floating": "フローティング",
-    "Full screen": "フルスクリーン",
-    "New chat": "新規チャット",
-    "PromptSuggestion1": "フィリグランXTMプラットフォームとは？",
-    "PromptSuggestion2": "OpenCTI はどのようにサイバーセキュリティを強化するのか？",
-    "PromptSuggestion3": "OpenAEVの主な機能について教えてください。",
-    "PromptSuggestion4": "OpenGRC のドキュメントはどこにありますか？",
-    "Reasoning details": "理由詳細",
-    "Sidebar": "サイドバー",
-    "Stop generating": "発生停止",
-    "Suggestions": "提案",
-    "Switch to": "に切り替える",
-    "Switch to another agent": "他のエージェントに切り替える",
-    "Switch view": "ビューを切り替える",
-    "task": "タスク",
-    "tasks": "タスク",
-    "Thinking": "考える...",
-    "tool call": "ツールコール",
-    "tool calls": "ツールコール",
-    "Transferred from": "転送元",
-    "Transferring to": "への転送",
-    "UnableToConnect": "接続できません。設定を確認してください。",
-    "UsingTools": "ツールを使って...",
-    "Waiting for": "待機中",
-    "WelcomeMessage": "ご用件は？"
-  },
   "Badge": {
     "Disabled": "お断りします",
     "Draft": "草案",
@@ -98,7 +56,7 @@
     "hosting_threat_community": "脅威共有コミュニティの主催",
     "oaev_attack_simulation": "侵入・攻撃シミュレーション（BAS）の実行",
     "oaev_penetration_testing": "侵入テストの実行",
-    "oaev_atomic_testing": "個別アトミック・テストの実行",
+    "oaev_atomic_testing": "個別のアトミック・テストの実行",
     "oaev_platform_validation": "セキュリティ・プラットフォームが 期待通りに機能するか検証する",
     "oaev_tabletop_exercise": "#__# 危機シミュレーションのための、状況に応じた卓上演習を実行する #__#",
     "oaev_purple_team": "パープルチームの有効化攻撃に基づいて防御を改善する",
@@ -157,7 +115,14 @@
       "now": "今すぐ",
       "next": "次",
       "under_consideration": "検討中",
-      "finished": "最近3ヶ月以内に終了"
+      "finished": "最近3ヶ月以内に終了",
+      "Details": {
+        "draft": "使用例はドラフトモードで、アップロード機能がないと表示されない。",
+        "finished": "利用可能な使用例",
+        "now": "現在開発中のユースケース",
+        "next": "将来のリリースを予定しているユースケース",
+        "under_consideration": "現在検討中のユースケース"
+      }
     },
     "Form": {
       "Epic": "エピック",
@@ -553,6 +518,10 @@
       "Title": "よろしいですか？"
     }
   },
+  "RegistrationDetails": {
+    "NoAccess": "アクセス禁止",
+    "NoAccessContact": "トライアル管理者{email}までご連絡ください。"
+  },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "オープンCTI",
@@ -611,10 +580,25 @@
         "CE": "コミュニティ版",
         "EE": "エンタープライズ版"
       },
+      "ConnectionStatus": {
+        "Title": "接続状況",
+        "Connected": "つながる",
+        "NotConnected": "接続が切れた",
+        "NotConnectedDetails": "プラットフォームを再登録してください。"
+      },
       "Description": "プライベート・プラットフォームへのアクセスはこちらをクリックしてください。",
       "PlatformID": "プラットフォームID",
+      "PlatformName": "プラットフォーム名",
       "PlatformURL": "プラットフォームURL",
-      "PrivatePlatform": "プライベート・プラットフォーム"
+      "StartDate": "開始日",
+      "EndDate": "終了日",
+      "RegisteredOn": "登録日",
+      "Region": "地域",
+      "License": "ライセンス",
+      "Status": "ステータス",
+      "PrivatePlatform": "プライベート・プラットフォーム",
+      "LastConnectionCheck": "最終接続チェック",
+      "Access": "アクセス"
     },
     "Error": {
       "Capability": {
@@ -1046,8 +1030,9 @@
     "Management": {
       "AvailableCapabilities": "利用可能な機能",
       "AreYouSureRemoveAccess": "本当にこのサービスのユーザー {firstname} {lastname} のアクセスを削除してもよろしいですか？",
-      "AreYouSureRemoveOrganizationAccess": "このサービスから組織{organizationName}のアクセスを削除してもよろしいですか？",
-      "AreYouSureRemoveOrganizationsAccess": "このサービスから組織 {count} のアクセスを削除してもよろしいですか？",
+      "AreYouSureRemoveUsersAccess": "このサービスから {count} ユーザーのアクセスを削除してもよろしいですか？",
+      "AreYouSureRemoveOrganizationAccess": "このサービスから組織 {organizationName} のアクセスを削除してもよろしいですか？",
+      "AreYouSureRemoveOrganizationsAccess": "このサービスから {count} 組織へのアクセスを削除しますか？",
       "Description": "このサービスに加入している組織のリストを以下に表示します。",
       "Email": "電子メール",
       "FirstName": "ファーストネーム",
@@ -1066,6 +1051,11 @@
         "Button": "機能を追加する",
         "Title": "購読機能の追加",
         "Description": "選択した{count}購読に追加する機能を選択します。"
+      },
+      "AddUserServiceCapabilities": {
+        "Button": "機能の追加",
+        "Title": "ユーザーサービス機能の追加",
+        "Description": "選択した{count}ユーザーサービスに追加する機能を選択します。"
       },
       "RemoveAccess": "アクセス削除",
       "RemoveRights": "権限削除",
@@ -1092,7 +1082,27 @@
         "DeployPlatform": "{platformName} にデプロイしますか？",
         "DeployQuestionTag": "どの {platformType} プラットフォームに配置しますか？",
         "DeployResourceDescription": "あなたは {resourceName} {resourceType} をデプロイしようとしています。",
-        "DeployIncompatibleVersion": "このリソースは OpenCTI プラットフォームにデプロイできません \"{platformTitle}\" なぜならプラットフォームのバージョンはもうこのリソースと互換性がないからです。先に進む前に、プラットフォームをアップデートするか、互換性のあるリソースのバージョンを使う必要があります。"
+        "DeployIncompatibleVersion": "このリソースは OpenCTI プラットフォームにデプロイできません \"{platformTitle}\" なぜならプラットフォームのバージョンはもうこのリソースと互換性がないからです。先に進む前に、プラットフォームをアップデートするか、互換性のあるリソースのバージョンを使う必要があります。",
+        "EE": {
+          "Tag": "EE",
+          "HoverTitle": "エンタープライズ版で利用可能",
+          "HoverSubtitle": "クリックして詳細を見る",
+          "PlatformRequiresEE": "プラットフォーム \"{platformTitle}\" は Community Edition です。プレイブックをワンクリックでデプロイするには、OpenCTIのEnterprise Editionが必要です。"
+        },
+        "EELearnMore": {
+          "Title": "ワンクリックデプロイ",
+          "Subtitle": "OpenCTI Enterprise Edition で利用可能",
+          "Heading": "ワンクリックでプレイブックを OpenCTI インスタンスに直接デプロイ",
+          "FirstParagraph": "ワンクリックデプロイにより、XTMハブからOpenCTIプラットフォームにプレイブックを即座に直接プッシュできます。手動での設定やファイル操作は必要ありません。",
+          "SecondParagraph": "プレイブックを選択し、デプロイをクリックすると、数秒以内にインスタンスで実行する準備が整います。",
+          "EnterpriseEditionTitle": "OpenCTI エンタープライズ版 (EE)",
+          "EnterpriseEditionDescription": "OpenCTI Enterprise Editionは、脅威インテリジェンス運用の高度化を目指す企業向けに、高度な機能、エンタープライズグレードの拡張性、専用サポートを提供します。",
+          "Link": "詳細はこちら",
+          "InterestedTitle": "もっと知りたいですか？",
+          "InterestedSubtitle": "すぐに担当者がご連絡いたします！",
+          "DefaultMessage": "OpenCTI Enterprise Editionの詳細について興味があります。",
+          "SendButton": "送信"
+        }
       },
       "Details": {
         "Author": "著者",

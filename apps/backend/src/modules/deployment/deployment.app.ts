@@ -269,9 +269,9 @@ export const DeploymentApp = {
     });
 
     const updatedDeploymentRequest =
-      await DeploymentRequestDomain.loadFullDeploymentRequestById(
-        deploymentRequestId
-      );
+      await DeploymentRequestDomain.loadFullDeploymentRequest({
+        id: deploymentRequestId,
+      });
 
     await sendUpdateDeploymentTelemetryEvent(
       updatedDeploymentRequest,

@@ -31,6 +31,8 @@ export type Scalars = {
   /** A Relay global ID for Document, extracted to a branded DocumentId string */
   DocumentId: { input: any; output: any; }
   JSON: { input: any; output: any; }
+  /** A Relay global ID for NewsFeedItem, extracted to a branded NewsFeedItemId string */
+  NewsFeedItemId: { input: any; output: any; }
   /** A Relay global ID for Organization, extracted to a branded OrganizationId string */
   OrganizationId: { input: any; output: any; }
   /** A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string */
@@ -848,6 +850,7 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addCapabilitiesToUserServices: Maybe<Array<Maybe<UserService>>>;
   addOrganization: Maybe<Organization>;
   addServicePicture: Maybe<ServiceInstance>;
   addSubscription: Maybe<ServiceInstance>;
@@ -873,15 +876,17 @@ export type Mutation = {
   deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic: Epic;
+  deleteNewsFeedItem: Scalars['Boolean']['output'];
   deleteOrganization: Maybe<Organization>;
   deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
-  deleteUserService: Maybe<UserService>;
+  deleteUserServices: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization: Maybe<Organization>;
   editServiceCapability: Maybe<SubscriptionModel>;
   editUseCase: UseCase;
   editUserCapabilities: User;
+  editUserService: Maybe<UserService>;
   frontendErrorLog: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
   login: Maybe<User>;
@@ -908,6 +913,12 @@ export type Mutation = {
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
+};
+
+
+export type MutationAddCapabilitiesToUserServicesArgs = {
+  input: UserServicesAddCapabilitiesInput;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -945,6 +956,7 @@ export type MutationAddUserArgs = {
 
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1046,6 +1058,11 @@ export type MutationDeleteEpicArgs = {
 };
 
 
+export type MutationDeleteNewsFeedItemArgs = {
+  id: Scalars['NewsFeedItemId']['input'];
+};
+
+
 export type MutationDeleteOrganizationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1061,8 +1078,9 @@ export type MutationDeleteUseCaseArgs = {
 };
 
 
-export type MutationDeleteUserServiceArgs = {
-  input: UserServiceDeleteInput;
+export type MutationDeleteUserServicesArgs = {
+  input: UserServicesDeleteInput;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1092,6 +1110,12 @@ export type MutationEditUseCaseArgs = {
 export type MutationEditUserCapabilitiesArgs = {
   id: Scalars['ID']['input'];
   input: EditUserCapabilitiesInput;
+};
+
+
+export type MutationEditUserServiceArgs = {
+  input: UserServiceEditInput;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1220,6 +1244,28 @@ export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
 };
 
+export type NewsFeedItem = Node & {
+  __typename?: 'NewsFeedItem';
+  creation_date: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  is_deleted: Scalars['Boolean']['output'];
+  tags: Array<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type NewsFeedItemConnection = {
+  __typename?: 'NewsFeedItemConnection';
+  edges: Array<NewsFeedItemEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type NewsFeedItemEdge = {
+  __typename?: 'NewsFeedItemEdge';
+  cursor: Scalars['String']['output'];
+  node: NewsFeedItem;
+};
+
 export type NewsFeedItemMetadata = {
   __typename?: 'NewsFeedItemMetadata';
   key: NewsFeedItemMetadataKey;
@@ -1227,6 +1273,7 @@ export type NewsFeedItemMetadata = {
 };
 
 export enum NewsFeedItemMetadataKey {
+  DocumentId = 'document_id',
   UrlPath = 'url_path'
 }
 
@@ -1465,9 +1512,11 @@ export enum PortalCapability {
   ReadTrials = 'READ_TRIALS'
 }
 
-export type ProvisionedNewsFeedItem = {
+export type ProvisionedNewsFeedItem = Node & {
   __typename?: 'ProvisionedNewsFeedItem';
   creation_date: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  is_deleted: Scalars['Boolean']['output'];
   metadata: Array<NewsFeedItemMetadata>;
   tags: Array<Scalars['String']['output']>;
   title: Scalars['String']['output'];
@@ -1487,6 +1536,7 @@ export type Query = {
   epics: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me: Maybe<User>;
+  newsFeedItems: NewsFeedItemConnection;
   node: Maybe<Node>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
   openCTIPlatformRegistrationStatus: OpenCtiPlatformRegistrationStatusResponse;
@@ -1590,6 +1640,12 @@ export type QueryEpicsArgs = {
 
 export type QueryIsPlatformRegisteredArgs = {
   input: IsPlatformRegisteredInput;
+};
+
+
+export type QueryNewsFeedItemsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
 };
 
 
@@ -1811,6 +1867,8 @@ export type RegisteredPlatform = Node & {
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
+  last_connectivity_check: Scalars['Date']['output'];
+  myGroups: Maybe<Array<ServiceGroup>>;
   platform_id: Scalars['String']['output'];
   subscription: Maybe<SubscriptionModel>;
   tenant_id: Maybe<Scalars['String']['output']>;
@@ -2439,7 +2497,7 @@ export type UserService = Node & {
 export type UserServiceAddInput = {
   capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   email: Array<Scalars['String']['input']>;
-  subscriptionId: InputMaybe<Scalars['SubscriptionId']['input']>;
+  subscription_id: Scalars['SubscriptionId']['input'];
 };
 
 export type UserServiceAddYourselfInput = {
@@ -2462,12 +2520,6 @@ export type UserServiceConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type UserServiceDeleteInput = {
-  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  email: Scalars['String']['input'];
-  subscriptionId: Scalars['SubscriptionId']['input'];
-};
-
 export type UserServiceDeleted = Node & {
   __typename?: 'UserServiceDeleted';
   id: Scalars['ID']['output'];
@@ -2481,6 +2533,11 @@ export type UserServiceEdge = {
   node: Maybe<UserService>;
 };
 
+export type UserServiceEditInput = {
+  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  userServiceId: Scalars['User_ServiceId']['input'];
+};
+
 export enum UserServiceOrdering {
   Email = 'email',
   FirstName = 'first_name',
@@ -2492,6 +2549,15 @@ export enum UserServiceOrdering {
   ServiceType = 'service_type',
   SubscriptionStatus = 'subscription_status'
 }
+
+export type UserServicesAddCapabilitiesInput = {
+  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  userServiceIds: Array<Scalars['User_ServiceId']['input']>;
+};
+
+export type UserServicesDeleteInput = {
+  userServiceIds: Array<Scalars['User_ServiceId']['input']>;
+};
 
 export type UserSubscription = {
   __typename?: 'UserSubscription';

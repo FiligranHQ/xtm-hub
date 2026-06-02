@@ -1176,7 +1176,6 @@ describe('deployment app', () => {
 
       requestContext.set({
         user: contextUserWithPersonalOrga.user,
-        portalContext: contextUserWithPersonalOrga,
       });
 
       const trialDeployments = await DeploymentApp.loadTrialDeployments({

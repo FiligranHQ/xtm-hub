@@ -70,6 +70,7 @@ const ShareableResourceSlug = ({
     return [
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
       ShareableResourceType.OPENAEV_SCENARIO,
+      ShareableResourceType.OPENCTI_PLAYBOOK,
     ].includes(documentData.type as ShareableResourceType);
   }, [documentData]);
 

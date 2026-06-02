@@ -8,10 +8,13 @@ import {
 } from '../../../__generated__/resolvers-types';
 import CapabilityPortal from '../../../model/kanel/public/CapabilityPortal';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionMutator } from '../../../model/kanel/public/Subscription';
+import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserLoadUserBy } from '../../../model/user';
 import { ServiceCapabilityArgs } from '../../../security/directive-graphql/validator/service-capability.validator';
 import { UserOrganizationDomain } from '../../organization-management/user/user-organization/user-organization.domain';
+import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { loadUserOrganizationCapabilities } from '../user-organization-capability/user-organization-capability.domain';
 
 export const loadCapabilitiesByServiceId = async (
@@ -79,6 +82,15 @@ export const loadCapabilitiesByServiceId = async (
     .where('ServiceInstance.id', '=', dbRaw('?', [serviceId]))
     .groupBy(['ServiceInstance.id', 'subscription.id'])
     .first();
+};
+
+export const checkUserServiceIsInServiceInstance = async (
+  userServiceId: UserServiceId,
+  serviceInstanceId: ServiceInstanceId
+) => {
+  const userService =
+    await UserServiceDomain.loadUserServiceById(userServiceId);
+  return userService.subscription.service_instance_id === serviceInstanceId;
 };
 
 export const userHasBypassCapability = (user: UserLoadUserBy): boolean => {

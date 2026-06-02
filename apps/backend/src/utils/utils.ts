@@ -2,6 +2,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { z } from 'zod';
 import { DatabaseType } from '../../knexfile';
 import { logApp } from './app-logger.util';
+import { addPrefixToObject } from './typescript';
 
 export const extractId = <T extends string>(id: string) => {
   const { id: databaseId } = fromGlobalId(id) as {
@@ -140,4 +141,13 @@ export const ucfirst = (str: string): string => {
     return str;
   }
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const prefixObjectKeys = <T extends object, P extends string>(
+  obj: T,
+  prefix: P
+): addPrefixToObject<T, P> => {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [`${prefix}${key}`, value])
+  ) as addPrefixToObject<T, P>;
 };

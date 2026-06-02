@@ -58,6 +58,7 @@ const basePlatform: registeredPlatformByServiceInstanceId_fragment$data = {
   ' $fragmentType': 'registeredPlatformByServiceInstanceId_fragment',
   id: 'platform-id',
   platform_id: 'pid',
+  myGroups: null,
   tenant_id: null,
   title: 'My Platform',
   url: 'https://platform.example.com',
@@ -81,12 +82,19 @@ const trialPlatform: registeredPlatformByServiceInstanceId_fragment$data = {
     region: 'eu_west',
     platform_identifier: PlatformIdentifierEnum.OPENCTI,
     counts_in_orga_quota: true,
+    requester_email: 'trial-admin@filigran.io',
   },
   subscription: {
     ...basePlatform.subscription!,
     end_date: '2025-04-01',
   },
 };
+
+const trialPlatformWithAccess: registeredPlatformByServiceInstanceId_fragment$data =
+  {
+    ...trialPlatform,
+    myGroups: [{ name: 'Admin' }],
+  };
 
 const renderDetails = (
   platform: registeredPlatformByServiceInstanceId_fragment$data,
@@ -104,11 +112,12 @@ const renderDetails = (
 describe('RegistrationDetails', () => {
   describe('Access button', () => {
     it.each`
-      label                                | platform                                                                                                                                 | shouldShow
-      ${'trial, ACTIVE status, with url'}  | ${trialPlatform}                                                                                                                         | ${true}
-      ${'trial, PENDING status, with url'} | ${{ ...trialPlatform, deployment_request: { ...trialPlatform.deployment_request, hub_status: DeploymentRequestHubStatusEnum.PENDING } }} | ${false}
-      ${'trial, ACTIVE status, no url'}    | ${{ ...trialPlatform, url: '' }}                                                                                                         | ${false}
-      ${'non-trial with url'}              | ${basePlatform}                                                                                                                          | ${true}
+      label                                             | platform                                                                                                                                                     | shouldShow
+      ${'trial, ACTIVE status, with url, no myGroups'}  | ${trialPlatform}                                                                                                                                             | ${false}
+      ${'trial, ACTIVE status, with url and myGroups'}  | ${trialPlatformWithAccess}                                                                                                                                   | ${true}
+      ${'trial, PENDING status, with url and myGroups'} | ${{ ...trialPlatformWithAccess, deployment_request: { ...trialPlatformWithAccess.deployment_request, hub_status: DeploymentRequestHubStatusEnum.PENDING } }} | ${false}
+      ${'trial, ACTIVE status, no url'}                 | ${{ ...trialPlatformWithAccess, url: '' }}                                                                                                                   | ${false}
+      ${'non-trial with url'}                           | ${basePlatform}                                                                                                                                              | ${true}
     `('should show=$shouldShow for $label', ({ platform, shouldShow }) => {
       renderDetails(platform);
       const accessLink = screen.queryByRole('link', { name: /Access/i });
@@ -152,23 +161,127 @@ describe('RegistrationDetails', () => {
 
     it('should not show status row when there is no deployment_request', () => {
       renderDetails(basePlatform);
-      expect(screen.queryByText(/Status:/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.Status/i)
+      ).not.toBeInTheDocument();
     });
   });
 
   describe('Date labels', () => {
     it('should show "Start date" and "End date" for trial, not "Registered on"', () => {
       renderDetails(trialPlatform);
-      expect(screen.getByText(/Start date:/i)).toBeInTheDocument();
-      expect(screen.getByText(/End date:/i)).toBeInTheDocument();
-      expect(screen.queryByText(/Registered on:/i)).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/Register\.Details\.StartDate/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Register\.Details\.EndDate/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.RegisteredOn/i)
+      ).not.toBeInTheDocument();
     });
 
     it('should show "Registered on" for non-trial, not "Start date" or "End date"', () => {
       renderDetails(basePlatform);
-      expect(screen.getByText(/Registered on:/i)).toBeInTheDocument();
-      expect(screen.queryByText(/Start date:/i)).not.toBeInTheDocument();
-      expect(screen.queryByText(/End date:/i)).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/Register\.Details\.RegisteredOn/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.StartDate/i)
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.EndDate/i)
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Access row for trial', () => {
+    it.each`
+      myGroups                                   | expectedText
+      ${[{ name: 'Admin' }, { name: 'Reader' }]} | ${'Admin, Reader'}
+      ${[{ name: 'Manager' }]}                   | ${'Manager'}
+    `(
+      'should show group names when myGroups is provided',
+      ({ myGroups, expectedText }) => {
+        renderDetails({
+          ...trialPlatform,
+          myGroups,
+        });
+
+        expect(screen.getByText(/Access:/i)).toBeInTheDocument();
+        expect(screen.getByText(expectedText)).toBeInTheDocument();
+        expect(
+          screen.queryByText('RegistrationDetails.NoAccess')
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('RegistrationDetails.NoAccessContact')
+        ).not.toBeInTheDocument();
+      }
+    );
+
+    it.each`
+      myGroups     | description
+      ${[]}        | ${'empty array'}
+      ${null}      | ${'null value'}
+      ${undefined} | ${'undefined value'}
+    `(
+      'should show fallback message when myGroups is $description',
+      ({ myGroups }) => {
+        renderDetails({
+          ...trialPlatform,
+          myGroups,
+          deployment_request: {
+            ...trialPlatform.deployment_request!,
+            requester_email: 'admin@filigran.io',
+          },
+        });
+
+        expect(
+          screen.getByText('RegistrationDetails.NoAccess')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('RegistrationDetails.NoAccessContact')
+        ).toBeInTheDocument();
+      }
+    );
+
+    it('should render "No access" in red and contact info without red styling', () => {
+      renderDetails({
+        ...trialPlatform,
+        myGroups: [],
+        deployment_request: {
+          ...trialPlatform.deployment_request!,
+          requester_email: 'admin@filigran.io',
+        },
+      });
+
+      const noAccessEl = screen.getByText('RegistrationDetails.NoAccess');
+      expect(noAccessEl).toHaveClass('text-red-500');
+
+      const contactEl = screen.getByText('RegistrationDetails.NoAccessContact');
+      expect(contactEl).not.toHaveClass('text-red-500');
+    });
+
+    it('should not render access row for non-trial', () => {
+      renderDetails({
+        ...basePlatform,
+        myGroups: [{ name: 'Admin' }],
+      });
+
+      expect(screen.queryByText(/Access:/i)).not.toBeInTheDocument();
+    });
+
+    it('should not render access row for trial that is not ACTIVE', () => {
+      renderDetails({
+        ...trialPlatform,
+        myGroups: [{ name: 'Admin' }],
+        deployment_request: {
+          ...trialPlatform.deployment_request!,
+          hub_status: DeploymentRequestHubStatusEnum.PENDING,
+        },
+      });
+
+      expect(screen.queryByText(/Access:/i)).not.toBeInTheDocument();
     });
   });
 
@@ -179,9 +292,9 @@ describe('RegistrationDetails', () => {
       ${'MANAGE_PLATFORM_REGISTRATION'} | ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]} | ${true}
       ${'no capability'}                | ${[]}                                                        | ${false}
     `(
-      'should show=$shouldShow on trial + ACTIVE when user has $label',
+      'should show=$shouldShow on trial + ACTIVE + myGroups when user has $label',
       ({ capabilities, shouldShow }) => {
-        renderDetails(trialPlatform, {
+        renderDetails(trialPlatformWithAccess, {
           selected_org_capabilities: capabilities,
         });
         if (shouldShow) {
@@ -197,9 +310,9 @@ describe('RegistrationDetails', () => {
     it('should not show when trial but deployment is not ACTIVE', () => {
       renderDetails(
         {
-          ...trialPlatform,
+          ...trialPlatformWithAccess,
           deployment_request: {
-            ...trialPlatform.deployment_request!,
+            ...trialPlatformWithAccess.deployment_request!,
             hub_status: DeploymentRequestHubStatusEnum.PENDING,
           },
         },
@@ -209,6 +322,17 @@ describe('RegistrationDetails', () => {
           ],
         }
       );
+      expect(
+        screen.queryByTestId('manage-users-dialog')
+      ).not.toBeInTheDocument();
+    });
+
+    it('should not show when trial + ACTIVE + capability but no myGroups', () => {
+      renderDetails(trialPlatform, {
+        selected_org_capabilities: [
+          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+        ],
+      });
       expect(
         screen.queryByTestId('manage-users-dialog')
       ).not.toBeInTheDocument();
@@ -225,12 +349,12 @@ describe('RegistrationDetails', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('should not show when trial + ACTIVE + capability but no serviceInstanceId', () => {
+    it('should not show when trial + ACTIVE + myGroups + capability but no serviceInstanceId', () => {
       renderDetails(
         {
-          ...trialPlatform,
+          ...trialPlatformWithAccess,
           subscription: {
-            ...trialPlatform.subscription!,
+            ...trialPlatformWithAccess.subscription!,
             service_instance: null,
           },
         },
@@ -306,7 +430,7 @@ describe('RegistrationDetails', () => {
           typeof useSearchParams
         >
       );
-      renderDetails(trialPlatform, {
+      renderDetails(trialPlatformWithAccess, {
         selected_org_capabilities: [
           OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
         ],
@@ -320,7 +444,7 @@ describe('RegistrationDetails', () => {
       vi.mocked(useSearchParams).mockReturnValue(
         new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>
       );
-      renderDetails(trialPlatform, {
+      renderDetails(trialPlatformWithAccess, {
         selected_org_capabilities: [
           OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
         ],

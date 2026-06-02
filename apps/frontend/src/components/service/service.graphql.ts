@@ -46,6 +46,7 @@ export const serviceInstanceFragment = graphql`
     capabilities
     subscriptions {
       id
+      organization_id
       user_service {
         user {
           id
