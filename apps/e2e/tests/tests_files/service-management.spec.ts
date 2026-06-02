@@ -64,9 +64,10 @@ test.describe('Service Management', () => {
 
     await test.step('Add user that is not in organization', async () => {
       await page.getByRole('button', { name: 'Invite user' }).click();
-      await page.getByPlaceholder('EMAIL').click();
-      await page.getByPlaceholder('EMAIL').fill('user15');
-      await expect(page.getByText('No results found.')).toBeVisible();
+      await page.getByRole('button', { name: 'Email' }).click();
+      await page.getByPlaceholder('Search...').click();
+      await page.getByPlaceholder('Search...').fill('user15');
+      await expect(page.getByText('Not found')).toBeVisible();
       await page.getByRole('button', { name: 'Cancel' }).click();
     });
 

@@ -72,9 +72,11 @@ export default class ServicePage {
 
   async addUserIntoService(userEmail: string) {
     await this.page.getByRole('button', { name: 'Invite user' }).click();
-    await this.page.getByPlaceholder('EMAIL').click();
-    await this.page.getByPlaceholder('EMAIL').fill(userEmail);
+    await this.page.getByRole('button', { name: 'Email' }).click();
+    await this.page.getByPlaceholder('Search...').click();
+    await this.page.getByPlaceholder('Search...').fill(userEmail);
     await this.page.getByText(userEmail).click();
+    await this.page.getByRole('button', { name: 'Email' }).click();
     await this.page.getByRole('dialog').nth(1).press('Enter');
     await this.page.getByLabel('Manage access').click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
@@ -86,9 +88,11 @@ export default class ServicePage {
     capability: string
   ) {
     await this.page.getByRole('button', { name: 'Invite user' }).click();
-    await this.page.getByPlaceholder('EMAIL').click();
-    await this.page.getByPlaceholder('EMAIL').fill('use');
+    await this.page.getByRole('button', { name: 'Email' }).click();
+    await this.page.getByPlaceholder('Search...').click();
+    await this.page.getByPlaceholder('Search...').fill('use');
     await this.page.getByText(userEmail).click();
+    await this.page.getByRole('button', { name: 'Email' }).click();
     await this.page.getByRole('dialog').nth(1).press('Enter');
     await this.page.getByLabel(capability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
