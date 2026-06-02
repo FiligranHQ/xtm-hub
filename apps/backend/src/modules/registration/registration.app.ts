@@ -513,8 +513,7 @@ const mapDomainRegisteredPlatformToGraphQL = (
     __typename: 'RegisteredPlatform',
     id: platform.id,
     platform_id: platform.config?.platform_id ?? platform.id,
-    last_connectivity_check:
-      platform.config?.last_connectivity_check ?? new Date(),
+    last_connectivity_check: platform.config?.last_connectivity_check ?? null,
     tenant_id: platform.config?.tenant_id,
     tenant_name: platform.config?.tenant_name,
     title: platform.config?.platform_title ?? defaultTitle,
