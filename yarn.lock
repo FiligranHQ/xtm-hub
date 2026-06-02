@@ -8714,7 +8714,7 @@ __metadata:
     "@vitest/coverage-v8": "catalog:"
     "@vitest/eslint-plugin": "npm:1.6.18"
     apollo-errors: "npm:1.9.0"
-    auth0: "npm:5.10.0"
+    auth0: "npm:5.11.0"
     body-parser: "npm:2.2.2"
     chokidar: "npm:5.0.0"
     concurrently: "catalog:"
@@ -9316,25 +9316,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0-legacy@npm:auth0@^4.27.0":
-  version: 4.37.0
-  resolution: "auth0@npm:4.37.0"
+"auth0-legacy@npm:auth0@^4.37.1":
+  version: 4.37.1
+  resolution: "auth0@npm:4.37.1"
   dependencies:
     jose: "npm:^4.13.2"
     undici-types: "npm:^6.15.0"
-    uuid: "npm:^9.0.0"
-  checksum: 10/7e6ee62e6223cd2cad83b98e2b278f6c8925a0f242bb14140bd22c50f8a515e074293c6ace10dca69b8a90547fa7d56160825e66950fada689553592da021982
+    uuid: "npm:11.1.1"
+  checksum: 10/d07cd3450b73a4c9cab0f36ead787d4d813508e48558889e43a693048bcc1a815eb40cae04a27aebdee9169e8f024c7245877df9c74f14029698d3ab6c9d1a16
   languageName: node
   linkType: hard
 
-"auth0@npm:5.10.0":
-  version: 5.10.0
-  resolution: "auth0@npm:5.10.0"
+"auth0@npm:5.11.0":
+  version: 5.11.0
+  resolution: "auth0@npm:5.11.0"
   dependencies:
-    auth0-legacy: "npm:auth0@^4.27.0"
+    auth0-legacy: "npm:auth0@^4.37.1"
     jose: "npm:^4.13.2"
     uuid: "npm:^11.1.1"
-  checksum: 10/395195ab35ee3c28ad8a4d9f64c25ad1efc34d2591b6276151426f63af2d05f9f68a81f85b94f33d1bc12eed7c85888ac375fe5f6a6cd1897222382b63ac76ce
+  checksum: 10/c40d31868a7a1495f8b3be76d3de67601994051b0556bfd387aa157113e5af84ca0b590a8573c25ae15454810d4dfb7f2db1d15f101f30012d0936056e88b184
   languageName: node
   linkType: hard
 
@@ -20460,16 +20460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:14.0.0":
-  version: 14.0.0
-  resolution: "uuid@npm:14.0.0"
-  bin:
-    uuid: dist-node/bin/uuid
-  checksum: 10/8ee9b98f9650e25555515f7a28d3c3ae9364e72f7bb19b9e08b681bc135338beba5509b2830f6ae1cfaba4d45401da0d16d4d109b977097bc3d6ba0c5583341b
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^11.1.1":
+"uuid@npm:11.1.1, uuid@npm:^11.1.1":
   version: 11.1.1
   resolution: "uuid@npm:11.1.1"
   bin:
@@ -20478,12 +20469,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^9.0.0":
-  version: 9.0.1
-  resolution: "uuid@npm:9.0.1"
+"uuid@npm:14.0.0":
+  version: 14.0.0
+  resolution: "uuid@npm:14.0.0"
   bin:
-    uuid: dist/bin/uuid
-  checksum: 10/9d0b6adb72b736e36f2b1b53da0d559125ba3e39d913b6072f6f033e0c87835b414f0836b45bcfaf2bdf698f92297fea1c3cc19b0b258bc182c9c43cc0fab9f2
+    uuid: dist-node/bin/uuid
+  checksum: 10/8ee9b98f9650e25555515f7a28d3c3ae9364e72f7bb19b9e08b681bc135338beba5509b2830f6ae1cfaba4d45401da0d16d4d109b977097bc3d6ba0c5583341b
   languageName: node
   linkType: hard
 
