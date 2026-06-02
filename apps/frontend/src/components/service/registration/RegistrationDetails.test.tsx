@@ -161,23 +161,37 @@ describe('RegistrationDetails', () => {
 
     it('should not show status row when there is no deployment_request', () => {
       renderDetails(basePlatform);
-      expect(screen.queryByText(/Status:/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.Status/i)
+      ).not.toBeInTheDocument();
     });
   });
 
   describe('Date labels', () => {
     it('should show "Start date" and "End date" for trial, not "Registered on"', () => {
       renderDetails(trialPlatform);
-      expect(screen.getByText(/Start date:/i)).toBeInTheDocument();
-      expect(screen.getByText(/End date:/i)).toBeInTheDocument();
-      expect(screen.queryByText(/Registered on:/i)).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/Register\.Details\.StartDate/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Register\.Details\.EndDate/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.RegisteredOn/i)
+      ).not.toBeInTheDocument();
     });
 
     it('should show "Registered on" for non-trial, not "Start date" or "End date"', () => {
       renderDetails(basePlatform);
-      expect(screen.getByText(/Registered on:/i)).toBeInTheDocument();
-      expect(screen.queryByText(/Start date:/i)).not.toBeInTheDocument();
-      expect(screen.queryByText(/End date:/i)).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/Register\.Details\.RegisteredOn/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.StartDate/i)
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.EndDate/i)
+      ).not.toBeInTheDocument();
     });
   });
 

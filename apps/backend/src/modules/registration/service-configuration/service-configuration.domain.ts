@@ -100,7 +100,13 @@ export const ServiceConfigurationDomain = {
     const schema = z.fromJSONSchema(
       serviceContract.schema as Parameters<typeof z.fromJSONSchema>[0]
     );
-    const { success, error } = schema.safeParse(config);
+    const serializedConfig = Object.fromEntries(
+      Object.entries(config).map(([key, value]) => [
+        key,
+        value instanceof Date ? value.toISOString() : value,
+      ])
+    );
+    const { success, error } = schema.safeParse(serializedConfig);
     if (!success) {
       logApp.error('Invalid service configuration', { error });
     }

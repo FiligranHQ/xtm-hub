@@ -6,7 +6,7 @@ import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpd
 import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
 import { TrialCancelSheet } from '@/components/service/trial-instances/TrialCancelSheet';
-import { formatDate } from '@/utils/date';
+import { formatDate, isWithinLastMonths } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { Button } from '@filigran/ui/servers';
 import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
@@ -87,18 +87,27 @@ export const RegistrationDetails = ({
     platform.deployment_request?.hub_status ===
       DeploymentRequestHubStatusEnum.ACTIVE;
 
+  const isConnectionStatusOk = isWithinLastMonths(
+    new Date(platform.last_connectivity_check),
+    1
+  );
+
   return (
     <section className="flex justify-between p-xl border border-solid border-blue rounded">
       <ul className="text-sm flex flex-col gap-l">
         {platform.title && (
           <li>
-            <span className="text-gray/60">Platform name:</span>{' '}
+            <span className="text-gray/60">
+              {t('Register.Details.PlatformName')}:
+            </span>{' '}
             {platform.title}
           </li>
         )}
         {platform.deployment_request?.hub_status && (
           <li>
-            <span className="text-gray/60">Status:</span>{' '}
+            <span className="text-gray/60">
+              {t('Register.Details.Status')}:
+            </span>{' '}
             {formatTitleCase(platform.deployment_request?.hub_status)}
             {isCancellable && (
               <Button
@@ -112,14 +121,19 @@ export const RegistrationDetails = ({
         {isTrial ? (
           <>
             <li>
-              <span className="text-gray/60">Start date:</span>{' '}
+              <span className="text-gray/60">
+                {t('Register.Details.StartDate')}:
+              </span>{' '}
               {platform.subscription?.start_date &&
               platform.subscription.end_date
                 ? formatDate(platform.subscription.start_date)
                 : '-'}
             </li>
             <li>
-              <span className="text-gray/60">End date:</span>{' '}
+              <span className="text-gray/60">
+                {' '}
+                {t('Register.Details.EndDate')}:
+              </span>{' '}
               {platform.subscription?.end_date
                 ? formatDate(platform.subscription?.end_date)
                 : '-'}
@@ -128,7 +142,9 @@ export const RegistrationDetails = ({
         ) : (
           <>
             <li>
-              <span className="text-gray/60">Registered on:</span>{' '}
+              <span className="text-gray/60">
+                {t('Register.Details.RegisteredOn')}:
+              </span>{' '}
               {platform.subscription?.start_date
                 ? formatDate(platform.subscription.start_date)
                 : '-'}
@@ -138,17 +154,56 @@ export const RegistrationDetails = ({
 
         {platform.deployment_request?.region && (
           <li>
-            <span className="text-gray/60">Region:</span>{' '}
+            <span className="text-gray/60">
+              {' '}
+              {t('Register.Details.Region')}:
+            </span>{' '}
             {t(`Region.${platform.deployment_request.region.toUpperCase()}`)}
           </li>
         )}
         <li>
-          <span className="text-gray/60">License:</span> Enterprise Edition
+          <span className="text-gray/60">{t('Register.Details.License')}:</span>{' '}
+          {platform.contract === 'CE'
+            ? t('Register.Details.Contracts.CE')
+            : t('Register.Details.Contracts.EE')}
+        </li>
+        <li>
+          <span className="text-gray/60">
+            {t('Register.Details.ConnectionStatus.Title')}:
+          </span>{' '}
+          <span
+            className={
+              isConnectionStatusOk ? 'text-green-500' : 'text-red-500'
+            }>
+            {isConnectionStatusOk ? (
+              t('Register.Details.ConnectionStatus.Connected')
+            ) : (
+              <span>
+                {t('Register.Details.ConnectionStatus.NotConnected')}
+                {'. '}
+              </span>
+            )}
+          </span>
+          {!isConnectionStatusOk && (
+            <span>
+              {t('Register.Details.ConnectionStatus.NotConnectedDetails')}
+            </span>
+          )}
+        </li>
+        <li>
+          <span className="text-gray/60">
+            {t('Register.Details.LastConnectionCheck')}:
+          </span>{' '}
+          {platform.last_connectivity_check
+            ? formatDate(platform.last_connectivity_check)
+            : '-'}
         </li>
         <li>
           {isTrialActive && (
             <span>
-              <span className="text-gray/60">Access:</span>{' '}
+              <span className="text-gray/60">
+                {t('Register.Details.Access')}:
+              </span>{' '}
               {userHasTrialAccess ? (
                 <span>
                   {(platform.myGroups ?? [])
@@ -178,7 +233,7 @@ export const RegistrationDetails = ({
               target="_blank"
               rel="noopener noreferrer"
               href={platform.url}>
-              Access {displayedIdentifier}
+              {t('Register.Details.Access')} {displayedIdentifier}
             </Link>
           </Button>
         )}

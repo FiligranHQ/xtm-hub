@@ -41,6 +41,7 @@ export type PlatformConfiguration = {
   platform_title: string;
   platform_version: string;
   platform_contract: PlatformContract;
+  last_connectivity_check: Date;
   token: string;
 };
 

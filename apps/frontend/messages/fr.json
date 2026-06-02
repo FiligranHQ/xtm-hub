@@ -207,7 +207,7 @@
       "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
       "INVALID_SERVICE_CONFIGURATION": "La configuration du service n'est pas valide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
-      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Argument d'enregistrement automatique de la plate-forme manquant",
+      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Argument d'enregistrement automatique de la plateforme manquant",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
@@ -580,10 +580,25 @@
         "CE": "Édition communautaire",
         "EE": "Édition Entreprise"
       },
+      "ConnectionStatus": {
+        "Title": "Statut de connexion",
+        "Connected": "Connecté",
+        "NotConnected": "Connexion perdue",
+        "NotConnectedDetails": "Vous devez à nouveau enregistrer votre plateforme."
+      },
       "Description": "Cliquez ici pour accéder à votre plateforme privée.",
       "PlatformID": "ID de la plateforme",
+      "PlatformName": "Nom de la plateforme",
       "PlatformURL": "URL de la plateforme",
-      "PrivatePlatform": "Plateforme privée"
+      "StartDate": "Date de début",
+      "EndDate": "Date de fin",
+      "RegisteredOn": "Enregistré le",
+      "Region": "Région",
+      "License": "Licence",
+      "Status": "Statut",
+      "PrivatePlatform": "Plateforme privée",
+      "LastConnectionCheck": "Dernier contrôle de connexion",
+      "Access": "Accès"
     },
     "Error": {
       "Capability": {
@@ -1173,7 +1188,7 @@
           "Blocks": {
             "First": {
               "Title": "Ingestion",
-              "Description": "Consolidez et enrichissez les renseignements sur les menaces à partir de n'importe quel flux - commercial, open-source, interne - dans une plate-forme centralisée, en tirant parti de plus de 300 intégrations et en vous appuyant sur le cadre STIX 2.1. Utilisez l'importation assistée par l'IA des rapports CTI pour économiser d'innombrables heures d'analyse."
+              "Description": "Consolidez et enrichissez les renseignements sur les menaces à partir de n'importe quel flux - commercial, open-source, interne - dans une plateforme centralisée, en tirant parti de plus de 300 intégrations et en vous appuyant sur le cadre STIX 2.1. Utilisez l'importation assistée par l'IA des rapports CTI pour économiser d'innombrables heures d'analyse."
             },
             "Second": {
               "Title": "Traitement",

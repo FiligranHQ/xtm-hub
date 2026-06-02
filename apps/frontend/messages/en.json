@@ -580,10 +580,25 @@
         "CE": "Community Edition",
         "EE": "Enterprise Edition"
       },
+      "ConnectionStatus": {
+        "Title": "Connection status",
+        "Connected": "Connected",
+        "NotConnected": "Connection lost",
+        "NotConnectedDetails": "You should register your platform again."
+      },
       "Description": "Click here to access your Private Platform.",
       "PlatformID": "Platform ID",
+      "PlatformName": "Platform name",
       "PlatformURL": "Platform URL",
-      "PrivatePlatform": "Private platform"
+      "StartDate": "Start date",
+      "EndDate": "End date",
+      "RegisteredOn": "Registered on",
+      "Region": "Region",
+      "License": "License",
+      "Status": "Status",
+      "PrivatePlatform": "Private platform",
+      "LastConnectionCheck": "Last connection check",
+      "Access": "Access"
     },
     "Error": {
       "Capability": {
