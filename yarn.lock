@@ -7310,6 +7310,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/picomatch@npm:^4.0.0":
+  version: 4.0.3
+  resolution: "@types/picomatch@npm:4.0.3"
+  checksum: 10/6aa8d30d0c868ad1b09f695ecf9a40025277a2f862cb7e9814c4ea3c36295ec546450726d9862667eb326d927815c90c1168af51b9c0e830e9e5e014c12a45a6
+  languageName: node
+  linkType: hard
+
 "@types/prismjs@npm:^1.0.0":
   version: 1.26.6
   resolution: "@types/prismjs@npm:1.26.6"
@@ -7877,6 +7884,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@unicode/unicode-17.0.0@npm:^1.6.16":
+  version: 1.6.16
+  resolution: "@unicode/unicode-17.0.0@npm:1.6.16"
+  checksum: 10/0a619c8ca4e2fd90e3aad7e783cf89ce2bc5b1873c90c5a6d6ebf5d0d2c0382a519d855a15daa56a3c214dface795e4e23418ffe0f25b19562454b9c24bb0b77
+  languageName: node
+  linkType: hard
+
 "@unrs/resolver-binding-android-arm-eabi@npm:1.11.1":
   version: 1.11.1
   resolution: "@unrs/resolver-binding-android-arm-eabi@npm:1.11.1"
@@ -8313,6 +8327,7 @@ __metadata:
     eslint: "catalog:"
     eslint-config-next: "npm:16.2.6"
     eslint-config-prettier: "catalog:"
+    eslint-plugin-formatjs: "npm:6.4.13"
     extract-files: "npm:13.0.0"
     graphql: "catalog:"
     graphql-codegen-typescript-mock-data: "npm:5.1.1"
@@ -11104,6 +11119,22 @@ __metadata:
     eslint:
       optional: true
   checksum: 10/bd25d6610ec3abaa50e8f1beb0119541562bbb8dd02c035c7e887976fe1e0c5dd8175f4607ca8d86d1146df24d52a071bd3d1dd329f6902bd58df805a8ca16d3
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-formatjs@npm:6.4.13":
+  version: 6.4.13
+  resolution: "eslint-plugin-formatjs@npm:6.4.13"
+  dependencies:
+    "@formatjs/icu-messageformat-parser": "npm:3.5.10"
+    "@formatjs/ts-transformer": "npm:4.4.11"
+    "@types/picomatch": "npm:^4.0.0"
+    "@unicode/unicode-17.0.0": "npm:^1.6.16"
+    magic-string: "npm:^0.30.0"
+    picomatch: "npm:2 || 3 || 4"
+  peerDependencies:
+    eslint: 9 || 10
+  checksum: 10/0a601ace5ed31b8910f6074990030ff922b3a95907e215541dfb041fb95903ef23e95f3fc71b36857e0c35f5fed128c1097baeb84b4c05b2d44d987c3696f0af
   languageName: node
   linkType: hard
 
@@ -14644,7 +14675,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.30.21":
+"magic-string@npm:^0.30.0, magic-string@npm:^0.30.21":
   version: 0.30.21
   resolution: "magic-string@npm:0.30.21"
   dependencies:
@@ -16714,17 +16745,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"picomatch@npm:2 || 3 || 4, picomatch@npm:^4.0.3, picomatch@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "picomatch@npm:4.0.4"
+  checksum: 10/f6ef80a3590827ce20378ae110ac78209cc4f74d39236370f1780f957b7ee41c12acde0e4651b90f39983506fd2f5e449994716f516db2e9752924aff8de93ce
+  languageName: node
+  linkType: hard
+
 "picomatch@npm:^2.3.1":
   version: 2.3.2
   resolution: "picomatch@npm:2.3.2"
   checksum: 10/b788ef8148a2415b9dec12f0bb350ae6a5830f8f1950e472abc2f5225494debf7d1b75eb031df0ceaea9e8ec3e7bad599e8dbf3c60d61b42be429ba41bff4426
-  languageName: node
-  linkType: hard
-
-"picomatch@npm:^4.0.3, picomatch@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "picomatch@npm:4.0.4"
-  checksum: 10/f6ef80a3590827ce20378ae110ac78209cc4f74d39236370f1780f957b7ee41c12acde0e4651b90f39983506fd2f5e449994716f516db2e9752924aff8de93ce
   languageName: node
   linkType: hard
 

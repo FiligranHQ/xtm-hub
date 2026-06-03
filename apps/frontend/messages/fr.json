@@ -260,6 +260,9 @@
     }
   },
   "GoToProd": "Allez sur la production",
+  "Header": {
+    "BrandName": "Filigran"
+  },
   "HomePage": {
     "Homepage": "Page d'accueil",
     "Manage": "Gérer",
@@ -267,6 +270,9 @@
   },
   "PublicHomePage": {
     "Title": "Découvrez nos ressources et notre expertise"
+  },
+  "PublicPathError": {
+    "NotFound": "404 | Cette page est introuvable"
   },
   "PublicLayout": {
     "SignIn": "Connexion",
@@ -776,6 +782,8 @@
     "Connectors": {
       "DataImport": "Importation de données",
       "Description": "Explorer une gamme de connecteurs OpenCTI partagés par l'équipe Filigran",
+      "ImproveIntegrationPrefix": "Si vous souhaitez améliorer cette intégration, veuillez consulter",
+      "GithubRepositoryLink": "le lien du dépôt github ici",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Dernière vérification",
       "Name": "Connecteurs OpenCTI",
@@ -788,6 +796,7 @@
     "CreationStatus": "Statut de la création",
     "Form": {
       "Author": "Auteur",
+      "CapabilityAccessLabel": "Accès {name} : {description}",
       "ContainerImageLabel": "Image du conteneur",
       "CurrentLogo": "Logo actuel",
       "DatasheetUrlLabel": "Lien vers la fiche technique (url)",
@@ -806,6 +815,7 @@
       "ImageLabel": "Images",
       "LogoLabel": "Logo",
       "ManagerSupportedLabel": "Gestionnaire pris en charge",
+      "ManageAccessCapabilityLabel": "Accès de gestion : l'utilisateur peut inviter d'autres utilisateurs de son organisation à ce service",
       "MinimumDeployableVersionLabel": "Version minimale pour déployer sur {platform}",
       "MinimumDeployableVersionPlaceholder": "1.0.0",
       "NameLabel": "Nom",
@@ -1152,7 +1162,9 @@
       "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
       "Header": {
         "ActiveTrial": "Essai actif",
-        "DaysRemaining": "jours restant"
+        "ActiveTrialCount": "{count} essai actif{count, plural, one {} other {s}}",
+        "DaysRemaining": "jours restant",
+        "OpenInNewTab": "Ouvrir {title} dans un nouvel onglet"
       },
       "LearnMore": {
         "Link": "En savoir plus",
@@ -1344,6 +1356,9 @@
   },
   "ServiceName": {
     "custom_dashboards": "Tableau de bord personnalisé"
+  },
+  "SelectUsers": {
+    "ClearAllSelections": "Effacer toutes les sélections"
   },
   "Sort Asc": "Tri Asc",
   "Sort Desc": "Sort Desc",

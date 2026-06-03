@@ -2,6 +2,7 @@
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { ErrorPage } from '@/components/ui/ErrorPage';
 import { isProduction } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useRelayEnvironment } from 'react-relay';
 
@@ -11,6 +12,7 @@ interface PublicPathErrorProps {
 
 const PublicPathError = ({ error }: PublicPathErrorProps) => {
   const env = useRelayEnvironment();
+  const t = useTranslations();
   useEffect(() => {
     if (isProduction()) {
       logFrontendError(
@@ -24,7 +26,7 @@ const PublicPathError = ({ error }: PublicPathErrorProps) => {
 
   return (
     <ErrorPage>
-      <p className="text-center">404 | This page could not be found </p>
+      <p className="text-center">{t('PublicPathError.NotFound')}</p>
     </ErrorPage>
   );
 };

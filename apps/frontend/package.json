@@ -79,6 +79,7 @@
     "eslint": "catalog:",
     "eslint-config-next": "16.2.6",
     "eslint-config-prettier": "catalog:",
+    "eslint-plugin-formatjs": "6.4.13",
     "graphql-codegen-typescript-mock-data": "5.1.1",
     "husky": "catalog:",
     "i18n-auto-translation": "2.2.3",

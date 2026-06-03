@@ -260,6 +260,9 @@
     }
   },
   "GoToProd": "プロダクションへ",
+  "Header": {
+    "BrandName": "Filigran"
+  },
   "HomePage": {
     "Homepage": "ホームページ",
     "Manage": "管理する",
@@ -267,6 +270,9 @@
   },
   "PublicHomePage": {
     "Title": "リソースと専門知識の発見"
+  },
+  "PublicPathError": {
+    "NotFound": "404 | このページは見つかりませんでした"
   },
   "PublicLayout": {
     "SignIn": "サインイン",
@@ -776,6 +782,8 @@
     "Connectors": {
       "DataImport": "データインポート",
       "Description": "フィリグランチームが共有するOpenCTIコネクタの数々をご覧ください。",
+      "ImproveIntegrationPrefix": "この統合を改善したい場合は、こちらをご確認ください",
+      "GithubRepositoryLink": "github リポジトリへのリンク",
       "IntegrationDocumentationAndCode": "統合ドキュメントとコード",
       "LastVerifiedDate": "最終確認日",
       "Name": "OpenCTIコネクタ",
@@ -788,6 +796,7 @@
     "CreationStatus": "作成ステータス",
     "Form": {
       "Author": "作成者",
+      "CapabilityAccessLabel": "{name} アクセス: {description}",
       "ContainerImageLabel": "コンテナイメージ",
       "CurrentLogo": "現在のロゴ",
       "DatasheetUrlLabel": "データシート・リンク（URL）",
@@ -806,6 +815,7 @@
       "ImageLabel": "画像",
       "LogoLabel": "ロゴ",
       "ManagerSupportedLabel": "マネージャー",
+      "ManageAccessCapabilityLabel": "アクセス管理: ユーザーは所属組織の他ユーザーをこのサービスに招待できます",
       "MinimumDeployableVersionLabel": "{platform} ハブのバージョンからデプロイ可能",
       "MinimumDeployableVersionPlaceholder": "1.0.0",
       "NameLabel": "名前",
@@ -1152,7 +1162,9 @@
       "DaysRemaining": "{days, plural, =1 {# 日残り} other {# 日残り}}",
       "Header": {
         "ActiveTrial": "アクティブトライアル",
-        "DaysRemaining": "残りの日"
+        "ActiveTrialCount": "{count} 件のアクティブトライアル{count, plural, one {} other {s}}",
+        "DaysRemaining": "残りの日",
+        "OpenInNewTab": "{title} を新しいタブで開く"
       },
       "LearnMore": {
         "Link": "もっと詳しく",
@@ -1344,6 +1356,9 @@
   },
   "ServiceName": {
     "custom_dashboards": "カスタムダッシュボード"
+  },
+  "SelectUsers": {
+    "ClearAllSelections": "すべての選択をクリア"
   },
   "Sort Asc": "ソート",
   "Sort Desc": "降順ソート",

@@ -234,7 +234,10 @@ export const ServiceSlugOrgaForm = ({
                       <label
                         htmlFor={id}
                         className="txt-sub-content cursor-pointer">
-                        {name} access: {description}
+                        {t('Service.Form.CapabilityAccessLabel', {
+                          name,
+                          description,
+                        })}
                       </label>
                     </FormItem>
                   )}
