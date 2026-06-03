@@ -62,7 +62,7 @@ export type AddServiceInput = {
 };
 
 export type AddSubscriptionCapabilityInput = {
-  capabilitiesId: Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>;
+  capabilitiesId: Array<Scalars['Service_CapabilityId']['input']>;
   subscriptionsId: Array<Scalars['SubscriptionId']['input']>;
 };
 
@@ -241,7 +241,7 @@ export type CreateEpicInput = {
 };
 
 export type CreateSubscriptionsInput = {
-  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
+  capability_ids: InputMaybe<Array<Scalars['Service_CapabilityId']['input']>>;
   end_date: InputMaybe<Scalars['Date']['input']>;
   organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
@@ -692,7 +692,7 @@ export enum FiligranProduct {
 }
 
 export type Filter = {
-  key: InputMaybe<FilterKey>;
+  key: FilterKey;
   value: Array<Scalars['String']['input']>;
 };
 
@@ -966,7 +966,7 @@ export type MutationAdminAddUserArgs = {
 
 
 export type MutationAdminCancelDeploymentRequestArgs = {
-  deploymentRequestId: InputMaybe<Scalars['DeploymentRequestId']['input']>;
+  deploymentRequestId: Scalars['DeploymentRequestId']['input'];
 };
 
 
@@ -983,12 +983,12 @@ export type MutationAutoRegisterPlatformArgs = {
 
 
 export type MutationBulkAcceptPendingUserInOrganizationArgs = {
-  input: InputMaybe<BulkPendingUserFromOrganizationInput>;
+  input: BulkPendingUserFromOrganizationInput;
 };
 
 
 export type MutationBulkRemovePendingUserFromOrganizationArgs = {
-  input: InputMaybe<BulkPendingUserFromOrganizationInput>;
+  input: BulkPendingUserFromOrganizationInput;
 };
 
 
@@ -1016,7 +1016,7 @@ export type MutationCreateCompetitorArgs = {
 
 
 export type MutationCreateDeploymentRequestArgs = {
-  input: InputMaybe<CreateDeploymentRequestInput>;
+  input: CreateDeploymentRequestInput;
 };
 
 
@@ -1025,7 +1025,7 @@ export type MutationCreateDocumentArgs = {
   input: CreateDocumentInput;
   logo: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
   sourceDocument: InputMaybe<Scalars['Upload']['input']>;
 };
 
@@ -1037,7 +1037,7 @@ export type MutationCreateEpicArgs = {
 
 
 export type MutationCreateSubscriptionsArgs = {
-  input: InputMaybe<CreateSubscriptionsInput>;
+  input: CreateSubscriptionsInput;
 };
 
 
@@ -1047,9 +1047,9 @@ export type MutationDeleteCompetitorArgs = {
 
 
 export type MutationDeleteDocumentArgs = {
-  documentId: InputMaybe<Scalars['DocumentId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
   forceDelete: InputMaybe<Scalars['Boolean']['input']>;
-  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1127,7 +1127,7 @@ export type MutationFrontendErrorLogArgs = {
 
 
 export type MutationIncrementShareNumberDocumentArgs = {
-  documentId: InputMaybe<Scalars['DocumentId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
 };
 
 
@@ -1175,7 +1175,7 @@ export type MutationReorderDeploymentRequestInQueueArgs = {
 
 
 export type MutationRequestTransferPersonalSpaceArgs = {
-  new_email: InputMaybe<Scalars['String']['input']>;
+  new_email: Scalars['String']['input'];
 };
 
 
@@ -1185,7 +1185,7 @@ export type MutationTransferPersonalSpaceArgs = {
 
 
 export type MutationUnregisterPlatformArgs = {
-  input: InputMaybe<UnregisterPlatformInput>;
+  input: UnregisterPlatformInput;
 };
 
 
@@ -1211,7 +1211,7 @@ export type MutationUpdateDocumentArgs = {
   input: UpdateDocumentInput;
   logo: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
   sourceDocument: InputMaybe<Scalars['Upload']['input']>;
 };
 
@@ -1596,7 +1596,7 @@ export type QueryDeploymentRequestsArgs = {
 
 
 export type QueryDeploymentRequestsAvailableArgs = {
-  platformIdentifier: InputMaybe<PlatformIdentifier>;
+  platformIdentifier: PlatformIdentifier;
 };
 
 
@@ -1611,8 +1611,8 @@ export type QueryDeploymentRequestsListArgs = {
 
 
 export type QueryDocumentArgs = {
-  documentId: InputMaybe<Scalars['DocumentId']['input']>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1723,7 +1723,7 @@ export type QueryRegisteredPlatformArgs = {
 
 
 export type QueryRegisteredPlatformsArgs = {
-  input: InputMaybe<RegisteredPlatformsInput>;
+  input: RegisteredPlatformsInput;
 };
 
 
@@ -1738,12 +1738,12 @@ export type QueryServiceGroupsArgs = {
 
 
 export type QueryServiceInstanceByIdArgs = {
-  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
 export type QueryServiceInstanceByIdAndGrantAccessArgs = {
-  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1778,12 +1778,12 @@ export type QuerySubscriptionsArgs = {
 
 
 export type QueryTrialDeploymentsArgs = {
-  input: InputMaybe<TrialDeploymentsInput>;
+  input: TrialDeploymentsInput;
 };
 
 
 export type QueryUpdateOpenCtiManifestArgs = {
-  tag: InputMaybe<Scalars['String']['input']>;
+  tag: Scalars['String']['input'];
 };
 
 
@@ -2405,7 +2405,7 @@ export type UpdateServiceGroupsInputGroup = {
 };
 
 export type UpdateSubscriptionInput = {
-  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
+  capability_ids: InputMaybe<Array<Scalars['Service_CapabilityId']['input']>>;
   end_date: InputMaybe<Scalars['Date']['input']>;
   start_date: InputMaybe<Scalars['Date']['input']>;
 };
@@ -2495,7 +2495,7 @@ export type UserService = Node & {
 };
 
 export type UserServiceAddInput = {
-  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities: InputMaybe<Array<Scalars['String']['input']>>;
   email: Array<Scalars['String']['input']>;
   subscription_id: Scalars['SubscriptionId']['input'];
 };
@@ -2534,7 +2534,7 @@ export type UserServiceEdge = {
 };
 
 export type UserServiceEditInput = {
-  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities: Array<Scalars['String']['input']>;
   userServiceId: Scalars['User_ServiceId']['input'];
 };
 
@@ -2551,7 +2551,7 @@ export enum UserServiceOrdering {
 }
 
 export type UserServicesAddCapabilitiesInput = {
-  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities: Array<Scalars['String']['input']>;
   userServiceIds: Array<Scalars['User_ServiceId']['input']>;
 };
 

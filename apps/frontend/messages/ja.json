@@ -242,6 +242,7 @@
       "UPLOAD_USER_PICTURE_ERROR": "プロフィール写真のアップロード中にエラーが発生した",
       "USER_DISABLED": "ユーザーが無効です",
       "USER_IS_NOT_IN_ORGANIZATION": "権限がありません",
+      "USER_NOT_FOUND": "ユーザーが見つかりません",
       "YOU_CAN_NOT_LOGIN": "ログインできません"
     },
     "SomethingWentWrong": "何かが間違っている",

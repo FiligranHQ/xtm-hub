@@ -19,7 +19,7 @@ type ServiceCapability implements Node {
 
 input UserServicesAddCapabilitiesInput {
   userServiceIds: [UserServiceId!]!
-  capabilities: [String]
+  capabilities: [String!]!
 }
 
 type Mutation {

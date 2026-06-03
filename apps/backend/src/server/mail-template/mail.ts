@@ -50,8 +50,8 @@ export interface AdminSaasInstanceRequestedModel {
   userName: string;
   userEmail: string;
   region: string;
-  activitySector: string;
-  useCase: string;
+  activitySector?: string;
+  useCase?: string;
   platformIdentifier: string;
   deploymentType: string;
 }

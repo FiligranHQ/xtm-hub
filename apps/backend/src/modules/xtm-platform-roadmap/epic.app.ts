@@ -16,6 +16,7 @@ import { assertUserHasCapaOnService } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
+import { nullsToUndefined } from '../../utils/typescript';
 import {
   DocumentUploadsHelper,
   Upload,
@@ -107,7 +108,7 @@ export const EpicApp = {
       oldEpic = await EpicDomain.loadEpicsBy({ id });
     }
     const epicData: Partial<Epic> = {
-      ...restInput,
+      ...nullsToUndefined(restInput),
       updater_id: user.id,
       updated_at: new Date(),
       epic_type: is_integration ? EpicType.Integration : EpicType.Other,

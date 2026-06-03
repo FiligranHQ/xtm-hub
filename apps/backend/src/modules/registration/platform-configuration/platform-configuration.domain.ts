@@ -64,7 +64,7 @@ const resolvePlatformFromJoinedRow = (
 };
 
 const buildJoinedConfigurationQuery = () =>
-  db('PlatformConfiguration')
+  db<PlatformConfiguration>('PlatformConfiguration')
     .leftJoin(
       'ServiceInstance',
       'ServiceInstance.id',

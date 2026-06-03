@@ -22,7 +22,7 @@ export default interface ServiceInstance {
 
   tags: ServiceInstanceTag[] | null;
 
-  service_definition_id: ServiceDefinitionId | null;
+  service_definition_id: ServiceDefinitionId;
 
   logo_document_id: DocumentId | null;
 
@@ -48,7 +48,7 @@ export interface ServiceInstanceInitializer {
 
   tags?: ServiceInstanceTag[] | null;
 
-  service_definition_id?: ServiceDefinitionId | null;
+  service_definition_id: ServiceDefinitionId;
 
   logo_document_id?: DocumentId | null;
 
@@ -74,7 +74,7 @@ export interface ServiceInstanceMutator {
 
   tags?: ServiceInstanceTag[] | null;
 
-  service_definition_id?: ServiceDefinitionId | null;
+  service_definition_id?: ServiceDefinitionId;
 
   logo_document_id?: DocumentId | null;
 

@@ -54,13 +54,14 @@ const Page = () => {
     useQueryLoader<registerRegisteredPlatformsQuery>(
       RegisterRegisteredPlatformsQueryGraphql
     );
-  useMountingLoader(loadQueryRegisteredPlatforms, {
-    fetchPolicy: 'network-only',
-  });
+  useMountingLoader(loadQueryRegisteredPlatforms, { input: {} });
 
   useEffect(() => {
     const handleRefresh = () => {
-      loadQueryRegisteredPlatforms({}, { fetchPolicy: 'network-only' });
+      loadQueryRegisteredPlatforms(
+        { input: {} },
+        { fetchPolicy: 'network-only' }
+      );
     };
 
     window.addEventListener('refresh-registered-platforms', handleRefresh);

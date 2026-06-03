@@ -5,6 +5,7 @@ import {
   addRoleToUser,
   ensureUserOrganizationExist,
 } from '../../../server/initialize.helper';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { isEmptyField } from '../../../utils/utils';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
@@ -21,6 +22,9 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   const isFiligranUser = email.endsWith('@filigran.io');
 
   const user = await getOrCreateUser(userInfo, true, isFiligranUser);
+  if (!user) {
+    throw new Error(ErrorCode.UserNotFound);
+  }
   if (user.disabled) {
     throw ForbiddenAccess('You are not allowed to log in');
   }
@@ -32,7 +36,11 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
       await Promise.all(
         userInfo.roles.map((role) => addRoleToUser(user.id, role))
       );
-      return UserDomain.loadUserBy({ 'User.id': user.id });
+      const reloadedUser = await UserDomain.loadUserBy({ 'User.id': user.id });
+      if (!reloadedUser) {
+        throw new Error(ErrorCode.UserNotFound);
+      }
+      return reloadedUser;
     }
   }
 

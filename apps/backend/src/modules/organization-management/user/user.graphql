@@ -136,10 +136,10 @@ type Mutation {
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   changeSelectedOrganization(organization_id: OrganizationId!): User @auth
   bulkRemovePendingUserFromOrganization(
-    input: BulkPendingUserFromOrganizationInput
+    input: BulkPendingUserFromOrganizationInput!
   ): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   bulkAcceptPendingUserInOrganization(
-    input: BulkPendingUserFromOrganizationInput
+    input: BulkPendingUserFromOrganizationInput!
   ): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   removePendingUserFromOrganization(
     user_id: UserId!
@@ -154,7 +154,7 @@ type Mutation {
   editMeUser(input: EditMeUserInput!): User! @auth
   uploadUserPicture(document: Upload!): User! @auth
   resetPassword: Success! @auth
-  requestTransferPersonalSpace(new_email: String): Success! @auth
+  requestTransferPersonalSpace(new_email: String!): Success! @auth
   transferPersonalSpace(requestId: ID!): Success! @auth
 
   # Login

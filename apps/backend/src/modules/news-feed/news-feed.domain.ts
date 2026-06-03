@@ -48,13 +48,15 @@ export const NewsFeedDomain = {
         ({ news_feed_item_id }) => news_feed_item_id
       );
 
-      const newsFeedItems: NewsFeedItem[] = await db('NewsFeedItem')
+      const newsFeedItems: NewsFeedItem[] = await db<NewsFeedItem[]>(
+        'NewsFeedItem'
+      )
         .whereIn('id', newsFeedItemIds)
         .select('*');
 
-      const allMetadata: NewsFeedItemMetadata[] = await db(
-        'NewsFeedItemMetadata'
-      )
+      const allMetadata: NewsFeedItemMetadata[] = await db<
+        NewsFeedItemMetadata[]
+      >('NewsFeedItemMetadata')
         .whereIn('news_feed_item_id', newsFeedItemIds)
         .select('*');
 

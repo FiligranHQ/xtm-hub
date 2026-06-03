@@ -8,9 +8,9 @@ export type UseCaseId = string & { __brand: 'public.UseCase' };
 export default interface UseCase {
   id: UseCaseId;
 
-  name: string | null;
+  name: string;
 
-  color: string | null;
+  color: string;
 }
 
 /** Represents the initializer for the table public.UseCase */
@@ -18,16 +18,16 @@ export interface UseCaseInitializer {
   /** Default value: gen_random_uuid() */
   id?: UseCaseId;
 
-  name?: string | null;
+  name: string;
 
-  color?: string | null;
+  color: string;
 }
 
 /** Represents the mutator for the table public.UseCase */
 export interface UseCaseMutator {
   id?: UseCaseId;
 
-  name?: string | null;
+  name?: string;
 
-  color?: string | null;
+  color?: string;
 }

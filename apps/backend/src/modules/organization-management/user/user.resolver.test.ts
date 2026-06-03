@@ -404,9 +404,9 @@ describe('user mutation resolver', () => {
         );
         expect(response).toBeTruthy();
 
-        user = await UserDomain.loadUserBy({
+        user = (await UserDomain.loadUserBy({
           'User.id': response!.id as UserId,
-        });
+        }))!;
         // @ts-ignore
         organizations = await usersResolver.User!.organizations!(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -451,9 +451,9 @@ describe('user mutation resolver', () => {
           contextBypassUser
         );
         expect(response).toBeTruthy();
-        user = await UserDomain.loadUserBy({
+        user = (await UserDomain.loadUserBy({
           'User.id': response!.id as UserId,
-        });
+        }))!;
         // @ts-ignore
         organizations = await usersResolver.User!.organizations!(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -530,9 +530,9 @@ describe('user mutation resolver', () => {
           },
           contextAdminSecondOrga
         );
-        user = await UserDomain.loadUserBy({
+        user = (await UserDomain.loadUserBy({
           'User.id': response!.id as UserId,
-        });
+        }))!;
 
         requestContext.set(requestContextAdminUser);
         // @ts-ignore
@@ -593,9 +593,9 @@ describe('user mutation resolver', () => {
     let secondOrgaUser: UserLoadUserBy;
 
     beforeAll(async () => {
-      secondOrgaUser = await UserDomain.loadUserBy({
+      secondOrgaUser = (await UserDomain.loadUserBy({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
-      });
+      }))!;
     });
 
     afterEach(async () => {
@@ -605,6 +605,7 @@ describe('user mutation resolver', () => {
         {
           id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
           input: {
+            first_name: secondOrgaUser.first_name,
             organization_capabilities:
               secondOrgaUser.organization_capabilities!.map(
                 (organizationCapabilities) => ({
@@ -672,9 +673,9 @@ describe('user mutation resolver', () => {
         testContext,
         GRAPHQL_RESOLVE_INFO
       );
-      secondOrgaUser = await UserDomain.loadUserBy({
+      secondOrgaUser = (await UserDomain.loadUserBy({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
-      });
+      }))!;
       expect(secondOrgaUser.selected_org_capabilities).toContain(
         'MANAGE_PLATFORM_REGISTRATION'
       );
@@ -723,9 +724,9 @@ describe('user mutation resolver', () => {
         testContext,
         GRAPHQL_RESOLVE_INFO
       );
-      const updatedUser = await UserDomain.loadUserBy({
+      const updatedUser = (await UserDomain.loadUserBy({
         email: pendingUser.email,
-      });
+      }))!;
 
       expect(updatedUser.selected_org_capabilities).toContain(
         'ADMINISTRATE_ORGANIZATION'
@@ -743,12 +744,9 @@ describe('user mutation resolver', () => {
     let simpleUserSecondOrga: UserLoadUserBy;
     let auth0Spy: MockInstance;
     beforeAll(async () => {
-      simpleUserSecondOrga = await UserDomain.loadUserBy({
+      simpleUserSecondOrga = (await UserDomain.loadUserBy({
         email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
-      });
-      if (!simpleUserSecondOrga) {
-        throw new Error('simple user second orga not found');
-      }
+      }))!;
       requestContext.set(requestContextSimpleUserSecondOrga);
 
       auth0Spy = vi.spyOn(auth0ClientMock, 'updateUser');

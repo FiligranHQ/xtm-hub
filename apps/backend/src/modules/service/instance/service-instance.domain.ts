@@ -32,6 +32,8 @@ import { UserServiceCapabilityId } from '../../../model/kanel/public/UserService
 import { isUserAdminPlatform } from '../../../security/access';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
+import { logApp } from '../../../utils/app-logger.util';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import {
@@ -396,6 +398,11 @@ export const grantServiceAccess = async (
       'User.id': userId,
     } as UserMutator);
 
+    if (!user) {
+      logApp.warn(`User ${userId} not found, skipping mail notification`);
+      continue;
+    }
+
     const mailTemplate = ServiceIdentifierToMailTemplate.get(
       service_definition.identifier
     );
@@ -572,10 +579,13 @@ export const loadPlatformServiceInstance = async (
 
 export const insertServiceInstance = async (
   data: ServiceInstanceInitializer
-) => {
+): Promise<ServiceInstance> => {
   const [serviceInstance] = await db<ServiceInstance>('ServiceInstance')
     .insert(data)
     .returning('*');
+  if (!serviceInstance) {
+    throw new Error(UnknownErrorCode.UnknownError);
+  }
   return serviceInstance;
 };
 
@@ -594,7 +604,7 @@ export const updateServiceInstance = async (
 export const loadPlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string
 ): Promise<PlatformConfigurationModel | null> => {
-  return db('PlatformConfiguration')
+  return db<PlatformConfigurationModel>('PlatformConfiguration')
     .where('service_instance_id', '=', serviceInstanceId)
     .first()
     .select('*');
@@ -604,7 +614,7 @@ export const updatePlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string,
   config: PlatformConfigurationMutator
 ): Promise<PlatformConfigurationModel | null> => {
-  const qb = db('PlatformConfiguration')
+  const qb = db<PlatformConfigurationModel>('PlatformConfiguration')
     .where('service_instance_id', '=', serviceInstanceId)
     .update({ ...config })
     .returning('*');

@@ -89,12 +89,12 @@ describe('add use case GraphQL mutation', () => {
 });
 
 describe('edit use case GraphQL mutation', () => {
-  it('should delegate to useCaseDomain.updateUseCase with typed id and return result', async () => {
+  it('should delegate to useCaseApp.editUseCaseById with typed id and return result', async () => {
     // Given
     const id = uuidv4() as UseCaseId;
     const input = { name: 'Updated Name', color: '#00ff00' };
     const expected = { id, name: 'Updated Name', color: '#00ff00' } as UseCase;
-    vi.spyOn(useCaseDomain, 'updateUseCase').mockResolvedValue(expected);
+    vi.spyOn(useCaseApp, 'editUseCaseById').mockResolvedValue(expected);
 
     // When
     const result = await useCaseResolver.Mutation!.editUseCase!(
@@ -105,7 +105,7 @@ describe('edit use case GraphQL mutation', () => {
     );
 
     // Then
-    expect(useCaseDomain.updateUseCase).toHaveBeenCalledWith(id, input);
+    expect(useCaseApp.editUseCaseById).toHaveBeenCalledWith(id, input);
     expect(result).toMatchObject({ id, name: 'Updated Name' });
   });
 });

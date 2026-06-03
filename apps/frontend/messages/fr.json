@@ -242,6 +242,7 @@
       "UPLOAD_USER_PICTURE_ERROR": "Une erreur s'est produite lors du téléchargement de votre photo de profil",
       "USER_DISABLED": "L'utilisateur est désactivé",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
+      "USER_NOT_FOUND": "L'utilisateur n'a pas été trouvé",
       "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter"
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",

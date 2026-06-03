@@ -293,7 +293,7 @@ export const removeUser = async (field: UserMutator) => {
 };
 
 export const hasAdministrateOrganizationCapability = (
-  capabilities?: string[]
+  capabilities?: string[] | null
 ): boolean => {
   return (capabilities ?? []).includes(
     OrganizationCapability.AdministrateOrganization
@@ -303,7 +303,7 @@ export const hasAdministrateOrganizationCapability = (
 export const preventAdministratorRemovalOfOneOrganization = async (
   userId: UserId,
   organizationId: OrganizationId,
-  capabilities?: string[]
+  capabilities?: string[] | null
 ) => {
   const isRemovingAdministratorCapability =
     !hasAdministrateOrganizationCapability(capabilities);
@@ -326,7 +326,7 @@ export const preventAdministratorRemovalOfAllOrganizations = async (
   userId: UserId,
   newOrganizationCapabilities: {
     organizationId: OrganizationId;
-    capabilities?: string[];
+    capabilities?: string[] | null;
   }[]
 ) => {
   const userOrganizations = await db('Organization')
@@ -410,7 +410,7 @@ export const acceptPendingUserWithCapabilities = async ({
 }: {
   user_id: UserId;
   organization_id: OrganizationId;
-  orgCapabilities?: string[];
+  orgCapabilities?: string[] | null;
 }) => {
   const { user, userMapped } = await withTransaction(async () => {
     await UserOrganizationDomain.createUserOrganizationRelationAndRemovePending(
@@ -446,7 +446,7 @@ export const updateUserOrgCapabilitiesAndDispatch = async ({
 }: {
   user_id: UserId;
   organization_id: OrganizationId;
-  orgCapabilities?: string[];
+  orgCapabilities?: string[] | null;
 }) => {
   const { user, userMapped } = await updateUserCapabilities({
     user_id,
@@ -467,7 +467,7 @@ const updateUserCapabilities = async ({
 }: {
   user_id: UserId;
   organization_id: OrganizationId;
-  orgCapabilities?: string[];
+  orgCapabilities?: string[] | null;
 }) => {
   const user = await withTransaction(async () => {
     await UserOrganizationDomain.updateUserOrgCapabilities({

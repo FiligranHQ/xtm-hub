@@ -21,9 +21,11 @@ describe('userOrganizationPendingDomain', () => {
       const secondOrgaUsers = [
         await insertUser({
           selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          email: 'user1@second-orga.com',
         }),
         await insertUser({
           selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          email: 'user2@second-orga.com',
         }),
       ];
       await linkUsersToOrganization(
@@ -31,7 +33,10 @@ describe('userOrganizationPendingDomain', () => {
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
-      const filigranUsers = [await insertUser(), await insertUser()];
+      const filigranUsers = [
+        await insertUser({ email: 'user1@filigran.io' }),
+        await insertUser({ email: 'user2@filigran.io' }),
+      ];
       await linkUsersToOrganization(
         filigranUsers,
         TEST_ORGANIZATIONS.FILIGRAN.ID

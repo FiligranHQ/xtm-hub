@@ -38,7 +38,7 @@ export type PlatformConfigurationInput = {
   tenant_name?: string;
   platform_url: string;
   platform_title: string;
-  platform_version: string;
+  platform_version?: string;
   platform_contract: PlatformContract;
   last_connectivity_check: Date;
   token: string;
