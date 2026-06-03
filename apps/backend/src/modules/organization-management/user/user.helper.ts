@@ -5,6 +5,7 @@ import {
   Capability,
   User as GraphqlUser,
   OrganizationCapability,
+  RolePortal,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import Organization, {
@@ -27,7 +28,17 @@ import { dispatch } from '../../../pub';
 import { sendMail } from '../../../server/mail-service';
 import { updateUserSession } from '../../../session-store-manager';
 import { logApp } from '../../../utils/app-logger.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  NotFoundErrorCode,
+  UnknownErrorCode,
+} from '../../../utils/error/error.code';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnknownError,
+} from '../../../utils/error/error.util';
 import { hashPassword } from '../../../utils/hash-password.util';
 import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
@@ -59,19 +70,17 @@ export const createUserWithPersonalSpace = async (
       personal_space: true,
     });
 
-  const [addedUser] = await db<User>('User')
-    .insert({
-      id: uuid as UserId,
-      selected_organization_id:
-        data.selected_organization_id ?? personalSpaceOrganization.id,
-      salt,
-      email: data.email,
-      first_name: data.first_name,
-      last_name: data.last_name,
-      picture: data.picture,
-      password: hash,
-    })
-    .returning('*');
+  const addedUser = await UserDomain.insertUser({
+    id: uuid as UserId,
+    selected_organization_id:
+      data.selected_organization_id ?? personalSpaceOrganization.id,
+    salt,
+    email: data.email,
+    first_name: data.first_name,
+    last_name: data.last_name,
+    picture: data.picture,
+    password: hash,
+  });
 
   // Insert relation UserOrganization
   const [userOrgRelation] =
@@ -79,6 +88,10 @@ export const createUserWithPersonalSpace = async (
       user_id: addedUser.id,
       organizations_id: [personalSpaceOrganization.id],
     });
+
+  if (!userOrgRelation) {
+    throw UnknownError(UnknownErrorCode.AddingUserError);
+  }
 
   await createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
@@ -96,6 +109,10 @@ export const createUserWithPersonalSpace = async (
 
 async function createOrganisationWithAdminUser(email: string) {
   const extractedDomain = extractDomain(email);
+
+  if (!extractedDomain) {
+    throw BadRequestError(BadRequestErrorCode.InvalidEmail);
+  }
 
   const newOrganization = await OrganizationDomain.insertNewOrganization({
     id: uuidv4() as OrganizationId,
@@ -124,6 +141,10 @@ async function createOrganisationWithAdminUser(email: string) {
       user_id: addedUser.id,
       organizations_id: [newOrganization.id],
     });
+
+  if (!userOrgRelation) {
+    throw UnknownError(UnknownErrorCode.AddingUserError);
+  }
 
   await createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
@@ -163,7 +184,7 @@ export const createNewUserFromInvitation = async (
     picture,
   }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
   isFiligranUser: boolean = false
-) => {
+): Promise<User> => {
   const [organization] =
     await OrganizationDomain.loadOrganizationsFromEmail(email);
   let userWithRoles: User;
@@ -188,7 +209,11 @@ export const createNewUserFromInvitation = async (
     );
   }
 
-  return UserDomain.loadUserBy({ 'User.id': userWithRoles.id });
+  const user = await UserDomain.loadUserBy({ 'User.id': userWithRoles.id });
+  if (!user) {
+    throw UnknownError(UnknownErrorCode.AddingUserError);
+  }
+  return user;
 };
 
 export const getOrCreateUser = async (
@@ -198,7 +223,7 @@ export const getOrCreateUser = async (
   >,
   upsert = false,
   isFiligranUser = false
-) => {
+): Promise<User> => {
   const user = await UserDomain.loadUserBy({ email: userInfo.email });
   if (user && upsert) {
     await db<User>('User')
@@ -230,6 +255,9 @@ export const insertUserIntoOrganization = async (
   const [organization] = await OrganizationDomain.loadOrganizationsFromEmail(
     user.email
   );
+  if (!organization) {
+    throw NotFoundError(NotFoundErrorCode.UserNotFound);
+  }
   const userOrganization = await UserOrganizationDomain.loadUserOrganization({
     user_id: user.id,
     organization_id: organization.id,
@@ -250,6 +278,9 @@ export const insertUserIntoOrganization = async (
           organizations_id: [organization.id],
         }
       );
+    if (!userOrgRelation) {
+      throw UnknownError(UnknownErrorCode.AddingUserError);
+    }
     const shouldBeAdminOrga = await isFirstInOrganization(organization.id);
     if (shouldBeAdminOrga) {
       await createUserOrganizationCapability({
@@ -275,6 +306,8 @@ export const mapUserToGraphqlUser = (
     selected_organization_id: user.selected_organization_id,
     capabilities:
       'capabilities' in user ? (user.capabilities as Capability[]) : null,
+    roles_portal:
+      'roles_portal' in user ? (user.roles_portal as RolePortal[]) : null,
   };
 };
 
@@ -283,6 +316,10 @@ export const removeUser = async (field: UserMutator) => {
     .where(field)
     .delete('*')
     .returning('*');
+
+  if (!deletedUser) {
+    throw NotFoundError(NotFoundErrorCode.UserNotFound);
+  }
 
   // Organization personalSpace of the user should have the same id
   await OrganizationDomain.deleteOrganizationBy({

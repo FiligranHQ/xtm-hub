@@ -49,13 +49,18 @@ export const ServiceInstanceApp = {
     });
 
     if (!subscription) {
-      [subscription] = await subscriptionApp.subscribeOrganizationsToService({
-        organizationIds: [user.selected_organization_id],
-        serviceInstanceId: serviceInstanceId,
-        startDate: new Date(),
-        endDate: null,
-        capabilityIds: [],
-      });
+      const [createdSubscription] =
+        await subscriptionApp.subscribeOrganizationsToService({
+          organizationIds: [user.selected_organization_id],
+          serviceInstanceId: serviceInstanceId,
+          startDate: new Date(),
+          endDate: null,
+          capabilityIds: [],
+        });
+      if (!createdSubscription) {
+        throw NotFoundError(ErrorCode.SubscriptionNotFound);
+      }
+      subscription = createdSubscription;
     }
     const userService = await UserServiceDomain.loadUserServiceBy({
       subscription_id: subscription.id,
@@ -86,12 +91,17 @@ export const ServiceInstanceApp = {
         document,
         serviceInstanceId
       );
+      if (!uploadedDocument) {
+        throw NotFoundError(ErrorCode.DocumentFileMissing);
+      }
       const update = isLogo
         ? { logo_document_id: uploadedDocument.id }
         : { illustration_document_id: uploadedDocument.id };
       return updateServiceInstance(serviceInstanceId, update);
     });
-    await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+    if (updatedServiceInstance) {
+      await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+    }
     return updatedServiceInstance as unknown as ServiceInstance;
   },
 
@@ -137,6 +147,9 @@ export const ServiceInstanceApp = {
         upload,
         serviceInstance.id
       );
+      if (!document) {
+        throw new Error(ErrorCode.DocumentFileMissing);
+      }
       updateData.illustration_document_id = document.id;
     }
 

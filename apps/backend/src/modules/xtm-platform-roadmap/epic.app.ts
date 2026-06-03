@@ -16,7 +16,10 @@ import { assertUserHasCapaOnService } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
-import { UnknownErrorCode } from '../../utils/error/error.code';
+import {
+  NotFoundErrorCode,
+  UnknownErrorCode,
+} from '../../utils/error/error.code';
 import { nullsToUndefined } from '../../utils/typescript';
 import {
   DocumentUploadsHelper,
@@ -63,6 +66,8 @@ const addImage = async (user: User, uploads: Upload[]) => {
   return undefined;
 };
 
+const PLATFORM_ROADMAP_SLUG = 'xtm-platform-roadmap';
+
 export const EpicApp = {
   loadEpics: async (opts: Partial<QueryEpicsArgs>): Promise<EpicConnection> => {
     return EpicDomain.loadEpics(opts);
@@ -74,8 +79,11 @@ export const EpicApp = {
     const { user } = requestContext.require();
 
     const serviceInstance = await loadServiceInstanceBy({
-      slug: 'xtm-platform-roadmap',
+      slug: PLATFORM_ROADMAP_SLUG,
     });
+    if (!serviceInstance) {
+      throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
+    }
 
     await assertUserHasCapaOnService(user, serviceInstance.id, [
       ServiceRestriction.Upsert,
@@ -98,8 +106,11 @@ export const EpicApp = {
     const { user } = requestContext.require();
 
     const serviceInstance = await loadServiceInstanceBy({
-      slug: 'xtm-platform-roadmap',
+      slug: PLATFORM_ROADMAP_SLUG,
     });
+    if (!serviceInstance) {
+      throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
+    }
     await assertUserHasCapaOnService(user, serviceInstance.id, [
       ServiceRestriction.Upsert,
     ]);
@@ -129,7 +140,10 @@ export const EpicApp = {
       const document = await DocumentDomain.loadDocumentBy({
         id: oldEpic.document_id,
       });
-      await MinIOClient.deleteFile(document.minio_name);
+      if (document && document.minio_name) {
+        await MinIOClient.deleteFile(document.minio_name);
+      }
+
       await DocumentDomain.deleteDocuments([oldEpic.document_id]);
     }
     return updatedEpic;
@@ -139,20 +153,24 @@ export const EpicApp = {
     const { user } = requestContext.require();
 
     const serviceInstance = await loadServiceInstanceBy({
-      slug: 'xtm-platform-roadmap',
+      slug: PLATFORM_ROADMAP_SLUG,
     });
-
+    if (!serviceInstance) {
+      throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
+    }
     await assertUserHasCapaOnService(user, serviceInstance.id, [
       ServiceRestriction.Delete,
     ]);
 
     const [epic] = await EpicDomain.loadEpicsBy({ id: id });
     await EpicDomain.deleteEpicBy({ id });
-    if (epic.document_id) {
+    if (epic && epic.document_id) {
       const document = await DocumentDomain.loadDocumentBy({
         id: epic.document_id,
       });
-      await MinIOClient.deleteFile(document.minio_name);
+      if (document && document.minio_name) {
+        await MinIOClient.deleteFile(document.minio_name);
+      }
       await DocumentDomain.deleteDocuments([epic.document_id]);
     }
     return epic;

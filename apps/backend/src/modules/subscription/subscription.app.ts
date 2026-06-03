@@ -43,9 +43,9 @@ export const subscriptionApp = {
     organizationIds: OrganizationId[];
     serviceInstanceId: ServiceInstanceId;
     startDate: Date;
-    endDate: Date;
+    endDate: Date | null;
     capabilityIds: ServiceCapabilityId[];
-  }): Promise<Subscription[] | undefined> => {
+  }): Promise<Subscription[]> => {
     const createdSubscriptions: Subscription[] = [];
     return withTransaction(async () => {
       for (const organizationId of organizationIds) {
