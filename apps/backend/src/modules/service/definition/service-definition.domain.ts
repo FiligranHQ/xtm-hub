@@ -46,14 +46,14 @@ export const ServiceDefinitionDomain = {
       .first();
   },
 
-  loadServiceDefinitionByPlatformIdentifier(
+  async loadServiceDefinitionByPlatformIdentifier(
     platformIdentifier: PlatformIdentifier
   ): Promise<ServiceDefinition | undefined> {
     const serviceDefinitionIdentifier =
       serviceDefinitionIdentifierMappedByPlatformIdentifier[platformIdentifier];
 
     if (!serviceDefinitionIdentifier) {
-      return Promise.resolve(undefined);
+      return undefined;
     }
 
     return ServiceDefinitionDomain.loadServiceDefinitionBy({

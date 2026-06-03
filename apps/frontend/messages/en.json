@@ -242,6 +242,7 @@
       "UPLOAD_USER_PICTURE_ERROR": "An error occurred while uploading your profile picture",
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
+      "USER_NOT_FOUND": "User is not found",
       "YOU_CAN_NOT_LOGIN": "You can not login"
     },
     "SomethingWentWrong": "Something went wrong",

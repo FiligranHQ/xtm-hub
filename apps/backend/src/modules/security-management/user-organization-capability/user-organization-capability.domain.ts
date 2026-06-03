@@ -10,7 +10,7 @@ export const createUserOrganizationCapability = async ({
   capabilities_name,
 }: {
   user_organization_id: UserOrganizationId;
-  capabilities_name?: string[] | null;
+  capabilities_name: string[] | null | undefined;
 }): Promise<UserOrganizationCapability[]> => {
   const names = capabilities_name ?? [];
   if (names.length === 0) {
@@ -32,7 +32,7 @@ export const updateUserOrganizationCapability = async ({
   capabilities_name,
 }: {
   user_organization_id: UserOrganizationId;
-  capabilities_name?: string[] | null;
+  capabilities_name: string[] | null | undefined;
 }): Promise<UserOrganizationCapability[]> => {
   await db<UserOrganizationCapability>('UserOrganization_Capability')
     .where({ user_organization_id })

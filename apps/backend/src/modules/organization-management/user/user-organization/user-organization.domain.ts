@@ -76,17 +76,16 @@ export const UserOrganizationDomain = {
 
   updateMultipleUserOrgWithCapabilities: async (
     userId: UserId,
-    orgCapabilities?: OrganizationCapabilitiesInput[] | null
+    orgCapabilities: OrganizationCapabilitiesInput[] | null = []
   ) => {
     await db<UserOrganization>('User_Organization')
       .where('user_id', '=', userId)
       .whereNot('organization_id', userId) // Should not touch personal space
       .del();
-    const safeCapabilities = orgCapabilities ?? [];
-    if (isEmpty(safeCapabilities)) {
+    if (!orgCapabilities || isEmpty(orgCapabilities)) {
       return;
     }
-    for (const orgCapa of safeCapabilities) {
+    for (const orgCapa of orgCapabilities) {
       const organization_id = orgCapa.organization_id;
       if (organization_id !== userId.toString()) {
         const [newUserOrganization] =

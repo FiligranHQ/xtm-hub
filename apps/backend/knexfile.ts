@@ -551,7 +551,7 @@ export const paginate = async <T extends object, U>(
   applyLogicalFilter(type, queryContext, logicalFilters ?? undefined);
 
   if (filters) {
-    await applyFilters(type, queryContext, filters ?? undefined);
+    await applyFilters(type, queryContext, filters);
   }
 
   await applySearch(
