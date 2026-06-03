@@ -127,7 +127,7 @@ jobs:
 
       - name: Docker meta deps
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: filigran/${{ matrix.image }}
           tags: |
@@ -434,7 +434,7 @@ jobs:
 
       - name: Docker meta deps
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: filigran/${{ matrix.image }}-prod
           tags: |
