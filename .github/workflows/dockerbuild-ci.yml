@@ -86,35 +86,28 @@ jobs:
             DIFF_RANGE="${{ github.event.before }}...${{ github.sha }}"
           else
             echo "workflow_dispatch: fallback to full formatting check"
-            if [ "${{ matrix.label }}" = "backend" ]; then
-              yarn workspace @xtm-hub/backend format:check
-            else
-              yarn workspace @xtm-hub/frontend prettier --check .
-            fi
+            yarn --cwd "${{ matrix.working-directory }}" format:check
             exit 0
           fi
 
-          if [ "${{ matrix.label }}" = "backend" ]; then
-            TARGET_PREFIX="apps/backend/"
-            PRETTIER_WORKSPACE="@xtm-hub/backend"
-          else
-            TARGET_PREFIX="apps/frontend/"
-            PRETTIER_WORKSPACE="@xtm-hub/frontend"
-          fi
+          TARGET_PREFIX="${{ matrix.working-directory }}/"
 
           mapfile -t CHANGED_FILES < <(git diff --name-only --diff-filter=ACMRT "$DIFF_RANGE" | grep "^${TARGET_PREFIX}" || true)
 
-          if [ ${#CHANGED_FILES[@]} -eq 0 ]; then
+          mapfile -t REL_CHANGED_FILES < <(printf '%s\n' "${CHANGED_FILES[@]}" | sed "s#^${TARGET_PREFIX}##" | sed '/^$/d')
+
+          if [ ${#REL_CHANGED_FILES[@]} -eq 0 ]; then
             echo "No modified files to check for ${TARGET_PREFIX}"
             exit 0
           fi
 
-          yarn workspace "$PRETTIER_WORKSPACE" prettier --check --ignore-unknown "${CHANGED_FILES[@]}"
+          yarn --cwd "${{ matrix.working-directory }}" prettier --check --ignore-unknown "${REL_CHANGED_FILES[@]}"
 
       - name: yarn i18n-check
         if: matrix.label == 'frontend'
+        working-directory: ${{ matrix.working-directory }}
         run: |
-          yarn i18n-check --locales apps/frontend/messages --source en
+          yarn i18n:check
 
   build-images-tests:
     needs:

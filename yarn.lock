@@ -8302,6 +8302,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": "npm:4.6.1"
     "@graphql-codegen/typescript-react-query": "npm:6.1.2"
     "@hookform/resolvers": "npm:5.4.0"
+    "@lingual/i18n-check": "npm:0.9.5"
     "@svgr/webpack": "npm:8.1.0"
     "@tailwindcss/postcss": "npm:4.3.0"
     "@tanstack/react-query": "npm:5.100.14"
@@ -20705,7 +20706,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "xtm-hub@workspace:."
   dependencies:
-    "@lingual/i18n-check": "npm:0.9.5"
     "@types/node": "catalog:"
     eslint: "catalog:"
     eslint-config-prettier: "catalog:"

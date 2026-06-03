@@ -12,8 +12,7 @@
   "author": "Filigran",
   "scripts": {
     "dev:api": "yarn workspace  @xtm-hub/backend dev",
-    "dev:front": "yarn workspace  @xtm-hub/frontend dev",
-    "i18n:check": "i18n-check"
+    "dev:front": "yarn workspace  @xtm-hub/frontend dev"
   },
   "devDependencies": {
     "eslint": "catalog:",
@@ -22,7 +21,6 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@lingual/i18n-check": "0.9.5",
     "@types/node": "catalog:",
     "eslint-plugin-unicorn": "64.0.0",
     "tsx": "catalog:",
