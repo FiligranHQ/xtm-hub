@@ -47,7 +47,7 @@ export const listen = (
   const getRequestedFields = () => {
     if (!info) return null;
 
-    const selections = info.fieldNodes[0].selectionSet?.selections || [];
+    const selections = info.fieldNodes[0]?.selectionSet?.selections || [];
     return selections
       .filter((sel): sel is FieldNode => sel.kind === Kind.FIELD)
       .map((sel) => sel.name.value);

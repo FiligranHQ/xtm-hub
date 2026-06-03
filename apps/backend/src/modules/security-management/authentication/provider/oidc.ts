@@ -19,6 +19,10 @@ export const addOIDCStrategy = async (
   const providers = [];
 
   const oidcConfig = getOidcConfig();
+  const redirectUri = oidcConfig.redirect_uris?.[0];
+  if (!redirectUri) {
+    throw new Error('OIDC redirect_uris is not configured');
+  }
 
   const providerRef = 'oidc';
   try {
@@ -35,7 +39,7 @@ export const addOIDCStrategy = async (
       config: oidcConfiguration,
       passReqToCallback: true,
       scope: openIdScopes.join(' '),
-      callbackURL: oidcConfig.redirect_uris?.[0],
+      callbackURL: redirectUri,
     };
 
     const openIDStrategy = new OpenIDStrategy(

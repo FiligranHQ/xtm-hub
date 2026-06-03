@@ -86,7 +86,7 @@ export const DeploymentApp = {
 
     if (await CompetitorApp.isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
-        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
+        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains?.join(', ')}') is blacklisted`
       );
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
@@ -214,9 +214,7 @@ export const DeploymentApp = {
           to: instanceRequestedEmail,
           template: 'admin_saas_instance_requested',
           params: {
-            organizationName: user.organizations.find(
-              (o) => o.id === user.selected_organization_id
-            ).name,
+            organizationName: chosenOrganization.name,
             userName:
               user.first_name && user.last_name
                 ? `${user.first_name} ${user.last_name}`

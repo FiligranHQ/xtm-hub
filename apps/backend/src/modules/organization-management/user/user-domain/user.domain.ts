@@ -442,20 +442,26 @@ export const UserDomain = {
       last_login: new Date(),
     };
     if (organizations.length === 1) {
-      fields.selected_organization_id = organizations[0].id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      fields.selected_organization_id = organizations[0]!.id;
     }
 
     const [updatedUser] = await db<User>('User')
       .where({ id: user.id })
       .update(fields)
       .returning('*');
+    if (!updatedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
 
     try {
       const selectedOrga = user.organizations.find(
         (org) => org.id === updatedUser.selected_organization_id
       );
-      const loginEvent = buildLoginEvent(selectedOrga, user.id);
-      await telemetryApp.sendTelemetryEvent(loginEvent);
+      if (selectedOrga) {
+        const loginEvent = buildLoginEvent(selectedOrga, user.id);
+        await telemetryApp.sendTelemetryEvent(loginEvent);
+      }
     } catch (error) {
       logApp.error('Unable to send telemetry event for login', {
         error,

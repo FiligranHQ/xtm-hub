@@ -16,6 +16,7 @@ import { assertUserHasCapaOnService } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 import { nullsToUndefined } from '../../utils/typescript';
 import {
   DocumentUploadsHelper,
@@ -41,14 +42,18 @@ const addImage = async (user: User, uploads: Upload[]) => {
       uploads,
       serviceInstance.service_instance_id
     );
+    const imageFile = files[0];
+    if (!imageFile) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     return DocumentDomain.createDocument(
       {
         service_instance_id: serviceInstance.service_instance_id,
         description: 'Epic illustration',
-        file_name: files[0].fileName,
-        minio_name: files[0].minioName,
+        file_name: imageFile.fileName,
+        minio_name: imageFile.minioName,
         active: true,
-        mime_type: files[0].mimeType,
+        mime_type: imageFile.mimeType,
         type: 'image',
         source_type: 'internal',
       },

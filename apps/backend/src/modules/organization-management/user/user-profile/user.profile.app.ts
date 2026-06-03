@@ -15,6 +15,7 @@ import {
 } from '../../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
+import { nullsToUndefined } from '../../../../utils/typescript';
 import { isValidEmail } from '../../../../utils/verify-email.util';
 import { DocumentHelper } from '../../../document/document.helper';
 import {
@@ -55,10 +56,13 @@ export const userProfileApp = {
     const sanitized =
       selected_language != null ? { ...rest, selected_language } : rest;
     const updatedUser = await UserDomain.updateUser(meUser.id, sanitized);
+    if (!updatedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
 
     try {
       await auth0Client.updateUser({
-        ...input,
+        ...nullsToUndefined(input),
         email: updatedUser.email,
       });
     } catch (err) {
@@ -111,22 +115,30 @@ export const userProfileApp = {
     const newUser = await OrganizationDomain.loadUserByOrganization(
       existingPersonalSpace.id
     );
+    const targetUser = newUser[0];
+    if (!targetUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
 
     const userTransferRequest =
       await UserTransferRequestDomain.insertNewUserTransfer({
         from_user_id: user.id,
-        to_user_id: newUser[0].id,
+        to_user_id: targetUser.id,
       });
+    const transferRequest = userTransferRequest[0];
+    if (!transferRequest) {
+      throw new Error(UnknownErrorCode.TransferMeError);
+    }
     await sendMail({
       to: newEmail,
       template: 'request_transfer_personal_space',
       params: {
-        recipientName: `${newUser[0].first_name} ${newUser[0].last_name}`,
-        recipientId: newUser[0].id,
+        recipientName: `${targetUser.first_name} ${targetUser.last_name}`,
+        recipientId: targetUser.id,
         previousUserId: user.id,
         previousUserEmail: user.email,
         previousUserName: `${user.first_name} ${user.last_name}`,
-        transferRequestId: `${userTransferRequest[0].id}`,
+        transferRequestId: `${transferRequest.id}`,
       },
     });
   },
