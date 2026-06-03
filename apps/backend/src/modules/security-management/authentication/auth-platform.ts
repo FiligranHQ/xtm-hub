@@ -3,6 +3,10 @@ import { requestContext } from '../../../context/request.context';
 import { UserInfo } from '../../../model/user';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
 import { AppLogsCategory, logApp } from '../../../utils/app-logger.util';
+import {
+  getErrorMessage,
+  toError,
+} from '../../../utils/error/error-guard.util';
 import { resolveSessionReferer } from '../../../utils/extract-referer.util';
 import { setCookieError } from '../../../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
@@ -26,7 +30,7 @@ export const initAuthPlatform = async (app) => {
         next(err);
       })(req, res, next);
     } catch (e) {
-      setCookieError(res, e?.message);
+      setCookieError(res, getErrorMessage(e));
       next(e);
     }
   });
@@ -60,8 +64,9 @@ export const initAuthPlatform = async (app) => {
         const logged = await authenticateUser(req, res, user);
         res.redirect(logged ? (referer ?? '/app') : '/');
       } catch (err) {
-        logApp.error(err, { provider });
-        if (err.message === 'User not provided' && referer) {
+        const normalizedError = toError(err);
+        logApp.error(normalizedError, { provider });
+        if (normalizedError.message === 'User not provided' && referer) {
           referer = `${referer}${referer.includes('?') ? '&' : '?'}error=not-provided`;
         }
 

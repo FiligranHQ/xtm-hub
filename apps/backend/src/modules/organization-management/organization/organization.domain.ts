@@ -13,6 +13,10 @@ import Organization, {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
+import {
+  getErrorMessage,
+  getErrorStringProperty,
+} from '../../../utils/error/error-guard.util';
 import { extractDomain } from '../../../utils/verify-email.util';
 
 export const OrganizationDomain = {
@@ -173,9 +177,10 @@ export const OrganizationDomain = {
         .returning('*');
     } catch (error) {
       const regexErrorName = /is still referenced from table "([^"]+)"/;
+      const detail = getErrorStringProperty(error, 'detail');
+      const message = getErrorMessage(error);
       const match =
-        error.detail.match(regexErrorName) ||
-        error.message.match(regexErrorName);
+        detail?.match(regexErrorName) || message.match(regexErrorName);
       if (match) {
         const tableName = match[1];
         throw new Error(`${tableName.toUpperCase()}_STILL_IN_ORGANIZATION`);

@@ -1,6 +1,8 @@
 import { Resolvers } from '../../__generated__/resolvers-types';
 import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
+import { getErrorMessage } from '../../utils/error/error-guard.util';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 import { telemetryApp } from './telemetry.app';
 
 const resolvers: Resolvers = {
@@ -21,11 +23,16 @@ const resolvers: Resolvers = {
         logApp.error('Error in sendTelemetryEvent resolver', {
           error,
         });
+        const errorMessage = getErrorMessage(error);
+        const isGenericErrorMessage =
+          !errorMessage || errorMessage === UnknownErrorCode.UnknownError;
+        const message = !isGenericErrorMessage
+          ? errorMessage
+          : 'An error occurred while processing sendTelemetryEvent';
+
         return {
           result: false,
-          message:
-            error.message ||
-            'An error occurred while processing sendTelemetryEvent',
+          message,
         };
       }
     },

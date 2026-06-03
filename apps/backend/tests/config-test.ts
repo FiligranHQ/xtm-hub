@@ -2,6 +2,7 @@ import config from 'config';
 import pkg, { Knex } from 'knex';
 import portalConfig from '../src/config';
 import { logApp } from '../src/utils/app-logger.util';
+import { toError } from '../src/utils/error/error-guard.util';
 
 const DATABASE_TEST: string =
   config.get('database-test.database') || 'test_database';
@@ -64,7 +65,7 @@ export async function createDatabase() {
     await database.migrate.latest();
     await database.seed.run();
   } catch (err) {
-    logApp.error(err);
+    logApp.error(toError(err));
     throw err;
   } finally {
     await dbConnection.destroy();
@@ -79,7 +80,7 @@ export async function cleanDatabase() {
     );
     await dbConnection.raw('CREATE DATABASE test_database');
   } catch (err) {
-    logApp.error(err);
+    logApp.error(toError(err));
     throw err;
   } finally {
     await dbConnection.destroy();

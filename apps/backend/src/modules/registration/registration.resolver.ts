@@ -5,6 +5,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { PortalContext } from '../../model/portal-context';
+import { getErrorMessage } from '../../utils/error/error-guard.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
@@ -56,7 +57,7 @@ const resolvers: Resolvers = {
           organizationId: response.organizationId ?? undefined,
         };
       } catch (error) {
-        if (error.message === ErrorCode.PlatformNotRegistered) {
+        if (getErrorMessage(error) === ErrorCode.PlatformNotRegistered) {
           return {
             isPlatformRegistered: false,
           };

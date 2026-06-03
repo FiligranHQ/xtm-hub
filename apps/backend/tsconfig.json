@@ -14,7 +14,7 @@
     "strict": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
-    "useUnknownInCatchVariables": false,
+    "useUnknownInCatchVariables": true,
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
     "isolatedModules": true,
