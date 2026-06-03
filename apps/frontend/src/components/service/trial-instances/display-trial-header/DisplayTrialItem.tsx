@@ -12,7 +12,6 @@ interface DisplayTrialItemProps {
 
 export const DisplayTrialItem = ({ freeTrial, t }: DisplayTrialItemProps) => {
   const dotColor = getDotColor(freeTrial.daysUntilEnd);
-
   return (
     <Link
       className="w-full pl-m p-xs bg-page-background hover:bg-hover  flex flex-row items-center text-primary"

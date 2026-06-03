@@ -1,7 +1,7 @@
 'use client';
-import { buildContext, CopilotUser, getUserKey } from './copilot.utils';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
+import { buildContext, CopilotUser, getUserKey } from './copilot.utils';
 
 const COPILOT_WIDGET_URL =
   'https://copilot.filigran.ai/api/v1/public/widget.js';

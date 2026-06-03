@@ -78,30 +78,8 @@ jobs:
         run: yarn lint
 
       - name: Check formatting
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git fetch --no-tags --prune --depth=1 origin "${{ github.base_ref }}"
-            DIFF_RANGE="origin/${{ github.base_ref }}...HEAD"
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            DIFF_RANGE="${{ github.event.before }}...${{ github.sha }}"
-          else
-            echo "workflow_dispatch: fallback to full formatting check"
-            yarn --cwd "${{ matrix.working-directory }}" format:check
-            exit 0
-          fi
-
-          TARGET_PREFIX="${{ matrix.working-directory }}/"
-
-          mapfile -t CHANGED_FILES < <(git diff --name-only --diff-filter=ACMRT "$DIFF_RANGE" | grep "^${TARGET_PREFIX}" || true)
-
-          mapfile -t REL_CHANGED_FILES < <(printf '%s\n' "${CHANGED_FILES[@]}" | sed "s#^${TARGET_PREFIX}##" | sed '/^$/d')
-
-          if [ ${#REL_CHANGED_FILES[@]} -eq 0 ]; then
-            echo "No modified files to check for ${TARGET_PREFIX}"
-            exit 0
-          fi
-
-          yarn --cwd "${{ matrix.working-directory }}" prettier --check --ignore-unknown "${REL_CHANGED_FILES[@]}"
+        working-directory: ${{ matrix.working-directory }}
+        run: yarn format:check
 
       - name: yarn i18n-check
         if: matrix.label == 'frontend'

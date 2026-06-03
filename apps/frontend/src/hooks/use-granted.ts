@@ -1,6 +1,6 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { useContext } from 'react';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 // Mock the useContext hook
 
