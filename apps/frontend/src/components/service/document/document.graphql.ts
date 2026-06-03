@@ -54,9 +54,9 @@ export const DocumentUpdateMutation = graphql`
 
 export const DocumentDeleteMutation = graphql`
   mutation documentDeleteMutation(
-    $documentId: DocumentId
+    $documentId: DocumentId!
     $connections: [ID!]!
-    $serviceInstanceId: ServiceInstanceId
+    $serviceInstanceId: ServiceInstanceId!
     $forceDelete: Boolean
   ) {
     deleteDocument(

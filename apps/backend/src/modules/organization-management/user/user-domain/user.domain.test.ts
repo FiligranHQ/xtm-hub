@@ -25,9 +25,9 @@ describe('users domain', () => {
   });
 
   it('should load user Admin', async () => {
-    const response = await UserDomain.loadUserBy({
+    const response = (await UserDomain.loadUserBy({
       'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId,
-    });
+    }))!;
     expect(response.email).toEqual(
       TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
     );

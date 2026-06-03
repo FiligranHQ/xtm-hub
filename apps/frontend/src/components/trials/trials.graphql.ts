@@ -98,7 +98,7 @@ export const TrialsDeploymentRequestsAvailableListFragment = graphql`
 
 export const TrialsDeploymentRequestsAvailableQuery = graphql`
   query trialsDeploymentRequestsAvailableQuery(
-    $platformIdentifier: PlatformIdentifier
+    $platformIdentifier: PlatformIdentifier!
   ) {
     ...trialsDeploymentRequestsAvailableList
   }

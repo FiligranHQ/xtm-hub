@@ -8,32 +8,32 @@ export type OrganizationId = string & { __brand: 'public.Organization' };
 export default interface Organization {
   id: OrganizationId;
 
-  name: string | null;
+  name: string;
 
   domains: string[] | null;
 
-  personal_space: boolean | null;
+  personal_space: boolean;
 }
 
 /** Represents the initializer for the table public.Organization */
 export interface OrganizationInitializer {
   id: OrganizationId;
 
-  name?: string | null;
+  name: string;
 
   domains?: string[] | null;
 
   /** Default value: false */
-  personal_space?: boolean | null;
+  personal_space?: boolean;
 }
 
 /** Represents the mutator for the table public.Organization */
 export interface OrganizationMutator {
   id?: OrganizationId;
 
-  name?: string | null;
+  name?: string;
 
   domains?: string[] | null;
 
-  personal_space?: boolean | null;
+  personal_space?: boolean;
 }

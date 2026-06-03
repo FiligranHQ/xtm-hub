@@ -10,7 +10,7 @@ export type UserId = string & { __brand: 'public.User' };
 export default interface User {
   id: UserId;
 
-  email: string | null;
+  email: string;
 
   salt: string;
 
@@ -41,7 +41,7 @@ export default interface User {
 export interface UserInitializer {
   id: UserId;
 
-  email?: string | null;
+  email: string;
 
   salt: string;
 
@@ -73,7 +73,7 @@ export interface UserInitializer {
 export interface UserMutator {
   id?: UserId;
 
-  email?: string | null;
+  email?: string;
 
   salt?: string;
 

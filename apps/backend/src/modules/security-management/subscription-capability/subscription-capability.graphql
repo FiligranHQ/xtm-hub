@@ -1,6 +1,6 @@
 input AddSubscriptionCapabilityInput {
   subscriptionsId: [SubscriptionId!]!
-  capabilitiesId: [ServiceCapabilityId]!
+  capabilitiesId: [ServiceCapabilityId!]!
 }
 
 type Mutation {

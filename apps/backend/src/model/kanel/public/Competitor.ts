@@ -10,11 +10,11 @@ export type CompetitorId = string & { __brand: 'public.Competitor' };
 export default interface Competitor {
   id: CompetitorId;
 
-  name: string | null;
+  name: string;
 
-  tier: CompetitorTier | null;
+  tier: CompetitorTier;
 
-  domain: string | null;
+  domain: string;
 }
 
 /** Represents the initializer for the table public.Competitor */
@@ -22,20 +22,20 @@ export interface CompetitorInitializer {
   /** Default value: gen_random_uuid() */
   id?: CompetitorId;
 
-  name?: string | null;
+  name: string;
 
-  tier?: CompetitorTier | null;
+  tier: CompetitorTier;
 
-  domain?: string | null;
+  domain: string;
 }
 
 /** Represents the mutator for the table public.Competitor */
 export interface CompetitorMutator {
   id?: CompetitorId;
 
-  name?: string | null;
+  name?: string;
 
-  tier?: CompetitorTier | null;
+  tier?: CompetitorTier;
 
-  domain?: string | null;
+  domain?: string;
 }

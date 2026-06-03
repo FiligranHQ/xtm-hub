@@ -87,6 +87,7 @@ describe('service instance domain', () => {
 
       await TestHelper.subscription.create({
         service_instance_id: instance.id,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
       // When
@@ -548,6 +549,7 @@ describe('service instance domain', () => {
 
       const anyServiceInstance = await TestHelper.serviceInstance.create({
         id: otherServiceInstanceId,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
 
       const subscription = await TestHelper.subscription.create({

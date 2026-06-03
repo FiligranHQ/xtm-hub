@@ -10,6 +10,7 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
+import { nullsToUndefined } from '../../utils/typescript';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import {
   getServiceInstance,
@@ -39,7 +40,7 @@ const resolvers: Resolvers = {
     createDocument: async (_, input) => {
       try {
         return await DocumentApp.createDocument({
-          ...input,
+          ...nullsToUndefined(input),
           serviceInstanceId: input.serviceInstanceId,
         });
       } catch (error) {
@@ -54,7 +55,7 @@ const resolvers: Resolvers = {
     updateDocument: async (_, input) => {
       try {
         return await DocumentApp.updateDocument({
-          ...input,
+          ...nullsToUndefined(input),
           parentDocumentId: input.documentId,
           serviceInstanceId: input.serviceInstanceId,
           existingImageIds: input.existingImageIds ?? [],

@@ -25,14 +25,14 @@ const resolvers: Resolvers = {
   Mutation: {
     createEpic: async (_, { input, document }) => {
       try {
-        return await EpicApp.createEpic(input, document);
+        return await EpicApp.createEpic(input, document ?? []);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicCreateError);
       }
     },
     updateEpic: async (_, { id, input, document }) => {
       try {
-        return await EpicApp.updateEpic(id as EpicId, input, document);
+        return await EpicApp.updateEpic(id as EpicId, input, document ?? []);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicUpdateError);
       }

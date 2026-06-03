@@ -191,7 +191,7 @@ export const registrationConnectivityApp = {
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
     return refreshConnectivityStatus({
-      platform_identifier: input.platformIdentifier,
+      platform_identifier: input.platformIdentifier ?? undefined,
       platform_version: input.platformVersion,
       platform_id: input.platformId,
       token: input.token,

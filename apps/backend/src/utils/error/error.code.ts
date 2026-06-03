@@ -101,6 +101,7 @@ export enum NotFoundErrorCode {
   DeploymentRequestQuotaNotFound = 'DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND',
   DocumentNotFound = 'DOCUMENT_NOT_FOUND',
   NewsFeedItemNotFound = 'NEWS_FEED_ITEM_NOT_FOUND',
+  UserNotFound = 'USER_NOT_FOUND',
 }
 
 export const ErrorCode = {

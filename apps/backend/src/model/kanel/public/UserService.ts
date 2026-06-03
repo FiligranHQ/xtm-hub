@@ -11,9 +11,9 @@ export type UserServiceId = string & { __brand: 'public.User_Service' };
 export default interface UserService {
   id: UserServiceId;
 
-  user_id: UserId | null;
+  user_id: UserId;
 
-  subscription_id: SubscriptionId | null;
+  subscription_id: SubscriptionId;
 
   service_personal_data: unknown | null;
 }
@@ -22,9 +22,9 @@ export default interface UserService {
 export interface UserServiceInitializer {
   id: UserServiceId;
 
-  user_id?: UserId | null;
+  user_id: UserId;
 
-  subscription_id?: SubscriptionId | null;
+  subscription_id: SubscriptionId;
 
   service_personal_data?: unknown | null;
 }
@@ -33,9 +33,9 @@ export interface UserServiceInitializer {
 export interface UserServiceMutator {
   id?: UserServiceId;
 
-  user_id?: UserId | null;
+  user_id?: UserId;
 
-  subscription_id?: SubscriptionId | null;
+  subscription_id?: SubscriptionId;
 
   service_personal_data?: unknown | null;
 }

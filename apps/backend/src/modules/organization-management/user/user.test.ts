@@ -35,14 +35,14 @@ describe('user helpers', async () => {
       await createNewUserFromInvitation({
         email: testMail,
       });
-      const newUser = await UserDomain.loadUserBy({ email: testMail });
+      const newUser = (await UserDomain.loadUserBy({ email: testMail }))!;
       const newUserPendingOrg =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: newUser.id,
         });
       expect(newUser).toBeTruthy();
       expect(newUser.selected_org_capabilities).toHaveLength(1);
-      expect(newUser!.organizations[0]?.personal_space).toBe(true);
+      expect(newUser.organizations[0]?.personal_space).toBe(true);
       expect(newUserPendingOrg).toHaveLength(1);
       expect(newUserPendingOrg[0]?.organization_id).toBe(
         TEST_ORGANIZATIONS.FILIGRAN.ID
@@ -65,7 +65,7 @@ describe('user helpers', async () => {
       await createNewUserFromInvitation({
         email: testMail,
       });
-      const newUser = await UserDomain.loadUserBy({ email: testMail });
+      const newUser = (await UserDomain.loadUserBy({ email: testMail }))!;
       const newUserPendingOrg =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: newUser.id,
@@ -97,7 +97,7 @@ describe('user helpers', async () => {
         organization_name: newOrganization.name,
         organization_type: 'Professional',
         source: TelemetrySource.XTMHUB,
-        user_id: newUser.id,
+        user_id: newUser!.id,
         domains: ['test-new-organization.fr'],
       });
 
@@ -111,7 +111,7 @@ describe('user helpers', async () => {
       await createNewUserFromInvitation({
         email: testMail,
       });
-      const newUser = await UserDomain.loadUserBy({ email: testMail });
+      const newUser = (await UserDomain.loadUserBy({ email: testMail }))!;
       const newUserPendingOrg =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: newUser.id,
@@ -140,7 +140,8 @@ describe('user helpers', async () => {
 
       expect(organization).toBeTruthy();
 
-      user = await UserDomain.loadUserBy({ email: userEmail });
+      const loadedUser = await UserDomain.loadUserBy({ email: userEmail });
+      user = loadedUser!;
     });
 
     afterEach(async () => {
@@ -176,9 +177,9 @@ describe('user helpers', async () => {
           email: anotherUserEmail,
         });
 
-        anotherUser = await UserDomain.loadUserBy({
+        anotherUser = (await UserDomain.loadUserBy({
           'User.email': anotherUserEmail,
-        });
+        }))!;
 
         const [anotherUserOrgRelation] =
           await UserOrganizationDomain.createUserOrganizationRelationAndRemovePending(
@@ -229,9 +230,9 @@ describe('user helpers', async () => {
           email: anotherUserEmail,
         });
 
-        anotherUser = await UserDomain.loadUserBy({
+        anotherUser = (await UserDomain.loadUserBy({
           'User.email': anotherUserEmail,
-        });
+        }))!;
 
         const [anotherUserOrgRelation] =
           await UserOrganizationDomain.createUserOrganizationRelationAndRemovePending(

@@ -54,7 +54,7 @@ export type AddServiceInput = {
 };
 
 export type AddSubscriptionCapabilityInput = {
-  capabilitiesId: Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>;
+  capabilitiesId: Array<Scalars['ServiceCapabilityId']['input']>;
   subscriptionsId: Array<Scalars['SubscriptionId']['input']>;
 };
 
@@ -233,7 +233,7 @@ export type CreateEpicInput = {
 };
 
 export type CreateSubscriptionsInput = {
-  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
+  capability_ids?: InputMaybe<Array<Scalars['ServiceCapabilityId']['input']>>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
   organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
@@ -684,7 +684,7 @@ export enum FiligranProduct {
 }
 
 export type Filter = {
-  key?: InputMaybe<FilterKey>;
+  key: FilterKey;
   value: Array<Scalars['String']['input']>;
 };
 
@@ -958,7 +958,7 @@ export type MutationAdminAddUserArgs = {
 
 
 export type MutationAdminCancelDeploymentRequestArgs = {
-  deploymentRequestId?: InputMaybe<Scalars['DeploymentRequestId']['input']>;
+  deploymentRequestId: Scalars['DeploymentRequestId']['input'];
 };
 
 
@@ -975,12 +975,12 @@ export type MutationAutoRegisterPlatformArgs = {
 
 
 export type MutationBulkAcceptPendingUserInOrganizationArgs = {
-  input?: InputMaybe<BulkPendingUserFromOrganizationInput>;
+  input: BulkPendingUserFromOrganizationInput;
 };
 
 
 export type MutationBulkRemovePendingUserFromOrganizationArgs = {
-  input?: InputMaybe<BulkPendingUserFromOrganizationInput>;
+  input: BulkPendingUserFromOrganizationInput;
 };
 
 
@@ -1008,7 +1008,7 @@ export type MutationCreateCompetitorArgs = {
 
 
 export type MutationCreateDeploymentRequestArgs = {
-  input?: InputMaybe<CreateDeploymentRequestInput>;
+  input: CreateDeploymentRequestInput;
 };
 
 
@@ -1017,7 +1017,7 @@ export type MutationCreateDocumentArgs = {
   input: CreateDocumentInput;
   logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
   sourceDocument?: InputMaybe<Scalars['Upload']['input']>;
 };
 
@@ -1029,7 +1029,7 @@ export type MutationCreateEpicArgs = {
 
 
 export type MutationCreateSubscriptionsArgs = {
-  input?: InputMaybe<CreateSubscriptionsInput>;
+  input: CreateSubscriptionsInput;
 };
 
 
@@ -1039,9 +1039,9 @@ export type MutationDeleteCompetitorArgs = {
 
 
 export type MutationDeleteDocumentArgs = {
-  documentId?: InputMaybe<Scalars['DocumentId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
   forceDelete?: InputMaybe<Scalars['Boolean']['input']>;
-  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1119,7 +1119,7 @@ export type MutationFrontendErrorLogArgs = {
 
 
 export type MutationIncrementShareNumberDocumentArgs = {
-  documentId?: InputMaybe<Scalars['DocumentId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
 };
 
 
@@ -1167,7 +1167,7 @@ export type MutationReorderDeploymentRequestInQueueArgs = {
 
 
 export type MutationRequestTransferPersonalSpaceArgs = {
-  new_email?: InputMaybe<Scalars['String']['input']>;
+  new_email: Scalars['String']['input'];
 };
 
 
@@ -1177,7 +1177,7 @@ export type MutationTransferPersonalSpaceArgs = {
 
 
 export type MutationUnregisterPlatformArgs = {
-  input?: InputMaybe<UnregisterPlatformInput>;
+  input: UnregisterPlatformInput;
 };
 
 
@@ -1203,7 +1203,7 @@ export type MutationUpdateDocumentArgs = {
   input: UpdateDocumentInput;
   logo?: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
   sourceDocument?: InputMaybe<Scalars['Upload']['input']>;
 };
 
@@ -1588,7 +1588,7 @@ export type QueryDeploymentRequestsArgs = {
 
 
 export type QueryDeploymentRequestsAvailableArgs = {
-  platformIdentifier?: InputMaybe<PlatformIdentifier>;
+  platformIdentifier: PlatformIdentifier;
 };
 
 
@@ -1603,8 +1603,8 @@ export type QueryDeploymentRequestsListArgs = {
 
 
 export type QueryDocumentArgs = {
-  documentId?: InputMaybe<Scalars['DocumentId']['input']>;
-  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1715,7 +1715,7 @@ export type QueryRegisteredPlatformArgs = {
 
 
 export type QueryRegisteredPlatformsArgs = {
-  input?: InputMaybe<RegisteredPlatformsInput>;
+  input: RegisteredPlatformsInput;
 };
 
 
@@ -1730,12 +1730,12 @@ export type QueryServiceGroupsArgs = {
 
 
 export type QueryServiceInstanceByIdArgs = {
-  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
 export type QueryServiceInstanceByIdAndGrantAccessArgs = {
-  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1770,12 +1770,12 @@ export type QuerySubscriptionsArgs = {
 
 
 export type QueryTrialDeploymentsArgs = {
-  input?: InputMaybe<TrialDeploymentsInput>;
+  input: TrialDeploymentsInput;
 };
 
 
 export type QueryUpdateOpenCtiManifestArgs = {
-  tag?: InputMaybe<Scalars['String']['input']>;
+  tag: Scalars['String']['input'];
 };
 
 
@@ -2397,7 +2397,7 @@ export type UpdateServiceGroupsInputGroup = {
 };
 
 export type UpdateSubscriptionInput = {
-  capability_ids?: InputMaybe<Array<InputMaybe<Scalars['ServiceCapabilityId']['input']>>>;
+  capability_ids?: InputMaybe<Array<Scalars['ServiceCapabilityId']['input']>>;
   end_date?: InputMaybe<Scalars['Date']['input']>;
   start_date?: InputMaybe<Scalars['Date']['input']>;
 };
@@ -2487,7 +2487,7 @@ export type UserService = Node & {
 };
 
 export type UserServiceAddInput = {
-  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities?: InputMaybe<Array<Scalars['String']['input']>>;
   email: Array<Scalars['String']['input']>;
   subscription_id: Scalars['SubscriptionId']['input'];
 };
@@ -2526,7 +2526,7 @@ export type UserServiceEdge = {
 };
 
 export type UserServiceEditInput = {
-  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities: Array<Scalars['String']['input']>;
   userServiceId: Scalars['UserServiceId']['input'];
 };
 
@@ -2543,7 +2543,7 @@ export enum UserServiceOrdering {
 }
 
 export type UserServicesAddCapabilitiesInput = {
-  capabilities?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities: Array<Scalars['String']['input']>;
   userServiceIds: Array<Scalars['UserServiceId']['input']>;
 };
 
@@ -3458,22 +3458,22 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input' | 'service_instance_id'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
-  adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<MutationAdminCancelDeploymentRequestArgs>>;
+  adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationAdminCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;
   autoRegisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationAutoRegisterPlatformArgs>>;
-  bulkAcceptPendingUserInOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkAcceptPendingUserInOrganizationArgs>>;
-  bulkRemovePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, Partial<MutationBulkRemovePendingUserFromOrganizationArgs>>;
+  bulkAcceptPendingUserInOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationBulkAcceptPendingUserInOrganizationArgs, 'input'>>;
+  bulkRemovePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['Success']>, ParentType, ContextType, RequireFields<MutationBulkRemovePendingUserFromOrganizationArgs, 'input'>>;
   cancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   changeSelectedOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationChangeSelectedOrganizationArgs, 'organization_id'>>;
   consumeProvisionedNewsFeedItems?: Resolver<ResolversTypes['ConsumeProvisionedNewsFeedItemsResponse'], ParentType, ContextType>;
   contactUs?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationContactUsArgs>>;
   createCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationCreateCompetitorArgs, 'input'>>;
-  createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, Partial<MutationCreateDeploymentRequestArgs>>;
-  createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'input' | 'metadata'>>;
+  createDeploymentRequest?: Resolver<ResolversTypes['DeploymentRequest'], ParentType, ContextType, RequireFields<MutationCreateDeploymentRequestArgs, 'input'>>;
+  createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'input' | 'metadata' | 'serviceInstanceId'>>;
   createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
-  createSubscriptions?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationCreateSubscriptionsArgs>>;
+  createSubscriptions?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationCreateSubscriptionsArgs, 'input'>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
-  deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationDeleteDocumentArgs>>;
+  deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationDeleteDocumentArgs, 'documentId' | 'service_instance_id'>>;
   deleteEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
   deleteNewsFeedItem?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteNewsFeedItemArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
@@ -3487,7 +3487,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
   editUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationEditUserServiceArgs, 'input' | 'service_instance_id'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
-  incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, Partial<MutationIncrementShareNumberDocumentArgs>>;
+  incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationIncrementShareNumberDocumentArgs, 'documentId'>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;
@@ -3498,15 +3498,15 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   reorderDeploymentRequestInQueue?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationReorderDeploymentRequestInQueueArgs, 'input'>>;
-  requestTransferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationRequestTransferPersonalSpaceArgs>>;
+  requestTransferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationRequestTransferPersonalSpaceArgs, 'new_email'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
   transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
-  unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<MutationUnregisterPlatformArgs>>;
+  unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUnregisterPlatformArgs, 'input'>>;
   updateCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationUpdateCompetitorArgs, 'input'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;
-  updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'documentId' | 'input' | 'metadata'>>;
+  updateDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationUpdateDocumentArgs, 'documentId' | 'input' | 'metadata' | 'serviceInstanceId'>>;
   updateEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationUpdateEpicArgs, 'id' | 'input'>>;
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
@@ -3715,9 +3715,9 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
-  deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, Partial<QueryDeploymentRequestsAvailableArgs>>;
+  deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, RequireFields<QueryDeploymentRequestsAvailableArgs, 'platformIdentifier'>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, Partial<QueryDocumentArgs>>;
+  document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryDocumentArgs, 'documentId' | 'serviceInstanceId'>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, Partial<QueryDocumentExistsArgs>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -3734,19 +3734,19 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicDocuments?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryPublicDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId' | 'slug'>>;
   publicDocumentsByServiceSlug?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryPublicDocumentsByServiceSlugArgs, 'serviceInstanceSlug'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
-  registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, Partial<QueryRegisteredPlatformsArgs>>;
+  registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
-  serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdArgs>>;
-  serviceInstanceByIdAndGrantAccess?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<QueryServiceInstanceByIdAndGrantAccessArgs>>;
+  serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceByIdArgs, 'service_instance_id'>>;
+  serviceInstanceByIdAndGrantAccess?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceByIdAndGrantAccessArgs, 'service_instance_id'>>;
   serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
   subscriptions?: Resolver<ResolversTypes['SubscriptionConnection'], ParentType, ContextType, RequireFields<QuerySubscriptionsArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  trialDeployments?: Resolver<ResolversTypes['TrialsDeployments'], ParentType, ContextType, Partial<QueryTrialDeploymentsArgs>>;
-  updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, Partial<QueryUpdateOpenCtiManifestArgs>>;
+  trialDeployments?: Resolver<ResolversTypes['TrialsDeployments'], ParentType, ContextType, RequireFields<QueryTrialDeploymentsArgs, 'input'>>;
+  updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<QueryUpdateOpenCtiManifestArgs, 'tag'>>;
   useCases?: Resolver<Maybe<ResolversTypes['UseCaseConnection']>, ParentType, ContextType, RequireFields<QueryUseCasesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;

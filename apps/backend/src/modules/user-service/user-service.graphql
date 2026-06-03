@@ -14,7 +14,7 @@ enum UserServiceOrdering {
 
 input UserServiceAddInput {
   email: [String!]!
-  capabilities: [String]
+  capabilities: [String!]
   subscription_id: SubscriptionId!
 }
 
@@ -28,7 +28,7 @@ input UserServicesDeleteInput {
 }
 input UserServiceEditInput {
   userServiceId: UserServiceId!
-  capabilities: [String]
+  capabilities: [String!]!
 }
 
 type Mutation {

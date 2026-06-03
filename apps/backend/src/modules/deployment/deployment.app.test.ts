@@ -1041,6 +1041,7 @@ describe('deployment app', () => {
           start_date: new Date(2025, 12, 1),
           end_date: new Date(2026, 1, 1),
           actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: uuidv4(),
         });
 
         expect(mockSendMail).toHaveBeenCalledWith({

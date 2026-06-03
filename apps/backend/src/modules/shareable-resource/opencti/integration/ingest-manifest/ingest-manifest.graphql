@@ -1,4 +1,4 @@
 type Query {
-  updateOpenCTIManifest(tag: String): Success!
+  updateOpenCTIManifest(tag: String!): Success!
     @system_token(portalCapa: [MANAGE_CONNECTORS_INGESTIONS])
 }

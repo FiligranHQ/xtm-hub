@@ -207,10 +207,10 @@ const resolvers: Resolvers = {
         const { ids, searchTerm, filters, excludedIds } = input;
         await UserAdminApp.bulkRemovePendingUserFromOrganization(
           context.user.selected_organization_id,
-          ids,
-          searchTerm,
-          filters,
-          excludedIds
+          ids ?? [],
+          searchTerm ?? undefined,
+          filters ?? [],
+          excludedIds ?? []
         );
 
         return { success: true };
@@ -231,10 +231,10 @@ const resolvers: Resolvers = {
 
         await UserAdminApp.bulkAcceptPendingUserInOrganization(
           context.user.selected_organization_id,
-          ids,
-          searchTerm,
-          filters,
-          excludedIds
+          ids ?? [],
+          searchTerm ?? undefined,
+          filters ?? [],
+          excludedIds ?? []
         );
         return { success: true };
       } catch (error) {
@@ -304,10 +304,10 @@ const resolvers: Resolvers = {
         );
 
         await hubspotReachOutSalesHook({
-          message,
+          message: message ?? undefined,
           platformToken,
-          platformId,
-          platformIdentifier,
+          platformId: platformId ?? undefined,
+          platformIdentifier: platformIdentifier ?? undefined,
         });
         return { success: true };
       } catch (error) {

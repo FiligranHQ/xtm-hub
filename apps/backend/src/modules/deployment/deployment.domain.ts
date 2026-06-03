@@ -17,7 +17,7 @@ import DeploymentRequest, {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { prefixObjectKeys } from '../../utils/utils';
 import {
   ServiceGroupDomain,
@@ -27,12 +27,15 @@ import {
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
     deploymentRequest: DeploymentRequestInitializer
-  ) => {
+  ): Promise<DeploymentRequest> => {
     const [createdDeploymentRequest] = await db<DeploymentRequest>(
       'DeploymentRequest'
     )
       .insert(deploymentRequest)
       .returning('*');
+    if (!createdDeploymentRequest) {
+      throw new Error(UnknownErrorCode.CreateDeploymentRequestError);
+    }
     return createdDeploymentRequest;
   },
 

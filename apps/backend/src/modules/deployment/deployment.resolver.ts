@@ -97,7 +97,7 @@ const resolvers: Resolvers = {
         return await DeploymentApp.cancelDeploymentRequest(
           deploymentRequestId,
           false,
-          cancellationReason
+          cancellationReason ?? undefined
         );
       } catch (error) {
         throw mapToGraphQLError(

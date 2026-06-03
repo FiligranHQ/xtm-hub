@@ -58,7 +58,7 @@ export const UserOrganizationApp = {
         ? existingUser
         : await createUserWithPersonalSpace({
             email: input.email,
-            password: input.password,
+            password: input.password ?? undefined,
             selected_organization_id: chosenOrganization.id,
           });
 

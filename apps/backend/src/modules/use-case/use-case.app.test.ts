@@ -2,12 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
+import { UseCaseId } from '../../model/kanel/public/UseCase';
 import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseApp } from './use-case.app';
 import { useCaseDomain } from './use-case.domain';
 
 describe('use Case app', () => {
-  describe(`${useCaseApp.loadOrCreateUseCase.name}`, () => {
+  describe('loadOrCreateUseCase', () => {
     beforeEach(async () => {
       // Clean up the Use Case table before each test
       await TestHelper.useCase.delete({});
@@ -122,7 +123,7 @@ describe('use Case app', () => {
     });
   });
 
-  describe(`${useCaseApp.deleteUseCaseBy.name}`, () => {
+  describe('deleteUseCaseBy', () => {
     it('should remove object use case associated to use case', async () => {
       const useCase1 = await useCaseApp.loadOrCreateUseCase({
         name: 'UseCase 1',
@@ -151,6 +152,40 @@ describe('use Case app', () => {
       });
 
       expect(resultObjectUseCases).toHaveLength(0);
+    });
+  });
+
+  describe('editUseCaseById', () => {
+    beforeEach(async () => {
+      await TestHelper.useCase.delete({});
+    });
+
+    it('should update the use case and return the updated value', async () => {
+      const created = await useCaseApp.loadOrCreateUseCase({
+        name: 'Original Name',
+        color: '#111111',
+      });
+
+      const updated = await useCaseApp.editUseCaseById(created.id, {
+        name: 'Updated Name',
+        color: '#222222',
+      });
+
+      expect(updated).toMatchObject({
+        id: created.id,
+        name: 'Updated Name',
+        color: '#222222',
+      });
+
+      const fromDb = await TestHelper.useCase.load({ id: created.id });
+      expect(fromDb).toMatchObject({ name: 'Updated Name', color: '#222222' });
+    });
+
+    it('should throw when the use case does not exist', async () => {
+      const nonExistentId = uuidv4() as UseCaseId;
+      await expect(
+        useCaseApp.editUseCaseById(nonExistentId, { name: 'Ghost' })
+      ).rejects.toThrow();
     });
   });
 });
