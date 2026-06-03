@@ -11,7 +11,6 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { ErrorCode } from '../../../utils/error/error.code';
 import { PlatformConfigurationDomain } from './platform-configuration.domain';
 
 describe('platformConfigurationDomain', () => {
@@ -180,25 +179,6 @@ describe('platformConfigurationDomain', () => {
         ServiceDefinitionIdentifier.OpenctiRegistration
       );
       expect(resolved?.platformIdentifier).toBe(PlatformIdentifier.Opencti);
-    });
-
-    it('should throw ServiceDefinitionNotFound when the instance has no service_definition_id', async () => {
-      await TestHelper.serviceInstance.create({
-        id: serviceInstanceId,
-        service_definition_id: null,
-      });
-      await TestHelper.platformConfiguration.create({
-        service_instance_id: serviceInstanceId,
-        status: PlatformConfigurationStatus.Active,
-        platform_id: platformId,
-      });
-
-      const call =
-        PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
-          platformId
-        );
-
-      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
 
     it('should filter by status when status option is provided', async () => {

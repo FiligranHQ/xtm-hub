@@ -24,6 +24,7 @@ import ServiceInstance, {
 import SubscriptionCapability, {
   SubscriptionCapabilityMutator,
 } from '../../src/model/kanel/public/SubscriptionCapability';
+import { SERVICES } from '../tests.const';
 
 export const TestServiceHelper = {
   serviceDefinition: {
@@ -83,6 +84,7 @@ export const TestServiceHelper = {
         .insert({
           id: uuidv4() as ServiceInstanceId,
           name: 'Default name serviceInstance',
+          service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
           tags: [],
           ...data,
         })
