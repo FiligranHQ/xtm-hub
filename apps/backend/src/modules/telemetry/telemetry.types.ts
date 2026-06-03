@@ -30,10 +30,10 @@ export enum TelemetryEventType {
 
 export interface BaseTelemetryEvent {
   event_type: string;
-  organization_id: string;
-  organization_name: string;
+  organization_id?: string;
+  organization_name?: string;
   organization_type: TelemetryOrganizationType;
-  user_id: string;
+  user_id?: string;
   '@timestamp': string;
   source: TelemetrySource;
 }
