@@ -43,11 +43,10 @@ describe('query-cache utils', () => {
       ]);
     });
 
-    it.each`
-      title                            | previous
-      ${'undefined previous query'}    | ${undefined}
-      ${'null connection in previous'} | ${{ __typename: 'Query', useCases: null }}
-    `('should keep value unchanged for $title', ({ previous }) => {
+    it.each([
+      ['undefined previous query', undefined],
+      ['null connection in previous', { __typename: 'Query', useCases: null }],
+    ])('should keep value unchanged for %s', (_, previous) => {
       const next = prependToQueryCache<UseCasesListQuery, 'useCases'>(
         'useCases',
         {
