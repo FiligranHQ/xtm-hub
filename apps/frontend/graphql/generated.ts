@@ -2639,8 +2639,7 @@ export const useUseCaseAddMutation = <
     )};
 
 useUseCaseAddMutation.getKey = () => ['UseCaseAdd'];
-
-
+useUseCaseAddMutation.getRootKey = () => ['UseCaseAdd'] as const;
 useUseCaseAddMutation.fetcher = (client: GraphQLClient, variables: UseCaseAddMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseAddMutation, UseCaseAddMutationVariables>(client, UseCaseAddDocument, variables, headers);
 
 export const UseCaseEditDocument = `
@@ -2669,8 +2668,7 @@ export const useUseCaseEditMutation = <
     )};
 
 useUseCaseEditMutation.getKey = () => ['UseCaseEdit'];
-
-
+useUseCaseEditMutation.getRootKey = () => ['UseCaseEdit'] as const;
 useUseCaseEditMutation.fetcher = (client: GraphQLClient, variables: UseCaseEditMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseEditMutation, UseCaseEditMutationVariables>(client, UseCaseEditDocument, variables, headers);
 
 export const UseCaseDeleteDocument = `
@@ -2699,8 +2697,7 @@ export const useUseCaseDeleteMutation = <
     )};
 
 useUseCaseDeleteMutation.getKey = () => ['UseCaseDelete'];
-
-
+useUseCaseDeleteMutation.getRootKey = () => ['UseCaseDelete'] as const;
 useUseCaseDeleteMutation.fetcher = (client: GraphQLClient, variables: UseCaseDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseDeleteMutation, UseCaseDeleteMutationVariables>(client, UseCaseDeleteDocument, variables, headers);
 
 export const UseCasesListDocument = `
@@ -2737,7 +2734,7 @@ export const useUseCasesListQuery = <
     )};
 
 useUseCasesListQuery.getKey = (variables: UseCasesListQueryVariables) => ['UseCasesList', variables];
-
+useUseCasesListQuery.getRootKey = () => ['UseCasesList'] as const;
 export const useInfiniteUseCasesListQuery = <
       TData = InfiniteData<UseCasesListQuery>,
       TError = unknown
@@ -2760,6 +2757,5 @@ export const useInfiniteUseCasesListQuery = <
     )};
 
 useInfiniteUseCasesListQuery.getKey = (variables: UseCasesListQueryVariables) => ['UseCasesList.infinite', variables];
-
-
+useInfiniteUseCasesListQuery.getRootKey = () => ['UseCasesList.infinite'] as const;
 useUseCasesListQuery.fetcher = (client: GraphQLClient, variables: UseCasesListQueryVariables, headers?: RequestInit['headers']) => fetcher<UseCasesListQuery, UseCasesListQueryVariables>(client, UseCasesListDocument, variables, headers);

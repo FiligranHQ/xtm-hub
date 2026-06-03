@@ -1,3 +1,4 @@
+import type { Query } from '@graphql/generated';
 import type { QueryKey } from '@tanstack/react-query';
 
 type EdgeOf<TQuery, K extends keyof TQuery> =
@@ -21,7 +22,7 @@ type Connection<TEdge> =
   | undefined;
 
 export const prependToQueryCache =
-  <TQuery, K extends keyof TQuery & string>(
+  <TQuery extends object, K extends keyof TQuery & keyof Query>(
     connectionKey: K,
     newEdge: EdgeOf<TQuery, K>
   ) =>
@@ -40,7 +41,7 @@ export const prependToQueryCache =
   };
 
 export const updateInQueryCache =
-  <TQuery, K extends keyof TQuery & string>(
+  <TQuery extends object, K extends keyof TQuery & keyof Query>(
     connectionKey: K,
     updatedNode: NodeOf<TQuery, K> & { id: string }
   ) =>
@@ -67,7 +68,7 @@ export const updateInQueryCache =
   };
 
 export const removeFromQueryCache =
-  <TQuery, K extends keyof TQuery & string>(
+  <TQuery extends object, K extends keyof TQuery & keyof Query>(
     connectionKey: K,
     deletedId: string
   ) =>
