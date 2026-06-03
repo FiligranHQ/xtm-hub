@@ -44,7 +44,7 @@ jobs:
               - "yarn.lock"
 
   run-lint:
-    name: Lint ${{ matrix.label }}
+    name: Check quality ${{ matrix.label }}
     needs: detect-changes
     if: needs.detect-changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -76,6 +76,45 @@ jobs:
       - name: Run lint
         working-directory: ${{ matrix.working-directory }}
         run: yarn lint
+
+      - name: Check formatting
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags --prune --depth=1 origin "${{ github.base_ref }}"
+            DIFF_RANGE="origin/${{ github.base_ref }}...HEAD"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            DIFF_RANGE="${{ github.event.before }}...${{ github.sha }}"
+          else
+            echo "workflow_dispatch: fallback to full formatting check"
+            if [ "${{ matrix.label }}" = "backend" ]; then
+              yarn workspace @xtm-hub/backend format:check
+            else
+              yarn workspace @xtm-hub/frontend prettier --check .
+            fi
+            exit 0
+          fi
+
+          if [ "${{ matrix.label }}" = "backend" ]; then
+            TARGET_PREFIX="apps/backend/"
+            PRETTIER_WORKSPACE="@xtm-hub/backend"
+          else
+            TARGET_PREFIX="apps/frontend/"
+            PRETTIER_WORKSPACE="@xtm-hub/frontend"
+          fi
+
+          mapfile -t CHANGED_FILES < <(git diff --name-only --diff-filter=ACMRT "$DIFF_RANGE" | grep "^${TARGET_PREFIX}" || true)
+
+          if [ ${#CHANGED_FILES[@]} -eq 0 ]; then
+            echo "No modified files to check for ${TARGET_PREFIX}"
+            exit 0
+          fi
+
+          yarn workspace "$PRETTIER_WORKSPACE" prettier --check --ignore-unknown "${CHANGED_FILES[@]}"
+
+      - name: yarn i18n-check
+        if: matrix.label == 'frontend'
+        run: |
+          yarn i18n-check --locales apps/frontend/messages --source en
 
   build-images-tests:
     needs:

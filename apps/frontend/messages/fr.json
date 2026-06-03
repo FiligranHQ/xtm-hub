@@ -812,7 +812,7 @@
       "NamePlaceholder": "nom {documentType}",
       "NoImage": "Pas d'image sélectionnée",
       "PlaybookSupportedLabel": "Playbook pris en charge",
-      "ProductVersionLabel": "Version de compatibilité d'{platform}",
+      "ProductVersionLabel": "Version de compatibilité de {platform}",
       "ProductVersionPlaceholder": "1.0.0",
       "PublishedPlaceholder": "Le {documentType} est-il publié ?",
       "Restore": "Restaurer",
@@ -1078,7 +1078,7 @@
         "DeployDescriptionNoPlatform": "Vous n'avez pas de plateforme {platformIdentifier} enregistrée.",
         "DeployDescriptionNoPlatformIllustration": "Illustration de l'enregistrement XTM Hub",
         "DeployDescriptionNoPlatformThen": "Pour déployer une ressource, vous devez d'abord enregistrer votre plateforme {platformIdentifier}.\n\nÉtapes d'enregistrement :\n1. Assurez-vous d'être administrateur {platformIdentifier}, ou contactez votre administrateur pour obtenir de l'aide.\n2. Connectez-vous à votre plateforme {platformIdentifier} et accédez aux paramètres &gt; Expérience Filigran.\n3. Cliquez sur le bouton &quot;Enregistrer&quot; pour terminer l'enregistrement comme dans l'image ci-dessous",
-        "DeployDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {instanceName} ?",
+        "DeployDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {platformName} ?",
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
         "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
@@ -1112,7 +1112,7 @@
         "LastUpdatedAt": "Dernière mise à jour le",
         "Overview": "Vue d'ensemble",
         "MinimumDeployableVersion": "Version minimale pour être déployé sur {platform}",
-        "ProductVersion": "Version de compatibilité d'{platform}",
+        "ProductVersion": "Version de compatibilité de {platform}",
         "Shares": "Actions",
         "IntegrationType": "Type",
         "IntegrationSubType": "Sous-type",
@@ -1372,13 +1372,13 @@
     "Description": "Êtes-vous sûr de vouloir désenregistrer la plateforme {platformName} ? Si vous le faites, vous devrez refaire le processus d'enregistrement de {productName}.",
     "Confirm": {
       "Description": "Voulez-vous procéder à la désinscription ?",
-      "Title": "Vous êtes sur le point de désenregistrer votre plateforme {platformTitle} de l'organisation {platformIdentifier} sur le Hub."
+      "Title": "Vous êtes sur le point de désenregistrer votre plateforme {platformIdentifier} de l'organisation {name} sur le Hub."
     },
     "Error": {
       "Capability": {
         "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
-        "Description": "Si vous souhaitez procéder à la désinscription de votre plateforme {name} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui dispose des autorisations appropriées pour procéder.",
-        "Title": "Vous n'avez pas l'accès {platformIdentifier} nécessaire sur le XTM Hub."
+        "Description": "Si vous souhaitez procéder à la désinscription de votre plateforme {platformIdentifier} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui dispose des autorisations appropriées pour procéder.",
+        "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub."
       },
       "NotInOrganization": {
         "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
@@ -1395,7 +1395,7 @@
     "OpenCTI": {
       "Confirm": {
         "Description": "Voulez-vous procéder à la désinscription ?",
-        "Title": "Vous'êtes sur le point de désenregistrer votre plateforme OpenCTI"
+        "Title": "Vous êtes sur le point de désenregistrer votre plateforme OpenCTI de l'organisation {name} sur le Hub."
       },
       "Error": {
         "Capability": {
@@ -1437,7 +1437,7 @@
     "Enable": "Activer",
     "RemoveUser": "Retirer l'utilisateur",
     "SearchUser": "Rechercher l'utilisateur...",
-    "UpdateUser": "Mettre à jour l'utilisateur",
+    "UpdateUser": "Mettre à jour l'utilisateur - {email}",
     "UserCreated": "L'utilisateur {email} a été créé",
     "UserDeleted": "L'utilisateur {email} a été supprimé",
     "UserRemoved": "L'utilisateur {email} a été supprimé",

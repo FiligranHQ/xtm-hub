@@ -431,7 +431,7 @@
   },
   "OrganizationInServiceAction": {
     "AddOrganization": "組織を",
-    "ConfirmDelete1": "本当にこの組織 {name} を削除しますか？",
+    "ConfirmDelete1": "この組織を削除してもよろしいですか？",
     "ConfirmDelete2": "をこのサービスから削除してもよろしいですか？この操作は取り消せません。",
     "DeleteOrgFromService": "サービスから組織を削除する",
     "EndDate": "終了日（オプション）",
