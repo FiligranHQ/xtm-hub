@@ -62,9 +62,7 @@ export async function waitForReactIdle(page: Page, timeout = 5000) {
             if (hook.reactDevtoolsAgent && hook.reactDevtoolsAgent._fibers) {
               const hasUpdates = Object.values(
                 hook.reactDevtoolsAgent._fibers
-              ).some(
-                (fiber) => fiber.memoizedState?.isProcessing === true
-              );
+              ).some((fiber) => fiber.memoizedState?.isProcessing === true);
               if (!hasUpdates) {
                 resolve();
                 return;

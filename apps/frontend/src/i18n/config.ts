@@ -8,5 +8,5 @@ export const defaultLocale: PublicLocale = 'en';
 
 export type UseTranslationsProps = (
   key: string,
-  values?: Record<string, unknown>
+  values?: Record<string, string | number | Date>
 ) => string;
