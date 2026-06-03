@@ -47,8 +47,8 @@ import { formatName } from '../../utils/format';
 import { ucfirst } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import { registrationDomain } from '../registration/registration.domain';
-import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
 import { updateSubscriptionBy } from '../subscription/subscription.domain';
@@ -850,21 +850,17 @@ const sendActivePlatformEmail = async (
       id: deploymentRequest.user_requester_id,
     });
 
-    const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(
+    const platformConfiguration =
+      await PlatformConfigurationDomain.loadConfigurationByPlatform(
         deploymentRequest.platform_id
       );
-
-    const parsedConfig = JSON.parse(
-      JSON.stringify(serviceConfiguration.config)
-    );
 
     await sendMail({
       to: user.email,
       template: 'free_trial_registered',
       params: {
         firstName: formatName(user.first_name ?? ''),
-        platformUrl: parsedConfig.platform_url,
+        platformUrl: platformConfiguration?.platform_url,
         platformIdentifier: deploymentRequest.platform_identifier,
         globalServiceInstanceId: toGlobalId(
           'ServiceInstance',

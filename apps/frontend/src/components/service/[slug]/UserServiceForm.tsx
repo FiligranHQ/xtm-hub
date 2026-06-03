@@ -1,6 +1,6 @@
 import { UserFragment } from '@/components/admin/user/UserList';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { PortalContext } from '@/components/me/AppPortalContext';
@@ -10,8 +10,6 @@ import {
 } from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { useUsersList } from '@/hooks/use-users-list';
-import { emailRegex } from '@/lib/regexs';
-import { DEBOUNCE_TIME } from '@/utils/constant';
 import {
   Button,
   Checkbox,
@@ -21,9 +19,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  MultiSelectFormField,
   SheetFooter,
-  Tag,
-  TagInput,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -39,7 +36,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { readInlineData, useMutation } from 'react-relay';
-import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 
 interface UserServiceFormProps {
@@ -87,16 +83,9 @@ export const UserServiceForm = ({
   });
 
   const extendedSchema = capabilitiesFormSchema.extend({
-    email: z
-      .array(
-        z.object({
-          id: z.string(),
-          text: z.string(),
-        })
-      )
-      .min(1, {
-        error: 'Please provide at least one email.',
-      }),
+    email: z.array(z.string()).min(1, {
+      error: 'Please provide at least one email.',
+    }),
   });
 
   const currentCapabilities = useMemo(() => {
@@ -116,7 +105,7 @@ export const UserServiceForm = ({
 
   const defaultValues = useMemo(() => {
     return {
-      email: [{ id: '', text: '' }],
+      email: [],
       capabilities: currentCapabilities,
       organizationId: organizationId,
     };
@@ -133,7 +122,7 @@ export const UserServiceForm = ({
   const extendedForm = useForm<z.infer<typeof extendedSchema>>({
     resolver: zodResolver(extendedSchema),
     defaultValues: {
-      email: [{ id: '', text: '' }],
+      email: [],
       capabilities: currentCapabilities,
       organizationId: organizationId,
     },
@@ -197,7 +186,7 @@ export const UserServiceForm = ({
       variables: {
         connections: [connectionId ?? ''],
         input: {
-          email: values.email.map(({ text }) => text),
+          email: values.email,
           capabilities: values.capabilities,
           subscription_id: subscription.subscriptionById.id,
         },
@@ -207,7 +196,7 @@ export const UserServiceForm = ({
         toast({
           title: t('Utils.Success'),
           description: t('ServiceActions.UserServiceAdded', {
-            email: values.email.map((item) => item.text).join(', '),
+            email: values.email.join(', '),
             serviceName: subscription.subscriptionById!.service_instance!.name,
           }),
         });
@@ -225,24 +214,6 @@ export const UserServiceForm = ({
   };
 
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
-  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
-
-  const filter = useMemo(
-    () => ({
-      search: searchTerm,
-      organization: organizationId,
-    }),
-    [searchTerm, organizationId]
-  );
-
-  const handleInputChange = (inputValue: string) => {
-    setSearchTerm(inputValue);
-  };
-
-  const debounceHandleInput = useDebounceCallback(
-    handleInputChange,
-    DEBOUNCE_TIME
-  );
 
   const isCapabilityDisabled = (id: string) => {
     if (id === ServiceRestrictionEnum.MANAGE_ACCESS) {
@@ -254,30 +225,35 @@ export const UserServiceForm = ({
     );
   };
 
-  const { data } = useUsersList({ pageSize, orderMode, orderBy, filter });
+  const { data } = useUsersList({
+    pageSize,
+    orderMode,
+    orderBy,
+    filter: { organization: organizationId },
+  });
 
-  const tagsAutocomplete = data?.users?.edges
-    ?.filter((edge) => {
-      const user = readInlineData<UserList_fragment$key>(
-        UserFragment,
-        edge.node
-      );
-      return user.id !== me?.id;
-    })
-    ?.map((edge) => {
-      const user = readInlineData<UserList_fragment$key>(
-        UserFragment,
-        edge.node
-      );
-      return {
-        id: user.id,
-        text: user.email,
-      };
-    });
-
-  const { setValue } = extendedForm;
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+  const usersOptions = useMemo(() => {
+    return (
+      data?.users?.edges
+        ?.filter((edge) => {
+          const user = readInlineData<UserList_fragment$key>(
+            UserFragment,
+            edge.node
+          );
+          return user.id !== me?.id;
+        })
+        ?.map((edge) => {
+          const user = readInlineData<UserList_fragment$key>(
+            UserFragment,
+            edge.node
+          );
+          return {
+            label: user.email,
+            value: user.email,
+          };
+        }) ?? []
+    );
+  }, [data?.users?.edges, me?.id]);
 
   return (
     <Form {...(form as typeof extendedForm)}>
@@ -298,20 +274,14 @@ export const UserServiceForm = ({
                 <FormItem>
                   <FormLabel>{t('InviteUserServiceForm.Email')}</FormLabel>
                   <FormControl>
-                    <TagInput
-                      {...field}
+                    <MultiSelectFormField
+                      options={usersOptions}
+                      defaultValue={field.value}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      noResultString={t('Utils.NotFound')}
                       placeholder={t('Service.Management.Email')}
-                      tags={tags}
-                      activeTagIndex={activeTagIndex}
-                      setActiveTagIndex={setActiveTagIndex}
-                      enableAutocomplete={true}
-                      autocompleteOptions={tagsAutocomplete}
-                      validateTag={(tag: string) => !!tag.match(emailRegex)}
-                      setTags={(newTags) => {
-                        setTags(newTags);
-                        setValue('email', newTags as Tag[]);
-                      }}
-                      onInputChange={debounceHandleInput}
+                      variant="inverted"
                     />
                   </FormControl>
                   <FormMessage />

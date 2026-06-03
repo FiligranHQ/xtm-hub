@@ -29,12 +29,12 @@ import {
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   DeploymentRequestUseCase,
+  PlatformConfigurationStatus,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
-  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../__generated__/resolvers-types';
@@ -67,9 +67,9 @@ import {
   TelemetryTargetProduct,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { registrationApp } from './registration.app';
 import { registrationDomain } from './registration.domain';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 describe('registration app', () => {
   afterAll(async () => {
@@ -79,7 +79,7 @@ describe('registration app', () => {
   describe('loadPlatformAssociatedOrganization', () => {
     it('should return null when platform is not found', async () => {
       const result =
-        await registrationApp.loadPlatformAssociatedOrganization('unknown-id');
+        await registrationApp.loadPlatformAssociatedOrganization(uuidv4());
 
       expect(result).toBeNull();
     });
@@ -92,10 +92,10 @@ describe('registration app', () => {
         name: 'test',
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
       });
 
       const call =
@@ -113,10 +113,10 @@ describe('registration app', () => {
         name: 'test',
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
       });
       await TestHelper.subscription.create({
         id: subscriptionId,
@@ -140,10 +140,11 @@ describe('registration app', () => {
         name: 'test',
         service_definition_id: SERVICES.DEFINITIONS.OPENAEV_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId, platform_version: '2.5.0' },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        platform_version: '2.5.0',
+        status: PlatformConfigurationStatus.Active,
       });
 
       const call =
@@ -160,10 +161,10 @@ describe('registration app', () => {
         name: 'test',
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
       });
       await TestHelper.subscription.create({
         id: subscriptionId,
@@ -201,10 +202,10 @@ describe('registration app', () => {
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
       });
 
       const call = registrationApp.isPlatformRegistered({
@@ -224,10 +225,11 @@ describe('registration app', () => {
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId, platform_title: platformTitle },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        platform_title: platformTitle,
+        status: PlatformConfigurationStatus.Active,
       });
       await TestHelper.subscription.create({
         id: subscriptionId,
@@ -246,6 +248,7 @@ describe('registration app', () => {
       );
       expect(result.platformTitle).toBe(platformTitle);
     });
+
     it('should return unregistered when platform registration is inactive', async () => {
       const platformId = uuidv4();
       const platformTitle = 'Platform title';
@@ -256,10 +259,11 @@ describe('registration app', () => {
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId, platform_title: platformTitle },
-        status: ServiceConfigurationStatus.Inactive,
+        platform_id: platformId,
+        platform_title: platformTitle,
+        status: PlatformConfigurationStatus.Inactive,
       });
       await TestHelper.subscription.create({
         id: subscriptionId,
@@ -357,7 +361,7 @@ describe('registration app', () => {
         });
 
         await expect(call).rejects.toThrow(
-          ErrorCode.InvalidServiceConfiguration
+          ErrorCode.InvalidPlatformConfiguration
         );
       });
 
@@ -372,7 +376,7 @@ describe('registration app', () => {
         });
 
         await expect(call).rejects.toThrow(
-          ErrorCode.InvalidServiceConfiguration
+          ErrorCode.InvalidPlatformConfiguration
         );
       });
 
@@ -529,16 +533,14 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          config: {
-            platform_id: platformId,
-            tenant_id: tenantId,
-            tenant_name: tenantName,
-          },
+          platform_id: platformId,
+          tenant_id: tenantId,
+          tenant_name: tenantName,
         });
       });
 
@@ -561,11 +563,11 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId
           );
-        expect(configuration?.config).not.toHaveProperty('tenant_id');
-        expect(configuration?.config).not.toHaveProperty('tenant_name');
+        expect(configuration?.tenant_id).toBeNull();
+        expect(configuration?.tenant_name).toBeNull();
       });
 
       it('should create separate service instances for the same platform_id with different tenantId values', async () => {
@@ -605,28 +607,24 @@ describe('registration app', () => {
 
         // Then
         const config1 =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId: tenantId1 }
           );
         const config2 =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId: tenantId2 }
           );
         expect(config1).toMatchObject({
-          config: {
-            platform_id: platformId,
-            tenant_id: tenantId1,
-            tenant_name: tenantName1,
-          },
+          platform_id: platformId,
+          tenant_id: tenantId1,
+          tenant_name: tenantName1,
         });
         expect(config2).toMatchObject({
-          config: {
-            platform_id: platformId,
-            tenant_id: tenantId2,
-            tenant_name: tenantName2,
-          },
+          platform_id: platformId,
+          tenant_id: tenantId2,
+          tenant_name: tenantName2,
         });
         expect(config1?.service_instance_id).not.toBe(
           config2?.service_instance_id
@@ -653,7 +651,7 @@ describe('registration app', () => {
           identifier: PlatformIdentifier.Openaev,
         });
         const firstConfig =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -671,7 +669,7 @@ describe('registration app', () => {
 
         // Then — same service instance is reused, title is updated
         const secondConfig =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -679,7 +677,8 @@ describe('registration app', () => {
           firstConfig?.service_instance_id
         );
         expect(secondConfig).toMatchObject({
-          config: { platform_title: 'Updated title', tenant_name: 'newTenant' },
+          platform_title: 'Updated title',
+          tenant_name: 'newTenant',
         });
       });
     });
@@ -825,13 +824,13 @@ describe('registration app', () => {
 
         // Then — the new configuration has tenant_id stored
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          config: expect.objectContaining({ tenant_id: tenantId }),
-          status: ServiceConfigurationStatus.Active,
+          tenant_id: tenantId,
+          status: PlatformConfigurationStatus.Active,
         });
       });
     });
@@ -918,18 +917,18 @@ describe('registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const serviceConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+      const platformConfiguration =
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId
         );
 
-      expect(serviceConfiguration).toBeDefined();
-      expect(serviceConfiguration?.status).toBe(
-        ServiceConfigurationStatus.Inactive
+      expect(platformConfiguration).toBeDefined();
+      expect(platformConfiguration?.status).toBe(
+        PlatformConfigurationStatus.Inactive
       );
 
       const subscription = await TestHelper.subscription.load({
-        service_instance_id: serviceConfiguration!.service_instance_id,
+        service_instance_id: platformConfiguration!.service_instance_id,
       });
 
       expect(subscription).toBeDefined();
@@ -959,12 +958,12 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          status: ServiceConfigurationStatus.Inactive,
+          status: PlatformConfigurationStatus.Inactive,
         });
       });
 
@@ -978,12 +977,12 @@ describe('registration app', () => {
 
         // Then — original tenant configuration is still active
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          status: ServiceConfigurationStatus.Active,
+          status: PlatformConfigurationStatus.Active,
         });
       });
     });
@@ -1017,13 +1016,12 @@ describe('registration app', () => {
     let loadSubscriptionBySpy: MockInstance;
 
     const buildResolved = (overrides = {}) => ({
-      serviceConfiguration: { service_instance_id: uuidv4() },
+      platformConfiguration: { service_instance_id: uuidv4() },
       serviceDefinition: {
         id: uuidv4(),
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       },
       platformIdentifier: PlatformIdentifier.Opencti,
-      config: {},
       ...overrides,
     });
 
@@ -1033,7 +1031,7 @@ describe('registration app', () => {
         'isUserAllowedOnOrganization'
       );
       loadResolvedConfigurationByPlatformSpy = vi.spyOn(
-        ServiceConfigurationDomain,
+        PlatformConfigurationDomain,
         'loadResolvedConfigurationByPlatform'
       );
       loadSubscriptionBySpy = vi.spyOn(
@@ -1244,7 +1242,7 @@ describe('registration app', () => {
     });
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      await PlatformConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
@@ -1295,25 +1293,23 @@ describe('registration app', () => {
         id: deploymentRequest.service_instance_id,
       });
       const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Ready
       );
       expect(configuration).toMatchObject({
-        config: {
-          platform_contract: platformConfiguration.contract,
-          platform_id: platformConfiguration.id,
-          platform_title: platformConfiguration.title,
-          platform_url: platformConfiguration.url,
-          platform_version: platformConfiguration.version,
-          registerer_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
-          token: deploymentRequest.platform_token,
-        },
+        platform_contract: platformConfiguration.contract,
+        platform_id: platformConfiguration.id,
+        platform_title: platformConfiguration.title,
+        platform_url: platformConfiguration.url,
+        platform_version: platformConfiguration.version,
+        registerer_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+        token: deploymentRequest.platform_token,
         service_instance_id: deploymentRequest.service_instance_id,
-        status: ServiceConfigurationStatus.Active,
+        status: PlatformConfigurationStatus.Active,
       });
     });
     it("should successfully register the provided platform if it's already registered", async () => {
@@ -1335,27 +1331,25 @@ describe('registration app', () => {
       );
 
       const oldConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       const newConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           newPlatformConfiguration.id
         );
       expect(oldConfiguration).toBeUndefined();
       expect(newConfiguration).toMatchObject({
-        config: {
-          platform_contract: newPlatformConfiguration.contract,
-          platform_id: newPlatformConfiguration.id,
-          platform_title: newPlatformConfiguration.title,
-          platform_url: newPlatformConfiguration.url,
-          platform_version: newPlatformConfiguration.version,
-          registerer_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
-          token: deploymentRequest.platform_token,
-        },
+        platform_contract: newPlatformConfiguration.contract,
+        platform_id: newPlatformConfiguration.id,
+        platform_title: newPlatformConfiguration.title,
+        platform_url: newPlatformConfiguration.url,
+        platform_version: newPlatformConfiguration.version,
+        registerer_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+        token: deploymentRequest.platform_token,
         service_instance_id: deploymentRequest.service_instance_id,
-        status: ServiceConfigurationStatus.Active,
+        status: PlatformConfigurationStatus.Active,
       });
     });
 
@@ -1504,23 +1498,17 @@ describe('registration app', () => {
 
       // Then
       const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id,
           { tenantId }
         );
       expect(configuration).toMatchObject({
-        config: {
-          platform_id: platformConfiguration.id,
-          tenant_id: tenantId,
-          tenant_name: tenantName,
-        },
+        platform_id: platformConfiguration.id,
+        tenant_id: tenantId,
+        tenant_name: tenantName,
         service_instance_id: deploymentRequest.service_instance_id,
-        status: ServiceConfigurationStatus.Active,
+        status: PlatformConfigurationStatus.Active,
       });
     });
-  });
-
-  afterAll(async () => {
-    vi.useRealTimers();
   });
 });

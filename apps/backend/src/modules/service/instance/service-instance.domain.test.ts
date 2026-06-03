@@ -19,19 +19,20 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
+  PlatformConfigurationStatus,
   PlatformContract,
-  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceTag,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
+import PlatformConfiguration from '../../../model/kanel/public/PlatformConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import * as mailService from '../../../server/mail-service';
-import { PlatformConfiguration } from '../../registration/registration.domain';
+import { PlatformConfigurationInput } from '../../registration/registration.domain';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import {
   getUserJoined,
@@ -281,6 +282,7 @@ describe('service instance domain', () => {
 
   describe('loadPlatformConfigurationByServiceInstanceId', () => {
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
+    let platformConfiguration: PlatformConfiguration;
 
     beforeAll(async () => {
       await TestHelper.serviceInstance.create({
@@ -288,12 +290,12 @@ describe('service instance domain', () => {
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
 
-      await TestHelper.serviceConfiguration.create({
+      platformConfiguration = await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
       });
     });
     afterAll(async () => {
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: serviceInstanceId,
       });
       await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
@@ -307,16 +309,14 @@ describe('service instance domain', () => {
       // Then
       expect(result).toMatchObject({
         service_instance_id: serviceInstanceId,
-        config: {
-          registerer_id: contextRegistererUserSecondOrga.user.id,
-          platform_id: 'test-platform',
-          platform_title: 'Test Platform',
-          platform_url: 'https://test.com',
-          platform_contract: PlatformContract.Ee,
-          platform_version: '1.0.0',
-          token: 'test-token',
-        },
-        status: ServiceConfigurationStatus.Active,
+        registerer_id: contextRegistererUserSecondOrga.user.id,
+        platform_id: platformConfiguration.platform_id,
+        platform_title: 'Test Platform',
+        platform_url: 'https://test.com',
+        platform_contract: PlatformContract.Ee,
+        platform_version: '1.0.0',
+        token: platformConfiguration.token,
+        status: PlatformConfigurationStatus.Active,
       });
     });
 
@@ -343,13 +343,13 @@ describe('service instance domain', () => {
         id: serviceInstanceId,
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
       });
     });
 
     afterAll(async () => {
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: serviceInstanceId,
       });
       await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
@@ -357,14 +357,15 @@ describe('service instance domain', () => {
 
     it('should handle complete configuration replacement', async () => {
       // Given
-      const newConfig: PlatformConfiguration = {
-        registerer_id: 'new-registerer',
-        platform_id: 'completely-new-platform',
+      const newConfig: PlatformConfigurationInput = {
+        registerer_id: uuidv4(),
+        platform_id: uuidv4(),
         platform_title: 'Completely New Title',
         platform_url: 'https://completelynew.com',
         platform_contract: PlatformContract.Ce,
         platform_version: '3.0.0',
-        token: 'new-token',
+        token: uuidv4(),
+        last_connectivity_check: new Date(),
       };
 
       // When
@@ -375,15 +376,15 @@ describe('service instance domain', () => {
 
       // Then
       expect(result).toMatchObject({
+        ...newConfig,
         service_instance_id: serviceInstanceId,
-        config: newConfig,
-        status: ServiceConfigurationStatus.Active,
+        status: PlatformConfigurationStatus.Active,
       });
     });
 
     it('should update partial platform configuration', async () => {
       // Given
-      const updatedConfig: Partial<PlatformConfiguration> = {
+      const updatedConfig: Partial<PlatformConfigurationInput> = {
         platform_title: 'Updated Title',
         platform_url: 'https://updated.com',
         platform_version: '2.0.0',
@@ -399,20 +400,18 @@ describe('service instance domain', () => {
       // Then
       expect(result).toMatchObject({
         service_instance_id: serviceInstanceId,
-        config: {
-          platform_title: 'Updated Title',
-          platform_url: 'https://updated.com',
-          platform_version: '2.0.0',
-          platform_contract: PlatformContract.Ce,
-        },
-        status: ServiceConfigurationStatus.Active,
+        platform_title: 'Updated Title',
+        platform_url: 'https://updated.com',
+        platform_version: '2.0.0',
+        platform_contract: PlatformContract.Ce,
+        status: PlatformConfigurationStatus.Active,
       });
     });
 
     it('should return null when configuration does not exist', async () => {
       // Given
       const nonExistentServiceId = uuidv4();
-      const updatedConfig: Partial<PlatformConfiguration> = {
+      const updatedConfig: Partial<PlatformConfigurationInput> = {
         platform_title: 'Should Not Update',
       };
 
@@ -462,10 +461,10 @@ describe('service instance domain', () => {
       await TestHelper.user_Service.delete({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: testServiceInstanceId,
       });
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: otherServiceInstanceId,
       });
       await TestHelper.serviceInstance.delete({

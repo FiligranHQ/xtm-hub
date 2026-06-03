@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { db, dbRaw, paginate } from '../../../knexfile';
+import { db, paginate } from '../../../knexfile';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
@@ -358,10 +358,10 @@ const getDeploymentRequestWithUserDataQuery =
         'CancellationUser.id'
       )
       .leftJoin(
-        'Service_Configuration',
+        'PlatformConfiguration',
         'DeploymentRequest.service_instance_id',
         '=',
-        'Service_Configuration.service_instance_id'
+        'PlatformConfiguration.service_instance_id'
       )
       .select([
         'DeploymentRequest.*',
@@ -371,8 +371,6 @@ const getDeploymentRequestWithUserDataQuery =
         'User.first_name as requester_first_name',
         'User.last_name as requester_last_name',
         'CancellationUser.email as cancellation_user_email',
-        dbRaw(
-          `"Service_Configuration"."config"->>'platform_url' as platform_url`
-        ),
+        'PlatformConfiguration.platform_url as platform_url',
       ]);
   };

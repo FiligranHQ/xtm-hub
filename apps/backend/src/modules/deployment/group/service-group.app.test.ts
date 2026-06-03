@@ -18,8 +18,9 @@ import {
 } from '../../../../tests/tests.const';
 import {
   DeploymentRequestHubStatus,
+  PlatformConfigurationStatus,
+  PlatformContract,
   PlatformIdentifier,
-  ServiceConfigurationStatus,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -107,7 +108,7 @@ describe('serviceGroupApp', () => {
         await TestHelper.subscription.delete({
           service_instance_id: serviceInstanceId,
         });
-        await TestHelper.serviceConfiguration.delete({
+        await TestHelper.platformConfiguration.delete({
           service_instance_id: serviceInstanceId,
         });
       }
@@ -255,18 +256,16 @@ describe('serviceGroupApp', () => {
           end_date: endDate,
         });
 
-        await TestHelper.serviceConfiguration.create({
+        await TestHelper.platformConfiguration.create({
           service_instance_id: serviceInstanceId1,
-          status: ServiceConfigurationStatus.Active,
-          config: {
-            platform_id: platformId,
-            platform_url: platformUrl,
-            registerer_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-            platform_title: 'Test Platform',
-            platform_version: '1.0.0',
-            platform_contract: 'EE',
-            token: uuidv4(),
-          },
+          status: PlatformConfigurationStatus.Active,
+          platform_id: platformId,
+          platform_url: platformUrl,
+          registerer_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          platform_title: 'Test Platform',
+          platform_version: '1.0.0',
+          platform_contract: PlatformContract.Ee,
+          token: uuidv4(),
         });
       });
 
