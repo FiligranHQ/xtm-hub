@@ -1,8 +1,7 @@
 import path from 'path';
 import { pathToFileURL } from 'url';
 import { chromium } from '@playwright/test';
-
-const fs = require('fs');
+import fs from 'fs';
 
 function getAllDirectories(directoryPath) {
   // Read the contents of the directory
@@ -58,8 +57,8 @@ export default async (reportData) => {
   });
 
   await page.evaluate(() => {
-    location.hash = 'page=report';
-    window.postMessage({
+    globalThis.location.hash = 'page=report';
+    globalThis.postMessage({
       flyoverWidth: '100%',
     });
   });

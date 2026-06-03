@@ -8375,8 +8375,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/test_e2e@workspace:apps/e2e"
   dependencies:
+    "@eslint/js": "npm:9.39.4"
     "@playwright/test": "npm:1.60.0"
     "@types/node": "catalog:"
+    eslint: "catalog:"
+    eslint-config-prettier: "catalog:"
+    globals: "npm:17.6.0"
     graphql: "catalog:"
     graphql-tag: "npm:2.12.6"
     knex: "catalog:"
@@ -8385,6 +8389,7 @@ __metadata:
     playwright-ctrf-json-reporter: "npm:0.0.29"
     prettier: "catalog:"
     react: "catalog:"
+    typescript-eslint: "npm:8.60.0"
     uuid: "catalog:"
   languageName: unknown
   linkType: soft

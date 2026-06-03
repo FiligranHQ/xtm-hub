@@ -38,17 +38,32 @@ export async function waitForReactIdle(page: Page, timeout = 5000) {
   try {
     await page.evaluate(() => {
       return new Promise<void>((resolve) => {
+        type FiberCandidate = {
+          memoizedState?: {
+            isProcessing?: boolean;
+          };
+        };
+        type ReactDevtoolsHook = {
+          reactDevtoolsAgent?: {
+            _fibers?: Record<string, FiberCandidate>;
+          };
+        };
+        const reactHook = (
+          window as Window & {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__?: ReactDevtoolsHook;
+          }
+        ).__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
         // Detect React
-        if ((window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+        if (reactHook) {
           // This method waits for all React updates to complete
           const checkReactUpdates = () => {
-            const hook = (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__;
+            const hook = reactHook;
             if (hook.reactDevtoolsAgent && hook.reactDevtoolsAgent._fibers) {
               const hasUpdates = Object.values(
                 hook.reactDevtoolsAgent._fibers
               ).some(
-                (fiber: any) =>
-                  fiber.memoizedState && fiber.memoizedState.isProcessing
+                (fiber) => fiber.memoizedState?.isProcessing === true
               );
               if (!hasUpdates) {
                 resolve();

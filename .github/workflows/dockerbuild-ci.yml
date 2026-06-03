@@ -56,6 +56,8 @@ jobs:
             working-directory: apps/backend
           - label: frontend
             working-directory: apps/frontend
+          - label: e2e
+            working-directory: apps/e2e
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

@@ -23,7 +23,9 @@ export default class RegisterPage {
       platform_title: platformDetails.title,
       platform_id: platformDetails.id,
       platform_contract: platformDetails.contract,
-      ...(platformDetails.version !== undefined && { platform_version: platformDetails.version }),
+      ...(platformDetails.version !== undefined && {
+        platform_version: platformDetails.version,
+      }),
     });
     await this.page.goto(`/redirect/${redirectionKey}?${params.toString()}`);
   }
