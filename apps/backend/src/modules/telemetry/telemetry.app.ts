@@ -95,25 +95,21 @@ export const telemetryApp = {
     const platformServiceInstanceId = extractId<'RegisteredPlatform'>(
       input.platform_service_instance_id
     );
-    const serviceConfiguration =
+    const platformConfiguration =
       await loadPlatformConfigurationByServiceInstanceId(
         platformServiceInstanceId
       );
-
-    const config = serviceConfiguration.config as object;
 
     const event = await buildOneClickDeployEvent(
       selectedOrga,
       userId,
       serviceDefinition.identifier,
       input.platform_identifier,
-      'platform_id' in config ? (config.platform_id as string) : undefined,
-      'platform_version' in config
-        ? (config.platform_version as string)
-        : undefined,
+      platformConfiguration?.platform_id,
+      platformConfiguration?.platform_version ?? undefined,
       input.resource_id,
       input.resource_title,
-      'tenant_id' in config ? (config.tenant_id as string) : undefined
+      platformConfiguration?.tenant_id ?? undefined
     );
     await telemetryApp.sendTelemetryEvent(event);
   },

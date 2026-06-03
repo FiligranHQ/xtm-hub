@@ -5,7 +5,7 @@ import { requestContext } from '../../../context/request.context';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { OrganizationDomain } from '../../../modules/organization-management/organization/organization.domain';
-import { ServiceConfigurationDomain } from '../../../modules/registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../../../modules/registration/platform-configuration/platform-configuration.domain';
 import {
   extractPlatformId,
   extractPlatformToken,
@@ -39,14 +39,14 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
     });
   }
 
-  const serviceConfiguration =
-    await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+  const platformConfiguration =
+    await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id: extractPlatformId(req),
       token: extractPlatformToken(req),
     });
-  if (serviceConfiguration) {
+  if (platformConfiguration) {
     return OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
-      serviceConfiguration.service_instance_id
+      platformConfiguration.service_instance_id
     );
   }
 

@@ -5,34 +5,33 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   OrganizationCapability,
+  PlatformConfigurationStatus,
   PlatformContract,
   PlatformIdentifier,
-  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { DocumentId } from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import PlatformConfigurationModel from '../../model/kanel/public/PlatformConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
-import { FullyQualifiedDeploymentRequest } from '../deployment/deployment.domain';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import {
   createSubscription,
   loadSubscriptionBy,
   transferSubscriptionToOrganization,
 } from '../subscription/subscription.domain';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
-
-import { DocumentId } from '../../model/kanel/public/Document';
-import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 
-export type PlatformConfiguration = {
+export type PlatformConfigurationInput = {
   registerer_id: string;
   platform_id: string;
   tenant_id?: string;
@@ -45,12 +44,18 @@ export type PlatformConfiguration = {
   token: string;
 };
 
-export interface DomainRegisteredPlatform {
-  config: PlatformConfiguration;
+export interface DomainRegisteredPlatform extends PlatformConfigurationModel {
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id: DocumentId | null;
   id: string;
 }
+
+const RegisteredPlatformsSelectColumns = [
+  'ServiceDefinition.identifier as identifier',
+  'ServiceInstance.id as id',
+  'ServiceInstance.illustration_document_id as illustration_document_id',
+  'PlatformConfiguration.*',
+] as const;
 
 export const registrationDomain = {
   registerNewPlatform: async ({
@@ -62,7 +67,7 @@ export const registrationDomain = {
   }: {
     serviceDefinitionId: string;
     organizationId: OrganizationId;
-    configuration?: PlatformConfiguration;
+    configuration?: PlatformConfigurationInput;
     platformIdentifier: PlatformIdentifier;
     serviceInstanceCreationStatus?: ServiceInstanceCreationStatus;
   }): Promise<ServiceInstanceId> => {
@@ -88,7 +93,7 @@ export const registrationDomain = {
     });
 
     if (configuration) {
-      await ServiceConfigurationDomain.createConfiguration(
+      await PlatformConfigurationDomain.createConfiguration(
         serviceInstanceId,
         configuration
       );
@@ -101,7 +106,7 @@ export const registrationDomain = {
     serviceInstanceId,
     targetOrganizationId,
   }: {
-    configuration: PlatformConfiguration;
+    configuration: PlatformConfigurationInput;
     serviceInstanceId: ServiceInstanceId;
     targetOrganizationId: OrganizationId;
   }) => {
@@ -135,13 +140,15 @@ export const registrationDomain = {
       });
     }
 
-    await ServiceConfigurationDomain.updateConfiguration(serviceInstanceId, {
-      config: configuration,
-      status: ServiceConfigurationStatus.Active,
+    await PlatformConfigurationDomain.updateConfiguration(serviceInstanceId, {
+      ...configuration,
+      status: PlatformConfigurationStatus.Active,
     });
   },
 
-  loadRegisteredPlatform: async (serviceInstanceId: ServiceInstanceId) => {
+  loadRegisteredPlatform: async (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<DomainRegisteredPlatform[]> => {
     return getRegisteredPlatformsDataQuery().where(
       'ServiceInstance.id',
       '=',
@@ -162,8 +169,8 @@ export const registrationDomain = {
 
     return db<ServiceInstance>('ServiceInstance')
       .leftJoin(
-        'Service_Configuration',
-        'Service_Configuration.service_instance_id',
+        'PlatformConfiguration',
+        'PlatformConfiguration.service_instance_id',
         '=',
         'ServiceInstance.id'
       )
@@ -183,15 +190,11 @@ export const registrationDomain = {
       .whereIn('Subscription.organization_id', organizationIds)
       .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
       .where(
-        'Service_Configuration.status',
+        'PlatformConfiguration.status',
         '=',
-        ServiceConfigurationStatus.Active
+        PlatformConfigurationStatus.Active
       )
-      .select([
-        'Service_Configuration.config',
-        'ServiceDefinition.identifier',
-        'ServiceInstance.*',
-      ]) as unknown as Promise<DomainRegisteredPlatform[]>;
+      .select(RegisteredPlatformsSelectColumns);
   },
 
   loadAllActiveRegisteredPlatformsByPlatformIdentifier: async (
@@ -202,8 +205,8 @@ export const registrationDomain = {
 
     return db<ServiceInstance>('ServiceInstance')
       .leftJoin(
-        'Service_Configuration',
-        'Service_Configuration.service_instance_id',
+        'PlatformConfiguration',
+        'PlatformConfiguration.service_instance_id',
         '=',
         'ServiceInstance.id'
       )
@@ -216,15 +219,11 @@ export const registrationDomain = {
       .where('ServiceInstance.creation_status', '!=', 'DISABLED')
       .where('ServiceDefinition.identifier', '=', serviceDefinitionIdentifier)
       .where(
-        'Service_Configuration.status',
+        'PlatformConfiguration.status',
         '=',
-        ServiceConfigurationStatus.Active
+        PlatformConfigurationStatus.Active
       )
-      .select([
-        'Service_Configuration.config',
-        'ServiceDefinition.identifier',
-        'ServiceInstance.*',
-      ]) as unknown as Promise<DomainRegisteredPlatform[]>;
+      .select(RegisteredPlatformsSelectColumns);
   },
 
   loadRegisteredPlatforms: async (
@@ -246,8 +245,8 @@ export const registrationDomain = {
     return getRegisteredPlatformsDataQuery()
       .whereIn('ServiceDefinition.identifier', serviceDefinitionIdentifiers)
       .where(function () {
-        this.where('Service_Configuration.status', '=', 'active').orWhereNull(
-          'Service_Configuration.service_instance_id'
+        this.where('PlatformConfiguration.status', '=', 'active').orWhereNull(
+          'PlatformConfiguration.service_instance_id'
         );
       })
       .where(function () {
@@ -283,40 +282,38 @@ export const registrationDomain = {
   },
 };
 
-const getRegisteredPlatformsDataQuery =
-  (): Knex.QueryBuilder<FullyQualifiedDeploymentRequest> => {
-    const { user } = requestContext.require();
-    const userSelectedOrganization = user.selected_organization_id;
-    return db<ServiceInstance>('ServiceInstance')
-      .leftJoin(
-        'Service_Configuration',
-        'Service_Configuration.service_instance_id',
-        '=',
-        'ServiceInstance.id'
-      )
-      .leftJoin(
-        'ServiceDefinition',
-        'ServiceDefinition.id',
-        '=',
-        'ServiceInstance.service_definition_id'
-      )
-      .leftJoin(
-        'Subscription',
-        'Subscription.service_instance_id',
-        '=',
-        'ServiceInstance.id'
-      )
-      .leftJoin(
-        'DeploymentRequest',
-        'DeploymentRequest.service_instance_id',
-        '=',
-        'ServiceInstance.id'
-      )
-      .where('ServiceInstance.creation_status', '!=', 'DISABLED')
-      .where('Subscription.organization_id', '=', userSelectedOrganization)
-      .select([
-        'Service_Configuration.config',
-        'ServiceDefinition.identifier',
-        'ServiceInstance.*',
-      ]);
-  };
+const getRegisteredPlatformsDataQuery = (): Knex.QueryBuilder<
+  ServiceInstance,
+  DomainRegisteredPlatform[]
+> => {
+  const { user } = requestContext.require();
+  const userSelectedOrganization = user.selected_organization_id;
+  return db<ServiceInstance>('ServiceInstance')
+    .leftJoin(
+      'PlatformConfiguration',
+      'PlatformConfiguration.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .leftJoin(
+      'ServiceDefinition',
+      'ServiceDefinition.id',
+      '=',
+      'ServiceInstance.service_definition_id'
+    )
+    .leftJoin(
+      'Subscription',
+      'Subscription.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .leftJoin(
+      'DeploymentRequest',
+      'DeploymentRequest.service_instance_id',
+      '=',
+      'ServiceInstance.id'
+    )
+    .where('ServiceInstance.creation_status', '!=', 'DISABLED')
+    .where('Subscription.organization_id', '=', userSelectedOrganization)
+    .select(RegisteredPlatformsSelectColumns);
+};

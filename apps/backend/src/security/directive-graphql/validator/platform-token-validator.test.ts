@@ -4,12 +4,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { requestContext } from '../../../context/request.context';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import Organization from '../../../model/kanel/public/Organization';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import PlatformConfiguration from '../../../model/kanel/public/PlatformConfiguration';
 import type { PortalContext } from '../../../model/portal-context';
 import type { UserLoadUserBy } from '../../../model/user';
 import { DeploymentRequestDomain } from '../../../modules/deployment/deployment.domain';
 import { OrganizationDomain } from '../../../modules/organization-management/organization/organization.domain';
-import { ServiceConfigurationDomain } from '../../../modules/registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../../../modules/registration/platform-configuration/platform-configuration.domain';
 import {
   PLATFORM_ID_HEADER,
   PLATFORM_TOKEN_HEADER,
@@ -110,11 +110,11 @@ describe('createPlatformTokenResolver', () => {
       ).mockResolvedValue(undefined);
 
       vi.spyOn(
-        ServiceConfigurationDomain,
+        PlatformConfigurationDomain,
         'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue({
         service_instance_id: serviceInstanceId,
-      } as ServiceConfiguration);
+      } as PlatformConfiguration);
 
       vi.spyOn(
         OrganizationDomain,
@@ -139,7 +139,7 @@ describe('createPlatformTokenResolver', () => {
         'loadDeploymentRequestBy'
       ).mockResolvedValue(undefined);
       vi.spyOn(
-        ServiceConfigurationDomain,
+        PlatformConfigurationDomain,
         'loadConfigurationByPlatformAndToken'
       ).mockResolvedValue(undefined);
 

@@ -7,6 +7,7 @@ import {
   IsPlatformRegisteredResponse,
   OpenCtiPlatformRegistrationStatusInput,
   OrganizationCapability,
+  PlatformConfigurationStatus,
   PlatformContract,
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
@@ -15,7 +16,6 @@ import {
   RegisteredPlatform,
   RegisteredPlatformsInput,
   RegisterPlatformInput,
-  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
   UnregisterPlatformInput,
@@ -49,19 +49,19 @@ import { updateServiceInstance } from '../service/instance/service-instance.doma
 import { loadSubscriptionBy } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../telemetry/telemetry.helper';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import {
   DomainRegisteredPlatform,
-  PlatformConfiguration,
+  PlatformConfigurationInput,
   registrationDomain,
 } from './registration.domain';
 import { isTenantIdRequired } from './registration.helper';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 const buildPlatformConfiguration = (
   platform: PlatformInput,
   registererId: string,
   token: string
-): PlatformConfiguration => ({
+): PlatformConfigurationInput => ({
   registerer_id: registererId,
   platform_id: platform.id,
   ...(platform.tenantId ? { tenant_id: platform.tenantId } : {}),
@@ -81,7 +81,7 @@ export const registrationApp = {
   ): Promise<Organization | null> => {
     const { user } = requestContext.require();
     const resolvedConfiguration =
-      await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
         platformId,
         { tenantId }
       );
@@ -93,7 +93,7 @@ export const registrationApp = {
       if (
         isTenantIdRequired(
           resolvedConfiguration.platformIdentifier,
-          resolvedConfiguration.config.platform_version
+          resolvedConfiguration.platformConfiguration.platform_version
         )
       ) {
         throw new Error(BadRequestErrorCode.TenantIdMandatory);
@@ -102,7 +102,7 @@ export const registrationApp = {
 
     const subscription = await loadSubscriptionBy({
       service_instance_id:
-        resolvedConfiguration.serviceConfiguration.service_instance_id,
+        resolvedConfiguration.platformConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
@@ -151,14 +151,14 @@ export const registrationApp = {
   loadPlatformRegistrationStatus: async (
     input: OpenCtiPlatformRegistrationStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
-    const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
+    const platformConfiguration =
+      await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
         platform_id: input.platformId,
         token: input.token,
       });
     return {
       status:
-        serviceConfiguration?.status === ServiceConfigurationStatus.Active
+        platformConfiguration?.status === PlatformConfigurationStatus.Active
           ? PlatformRegistrationConnectivityStatus.Active
           : PlatformRegistrationConnectivityStatus.Inactive,
     };
@@ -194,33 +194,30 @@ export const registrationApp = {
     }
 
     const isConfigurationValid =
-      await ServiceConfigurationDomain.isServiceConfigurationValid(
-        serviceDefinition.id,
+      await PlatformConfigurationDomain.isPlatformConfigurationValid(
         configuration
       );
     if (!isConfigurationValid) {
-      throw new Error(ErrorCode.InvalidServiceConfiguration);
+      throw new Error(ErrorCode.InvalidPlatformConfiguration);
     }
 
-    const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(
+    const platformConfiguration =
+      await PlatformConfigurationDomain.loadConfigurationByPlatform(
         platform.id,
         {
           tenantId: platform.tenantId,
         }
       );
 
-    const existingConfigTenantId = (
-      serviceConfiguration?.config as PlatformConfiguration | undefined
-    )?.tenant_id;
+    const existingConfigTenantId = platformConfiguration?.tenant_id;
     if (existingConfigTenantId && !platform.tenantId) {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
     await withTransaction(async () => {
-      if (serviceConfiguration) {
+      if (platformConfiguration) {
         await registrationDomain.refreshExistingPlatform({
-          serviceInstanceId: serviceConfiguration.service_instance_id,
+          serviceInstanceId: platformConfiguration.service_instance_id,
           targetOrganizationId: organizationId as OrganizationId,
           configuration,
         });
@@ -287,24 +284,24 @@ export const registrationApp = {
     tenantId,
   }: UnregisterPlatformInput) => {
     const resolvedConfiguration =
-      await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
         platformId,
         {
           tenantId,
-          status: ServiceConfigurationStatus.Active,
+          status: PlatformConfigurationStatus.Active,
         }
       );
     if (!resolvedConfiguration) {
       return;
     }
 
-    if (resolvedConfiguration.config.tenant_id && !tenantId) {
+    const { platformConfiguration } = resolvedConfiguration;
+    if (platformConfiguration.tenant_id && !tenantId) {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
     const subscription = await loadSubscriptionBy({
-      service_instance_id:
-        resolvedConfiguration.serviceConfiguration.service_instance_id,
+      service_instance_id: platformConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
@@ -319,9 +316,9 @@ export const registrationApp = {
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
 
-    await ServiceConfigurationDomain.updateConfiguration(
-      resolvedConfiguration.serviceConfiguration.service_instance_id,
-      { status: ServiceConfigurationStatus.Inactive }
+    await PlatformConfigurationDomain.updateConfiguration(
+      platformConfiguration.service_instance_id,
+      { status: PlatformConfigurationStatus.Inactive }
     );
 
     const users = await UserDomain.loadUsersByCapabilitiesInOrganization(
@@ -349,32 +346,29 @@ export const registrationApp = {
   isPlatformRegistered: async (
     input: IsPlatformRegisteredInput
   ): Promise<IsPlatformRegisteredResponse> => {
-    const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(
+    const platformConfiguration =
+      await PlatformConfigurationDomain.loadConfigurationByPlatform(
         input.platformId,
         { tenantId: input.tenantId }
       );
-    if (!serviceConfiguration) {
+    if (!platformConfiguration) {
       return { status: PlatformRegistrationStatus.NeverRegistered };
     }
 
     const subscription = await loadSubscriptionBy({
-      service_instance_id: serviceConfiguration.service_instance_id,
+      service_instance_id: platformConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
 
-    const parsedConfig = JSON.parse(
-      JSON.stringify(serviceConfiguration.config)
-    );
     return {
       status:
-        serviceConfiguration.status === ServiceConfigurationStatus.Active
+        platformConfiguration.status === PlatformConfigurationStatus.Active
           ? PlatformRegistrationStatus.Registered
           : PlatformRegistrationStatus.Unregistered,
       organization: { id: subscription.organization_id },
-      platformTitle: parsedConfig.platform_title,
+      platformTitle: platformConfiguration.platform_title,
     };
   },
 
@@ -387,11 +381,11 @@ export const registrationApp = {
     isInOrganization: boolean;
   }> => {
     const resolvedConfiguration =
-      await ServiceConfigurationDomain.loadResolvedConfigurationByPlatform(
+      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
         platformId,
         {
           tenantId,
-          status: ServiceConfigurationStatus.Active,
+          status: PlatformConfigurationStatus.Active,
         }
       );
     if (!resolvedConfiguration) {
@@ -400,7 +394,7 @@ export const registrationApp = {
 
     const subscription = await loadSubscriptionBy({
       service_instance_id:
-        resolvedConfiguration.serviceConfiguration.service_instance_id,
+        resolvedConfiguration.platformConfiguration.service_instance_id,
     });
     if (!subscription) {
       throw new Error(ErrorCode.PlatformNotRegistered);
@@ -460,7 +454,7 @@ export const registrationApp = {
 
     await withTransaction(async () => {
       await Promise.all([
-        ServiceConfigurationDomain.upsertConfiguration(
+        PlatformConfigurationDomain.upsertConfiguration(
           deploymentRequest.service_instance_id,
           configuration
         ),
@@ -512,16 +506,16 @@ const mapDomainRegisteredPlatformToGraphQL = (
   return {
     __typename: 'RegisteredPlatform',
     id: platform.id,
-    platform_id: platform.config?.platform_id ?? platform.id,
-    last_connectivity_check: platform.config?.last_connectivity_check ?? null,
-    tenant_id: platform.config?.tenant_id,
-    tenant_name: platform.config?.tenant_name,
-    title: platform.config?.platform_title ?? defaultTitle,
-    url: platform.config?.platform_url ?? '',
-    contract: platform.config?.platform_contract ?? PlatformContract.Trial,
+    platform_id: platform.platform_id ?? platform.id,
+    last_connectivity_check: platform?.last_connectivity_check ?? null,
+    tenant_id: platform.tenant_id,
+    tenant_name: platform.tenant_name,
+    title: platform.platform_title ?? defaultTitle,
+    url: platform.platform_url ?? '',
+    contract: platform.platform_contract ?? PlatformContract.Trial,
     identifier:
       platform.identifier ?? ServiceDefinitionIdentifier.OpenctiRegistration,
-    version: platform.config?.platform_version ?? '',
+    version: platform.platform_version ?? '',
     illustration_document_id: platform.illustration_document_id ?? null,
   };
 };

@@ -74,7 +74,7 @@ const main = () => {
   const regex = /'([^']*)'/g;
   const matches = Array.from(fileContent.matchAll(regex), (m) => m[1]);
   const errorTranslationKeys = matches.filter((m) => m).map((m) => `${m}`);
-  for (const locale of ['fr', 'en']) {
+  for (const locale of ['fr', 'en', 'ja']) {
     console.log(`-- PROCESS ${locale.toUpperCase()} --`);
     const file = path.join(APPS_PATH, 'frontend', 'messages', locale + '.json');
     mergeWithExistingData(file, errorTranslationKeys);

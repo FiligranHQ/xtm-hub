@@ -33,6 +33,7 @@ const COLUMN_ENUM_MAP = {
     product: 'FiligranProduct',
     timeline: 'Timeline',
     epic_type: 'EpicType',
+    edition_type: 'EditionType',
   },
   ServiceDefinition: {
     identifier: 'ServiceDefinitionIdentifier',
@@ -45,6 +46,10 @@ const COLUMN_ENUM_MAP = {
       tsType: 'DocumentId',
       importPath: './Document',
     },
+  },
+  PlatformConfiguration: {
+    platform_contract: 'PlatformContract',
+    status: 'PlatformConfigurationStatus',
   },
   NewsFeedItem: {
     type: 'NewsFeedItemType',

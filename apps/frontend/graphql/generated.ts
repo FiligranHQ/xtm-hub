@@ -1423,6 +1423,11 @@ export type PageInfo = {
   startCursor: Maybe<Scalars['String']['output']>;
 };
 
+export enum PlatformConfigurationStatus {
+  Active = 'active',
+  Inactive = 'inactive'
+}
+
 export enum PlatformContract {
   Ce = 'CE',
   Ee = 'EE',
@@ -1867,7 +1872,7 @@ export type RegisteredPlatform = Node & {
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
-  last_connectivity_check: Scalars['Date']['output'];
+  last_connectivity_check: Maybe<Scalars['Date']['output']>;
   myGroups: Maybe<Array<ServiceGroup>>;
   platform_id: Scalars['String']['output'];
   subscription: Maybe<SubscriptionModel>;
@@ -1971,11 +1976,6 @@ export type ServiceCapability = Node & {
   name: Maybe<Scalars['String']['output']>;
   service_definition_id: Maybe<Scalars['ID']['output']>;
 };
-
-export enum ServiceConfigurationStatus {
-  Active = 'active',
-  Inactive = 'inactive'
-}
 
 export type ServiceConnection = {
   __typename?: 'ServiceConnection';

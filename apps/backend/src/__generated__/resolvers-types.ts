@@ -1415,6 +1415,11 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export enum PlatformConfigurationStatus {
+  Active = 'active',
+  Inactive = 'inactive'
+}
+
 export enum PlatformContract {
   Ce = 'CE',
   Ee = 'EE',
@@ -1859,7 +1864,7 @@ export type RegisteredPlatform = Node & {
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id?: Maybe<Scalars['DocumentId']['output']>;
-  last_connectivity_check: Scalars['Date']['output'];
+  last_connectivity_check?: Maybe<Scalars['Date']['output']>;
   myGroups?: Maybe<Array<ServiceGroup>>;
   platform_id: Scalars['String']['output'];
   subscription?: Maybe<SubscriptionModel>;
@@ -1963,11 +1968,6 @@ export type ServiceCapability = Node & {
   name?: Maybe<Scalars['String']['output']>;
   service_definition_id?: Maybe<Scalars['ID']['output']>;
 };
-
-export enum ServiceConfigurationStatus {
-  Active = 'active',
-  Inactive = 'inactive'
-}
 
 export type ServiceConnection = {
   __typename?: 'ServiceConnection';
@@ -2748,6 +2748,7 @@ export type ResolversTypes = ResolversObject<{
   OrganizationOrdering: OrganizationOrdering;
   OrganizationRef: ResolverTypeWrapper<OrganizationRef>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
+  PlatformConfigurationStatus: PlatformConfigurationStatus;
   PlatformContract: PlatformContract;
   PlatformDeploymentRequest: ResolverTypeWrapper<PlatformDeploymentRequest>;
   PlatformDeploymentRequestConnection: ResolverTypeWrapper<PlatformDeploymentRequestConnection>;
@@ -2779,7 +2780,6 @@ export type ResolversTypes = ResolversObject<{
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceCapabilityId: ResolverTypeWrapper<Scalars['ServiceCapabilityId']['output']>;
-  ServiceConfigurationStatus: ServiceConfigurationStatus;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
@@ -3776,7 +3776,7 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   identifier?: Resolver<ResolversTypes['ServiceDefinitionIdentifier'], ParentType, ContextType>;
   illustration_document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
-  last_connectivity_check?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  last_connectivity_check?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   myGroups?: Resolver<Maybe<Array<ResolversTypes['ServiceGroup']>>, ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;

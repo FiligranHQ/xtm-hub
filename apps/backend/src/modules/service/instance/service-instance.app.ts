@@ -19,7 +19,6 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { DocumentHelper } from '../../document/document.helper';
 import { Upload } from '../../document/document.uploads.helper';
-import { PlatformConfiguration } from '../../registration/registration.domain';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import { subscriptionApp } from '../../subscription/subscription.app';
 import { loadSubscriptionBy } from '../../subscription/subscription.domain';
@@ -106,7 +105,6 @@ export const ServiceInstanceApp = {
       user.selected_organization_id,
       serviceInstanceId
     );
-
     if (!serviceInstance) {
       throw NotFoundError(ErrorCode.ServiceInstanceNotFound);
     }
@@ -115,7 +113,6 @@ export const ServiceInstanceApp = {
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       serviceInstance.id
     );
-
     if (!serviceDefinition) {
       throw NotFoundError(ErrorCode.ServiceDefinitionNotFound);
     }
@@ -150,22 +147,14 @@ export const ServiceInstanceApp = {
         result = await updateServiceInstance(serviceInstance.id, updateData);
       }
 
-      // For registered platforms, also update the configuration JSON for platform_title
+      // For registered platforms, also update the platform_title in platform configuration
       if (input.name) {
-        const currentConfig =
-          await loadPlatformConfigurationByServiceInstanceId(
-            serviceInstance.id
-          );
-
-        if (currentConfig) {
-          const config = currentConfig.config as PlatformConfiguration;
-          config.platform_title = input.name;
-
-          await updatePlatformConfigurationByServiceInstanceId(
-            serviceInstance.id,
-            config
-          );
-        }
+        await updatePlatformConfigurationByServiceInstanceId(
+          serviceInstance.id,
+          {
+            platform_title: input.name,
+          }
+        );
       }
       return result;
     });
@@ -178,22 +167,22 @@ export const ServiceInstanceApp = {
     );
 
     if (!config) {
-      throw NotFoundError(ErrorCode.ServiceConfigurationNotFound);
+      throw NotFoundError(ErrorCode.PlatformConfigurationNotFound);
     }
 
-    const platformConfig = config.config as PlatformConfiguration;
     return {
       __typename: 'RegisteredPlatform',
       id: updatedServiceInstance.id,
-      platform_id: platformConfig.platform_id,
-      title: platformConfig.platform_title,
-      url: platformConfig.platform_url,
-      contract: platformConfig.platform_contract,
-      version: platformConfig.platform_version,
+      platform_id: config.platform_id,
+      title: config.platform_title,
+      url: config.platform_url,
+      contract: config.platform_contract,
+      version: config.platform_version,
       identifier: serviceDefinition.identifier,
       illustration_document_id:
         updatedServiceInstance.illustration_document_id ?? null,
-    } as RegisteredPlatform;
+      last_connectivity_check: config.last_connectivity_check,
+    };
   },
 
   loadSeoServiceInstances: async (): Promise<SeoServiceInstance[]> => {

@@ -33,6 +33,7 @@ import {
   DeploymentRequestPlatformState,
   DeploymentRequestSource,
   DeploymentRequestUseCase,
+  PlatformContract,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
@@ -75,7 +76,7 @@ import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import { PortalContext } from '../../model/portal-context';
-import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -531,12 +532,12 @@ describe('deployment app', () => {
       });
     });
 
-    it('should return platform_url when Service_Configuration exists', async () => {
+    it('should return platform_url when PlatformConfiguration exists', async () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: deploymentRequest!.service_instance_id,
-        config: { platform_url: 'https://test-platform.opencti.io' },
+        platform_url: 'https://test-platform.opencti.io',
         status: 'active',
       });
 
@@ -552,7 +553,7 @@ describe('deployment app', () => {
         'https://test-platform.opencti.io'
       );
 
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: deploymentRequest!.service_instance_id,
       });
     });
@@ -1019,12 +1020,21 @@ describe('deployment app', () => {
 
       it('should send a mail in case deployment request is in active (only first time)', async () => {
         vi.spyOn(
-          ServiceConfigurationDomain,
+          PlatformConfigurationDomain,
           'loadConfigurationByPlatform'
         ).mockResolvedValue({
           service_instance_id: uuidv4() as ServiceInstanceId,
-          config: { platform_url: 'http://example.com' },
+          registerer_id: uuidv4(),
+          platform_id: uuidv4(),
+          tenant_id: null,
+          tenant_name: null,
+          platform_url: 'http://example.com',
+          platform_title: 'OpenCTI',
+          platform_version: '1.0.0',
+          platform_contract: PlatformContract.Trial,
+          token: 'token',
           status: DeploymentRequestPlatformState.Active,
+          last_connectivity_check: new Date(),
         });
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,

@@ -12,7 +12,9 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import ServiceConfiguration from '../../../model/kanel/public/ServiceConfiguration';
+import PlatformConfigurationModel, {
+  PlatformConfigurationMutator,
+} from '../../../model/kanel/public/PlatformConfiguration';
 import ServiceInstance, {
   ServiceInstanceId,
   ServiceInstanceInitializer,
@@ -32,7 +34,6 @@ import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
-import { PlatformConfiguration } from '../../registration/registration.domain';
 import {
   serviceInstanceNameMappedByPlatformIdentifier,
   serviceInstanceTagMappedByPlatformIdentifier,
@@ -155,8 +156,8 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
       'Organization.id'
     )
     .leftJoin(
-      'Service_Configuration',
-      'Service_Configuration.service_instance_id',
+      'PlatformConfiguration',
+      'PlatformConfiguration.service_instance_id',
       '=',
       'Organization_Subscriptions.service_instance_id'
     )
@@ -168,7 +169,22 @@ export const loadSubscribedServiceInstancesByIdentifier = async (
       'Organization.id AS organization_id',
       'Organization.personal_space AS is_personal_space',
       dbRaw(
-        'COALESCE(json_agg("Service_Configuration"."config"), \'[]\'::json) AS configurations'
+        `COALESCE(
+          json_agg(
+            jsonb_build_object(
+              'registerer_id', "PlatformConfiguration"."registerer_id",
+              'platform_id', "PlatformConfiguration"."platform_id",
+              'tenant_id', "PlatformConfiguration"."tenant_id",
+              'tenant_name', "PlatformConfiguration"."tenant_name",
+              'platform_url', "PlatformConfiguration"."platform_url",
+              'platform_title', "PlatformConfiguration"."platform_title",
+              'platform_version', "PlatformConfiguration"."platform_version",
+              'platform_contract', "PlatformConfiguration"."platform_contract",
+              'token', "PlatformConfiguration"."token"
+            )
+          ) FILTER (WHERE "PlatformConfiguration"."service_instance_id" IS NOT NULL),
+          '[]'::json
+        ) AS configurations`
       ),
     ]);
 
@@ -527,8 +543,8 @@ export const loadPlatformServiceInstance = async (
 ) => {
   return db<ServiceInstance>('ServiceInstance')
     .leftJoin(
-      'Service_Configuration',
-      'Service_Configuration.service_instance_id',
+      'PlatformConfiguration',
+      'PlatformConfiguration.service_instance_id',
       '=',
       'ServiceInstance.id'
     )
@@ -577,8 +593,8 @@ export const updateServiceInstance = async (
 
 export const loadPlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string
-): Promise<ServiceConfiguration | null> => {
-  return db('Service_Configuration')
+): Promise<PlatformConfigurationModel | null> => {
+  return db('PlatformConfiguration')
     .where('service_instance_id', '=', serviceInstanceId)
     .first()
     .select('*');
@@ -586,11 +602,11 @@ export const loadPlatformConfigurationByServiceInstanceId = async (
 
 export const updatePlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string,
-  config: PlatformConfiguration
-): Promise<ServiceConfiguration | null> => {
-  const qb = db('Service_Configuration')
+  config: PlatformConfigurationMutator
+): Promise<PlatformConfigurationModel | null> => {
+  const qb = db('PlatformConfiguration')
     .where('service_instance_id', '=', serviceInstanceId)
-    .update({ config })
+    .update({ ...config })
     .returning('*');
 
   const [result] = await qb;
