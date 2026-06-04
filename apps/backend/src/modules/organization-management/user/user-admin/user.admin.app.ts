@@ -16,6 +16,7 @@ import { securityGuard } from '../../../../security/guard';
 import { updateUserSession } from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
+import { toError } from '../../../../utils/error/error-guard.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { OrganizationDomain } from '../../organization/organization.domain';
@@ -139,7 +140,7 @@ export const UserAdminApp = {
           email: updatedUser.email,
         });
       } catch (err) {
-        logApp.error(err);
+        logApp.error(toError(err));
       }
     }
     await UserOrganizationDomain.updateMultipleUserOrgWithCapabilities(

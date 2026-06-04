@@ -4,6 +4,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { listen } from '../../../pub';
+import { getErrorMessage } from '../../../utils/error/error-guard.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { NotFoundError } from '../../../utils/error/error.util';
@@ -91,7 +92,7 @@ const resolvers: Resolvers = {
       try {
         return await ServiceInstanceApp.loadSeoServiceInstance(slug);
       } catch (error) {
-        if (error.message === ErrorCode.ServiceNotFound) {
+        if (getErrorMessage(error) === ErrorCode.ServiceNotFound) {
           throw NotFoundError(ErrorCode.ServiceNotFound, { slug });
         }
 

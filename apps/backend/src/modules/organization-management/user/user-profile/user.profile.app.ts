@@ -8,6 +8,7 @@ import { updateUserSession } from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { MinIOClient } from '../../../../thirdparty/minio/client';
 import { logApp } from '../../../../utils/app-logger.util';
+import { toError } from '../../../../utils/error/error-guard.util';
 import {
   ErrorCode,
   UnknownErrorCode,
@@ -61,7 +62,7 @@ export const userProfileApp = {
         email: updatedUser.email,
       });
     } catch (err) {
-      logApp.error(err);
+      logApp.error(toError(err));
     }
 
     const user = await UserDomain.loadUserDetails({

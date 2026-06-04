@@ -43,6 +43,7 @@ import { initShutdown, registerShutdownHook } from './shutdown';
 import { runESMigrations } from './thirdparty/elasticsearch/migrate';
 import { PgBossApp } from './thirdparty/pgboss/pgboss';
 import { logApp } from './utils/app-logger.util';
+import { getErrorStringProperty } from './utils/error/error-guard.util';
 import {
   startSessionCleanup,
   stopSessionCleanup,
@@ -146,7 +147,7 @@ app.use(function (req, res, next) {
     try {
       return originalWrite.call(this, chunk, encoding);
     } catch (error) {
-      if (error.code === 'ERR_STREAM_DESTROYED') {
+      if (getErrorStringProperty(error, 'code') === 'ERR_STREAM_DESTROYED') {
         logApp.debug('Stream destroyed during write, ignoring');
         return true;
       }
@@ -171,7 +172,7 @@ app.use(function (req, res, next) {
     try {
       return originalEnd.call(this, chunk, encoding);
     } catch (error) {
-      if (error.code === 'ERR_STREAM_DESTROYED') {
+      if (getErrorStringProperty(error, 'code') === 'ERR_STREAM_DESTROYED') {
         logApp.debug('Stream destroyed during end, ignoring');
         return this;
       }

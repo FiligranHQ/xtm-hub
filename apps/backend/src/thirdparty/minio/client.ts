@@ -13,6 +13,7 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { DocumentHelper } from '../../modules/document/document.helper';
 import { Upload } from '../../modules/document/document.uploads.helper';
 import { logApp } from '../../utils/app-logger.util';
+import { getErrorMessage, toError } from '../../utils/error/error-guard.util';
 import { MinioFile, UploadedFile } from './types';
 
 const getEndpoint = () => {
@@ -46,7 +47,7 @@ export const MinIOClient = {
       // If bucket not exist, try to create it.
       // If creation fail, propagate the exception
 
-      logApp.error(err);
+      logApp.error(toError(err));
       await s3Client.send(
         new CreateBucketCommand({ Bucket: config.get('minio.bucketName') })
       );
@@ -190,7 +191,7 @@ const parseJsonStream = async (
   try {
     return JSON.parse(content);
   } catch (err) {
-    logApp.error(`unable to parse JSON stream: ${err.message}`);
+    logApp.error(`unable to parse JSON stream: ${getErrorMessage(err)}`);
     return undefined;
   }
 };
