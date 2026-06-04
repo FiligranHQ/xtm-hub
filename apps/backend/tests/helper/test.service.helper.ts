@@ -30,7 +30,7 @@ export const TestServiceHelper = {
   serviceDefinition: {
     load: async (
       field: ServiceDefinitionMutator
-    ): Promise<ServiceDefinition> => {
+    ): Promise<ServiceDefinition | undefined> => {
       return db<ServiceDefinition>('ServiceDefinition')
         .where(field)
         .select('*')
@@ -50,7 +50,7 @@ export const TestServiceHelper = {
         })
         .returning('*');
       expect(serviceDefinition).toBeDefined();
-      return serviceDefinition;
+      return serviceDefinition!;
     },
     delete: async (field: ServiceDefinitionMutator) => {
       await db<ServiceDefinition>('ServiceDefinition').where(field).del();
@@ -70,7 +70,7 @@ export const TestServiceHelper = {
           ...data,
         })
         .returning('*');
-      return serviceCapability;
+      return serviceCapability!;
     },
     delete: async (field: ServiceCapabilityMutator) => {
       await db<ServiceCapability>('Service_Capability').where(field).del();
@@ -91,7 +91,7 @@ export const TestServiceHelper = {
         .returning('*')
         .onConflict()
         .ignore();
-      return serviceInstance;
+      return serviceInstance!;
     },
     delete: async (field: ServiceInstanceMutator) => {
       await db<ServiceInstance>('ServiceInstance').where(field).del();
@@ -116,7 +116,7 @@ export const TestServiceHelper = {
         .returning('*')
         .onConflict()
         .ignore();
-      return serviceGroup;
+      return serviceGroup!;
     },
     load: async (
       field: ServiceGroupMutator
@@ -138,7 +138,7 @@ export const TestServiceHelper = {
         .returning('*')
         .onConflict()
         .ignore();
-      return serviceGroupUser;
+      return serviceGroupUser!;
     },
     load: async (
       field: ServiceGroupUserMutator

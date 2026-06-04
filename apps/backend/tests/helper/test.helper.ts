@@ -49,12 +49,14 @@ export const TestHelper = {
           ...data,
         })
         .returning('*');
-      return subscription;
+      return subscription!;
     },
     delete: async (field: SubscriptionMutator) => {
       await db<Subscription>('Subscription').where(field).del();
     },
-    load: async (field: SubscriptionMutator): Promise<Subscription> => {
+    load: async (
+      field: SubscriptionMutator
+    ): Promise<Subscription | undefined> => {
       return db<Subscription>('Subscription').where(field).select('*').first();
     },
     loadAll: async (field: SubscriptionMutator): Promise<Subscription[]> => {

@@ -31,7 +31,7 @@ export const TestNewsfeedHelper = {
           ...data,
         })
         .returning('*');
-      return item;
+      return item!;
     },
     loadItems: async (
       field: NewsFeedItemMutator = {}
