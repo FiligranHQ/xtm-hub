@@ -9,7 +9,7 @@ import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { NotFoundError } from '../../utils/error/error.util';
 import { extractId } from '../../utils/utils';
-import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { DocumentDomain } from './domain/document.domain';
 
 export const documentVisualizeEndpoint = (app) => {
@@ -67,9 +67,10 @@ export const documentVisualizeEndpoint = (app) => {
           req.params.serviceInstanceId
         );
         // Check if the user is authorized to access the document
-        const serviceDefinition = (await loadServiceDefinitionByServiceInstance(
-          serviceInstanceId
-        )) as ServiceDefinition;
+        const serviceDefinition =
+          (await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+            serviceInstanceId
+          )) as ServiceDefinition;
         if (!serviceDefinition) {
           logApp.error(
             `Service definition not found. Required: ${serviceInstanceId}`

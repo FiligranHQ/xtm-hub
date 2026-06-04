@@ -28,7 +28,7 @@ import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest'
 import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQuota';
 import { ErrorCode } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
-import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { deleteSubscription } from '../subscription/subscription.helper';
 import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
@@ -37,7 +37,7 @@ import resolver from './deployment.resolver';
 describe('deployment resolver', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-    await deleteServiceInstanceBy({});
+    await ServiceInstanceDomain.deleteServiceInstanceBy({});
     await deleteSubscription({});
   });
   describe('createDeploymentRequest', () => {

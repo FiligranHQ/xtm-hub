@@ -16,7 +16,7 @@ import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import * as errorMapping from '../../utils/error/error.mapping';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import { SubscriptionDomain } from './subscription.domain';
 import * as subscriptionHelper from './subscription.helper';
@@ -63,7 +63,7 @@ describe('subscription resolver - unit tests', () => {
         | ServiceInstance
         | undefined;
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadServiceInstanceBy'
       ).mockResolvedValue(expected);
 
@@ -81,7 +81,7 @@ describe('subscription resolver - unit tests', () => {
       );
 
       // Then
-      expect(serviceInstanceDomain.loadServiceInstanceBy).toHaveBeenCalledWith({
+      expect(ServiceInstanceDomain.loadServiceInstanceBy).toHaveBeenCalledWith({
         id: serviceInstanceId,
       });
       expect(result).toEqual(expected);

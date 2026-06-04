@@ -32,7 +32,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 
 import { TestHelper } from '../../../../tests/helper/test.helper';
-import { deleteServiceInstanceBy } from '../../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../../service/instance/service-instance.domain';
 import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupApp } from './service-group.app';
 
@@ -403,7 +403,7 @@ describe('serviceGroupApp', () => {
         }
 
         for (const id of trackedServiceInstanceIds) {
-          await deleteServiceInstanceBy({ id });
+          await ServiceInstanceDomain.deleteServiceInstanceBy({ id });
         }
         trackedServiceInstanceIds.length = 0;
       }

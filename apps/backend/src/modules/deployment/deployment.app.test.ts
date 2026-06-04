@@ -78,10 +78,7 @@ import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import { PortalContext } from '../../model/portal-context';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
-import {
-  deleteServiceInstanceBy,
-  loadServiceInstanceBy,
-} from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
 import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
@@ -104,7 +101,7 @@ describe('deployment app', () => {
 
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-    await deleteServiceInstanceBy({});
+    await ServiceInstanceDomain.deleteServiceInstanceBy({});
     await deleteSubscription({});
     vi.resetAllMocks();
   });
@@ -131,9 +128,10 @@ describe('deployment app', () => {
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: deployment.id as DeploymentRequestId,
         });
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
-        id: dbDeploymentRequest!.service_instance_id,
-      });
+      const serviceInstance: ServiceInstance =
+        await ServiceInstanceDomain.loadServiceInstanceBy({
+          id: dbDeploymentRequest!.service_instance_id,
+        });
 
       // Then
       expect(dbDeploymentRequest).toMatchObject({
@@ -177,9 +175,10 @@ describe('deployment app', () => {
           id: deployment.id as DeploymentRequestId,
         });
 
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
-        id: dbDeploymentRequest!.service_instance_id,
-      });
+      const serviceInstance: ServiceInstance =
+        await ServiceInstanceDomain.loadServiceInstanceBy({
+          id: dbDeploymentRequest!.service_instance_id,
+        });
 
       // Then
       expect(dbDeploymentRequest).toMatchObject({
@@ -734,9 +733,10 @@ describe('deployment app', () => {
 
       if (!dbDeploymentRequest) return;
 
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
-        id: dbDeploymentRequest!.service_instance_id,
-      });
+      const serviceInstance: ServiceInstance =
+        await ServiceInstanceDomain.loadServiceInstanceBy({
+          id: dbDeploymentRequest!.service_instance_id,
+        });
       const subscription = await SubscriptionDomain.loadSubscriptionBy({
         service_instance_id: dbDeploymentRequest.service_instance_id,
       });
@@ -1321,7 +1321,7 @@ describe('deployment app', () => {
       ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}              | ${DeploymentRequestPlatformState.Removed}
       ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
       ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
-      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestPlatformState.Removed}
+      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestHubStatus.Cancelled}
     `(
       'should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
       async ({
@@ -1351,9 +1351,10 @@ describe('deployment app', () => {
           cancellation_reason: isAdmin ? null : cancellationReason,
         });
 
-        const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
-          id: initialDeployment.service_instance_id,
-        });
+        const serviceInstance: ServiceInstance =
+          await ServiceInstanceDomain.loadServiceInstanceBy({
+            id: initialDeployment.service_instance_id,
+          });
         expect(serviceInstance.creation_status).toBe(
           counts_in_orga_quota
             ? ServiceInstanceCreationStatus.Pending

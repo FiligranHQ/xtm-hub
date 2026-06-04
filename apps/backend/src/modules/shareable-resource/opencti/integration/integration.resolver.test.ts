@@ -19,7 +19,7 @@ import User from '../../../../model/kanel/public/User';
 import { logApp } from '../../../../utils/app-logger.util';
 import { DocumentChildrenDomain } from '../../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../../document/domain/document.domain';
-import * as serviceInstanceDomain from '../../../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../../../service/instance/service-instance.domain';
 import { subscriptionApp } from '../../../subscription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
 import { Integration } from './integration.model';
@@ -191,7 +191,7 @@ describe('integration field resolvers', () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS.ID;
       const expected = { id: serviceInstanceId, name: 'integrations' };
-      vi.spyOn(serviceInstanceDomain, 'getServiceInstance').mockResolvedValue(
+      vi.spyOn(ServiceInstanceDomain, 'getServiceInstance').mockResolvedValue(
         expected as unknown as ServiceInstance | undefined
       );
 
@@ -204,7 +204,7 @@ describe('integration field resolvers', () => {
       );
 
       // Then
-      expect(serviceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
+      expect(ServiceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
         serviceInstanceId
       );
       expect(result).toEqual(expected);

@@ -18,7 +18,7 @@ import DeploymentRequest, {
 } from '../../model/kanel/public/DeploymentRequest';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
-import { insertServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { insertSubscription } from '../subscription/subscription.helper';
 import { DeploymentRequestDomain } from './deployment.domain';
 
@@ -26,7 +26,7 @@ export async function insertDeploymentRequest(
   deploymentRequest: Partial<DeploymentRequestInitializer>
 ): Promise<DeploymentRequest> {
   const serviceInstanceId = uuidv4() as ServiceInstanceId;
-  await insertServiceInstance({
+  await ServiceInstanceDomain.insertServiceInstance({
     id: serviceInstanceId,
     name: 'oneRandomTrialInstance',
     description: '',

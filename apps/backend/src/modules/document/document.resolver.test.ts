@@ -24,7 +24,7 @@ import {
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
-import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
@@ -225,7 +225,7 @@ describe('increment share number document GraphQL mutation', () => {
       updated
     );
     vi.spyOn(
-      serviceInstanceDomain,
+      ServiceInstanceDomain,
       'loadServiceDefinitionByServiceInstance'
     ).mockRejectedValue(new Error('skip telemetry'));
 
@@ -377,7 +377,7 @@ describe('document field resolvers', () => {
     const expected = { id: serviceInstanceId } as unknown as
       | ServiceInstance
       | undefined;
-    vi.spyOn(serviceInstanceDomain, 'getServiceInstance').mockResolvedValue(
+    vi.spyOn(ServiceInstanceDomain, 'getServiceInstance').mockResolvedValue(
       expected
     );
 
@@ -390,7 +390,7 @@ describe('document field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(serviceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
+    expect(ServiceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
       serviceInstanceId
     );
     expect(result).toEqual(expected);

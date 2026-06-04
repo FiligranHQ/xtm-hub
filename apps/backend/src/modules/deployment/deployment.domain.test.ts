@@ -15,7 +15,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
-import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { deleteSubscription } from '../subscription/subscription.helper';
 import { DeploymentRequestDomain } from './deployment.domain';
 import {
@@ -31,7 +31,7 @@ describe('deploymentRequestDomain', () => {
   describe('loadDeploymentRequest', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await deleteServiceInstanceBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
       await deleteSubscription({});
     });
 
@@ -158,7 +158,7 @@ describe('deploymentRequestDomain', () => {
   describe('loadTrialDeploymentRequestByPlatformIdentifierAndUserId', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await deleteServiceInstanceBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
       await deleteSubscription({});
     });
 
@@ -275,7 +275,7 @@ describe('deploymentRequestDomain', () => {
   describe('loadTrialDeploymentRequestByPlatformToken', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await deleteServiceInstanceBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
       await deleteSubscription({});
     });
 

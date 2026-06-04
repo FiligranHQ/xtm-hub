@@ -45,10 +45,7 @@ import {
   insertCapabilities,
   insertUserServiceCapability,
 } from '../security-management/user-service-capability/user-service-capability.helper';
-import {
-  loadServiceDefinitionByServiceInstance,
-  loadServiceInstanceBy,
-} from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { loadSubscriptionBy } from '../subscription/subscription.helper';
 
 export const UserServiceDomain = {
@@ -173,15 +170,16 @@ export const UserServiceDomain = {
     if (!user) {
       throw new Error(ErrorCode.UserNotFound);
     }
-    const serviceInstance = await loadServiceInstanceBy({
+    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       id: subscription.service_instance_id,
     });
     if (!serviceInstance) {
       throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
     }
-    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      serviceInstance.id
-    );
+    const serviceDefinition =
+      await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstance.id
+      );
     if (!serviceDefinition) {
       throw new Error(NotFoundErrorCode.ServiceDefinitionNotFound);
     }
