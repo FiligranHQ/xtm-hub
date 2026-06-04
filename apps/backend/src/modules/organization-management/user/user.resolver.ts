@@ -324,9 +324,11 @@ const resolvers: Resolvers = {
             return true;
           }
           const user = payload.add ?? payload.delete ?? payload.edit;
-          return user?.organizations
-            ?.map((org) => org.id)
-            .includes(extractId(args.organizationId));
+          return (
+            user?.organizations
+              ?.map((org) => org.id)
+              ?.includes(extractId(args.organizationId)) ?? false
+          );
         }),
     },
     MeUser: {

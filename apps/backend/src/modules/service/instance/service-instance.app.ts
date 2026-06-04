@@ -99,16 +99,19 @@ export const ServiceInstanceApp = {
         serviceInstanceId
       );
       if (!uploadedDocument) {
-        throw NotFoundError(ErrorCode.DocumentFileMissing);
+        throw new Error(ErrorCode.DocumentFileMissing);
       }
       const update = isLogo
         ? { logo_document_id: uploadedDocument.id }
         : { illustration_document_id: uploadedDocument.id };
       return updateServiceInstance(serviceInstanceId, update);
     });
-    if (updatedServiceInstance) {
-      await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+
+    if (!updatedServiceInstance) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
     }
+    await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+
     return updatedServiceInstance as unknown as ServiceInstance;
   },
 
@@ -165,6 +168,9 @@ export const ServiceInstanceApp = {
       let result = serviceInstance;
       if (Object.keys(updateData).length > 0) {
         result = await updateServiceInstance(serviceInstance.id, updateData);
+        if (!result) {
+          throw new Error(ErrorCode.ServiceInstanceNotFound);
+        }
       }
 
       // For registered platforms, also update the platform_title in platform configuration

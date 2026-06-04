@@ -9,8 +9,12 @@ import {
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
 import { SubscriptionCapabilityId } from '../../model/kanel/public/SubscriptionCapability';
-import { UnknownErrorCode } from '../../utils/error/error.code';
+import {
+  NotFoundErrorCode,
+  UnknownErrorCode,
+} from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { NotFoundError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
@@ -25,7 +29,8 @@ const resolvers: Resolvers = {
       SubscriptionDomain.getSubscriptionCapability(id as SubscriptionId),
     service_instance: async ({ service_instance_id }, _) => {
       const instance = await loadServiceInstanceBy({ id: service_instance_id });
-      if (!instance) throw new Error('ServiceInstance not found');
+      if (!instance)
+        throw NotFoundError(NotFoundErrorCode.ServiceInstanceNotFound);
       return instance as unknown as ServiceInstance;
     },
     user_service: ({ id }, _) =>
