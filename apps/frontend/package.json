@@ -58,8 +58,8 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "5.0.7",
-    "@graphql-codegen/typescript": "4.1.6",
+    "@graphql-codegen/cli": "catalog:",
+    "@graphql-codegen/typescript": "catalog:",
     "@graphql-codegen/typescript-operations": "4.6.1",
     "@graphql-codegen/typescript-react-query": "6.1.2",
     "@lingual/i18n-check": "0.9.5",
@@ -90,7 +90,7 @@
     "monocart-reporter": "catalog:",
     "msw": "2.14.6",
     "prettier": "catalog:",
-    "prettier-plugin-organize-imports": "4.3.0",
+    "prettier-plugin-organize-imports": "catalog:",
     "prettier-plugin-tailwindcss": "0.8.0",
     "rehype-sanitize": "6.0.0",
     "relay-compiler": "20.1.1",
