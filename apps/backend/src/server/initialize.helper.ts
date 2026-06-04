@@ -37,6 +37,7 @@ import {
 } from '../portal.const';
 import { logApp } from '../utils/app-logger.util';
 import { DevUser } from '../utils/config-validation.util';
+import { getErrorMessage } from '../utils/error/error-guard.util';
 import { UnknownErrorCode } from '../utils/error/error.code';
 import { hashPassword } from '../utils/hash-password.util';
 
@@ -408,7 +409,7 @@ export const ensureDevUserExists = async (
     });
   } catch (error) {
     logApp.error(
-      `Failed to initialize dev user ${userConfig.email}: ${error.message}`
+      `Failed to initialize dev user ${userConfig.email}: ${getErrorMessage(error)}`
     );
     throw error;
   }
@@ -431,7 +432,7 @@ export const initializeDevUsers = async (): Promise<void> => {
       await ensureDevUserExists(userConfig);
     } catch (error) {
       logApp.warn(
-        `Failed to initialize dev user ${userConfig.email}: ${error.message}`
+        `Failed to initialize dev user ${userConfig.email}: ${getErrorMessage(error)}`
       );
       // Continue with other users
     }

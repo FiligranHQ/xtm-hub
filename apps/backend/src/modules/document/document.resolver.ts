@@ -6,6 +6,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { logApp } from '../../utils/app-logger.util';
+import { toError } from '../../utils/error/error-guard.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../utils/error/error.util';
@@ -44,9 +45,10 @@ const resolvers: Resolvers = {
           serviceInstanceId: input.serviceInstanceId,
         });
       } catch (error) {
-        if (error.message?.includes('document_type_slug_unique')) {
+        const normalizedError = toError(error);
+        if (normalizedError.message.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
-            detail: error,
+            detail: normalizedError,
           });
         }
         throw mapToGraphQLError(error, UnknownErrorCode.DocumentCreateError);
@@ -61,9 +63,10 @@ const resolvers: Resolvers = {
           existingImageIds: input.existingImageIds ?? [],
         });
       } catch (error) {
-        if (error.message?.includes('document_type_slug_unique')) {
+        const normalizedError = toError(error);
+        if (normalizedError.message.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
-            detail: error,
+            detail: normalizedError,
           });
         }
         throw mapToGraphQLError(error, UnknownErrorCode.DocumentUpdateError);

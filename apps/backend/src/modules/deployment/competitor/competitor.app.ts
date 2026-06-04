@@ -6,15 +6,17 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { CompetitorId } from '../../../model/kanel/public/Competitor';
 import Organization from '../../../model/kanel/public/Organization';
+import { toError } from '../../../utils/error/error-guard.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { omit } from '../../../utils/utils';
 import { CompetitorDomain } from './competitor.domain';
 
-const throwIfUniqueViolation = (error: Error) => {
-  if (error.message?.includes('competitor_domain_unique')) {
+const throwIfUniqueViolation = (error: unknown) => {
+  const normalizedError = toError(error);
+  if (normalizedError.message.includes('competitor_domain_unique')) {
     throw AlreadyExistsError(ErrorCode.CompetitorDomainAlreadyExists, {
-      detail: error,
+      detail: normalizedError,
     });
   }
 };
