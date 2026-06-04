@@ -13,25 +13,23 @@ import { createRelayIdScalar } from '../../utils/scalar.util';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
-import {
-  getServiceCapability,
-  getSubscriptionCapability,
-  getUserService,
-} from './subscription.domain';
+import { SubscriptionDomain } from './subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
   SubscriptionId: createRelayIdScalar<SubscriptionId>('Subscription'),
   SubscriptionModel: {
-    subscription_capability: ({ id }, _) => getSubscriptionCapability(id),
+    subscription_capability: ({ id }, _) =>
+      SubscriptionDomain.getSubscriptionCapability(id),
     service_instance: ({ service_instance_id }, _) =>
       loadServiceInstanceBy({ id: service_instance_id }),
-    user_service: ({ id }, _) => getUserService(id),
+    user_service: ({ id }, _) => SubscriptionDomain.getUserService(id),
     organization: ({ organization_id }, _) =>
       OrganizationDomain.loadOrganizationBy({ id: organization_id }),
   },
   SubscriptionCapability: {
-    service_capability: ({ id }, _) => getServiceCapability(id),
+    service_capability: ({ id }, _) =>
+      SubscriptionDomain.getServiceCapability(id),
   },
   Mutation: {
     createSubscriptions: async (_, { input }) => {

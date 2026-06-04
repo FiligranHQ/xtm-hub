@@ -18,19 +18,14 @@ import {
   addCapabilitiesToSubscription,
   replaceCapabilitiesForSubscription,
 } from '../security-management/subscription-capability/subscription-capability.domain';
-import {
-  createSubscription,
-  loadSubscriptionBy,
-  SubscriptionDomain,
-  updateSubscriptionBy,
-} from './subscription.domain';
+import { SubscriptionDomain } from './subscription.domain';
 
 export const subscriptionApp = {
   loadSubscriptionModel: async (
     user: UserLoadUserBy,
     service_instance_id: ServiceInstanceId
   ): Promise<SubscriptionModel> => {
-    const subscription = await loadSubscriptionBy({
+    const subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id,
       organization_id: user.selected_organization_id,
     });
@@ -59,13 +54,15 @@ export const subscriptionApp = {
           organizationId,
         });
 
-        const createdSubscription = await createSubscription({
-          id: uuidv4() as SubscriptionId,
-          service_instance_id: serviceInstanceId,
-          organization_id: organizationId,
-          start_date: startDate,
-          end_date: endDate,
-        });
+        const createdSubscription = await SubscriptionDomain.createSubscription(
+          {
+            id: uuidv4() as SubscriptionId,
+            service_instance_id: serviceInstanceId,
+            organization_id: organizationId,
+            start_date: startDate,
+            end_date: endDate,
+          }
+        );
 
         await addCapabilitiesToSubscription(
           createdSubscription.id,
@@ -102,10 +99,15 @@ export const subscriptionApp = {
 
       let updatedSubscription: Subscription;
       if (Object.keys(data).length > 0) {
-        const [result] = await updateSubscriptionBy({ id }, data);
+        const [result] = await SubscriptionDomain.updateSubscriptionBy(
+          { id },
+          data
+        );
         updatedSubscription = result;
       } else {
-        updatedSubscription = await loadSubscriptionBy({ id });
+        updatedSubscription = await SubscriptionDomain.loadSubscriptionBy({
+          id,
+        });
       }
 
       if (capabilityIds !== undefined) {
@@ -134,7 +136,7 @@ const assertOrganizationIsNotAlreadySubscribed = async ({
   serviceInstanceId: ServiceInstanceId;
   organizationId: OrganizationId;
 }) => {
-  const subscription = await loadSubscriptionBy({
+  const subscription = await SubscriptionDomain.loadSubscriptionBy({
     organization_id: organizationId,
     service_instance_id: serviceInstanceId,
   });

@@ -29,7 +29,7 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
-import * as subscriptionDomain from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import {
   PlatformConfigurationInput,
@@ -165,7 +165,7 @@ describe('registration domain', () => {
       );
 
       loadSubscriptionBySpy = vi.spyOn(
-        subscriptionDomain,
+        SubscriptionDomain,
         'loadSubscriptionBy'
       );
 
@@ -175,7 +175,7 @@ describe('registration domain', () => {
       );
 
       transferSubscriptionToOrganizationSpy = vi.spyOn(
-        subscriptionDomain,
+        SubscriptionDomain,
         'transferSubscriptionToOrganization'
       );
 

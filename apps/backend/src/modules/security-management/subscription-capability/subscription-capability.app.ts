@@ -2,7 +2,7 @@ import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapabili
 import Subscription, {
   SubscriptionId,
 } from '../../../model/kanel/public/Subscription';
-import { loadSubscriptionsBy } from '../../subscription/subscription.domain';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { addCapabilitiesToSubscriptions } from './subscription-capability.domain';
 
 export const SubscriptionCapabilityApp = {
@@ -11,6 +11,6 @@ export const SubscriptionCapabilityApp = {
     capabilitiesId: ServiceCapabilityId[]
   ): Promise<Subscription[]> => {
     await addCapabilitiesToSubscriptions(subscriptionsId, capabilitiesId);
-    return loadSubscriptionsBy(subscriptionsId);
+    return SubscriptionDomain.loadSubscriptionsBy(subscriptionsId);
   },
 };

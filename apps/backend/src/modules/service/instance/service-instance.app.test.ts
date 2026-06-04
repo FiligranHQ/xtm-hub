@@ -43,7 +43,7 @@ import * as securityGuardModule from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { DocumentHelper } from '../../document/document.helper';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
-import * as subscriptionDomain from '../../subscription/subscription.domain';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { ServiceInstanceApp } from './service-instance.app';
 import * as serviceInstanceDomain from './service-instance.domain';
@@ -86,7 +86,7 @@ describe('service Instance app', () => {
 
     beforeEach(() => {
       loadSubscriptionBySpy = vi.spyOn(
-        subscriptionDomain,
+        SubscriptionDomain,
         'loadSubscriptionBy'
       );
       loadUserServiceBySpy = vi.spyOn(UserServiceDomain, 'loadUserServiceBy');

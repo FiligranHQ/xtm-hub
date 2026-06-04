@@ -20,7 +20,7 @@ import {
   DocumentUploadsHelper,
   Upload,
 } from '../../../document/document.uploads.helper';
-import { updateSubscriptionBy } from '../../../subscription/subscription.domain';
+import { SubscriptionDomain } from '../../../subscription/subscription.domain';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserTransferRequestDomain } from '../user-transferRequest/user-transfer-request.domain';
@@ -172,7 +172,7 @@ export const userProfileApp = {
         throw new Error();
       }
 
-      await updateSubscriptionBy(
+      await SubscriptionDomain.updateSubscriptionBy(
         { organization_id: personalSpaceToTransfer.id },
         { organization_id: currentToUserSpace.id }
       );
