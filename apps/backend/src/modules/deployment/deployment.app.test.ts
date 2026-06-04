@@ -58,7 +58,6 @@ import {
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { deleteSubscription } from '../subscription/subscription.helper';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
@@ -102,7 +101,7 @@ describe('deployment app', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
     await ServiceInstanceDomain.deleteServiceInstanceBy({});
-    await deleteSubscription({});
+    await TestHelper.subscription.delete({});
     vi.resetAllMocks();
   });
 
@@ -1321,7 +1320,7 @@ describe('deployment app', () => {
       ${true}  | ${DeploymentRequestHubStatus.Provisioning} | ${DeploymentRequestPlatformState.Provisioning}  | ${true}              | ${DeploymentRequestPlatformState.Removed}
       ${true}  | ${DeploymentRequestHubStatus.Pending}      | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
       ${true}  | ${DeploymentRequestHubStatus.Queued}       | ${DeploymentRequestPlatformState.Unprovisioned} | ${true}              | ${DeploymentRequestPlatformState.Unprovisioned}
-      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestHubStatus.Cancelled}
+      ${true}  | ${DeploymentRequestHubStatus.Active}       | ${DeploymentRequestPlatformState.Active}        | ${true}              | ${DeploymentRequestPlatformState.Removed}
     `(
       'should cancel deployment request actual state $actual_state, with counts_in_orga_quota: counts_in_orga_quota',
       async ({

@@ -45,7 +45,7 @@ import {
   serviceInstanceTagMappedByPlatformIdentifier,
 } from '../../registration/registration.mapping';
 import { insertServiceCapability } from '../../security-management/service-capability/service-capability.helper';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscription/subscription.helper';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 
 export const ServiceInstanceDomain = {
@@ -347,9 +347,11 @@ export const ServiceInstanceDomain = {
       await UserServiceDomain.insertUserService(dataUserServices);
 
     const [subscription] =
-      await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-        'Subscription.id': subscriptionId,
-      } as SubscriptionMutator);
+      await SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy(
+        {
+          'Subscription.id': subscriptionId,
+        } as SubscriptionMutator
+      );
     const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       id: subscription.service_instance_id,
     });

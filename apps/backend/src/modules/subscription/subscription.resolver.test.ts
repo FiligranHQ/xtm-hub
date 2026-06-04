@@ -19,7 +19,6 @@ import { OrganizationDomain } from '../organization-management/organization/orga
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import { SubscriptionDomain } from './subscription.domain';
-import * as subscriptionHelper from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
 describe('subscription resolver - unit tests', () => {
@@ -174,11 +173,11 @@ describe('subscription resolver - unit tests', () => {
       const subscriptionId = uuidv4() as SubscriptionId;
       const expected = { id: subscriptionId } as Awaited<
         ReturnType<
-          typeof subscriptionHelper.loadSubscriptionWithOrganizationAndCapabilitiesBy
+          typeof SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy
         >
       >[number];
       vi.spyOn(
-        subscriptionHelper,
+        SubscriptionDomain,
         'loadSubscriptionWithOrganizationAndCapabilitiesBy'
       ).mockResolvedValue([expected] as never);
 
@@ -192,7 +191,7 @@ describe('subscription resolver - unit tests', () => {
 
       // Then
       expect(
-        subscriptionHelper.loadSubscriptionWithOrganizationAndCapabilitiesBy
+        SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy
       ).toHaveBeenCalledWith(
         expect.objectContaining({ 'Subscription.id': subscriptionId })
       );
@@ -203,9 +202,9 @@ describe('subscription resolver - unit tests', () => {
       // Given
       const subscriptionId = uuidv4() as SubscriptionId;
       vi.spyOn(
-        subscriptionHelper,
+        SubscriptionDomain,
         'loadSubscriptionWithOrganizationAndCapabilitiesBy'
-      ).mockResolvedValue([] as never);
+      ).mockResolvedValue([]);
 
       // When
       const result = await subscriptionResolver.Query!.subscriptionById!(
@@ -366,8 +365,8 @@ describe('subscription resolver - unit tests', () => {
 
   describe('mutation error mapping', () => {
     it.each`
-      mutationName            | runMutation                                                                                                                                                            | setupAppMock                                                                                   | expectedCode
-      ${'createSubscription'} | ${() =>
+      mutationName             | runMutation                                                                                                                                                            | setupAppMock                                                                                   | expectedCode
+      ${'createSubscriptions'} | ${() =>
   subscriptionResolver.Mutation!.createSubscriptions!(
     {},
     {
@@ -382,7 +381,7 @@ describe('subscription resolver - unit tests', () => {
     contextSimpleUserFiligran2,
     GRAPHQL_RESOLVE_INFO
   )} | ${() => vi.spyOn(subscriptionApp, 'subscribeOrganizationsToService').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
-      ${'deleteSubscription'} | ${() => subscriptionResolver.Mutation!.deleteSubscriptions!({}, { subscription_ids: [uuidv4() as SubscriptionId] }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscriptions').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
+      ${'deleteSubscriptions'} | ${() => subscriptionResolver.Mutation!.deleteSubscriptions!({}, { subscription_ids: [uuidv4() as SubscriptionId] }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscriptions').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
       ${'updateSubscription'} | ${() =>
   subscriptionResolver.Mutation!.updateSubscription!(
     {},

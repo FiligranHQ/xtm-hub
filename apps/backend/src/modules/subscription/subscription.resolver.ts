@@ -20,7 +20,6 @@ import { OrganizationDomain } from '../organization-management/organization/orga
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import { SubscriptionDomain } from './subscription.domain';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
   SubscriptionId: createRelayIdScalar<SubscriptionId>('Subscription'),
@@ -92,9 +91,11 @@ const resolvers: Resolvers = {
   Query: {
     subscriptionById: async (_, { subscription_id }) => {
       const subscriptions =
-        await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-          'Subscription.id': subscription_id,
-        } as SubscriptionMutator);
+        await SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy(
+          {
+            'Subscription.id': subscription_id,
+          } as SubscriptionMutator
+        );
 
       return subscriptions[0];
     },

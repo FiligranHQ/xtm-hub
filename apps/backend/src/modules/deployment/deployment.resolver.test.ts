@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '../../../knexfile';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   requestContextRegistererUserSecondOrga,
   requestContextSystemUserManageDeployment,
@@ -29,7 +30,6 @@ import DeploymentRequestQuota from '../../model/kanel/public/DeploymentRequestQu
 import { ErrorCode } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
-import { deleteSubscription } from '../subscription/subscription.helper';
 import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
 import resolver from './deployment.resolver';
@@ -38,7 +38,7 @@ describe('deployment resolver', () => {
   afterEach(async () => {
     await DeploymentRequestDomain.deleteDeploymentRequestBy({});
     await ServiceInstanceDomain.deleteServiceInstanceBy({});
-    await deleteSubscription({});
+    await TestHelper.subscription.delete({});
   });
   describe('createDeploymentRequest', () => {
     beforeEach(() => {

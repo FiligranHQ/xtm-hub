@@ -16,7 +16,6 @@ import {
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
-import { deleteSubscription } from '../subscription/subscription.helper';
 import { DeploymentRequestDomain } from './deployment.domain';
 import {
   assertDeploymentRequestProperties,
@@ -32,7 +31,7 @@ describe('deploymentRequestDomain', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await deleteSubscription({});
+      await TestHelper.subscription.delete({});
     });
 
     it('should return filtered deployment requests', async () => {
@@ -159,7 +158,7 @@ describe('deploymentRequestDomain', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await deleteSubscription({});
+      await TestHelper.subscription.delete({});
     });
 
     it('should return deployment request when Active trial deployment exists for user', async () => {
@@ -276,7 +275,7 @@ describe('deploymentRequestDomain', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await deleteSubscription({});
+      await TestHelper.subscription.delete({});
     });
 
     it('should return deployment request when Active trial deployment exists with matching token', async () => {

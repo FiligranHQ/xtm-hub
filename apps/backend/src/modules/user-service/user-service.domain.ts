@@ -46,7 +46,7 @@ import {
   insertUserServiceCapability,
 } from '../security-management/user-service-capability/user-service-capability.helper';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
-import { loadSubscriptionBy } from '../subscription/subscription.helper';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 
 export const UserServiceDomain = {
   addServiceToUsers: async (
@@ -129,7 +129,7 @@ export const UserServiceDomain = {
     };
 
     // Check the user is in the current organization
-    const [subscription] = await loadSubscriptionBy({
+    const subscription = await SubscriptionDomain.loadSubscriptionBy({
       id: subscription_id as SubscriptionId,
     });
     const userOrganizations = await UserOrganizationDomain.loadUserOrganization(
