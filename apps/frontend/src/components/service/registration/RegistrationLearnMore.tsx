@@ -75,10 +75,10 @@ export const RegistrationLearnMore = async ({
                   height="25"
                   src="/logo_opencti_dark.png"
                   alt={t('Service.Trials.XTMPlatform.LogoAlt', {
-                    name: 'OpenCTI',
+                    name: t('PlatformIdentifier.opencti'),
                   })}
                 />
-                OpenCTI
+                {t('PlatformIdentifier.opencti')}
               </h3>
               <P className="mb-s">
                 <strong>
@@ -94,10 +94,10 @@ export const RegistrationLearnMore = async ({
                   height="25"
                   src="/logo_openaev_dark.png"
                   alt={t('Service.Trials.XTMPlatform.LogoAlt', {
-                    name: 'OpenAEV',
+                    name: t('PlatformIdentifier.openaev'),
                   })}
                 />
-                OpenAEV
+                {t('PlatformIdentifier.openaev')}
               </h3>
               <P className="mb-s">
                 <strong>

@@ -50,12 +50,17 @@ describe('AddUseCase', () => {
     );
 
     const colorInput = screen.getByDisplayValue('#FFFFFF');
-    await user.type(screen.getByLabelText(/UseCaseForm.Name/i), 'Threat Hunting');
+    await user.type(
+      screen.getByLabelText(/UseCaseForm.Name/i),
+      'Threat Hunting'
+    );
     fireEvent.change(colorInput, { target: { value: '#11aa22' } });
     await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));
 
     await waitFor(() => {
-      expect(screen.queryByLabelText(/UseCaseForm.Name/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByLabelText(/UseCaseForm.Name/i)
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -74,10 +79,15 @@ describe('AddUseCase', () => {
     );
 
     const colorInput = screen.getByDisplayValue('#FFFFFF');
-    await user.type(screen.getByLabelText(/UseCaseForm.Name/i), 'Threat Hunting');
+    await user.type(
+      screen.getByLabelText(/UseCaseForm.Name/i),
+      'Threat Hunting'
+    );
     fireEvent.change(colorInput, { target: { value: '#11aa22' } });
     await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));
 
-    expect(await screen.findByLabelText(/UseCaseForm.Name/i)).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText(/UseCaseForm.Name/i)
+    ).toBeInTheDocument();
   });
 });

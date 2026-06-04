@@ -1,6 +1,5 @@
 import { expect, test } from '../fixtures/baseFixtures.js';
 import LoginPage from '../model/login.pageModel';
-import { removeOrganization } from '../db-utils/organization.helper';
 import OrganizationPage from '../model/organization.pageModel';
 
 const TEST_ORGANIZATION = {

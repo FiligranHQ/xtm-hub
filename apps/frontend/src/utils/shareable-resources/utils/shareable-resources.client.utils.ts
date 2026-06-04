@@ -1,9 +1,12 @@
+import { hasProperty } from '@/utils/has-property';
+import { serviceConfigMap } from '@/utils/shareable-resources/shareable-resources.consts';
+import {
+  ServiceInfo,
+  ServiceSlug,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
-import { hasProperty } from '@/utils/has-property';
-import { serviceConfigMap } from '@/utils/shareable-resources/shareable-resources.consts';
-import { ServiceInfo, ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 
 export function getServiceInfo(
   serviceInstance: { id: string; slug: ServiceSlug },

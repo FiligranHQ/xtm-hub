@@ -1,3 +1,7 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
+import { ServiceFormSheetFooter } from '@/components/service/form/SheetFooter';
+import { useServiceFormFields } from '@/components/service/form/UseServiceFormFields';
+import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import {
   fileListCheck,
   optionalFileListCheck,
@@ -10,10 +14,6 @@ import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum'
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useContext, useMemo } from 'react';
 import { z } from 'zod';
-import { PortalContext } from '@/components/me/AppPortalContext';
-import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
-import { ServiceFormSheetFooter } from '@/components/service/form/SheetFooter';
-import { useServiceFormFields } from '@/components/service/form/UseServiceFormFields';
 
 const connectorSchema = z.object({
   name: z.string().min(1, 'Required'),

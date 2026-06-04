@@ -1,3 +1,4 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   registerRegisteredPlatformListFragment,
   RegisterRegisteredPlatformsQuery,
@@ -7,7 +8,6 @@ import { registerRegisteredPlatformListFragment$key } from '@generated/registerR
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { useContext } from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 export const useFreeTrial = (isActiveOnly: boolean = false) => {
   const { isPersonalSpace } = useContext(PortalContext);

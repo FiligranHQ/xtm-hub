@@ -10,7 +10,10 @@ import {
   CsvFeedForm,
   CsvFeedFormValues,
 } from '@/components/service/integrations/forms/CsvFeedForm';
-import { StreamForm, StreamFormValues } from '@/components/service/integrations/forms/StreamForm';
+import {
+  StreamForm,
+  StreamFormValues,
+} from '@/components/service/integrations/forms/StreamForm';
 import {
   TaxiiFeedForm,
   TaxiiFeedFormValues,

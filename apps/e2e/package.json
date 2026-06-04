@@ -6,7 +6,11 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "generate-test-e2e": "npx playwright codegen http://localhost:3002/",
-    "test:e2e:update-snapshot": "playwright test --update-snapshots"
+    "test:e2e:update-snapshot": "playwright test --update-snapshots",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format:check": "prettier --check .",
+    "prettier:format": "prettier --write ."
   },
   "dependencies": {
     "knex": "catalog:",
@@ -15,13 +19,18 @@
     "uuid": "catalog:"
   },
   "devDependencies": {
+    "@eslint/js": "9.39.4",
     "@playwright/test": "1.60.0",
     "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "globals": "17.6.0",
     "graphql": "catalog:",
     "graphql-tag": "2.12.6",
     "monocart-reporter": "catalog:",
     "playwright-ctrf-json-reporter": "0.0.29",
-    "prettier": "catalog:"
+    "prettier": "catalog:",
+    "typescript-eslint": "8.60.0"
   },
   "packageManager": "yarn@4.15.0+sha512.07ec708ac11e2eaa4ea2b04cfbb272812f7e74a753f1595eaef4486c663a98306a30cca3e6fc40f7a0b168dcfb3a2490b6a5e0501e20fb69cc36f563dd161c53",
   "prettier": {

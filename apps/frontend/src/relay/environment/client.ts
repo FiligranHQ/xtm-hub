@@ -1,16 +1,4 @@
 import { isEmpty, isNil } from '@/lib/utils';
-import { buildLoginRedirect } from '@/utils/redirect';
-import {
-  Environment,
-  FetchFunction,
-  GraphQLResponse,
-  Network,
-  Observable,
-  RecordSource,
-  ReplaySubject,
-  Store,
-} from 'relay-runtime';
-import RelayModernEnvironment from 'relay-runtime/lib/store/RelayModernEnvironment';
 import {
   fetchOrSubscribe,
   networkFetch,
@@ -24,6 +12,18 @@ import {
   RELAY_WINDOW_KEY,
 } from '@/relay/environment/helpers';
 import { registerClientEnvironment } from '@/relay/environment/registry';
+import { buildLoginRedirect } from '@/utils/redirect';
+import {
+  Environment,
+  FetchFunction,
+  GraphQLResponse,
+  Network,
+  Observable,
+  RecordSource,
+  ReplaySubject,
+  Store,
+} from 'relay-runtime';
+import RelayModernEnvironment from 'relay-runtime/lib/store/RelayModernEnvironment';
 
 // A singleton helper that is shared on the client.
 let clientSideRelayEnvironment: RelayModernEnvironment | null = null;
