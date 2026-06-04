@@ -56,6 +56,7 @@ export const listen = (
   const filterFn = async (event: PubEvent) => {
     try {
       const [topic] = Object.keys(event);
+      if (!topic) return false;
       const payload = event[topic];
       if (!payload) return false;
 

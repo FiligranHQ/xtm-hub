@@ -156,9 +156,11 @@ const resolvers: Resolvers = {
       } else if (document.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         const integrationType =
           await DocumentMetadataDomain.loadIntegrationType(document.id);
-        const responseType = INTEGRATION_MAPPINGS[integrationType];
-        if (responseType) {
-          return responseType;
+        if (integrationType) {
+          const responseType = INTEGRATION_MAPPINGS[integrationType];
+          if (responseType) {
+            return responseType;
+          }
         }
       }
       logApp.warn(
