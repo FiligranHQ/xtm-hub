@@ -14,7 +14,7 @@ import { requestContext } from '../../context/request.context';
 import { BadRequestErrorCode, ErrorCode } from '../../utils/error/error.code';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { RegistrationApp } from './registration.app';
-import { registrationConnectivityApp } from './registration.connectivity.app';
+import { RegistrationConnectivityApp } from './registration.connectivity.app';
 
 describe('registration connectivity app', () => {
   beforeEach(() => {
@@ -28,7 +28,7 @@ describe('registration connectivity app', () => {
   describe('refreshPlatformRegistrationConnectivityStatus', () => {
     it('should throw an error when version is not formatted as a semantic version', async () => {
       const call =
-        registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+        RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
           {
             platformId: uuidv4(),
             token: uuidv4(),
@@ -41,7 +41,7 @@ describe('registration connectivity app', () => {
 
     it('should throw TENANT_ID_MANDATORY when no tenantId is provided but the platform version requires one', async () => {
       const call =
-        registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+        RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
           {
             platformId: uuidv4(),
             token: uuidv4(),
@@ -55,7 +55,7 @@ describe('registration connectivity app', () => {
 
     it('should return inactive when platform is not registered but identifier is not provided', async () => {
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
           {
             platformId: uuidv4(),
             token: uuidv4(),
@@ -70,7 +70,7 @@ describe('registration connectivity app', () => {
 
     it('should return not found when platform is not registered and has version below compatibility version', async () => {
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
           {
             platformId: uuidv4(),
             token: uuidv4(),
@@ -86,7 +86,7 @@ describe('registration connectivity app', () => {
 
     it('should return inactive when platform is not registered and has version above compatibility version', async () => {
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
           {
             platformId: uuidv4(),
             token: uuidv4(),
@@ -114,7 +114,7 @@ describe('registration connectivity app', () => {
       });
 
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
           {
             platformId,
             token,
@@ -136,7 +136,7 @@ describe('registration connectivity app', () => {
   describe('refreshPlatformRegistrationConnectivityStatusSingleTenant', () => {
     it('should throw an error when version is not formatted as a semantic version', async () => {
       const call =
-        registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+        RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
           {
             platformId: uuidv4(),
             token: uuidv4(),
@@ -170,7 +170,7 @@ describe('registration connectivity app', () => {
       });
 
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
           {
             platformId,
             token,
@@ -204,7 +204,7 @@ describe('registration connectivity app', () => {
       });
 
       const newUrl = 'http://example.com/tenantId';
-      await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+      await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
         {
           platformId,
           token,
@@ -242,7 +242,7 @@ describe('registration connectivity app', () => {
       });
 
       const updatedTenantName = 'Updated tenant name';
-      await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+      await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
         {
           platformId,
           token,
@@ -280,7 +280,7 @@ describe('registration connectivity app', () => {
       });
 
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
           {
             platformId,
             token,
@@ -314,7 +314,7 @@ describe('registration connectivity app', () => {
       });
 
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
           {
             platformId,
             token,
@@ -343,7 +343,7 @@ describe('registration connectivity app', () => {
     it('should return inactive for all tenants when version is not formatted as a semantic version', async () => {
       const tenantId = uuidv4();
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
           {
             platformId: uuidv4(),
             platformVersion: '9.Y.Z',
@@ -402,7 +402,7 @@ describe('registration connectivity app', () => {
       });
 
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
           {
             platformId,
             platformVersion: '6.7.18',
@@ -458,7 +458,7 @@ describe('registration connectivity app', () => {
       });
 
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
           {
             platformId,
             platformVersion: '6.7.18',
@@ -482,7 +482,7 @@ describe('registration connectivity app', () => {
 
     it('should return empty statuses when no tenants are provided', async () => {
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
           {
             platformId: uuidv4(),
             platformVersion: '6.7.18',
@@ -515,7 +515,7 @@ describe('registration connectivity app', () => {
       const failingTenantId = uuidv4();
 
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
           {
             platformId,
             platformVersion: '6.7.18',
@@ -583,7 +583,7 @@ describe('registration connectivity app', () => {
       });
 
       const result =
-        await registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
           {
             platformId,
             platformVersion: '6.7.18',

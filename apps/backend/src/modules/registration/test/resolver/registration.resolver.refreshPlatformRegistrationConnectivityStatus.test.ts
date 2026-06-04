@@ -9,7 +9,7 @@ import {
   PlatformRegistrationConnectivityStatus,
   RefreshPlatformRegistrationConnectivityStatusInput,
 } from '../../../../__generated__/resolvers-types';
-import { registrationConnectivityApp } from '../../registration.connectivity.app';
+import { RegistrationConnectivityApp } from '../../registration.connectivity.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('mutation.refreshPlatformRegistrationConnectivityStatus', () => {
@@ -29,7 +29,7 @@ describe('mutation.refreshPlatformRegistrationConnectivityStatus', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       };
       vi.spyOn(
-        registrationConnectivityApp,
+        RegistrationConnectivityApp,
         'refreshPlatformRegistrationConnectivityStatus'
       ).mockResolvedValue({ status });
 
@@ -44,7 +44,7 @@ describe('mutation.refreshPlatformRegistrationConnectivityStatus', () => {
 
       // Then
       expect(
-        registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus
+        RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus
       ).toHaveBeenCalledWith(input);
       expect(result).toMatchObject({ status });
     }

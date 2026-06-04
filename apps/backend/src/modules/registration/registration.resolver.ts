@@ -17,7 +17,7 @@ import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { ServiceGroupDomain } from '../deployment/group/service-group.domain';
 import { loadSubscriptionByServiceInstanceAndOrganization } from '../service/instance/service-instance.domain';
 import { RegistrationApp } from './registration.app';
-import { registrationConnectivityApp } from './registration.connectivity.app';
+import { RegistrationConnectivityApp } from './registration.connectivity.app';
 
 const resolvers: Resolvers = {
   RegisteredPlatform: {
@@ -129,21 +129,21 @@ const resolvers: Resolvers = {
       }
     },
     refreshPlatformRegistrationConnectivityStatus: async (_, { input }) =>
-      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+      RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
         input
       ),
     refreshPlatformRegistrationConnectivityStatusSingleTenant: async (
       _,
       { input }
     ) =>
-      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+      RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
         input
       ),
     refreshPlatformRegistrationConnectivityStatusAllTenants: async (
       _,
       { input }
     ) =>
-      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+      RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
         input
       ),
     autoRegisterPlatform: async (

@@ -186,7 +186,7 @@ const refreshConnectivityStatus = async ({
   };
 };
 
-export const registrationConnectivityApp = {
+export const RegistrationConnectivityApp = {
   refreshPlatformRegistrationConnectivityStatus: async (
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
