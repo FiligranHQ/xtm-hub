@@ -80,7 +80,7 @@ const resolvers: Resolvers = {
         return await DocumentApp.deleteDocument(
           documentId,
           service_instance_id,
-          forceDelete
+          forceDelete ?? false
         );
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.DeleteDocumentError);
@@ -95,10 +95,16 @@ const resolvers: Resolvers = {
         const documentWithCounters =
           await DocumentHelper.updateDocumentWithCounters(document);
         try {
+          if (!document.service_instance_id) {
+            throw new Error(ErrorCode.ServiceInstanceNotFound);
+          }
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
               document.service_instance_id
             );
+          if (!serviceDefinition) {
+            throw new Error(ErrorCode.ServiceDefinitionNotFound);
+          }
 
           if (shouldSendEventForService(serviceDefinition.identifier)) {
             const selectedOrga = context.user
@@ -112,7 +118,7 @@ const resolvers: Resolvers = {
               context.user?.id,
               serviceDefinition.identifier,
               document.id,
-              document.name
+              document.name ?? ''
             );
             await telemetryApp.sendTelemetryEvent(shareEvent);
           }

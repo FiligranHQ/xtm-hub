@@ -107,26 +107,26 @@ export interface CreateOrganizationEvent extends BaseTelemetryEvent {
 }
 
 export interface CreateDeploymentEvent extends BaseTelemetryEvent {
-  activity_sector: DeploymentRequestActivitySector;
+  activity_sector: DeploymentRequestActivitySector | null;
   deployment_id: string;
   deployment_type: DeploymentRequestDeploymentType;
   email: string;
   event_type: TelemetryEventType.CREATE_DEPLOYMENT;
-  job_title: DeploymentRequestJobTitle;
+  job_title: DeploymentRequestJobTitle | null;
   region: DeploymentRequestPlatformRegion;
   status: DeploymentRequestHubStatus;
-  use_case: DeploymentRequestUseCase;
+  use_case: DeploymentRequestUseCase | null;
   target_product: TelemetryTargetProduct;
 }
 
 export interface UpdateDeploymentEvent extends BaseTelemetryEvent {
   deployment_id: string;
   deployment_type: DeploymentRequestDeploymentType;
-  start_date: Date;
-  end_date: Date;
-  platform_id: string;
+  start_date: Date | null;
+  end_date: Date | null;
+  platform_id: string | null;
   status?: DeploymentRequestHubStatus;
-  cancellation_reason?: string;
+  cancellation_reason: string | null | undefined;
 }
 
 export type TelemetryEvent =

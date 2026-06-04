@@ -13,7 +13,7 @@ import Subscription, {
 } from '../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../model/user';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, NotFoundErrorCode } from '../../utils/error/error.code';
 import {
   addCapabilitiesToSubscription,
   replaceCapabilitiesForSubscription,
@@ -97,7 +97,7 @@ export const subscriptionApp = {
       if (startDate !== undefined) data.start_date = startDate;
       if (endDate !== undefined) data.end_date = endDate;
 
-      let updatedSubscription: Subscription;
+      let updatedSubscription: Subscription | undefined;
       if (Object.keys(data).length > 0) {
         const [result] = await SubscriptionDomain.updateSubscriptionBy(
           { id },
@@ -108,6 +108,9 @@ export const subscriptionApp = {
         updatedSubscription = await SubscriptionDomain.loadSubscriptionBy({
           id,
         });
+      }
+      if (!updatedSubscription) {
+        throw new Error(NotFoundErrorCode.SubscriptionNotFound);
       }
 
       if (capabilityIds !== undefined) {

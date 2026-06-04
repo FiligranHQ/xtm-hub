@@ -451,7 +451,7 @@ export const loadLinks = (id) => {
 };
 
 export const loadServiceDefinitionByServiceInstance = async (
-  service_instance_id: string
+  service_instance_id: ServiceInstanceId
 ): Promise<ServiceDefinition | undefined> => {
   return db<ServiceDefinition>('ServiceInstance')
     .where('ServiceInstance.id', '=', service_instance_id)
