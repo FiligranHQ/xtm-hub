@@ -49,7 +49,7 @@ const resolvers: Resolvers = {
     },
     links: ({ id }, _) => loadLinks(id),
     service_definition: ({ id }, _) =>
-      loadServiceDefinitionByServiceInstance(id),
+      loadServiceDefinitionByServiceInstance(id as ServiceInstanceId),
     organization_subscribed: ({ id }, _, context) =>
       loadIsSubscribed(
         context.user.selected_organization_id,

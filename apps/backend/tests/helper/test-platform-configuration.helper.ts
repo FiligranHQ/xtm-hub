@@ -41,7 +41,7 @@ export const TestPlatformConfigurationHelper = {
         })
         .returning('*');
       expect(platformConfiguration).toBeDefined();
-      return platformConfiguration;
+      return platformConfiguration!;
     },
     delete: async (field: PlatformConfigurationMutator) => {
       await db<PlatformConfigurationModel>('PlatformConfiguration')

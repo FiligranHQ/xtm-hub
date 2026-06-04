@@ -43,19 +43,27 @@ export const ServiceInstanceApp = {
     const { user } = requestContext.require();
 
     const service = await loadServiceInstanceBy({ id: serviceInstanceId });
+    if (!service) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
     let subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
       organization_id: user.selected_organization_id,
     });
 
     if (!subscription) {
-      [subscription] = await subscriptionApp.subscribeOrganizationsToService({
-        organizationIds: [user.selected_organization_id],
-        serviceInstanceId: serviceInstanceId,
-        startDate: new Date(),
-        endDate: null,
-        capabilityIds: [],
-      });
+      const [createdSubscription] =
+        await subscriptionApp.subscribeOrganizationsToService({
+          organizationIds: [user.selected_organization_id],
+          serviceInstanceId: serviceInstanceId,
+          startDate: new Date(),
+          endDate: null,
+          capabilityIds: [],
+        });
+      if (!createdSubscription) {
+        throw NotFoundError(ErrorCode.SubscriptionNotFound);
+      }
+      subscription = createdSubscription;
     }
     const userService = await UserServiceDomain.loadUserServiceBy({
       subscription_id: subscription.id,
@@ -68,13 +76,17 @@ export const ServiceInstanceApp = {
         subscription.id
       );
     }
-    return service;
+    return service as unknown as ServiceInstance;
   },
 
   loadServiceInstance: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    return loadServiceInstanceBy({ id: serviceInstanceId });
+    const service = await loadServiceInstanceBy({ id: serviceInstanceId });
+    if (!service) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
+    return service as unknown as ServiceInstance;
   },
   addServicePicture: async (
     serviceInstanceId: ServiceInstanceId,
@@ -86,12 +98,20 @@ export const ServiceInstanceApp = {
         document,
         serviceInstanceId
       );
+      if (!uploadedDocument) {
+        throw new Error(ErrorCode.DocumentFileMissing);
+      }
       const update = isLogo
         ? { logo_document_id: uploadedDocument.id }
         : { illustration_document_id: uploadedDocument.id };
       return updateServiceInstance(serviceInstanceId, update);
     });
+
+    if (!updatedServiceInstance) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
     await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+
     return updatedServiceInstance as unknown as ServiceInstance;
   },
 
@@ -137,6 +157,9 @@ export const ServiceInstanceApp = {
         upload,
         serviceInstance.id
       );
+      if (!document) {
+        throw new Error(ErrorCode.DocumentFileMissing);
+      }
       updateData.illustration_document_id = document.id;
     }
 
@@ -145,6 +168,9 @@ export const ServiceInstanceApp = {
       let result = serviceInstance;
       if (Object.keys(updateData).length > 0) {
         result = await updateServiceInstance(serviceInstance.id, updateData);
+        if (!result) {
+          throw new Error(ErrorCode.ServiceInstanceNotFound);
+        }
       }
 
       // For registered platforms, also update the platform_title in platform configuration

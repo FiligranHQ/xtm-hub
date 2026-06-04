@@ -39,10 +39,11 @@ import {
 } from '@generated/documentItem_fragment.graphql';
 import { documentsList$key } from '@generated/documentsList.graphql';
 import {
+  DocumentOrdering,
+  OrderingMode,
   documentsQuery,
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
-import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
@@ -207,13 +208,13 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
       cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
       orderBy,
       orderMode,
-      ...transformSortingValueToParams(sorting),
+      ...transformSortingValueToParams<DocumentOrdering, OrderingMode>(sorting),
       ...args,
     });
   };
 
   const onSortingChange = (updater: unknown) => {
-    handleSortingChange<DocumentOrderingEnum>({
+    handleSortingChange<DocumentOrdering>({
       updater,
       orderMode,
       setOrderMode,

@@ -145,7 +145,7 @@ const refreshConnectivityStatus = async ({
     throw new Error(BadRequestErrorCode.TenantIdMandatory);
   }
 
-  let platformConfiguration =
+  let platformConfiguration: PlatformConfiguration | null | undefined =
     await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id,
       token,
@@ -229,15 +229,17 @@ export const RegistrationConnectivityApp = {
       )
     );
     const statuses = results.map((result, index) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const tenant = input.tenants[index]!;
       if (result.status === 'fulfilled') {
         return result.value;
       }
       logApp.error(
-        `Failed to refresh connectivity status for tenant ${input.tenants[index].tenantId}`,
+        `Failed to refresh connectivity status for tenant ${tenant.tenantId}`,
         { error: result.reason }
       );
       return {
-        tenantId: input.tenants[index].tenantId,
+        tenantId: tenant.tenantId,
         status: PlatformRegistrationConnectivityStatus.Inactive,
       };
     });

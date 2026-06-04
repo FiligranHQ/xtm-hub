@@ -15,6 +15,7 @@ import UserOrganization, {
 import UserOrganizationPending from '../../../../model/kanel/public/UserOrganizationPending';
 import { securityGuard } from '../../../../security/guard';
 import { sendMail } from '../../../../server/mail-service';
+import { UnknownErrorCode } from '../../../../utils/error/error.code';
 import { isEmpty } from '../../../../utils/utils';
 import {
   createUserOrganizationCapability,
@@ -93,6 +94,9 @@ export const UserOrganizationDomain = {
             user_id: userId,
             organization_id,
           });
+        if (!newUserOrganization) {
+          throw new Error(UnknownErrorCode.UnknownError);
+        }
         await createUserOrganizationCapability({
           user_organization_id: newUserOrganization.id,
           capabilities_name: orgCapa.capabilities,
@@ -124,6 +128,9 @@ export const UserOrganizationDomain = {
         user_id,
         organization_id,
       });
+    if (!userOrganization) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     await updateUserOrganizationCapability({
       user_organization_id: userOrganization.id,
       capabilities_name: orgCapabilities,
@@ -147,6 +154,9 @@ export const UserOrganizationDomain = {
         user_id: user.id,
         organization_id: organization.id,
       });
+    if (!userOrganization) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     const { user: contextUser } = requestContext.require();
     await securityGuard.assertUserCapabilities(
       [

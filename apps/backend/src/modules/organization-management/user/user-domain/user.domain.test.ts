@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserSecondOrga,
@@ -12,7 +13,7 @@ import {
   UserOrdering,
 } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
-import { UserId } from '../../../../model/kanel/public/User';
+import User, { UserId } from '../../../../model/kanel/public/User';
 import { ROLE_ADMIN } from '../../../../portal.const';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../../telemetry/telemetry.const';
@@ -22,6 +23,39 @@ import { UserDomain } from './user.domain';
 describe('users domain', () => {
   afterEach(async () => {
     vi.useRealTimers();
+  });
+
+  describe('insertUser', () => {
+    let insertedUser: User | undefined;
+
+    afterEach(async () => {
+      if (insertedUser) {
+        await UserDomain.deleteUserById(insertedUser.id);
+        insertedUser = undefined;
+      }
+    });
+
+    it('should insert a user and return it', async () => {
+      const userId = uuidv4() as UserId;
+      insertedUser = await UserDomain.insertUser({
+        id: userId,
+        email: 'insert-user-domain-test@filigran.io',
+        salt: 'test-salt',
+        password: 'test-password',
+        selected_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        first_name: 'Insert',
+        last_name: 'Test',
+        picture: null,
+      });
+
+      expect(insertedUser).toMatchObject({
+        id: userId,
+        email: 'insert-user-domain-test@filigran.io',
+        first_name: 'Insert',
+        last_name: 'Test',
+        selected_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+    });
   });
 
   it('should load user Admin', async () => {

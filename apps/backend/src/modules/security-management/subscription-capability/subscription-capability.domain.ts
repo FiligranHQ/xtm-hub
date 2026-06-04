@@ -45,7 +45,7 @@ export const replaceCapabilitiesForSubscription = async (
   subscriptionId: SubscriptionId,
   capabilityIds: ServiceCapabilityId[]
 ): Promise<SubscriptionCapability[]> => {
-  let subscriptionCapabilities = [];
+  let subscriptionCapabilities: SubscriptionCapability[] = [];
   await withTransaction(async () => {
     await db<SubscriptionCapability>('Subscription_Capability')
       .where({

@@ -86,7 +86,7 @@ export const DeploymentApp = {
 
     if (await CompetitorApp.isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
-        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
+        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains?.join(', ')}') is blacklisted`
       );
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
@@ -214,9 +214,7 @@ export const DeploymentApp = {
           to: instanceRequestedEmail,
           template: 'admin_saas_instance_requested',
           params: {
-            organizationName: user.organizations.find(
-              (o) => o.id === user.selected_organization_id
-            ).name,
+            organizationName: chosenOrganization.name,
             userName:
               user.first_name && user.last_name
                 ? `${user.first_name} ${user.last_name}`
@@ -476,7 +474,10 @@ export const DeploymentApp = {
       ![
         DeploymentRequestPlatformState.Unprovisioned,
         DeploymentRequestPlatformState.Provisioning,
-      ].includes(deploymentRequest.actual_state);
+      ].includes(
+        deploymentRequest.actual_state ??
+          DeploymentRequestPlatformState.Unprovisioned
+      );
 
     const target_state =
       deploymentRequest.actual_state ===
@@ -551,10 +552,17 @@ export const DeploymentApp = {
     }
 
     try {
-      await auth0Client.deleteAudienceAPI(
-        deploymentRequest.organization_requester_id,
-        deploymentRequest.platform_id
-      );
+      if (deploymentRequest.platform_id) {
+        await auth0Client.deleteAudienceAPI(
+          deploymentRequest.organization_requester_id,
+          deploymentRequest.platform_id
+        );
+      } else {
+        logApp.error('Unable to delete audience', {
+          error: 'missing platform_id',
+          deploymentRequestId: deploymentRequest.id,
+        });
+      }
     } catch (error) {
       logApp.error('Unable to delete audience', {
         error,
@@ -632,10 +640,17 @@ export const DeploymentApp = {
         }
 
         try {
-          await auth0Client.deleteAudienceAPI(
-            trial.organization_requester_id,
-            trial.platform_id
-          );
+          if (trial.platform_id) {
+            await auth0Client.deleteAudienceAPI(
+              trial.organization_requester_id,
+              trial.platform_id
+            );
+          } else {
+            logApp.error('Unable to delete audience', {
+              error: 'missing platform_id',
+              deploymentRequestId: trial.id,
+            });
+          }
         } catch (error) {
           logApp.error('Unable to delete audience', {
             error,
@@ -966,10 +981,10 @@ const sendUpdateDeploymentTelemetryEvent = async (
         deployment_id: deploymentRequest.id,
         deployment_type: deploymentRequest.type,
         platform_id: deploymentRequest.platform_id,
-        ...(deploymentRequest.hub_status ===
-          DeploymentRequestHubStatus.Cancelled && {
-          cancellation_reason: deploymentRequest.cancellation_reason,
-        }),
+        cancellation_reason:
+          deploymentRequest.hub_status === DeploymentRequestHubStatus.Cancelled
+            ? deploymentRequest.cancellation_reason
+            : undefined,
       }
     );
 
