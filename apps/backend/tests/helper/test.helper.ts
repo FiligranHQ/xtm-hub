@@ -22,10 +22,14 @@ import Subscription, {
 } from '../../src/model/kanel/public/Subscription';
 import UseCase, { UseCaseMutator } from '../../src/model/kanel/public/UseCase';
 import { TEST_ORGANIZATIONS } from '../tests.const';
+import {
+  mockPlatformConfig,
+  TestPlatformConfigurationHelper,
+} from './test-platform-configuration.helper';
 import { TestDeploymentHelper } from './test.deployment.helper';
 import { TestDocumentHelper } from './test.document.helper';
 import { TestNewsfeedHelper } from './test.newsfeed.helper';
-import { mockPlatformConfig, TestServiceHelper } from './test.service.helper';
+import { TestServiceHelper } from './test.service.helper';
 import { TestUserHelper } from './test.user.helper';
 
 export { mockPlatformConfig };
@@ -33,6 +37,7 @@ export { mockPlatformConfig };
 export const TestHelper = {
   ...TestDocumentHelper,
   ...TestServiceHelper,
+  ...TestPlatformConfigurationHelper,
   ...TestUserHelper,
   ...TestDeploymentHelper,
   ...TestNewsfeedHelper,

@@ -20,7 +20,7 @@ export default interface Document {
 
   minio_name: string | null;
 
-  active: boolean | null;
+  active: boolean;
 
   created_at: Date;
 
@@ -61,7 +61,7 @@ export interface DocumentInitializer {
   minio_name?: string | null;
 
   /** Default value: true */
-  active?: boolean | null;
+  active?: boolean;
 
   /** Default value: CURRENT_TIMESTAMP */
   created_at?: Date;
@@ -102,7 +102,7 @@ export interface DocumentMutator {
 
   minio_name?: string | null;
 
-  active?: boolean | null;
+  active?: boolean;
 
   created_at?: Date;
 

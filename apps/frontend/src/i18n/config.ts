@@ -6,4 +6,7 @@ export type PublicLocale = (typeof publicLocales)[number];
 
 export const defaultLocale: PublicLocale = 'en';
 
-export type UseTranslationsProps = (arg: string) => string;
+export type UseTranslationsProps = (
+  key: string,
+  values?: Record<string, string | number | Date>
+) => string;

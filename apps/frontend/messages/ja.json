@@ -154,6 +154,7 @@
     },
     "Server": {
       "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "ユーザー受付中にエラーが発生しました",
+      "ADD_CAPABILITIES_ERROR": "機能追加時のエラー",
       "ADD_ORGANIZATION_ERROR": "組織の追加時にエラーが発生した",
       "ADD_USER_SERVICE_ERROR": "ユーザーへのアクセス許可中にエラーが発生した",
       "ADDING_USER_ERROR": "ユーザーの作成中にエラーが発生した",
@@ -185,7 +186,6 @@
       "DOCUMENT_UPDATE_ERROR": "リソースの更新中にエラーが発生した。",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "あなたが組織内で最後のアクセス管理権限を持つユーザーであるため、この権限を削除することはできません。",
       "EDIT_CAPABILITIES_ERROR": "ケイパビリティの編集中にエラーが発生しました",
-      "ADD_CAPABILITIES_ERROR": "機能追加時のエラー",
       "EDIT_ME_USER_ERROR": "プロフィール編集中のエラー",
       "EDIT_ORGANIZATION_ERROR": "組織編集中のエラー",
       "EDIT_USER_ERROR": "ユーザー編集中のエラー",
@@ -202,10 +202,10 @@
       "INVALID_ACTION_SIZE": "不明なエラーが発生した",
       "INVALID_EMAIL": "電子メールは有効な形式でなければなりません。",
       "INVALID_IMAGE_URL": "画像のURLが不正",
+      "INVALID_PLATFORM_CONFIGURATION": "プラットフォーム設定が無効です",
       "INVALID_PLATFORM_ID": "不明なエラーが発生した",
       "INVALID_PLATFORM_IDENTIFIER": "プラットフォーム識別子が無効",
       "INVALID_PLATFORM_VERSION": "プラットフォームのバージョンが無効です",
-      "INVALID_SERVICE_CONFIGURATION": "サービス設定が無効です",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "プラットフォーム登録時に不明なエラーが発生した",
       "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "自動登録プラットフォームの引数が見つからない",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "権限がない",
@@ -219,6 +219,7 @@
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "同じドメインの組織が既に存在する",
       "ORGANIZATION_SAME_NAME_EXISTS": "同じ名前の組織がすでに存在する",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "こんなことは許されない",
+      "PLATFORM_CONFIGURATION_NOT_FOUND": "プラットフォーム設定が見つかりません",
       "PLATFORM_NOT_REGISTERED": "プラットフォームが登録されていない",
       "PLATFORM_TYPE_NOT_SUPPORTED": "プラットフォームがサポートされていない",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "ユーザープラットフォームトークンの更新中に不明なエラーが発生した",
@@ -226,8 +227,6 @@
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "他の組織での登録が禁止されている",
       "REMOVE_USER_FROM_ORGA_ERROR": "組織からユーザーを削除する際にエラーが発生した",
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "保留中の組織からユーザーを削除する際にエラーが発生した",
-      "SERVICE_CONFIGURATION_NOT_FOUND": "サービス設定が見つからない",
-      "SERVICE_CONTRACT_NOT_FOUND": "サービス契約が見つからない",
       "SERVICE_DEFINITION_NOT_FOUND": "サービス定義が見つかりませんでした",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "あなたはこれを行うことはできません",
       "SERVICE_INSTANCE_NOT_FOUND": "サービスインスタンスが見つかりません",
@@ -243,6 +242,7 @@
       "UPLOAD_USER_PICTURE_ERROR": "プロフィール写真のアップロード中にエラーが発生した",
       "USER_DISABLED": "ユーザーが無効です",
       "USER_IS_NOT_IN_ORGANIZATION": "権限がありません",
+      "USER_NOT_FOUND": "ユーザーが見つかりません",
       "YOU_CAN_NOT_LOGIN": "ログインできません"
     },
     "SomethingWentWrong": "何かが間違っている",
@@ -260,6 +260,9 @@
     }
   },
   "GoToProd": "プロダクションへ",
+  "Header": {
+    "BrandName": "Filigran"
+  },
   "HomePage": {
     "Homepage": "ホームページ",
     "Manage": "管理する",
@@ -267,6 +270,9 @@
   },
   "PublicHomePage": {
     "Title": "リソースと専門知識の発見"
+  },
+  "PublicPathError": {
+    "NotFound": "404 | このページは見つかりませんでした"
   },
   "PublicLayout": {
     "SignIn": "サインイン",
@@ -431,7 +437,7 @@
   },
   "OrganizationInServiceAction": {
     "AddOrganization": "組織を",
-    "ConfirmDelete1": "本当にこの組織 {name} を削除しますか？",
+    "ConfirmDelete1": "この組織を削除してもよろしいですか？",
     "ConfirmDelete2": "をこのサービスから削除してもよろしいですか？この操作は取り消せません。",
     "DeleteOrgFromService": "サービスから組織を削除する",
     "EndDate": "終了日（オプション）",
@@ -776,6 +782,8 @@
     "Connectors": {
       "DataImport": "データインポート",
       "Description": "フィリグランチームが共有するOpenCTIコネクタの数々をご覧ください。",
+      "ImproveIntegrationPrefix": "この統合を改善したい場合は、こちらをご確認ください",
+      "GithubRepositoryLink": "github リポジトリへのリンク",
       "IntegrationDocumentationAndCode": "統合ドキュメントとコード",
       "LastVerifiedDate": "最終確認日",
       "Name": "OpenCTIコネクタ",
@@ -788,6 +796,7 @@
     "CreationStatus": "作成ステータス",
     "Form": {
       "Author": "作成者",
+      "CapabilityAccessLabel": "{name} アクセス: {description}",
       "ContainerImageLabel": "コンテナイメージ",
       "CurrentLogo": "現在のロゴ",
       "DatasheetUrlLabel": "データシート・リンク（URL）",
@@ -806,6 +815,7 @@
       "ImageLabel": "画像",
       "LogoLabel": "ロゴ",
       "ManagerSupportedLabel": "マネージャー",
+      "ManageAccessCapabilityLabel": "アクセス管理: ユーザーは所属組織の他ユーザーをこのサービスに招待できます",
       "MinimumDeployableVersionLabel": "{platform} ハブのバージョンからデプロイ可能",
       "MinimumDeployableVersionPlaceholder": "1.0.0",
       "NameLabel": "名前",
@@ -1152,7 +1162,9 @@
       "DaysRemaining": "{days, plural, =1 {# 日残り} other {# 日残り}}",
       "Header": {
         "ActiveTrial": "アクティブトライアル",
-        "DaysRemaining": "残りの日"
+        "ActiveTrialCount": "{count} 件のアクティブトライアル{count, plural, one {} other {s}}",
+        "DaysRemaining": "残りの日",
+        "OpenInNewTab": "{title} を新しいタブで開く"
       },
       "LearnMore": {
         "Link": "もっと詳しく",
@@ -1344,6 +1356,9 @@
   },
   "ServiceName": {
     "custom_dashboards": "カスタムダッシュボード"
+  },
+  "SelectUsers": {
+    "ClearAllSelections": "すべての選択をクリア"
   },
   "Sort Asc": "ソート",
   "Sort Desc": "降順ソート",

@@ -7,42 +7,50 @@ import UserOrganizationCapability, {
 
 export const createUserOrganizationCapability = async ({
   user_organization_id,
-  capabilities_name = [],
+  capabilities_name,
 }: {
   user_organization_id: UserOrganizationId;
-  capabilities_name: string[];
+  capabilities_name: string[] | null | undefined;
 }): Promise<UserOrganizationCapability[]> => {
-  if (capabilities_name.length === 0) {
+  const names = capabilities_name ?? [];
+  if (names.length === 0) {
     return [];
   }
-  const usersOrgCapa: UserOrganizationCapabilityInitializer[] =
-    capabilities_name.map((name) => ({
+  const usersOrgCapa: UserOrganizationCapabilityInitializer[] = names.map(
+    (name) => ({
       user_organization_id,
       name,
-    }));
-  return db('UserOrganization_Capability').insert(usersOrgCapa).returning('*');
+    })
+  );
+  return db<UserOrganizationCapability>('UserOrganization_Capability')
+    .insert(usersOrgCapa)
+    .returning('*');
 };
 
 export const updateUserOrganizationCapability = async ({
   user_organization_id,
-  capabilities_name = [],
+  capabilities_name,
 }: {
   user_organization_id: UserOrganizationId;
-  capabilities_name: string[];
+  capabilities_name: string[] | null | undefined;
 }): Promise<UserOrganizationCapability[]> => {
-  await db('UserOrganization_Capability')
+  await db<UserOrganizationCapability>('UserOrganization_Capability')
     .where({ user_organization_id })
     .delete();
 
-  if (capabilities_name.length === 0) {
+  const names = capabilities_name ?? [];
+  if (names.length === 0) {
     return [];
   }
-  const usersOrgCapa: UserOrganizationCapabilityInitializer[] =
-    capabilities_name.map((name) => ({
+  const usersOrgCapa: UserOrganizationCapabilityInitializer[] = names.map(
+    (name) => ({
       user_organization_id,
       name,
-    }));
-  return db('UserOrganization_Capability').insert(usersOrgCapa).returning('*');
+    })
+  );
+  return db<UserOrganizationCapability>('UserOrganization_Capability')
+    .insert(usersOrgCapa)
+    .returning('*');
 };
 
 export const loadUserOrganizationCapabilities = async (

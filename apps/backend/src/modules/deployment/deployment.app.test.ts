@@ -33,6 +33,8 @@ import {
   DeploymentRequestPlatformState,
   DeploymentRequestSource,
   DeploymentRequestUseCase,
+  PlatformConfigurationStatus,
+  PlatformContract,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceInstanceCreationStatus,
@@ -55,7 +57,7 @@ import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
-import { loadSubscriptionBy } from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { deleteSubscription } from '../subscription/subscription.helper';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
@@ -75,7 +77,7 @@ import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import { PortalContext } from '../../model/portal-context';
-import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
@@ -531,13 +533,13 @@ describe('deployment app', () => {
       });
     });
 
-    it('should return platform_url when Service_Configuration exists', async () => {
+    it('should return platform_url when PlatformConfiguration exists', async () => {
       const deploymentRequest = await insertDeploymentRequest({});
 
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: deploymentRequest!.service_instance_id,
-        config: { platform_url: 'https://test-platform.opencti.io' },
-        status: 'active',
+        platform_url: 'https://test-platform.opencti.io',
+        status: PlatformConfigurationStatus.Active,
       });
 
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
@@ -552,7 +554,7 @@ describe('deployment app', () => {
         'https://test-platform.opencti.io'
       );
 
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: deploymentRequest!.service_instance_id,
       });
     });
@@ -735,7 +737,7 @@ describe('deployment app', () => {
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
         id: dbDeploymentRequest!.service_instance_id,
       });
-      const subscription = await loadSubscriptionBy({
+      const subscription = await SubscriptionDomain.loadSubscriptionBy({
         service_instance_id: dbDeploymentRequest.service_instance_id,
       });
       expect(dbDeploymentRequest).toMatchObject({
@@ -1019,18 +1021,28 @@ describe('deployment app', () => {
 
       it('should send a mail in case deployment request is in active (only first time)', async () => {
         vi.spyOn(
-          ServiceConfigurationDomain,
+          PlatformConfigurationDomain,
           'loadConfigurationByPlatform'
         ).mockResolvedValue({
           service_instance_id: uuidv4() as ServiceInstanceId,
-          config: { platform_url: 'http://example.com' },
-          status: DeploymentRequestPlatformState.Active,
+          registerer_id: uuidv4(),
+          platform_id: uuidv4(),
+          tenant_id: null,
+          tenant_name: null,
+          platform_url: 'http://example.com',
+          platform_title: 'OpenCTI',
+          platform_version: '1.0.0',
+          platform_contract: PlatformContract.Trial,
+          token: 'token',
+          status: PlatformConfigurationStatus.Active,
+          last_connectivity_check: new Date(),
         });
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           start_date: new Date(2025, 12, 1),
           end_date: new Date(2026, 1, 1),
           actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: uuidv4(),
         });
 
         expect(mockSendMail).toHaveBeenCalledWith({

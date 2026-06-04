@@ -28,7 +28,7 @@ export const UserAuthApp = {
     }
 
     const loggedUser = await UserDomain.loadUserBy({ email });
-    if (loggedUser && validPassword(loggedUser, password)) {
+    if (loggedUser && password && validPassword(loggedUser, password)) {
       req.session.user = await UserDomain.updateUserAtLogin(loggedUser);
 
       res.cookie('NEXT_LOCALE', loggedUser.selected_language);

@@ -143,7 +143,7 @@ type Mutation {
   createDocument(
     input: CreateDocumentInput!
     metadata: [DocumentMetadata!]!
-    serviceInstanceId: ServiceInstanceId
+    serviceInstanceId: ServiceInstanceId!
     sourceDocument: Upload
     logo: Upload
     images: [Upload!]
@@ -152,18 +152,18 @@ type Mutation {
     documentId: DocumentId!
     input: UpdateDocumentInput!
     metadata: [DocumentMetadata!]!
-    serviceInstanceId: ServiceInstanceId
+    serviceInstanceId: ServiceInstanceId!
     sourceDocument: Upload
     logo: Upload
     images: [Upload!]
     existingImageIds: [DocumentId!]
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
-    documentId: DocumentId
-    service_instance_id: ServiceInstanceId
+    documentId: DocumentId!
+    service_instance_id: ServiceInstanceId!
     forceDelete: Boolean
   ): Document! @auth @service_capa(requires: [DELETE])
-  incrementShareNumberDocument(documentId: DocumentId): Document!
+  incrementShareNumberDocument(documentId: DocumentId!): Document!
 }
 
 type Query {
@@ -197,7 +197,7 @@ type Query {
     parentsOnly: Boolean
   ): DocumentConnection! @auth
   document(
-    documentId: DocumentId
-    serviceInstanceId: ServiceInstanceId
+    documentId: DocumentId!
+    serviceInstanceId: ServiceInstanceId!
   ): Document @auth
 }

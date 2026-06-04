@@ -26,7 +26,7 @@ import { isUserAdminPlatform } from '../../security/access';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { buildServiceLink, sendMail } from '../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../server/mail-template/mail';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { formatRawObject } from '../../utils/query-raw.util';
 import { addPrefixToObject } from '../../utils/typescript';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
@@ -144,6 +144,10 @@ export const UserServiceDomain = {
         .insert(user_service)
         .returning('*');
 
+      if (!addedUserService) {
+        throw new Error(UnknownErrorCode.AddUserServiceError);
+      }
+
       await insertCapabilities(capabilities, [addedUserService]);
       const user_service_capa: UserServiceCapabilityInitializer = {
         id: uuidv4() as UserServiceCapabilityId,
@@ -157,6 +161,9 @@ export const UserServiceDomain = {
     });
 
     const user = await UserDomain.loadUserBy({ 'User.id': user_id });
+    if (!user) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
     const serviceInstance = await loadServiceInstanceBy({
       id: subscription.service_instance_id,
     });
@@ -391,7 +398,7 @@ export const UserServiceDomain = {
     subscriptionId: SubscriptionId,
     capability: ServiceRestriction
   ) => {
-    return db('User_Service')
+    return db<UserService>('User_Service')
       .leftJoin(
         'UserService_Capability',
         'User_Service.id',

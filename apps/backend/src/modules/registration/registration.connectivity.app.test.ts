@@ -5,16 +5,16 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
 import {
+  PlatformConfigurationStatus,
   PlatformContract,
   PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
-  ServiceConfigurationStatus,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { BadRequestErrorCode, ErrorCode } from '../../utils/error/error.code';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { registrationApp } from './registration.app';
 import { registrationConnectivityApp } from './registration.connectivity.app';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
 
 describe('registration connectivity app', () => {
   beforeEach(() => {
@@ -217,11 +217,11 @@ describe('registration connectivity app', () => {
       );
 
       const config =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           { tenantId }
         );
-      expect((config?.config as Record<string, unknown>)['url']).toBe(newUrl);
+      expect(config?.platform_url).toBe(newUrl);
     });
 
     it('should update the tenant_name in the configuration when tenant_name changes', async () => {
@@ -255,13 +255,11 @@ describe('registration connectivity app', () => {
       );
 
       const config =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           { tenantId }
         );
-      expect((config?.config as Record<string, unknown>)['tenant_name']).toBe(
-        updatedTenantName
-      );
+      expect(config?.tenant_name).toBe(updatedTenantName);
     });
 
     it('should return not found when platform is registered with tenant_id but wrong tenant_id is provided', async () => {
@@ -330,11 +328,11 @@ describe('registration connectivity app', () => {
 
       expect(result.status).toBe(PlatformRegistrationConnectivityStatus.Active);
       const updatedConfig =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           { tenantId }
         );
-      expect(updatedConfig?.config).toMatchObject({
+      expect(updatedConfig).toMatchObject({
         tenant_id: tenantId,
         tenant_name: tenantName,
       });
@@ -608,11 +606,11 @@ describe('registration connectivity app', () => {
       });
 
       const staleConfig =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId,
           { tenantId: tenantId2 }
         );
-      expect(staleConfig?.status).toBe(ServiceConfigurationStatus.Inactive);
+      expect(staleConfig?.status).toBe(PlatformConfigurationStatus.Inactive);
     });
   });
 });

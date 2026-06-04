@@ -91,8 +91,12 @@ describe('EditUseCase', () => {
       />
     );
 
-    await user.click(screen.getByRole('button', { name: /^MenuActions.Delete$/i }));
-    await user.click(screen.getByRole('button', { name: /^MenuActions.Delete$/i }));
+    await user.click(
+      screen.getByRole('button', { name: /^MenuActions.Delete$/i })
+    );
+    await user.click(
+      screen.getByRole('button', { name: /^MenuActions.Delete$/i })
+    );
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalledTimes(1);

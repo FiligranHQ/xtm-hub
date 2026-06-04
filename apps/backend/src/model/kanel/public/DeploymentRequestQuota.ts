@@ -5,40 +5,39 @@ import type { DeploymentRequestPlatformRegion, PlatformIdentifier } from '../../
 
 /** Represents the table public.DeploymentRequestQuota */
 export default interface DeploymentRequestQuota {
-  id: string | null;
+  id: string;
 
-  region: DeploymentRequestPlatformRegion | null;
+  region: DeploymentRequestPlatformRegion;
 
-  platform_identifier: PlatformIdentifier | null;
+  platform_identifier: PlatformIdentifier;
 
-  capacity: number | null;
+  capacity: number;
 
-  availability: number | null;
+  availability: number;
 }
 
 /** Represents the initializer for the table public.DeploymentRequestQuota */
 export interface DeploymentRequestQuotaInitializer {
-  /** Default value: gen_random_uuid() */
-  id?: string | null;
+  id: string;
 
-  region?: DeploymentRequestPlatformRegion | null;
+  region: DeploymentRequestPlatformRegion;
 
-  platform_identifier?: PlatformIdentifier | null;
+  platform_identifier: PlatformIdentifier;
 
-  capacity?: number | null;
+  capacity: number;
 
-  availability?: number | null;
+  availability: number;
 }
 
 /** Represents the mutator for the table public.DeploymentRequestQuota */
 export interface DeploymentRequestQuotaMutator {
-  id?: string | null;
+  id?: string;
 
-  region?: DeploymentRequestPlatformRegion | null;
+  region?: DeploymentRequestPlatformRegion;
 
-  platform_identifier?: PlatformIdentifier | null;
+  platform_identifier?: PlatformIdentifier;
 
-  capacity?: number | null;
+  capacity?: number;
 
-  availability?: number | null;
+  availability?: number;
 }

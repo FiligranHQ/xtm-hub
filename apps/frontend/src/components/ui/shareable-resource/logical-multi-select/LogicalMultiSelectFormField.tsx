@@ -1,4 +1,12 @@
 import {
+  FlatOption,
+  OptionsList,
+} from '@/components/ui/shareable-resource/logical-multi-select/OptionsList';
+import {
+  GroupedSelection,
+  SelectedValuesDisplay,
+} from '@/components/ui/shareable-resource/logical-multi-select/SelectedValuesDisplay';
+import {
   Command,
   CommandInput,
   CommandList,
@@ -9,11 +17,6 @@ import {
 import { Button } from '@filigran/ui/servers';
 import * as React from 'react';
 import { useMemo } from 'react';
-import { FlatOption, OptionsList } from '@/components/ui/shareable-resource/logical-multi-select/OptionsList';
-import {
-  GroupedSelection,
-  SelectedValuesDisplay,
-} from '@/components/ui/shareable-resource/logical-multi-select/SelectedValuesDisplay';
 
 type Selection = Record<string, string[]>;
 

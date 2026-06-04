@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
+import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import ServiceCapability from '../../../model/kanel/public/ServiceCapability';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import ServiceInstance from '../../../model/kanel/public/ServiceInstance';
@@ -30,9 +31,11 @@ describe('subscription capability domain', () => {
       service_definition_id: serviceDefinition.id,
     });
     subscription = await TestHelper.subscription.create({
+      organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       service_instance_id: serviceInstance.id,
     });
     subscription2 = await TestHelper.subscription.create({
+      organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       service_instance_id: serviceInstance.id,
     });
     capability1 = await TestHelper.serviceCapability.create({

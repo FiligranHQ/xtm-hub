@@ -37,10 +37,10 @@ describe('mutation.refreshUserPlatformToken', () => {
     expect(result).toMatchObject({ token: newToken });
   });
 
-  it('should map to NotFound for ServiceContractNotFound error', async () => {
+  it('should map to NotFound when app throws a not found error', async () => {
     // Given
     vi.spyOn(registrationApp, 'refreshUserPlatformToken').mockRejectedValue(
-      new Error(NotFoundErrorCode.ServiceContractNotFound)
+      new Error(NotFoundErrorCode.ServiceDefinitionNotFound)
     );
 
     // When

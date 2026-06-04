@@ -73,8 +73,7 @@ type BaseDatabaseType =
   | 'User_TransferRequest'
   | 'Document_Children'
   | 'Document_Metadata'
-  | 'Service_Contract'
-  | 'Service_Configuration'
+  | 'PlatformConfiguration'
   | 'DeploymentRequest'
   | 'DeploymentRequestQuota'
   | 'ServiceGroup'
@@ -93,13 +92,13 @@ export type ActionType = 'add' | 'edit' | 'delete' | 'merge' | 'invalidate';
 export type MethodType = 'select' | 'insert' | 'update' | 'del';
 
 interface Pagination {
-  first?: number;
-  after?: string;
-  orderMode?: string;
-  orderBy?: string;
-  filters?: Filters;
-  logicalFilters?: LogicalFilterInput;
-  searchTerm?: string;
+  first?: number | null;
+  after?: string | null;
+  orderMode?: string | null;
+  orderBy?: string | null;
+  filters?: Filters | null;
+  logicalFilters?: LogicalFilterInput | null;
+  searchTerm?: string | null;
 }
 
 const knex = pkg;
@@ -140,23 +139,21 @@ export const database = knex(config);
 
 export interface QueryOpts {
   unsecured?: boolean;
-  first?: number;
-  after?: string;
-  orderMode?: string;
-  orderBy?: string;
+  first?: number | null;
+  after?: string | null;
+  orderMode?: string | null;
+  orderBy?: string | null;
   methodType?: MethodType;
   capabilities?: string[];
-  searchTerm?: string;
-  filters?: Filters;
+  searchTerm?: string | null;
+  filters?: Filters | null;
   columns?: string[];
   normalizeSearchTerm?: boolean;
 }
 
 export const dbRaw: Knex.RawBuilder = database.raw.bind(database);
 
-export const dbTx = () => database.transaction();
-
-export function db<T>(
+export function db<T extends object>(
   type: DatabaseType
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Knex.QueryBuilder<T, any> {
@@ -165,7 +162,8 @@ export function db<T>(
   });
 
   if (databaseContext.isInTransaction()) {
-    queryContext.transacting(databaseContext.getTransaction());
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    queryContext.transacting(databaseContext.getTransaction()!);
   }
 
   return queryContext;
@@ -174,7 +172,7 @@ export function db<T>(
 export const dbConnections = <T>(
   nodes: T[],
   offset: string | undefined,
-  limit: number,
+  limit: number | undefined,
   totalCount
 ) => {
   const currentOffset = offset ? Number(atob(offset)) : 0;
@@ -186,9 +184,9 @@ export const dbConnections = <T>(
     };
   });
   const pageInfo: PageInfo = {
-    startCursor: edges[0]?.cursor,
-    endCursor: edges.slice(-1)[0]?.cursor,
-    hasNextPage: nodes.length >= limit,
+    startCursor: edges[0]?.cursor ?? null,
+    endCursor: edges.slice(-1)[0]?.cursor ?? null,
+    hasNextPage: limit !== undefined ? nodes.length >= limit : false,
     hasPreviousPage: !offset && nodes.length > 0,
   };
   return { edges, pageInfo, totalCount };
@@ -409,15 +407,15 @@ export const applyFilters = async (
   return queryContext;
 };
 
-export const applySearch = async <T>(
+export const applySearch = async <T extends object>(
   type: DatabaseType,
   queryContext = db<T>(type),
-  searchTerm: string,
+  searchTerm: string | null | undefined,
   normalizeSearchTerm: boolean = false
 ) => {
   const columns = Object.keys(await database(type).columnInfo());
 
-  const search = [];
+  const search: string[] = [];
   if (searchTerm) {
     searchAttributes.forEach((s) => {
       if (columns.includes(s)) {
@@ -428,7 +426,7 @@ export const applySearch = async <T>(
 
   if (search.length > 0) {
     const normalizedSearchTerm = normalizeSearchTerm
-      ? DocumentHelper.normalizeDocumentName(searchTerm)
+      ? DocumentHelper.normalizeDocumentName(searchTerm ?? undefined)
       : searchTerm;
     const [first, ...others] = search;
     const metaAlias = 'metaSearch';
@@ -495,7 +493,8 @@ const applyLogicalFilterWhere = (
   }
   if (logicalFilter.operator && logicalFilter.children?.length) {
     qb.where((groupQb) => {
-      logicalFilter.children.forEach((child, index) => {
+      const children = logicalFilter.children ?? [];
+      children.forEach((child, index) => {
         if (index === 0) {
           groupQb.where((subQb) => {
             applyLogicalFilterWhere(type, subQb, child);
@@ -527,7 +526,7 @@ const applyLogicalFilter = (
   applyLogicalFilterWhere(type, qb, logicalFilter);
 };
 
-export const paginate = async <T, U>(
+export const paginate = async <T extends object, U>(
   type: DatabaseType,
   pagination: Pagination,
   opts: Partial<QueryOpts> = {},
@@ -549,11 +548,18 @@ export const paginate = async <T, U>(
     connection: true,
   });
 
-  applyLogicalFilter(type, queryContext, logicalFilters);
+  applyLogicalFilter(type, queryContext, logicalFilters ?? undefined);
 
-  await applyFilters(type, queryContext, filters);
+  if (filters) {
+    await applyFilters(type, queryContext, filters);
+  }
 
-  await applySearch(type, queryContext, searchTerm, opts.normalizeSearchTerm);
+  await applySearch(
+    type,
+    queryContext,
+    searchTerm ?? undefined,
+    opts.normalizeSearchTerm
+  );
 
   const totalCountQuery = queryContext
     .clone()
@@ -563,17 +569,27 @@ export const paginate = async <T, U>(
     .countDistinct(`${type}.id as totalCount`)
     .first();
 
-  queryContext
-    .orderBy([{ column: orderBy, order: orderMode, nulls: 'last' }])
-    .offset(currentOffset)
-    .limit(first)
-    .select(`${type}.*`);
+  if (orderBy) {
+    queryContext.orderBy([
+      { column: orderBy, order: orderMode ?? undefined, nulls: 'last' },
+    ]);
+  }
+  queryContext.offset(currentOffset).select(`${type}.*`);
+
+  if (first != null) {
+    queryContext.limit(first);
+  }
 
   const [query, { totalCount }] = await Promise.all([
     queryContext,
     totalCountQuery,
   ]);
-  return dbConnections(query, after, first, totalCount ?? 0) as U;
+  return dbConnections(
+    query,
+    after ?? undefined,
+    first ?? undefined,
+    totalCount ?? 0
+  ) as U;
 };
 
 export const dbMigration = {

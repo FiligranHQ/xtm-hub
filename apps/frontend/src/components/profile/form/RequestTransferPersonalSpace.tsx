@@ -1,6 +1,7 @@
 'use client';
 
 import { MeRequestTransferPersonalSpaceMutation } from '@/components/me/me.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import {
   AutoForm,
   Card,
@@ -16,7 +17,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 
 const formSchema = z.object({
   new_email: z.string().email('This is not a valid email.'),

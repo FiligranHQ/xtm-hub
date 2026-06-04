@@ -1,5 +1,7 @@
 'use client';
 import { ReachSalesMutation } from '@/components/service/trial-instances/reach-sales.graphql';
+import { ReachSalesDialogForm } from '@/components/service/trial-instances/reach-sales/ReachSalesDialogForm';
+import { DialogInformative } from '@/components/ui/Dialog';
 import { ArrowRightAltIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { Button, GradientButton } from '@filigran/ui/servers';
@@ -7,8 +9,6 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
-import { DialogInformative } from '@/components/ui/Dialog';
-import { ReachSalesDialogForm } from '@/components/service/trial-instances/reach-sales/ReachSalesDialogForm';
 
 interface ReachSalesButtonProps {
   variant: 'default' | 'gradient' | 'outline-primary';

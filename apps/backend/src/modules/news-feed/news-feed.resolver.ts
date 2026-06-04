@@ -6,11 +6,11 @@ import {
 import { NewsFeedItemId } from '../../model/kanel/public/NewsFeedItem';
 import { PortalContext } from '../../model/portal-context';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { createRelayIdScalar } from '../../utils/scalar.util';
 import {
   extractPlatformId,
   extractPlatformToken,
 } from '../security-management/token/platform-token.util';
-import { createRelayIdScalar } from '../../utils/scalar.util';
 import { NewsFeedApp } from './news-feed.app';
 import { NewsFeedDomain } from './news-feed.domain';
 

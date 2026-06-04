@@ -2,6 +2,7 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { z } from 'zod';
 import { DatabaseType } from '../../knexfile';
 import { logApp } from './app-logger.util';
+import { getErrorMessage } from './error/error-guard.util';
 import { addPrefixToObject } from './typescript';
 
 export const extractId = <T extends string>(id: string) => {
@@ -59,7 +60,7 @@ export const isImgUrl = async (url: string): Promise<boolean> => {
     const contentType = response.headers.get('Content-Type');
     return contentType.startsWith('img') || contentType.startsWith('image');
   } catch (err) {
-    logApp.debug(err.message);
+    logApp.debug(getErrorMessage(err));
     return false;
   }
 };

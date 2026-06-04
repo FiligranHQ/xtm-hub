@@ -37,6 +37,8 @@ import {
 } from '../portal.const';
 import { logApp } from '../utils/app-logger.util';
 import { DevUser } from '../utils/config-validation.util';
+import { getErrorMessage } from '../utils/error/error-guard.util';
+import { UnknownErrorCode } from '../utils/error/error.code';
 import { hashPassword } from '../utils/hash-password.util';
 
 // Role mapping for dev user initialization
@@ -297,10 +299,14 @@ export const ensureDevOrganizationExists = async (orgConfig: {
   if (existingOrg) {
     // Update domains if provided
     if (orgConfig.domains && orgConfig.domains.length > 0) {
-      return await OrganizationDomain.updateOrganizationBy(
+      const updatedOrg = await OrganizationDomain.updateOrganizationBy(
         { id: existingOrg.id },
         { domains: orgConfig.domains }
       );
+      if (!updatedOrg) {
+        throw new Error(UnknownErrorCode.EditOrganizationError);
+      }
+      return updatedOrg;
     }
     return existingOrg;
   }
@@ -403,7 +409,7 @@ export const ensureDevUserExists = async (
     });
   } catch (error) {
     logApp.error(
-      `Failed to initialize dev user ${userConfig.email}: ${error.message}`
+      `Failed to initialize dev user ${userConfig.email}: ${getErrorMessage(error)}`
     );
     throw error;
   }
@@ -426,7 +432,7 @@ export const initializeDevUsers = async (): Promise<void> => {
       await ensureDevUserExists(userConfig);
     } catch (error) {
       logApp.warn(
-        `Failed to initialize dev user ${userConfig.email}: ${error.message}`
+        `Failed to initialize dev user ${userConfig.email}: ${getErrorMessage(error)}`
       );
       // Continue with other users
     }
@@ -452,6 +458,12 @@ export const seedDevelopmentConnectors = async () => {
 
   logApp.info('[SEEDING] Ingesting OpenCTI connectors manifest...');
   const user = await UserDomain.loadUserBy({ 'User.id': ADMIN_UUID });
+  if (!user) {
+    logApp.error(
+      '[SEEDING] Admin user not found, skipping OpenCTI connectors seeding'
+    );
+    return;
+  }
   requestContext.run({ user }, async () => {
     await IngestManifestApp.updateOpenCTIManifest('6.8.3');
   });

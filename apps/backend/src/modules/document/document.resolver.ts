@@ -6,10 +6,12 @@ import {
 } from '../../__generated__/resolvers-types';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { logApp } from '../../utils/app-logger.util';
+import { toError } from '../../utils/error/error-guard.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
+import { nullsToUndefined } from '../../utils/typescript';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import {
   getServiceInstance,
@@ -19,7 +21,7 @@ import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/sc
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
 import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../shareable-resource/opencti/playbook/playbook.model';
-import { loadSubscriptionBy } from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildShareEvent,
@@ -39,13 +41,14 @@ const resolvers: Resolvers = {
     createDocument: async (_, input) => {
       try {
         return await DocumentApp.createDocument({
-          ...input,
+          ...nullsToUndefined(input),
           serviceInstanceId: input.serviceInstanceId,
         });
       } catch (error) {
-        if (error.message?.includes('document_type_slug_unique')) {
+        const normalizedError = toError(error);
+        if (normalizedError.message.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
-            detail: error,
+            detail: normalizedError,
           });
         }
         throw mapToGraphQLError(error, UnknownErrorCode.DocumentCreateError);
@@ -54,15 +57,16 @@ const resolvers: Resolvers = {
     updateDocument: async (_, input) => {
       try {
         return await DocumentApp.updateDocument({
-          ...input,
+          ...nullsToUndefined(input),
           parentDocumentId: input.documentId,
           serviceInstanceId: input.serviceInstanceId,
           existingImageIds: input.existingImageIds ?? [],
         });
       } catch (error) {
-        if (error.message?.includes('document_type_slug_unique')) {
+        const normalizedError = toError(error);
+        if (normalizedError.message.includes('document_type_slug_unique')) {
           throw AlreadyExistsError(ErrorCode.DocumentUniqueSlugError, {
-            detail: error,
+            detail: normalizedError,
           });
         }
         throw mapToGraphQLError(error, UnknownErrorCode.DocumentUpdateError);
@@ -169,7 +173,7 @@ const resolvers: Resolvers = {
       return getServiceInstance(service_instance_id);
     },
     subscription: async ({ service_instance_id }, _, context) => {
-      const subscription = await loadSubscriptionBy({
+      const subscription = await SubscriptionDomain.loadSubscriptionBy({
         service_instance_id,
         organization_id: context.user.selected_organization_id,
       });

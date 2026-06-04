@@ -11,6 +11,7 @@ import {
   UseCaseRowFragment,
   useUseCasesListQuery,
 } from '@graphql/generated';
+import { useCaseListKeys } from '@graphql/use-case/use-case-list.keys';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -20,13 +21,17 @@ const UseCases = () => {
   const [useCaseEdit, setUseCaseEdit] = useState<
     UseCaseRowFragment | undefined
   >(undefined);
+  const useCasesListVariables = {
+    count: 100,
+    orderMode: OrderingMode.Asc,
+    orderBy: UseCaseOrdering.Name,
+  };
 
   const { data: queryData, isError } = useUseCasesListQuery(
     portalGraphqlClient,
+    useCasesListVariables,
     {
-      count: 100,
-      orderMode: OrderingMode.Asc,
-      orderBy: UseCaseOrdering.Name,
+      queryKey: useCaseListKeys.all(),
     }
   );
 

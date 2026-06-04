@@ -10,6 +10,7 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { MarkdownAsync } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -27,6 +28,7 @@ const ShareableResourceConnectorSlugPublic = ({
   pageUrl,
   serviceInstance,
 }: ShareableResourceConnectorSlugPublicProps) => {
+  const t = useTranslations();
   const logo = findDocumentLogo(documentData);
   const carouselImages = filterDocumentImages(documentData);
 
@@ -51,13 +53,13 @@ const ShareableResourceConnectorSlugPublic = ({
             {documentData.manager_supported && (
               <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100  text-green-500 dark:bg-turquoise-900 rounded-lg">
                 <MotionPlayIcon className="h-5 w-5 shrink-0 mr-xs" />
-                Deployable
+                {t('Utils.AutomaticDeploy')}
               </div>
             )}
             {documentData.verified && (
               <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100  text-green-500 dark:bg-turquoise-900 rounded-lg">
                 <VerifiedIcon className="h-5 w-5 shrink-0 mr-xs" />
-                Verified
+                {t('Utils.Verified')}
               </div>
             )}
             <div className="ml-auto">
@@ -85,7 +87,7 @@ const ShareableResourceConnectorSlugPublic = ({
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <div className="flex-[3_3_0%] min-w-0">
           <h3 className="py-s txt-container-title truncate text-muted-foreground">
-            Overview
+            {t('PublicResourcePage.Overview')}
           </h3>
           <section className="border rounded border-border-light bg-page-background overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>

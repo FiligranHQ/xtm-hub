@@ -1,6 +1,6 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { useContext, useEffect } from 'react';
 import { VariablesOf } from 'relay-runtime';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 const useMountingLoader = (
   /* eslint-disable @typescript-eslint/no-explicit-any */

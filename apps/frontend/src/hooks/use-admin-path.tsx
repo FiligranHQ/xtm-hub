@@ -1,5 +1,5 @@
-import { usePathname } from 'next/navigation';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
+import { usePathname } from 'next/navigation';
 
 const useAdminPath = () => {
   const pathname = usePathname();

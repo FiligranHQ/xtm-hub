@@ -12,6 +12,7 @@ import {
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import User, { UserId, UserMutator } from '../../../../model/kanel/public/User';
+import UserOrganization from '../../../../model/kanel/public/UserOrganization';
 import UserService from '../../../../model/kanel/public/UserService';
 import {
   UserLoadUserBy,
@@ -25,7 +26,7 @@ import { ErrorCode } from '../../../../utils/error/error.code';
 import { formatRawAggObject } from '../../../../utils/query-raw.util';
 import { addPrefixToObject } from '../../../../utils/typescript';
 import { isEmpty } from '../../../../utils/utils';
-import { isAdmin } from '../../../role-portal/role-portal.domain';
+import { RolePortalDomain } from '../../../role-portal/role-portal.domain';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { buildLoginEvent } from '../../../telemetry/telemetry.helper';
 
@@ -103,7 +104,7 @@ export const UserDomain = {
 
   loadUserBy: async (
     field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
-  ): Promise<UserLoadUserBy> => {
+  ): Promise<UserLoadUserBy | undefined> => {
     const [foundUser] = await db<UserLoadUserBy>('User').where(field);
     if (!foundUser) {
       return;
@@ -291,7 +292,7 @@ export const UserDomain = {
       ])
       .groupBy(['User.id']);
 
-    if (!isAdmin()) {
+    if (!RolePortalDomain.isAdmin()) {
       const { user } = requestContext.require();
       loadUserQuery.where(
         'UserOrg.organization_id',
@@ -322,7 +323,10 @@ export const UserDomain = {
     await auth0Client.resetPassword(user.email);
   },
 
-  updateUser: async (id: UserId, input: UserMutator): Promise<User> => {
+  updateUser: async (
+    id: UserId,
+    input: UserMutator
+  ): Promise<User | undefined> => {
     if (isEmpty(input)) {
       return;
     }
@@ -343,7 +347,7 @@ export const UserDomain = {
     user_id: UserId,
     organization_id: OrganizationId
   ): Promise<{ capabilities?: string[] }> => {
-    return db('User_Organization')
+    return db<UserOrganization>('User_Organization')
       .leftJoin(
         'UserOrganization_Capability',
         'User_Organization.id',
@@ -457,6 +461,10 @@ export const UserDomain = {
         error,
       });
     }
-    return UserDomain.loadUserBy({ 'User.id': user.id });
+    const reloadedUser = await UserDomain.loadUserBy({ 'User.id': user.id });
+    if (!reloadedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
+    return reloadedUser;
   },
 };

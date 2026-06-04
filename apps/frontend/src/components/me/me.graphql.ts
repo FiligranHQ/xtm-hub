@@ -34,7 +34,7 @@ export const MeResetPasswordMutation = graphql`
 `;
 
 export const MeRequestTransferPersonalSpaceMutation = graphql`
-  mutation meRequestTransferPersonalSpaceMutation($new_email: String) {
+  mutation meRequestTransferPersonalSpaceMutation($new_email: String!) {
     requestTransferPersonalSpace(new_email: $new_email) {
       success
     }

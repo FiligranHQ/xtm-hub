@@ -16,6 +16,7 @@ import { securityGuard } from '../../../../security/guard';
 import { updateUserSession } from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
+import { toError } from '../../../../utils/error/error-guard.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { OrganizationDomain } from '../../organization/organization.domain';
@@ -77,6 +78,10 @@ export const UserAdminApp = {
       });
     });
 
+    if (!finalUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
+
     await dispatch('User', 'add', finalUser);
 
     return finalUser;
@@ -98,6 +103,9 @@ export const UserAdminApp = {
         contextUser.selected_organization_id
       );
       const targetUser = await UserDomain.loadUserBy({ 'User.id': userId });
+      if (!targetUser) {
+        throw new Error(ErrorCode.UserNotFound);
+      }
       await securityGuard.assertUserIsInOrganization(
         targetUser,
         contextUser.selected_organization_id
@@ -125,14 +133,15 @@ export const UserAdminApp = {
       );
     }
     const updatedUser = await UserDomain.updateUser(userId, userInput);
-
-    try {
-      await auth0Client.updateUser({
-        ...input,
-        email: updatedUser.email,
-      });
-    } catch (err) {
-      logApp.error(err);
+    if (updatedUser) {
+      try {
+        await auth0Client.updateUser({
+          ...input,
+          email: updatedUser.email,
+        });
+      } catch (err) {
+        logApp.error(toError(err));
+      }
     }
     await UserOrganizationDomain.updateMultipleUserOrgWithCapabilities(
       userId,
@@ -148,7 +157,7 @@ export const UserAdminApp = {
     await dispatch('User', 'edit', user);
     await dispatch('MeUser', 'edit', userMapped, 'User');
 
-    if (input.disabled) {
+    if (updatedUser && input.disabled) {
       await dispatch('User', 'delete', updatedUser);
       await dispatch('MeUser', 'delete', updatedUser, 'User');
     }

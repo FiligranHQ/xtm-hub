@@ -334,8 +334,11 @@ export const UserServiceForm = ({
                           className="txt-sub-content cursor-pointer aria-disabled:cursor-not-allowed">
                           {capability!.name ===
                           ServiceRestrictionEnum.MANAGE_ACCESS
-                            ? 'Manage access: The user can invite other users from his/her organization to this service'
-                            : `${capability!.name} access: ${capability!.description}`}
+                            ? t('Service.Form.ManageAccessCapabilityLabel')
+                            : t('Service.Form.CapabilityAccessLabel', {
+                                name: capability!.name ?? '',
+                                description: capability!.description ?? '',
+                              })}
                           {isCapabilityDisabled(capability!.id)}
                         </label>
                       </TooltipTrigger>

@@ -111,7 +111,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
           </SheetTrigger>
           <SheetContent side="left">
             <SheetHeader>
-              <SheetTitle>Filigran</SheetTitle>
+              <SheetTitle>{t('Header.BrandName')}</SheetTitle>
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
               <NavigationApp open={true} />

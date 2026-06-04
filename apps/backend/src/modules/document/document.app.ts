@@ -17,7 +17,7 @@ import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
@@ -105,6 +105,7 @@ export const DocumentApp = {
 
     const documentData: DocumentData<Document> = {
       ...input,
+      use_cases: input.use_cases ?? undefined,
       service_instance_id: serviceInstanceId,
       type: documentType,
       ...(sourceDocumentFile && isDocumentFileRequired
@@ -292,6 +293,10 @@ export const DocumentApp = {
         uploader_organization_id,
         uploader_id,
       });
+
+      if (!doc) {
+        throw new Error(UnknownErrorCode.DocumentUpdateError);
+      }
 
       // If use_cases is null => that mean we want to update the field to empty
       if (input.use_cases !== undefined) {
@@ -603,6 +608,7 @@ const upsertDocument = async <T extends DocumentModel>(
       for (const name of documentData.use_cases) {
         const useCase = await useCaseApp.loadOrCreateUseCase({
           name,
+          color: '#0099cc',
         });
         insertObjectUseCase.push({
           object_id: document.id as unknown as ObjectUseCaseObjectId,

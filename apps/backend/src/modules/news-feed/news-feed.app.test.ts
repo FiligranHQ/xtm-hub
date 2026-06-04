@@ -1,10 +1,7 @@
 import config from 'config';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  mockPlatformConfig,
-  TestHelper,
-} from '../../../tests/helper/test.helper';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   requestContextSimpleUserSecondOrga,
   SERVICES,
@@ -59,12 +56,9 @@ describe('newsFeedApp', () => {
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
     });
     createdServiceInstanceIds.push(serviceInstance.id);
-    await TestHelper.serviceConfiguration.create({
+    await TestHelper.platformConfiguration.create({
       service_instance_id: serviceInstance.id,
-      config: {
-        ...mockPlatformConfig,
-        platform_id: platformId,
-      },
+      platform_id: platformId,
     });
     await TestHelper.subscription.create({
       service_instance_id: serviceInstance.id,
@@ -76,15 +70,17 @@ describe('newsFeedApp', () => {
   const cleanupCreatedServiceInstances = async () => {
     for (const id of createdServiceInstanceIds) {
       await TestHelper.subscription.delete({ service_instance_id: id });
-      await TestHelper.serviceConfiguration.delete({ service_instance_id: id });
+      await TestHelper.platformConfiguration.delete({
+        service_instance_id: id,
+      });
       await TestHelper.serviceInstance.delete({ id });
     }
     createdServiceInstanceIds.length = 0;
   };
 
   describe('consumeProvisionedNewsFeedItems', () => {
-    const platformId = 'consume-test-platform-id';
-    const token = 'consume-test-token';
+    let platformId: string;
+    let token: string;
     let registrationServiceInstanceId: ServiceInstanceId;
 
     beforeEach(async () => {
@@ -92,19 +88,17 @@ describe('newsFeedApp', () => {
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
       registrationServiceInstanceId = serviceInstance.id;
-      await TestHelper.serviceConfiguration.create({
-        service_instance_id: registrationServiceInstanceId,
-        config: {
-          ...mockPlatformConfig,
-          platform_id: platformId,
-          token,
-        },
-      });
+      const platformConfiguration =
+        await TestHelper.platformConfiguration.create({
+          service_instance_id: registrationServiceInstanceId,
+        });
+      platformId = platformConfiguration.platform_id;
+      token = platformConfiguration.token;
     });
 
     afterEach(async () => {
       await TestHelper.newsFeed.deleteItem();
-      await TestHelper.serviceConfiguration.delete({
+      await TestHelper.platformConfiguration.delete({
         service_instance_id: registrationServiceInstanceId,
       });
       await TestHelper.serviceInstance.delete({
@@ -133,8 +127,8 @@ describe('newsFeedApp', () => {
     it('should throw when no service configuration matches platformId and token', async () => {
       await expect(
         NewsFeedApp.consumeProvisionedNewsFeedItems({
-          platformId: 'unknown-platform',
-          token: 'unknown-token',
+          platformId: uuidv4(),
+          token: uuidv4(),
         })
       ).rejects.toThrow(ErrorCode.PlatformNotRegistered);
     });
@@ -209,7 +203,7 @@ describe('newsFeedApp', () => {
     });
 
     it('should only return items provisioned for the requesting platform', async () => {
-      const otherPlatformId = 'other-platform-id';
+      const otherPlatformId = uuidv4();
       const itemForOther = await TestHelper.newsFeed.createItem({
         type: NewsFeedItemType.ResourceCustomDashboard,
         platform_identifier: PlatformIdentifier.Opencti,
@@ -367,9 +361,10 @@ describe('newsFeedApp', () => {
       });
 
       it('should create a news feed item with the correct type and platform identifier', async () => {
+        const platformId = uuidv4();
         await subscribeToCustomDashboards();
         await createOpenCTIPlatformForOrganization(
-          'platform-001',
+          platformId,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         );
 
@@ -385,13 +380,15 @@ describe('newsFeedApp', () => {
       });
 
       it('should provision the news feed item to all platforms with a platform_id', async () => {
+        const firstPlatformId = uuidv4();
+        const secondPlatformId = uuidv4();
         await subscribeToCustomDashboards();
         await createOpenCTIPlatformForOrganization(
-          'platform-001',
+          firstPlatformId,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         );
         await createOpenCTIPlatformForOrganization(
-          'platform-002',
+          secondPlatformId,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         );
 
@@ -404,7 +401,7 @@ describe('newsFeedApp', () => {
 
         expect(provisioned).toHaveLength(2);
         expect(provisioned.map((p) => p.platform_id)).toEqual(
-          expect.arrayContaining(['platform-001', 'platform-002'])
+          expect.arrayContaining([firstPlatformId, secondPlatformId])
         );
       });
 
@@ -418,42 +415,12 @@ describe('newsFeedApp', () => {
         expect(provisioned).toHaveLength(0);
       });
 
-      it('should filter out platforms that have no platform_id in their config', async () => {
-        await subscribeToCustomDashboards();
-        await createOpenCTIPlatformForOrganization(
-          'valid-platform',
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-        );
-
-        const platformWithoutId = await TestHelper.serviceInstance.create({
-          service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-        });
-        createdServiceInstanceIds.push(platformWithoutId.id);
-        await TestHelper.serviceConfiguration.create({
-          service_instance_id: platformWithoutId.id,
-          config: { token: 'some-token' },
-        });
-        await TestHelper.subscription.create({
-          service_instance_id: platformWithoutId.id,
-          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        });
-
-        await createCustomDashboardNewsFeedItem();
-
-        const newsFeedItem = await TestHelper.newsFeed.loadFirstItem();
-        const provisioned = await TestHelper.newsFeed.loadProvisioned({
-          news_feed_item_id: newsFeedItem!.id,
-        });
-
-        expect(provisioned).toHaveLength(1);
-        expect(provisioned[0]?.platform_id).toBe('valid-platform');
-      });
-
       it('should populate tags from use cases linked to the document', async () => {
+        const platformId = uuidv4();
         // Given
         await subscribeToCustomDashboards();
         await createOpenCTIPlatformForOrganization(
-          'platform-001',
+          platformId,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         );
 
@@ -555,14 +522,16 @@ describe('newsFeedApp', () => {
       );
 
       it('should provision the updated news feed item to all platforms subscribed to the service instance', async () => {
+        const firstPlatformId = uuidv4();
+        const secondPlatformId = uuidv4();
         // Given
         await subscribeToCustomDashboards();
         await createOpenCTIPlatformForOrganization(
-          'update-platform-001',
+          firstPlatformId,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         );
         await createOpenCTIPlatformForOrganization(
-          'update-platform-002',
+          secondPlatformId,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         );
 
@@ -588,15 +557,16 @@ describe('newsFeedApp', () => {
         });
         expect(provisioned).toHaveLength(2);
         expect(provisioned.map((p) => p.platform_id)).toEqual(
-          expect.arrayContaining(['update-platform-001', 'update-platform-002'])
+          expect.arrayContaining([firstPlatformId, secondPlatformId])
         );
       });
 
       it('should update tags from use cases linked to the document', async () => {
+        const platformId = uuidv4();
         // Given
         await subscribeToCustomDashboards();
         await createOpenCTIPlatformForOrganization(
-          'update-platform-tags',
+          platformId,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         );
 
@@ -653,10 +623,11 @@ describe('newsFeedApp', () => {
       });
 
       it('should not reprovision or update a soft-deleted item linked to the document', async () => {
+        const platformId = uuidv4();
         // Given
         await subscribeToCustomDashboards();
         await createOpenCTIPlatformForOrganization(
-          'update-platform-deleted',
+          platformId,
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
         );
 
@@ -979,13 +950,15 @@ describe('newsFeedApp', () => {
     });
 
     it('should provision the deleted item to all registered OpenCTI platforms', async () => {
+      const firstPlatformId = uuidv4();
+      const secondPlatformId = uuidv4();
       // Given
       await createOpenCTIPlatformForOrganization(
-        'delete-platform-001',
+        firstPlatformId,
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
       await createOpenCTIPlatformForOrganization(
-        'delete-platform-002',
+        secondPlatformId,
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
       const item = await TestHelper.newsFeed.createItem({
@@ -1005,7 +978,7 @@ describe('newsFeedApp', () => {
       });
       expect(provisioned).toHaveLength(2);
       expect(provisioned.map((p) => p.platform_id)).toEqual(
-        expect.arrayContaining(['delete-platform-001', 'delete-platform-002'])
+        expect.arrayContaining([firstPlatformId, secondPlatformId])
       );
     });
 
@@ -1030,9 +1003,10 @@ describe('newsFeedApp', () => {
     });
 
     it('should provision the deleted item to a platform belonging to a different organization than the context one', async () => {
+      const otherOrganizationPlatformId = uuidv4();
       // Given — context is SECOND_ORGANIZATION, but the platform is registered under FILIGRAN
       await createOpenCTIPlatformForOrganization(
-        'delete-other-org-platform',
+        otherOrganizationPlatformId,
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
       const item = await TestHelper.newsFeed.createItem({
@@ -1051,42 +1025,7 @@ describe('newsFeedApp', () => {
         news_feed_item_id: item.id,
       });
       expect(provisioned).toHaveLength(1);
-      expect(provisioned[0]?.platform_id).toBe('delete-other-org-platform');
-    });
-
-    it('should filter out registered platforms that have no platform_id in their config', async () => {
-      // Given
-      await createOpenCTIPlatformForOrganization(
-        'delete-valid-platform',
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
-      );
-
-      const platformWithoutId = await TestHelper.serviceInstance.create({
-        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-      });
-      createdServiceInstanceIds.push(platformWithoutId.id);
-      await TestHelper.serviceConfiguration.create({
-        service_instance_id: platformWithoutId.id,
-        config: { token: 'some-token' },
-      });
-
-      const item = await TestHelper.newsFeed.createItem({
-        type: NewsFeedItemType.ResourceCustomDashboard,
-        platform_identifier: PlatformIdentifier.Opencti,
-        title: 'Dashboard filter test',
-        creation_date: new Date(),
-        tags: [],
-      });
-
-      // When
-      await NewsFeedApp.deleteNewsFeedItem({ newsFeedItemId: item.id });
-
-      // Then
-      const provisioned = await TestHelper.newsFeed.loadProvisioned({
-        news_feed_item_id: item.id,
-      });
-      expect(provisioned).toHaveLength(1);
-      expect(provisioned[0]?.platform_id).toBe('delete-valid-platform');
+      expect(provisioned[0]?.platform_id).toBe(otherOrganizationPlatformId);
     });
   });
 });

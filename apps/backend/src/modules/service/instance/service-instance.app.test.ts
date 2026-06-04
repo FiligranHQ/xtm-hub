@@ -22,7 +22,7 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
-  ServiceConfigurationStatus,
+  PlatformConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceTag,
   UpdatePlatformServiceMetadataInput,
@@ -30,6 +30,7 @@ import {
 import { requestContext } from '../../../context/request.context';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import PlatformConfiguration from '../../../model/kanel/public/PlatformConfiguration';
 import ServiceDefinition, {
   ServiceDefinitionId,
 } from '../../../model/kanel/public/ServiceDefinition';
@@ -42,7 +43,7 @@ import * as securityGuardModule from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { DocumentHelper } from '../../document/document.helper';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
-import * as subscriptionDomain from '../../subscription/subscription.domain';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { ServiceInstanceApp } from './service-instance.app';
 import * as serviceInstanceDomain from './service-instance.domain';
@@ -85,7 +86,7 @@ describe('service Instance app', () => {
 
     beforeEach(() => {
       loadSubscriptionBySpy = vi.spyOn(
-        subscriptionDomain,
+        SubscriptionDomain,
         'loadSubscriptionBy'
       );
       loadUserServiceBySpy = vi.spyOn(UserServiceDomain, 'loadUserServiceBy');
@@ -302,13 +303,13 @@ describe('service Instance app', () => {
         service_instance_id: serviceInstance.id,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstance.id,
       });
     });
 
     afterEach(async () => {
-      await TestHelper.serviceConfiguration.delete({});
+      await TestHelper.platformConfiguration.delete({});
       await TestHelper.subscription.delete({});
       await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
       await TestHelper.serviceDefinition.delete({ id: serviceDefinition.id });
@@ -520,18 +521,18 @@ describe('service Instance app', () => {
       expect(dispatchSpy).not.toHaveBeenCalled();
     });
 
-    it('should throw SERVICE_CONFIGURATION_NOT_FOUND when config is missing after update', async () => {
+    it('should throw PLATFORM_CONFIGURATION_NOT_FOUND when config is missing after update', async () => {
       // Cannot reproduce with real DB: simulates a race condition where the
       // configuration is deleted between the update transaction and the
       // response-building query.
 
       // Given
       const mockId = uuidv4() as ServiceInstanceId;
-      const mockServiceConfiguration = {
+      const mockPlatformConfiguration = {
+        ...mockPlatformConfig,
         service_instance_id: mockId,
-        config: mockPlatformConfig,
-        status: ServiceConfigurationStatus.Active,
-      };
+        status: PlatformConfigurationStatus.Active,
+      } as PlatformConfiguration;
       vi.spyOn(
         serviceInstanceDomain,
         'loadPlatformServiceInstance'
@@ -564,13 +565,11 @@ describe('service Instance app', () => {
         'loadPlatformConfigurationByServiceInstanceId'
       );
 
-      configSpy
-        .mockResolvedValueOnce(mockServiceConfiguration)
-        .mockResolvedValueOnce(null);
+      configSpy.mockResolvedValueOnce(null);
       vi.spyOn(
         serviceInstanceDomain,
         'updatePlatformConfigurationByServiceInstanceId'
-      ).mockResolvedValue(mockServiceConfiguration);
+      ).mockResolvedValue(mockPlatformConfiguration);
 
       // When / Then
       await expect(
@@ -583,7 +582,7 @@ describe('service Instance app', () => {
           },
           null
         )
-      ).rejects.toThrow(ErrorCode.ServiceConfigurationNotFound);
+      ).rejects.toThrow(ErrorCode.PlatformConfigurationNotFound);
     });
   });
 

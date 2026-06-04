@@ -14,8 +14,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { OrganizationDomain } from '../../organization-management/organization/organization.domain';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
-import { PlatformConfiguration } from '../../registration/registration.domain';
-import { ServiceConfigurationDomain } from '../../registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../../registration/platform-configuration/platform-configuration.domain';
 import { userHasBypassCapability } from '../../security-management/capability/auth.helper';
 import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
@@ -89,17 +88,15 @@ export const ServiceGroupApp = {
             service_instance_id: serviceInstanceIds[0],
           });
         if (deploymentRequest?.platform_id) {
-          const serviceConfiguration =
-            await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          const platformConfiguration =
+            await PlatformConfigurationDomain.loadConfigurationByPlatform(
               deploymentRequest.platform_id
             );
           if (
-            serviceConfiguration &&
+            platformConfiguration &&
             deploymentRequest.type === DeploymentRequestDeploymentType.Trial &&
             deploymentRequest.end_date
           ) {
-            const parsedConfig =
-              serviceConfiguration.config as PlatformConfiguration;
             const addedUsers = await UserDomain.loadUsers(addedUserIds);
             const trialEndDate = deploymentRequest.end_date.toLocaleDateString(
               'en-US',
@@ -116,7 +113,7 @@ export const ServiceGroupApp = {
                   template: 'free_trial_user_added',
                   params: {
                     firstName: formatName(addedUser.first_name),
-                    platformUrl: parsedConfig.platform_url,
+                    platformUrl: platformConfiguration.platform_url,
                     platformIdentifier: deploymentRequest.platform_identifier,
                     adminEmail: user.email,
                     trialEndDate: trialEndDate,
