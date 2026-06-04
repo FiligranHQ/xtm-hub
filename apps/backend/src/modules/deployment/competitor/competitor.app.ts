@@ -9,6 +9,7 @@ import Organization from '../../../model/kanel/public/Organization';
 import { toError } from '../../../utils/error/error-guard.util';
 import { ErrorCode, NotFoundErrorCode } from '../../../utils/error/error.code';
 import { AlreadyExistsError } from '../../../utils/error/error.util';
+import { stripNulls } from '../../../utils/typescript';
 import { omit } from '../../../utils/utils';
 import { CompetitorDomain } from './competitor.domain';
 
@@ -37,7 +38,7 @@ export const CompetitorApp = {
     try {
       const competitor = await CompetitorDomain.updateCompetitorBy(
         { id: data.id },
-        { ...omit(data, ['id']) }
+        stripNulls(omit(data, ['id']))
       );
       if (!competitor) {
         throw new Error(NotFoundErrorCode.CompetitorNotFound);
