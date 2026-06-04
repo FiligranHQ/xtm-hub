@@ -1,0 +1,47 @@
+name: Project Dependency Consistency Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+      - "development"
+    paths:
+      - "apps/**/package.json"
+      - "package.json"
+      - "yarn.lock"
+      - "check-dependencies.yml"
+  pull_request:
+    branches:
+      - "main"
+      - "development"
+      - "issue/*"
+    paths:
+      - "apps/**/package.json"
+      - "package.json"
+      - "yarn.lock"
+      - "check-dependencies.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check-catalog:
+    name: Check catalog alignment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.13.0 --activate
+
+      - name: Check catalog dependencies
+        run: yarn check:dependencies
