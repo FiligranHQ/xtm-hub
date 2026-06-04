@@ -16,7 +16,7 @@ export const Parameters = () => {
     <div className="grid grid-cols-3">
       <Card className="w-1-3">
         <CardHeader>
-          <CardTitle>XTM Hub</CardTitle>
+          <CardTitle>{t('App.Title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">

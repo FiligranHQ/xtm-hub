@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { waitForDrawerToClose } from './common';
 export const TEST_JSON_FILE = {
   path: './tests/tests_files/assets/octi_dashboard.json',

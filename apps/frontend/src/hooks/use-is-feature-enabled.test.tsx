@@ -1,13 +1,13 @@
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
-import { settingsContext_fragment$data } from '@generated/settingsContext_fragment.graphql';
-import { renderHook } from '@testing-library/react';
-import { expect } from 'vitest';
 import {
   Settings,
   SettingsContext,
   SettingsProps,
 } from '@/components/settings/EnvPortalContext';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
+import { settingsContext_fragment$data } from '@generated/settingsContext_fragment.graphql';
+import { renderHook } from '@testing-library/react';
+import { expect } from 'vitest';
 
 describe('useIsFeatureEnabled', () => {
   const createWrapper = (contextValue: Settings) => {

@@ -1,18 +1,18 @@
 'use client';
 
+import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardsList';
 import { DocumentsListQuery } from '@/components/service/document/document.graphql';
+import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/hooks/use-service-list-local-storage';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { Skeleton } from '@filigran/ui';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
-import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardsList';
-import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
-import {
-  ServiceListLocalStorageKey,
-  useServiceListLocalStorage,
-} from '@/hooks/use-service-list-local-storage';
 
 interface PageLoaderProps {
   serviceInstance: serviceInstance_fragment$data;

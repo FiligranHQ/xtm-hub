@@ -6,6 +6,7 @@ import {
   CommandSeparator,
   Separator,
 } from '@filigran/ui';
+import { useTranslations } from 'next-intl';
 
 export type FlatOption =
   | { type: 'parent'; value: string; label: string }
@@ -35,73 +36,77 @@ export const OptionsList = ({
   onClear,
   onClose,
   showClear,
-}: OptionsListProps) => (
-  <>
-    <CommandEmpty>{noResultString}</CommandEmpty>
-    <CommandGroup>
-      {flatOptions.map((option) => {
-        if (option.type === 'parent') {
-          const checked = isParentFullySelected(option.value);
-          const indeterminate = isParentPartiallySelected(option.value);
+}: OptionsListProps) => {
+  const t = useTranslations();
+
+  return (
+    <>
+      <CommandEmpty>{noResultString}</CommandEmpty>
+      <CommandGroup>
+        {flatOptions.map((option) => {
+          if (option.type === 'parent') {
+            const checked = isParentFullySelected(option.value);
+            const indeterminate = isParentPartiallySelected(option.value);
+
+            return (
+              <CommandItem
+                key={option.value}
+                value={`parent:${option.value}`}
+                onSelect={() => toggleParent(option.value)}
+                style={{ pointerEvents: 'auto', opacity: 1 }}
+                className="cursor-pointer">
+                <Checkbox
+                  checked={indeterminate ? 'indeterminate' : checked}
+                  className="mr-2"
+                />
+                <span>{option.label}</span>
+              </CommandItem>
+            );
+          }
+
+          const isSelected = isChildSelected(option.parentValue, option.value);
 
           return (
             <CommandItem
-              key={option.value}
-              value={`parent:${option.value}`}
-              onSelect={() => toggleParent(option.value)}
+              key={`${option.parentValue}-${option.value}`}
+              value={`child:${option.parentValue}:${option.value}`}
+              onSelect={() => toggleChild(option.value, option.parentValue)}
               style={{ pointerEvents: 'auto', opacity: 1 }}
-              className="cursor-pointer">
+              className="cursor-pointer pl-6">
               <Checkbox
-                checked={indeterminate ? 'indeterminate' : checked}
+                checked={isSelected}
                 className="mr-2"
               />
               <span>{option.label}</span>
             </CommandItem>
           );
-        }
-
-        const isSelected = isChildSelected(option.parentValue, option.value);
-
-        return (
+        })}
+      </CommandGroup>
+      <CommandSeparator />
+      <CommandGroup>
+        <div className="flex items-center justify-between">
+          {showClear && (
+            <>
+              <CommandItem
+                onSelect={onClear}
+                style={{ pointerEvents: 'auto', opacity: 1 }}
+                className="flex-1 cursor-pointer justify-center">
+                {t('Utils.Clear')}
+              </CommandItem>
+              <Separator
+                orientation="vertical"
+                className="flex h-full min-h-6"
+              />
+            </>
+          )}
           <CommandItem
-            key={`${option.parentValue}-${option.value}`}
-            value={`child:${option.parentValue}:${option.value}`}
-            onSelect={() => toggleChild(option.value, option.parentValue)}
+            onSelect={onClose}
             style={{ pointerEvents: 'auto', opacity: 1 }}
-            className="cursor-pointer pl-6">
-            <Checkbox
-              checked={isSelected}
-              className="mr-2"
-            />
-            <span>{option.label}</span>
+            className="flex-1 cursor-pointer justify-center">
+            {t('Utils.Close')}
           </CommandItem>
-        );
-      })}
-    </CommandGroup>
-    <CommandSeparator />
-    <CommandGroup>
-      <div className="flex items-center justify-between">
-        {showClear && (
-          <>
-            <CommandItem
-              onSelect={onClear}
-              style={{ pointerEvents: 'auto', opacity: 1 }}
-              className="flex-1 cursor-pointer justify-center">
-              Clear
-            </CommandItem>
-            <Separator
-              orientation="vertical"
-              className="flex h-full min-h-6"
-            />
-          </>
-        )}
-        <CommandItem
-          onSelect={onClose}
-          style={{ pointerEvents: 'auto', opacity: 1 }}
-          className="flex-1 cursor-pointer justify-center">
-          Close
-        </CommandItem>
-      </div>
-    </CommandGroup>
-  </>
-);
+        </div>
+      </CommandGroup>
+    </>
+  );
+};
