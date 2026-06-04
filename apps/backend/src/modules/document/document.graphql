@@ -193,7 +193,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     logicalFilters: LogicalFilterInput
-    serviceInstanceId: ServiceInstanceId
+    serviceInstanceId: ServiceInstanceId!
     parentsOnly: Boolean
   ): DocumentConnection! @auth
   document(

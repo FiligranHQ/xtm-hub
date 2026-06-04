@@ -58,7 +58,10 @@ export const isImgUrl = async (url: string): Promise<boolean> => {
   try {
     const response = await fetch(url, { method: 'HEAD' });
     const contentType = response.headers.get('Content-Type');
-    return contentType.startsWith('img') || contentType.startsWith('image');
+    return (
+      contentType !== null &&
+      (contentType.startsWith('img') || contentType.startsWith('image'))
+    );
   } catch (err) {
     logApp.debug(getErrorMessage(err));
     return false;

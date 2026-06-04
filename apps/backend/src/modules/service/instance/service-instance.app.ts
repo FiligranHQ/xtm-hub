@@ -43,6 +43,9 @@ export const ServiceInstanceApp = {
     const { user } = requestContext.require();
 
     const service = await loadServiceInstanceBy({ id: serviceInstanceId });
+    if (!service) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
     let subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
       organization_id: user.selected_organization_id,
@@ -73,13 +76,17 @@ export const ServiceInstanceApp = {
         subscription.id
       );
     }
-    return service;
+    return service as unknown as ServiceInstance;
   },
 
   loadServiceInstance: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    return loadServiceInstanceBy({ id: serviceInstanceId });
+    const service = await loadServiceInstanceBy({ id: serviceInstanceId });
+    if (!service) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
+    return service as unknown as ServiceInstance;
   },
   addServicePicture: async (
     serviceInstanceId: ServiceInstanceId,

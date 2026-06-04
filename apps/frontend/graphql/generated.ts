@@ -1630,7 +1630,7 @@ export type QueryDocumentsArgs = {
   orderMode: OrderingMode;
   parentsOnly: InputMaybe<Scalars['Boolean']['input']>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 

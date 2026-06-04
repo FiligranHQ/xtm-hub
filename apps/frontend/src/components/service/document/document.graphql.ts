@@ -225,7 +225,7 @@ export const DocumentsListQuery = graphql`
     $orderMode: OrderingMode!
     $logicalFilters: LogicalFilterInput
     $searchTerm: String
-    $serviceInstanceId: ServiceInstanceId
+    $serviceInstanceId: ServiceInstanceId!
     $parentsOnly: Boolean
   ) {
     ...documentsList

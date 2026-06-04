@@ -324,8 +324,8 @@ const resolvers: Resolvers = {
             return true;
           }
           const user = payload.add ?? payload.delete ?? payload.edit;
-          return user.organizations
-            .map((org) => org.id)
+          return user?.organizations
+            ?.map((org) => org.id)
             .includes(extractId(args.organizationId));
         }),
     },
@@ -341,7 +341,7 @@ const resolvers: Resolvers = {
           (payload: UserPendingSubscription) => {
             const organizationId = payload.delete
               ? payload.delete.pending_organization_id
-              : payload.invalidate.id;
+              : payload.invalidate?.id;
             return organizationId === extractId(args.organizationId);
           }
         ),
