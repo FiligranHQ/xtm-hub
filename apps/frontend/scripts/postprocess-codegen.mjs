@@ -20,7 +20,7 @@ const withHeaderFix = lines.join('\n');
 // Make reruns idempotent by removing previous injected getRootKey lines.
 const withoutPreviousRootKeys = withHeaderFix.replace(
   /^\w+\.getRootKey\s*=\s*\(\)\s*=>\s*\[[^\]]*\]\s+as\s+const;\s*$/gm,
-  '',
+  ''
 );
 
 // Add hook.getRootKey() next to each generated hook.getKey().
@@ -30,7 +30,7 @@ const withoutPreviousRootKeys = withHeaderFix.replace(
 const normalizedWithRootKeys = withoutPreviousRootKeys.replace(
   /^(\w+)\.getKey\s*=\s*(\(.*?\)\s*=>\s*\[([^\],]+)[^\]]*\]);\s*$/gm,
   (_match, hookName, getKeyExpr, rootKeyExpr) =>
-    `${hookName}.getKey = ${getKeyExpr};\n${hookName}.getRootKey = () => [${rootKeyExpr.trim()}] as const;`,
+    `${hookName}.getKey = ${getKeyExpr};\n${hookName}.getRootKey = () => [${rootKeyExpr.trim()}] as const;`
 );
 
 fs.writeFileSync(generatedPath, normalizedWithRootKeys);
