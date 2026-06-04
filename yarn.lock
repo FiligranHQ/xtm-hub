@@ -8068,9 +8068,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/eslint-plugin@npm:1.6.18":
-  version: 1.6.18
-  resolution: "@vitest/eslint-plugin@npm:1.6.18"
+"@vitest/eslint-plugin@npm:1.6.19":
+  version: 1.6.19
+  resolution: "@vitest/eslint-plugin@npm:1.6.19"
   dependencies:
     "@typescript-eslint/scope-manager": "npm:^8.58.0"
     "@typescript-eslint/utils": "npm:^8.58.0"
@@ -8086,7 +8086,7 @@ __metadata:
       optional: true
     vitest:
       optional: true
-  checksum: 10/23ceb67b48b0357596b93c7ab2c6a2b5fdfd5117500df62ae5b515fe05cc31cf8525aba3423a79835f9a26bf28248eb1219253694d3a87a17030a87d55f4f961
+  checksum: 10/7d34be943459c5833c83b1ab059c01ad3978ab51b86ff9c3bbe83f3e7789bc24b9af884b0d5b355ede21e0b1418014016d09af077f228b33ad338d2e877211c4
   languageName: node
   linkType: hard
 
@@ -8240,7 +8240,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:8.60.0"
     "@typescript-eslint/parser": "npm:8.60.0"
     "@vitest/coverage-v8": "catalog:"
-    "@vitest/eslint-plugin": "npm:1.6.18"
+    "@vitest/eslint-plugin": "npm:1.6.19"
     apollo-errors: "npm:1.9.0"
     auth0: "npm:5.11.0"
     body-parser: "npm:2.2.2"
