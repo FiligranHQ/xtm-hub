@@ -10,7 +10,7 @@ on:
       - "apps/**/package.json"
       - "package.json"
       - "yarn.lock"
-      - "check-dependencies.yml"
+      - ".github/workflows/check-dependencies.yml"
   pull_request:
     branches:
       - "main"
@@ -20,7 +20,7 @@ on:
       - "apps/**/package.json"
       - "package.json"
       - "yarn.lock"
-      - "check-dependencies.yml"
+      - ".github/workflows/check-dependencies.yml"
 
 permissions:
   contents: read
@@ -38,10 +38,5 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Enable Corepack
-        run: |
-          corepack enable
-          corepack prepare yarn@4.13.0 --activate
-
       - name: Check catalog dependencies
-        run: yarn check:dependencies
+        run: node ./scripts/check-dependencies.mjs
