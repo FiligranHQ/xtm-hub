@@ -12,7 +12,7 @@ import {
   loadSubscriptionCapabilities,
 } from '../security-management/subscription-capability/subscription-capability.domain';
 import { subscriptionApp } from './subscription.app';
-import { createSubscription } from './subscription.domain';
+import { SubscriptionDomain } from './subscription.domain';
 
 describe('subscription app', () => {
   describe('subscribeOrganizationsToService', async () => {
@@ -54,7 +54,7 @@ describe('subscription app', () => {
     });
 
     it('should rollback all creations when one organization is already subscribed', async () => {
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id: uuidv4() as SubscriptionId,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
@@ -102,7 +102,7 @@ describe('subscription app', () => {
       const newStartDate = new Date('2026-03-01');
       const newEndDate = new Date('2026-03-10');
 
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -138,7 +138,7 @@ describe('subscription app', () => {
       const startDate = new Date('2026-02-01');
       const endDate = new Date('2026-02-10');
 
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -171,7 +171,7 @@ describe('subscription app', () => {
 
     it('should rollback updated dates and capabilities replacement on invalid capability id', async () => {
       const id = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -210,7 +210,7 @@ describe('subscription app', () => {
         name: 'test-load-model',
       });
 
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id: uuidv4() as SubscriptionId,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -218,13 +218,14 @@ describe('subscription app', () => {
         end_date: null,
       });
 
-      const secondOrganizationSubscription = await createSubscription({
-        id: uuidv4() as SubscriptionId,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        service_instance_id: serviceInstanceId,
-        start_date: new Date(),
-        end_date: null,
-      });
+      const secondOrganizationSubscription =
+        await SubscriptionDomain.createSubscription({
+          id: uuidv4() as SubscriptionId,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          service_instance_id: serviceInstanceId,
+          start_date: new Date(),
+          end_date: null,
+        });
 
       const user = {
         selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
@@ -245,7 +246,7 @@ describe('subscription app', () => {
   describe(`${subscriptionApp.deleteSubscriptions.name}`, () => {
     it('should delete the subscription', async () => {
       const id = uuidv4() as SubscriptionId;
-      const subscription = await createSubscription({
+      const subscription = await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -263,7 +264,7 @@ describe('subscription app', () => {
 
     it('should delete linked subscription capabilities', async () => {
       const id = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,

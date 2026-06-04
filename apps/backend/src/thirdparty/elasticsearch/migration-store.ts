@@ -1,5 +1,10 @@
 import { MigrationSet } from 'migrate';
 import { logApp } from '../../utils/app-logger.util';
+import {
+  getErrorNumberProperty,
+  isErrorLikeRecord,
+  toError,
+} from '../../utils/error/error-guard.util';
 import ElasticSearchService, { esDbClient } from './client';
 import {
   LOCK_DOC_ID,
@@ -52,7 +57,10 @@ export function createEsStateStorage(
 
         fn(null, loadedState);
       } catch (error) {
-        if (error.meta?.statusCode === 404) {
+        const statusCode = isErrorLikeRecord(error)
+          ? getErrorNumberProperty(error.meta, 'statusCode')
+          : undefined;
+        if (statusCode === 404) {
           const emptyState: MigrationState = {
             lastRun: null,
             migrations: [],
@@ -60,7 +68,7 @@ export function createEsStateStorage(
           loadedState = emptyState;
           fn(null, emptyState);
         } else {
-          fn(error);
+          fn(toError(error));
         }
       }
     },
@@ -110,7 +118,7 @@ export function createEsStateStorage(
         fn();
       } catch (error) {
         logApp.error('Error saving state', { error });
-        fn(error);
+        fn(toError(error));
       }
     },
 
@@ -125,7 +133,7 @@ export function createEsStateStorage(
         });
         return true;
       } catch (error) {
-        if (error.statusCode === 409) {
+        if (getErrorNumberProperty(error, 'statusCode') === 409) {
           logApp.error('ERROR: Another migration is already running!');
           return false;
         }
@@ -140,7 +148,7 @@ export function createEsStateStorage(
           id: LOCK_DOC_ID,
         })
         .catch((error) => {
-          if (error.statusCode === 404) {
+          if (getErrorNumberProperty(error, 'statusCode') === 404) {
             logApp.warn('Warning: Deleting migration lock but lock not found');
           } else {
             logApp.error('Error Deleting migration lock', { error });
