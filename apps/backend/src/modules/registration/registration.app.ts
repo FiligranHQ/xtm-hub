@@ -55,7 +55,7 @@ import {
   PlatformConfigurationInput,
   registrationDomain,
 } from './registration.domain';
-import { isTenantIdRequired } from './registration.helper';
+import { RegistrationHelper } from './registration.helper';
 
 const buildPlatformConfiguration = (
   platform: PlatformInput,
@@ -91,7 +91,7 @@ export const registrationApp = {
 
     if (!tenantId) {
       if (
-        isTenantIdRequired(
+        RegistrationHelper.isTenantIdRequired(
           resolvedConfiguration.platformIdentifier,
           resolvedConfiguration.platformConfiguration.platform_version
         )
@@ -177,7 +177,7 @@ export const registrationApp = {
     }
 
     if (
-      isTenantIdRequired(identifier, platform.version) &&
+      RegistrationHelper.isTenantIdRequired(identifier, platform.version) &&
       !platform.tenantId
     ) {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
@@ -441,7 +441,7 @@ export const registrationApp = {
     assertValidDeploymentRequest(deploymentRequest, input.platform.id);
 
     if (
-      isTenantIdRequired(
+      RegistrationHelper.isTenantIdRequired(
         deploymentRequest.platform_identifier,
         input.platform.version
       ) &&
