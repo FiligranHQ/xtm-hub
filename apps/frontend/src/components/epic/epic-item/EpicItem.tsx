@@ -3,7 +3,7 @@ import { EpicItemCard } from '@/components/epic/epic-item/EpicItemCard';
 import { EpicItemDetailed } from '@/components/epic/epic-item/EpicItemDetailed';
 import { Dialog, DialogContent } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface EpicItemProps {
   epic: epic_fragment$data;
@@ -18,20 +18,31 @@ export const EpicItem = ({
   userCanUpdate,
   userCanDelete,
 }: EpicItemProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const isOpen = searchParams.get('epicId') === epic.id;
+
+  const handleClose = (open: boolean) => {
+    if (!open) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('epicId');
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+  };
 
   return (
     <li className="group overflow-hidden border-light flex flex-col relative rounded border hover:cursor-pointer bg-page-background h-[183px]">
       <EpicItemCard
         epic={epic}
         serviceInstanceId={serviceInstanceId}
-        setIsOpen={setIsOpen}
         userCanDelete={userCanDelete}
         userCanUpdate={userCanUpdate}
       />
       <Dialog
         open={isOpen}
-        onOpenChange={setIsOpen}>
+        onOpenChange={handleClose}>
         <DialogContent className="p-0 w-full max-w-5xl h-[80vh] max-h-[90vh] flex flex-col overflow-hidden">
           <EpicItemDetailed
             epic={epic}

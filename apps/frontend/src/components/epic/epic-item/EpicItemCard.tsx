@@ -2,12 +2,12 @@ import { EpicAdminMenu } from '@/components/epic/epic-item/EpicAdminMenu';
 import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { MouseEvent } from 'react';
 
 interface EpicItemCardProps {
   epic: epic_fragment$data;
   serviceInstanceId: string;
-  setIsOpen: (open: boolean) => void;
   userCanDelete: boolean;
   userCanUpdate: boolean;
 }
@@ -15,10 +15,12 @@ interface EpicItemCardProps {
 export const EpicItemCard = ({
   epic,
   serviceInstanceId,
-  setIsOpen,
   userCanDelete,
   userCanUpdate,
 }: EpicItemCardProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   // Do not open details if it's a click in admin menu
   const handleOpenDetail = (event: MouseEvent<HTMLDivElement>) => {
     const { currentTarget, target } = event;
@@ -33,14 +35,16 @@ export const EpicItemCard = ({
       return;
     }
 
-    setIsOpen(true);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('epicId', epic.id);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   return (
     <>
       <div
         onClick={handleOpenDetail}
-        className="h-full flex flex-col flex-1 bg-page-background text-ellipsis overflow-hidden p-m group-hover:bg-hover h-full w-full">
+        className="flex flex-col flex-1 bg-page-background text-ellipsis overflow-hidden p-m group-hover:bg-hover h-full w-full">
         <h2 className="text-base font-semibold pr-xxl line-clamp-2">
           {epic.title}
         </h2>
