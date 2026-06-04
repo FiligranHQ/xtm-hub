@@ -6,7 +6,7 @@ import {
 } from 'openid-client/passport';
 import { PassportStatic } from 'passport';
 import { logApp } from '../../../../utils/app-logger.util';
-import { loadRolePortalsBySSOGroups } from '../../../role-portal/role-portal.domain';
+import { RolePortalDomain } from '../../../role-portal/role-portal.domain';
 import { providerLoginHandler } from '../login-handle';
 import { extractRole } from '../mapping-roles';
 
@@ -50,9 +50,10 @@ export const addOIDCStrategy = async (
         const extractedRoles = extractRole(
           userinfo['https://xtm-hub-development/roles'] as string[]
         );
-        const loadedRolesFromSSOGroup = await loadRolePortalsBySSOGroups(
-          userinfo['https://xtm-hub-development/groups'] as string[]
-        );
+        const loadedRolesFromSSOGroup =
+          await RolePortalDomain.loadRolePortalsBySSOGroups(
+            userinfo['https://xtm-hub-development/groups'] as string[]
+          );
 
         const rolePortal = loadedRolesFromSSOGroup.roles ?? [];
 
