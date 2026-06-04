@@ -1,5 +1,6 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { getErrorMessage } from '../../../utils/error/error-guard.util';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { StillReferencedError } from '../../../utils/error/error.util';
@@ -41,8 +42,9 @@ const resolvers: Resolvers = {
       try {
         return await OrganizationApp.deleteOrganization(id as OrganizationId);
       } catch (error) {
-        if (error.message.includes('STILL_IN_ORGANIZATION')) {
-          throw StillReferencedError(error.message);
+        const errorMessage = getErrorMessage(error);
+        if (errorMessage.includes('STILL_IN_ORGANIZATION')) {
+          throw StillReferencedError(errorMessage);
         }
 
         throw mapToGraphQLError(
