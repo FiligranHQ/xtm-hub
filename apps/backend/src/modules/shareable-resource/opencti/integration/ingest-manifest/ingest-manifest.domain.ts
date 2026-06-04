@@ -3,6 +3,7 @@ import {
   IntegrationType,
 } from '../../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../../utils/app-logger.util';
+import { toError } from '../../../../../utils/error/error-guard.util';
 import { omit } from '../../../../../utils/utils';
 import { DocumentApp } from '../../../../document/document.app';
 import { DocumentDomain } from '../../../../document/domain/document.domain';
@@ -73,7 +74,9 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
 
       results.push(doc);
     } catch (error) {
-      logApp.error(`Failed to upsert connector ${connector.name}:`, error);
+      logApp.error(`Failed to upsert connector ${connector.name}:`, {
+        error: toError(error),
+      });
       throw error;
     }
   }

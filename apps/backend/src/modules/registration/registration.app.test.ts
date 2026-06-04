@@ -59,7 +59,7 @@ import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
 } from '../service/instance/service-instance.domain';
-import * as subscriptionDomain from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
@@ -1035,7 +1035,7 @@ describe('registration app', () => {
         'loadResolvedConfigurationByPlatform'
       );
       loadSubscriptionBySpy = vi.spyOn(
-        subscriptionDomain,
+        SubscriptionDomain,
         'loadSubscriptionBy'
       );
     });

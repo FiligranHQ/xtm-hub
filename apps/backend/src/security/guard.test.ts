@@ -15,7 +15,7 @@ import {
 } from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
 import * as authHelper from '../modules/security-management/capability/auth.helper';
-import * as subscriptionDomain from '../modules/subscription/subscription.domain';
+import { SubscriptionDomain } from '../modules/subscription/subscription.domain';
 import { UserServiceDomain } from '../modules/user-service/user-service.domain';
 import { ErrorCode } from '../utils/error/error.code';
 import * as access from './access';
@@ -149,7 +149,7 @@ describe('security Guard', () => {
     beforeEach(() => {
       isUserGrantedSpy = vi.spyOn(access, 'isUserGranted');
       loadSubscriptionBySpy = vi.spyOn(
-        subscriptionDomain,
+        SubscriptionDomain,
         'loadSubscriptionBy'
       );
       loadUserServiceWithCapabilitiesBySpy = vi.spyOn(

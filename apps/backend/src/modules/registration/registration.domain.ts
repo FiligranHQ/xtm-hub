@@ -23,11 +23,7 @@ import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
-import {
-  createSubscription,
-  loadSubscriptionBy,
-  transferSubscriptionToOrganization,
-} from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 
@@ -84,7 +80,7 @@ export const registrationDomain = {
         serviceInstanceCreationStatus
       );
 
-    await createSubscription({
+    await SubscriptionDomain.createSubscription({
       id: uuidv4() as SubscriptionId,
       organization_id: organizationId,
       service_instance_id: serviceInstanceId,
@@ -115,7 +111,7 @@ export const registrationDomain = {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
     });
-    const subscription = await loadSubscriptionBy({
+    const subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
     });
     if (!subscription) {
@@ -134,7 +130,7 @@ export const registrationDomain = {
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
 
-      await transferSubscriptionToOrganization({
+      await SubscriptionDomain.transferSubscriptionToOrganization({
         subscriptionId: subscription.id,
         organizationId: targetOrganizationId,
       });

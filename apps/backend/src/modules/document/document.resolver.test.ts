@@ -28,7 +28,7 @@ import * as serviceInstanceDomain from '../service/instance/service-instance.dom
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
-import * as subscriptionDomain from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { DocumentApp } from './document.app';
 import { DocumentHelper } from './document.helper';
 import documentResolver from './document.resolver';
@@ -399,9 +399,9 @@ describe('document field resolvers', () => {
   it('subscription should load subscription by service_instance_id and organization_id', async () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: uuidv4() } as unknown as SubscriptionModel;
-    vi.spyOn(subscriptionDomain, 'loadSubscriptionBy').mockResolvedValue(
+    vi.spyOn(SubscriptionDomain, 'loadSubscriptionBy').mockResolvedValue(
       expected as unknown as Awaited<
-        ReturnType<typeof subscriptionDomain.loadSubscriptionBy>
+        ReturnType<typeof SubscriptionDomain.loadSubscriptionBy>
       >
     );
 
@@ -414,7 +414,7 @@ describe('document field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(subscriptionDomain.loadSubscriptionBy).toHaveBeenCalledWith({
+    expect(SubscriptionDomain.loadSubscriptionBy).toHaveBeenCalledWith({
       service_instance_id: serviceInstanceId,
       organization_id: contextSimpleUserFiligran2.user.selected_organization_id,
     });

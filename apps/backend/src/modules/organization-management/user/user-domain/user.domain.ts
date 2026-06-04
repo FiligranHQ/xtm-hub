@@ -26,7 +26,7 @@ import { ErrorCode } from '../../../../utils/error/error.code';
 import { formatRawAggObject } from '../../../../utils/query-raw.util';
 import { addPrefixToObject } from '../../../../utils/typescript';
 import { isEmpty } from '../../../../utils/utils';
-import { isAdmin } from '../../../role-portal/role-portal.domain';
+import { RolePortalDomain } from '../../../role-portal/role-portal.domain';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { buildLoginEvent } from '../../../telemetry/telemetry.helper';
 
@@ -292,7 +292,7 @@ export const UserDomain = {
       ])
       .groupBy(['User.id']);
 
-    if (!isAdmin()) {
+    if (!RolePortalDomain.isAdmin()) {
       const { user } = requestContext.require();
       loadUserQuery.where(
         'UserOrg.organization_id',

@@ -8,6 +8,7 @@ import { UserId } from '../../../model/kanel/public/User';
 import { dispatch, listen } from '../../../pub';
 import { hubspotReachOutSalesHook } from '../../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../../utils/app-logger.util';
+import { getErrorMessage } from '../../../utils/error/error-guard.util';
 
 import { UserTransferRequestId } from '../../../model/kanel/public/UserTransferRequest';
 import { PortalContext } from '../../../model/portal-context';
@@ -96,7 +97,7 @@ const resolvers: Resolvers = {
         const user = await UserAdminApp.addUser(input);
         return mapUserToGraphqlUser(user);
       } catch (error) {
-        if (error.message.includes(ErrorCode.UserDisabled)) {
+        if (getErrorMessage(error).includes(ErrorCode.UserDisabled)) {
           logApp.warn('You cannot add a user who is disabled in the plaform');
           throw ForbiddenAccess(ErrorCode.CantAddDisabledUser);
         }
@@ -283,7 +284,7 @@ const resolvers: Resolvers = {
 
         return undefined;
       } catch (error) {
-        if (error.message.includes(ErrorCode.UserDisabled)) {
+        if (getErrorMessage(error).includes(ErrorCode.UserDisabled)) {
           throw ForbiddenAccess(ErrorCode.YouCanNotLogin);
         }
 
