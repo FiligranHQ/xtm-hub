@@ -11,6 +11,6 @@ export const SubscriptionCapabilityApp = {
     capabilitiesId: ServiceCapabilityId[]
   ): Promise<Subscription[]> => {
     await addCapabilitiesToSubscriptions(subscriptionsId, capabilitiesId);
-    return SubscriptionDomain.loadSubscriptionsBy(subscriptionsId);
+    return SubscriptionDomain.loadSubscriptionsByIds(subscriptionsId);
   },
 };

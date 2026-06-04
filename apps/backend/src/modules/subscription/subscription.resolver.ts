@@ -7,6 +7,7 @@ import {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
+import { SubscriptionCapabilityId } from '../../model/kanel/public/SubscriptionCapability';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { createRelayIdScalar } from '../../utils/scalar.util';
@@ -20,16 +21,17 @@ const resolvers: Resolvers = {
   SubscriptionId: createRelayIdScalar<SubscriptionId>('Subscription'),
   SubscriptionModel: {
     subscription_capability: ({ id }, _) =>
-      SubscriptionDomain.getSubscriptionCapability(id),
+      SubscriptionDomain.getSubscriptionCapability(id as SubscriptionId),
     service_instance: ({ service_instance_id }, _) =>
       loadServiceInstanceBy({ id: service_instance_id }),
-    user_service: ({ id }, _) => SubscriptionDomain.getUserService(id),
+    user_service: ({ id }, _) =>
+      SubscriptionDomain.getUserService(id as SubscriptionId),
     organization: ({ organization_id }, _) =>
       OrganizationDomain.loadOrganizationBy({ id: organization_id }),
   },
   SubscriptionCapability: {
     service_capability: ({ id }, _) =>
-      SubscriptionDomain.getServiceCapability(id),
+      SubscriptionDomain.getServiceCapability(id as SubscriptionCapabilityId),
   },
   Mutation: {
     createSubscriptions: async (_, { input }) => {

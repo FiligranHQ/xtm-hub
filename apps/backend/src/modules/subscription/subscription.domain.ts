@@ -1,14 +1,15 @@
 import { db } from '../../../knexfile';
-import {
-  ServiceCapability,
-  UserService,
-} from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import ServiceCapability from '../../model/kanel/public/ServiceCapability';
 import Subscription, {
   SubscriptionId,
   SubscriptionInitializer,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
+import SubscriptionCapability, {
+  SubscriptionCapabilityId,
+} from '../../model/kanel/public/SubscriptionCapability';
+import UserService from '../../model/kanel/public/UserService';
 import { restrictSubscriptionToUserOrganization } from '../../security/restriction/user-service';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 
@@ -19,20 +20,24 @@ export const SubscriptionDomain = {
     return db<Subscription>('Subscription').whereIn('id', ids).delete('*');
   },
 
-  getSubscriptionCapability: async (id) => {
-    return db<UserService>('Subscription_Capability')
+  getSubscriptionCapability: async (
+    id: SubscriptionId
+  ): Promise<SubscriptionCapability[]> => {
+    return db<SubscriptionCapability>('Subscription_Capability')
       .where('Subscription_Capability.subscription_id', '=', id)
       .select('Subscription_Capability.*');
   },
 
-  getUserService: (id) => {
+  getUserService: (id: SubscriptionId): Promise<UserService[]> => {
     return db<UserService>('User_Service')
       .tap(restrictSubscriptionToUserOrganization)
       .where('User_Service.subscription_id', '=', id)
       .select('User_Service.*');
   },
 
-  getServiceCapability: async (id) => {
+  getServiceCapability: async (
+    id: SubscriptionCapabilityId
+  ): Promise<ServiceCapability | undefined> => {
     return db<ServiceCapability>('Service_Capability')
       .leftJoin(
         'Subscription_Capability',
@@ -75,10 +80,10 @@ export const SubscriptionDomain = {
     return db<Subscription>('Subscription').where(field).first();
   },
 
-  loadSubscriptionsBy: async (
+  loadSubscriptionsByIds: async (
     ids: SubscriptionId[]
   ): Promise<Subscription[]> => {
-    return db<Subscription[]>('Subscription').whereIn('id', ids).select('*');
+    return db<Subscription>('Subscription').whereIn('id', ids);
   },
 
   updateSubscriptionBy: async (
