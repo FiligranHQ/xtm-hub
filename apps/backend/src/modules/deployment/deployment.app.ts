@@ -51,7 +51,7 @@ import { PlatformConfigurationDomain } from '../registration/platform-configurat
 import { registrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
-import { updateSubscriptionBy } from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
@@ -815,7 +815,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
     async () => {
       const shouldUpdateSubscriptionDates = input.start_date || input.end_date;
       if (shouldUpdateSubscriptionDates) {
-        await updateSubscriptionBy(
+        await SubscriptionDomain.updateSubscriptionBy(
           { service_instance_id: deploymentRequest.service_instance_id },
           {
             start_date: input.start_date,

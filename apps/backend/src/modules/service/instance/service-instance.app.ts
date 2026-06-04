@@ -21,7 +21,7 @@ import { DocumentHelper } from '../../document/document.helper';
 import { Upload } from '../../document/document.uploads.helper';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import { subscriptionApp } from '../../subscription/subscription.app';
-import { loadSubscriptionBy } from '../../subscription/subscription.domain';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import {
   grantServiceAccess,
@@ -43,7 +43,7 @@ export const ServiceInstanceApp = {
     const { user } = requestContext.require();
 
     const service = await loadServiceInstanceBy({ id: serviceInstanceId });
-    let subscription = await loadSubscriptionBy({
+    let subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
       organization_id: user.selected_organization_id,
     });

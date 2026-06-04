@@ -26,7 +26,7 @@ import * as mailService from '../../server/mail-service';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { removeUser } from '../organization-management/user/user.helper';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
-import { createSubscription } from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user-service.domain';
 
 // ---------------------------------------------------------------------------
@@ -80,7 +80,7 @@ const createTestSubscription = async (
   overrides?: Parameters<typeof makeSubscription>[0]
 ) => {
   const data = makeSubscription(overrides);
-  await createSubscription(data);
+  await SubscriptionDomain.createSubscription(data);
   return data.id;
 };
 
@@ -284,7 +284,7 @@ describe('userServiceDomain', () => {
 
       expect(result).toHaveLength(1);
       const user2 = await UserDomain.loadUserBy({ email: ADMIN.EMAIL });
-      expect(result[0]!.user_id).toBe(user2.id);
+      expect(result[0]!.user_id).toBe(user2!.id);
     });
 
     it('should create a new User record for an unknown email in the org domain', async () => {
@@ -303,8 +303,8 @@ describe('userServiceDomain', () => {
 
       const createdUser = await UserDomain.loadUserBy({ email: newEmail });
       expect(createdUser).toBeDefined();
-      expect(createdUser.email).toBe(newEmail);
-      expect(result[0]!.user_id).toBe(createdUser.id);
+      expect(createdUser!.email).toBe(newEmail);
+      expect(result[0]!.user_id).toBe(createdUser!.id);
 
       await cleanupUserServices(sub.id);
       await removeUser({ email: newEmail });
