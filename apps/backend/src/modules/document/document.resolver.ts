@@ -11,7 +11,7 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { AlreadyExistsError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
-import { nullsToUndefined } from '../../utils/typescript';
+import { stripNulls } from '../../utils/typescript';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import {
   getServiceInstance,
@@ -41,7 +41,7 @@ const resolvers: Resolvers = {
     createDocument: async (_, input) => {
       try {
         return await DocumentApp.createDocument({
-          ...nullsToUndefined(input),
+          ...stripNulls(input),
           serviceInstanceId: input.serviceInstanceId,
         });
       } catch (error) {
@@ -57,7 +57,7 @@ const resolvers: Resolvers = {
     updateDocument: async (_, input) => {
       try {
         return await DocumentApp.updateDocument({
-          ...nullsToUndefined(input),
+          ...stripNulls(input),
           parentDocumentId: input.documentId,
           serviceInstanceId: input.serviceInstanceId,
           existingImageIds: input.existingImageIds ?? [],
@@ -176,9 +176,11 @@ const resolvers: Resolvers = {
     uploader_organization: ({ id }, _) =>
       DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
+      if (!service_instance_id) return null;
       return getServiceInstance(service_instance_id);
     },
     subscription: async ({ service_instance_id }, _, context) => {
+      if (!service_instance_id) return null;
       const subscription = await SubscriptionDomain.loadSubscriptionBy({
         service_instance_id,
         organization_id: context.user.selected_organization_id,

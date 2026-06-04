@@ -14,14 +14,17 @@ export const addOIDCStrategy = async (
   passport: PassportStatic
 ): Promise<void> => {
   logApp.debug('addOIDCStrategy');
-  const AUTH_SSO = 'SSO';
-  const STRATEGY_OPENID = 'OpenIDConnectStrategy';
-  const providers = [];
 
   const oidcConfig = getOidcConfig();
   const redirectUri = oidcConfig.redirect_uris?.[0];
   if (!redirectUri) {
     throw new Error('OIDC redirect_uris is not configured');
+  }
+  if (!oidcConfig.issuer) {
+    throw new Error('OIDC issuer is not configured');
+  }
+  if (!oidcConfig.client_id) {
+    throw new Error('OIDC client_id is not configured');
   }
 
   const providerRef = 'oidc';
@@ -48,7 +51,7 @@ export const addOIDCStrategy = async (
         const userinfo = await fetchUserInfo(
           oidcConfiguration,
           tokens.access_token,
-          tokens.claims().sub
+          tokens.claims()?.sub ?? ''
         );
 
         const extractedRoles = extractRole(
@@ -69,11 +72,15 @@ export const addOIDCStrategy = async (
           given_name,
           picture,
         } = userinfo;
+        if (!email) {
+          throw new Error('email is not provided');
+        }
+
         await providerLoginHandler(
           {
             email,
-            first_name: given_name ?? first_name,
-            last_name: family_name,
+            first_name: given_name ?? first_name ?? '',
+            last_name: family_name ?? '',
             roles,
             picture,
           },
@@ -91,13 +98,7 @@ export const addOIDCStrategy = async (
       done(null, user);
     });
     passport.deserializeUser(function (user, done) {
-      done(null, user);
-    });
-    providers.push({
-      name: 'keycloak-express',
-      type: AUTH_SSO,
-      STRATEGY_OPENID,
-      provider: providerRef,
+      done(null, user as Express.User);
     });
   } catch (err) {
     logApp.error('Error initializing authentication provider', {

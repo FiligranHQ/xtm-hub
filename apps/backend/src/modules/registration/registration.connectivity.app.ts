@@ -145,7 +145,7 @@ const refreshConnectivityStatus = async ({
     throw new Error(BadRequestErrorCode.TenantIdMandatory);
   }
 
-  let platformConfiguration =
+  let platformConfiguration: PlatformConfiguration | null | undefined =
     await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
       platform_id,
       token,

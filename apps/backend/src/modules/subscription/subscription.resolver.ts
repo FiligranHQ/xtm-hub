@@ -1,5 +1,6 @@
 import {
   Resolvers,
+  ServiceInstance,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
 
@@ -22,8 +23,11 @@ const resolvers: Resolvers = {
   SubscriptionModel: {
     subscription_capability: ({ id }, _) =>
       SubscriptionDomain.getSubscriptionCapability(id as SubscriptionId),
-    service_instance: ({ service_instance_id }, _) =>
-      loadServiceInstanceBy({ id: service_instance_id }),
+    service_instance: async ({ service_instance_id }, _) => {
+      const instance = await loadServiceInstanceBy({ id: service_instance_id });
+      if (!instance) throw new Error('ServiceInstance not found');
+      return instance as unknown as ServiceInstance;
+    },
     user_service: ({ id }, _) =>
       SubscriptionDomain.getUserService(id as SubscriptionId),
     organization: ({ organization_id }, _) =>

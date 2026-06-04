@@ -20,7 +20,7 @@ import {
   NotFoundErrorCode,
   UnknownErrorCode,
 } from '../../utils/error/error.code';
-import { nullsToUndefined } from '../../utils/typescript';
+import { stripNulls } from '../../utils/typescript';
 import {
   DocumentUploadsHelper,
   Upload,
@@ -93,7 +93,7 @@ export const EpicApp = {
     const createdDocument = await addImage(user, uploads);
 
     const epicData: Partial<Epic> = {
-      ...restInput,
+      ...stripNulls(restInput),
       id: uuidv4() as EpicId,
       uploader_id: user.id,
       created_at: new Date(),
@@ -124,7 +124,7 @@ export const EpicApp = {
       oldEpic = await EpicDomain.loadEpicsBy({ id });
     }
     const epicData: Partial<Epic> = {
-      ...nullsToUndefined(restInput),
+      ...stripNulls(restInput),
       updater_id: user.id,
       updated_at: new Date(),
       epic_type: is_integration ? EpicType.Integration : EpicType.Other,

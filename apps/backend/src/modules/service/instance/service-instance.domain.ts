@@ -622,7 +622,7 @@ export const loadPlatformConfigurationByServiceInstanceId = async (
 export const updatePlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string,
   config: PlatformConfigurationMutator
-): Promise<PlatformConfigurationModel | null> => {
+): Promise<PlatformConfigurationModel | undefined> => {
   const qb = db<PlatformConfigurationModel>('PlatformConfiguration')
     .where('service_instance_id', '=', serviceInstanceId)
     .update({ ...config })

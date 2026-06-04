@@ -56,7 +56,7 @@ export const createUserWithPersonalSpace = async (
     UserInitializer,
     'email' | 'first_name' | 'last_name' | 'picture'
   > & {
-    password?: string;
+    password?: string | null;
     selected_organization_id?: OrganizationId;
   }
 ): Promise<User> => {

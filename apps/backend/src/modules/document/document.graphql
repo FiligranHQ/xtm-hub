@@ -64,7 +64,6 @@ type DefaultDocument implements Node & Document {
   short_description: String
   description: String
   file_name: String @auth
-  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -73,7 +72,7 @@ type DefaultDocument implements Node & Document {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId! @auth
+  service_instance_id: ServiceInstanceId @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -88,7 +87,6 @@ interface Document implements Node {
   short_description: String
   description: String
   file_name: String @auth
-  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -97,7 +95,7 @@ interface Document implements Node {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId! @auth
+  service_instance_id: ServiceInstanceId @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]

@@ -200,7 +200,7 @@ type Mutation {
   deleteUserServices(input: UserServicesDeleteInput!, service_instance_id: ServiceInstanceId!): [UserService]
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
-  deleteEpic(id: ID!): Epic!
+  deleteEpic(id: ID!): Epic
 }
 
 """
@@ -572,7 +572,6 @@ type DefaultDocument implements Node & Document {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -581,7 +580,7 @@ type DefaultDocument implements Node & Document {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -596,7 +595,6 @@ interface Document implements Node {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -605,7 +603,7 @@ interface Document implements Node {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1246,7 +1244,6 @@ type OpenAEVScenario implements Document & Node {
   short_description: String
   description: String
   file_name: String!
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1255,7 +1252,7 @@ type OpenAEVScenario implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1271,7 +1268,6 @@ type CustomDashboard implements Document & Node {
   short_description: String
   description: String
   file_name: String!
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1280,7 +1276,7 @@ type CustomDashboard implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1329,7 +1325,6 @@ interface Integration implements Node & Document {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1338,7 +1333,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1358,7 +1353,6 @@ type IntegrationHack implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1367,7 +1361,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1387,7 +1381,6 @@ type CsvFeed implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1396,7 +1389,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1417,7 +1410,6 @@ type Connector implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1426,7 +1418,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1455,7 +1447,6 @@ type TaxiiFeed implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1464,7 +1455,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1486,7 +1477,6 @@ type RssFeed implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1495,7 +1485,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1517,7 +1507,6 @@ type Stream implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1526,7 +1515,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1548,7 +1537,6 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1557,7 +1545,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1581,7 +1569,6 @@ type OpenCTIPlaybook implements Document & Node {
   short_description: String
   description: String
   file_name: String!
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1590,7 +1577,7 @@ type OpenCTIPlaybook implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1620,7 +1607,7 @@ type SubscriptionModel implements Node {
   end_date: Date
   organization: Organization!
   service_url: String!
-  service_instance: ServiceInstance
+  service_instance: ServiceInstance!
   subscription_capability: [SubscriptionCapability]
   user_service: [UserService]!
 }

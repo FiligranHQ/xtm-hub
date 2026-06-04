@@ -15,7 +15,7 @@ import {
 } from '../../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../../utils/error/error.mapping';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
-import { nullsToUndefined } from '../../../../utils/typescript';
+import { stripNulls } from '../../../../utils/typescript';
 import { isValidEmail } from '../../../../utils/verify-email.util';
 import { DocumentHelper } from '../../../document/document.helper';
 import {
@@ -62,7 +62,7 @@ export const userProfileApp = {
 
     try {
       await auth0Client.updateUser({
-        ...nullsToUndefined(input),
+        ...stripNulls(input),
         email: updatedUser.email,
       });
     } catch (err) {
