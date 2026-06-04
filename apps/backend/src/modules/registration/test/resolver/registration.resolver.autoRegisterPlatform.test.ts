@@ -8,7 +8,7 @@ import {
 import { PortalContext } from '../../../../model/portal-context';
 import { BadRequestErrorCode } from '../../../../utils/error/error.code';
 import { ErrorType } from '../../../../utils/error/error.type';
-import { registrationApp } from '../../registration.app';
+import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 const makeContext = (token: string | null = null): PortalContext =>
@@ -43,7 +43,7 @@ describe('mutation.autoRegisterPlatform', () => {
 
   it('should call autoRegisterPlatform with token from header and return success', async () => {
     const token = uuidv4();
-    vi.spyOn(registrationApp, 'autoRegisterPlatform').mockResolvedValue(
+    vi.spyOn(RegistrationApp, 'autoRegisterPlatform').mockResolvedValue(
       undefined
     );
 
@@ -54,7 +54,7 @@ describe('mutation.autoRegisterPlatform', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(registrationApp.autoRegisterPlatform).toHaveBeenCalledWith(
+    expect(RegistrationApp.autoRegisterPlatform).toHaveBeenCalledWith(
       token,
       validInput
     );
@@ -62,7 +62,7 @@ describe('mutation.autoRegisterPlatform', () => {
   });
 
   it('should use legacy platform arg when input is null', async () => {
-    vi.spyOn(registrationApp, 'autoRegisterPlatform').mockResolvedValue(
+    vi.spyOn(RegistrationApp, 'autoRegisterPlatform').mockResolvedValue(
       undefined
     );
 
@@ -73,14 +73,14 @@ describe('mutation.autoRegisterPlatform', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(registrationApp.autoRegisterPlatform).toHaveBeenCalledWith(null, {
+    expect(RegistrationApp.autoRegisterPlatform).toHaveBeenCalledWith(null, {
       platform: validInput.platform,
     });
     expect(result).toMatchObject({ success: true });
   });
 
   it('should map to BadRequest for InvalidPlatformIdentifier error', async () => {
-    vi.spyOn(registrationApp, 'autoRegisterPlatform').mockRejectedValue(
+    vi.spyOn(RegistrationApp, 'autoRegisterPlatform').mockRejectedValue(
       new Error(BadRequestErrorCode.InvalidPlatformIdentifier)
     );
 

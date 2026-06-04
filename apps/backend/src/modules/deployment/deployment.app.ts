@@ -48,7 +48,7 @@ import { ucfirst } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
-import { registrationDomain } from '../registration/registration.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
@@ -127,7 +127,7 @@ export const DeploymentApp = {
             const ordering = (maxOrdering ?? 0) + 1;
 
             const serviceInstanceId =
-              await registrationDomain.registerNewPlatform({
+              await RegistrationDomain.registerNewPlatform({
                 serviceDefinitionId: serviceDefinition.id,
                 organizationId: user.selected_organization_id,
                 platformIdentifier: input.platform_identifier,

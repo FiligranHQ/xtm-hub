@@ -13,7 +13,7 @@ import { BadRequestErrorCode, ErrorCode } from '../../utils/error/error.code';
 import { RequiredPlatformVersions } from '../../utils/required-platform-version';
 import { doesVersionSatisfy, isValidVersion } from '../../utils/versioning';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
-import { isTenantIdRequired } from './registration.helper';
+import { RegistrationHelper } from './registration.helper';
 
 const handleTenantUpgrade = async ({
   platform_id,
@@ -37,7 +37,7 @@ const handleTenantUpgrade = async ({
 
   if (
     configWithoutTenant &&
-    !isTenantIdRequired(
+    !RegistrationHelper.isTenantIdRequired(
       platform_identifier,
       configWithoutTenant.platform_version
     )
@@ -140,7 +140,7 @@ const refreshConnectivityStatus = async ({
   if (
     !tenant_id &&
     platform_identifier &&
-    isTenantIdRequired(platform_identifier, platform_version)
+    RegistrationHelper.isTenantIdRequired(platform_identifier, platform_version)
   ) {
     throw new Error(BadRequestErrorCode.TenantIdMandatory);
   }
@@ -186,7 +186,7 @@ const refreshConnectivityStatus = async ({
   };
 };
 
-export const registrationConnectivityApp = {
+export const RegistrationConnectivityApp = {
   refreshPlatformRegistrationConnectivityStatus: async (
     input: RefreshPlatformRegistrationConnectivityStatusInput
   ): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {

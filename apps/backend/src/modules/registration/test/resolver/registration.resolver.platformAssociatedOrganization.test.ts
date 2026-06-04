@@ -11,7 +11,7 @@ import {
   NotFoundErrorCode,
   UnknownErrorCode,
 } from '../../../../utils/error/error.code';
-import { registrationApp } from '../../registration.app';
+import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.platformAssociatedOrganization', () => {
@@ -23,7 +23,7 @@ describe('query.platformAssociatedOrganization', () => {
       name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
     };
     vi.spyOn(
-      registrationApp,
+      RegistrationApp,
       'loadPlatformAssociatedOrganization'
     ).mockResolvedValue(organization as unknown as Organization);
 
@@ -38,7 +38,7 @@ describe('query.platformAssociatedOrganization', () => {
 
     // Then
     expect(
-      registrationApp.loadPlatformAssociatedOrganization
+      RegistrationApp.loadPlatformAssociatedOrganization
     ).toHaveBeenCalledWith(platformId, undefined);
     expect(result).toMatchObject({
       id: TEST_ORGANIZATIONS.FILIGRAN.ID,
@@ -55,7 +55,7 @@ describe('query.platformAssociatedOrganization', () => {
       name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
     };
     vi.spyOn(
-      registrationApp,
+      RegistrationApp,
       'loadPlatformAssociatedOrganization'
     ).mockResolvedValue(organization as unknown as Organization);
 
@@ -69,7 +69,7 @@ describe('query.platformAssociatedOrganization', () => {
 
     // Then
     expect(
-      registrationApp.loadPlatformAssociatedOrganization
+      RegistrationApp.loadPlatformAssociatedOrganization
     ).toHaveBeenCalledWith(platformId, tenantId);
   });
 
@@ -77,7 +77,7 @@ describe('query.platformAssociatedOrganization', () => {
     // Given
     const platformId = uuidv4();
     vi.spyOn(
-      registrationApp,
+      RegistrationApp,
       'loadPlatformAssociatedOrganization'
     ).mockResolvedValue(null);
 
@@ -105,7 +105,7 @@ describe('query.platformAssociatedOrganization', () => {
       // Given
       const platformId = uuidv4();
       vi.spyOn(
-        registrationApp,
+        RegistrationApp,
         'loadPlatformAssociatedOrganization'
       ).mockRejectedValue(new Error(errorCode));
 
