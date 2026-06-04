@@ -68,7 +68,7 @@ import {
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
-import { registrationApp } from './registration.app';
+import { RegistrationApp } from './registration.app';
 import { registrationDomain } from './registration.domain';
 
 describe('registration app', () => {
@@ -79,7 +79,7 @@ describe('registration app', () => {
   describe('loadPlatformAssociatedOrganization', () => {
     it('should return null when platform is not found', async () => {
       const result =
-        await registrationApp.loadPlatformAssociatedOrganization(uuidv4());
+        await RegistrationApp.loadPlatformAssociatedOrganization(uuidv4());
 
       expect(result).toBeNull();
     });
@@ -99,7 +99,7 @@ describe('registration app', () => {
       });
 
       const call =
-        registrationApp.loadPlatformAssociatedOrganization(platformId);
+        RegistrationApp.loadPlatformAssociatedOrganization(platformId);
 
       await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
     });
@@ -125,7 +125,7 @@ describe('registration app', () => {
       });
       requestContext.set(requestContextSimpleUserSecondOrga);
       const call =
-        registrationApp.loadPlatformAssociatedOrganization(platformId);
+        RegistrationApp.loadPlatformAssociatedOrganization(platformId);
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
@@ -148,7 +148,7 @@ describe('registration app', () => {
       });
 
       const call =
-        registrationApp.loadPlatformAssociatedOrganization(platformId);
+        RegistrationApp.loadPlatformAssociatedOrganization(platformId);
       await expect(call).rejects.toThrow(BadRequestErrorCode.TenantIdMandatory);
     });
 
@@ -175,7 +175,7 @@ describe('registration app', () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
       const result =
-        await registrationApp.loadPlatformAssociatedOrganization(platformId);
+        await RegistrationApp.loadPlatformAssociatedOrganization(platformId);
 
       expect(result).toBeDefined();
       expect(result?.id).toBe(TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID);
@@ -185,7 +185,7 @@ describe('registration app', () => {
   describe('isPlatformRegistered', () => {
     it(`should return never registered when platform is not registered`, async () => {
       const platformId = uuidv4();
-      const result = await registrationApp.isPlatformRegistered({
+      const result = await RegistrationApp.isPlatformRegistered({
         platformId,
       });
 
@@ -208,7 +208,7 @@ describe('registration app', () => {
         status: PlatformConfigurationStatus.Active,
       });
 
-      const call = registrationApp.isPlatformRegistered({
+      const call = RegistrationApp.isPlatformRegistered({
         platformId,
       });
 
@@ -237,7 +237,7 @@ describe('registration app', () => {
         service_instance_id: serviceInstanceId,
       });
 
-      const result = await registrationApp.isPlatformRegistered({
+      const result = await RegistrationApp.isPlatformRegistered({
         platformId,
       });
 
@@ -271,7 +271,7 @@ describe('registration app', () => {
         service_instance_id: serviceInstanceId,
       });
 
-      const result = await registrationApp.isPlatformRegistered({
+      const result = await RegistrationApp.isPlatformRegistered({
         platformId,
       });
 
@@ -295,7 +295,7 @@ describe('registration app', () => {
         tenantId = uuidv4();
         tenantName = 'My OpenAEV tenant';
 
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -324,7 +324,7 @@ describe('registration app', () => {
           expectedStatus: PlatformRegistrationStatus;
         }) => {
           // When
-          const result = await registrationApp.isPlatformRegistered({
+          const result = await RegistrationApp.isPlatformRegistered({
             platformId,
             tenantId: getTenantId(),
           });
@@ -351,7 +351,7 @@ describe('registration app', () => {
 
     describe('invalid configuration', async () => {
       it('should throw when platformId is not valid', async () => {
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...platform,
@@ -366,7 +366,7 @@ describe('registration app', () => {
       });
 
       it('should throw when platformUrl is not valid', async () => {
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...platform,
@@ -381,7 +381,7 @@ describe('registration app', () => {
       });
 
       it('should throw when platform version is not a valid semantic version', async () => {
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...platform,
@@ -398,7 +398,7 @@ describe('registration app', () => {
 
     it('should throw when user does not belong to the organization', async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
-      const call = registrationApp.registerPlatform({
+      const call = RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -409,7 +409,7 @@ describe('registration app', () => {
 
     it('should throw when user does not have the required capabilities', async () => {
       requestContext.set(requestContextSimpleUserSecondOrga);
-      const call = registrationApp.registerPlatform({
+      const call = RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -423,7 +423,7 @@ describe('registration app', () => {
     it('return token when platform is registered', async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      const token = await registrationApp.registerPlatform({
+      const token = await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -447,7 +447,7 @@ describe('registration app', () => {
           .spyOn(telemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform,
           identifier: platformName,
@@ -482,7 +482,7 @@ describe('registration app', () => {
 
       const tenantId = uuidv4();
       const tenantName = 'My OpenAEV tenant';
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: { ...platform, tenantId, tenantName },
         identifier: PlatformIdentifier.Openaev,
@@ -517,7 +517,7 @@ describe('registration app', () => {
         const tenantName = 'My OpenAEV tenant';
 
         // When
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -549,7 +549,7 @@ describe('registration app', () => {
         const platformId = uuidv4();
 
         // When
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -586,7 +586,7 @@ describe('registration app', () => {
         };
 
         // When
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...basePlatform,
@@ -595,7 +595,7 @@ describe('registration app', () => {
           },
           identifier: PlatformIdentifier.Openaev,
         });
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...basePlatform,
@@ -645,7 +645,7 @@ describe('registration app', () => {
           tenantId,
           tenantName,
         };
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: openaevPlatform,
           identifier: PlatformIdentifier.Openaev,
@@ -657,7 +657,7 @@ describe('registration app', () => {
           );
 
         // When — register again with the same (platform_id, tenantId)
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...openaevPlatform,
@@ -696,7 +696,7 @@ describe('registration app', () => {
       `(
         'should throw TENANT_ID_MANDATORY for OpenAEV $description ($version) without tenantId',
         async ({ version }: { version: string }) => {
-          const call = registrationApp.registerPlatform({
+          const call = RegistrationApp.registerPlatform({
             organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
             platform: {
               id: uuidv4(),
@@ -721,7 +721,7 @@ describe('registration app', () => {
       `(
         'should not throw TENANT_ID_MANDATORY for OpenAEV $description ($version) without tenantId',
         async ({ version }: { version: string }) => {
-          const call = registrationApp.registerPlatform({
+          const call = RegistrationApp.registerPlatform({
             organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
             platform: {
               id: uuidv4(),
@@ -738,7 +738,7 @@ describe('registration app', () => {
       );
 
       it('should not throw TENANT_ID_MANDATORY for OpenCTI regardless of version', async () => {
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: uuidv4(),
@@ -758,7 +758,7 @@ describe('registration app', () => {
         const platformId = uuidv4();
         const tenantId = uuidv4();
         const tenantName = 'My OpenAEV tenant';
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -773,7 +773,7 @@ describe('registration app', () => {
         });
 
         // When — re-register without tenantId (legacy client below threshold)
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -795,7 +795,7 @@ describe('registration app', () => {
         const platformId = uuidv4();
         const tenantId = uuidv4();
         const tenantName = 'My OpenAEV tenant';
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -808,7 +808,7 @@ describe('registration app', () => {
         });
 
         // When — re-register after upgrade to a version that requires tenantId, with tenantId provided
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -856,14 +856,14 @@ describe('registration app', () => {
     it('should throw when user does not belong to the organization', async () => {
       requestContext.set(requestContextAdminUser);
 
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      const call = registrationApp.unregisterPlatform({
+      const call = RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -873,14 +873,14 @@ describe('registration app', () => {
 
     it('should throw when user does not have the required capabilities', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
       requestContext.set(requestContextSimpleUserSecondOrga);
-      const call = registrationApp.unregisterPlatform({
+      const call = RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -891,13 +891,13 @@ describe('registration app', () => {
     });
 
     it('should throw when identifier is not the right type', async () => {
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const call = registrationApp.unregisterPlatform({
+      const call = RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Openaev,
       });
@@ -906,13 +906,13 @@ describe('registration app', () => {
     });
 
     it('should unregister platform when the platform is still active', async () => {
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationApp.unregisterPlatform({
+      await RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -941,7 +941,7 @@ describe('registration app', () => {
       beforeEach(async () => {
         // Given — an OpenAEV platform registered with a specific tenantId
         tenantId = uuidv4();
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: { ...platform, tenantId, tenantName: 'My OpenAEV tenant' },
           identifier: PlatformIdentifier.Openaev,
@@ -950,7 +950,7 @@ describe('registration app', () => {
 
       it('should set the specific tenant configuration to inactive', async () => {
         // When
-        await registrationApp.unregisterPlatform({
+        await RegistrationApp.unregisterPlatform({
           platformId,
           identifier: PlatformIdentifier.Openaev,
           tenantId,
@@ -969,7 +969,7 @@ describe('registration app', () => {
 
       it('should not unregister when tenantId does not match any active configuration', async () => {
         // When
-        await registrationApp.unregisterPlatform({
+        await RegistrationApp.unregisterPlatform({
           platformId,
           identifier: PlatformIdentifier.Openaev,
           tenantId: uuidv4(),
@@ -990,14 +990,14 @@ describe('registration app', () => {
     it('should throw TENANT_ID_MANDATORY when unregistering a tenanted platform without providing tenantId', async () => {
       // Given — an OpenAEV platform registered with a tenantId
       const tenantId = uuidv4();
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: { ...platform, tenantId, tenantName: 'My OpenAEV tenant' },
         identifier: PlatformIdentifier.Openaev,
       });
 
       // When
-      const call = registrationApp.unregisterPlatform({
+      const call = RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Openaev,
         // no tenantId
@@ -1045,7 +1045,7 @@ describe('registration app', () => {
         Promise.resolve(undefined)
       );
 
-      const call = registrationApp.canUnregisterPlatform({
+      const call = RegistrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -1058,7 +1058,7 @@ describe('registration app', () => {
       );
       loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
-      const call = registrationApp.canUnregisterPlatform({
+      const call = RegistrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -1077,7 +1077,7 @@ describe('registration app', () => {
         Promise.resolve({ organization_id: organizationId })
       );
 
-      const result = await registrationApp.canUnregisterPlatform({
+      const result = await RegistrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -1097,7 +1097,7 @@ describe('registration app', () => {
         Promise.resolve({ isAllowed: false, isInOrganization: false })
       );
 
-      const result = await registrationApp.canUnregisterPlatform({
+      const result = await RegistrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -1112,7 +1112,7 @@ describe('registration app', () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
     });
     it('should return inactive when platform is not registered', async () => {
-      const result = await registrationApp.loadPlatformRegistrationStatus({
+      const result = await RegistrationApp.loadPlatformRegistrationStatus({
         platformId: uuidv4(),
         token: uuidv4(),
       });
@@ -1124,7 +1124,7 @@ describe('registration app', () => {
 
     it('should return active when platform is registered', async () => {
       const platformId = uuidv4();
-      const token = await registrationApp.registerPlatform({
+      const token = await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
           id: platformId,
@@ -1136,7 +1136,7 @@ describe('registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const result = await registrationApp.loadPlatformRegistrationStatus({
+      const result = await RegistrationApp.loadPlatformRegistrationStatus({
         platformId,
         token,
       });
@@ -1146,7 +1146,7 @@ describe('registration app', () => {
 
     it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
-      const token = await registrationApp.registerPlatform({
+      const token = await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
           id: platformId,
@@ -1158,12 +1158,12 @@ describe('registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationApp.unregisterPlatform({
+      await RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const result = await registrationApp.loadPlatformRegistrationStatus({
+      const result = await RegistrationApp.loadPlatformRegistrationStatus({
         platformId: platformId,
         token,
       });
@@ -1177,7 +1177,7 @@ describe('registration app', () => {
   describe('refreshUserPlatformToken', () => {
     it('should generate a token and add it to the user each time it is called', async () => {
       requestContext.set(requestContextAdminUser);
-      const { token } = await registrationApp.refreshUserPlatformToken(
+      const { token } = await RegistrationApp.refreshUserPlatformToken(
         contextBypassUser.user.id
       );
       const user = await TestHelper.user.load({
@@ -1187,7 +1187,7 @@ describe('registration app', () => {
       expect(token).toBe(user.platform_token);
 
       const { token: anotherToken } =
-        await registrationApp.refreshUserPlatformToken(
+        await RegistrationApp.refreshUserPlatformToken(
           contextBypassUser.user.id
         );
       const updatedUser = await TestHelper.user.load({
@@ -1246,7 +1246,7 @@ describe('registration app', () => {
       await deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
-      const call = registrationApp.autoRegisterPlatform(uuidv4(), {
+      const call = RegistrationApp.autoRegisterPlatform(uuidv4(), {
         platform: platformConfiguration,
       });
       await expect(call).rejects.toThrow(
@@ -1259,7 +1259,7 @@ describe('registration app', () => {
         { platform_id: uuidv4() }
       );
 
-      const call = registrationApp.autoRegisterPlatform(
+      const call = RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: { ...platformConfiguration, id: uuidv4() } }
       );
@@ -1275,7 +1275,7 @@ describe('registration app', () => {
         }
       );
 
-      const call = registrationApp.autoRegisterPlatform(
+      const call = RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: platformConfiguration }
       );
@@ -1284,7 +1284,7 @@ describe('registration app', () => {
       );
     });
     it('should register the provided platform', async () => {
-      await registrationApp.autoRegisterPlatform(
+      await RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: platformConfiguration }
       );
@@ -1320,12 +1320,12 @@ describe('registration app', () => {
         contract: PlatformContract.Trial,
         version: 'A.B.C',
       };
-      await registrationApp.autoRegisterPlatform(
+      await RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: platformConfiguration }
       );
 
-      await registrationApp.autoRegisterPlatform(
+      await RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: newPlatformConfiguration }
       );
@@ -1363,7 +1363,7 @@ describe('registration app', () => {
           .spyOn(telemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
-        await registrationApp.autoRegisterPlatform(
+        await RegistrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
           { platform: platformConfiguration }
         );
@@ -1393,7 +1393,7 @@ describe('registration app', () => {
           .spyOn(telemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
-        await registrationApp.autoRegisterPlatform(
+        await RegistrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
           { platform: platformConfiguration, existing_users_count: 42 }
         );
@@ -1462,7 +1462,7 @@ describe('registration app', () => {
           tenantId: uuidv4(),
           tenantName: 'My OpenAEV tenant',
         };
-        await registrationApp.autoRegisterPlatform(
+        await RegistrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
           { platform: openaevPlatformConfiguration }
         );
@@ -1491,7 +1491,7 @@ describe('registration app', () => {
       const tenantName = 'My OpenAEV tenant';
 
       // When
-      await registrationApp.autoRegisterPlatform(
+      await RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: { ...platformConfiguration, tenantId, tenantName } }
       );

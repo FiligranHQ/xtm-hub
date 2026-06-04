@@ -74,7 +74,7 @@ const buildPlatformConfiguration = (
   token,
 });
 
-export const registrationApp = {
+export const RegistrationApp = {
   loadPlatformAssociatedOrganization: async (
     platformId: string,
     tenantId?: string | null

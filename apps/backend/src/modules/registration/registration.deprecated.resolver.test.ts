@@ -17,7 +17,7 @@ import { requestContext } from '../../context/request.context';
 import { PortalContext } from '../../model/portal-context';
 import { BadRequestErrorCode } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
-import { registrationApp } from './registration.app';
+import { RegistrationApp } from './registration.app';
 import registrationResolver from './registration.resolver';
 
 const PLATFORM_TOKEN = uuidv4();
@@ -67,7 +67,7 @@ describe('registration query resolver', () => {
       }
 
       const platformId = uuidv4();
-      const token = await registrationApp.registerPlatform({
+      const token = await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
           id: platformId,
@@ -96,7 +96,7 @@ describe('registration query resolver', () => {
 
     beforeEach(() => {
       autoRegisterSpy = vi
-        .spyOn(registrationApp, 'autoRegisterPlatform')
+        .spyOn(RegistrationApp, 'autoRegisterPlatform')
         .mockResolvedValue();
     });
 
