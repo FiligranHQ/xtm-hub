@@ -69,7 +69,7 @@ import {
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { RegistrationApp } from './registration.app';
-import { registrationDomain } from './registration.domain';
+import { RegistrationDomain } from './registration.domain';
 
 describe('registration app', () => {
   afterAll(async () => {
@@ -1212,7 +1212,7 @@ describe('registration app', () => {
     beforeEach(async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      const serviceInstanceId = await registrationDomain.registerNewPlatform({
+      const serviceInstanceId = await RegistrationDomain.registerNewPlatform({
         serviceDefinitionId: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platformIdentifier: PlatformIdentifier.Opencti,
@@ -1420,7 +1420,7 @@ describe('registration app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
 
-        const serviceInstanceId = await registrationDomain.registerNewPlatform({
+        const serviceInstanceId = await RegistrationDomain.registerNewPlatform({
           serviceDefinitionId: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platformIdentifier: PlatformIdentifier.Openaev,
