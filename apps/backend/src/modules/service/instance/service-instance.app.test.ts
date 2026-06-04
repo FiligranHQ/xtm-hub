@@ -438,6 +438,10 @@ describe('service Instance app', () => {
     });
 
     it('should throw SERVICE_DEFINITION_NOT_FOUND when service definition does not exist', async () => {
+      // Cannot reproduce with real DB: loadPlatformServiceInstance filters by
+      // ServiceDefinition.identifier, so a result is only returned when a
+      // matching ServiceDefinition exists in the join.
+
       // Given
       const mockId = uuidv4() as ServiceInstanceId;
       vi.spyOn(
