@@ -51,7 +51,7 @@ vi.mock('./ui/ShareableResourceCarouselView', () => ({
   default: () => <div>Carousel</div>,
 }));
 
-vi.mock('@filigran/ui/servers', () => ({
+vi.mock('@filigran/ui', () => ({
   Button: ({
     children,
     onClick,

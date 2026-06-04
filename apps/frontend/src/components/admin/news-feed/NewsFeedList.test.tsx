@@ -80,7 +80,7 @@ vi.mock('@/components/ui/AlertDialog', () => ({
     ) : null,
 }));
 
-vi.mock('@filigran/ui/servers', () => ({
+vi.mock('@filigran/ui', () => ({
   Badge: ({ children }: { children: ReactNode }) => <span>{children}</span>,
 }));
 

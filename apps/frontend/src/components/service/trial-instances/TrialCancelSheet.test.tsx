@@ -1,14 +1,38 @@
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { createMockEnvironment } from 'relay-test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TrialCancelSheet } from './TrialCancelSheet';
 
-let lastCancelDeploymentRequestVariables: Record<string, unknown> | null = null;
+const testState = vi.hoisted(() => ({
+  lastCancelDeploymentRequestVariables: null as Record<string, unknown> | null,
+  mutationMode: 'success' as 'success' | 'error',
+  toastMock: vi.fn(),
+}));
 
 vi.mock('@/components/service/trial-instances/useOrgaFreeTrials', () => ({
   useOrgaFreeTrial: () => ({ refetch: vi.fn() }),
+}));
+vi.mock('@/components/ui/SheetWithPreventingDialog', () => ({
+  SheetWithPreventingDialog: ({
+    children,
+    title,
+  }: {
+    children: React.ReactNode;
+    title: string;
+  }) => (
+    <div>
+      <h2>{title}</h2>
+      {children}
+    </div>
+  ),
+}));
+vi.mock('@/components/service/registration/SelectWithEditableField', () => ({
+  SelectWithEditableField: () => (
+    <div data-testid="select-with-editable-field" />
+  ),
 }));
 vi.mock('react-relay', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -18,7 +42,11 @@ vi.mock('react-relay', async (importOriginal) => ({
       onCompleted?: (data: unknown) => void;
       onError?: (err: Error) => void;
     }) => {
-      lastCancelDeploymentRequestVariables = opts.variables;
+      testState.lastCancelDeploymentRequestVariables = opts.variables;
+      if (testState.mutationMode === 'error') {
+        opts.onError?.(new Error('Some error'));
+        return;
+      }
       opts.onCompleted?.({
         cancelDeploymentRequest: { counts_in_orga_quota: false },
       });
@@ -31,10 +59,24 @@ type AutoFormProps = {
   children: React.ReactNode;
   [key: string]: unknown;
 };
-vi.mock('@filigran/ui', async (importOriginal) => {
+vi.mock('@filigran/ui', () => {
   return {
-    ...(await importOriginal()),
-    toast: vi.fn(),
+    toast: testState.toastMock,
+    Button: ({
+      children,
+      ...props
+    }: {
+      children: React.ReactNode;
+      [key: string]: unknown;
+    }) => <button {...props}>{children}</button>,
+    FormItem: ({ children }: { children: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+    FormLabel: ({ children }: { children: React.ReactNode }) => (
+      <label>{children}</label>
+    ),
+    FormMessage: ({ children }: { children?: React.ReactNode }) =>
+      children ? <div>{children}</div> : null,
     AutoForm: ({ onSubmit, children, ...props }: AutoFormProps) => (
       <form
         onSubmit={(e) => {
@@ -51,7 +93,9 @@ vi.mock('@filigran/ui', async (importOriginal) => {
 
 describe('TrialCancelSheet', () => {
   beforeEach(() => {
-    lastCancelDeploymentRequestVariables = null;
+    testState.lastCancelDeploymentRequestVariables = null;
+    testState.mutationMode = 'success';
+    testState.toastMock.mockReset();
   });
 
   it('should render and submit cancellation reason', async () => {
@@ -73,7 +117,7 @@ describe('TrialCancelSheet', () => {
     await waitFor(() => {
       expect(setOpen).toHaveBeenCalledWith(false);
     });
-    expect(lastCancelDeploymentRequestVariables).toMatchObject({
+    expect(testState.lastCancelDeploymentRequestVariables).toMatchObject({
       cancellationReason: 'Test reason',
     });
   });
@@ -113,23 +157,9 @@ describe('TrialCancelSheet', () => {
   });
 
   it('should show error toast on mutation error', async () => {
-    vi.doMock('react-relay', async (importOriginal) => ({
-      ...(await importOriginal()),
-      useMutation: () => [
-        (opts: { onError?: (err: Error) => void }) => {
-          opts.onError?.(new Error('Some error'));
-        },
-        {},
-      ],
-    }));
-    await vi.resetModules();
-    const uiMod = await import('@filigran/ui');
-    const toast = uiMod.toast as ReturnType<typeof vi.fn>;
-    toast.mockClear();
-    const { TrialCancelSheet: ErrorTrialCancelSheet } =
-      await import('./TrialCancelSheet');
+    testState.mutationMode = 'error';
     testRender(
-      <ErrorTrialCancelSheet
+      <TrialCancelSheet
         deploymentRequestId="id"
         isCancellationDefinitive={false}
         open
@@ -142,7 +172,7 @@ describe('TrialCancelSheet', () => {
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
     });
     await waitFor(() => {
-      const errorCall = toast.mock.calls.find(
+      const errorCall = testState.toastMock.mock.calls.find(
         (call: unknown[]) =>
           (call[0] as Record<string, unknown>)?.variant === 'destructive'
       );

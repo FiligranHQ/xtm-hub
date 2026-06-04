@@ -8,8 +8,7 @@ import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@filigran/ui/clients', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@filigran/ui/clients')>()),
+vi.mock('@filigran/ui/clients', () => ({
   FormControl: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   FormItem: ({
     children,
@@ -36,6 +35,17 @@ vi.mock('@filigran/ui/clients', async (importOriginal) => ({
   FormMessage: () => null,
 }));
 
+vi.mock('@filigran/ui/servers', () => ({
+  Button: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => <button {...props}>{children}</button>,
+  Input: (props: { [key: string]: unknown }) => <input {...props} />,
+}));
+
 type AutoFormMockProps = {
   onSubmit: (values: { organizationId: string }) => void;
   children: React.ReactNode;
@@ -49,8 +59,7 @@ type AutoFormMockProps = {
   values?: { organizationId: string };
 };
 
-vi.mock('@filigran/ui', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@filigran/ui')>()),
+vi.mock('@filigran/ui', () => ({
   AutoForm: ({
     onSubmit,
     children,
