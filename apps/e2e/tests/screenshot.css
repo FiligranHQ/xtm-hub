@@ -1,6 +1,6 @@
-body > div[role="region"][aria-label="Notifications (F8)"] {
-    display: none !important;
+body > div[role='region'][aria-label='Notifications (F8)'] {
+  display: none !important;
 }
 #devtools-indicator {
-    display: none !important;
+  display: none !important;
 }

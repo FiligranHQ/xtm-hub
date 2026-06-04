@@ -1,3 +1,7 @@
+import {
+  userListFragment,
+  UserListQuery,
+} from '@/components/admin/user/UserList';
 import { UserList_users$key } from '@generated/UserList_users.graphql';
 import {
   OrderingMode,
@@ -6,10 +10,6 @@ import {
 } from '@generated/UserListQuery.graphql';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
 import { FetchPolicy } from 'relay-runtime';
-import {
-  userListFragment,
-  UserListQuery,
-} from '@/components/admin/user/UserList';
 
 interface Props {
   pageSize: number;

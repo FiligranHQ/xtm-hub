@@ -1,3 +1,4 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   TrialsForOrga,
   TrialsForOrgaFragment,
@@ -7,7 +8,6 @@ import { trialInstancesTrialsForOrgaFragment$key } from '@generated/trialInstanc
 import { trialInstancesTrialsForOrgaQuery } from '@generated/trialInstancesTrialsForOrgaQuery.graphql';
 import { useContext } from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-import { PortalContext } from '@/components/me/AppPortalContext';
 
 export const useOrgaFreeTrial = () => {
   const { me } = useContext(PortalContext);

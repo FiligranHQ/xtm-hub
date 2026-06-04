@@ -2,7 +2,7 @@ import { expect, test } from '../fixtures/baseFixtures';
 import LoginPage from '../model/login.pageModel';
 
 import IntegrationPage from '../model/integration.pageModel';
-import RegisterPage, { PlatformDetails } from '../model/register.pageModel';
+import RegisterPage from '../model/register.pageModel';
 import { HomePage } from '../model/home.pageModel';
 
 const CSV_FEED_TEST = {

@@ -2,8 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 
+import GuardCapacityComponent from '@/components/AdminGuard';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { IconActionContext } from '@/components/ui/IconActions';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {
   Callout,
@@ -17,10 +21,6 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import Image from 'next/image'; // Component
 import Link from 'next/link';
 import { ReactNode, useContext, useState } from 'react';
-import GuardCapacityComponent from '@/components/AdminGuard';
-import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import { IconActionContext } from '@/components/ui/IconActions';
-import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 
 export const PRODUCTS_AVAILABLE_ON_TRIAL = 2;
 type BannerConfig = {

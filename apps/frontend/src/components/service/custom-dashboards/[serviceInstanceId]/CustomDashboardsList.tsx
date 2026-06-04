@@ -1,10 +1,14 @@
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
+import { AppServiceContext } from '@/components/service/components/ServiceContext';
+import ServiceList from '@/components/service/components/ServiceList';
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import {
   documentItem,
   documentsFragment,
   DocumentsListQuery,
 } from '@/components/service/document/document.graphql';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
+import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   documentItem_fragment$data,
@@ -18,10 +22,6 @@ import {
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
-import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
-import { AppServiceContext } from '@/components/service/components/ServiceContext';
-import ServiceList from '@/components/service/components/ServiceList';
-import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 
 interface CustomDashboardsListProps {
   queryRef: PreloadedQuery<documentsQuery>;

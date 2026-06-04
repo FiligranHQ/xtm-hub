@@ -18,7 +18,6 @@ import {
   subscription_fragment$data,
   subscription_fragment$key,
 } from '@generated/subscription_fragment.graphql';
-import * as React from 'react';
 import {
   readInlineData,
   useLazyLoadQuery,

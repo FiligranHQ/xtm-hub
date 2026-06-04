@@ -15,12 +15,12 @@ const baseUser: CopilotUser = {
 
 describe('getUserKey', () => {
   it.each`
-    user                                                         | expected              | description
-    ${null}                                                      | ${'anonymous'}        | ${'null user'}
-    ${undefined}                                                 | ${'anonymous'}        | ${'undefined user'}
-    ${{ ...baseUser }}                                           | ${'user-1-Jane-Doe'}  | ${'full user'}
-    ${{ ...baseUser, id: null }}                                 | ${'no-id-Jane-Doe'}   | ${'missing id'}
-    ${{ ...baseUser, first_name: null, last_name: null }}        | ${'user-1--'}         | ${'missing names'}
+    user                                                  | expected             | description
+    ${null}                                               | ${'anonymous'}       | ${'null user'}
+    ${undefined}                                          | ${'anonymous'}       | ${'undefined user'}
+    ${{ ...baseUser }}                                    | ${'user-1-Jane-Doe'} | ${'full user'}
+    ${{ ...baseUser, id: null }}                          | ${'no-id-Jane-Doe'}  | ${'missing id'}
+    ${{ ...baseUser, first_name: null, last_name: null }} | ${'user-1--'}        | ${'missing names'}
   `('returns "$expected" for $description', ({ user, expected }) => {
     expect(getUserKey(user)).toBe(expected);
   });
@@ -71,22 +71,19 @@ describe('buildContext', () => {
 
     it('falls back to "Unknown" when selected org is not found', () => {
       const result = JSON.parse(
-        buildContext(
-          { ...baseUser, selected_organization_id: 'org-999' },
-          '/'
-        )
+        buildContext({ ...baseUser, selected_organization_id: 'org-999' }, '/')
       );
       expect(result.organization).toBe('Unknown');
       expect(result.isPersonalSpace).toBe('false');
     });
 
     it.each`
-      first_name   | last_name    | expected     | description
-      ${'Jane'}    | ${'Doe'}     | ${'Jane Doe'} | ${'both names'}
-      ${'Jane'}    | ${null}      | ${'Jane'}     | ${'last name null'}
-      ${null}      | ${'Doe'}     | ${'Doe'}      | ${'first name null'}
-      ${null}      | ${null}      | ${'Unknown'}  | ${'both null'}
-      ${''}        | ${''}        | ${'Unknown'}  | ${'both empty'}
+      first_name | last_name | expected      | description
+      ${'Jane'}  | ${'Doe'}  | ${'Jane Doe'} | ${'both names'}
+      ${'Jane'}  | ${null}   | ${'Jane'}     | ${'last name null'}
+      ${null}    | ${'Doe'}  | ${'Doe'}      | ${'first name null'}
+      ${null}    | ${null}   | ${'Unknown'}  | ${'both null'}
+      ${''}      | ${''}     | ${'Unknown'}  | ${'both empty'}
     `(
       'formats username as "$expected" when $description',
       ({ first_name, last_name, expected }) => {
