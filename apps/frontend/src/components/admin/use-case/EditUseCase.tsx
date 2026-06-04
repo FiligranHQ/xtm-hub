@@ -3,14 +3,16 @@ import UseCaseForm, {
 } from '@/components/admin/use-case/UseCaseForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { portalGraphqlClient } from '@/lib/graphql-client';
+import { removeFromQueryCache, updateInQueryCache } from '@/utils/query-cache';
 import { toast } from '@filigran/ui';
 import {
-  OrderingMode,
-  UseCaseOrdering,
+  UseCaseDeleteMutation,
+  UseCaseEditMutation,
+  UseCasesListQuery,
   useUseCaseDeleteMutation,
   useUseCaseEditMutation,
-  useUseCasesListQuery,
 } from '@graphql/generated';
+import { useCaseListKeys } from '@graphql/use-case/use-case-list.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -29,17 +31,14 @@ const EditUseCase = ({
   const [openSheet, setOpenSheet] = useState<boolean>(open);
 
   const { mutate: editUseCase } = useUseCaseEditMutation(portalGraphqlClient, {
-    onSuccess: () => {
+    onSuccess: (data: UseCaseEditMutation) => {
       toast({
         title: t('Utils.Success'),
       });
-      queryClient.invalidateQueries({
-        queryKey: useUseCasesListQuery.getKey({
-          count: 100,
-          orderMode: OrderingMode.Asc,
-          orderBy: UseCaseOrdering.Name,
-        }),
-      });
+      queryClient.setQueryData<UseCasesListQuery>(
+        useCaseListKeys.all(),
+        updateInQueryCache('useCases', data.editUseCase)
+      );
       handleOpenSheet(false);
     },
     onError: (error) => {
@@ -56,17 +55,14 @@ const EditUseCase = ({
   const { mutate: deleteUseCase } = useUseCaseDeleteMutation(
     portalGraphqlClient,
     {
-      onSuccess: () => {
+      onSuccess: (data: UseCaseDeleteMutation) => {
         toast({
           title: t('Utils.Success'),
         });
-        queryClient.invalidateQueries({
-          queryKey: useUseCasesListQuery.getKey({
-            count: 100,
-            orderMode: OrderingMode.Asc,
-            orderBy: UseCaseOrdering.Name,
-          }),
-        });
+        queryClient.setQueryData<UseCasesListQuery>(
+          useCaseListKeys.all(),
+          removeFromQueryCache('useCases', data.deleteUseCase.id)
+        );
         handleOpenSheet(false);
       },
       onError: (error) => {

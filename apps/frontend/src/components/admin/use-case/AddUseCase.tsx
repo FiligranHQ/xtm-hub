@@ -1,13 +1,14 @@
 import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { portalGraphqlClient } from '@/lib/graphql-client';
+import { prependToQueryCache } from '@/utils/query-cache';
 import { Button, toast } from '@filigran/ui';
 import {
-  OrderingMode,
-  UseCaseOrdering,
+  UseCaseAddMutation,
+  UseCasesListQuery,
   useUseCaseAddMutation,
-  useUseCasesListQuery,
 } from '@graphql/generated';
+import { useCaseListKeys } from '@graphql/use-case/use-case-list.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -17,15 +18,17 @@ const AddUseCase = () => {
   const [openSheet, setOpenSheet] = useState(false);
   const queryClient = useQueryClient();
   const { mutate: createUseCase } = useUseCaseAddMutation(portalGraphqlClient, {
-    onSuccess: () => {
+    onSuccess: (data: UseCaseAddMutation) => {
       setOpenSheet(false);
-      queryClient.invalidateQueries({
-        queryKey: useUseCasesListQuery.getKey({
-          count: 100,
-          orderMode: OrderingMode.Asc,
-          orderBy: UseCaseOrdering.Name,
-        }),
-      });
+      const newUseCase = data.addUseCase;
+      if (newUseCase) {
+        queryClient.setQueryData<UseCasesListQuery>(
+          useCaseListKeys.all(),
+          prependToQueryCache('useCases', {
+            node: newUseCase,
+          })
+        );
+      }
       toast({
         title: t('Utils.Success'),
       });

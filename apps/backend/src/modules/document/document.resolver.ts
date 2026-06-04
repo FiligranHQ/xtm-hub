@@ -21,7 +21,7 @@ import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/sc
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
 import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../shareable-resource/opencti/playbook/playbook.model';
-import { loadSubscriptionBy } from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildShareEvent,
@@ -173,7 +173,7 @@ const resolvers: Resolvers = {
       return getServiceInstance(service_instance_id);
     },
     subscription: async ({ service_instance_id }, _, context) => {
-      const subscription = await loadSubscriptionBy({
+      const subscription = await SubscriptionDomain.loadSubscriptionBy({
         service_instance_id,
         organization_id: context.user.selected_organization_id,
       });

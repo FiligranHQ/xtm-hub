@@ -19,18 +19,18 @@
     "uuid": "catalog:"
   },
   "devDependencies": {
-    "@eslint/js": "9.39.4",
+    "@eslint/js": "catalog:",
     "@playwright/test": "1.60.0",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
-    "globals": "17.6.0",
+    "globals": "catalog:",
     "graphql": "catalog:",
     "graphql-tag": "2.12.6",
     "monocart-reporter": "catalog:",
     "playwright-ctrf-json-reporter": "0.0.29",
     "prettier": "catalog:",
-    "typescript-eslint": "8.60.0"
+    "typescript-eslint": "catalog:"
   },
   "packageManager": "yarn@4.15.0+sha512.07ec708ac11e2eaa4ea2b04cfbb272812f7e74a753f1595eaef4486c663a98306a30cca3e6fc40f7a0b168dcfb3a2490b6a5e0501e20fb69cc36f563dd161c53",
   "prettier": {

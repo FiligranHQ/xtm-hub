@@ -6,15 +6,7 @@ import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability'
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { addCapabilitiesToSubscription } from '../security-management/subscription-capability/subscription-capability.domain';
-import {
-  createSubscription,
-  getServiceCapability,
-  getSubscriptionCapability,
-  loadSubscriptionBy,
-  SubscriptionDomain,
-  transferSubscriptionToOrganization,
-  updateSubscriptionBy,
-} from './subscription.domain';
+import { SubscriptionDomain } from './subscription.domain';
 
 describe('subscription domain', () => {
   let serviceInstanceId: ServiceInstanceId;
@@ -33,7 +25,7 @@ describe('subscription domain', () => {
       const start_date = new Date('2025-01-01');
       const end_date = new Date('2026-01-01');
 
-      const result = await createSubscription({
+      const result = await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -53,7 +45,7 @@ describe('subscription domain', () => {
     it('should create a subscription with a null end_date', async () => {
       const id = uuidv4() as SubscriptionId;
 
-      const result = await createSubscription({
+      const result = await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -69,7 +61,7 @@ describe('subscription domain', () => {
   describe(`should test loadSubscriptionBy`, () => {
     it('should return the subscription matching the given field', async () => {
       const id = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -77,14 +69,14 @@ describe('subscription domain', () => {
         end_date: null,
       });
 
-      const result = await loadSubscriptionBy({ id });
+      const result = await SubscriptionDomain.loadSubscriptionBy({ id });
 
       expect(result).toBeDefined();
       expect(result?.id).toBe(id);
     });
 
     it('should return undefined when no subscription matches', async () => {
-      const result = await loadSubscriptionBy({
+      const result = await SubscriptionDomain.loadSubscriptionBy({
         id: uuidv4() as SubscriptionId,
       });
 
@@ -93,7 +85,7 @@ describe('subscription domain', () => {
 
     it('should filter by organization_id', async () => {
       const id = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
@@ -101,7 +93,7 @@ describe('subscription domain', () => {
         end_date: null,
       });
 
-      const result = await loadSubscriptionBy({
+      const result = await SubscriptionDomain.loadSubscriptionBy({
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
       });
@@ -113,7 +105,7 @@ describe('subscription domain', () => {
   describe(`should test updateSubscriptionBy`, () => {
     it('should update the subscription fields and return the updated rows', async () => {
       const id = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -121,7 +113,7 @@ describe('subscription domain', () => {
         end_date: new Date('2025-12-31'),
       });
 
-      const [updated] = await updateSubscriptionBy(
+      const [updated] = await SubscriptionDomain.updateSubscriptionBy(
         { id },
         { start_date: new Date('2026-06-01'), end_date: new Date('2026-12-31') }
       );
@@ -138,14 +130,14 @@ describe('subscription domain', () => {
     it('should delete subscriptions by ids and return the deleted rows', async () => {
       const id1 = uuidv4() as SubscriptionId;
       const id2 = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id: id1,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
         start_date: new Date(),
         end_date: null,
       });
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id: id2,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: serviceInstanceId,
@@ -160,8 +152,12 @@ describe('subscription domain', () => {
         expect.arrayContaining([id1, id2])
       );
 
-      const remaining1 = await loadSubscriptionBy({ id: id1 });
-      const remaining2 = await loadSubscriptionBy({ id: id2 });
+      const remaining1 = await SubscriptionDomain.loadSubscriptionBy({
+        id: id1,
+      });
+      const remaining2 = await SubscriptionDomain.loadSubscriptionBy({
+        id: id2,
+      });
       expect(remaining1).toBeUndefined();
       expect(remaining2).toBeUndefined();
     });
@@ -177,7 +173,7 @@ describe('subscription domain', () => {
   describe('should test getSubscriptionCapability', () => {
     it('should return capabilities linked to the subscription', async () => {
       const id = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -189,7 +185,7 @@ describe('subscription domain', () => {
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
       ]);
 
-      const result = await getSubscriptionCapability(id);
+      const result = await SubscriptionDomain.getSubscriptionCapability(id);
 
       expect(result).toHaveLength(2);
       const capabilityIds = result.map(
@@ -207,7 +203,7 @@ describe('subscription domain', () => {
 
     it('should return an empty array when the subscription has no capabilities', async () => {
       const id = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -215,7 +211,7 @@ describe('subscription domain', () => {
         end_date: null,
       });
 
-      const result = await getSubscriptionCapability(id);
+      const result = await SubscriptionDomain.getSubscriptionCapability(id);
       expect(result).toHaveLength(0);
     });
   });
@@ -223,7 +219,7 @@ describe('subscription domain', () => {
   describe('should test getServiceCapability', () => {
     it('should return the service capability linked to a subscription_capability id', async () => {
       const subscriptionId = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id: subscriptionId,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
@@ -235,7 +231,9 @@ describe('subscription domain', () => {
         [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID]
       );
 
-      const result = await getServiceCapability(subscriptionCapability!.id);
+      const result = await SubscriptionDomain.getServiceCapability(
+        subscriptionCapability!.id
+      );
 
       expect(result).toBeDefined();
       expect(result.id).toBe(
@@ -244,7 +242,7 @@ describe('subscription domain', () => {
     });
 
     it('should return undefined when the subscription_capability id does not exist', async () => {
-      const result = await getServiceCapability(
+      const result = await SubscriptionDomain.getServiceCapability(
         uuidv4() as ServiceCapabilityId
       );
       expect(result).toBeUndefined();
@@ -254,7 +252,7 @@ describe('subscription domain', () => {
   describe(`should test transferSubscriptionToOrganization`, () => {
     it('should transfer a subscription to a new organization', async () => {
       const id = uuidv4() as SubscriptionId;
-      await createSubscription({
+      await SubscriptionDomain.createSubscription({
         id,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         service_instance_id: serviceInstanceId,
@@ -262,12 +260,12 @@ describe('subscription domain', () => {
         end_date: null,
       });
 
-      await transferSubscriptionToOrganization({
+      await SubscriptionDomain.transferSubscriptionToOrganization({
         subscriptionId: id,
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
 
-      const updated = await loadSubscriptionBy({ id });
+      const updated = await SubscriptionDomain.loadSubscriptionBy({ id });
       expect(updated?.organization_id).toBe(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );

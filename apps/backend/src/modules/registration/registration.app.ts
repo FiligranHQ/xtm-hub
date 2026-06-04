@@ -46,7 +46,7 @@ import { UserOrganizationDomain } from '../organization-management/user/user-org
 import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
-import { loadSubscriptionBy } from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../telemetry/telemetry.helper';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
@@ -100,7 +100,7 @@ export const RegistrationApp = {
       }
     }
 
-    const subscription = await loadSubscriptionBy({
+    const subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id:
         resolvedConfiguration.platformConfiguration.service_instance_id,
     });
@@ -300,7 +300,7 @@ export const RegistrationApp = {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
-    const subscription = await loadSubscriptionBy({
+    const subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id: platformConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -355,7 +355,7 @@ export const RegistrationApp = {
       return { status: PlatformRegistrationStatus.NeverRegistered };
     }
 
-    const subscription = await loadSubscriptionBy({
+    const subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id: platformConfiguration.service_instance_id,
     });
     if (!subscription) {
@@ -392,7 +392,7 @@ export const RegistrationApp = {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
-    const subscription = await loadSubscriptionBy({
+    const subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id:
         resolvedConfiguration.platformConfiguration.service_instance_id,
     });

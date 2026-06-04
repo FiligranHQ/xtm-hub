@@ -33,6 +33,7 @@ import {
   DeploymentRequestPlatformState,
   DeploymentRequestSource,
   DeploymentRequestUseCase,
+  PlatformConfigurationStatus,
   PlatformContract,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
@@ -56,7 +57,7 @@ import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
-import { loadSubscriptionBy } from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { deleteSubscription } from '../subscription/subscription.helper';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
@@ -538,7 +539,7 @@ describe('deployment app', () => {
       await TestHelper.platformConfiguration.create({
         service_instance_id: deploymentRequest!.service_instance_id,
         platform_url: 'https://test-platform.opencti.io',
-        status: 'active',
+        status: PlatformConfigurationStatus.Active,
       });
 
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
@@ -736,7 +737,7 @@ describe('deployment app', () => {
       const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
         id: dbDeploymentRequest!.service_instance_id,
       });
-      const subscription = await loadSubscriptionBy({
+      const subscription = await SubscriptionDomain.loadSubscriptionBy({
         service_instance_id: dbDeploymentRequest.service_instance_id,
       });
       expect(dbDeploymentRequest).toMatchObject({
@@ -1033,7 +1034,7 @@ describe('deployment app', () => {
           platform_version: '1.0.0',
           platform_contract: PlatformContract.Trial,
           token: 'token',
-          status: DeploymentRequestPlatformState.Active,
+          status: PlatformConfigurationStatus.Active,
           last_connectivity_check: new Date(),
         });
         await DeploymentApp.updateDeploymentRequest({
