@@ -15,6 +15,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { restrictDocumentToUserOrganization } from '../../../security/restriction/document';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { MinioFile } from '../../../thirdparty/minio/types';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../document.app';
 import { Document } from '../document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from '../document.model';
@@ -143,9 +144,14 @@ export const DocumentChildrenDomain = {
     doc: T,
     externalImageUpload: Upload
   ) => {
+    const { service_instance_id } = doc;
+    if (!service_instance_id) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
+
     const [logoFile] = await DocumentUploadsHelper.processUploads(
       externalImageUpload,
-      doc.service_instance_id
+      service_instance_id
     );
 
     const deletedDocuments = await withTransaction(async () => {
@@ -155,7 +161,7 @@ export const DocumentChildrenDomain = {
       if (logoFile) {
         await DocumentChildrenDomain.createImageDocuments(
           doc.id,
-          doc.service_instance_id,
+          service_instance_id,
           [logoFile],
           DocumentImageType.Logo,
           DocumentSourceType.External

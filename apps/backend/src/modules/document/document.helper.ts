@@ -135,11 +135,12 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
         INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
       [IntegrationType.Connector]: INTEGRATION_CONNECTOR_METADATA,
     };
-    if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
+    const result = metadataKeysMapping[integrationType];
+    if (!result) {
       throw new Error(ErrorCode.IntegrationTypeNotManageable);
     }
 
-    return metadataKeysMapping[integrationType];
+    return result;
   },
   [ServiceDefinitionIdentifier.OpenaevScenarios]: () =>
     OPENAEV_SCENARIO_METADATA,
@@ -255,10 +256,12 @@ export const DocumentHelper = {
       (meta) => meta.key === DocumentMetadataKeyCode.IntegrationType
     )?.value as unknown as IntegrationType | undefined;
 
-    const isFileProhibited = [
-      IntegrationType.Connector,
-      IntegrationType.ThirdPartyIntegration,
-    ].includes(integrationType);
+    const isFileProhibited =
+      integrationType !== undefined &&
+      [
+        IntegrationType.Connector,
+        IntegrationType.ThirdPartyIntegration,
+      ].includes(integrationType);
 
     return !isFileProhibited;
   },
@@ -289,8 +292,8 @@ export const DocumentHelper = {
       await MinIOClient.deleteFile(document.minio_name);
     }
     await Promise.all(
-      childrenDocumentFromDB.map((document) =>
-        MinIOClient.deleteFile(document.minio_name)
+      childrenDocumentFromDB.flatMap((doc) =>
+        doc.minio_name !== null ? [MinIOClient.deleteFile(doc.minio_name)] : []
       )
     );
   },

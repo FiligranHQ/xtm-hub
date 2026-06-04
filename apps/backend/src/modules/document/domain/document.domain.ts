@@ -27,6 +27,7 @@ import {
   restrictDocumentToUserOrganization,
 } from '../../../security/restriction/document';
 import { MinioFile } from '../../../thirdparty/minio/types';
+import { stripNulls } from '../../../utils/typescript';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,
@@ -358,7 +359,7 @@ export const DocumentDomain = {
     const [updatedDocument] = await db<DocumentModel>('Document')
       .where('id', '=', parentDocumentId)
       .update({
-        ...omit(completeDocumentData, ['use_cases']),
+        ...stripNulls(omit(completeDocumentData, ['use_cases'])),
         uploader_organization_id,
         uploader_id,
         updated_at: new Date(),

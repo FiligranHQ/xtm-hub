@@ -36,7 +36,7 @@ const loadUser = async (
   user: UserLoadUserBy | null;
   isLoadedFromUserPlatformToken?: boolean;
 }> => {
-  const userLoadFromCookie: UserLoadUserBy | null = req.session.user;
+  const userLoadFromCookie: UserLoadUserBy | undefined = req.session.user;
   if (userLoadFromCookie) {
     return { user: userLoadFromCookie };
   }
@@ -50,7 +50,7 @@ const loadUser = async (
     'User.platform_token': user_platform_token,
   });
   return {
-    user: userLoadFromUserPlatformToken,
+    user: userLoadFromUserPlatformToken ?? null,
     isLoadedFromUserPlatformToken: true,
   };
 };
@@ -83,15 +83,23 @@ export const documentDownloadEndpoint = (app) => {
           }
         }
 
-        logApp.info('Downloading file:', { filename: req.params.filename });
+        const filename = Array.isArray(req.params.filename)
+          ? req.params.filename[0]
+          : req.params.filename;
+
+        if (!filename) {
+          logApp.error(
+            'Error while retrieving document: filename not provided'
+          );
+          res.status(400).json({ message: 'Missing filename parameter' });
+          return;
+        }
+
+        logApp.info('Downloading file:', { filename });
 
         try {
           const document = await DocumentDomain.loadDocumentBy({
-            id: fromGlobalId(
-              Array.isArray(req.params.filename)
-                ? req.params.filename[0]
-                : req.params.filename
-            ).id as DocumentId,
+            id: fromGlobalId(filename).id as DocumentId,
           });
 
           if (!document) {
@@ -100,6 +108,13 @@ export const documentDownloadEndpoint = (app) => {
             );
             res.status(404).json({ message: 'Document not found' });
             throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
+          }
+
+          if (!document.minio_name) {
+            logApp.error(
+              `Download Error - Invalid document - Missing name for ${document.id}`
+            );
+            return res.status(404).json({ message: 'Invalid document' });
           }
 
           const stream = (await MinIOClient.downloadFile(
@@ -129,7 +144,7 @@ export const documentDownloadEndpoint = (app) => {
                 user.id,
                 serviceDefinition.identifier,
                 document.id,
-                document.name
+                document.name ?? ''
               );
               await telemetryApp.sendTelemetryEvent(downloadEvent);
             }
