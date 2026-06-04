@@ -1,9 +1,9 @@
 'use client';
-import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { EpicList } from '@/components/epic/EpicList';
 import { useEpicFilter } from '@/hooks/use-epic-filter';
 import { EpicListContext } from '@/hooks/use-epic-list-context';
-import { EpicList } from '@/components/epic/EpicList';
+import { epic_fragment$data } from '@generated/epic_fragment.graphql';
+import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 
 interface EpicPageProps {
   epics: epic_fragment$data[];

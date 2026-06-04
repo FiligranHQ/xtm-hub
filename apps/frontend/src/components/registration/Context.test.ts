@@ -1,7 +1,7 @@
+import { generateRegistrationContext } from '@/components/registration/Context';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { describe, expect, it } from 'vitest';
-import { generateRegistrationContext } from '@/components/registration/Context';
 
 describe('generateRegistrationContext', () => {
   it('returns only an empty displayedIdentifier when no identifier is provided', () => {

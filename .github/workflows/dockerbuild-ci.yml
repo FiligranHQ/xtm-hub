@@ -33,7 +33,7 @@ jobs:
       code: ${{ steps.filter.outputs.code }}
     steps:
       - uses: actions/checkout@v6
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -44,7 +44,7 @@ jobs:
               - "yarn.lock"
 
   run-lint:
-    name: Lint ${{ matrix.label }}
+    name: Check quality ${{ matrix.label }}
     needs: detect-changes
     if: needs.detect-changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -56,6 +56,8 @@ jobs:
             working-directory: apps/backend
           - label: frontend
             working-directory: apps/frontend
+          - label: e2e
+            working-directory: apps/e2e
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -76,6 +78,16 @@ jobs:
       - name: Run lint
         working-directory: ${{ matrix.working-directory }}
         run: yarn lint
+
+      - name: Check formatting
+        working-directory: ${{ matrix.working-directory }}
+        run: yarn format:check
+
+      - name: yarn i18n-check
+        if: matrix.label == 'frontend'
+        working-directory: ${{ matrix.working-directory }}
+        run: |
+          yarn i18n:check
 
   build-images-tests:
     needs:

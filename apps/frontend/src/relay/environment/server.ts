@@ -1,3 +1,9 @@
+import { fetchOrSubscribe, networkFetch } from '@/relay/environment/fetch-fn';
+import {
+  buildQueryId,
+  fieldLogger,
+  isRelayObservable,
+} from '@/relay/environment/helpers';
 import {
   Environment,
   FetchFunction,
@@ -7,8 +13,6 @@ import {
   RecordSource,
   Store,
 } from 'relay-runtime';
-import { fetchOrSubscribe, networkFetch } from '@/relay/environment/fetch-fn';
-import { buildQueryId, fieldLogger, isRelayObservable } from '@/relay/environment/helpers';
 
 export type QueryResponsePayload = {
   queryId: string;

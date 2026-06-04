@@ -65,6 +65,124 @@ const localTestRulesPlugin = {
   },
 };
 
+const localI18nRulesPlugin = {
+  rules: {
+    'no-literal-string-in-jsx': {
+      meta: {
+        type: 'problem',
+        docs: {
+          description:
+            'Disallow untranslated literal strings in JSX while allowing configured punctuation tokens.',
+        },
+        schema: [
+          {
+            type: 'object',
+            properties: {
+              allowedStrings: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+            additionalProperties: false,
+          },
+        ],
+      },
+      create(context) {
+        // Examples from config:
+        // - allowedStrings: ':' | '/' | '•' | '('
+        // - useful for UI separators that must not be translated.
+        const allowedStrings = new Set(
+          context.options[0]?.allowedStrings ?? []
+        );
+
+        const isAllowedText = (value) => {
+          if (typeof value !== 'string') {
+            return false;
+          }
+
+          const trimmed = value.trim();
+          if (!trimmed) {
+            return true;
+          }
+
+          // Example allowed directly: " - ", "/", "•", "..."
+          // because these are separators with no letters/digits.
+          if (!/[\p{L}\p{N}]/u.test(trimmed)) {
+            return true;
+          }
+
+          return allowedStrings.has(trimmed);
+        };
+
+        const reportIfLiteralString = (node) => {
+          if (
+            node.type === 'Literal' &&
+            typeof node.value === 'string' &&
+            !isAllowedText(node.value)
+          ) {
+            context.report({
+              node,
+              message: 'Cannot have untranslated text in JSX',
+            });
+            return;
+          }
+
+          if (
+            node.type === 'TemplateLiteral' &&
+            node.expressions.length === 0
+          ) {
+            const templateValue = node.quasis[0]?.value?.cooked ?? '';
+            if (!isAllowedText(templateValue)) {
+              context.report({
+                node,
+                message: 'Cannot have untranslated text in JSX',
+              });
+            }
+            return;
+          }
+
+          if (node.type === 'BinaryExpression' && node.operator === '+') {
+            reportIfLiteralString(node.left);
+            reportIfLiteralString(node.right);
+            return;
+          }
+
+          if (node.type === 'ConditionalExpression') {
+            reportIfLiteralString(node.consequent);
+            reportIfLiteralString(node.alternate);
+            return;
+          }
+
+          if (node.type === 'LogicalExpression') {
+            reportIfLiteralString(node.left);
+            reportIfLiteralString(node.right);
+          }
+        };
+
+        return {
+          // Example flagged: <span>Deployable</span>
+          // Example ignored: <span> | </span>
+          JSXText(node) {
+            if (!isAllowedText(node.value)) {
+              context.report({
+                node,
+                message: 'Cannot have untranslated text in JSX',
+              });
+            }
+          },
+          'JSXElement > JSXExpressionContainer'(node) {
+            if (node.expression.type === 'JSXEmptyExpression') {
+              return;
+            }
+
+            reportIfLiteralString(node.expression);
+          },
+        };
+      },
+    },
+  },
+};
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
@@ -151,6 +269,34 @@ const eslintConfig = [
     files: ['**/components/**/*.tsx'],
     rules: {
       'unicorn/filename-case': ['error', { case: 'pascalCase' }],
+    },
+  },
+  {
+    files: ['**/components/**/*.tsx'],
+    ignores: ['**/*.test.tsx', '**/*.spec.tsx'],
+    plugins: {
+      'xtm-hub-i18n-rules': localI18nRulesPlugin,
+    },
+    rules: {
+      'xtm-hub-i18n-rules/no-literal-string-in-jsx': [
+        'error',
+        {
+          allowedStrings: [
+            ' ',
+            '*',
+            '-',
+            ':',
+            '/',
+            '|',
+            '•',
+            '·',
+            '(',
+            ')',
+            ',',
+            '.',
+          ],
+        },
+      ],
     },
   },
   {

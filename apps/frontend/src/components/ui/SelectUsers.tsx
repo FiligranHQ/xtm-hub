@@ -1,4 +1,5 @@
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { UserFragment } from '@/components/admin/user/UserList';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { CheckIcon, CloseIcon, KeyboardArrowDownIcon } from '@filigran/icon';
 import {
@@ -22,11 +23,10 @@ import { Badge, Button } from '@filigran/ui/servers';
 import { UserList_fragment$key } from '@generated/UserList_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { UserFragment } from '@/components/admin/user/UserList';
 
+import { useUsersList } from '@/hooks/use-users-list';
 import { readInlineData } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
-import { useUsersList } from '@/hooks/use-users-list';
 
 interface SelectUsersFormFieldProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   defaultValue?: string;
@@ -278,7 +278,7 @@ const SelectUsersFormField = React.forwardRef<
                         onValueChange('');
                       }
                     }}
-                    aria-label="Clear all selections">
+                    aria-label={t('SelectUsers.ClearAllSelections')}>
                     <CloseIcon className="mx-s h-3 cursor-pointer text-muted-foreground" />
                   </span>
                   <Separator
@@ -294,7 +294,7 @@ const SelectUsersFormField = React.forwardRef<
                   className="mx-3 text-sm text-muted-foreground normal-case"
                   role="textbox"
                   aria-readonly="true">
-                  {'Email'}
+                  {t('InviteUserServiceForm.Email')}
                 </span>
                 <KeyboardArrowDownIcon
                   className="mx-2 w-2.5 h-2.5 cursor-pointer text-muted-foreground"
@@ -312,7 +312,7 @@ const SelectUsersFormField = React.forwardRef<
             shouldFilter={false}
             onChange={handleSearchInputChange}>
             <CommandInput
-              placeholder="Search user..."
+              placeholder={t('UserActions.SearchUser')}
               onKeyDown={handleInputKeyDown}
             />
             <CommandList

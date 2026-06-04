@@ -1,7 +1,7 @@
+import { isValueInEnum } from '@/utils/is-value-in-enum';
 import { UserOrderingEnum } from '@generated/models/UserOrdering.enum';
 import { OrderingMode } from '@generated/UserListQuery.graphql';
 import { useLocalStorage } from 'usehooks-ts';
-import { isValueInEnum } from '@/utils/is-value-in-enum';
 
 export const useUserListLocalstorage = () => {
   const [count, setCount, removeCount] = useLocalStorage(
