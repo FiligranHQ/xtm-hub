@@ -7,6 +7,7 @@ import OnePlatformDisplay from '@/components/service/document/one-click-deploy/O
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
 import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
+import { isProduction } from '@/lib/utils';
 import { getPlatformIdentifier, isEeCapableContract } from '@/utils/platform';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { AlertDialog, AlertDialogContent, SimpleTooltip } from '@filigran/ui';
@@ -106,8 +107,14 @@ const OneClickDeploy = ({
   }
 
   const openEeSheet = useCallback(() => {
+    if (isProduction() && typeof window.gtag === 'function') {
+      window.gtag('event', 'ee_badge_one_click_deploy', {
+        resource_id: documentData.id,
+        resource_title: documentData.name ?? '',
+      });
+    }
     setIsEeSheetOpen(true);
-  }, []);
+  }, [documentData.id, documentData.name]);
 
   const alertContent = useMemo(() => {
     if (platforms.length === 0) {
