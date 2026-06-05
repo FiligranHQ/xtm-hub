@@ -1,6 +1,6 @@
 {
   "name": "@xtm-hub/frontend",
-  "version": "1.260605.0",
+  "version": "1.260605.1",
   "private": true,
   "scripts": {
     "dev": "concurrently \"relay-compiler && tsx scripts/generate-enum.ts\" \"yarn codegen:watch\" \"next dev  --turbopack -p 3002\"",
