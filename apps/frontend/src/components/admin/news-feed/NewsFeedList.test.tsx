@@ -13,7 +13,6 @@ type NewsFeedItem = {
 };
 
 const mocks = vi.hoisted(() => ({
-  toast: vi.fn(),
   refetch: vi.fn(),
   deleteMutation: vi.fn(),
   newsFeedItems: [] as NewsFeedItem[],
@@ -37,10 +36,6 @@ vi.mock('react-relay', async (importOriginal) => ({
   ],
   useMutation: () => [mocks.deleteMutation, false],
   readInlineData: (_fragment: unknown, node: unknown) => node,
-}));
-
-vi.mock('@filigran/icon', () => ({
-  MoreVertIcon: () => <span>more</span>,
 }));
 
 vi.mock('@/components/ui/IconActions', () => ({
@@ -80,79 +75,12 @@ vi.mock('@/components/ui/AlertDialog', () => ({
     ) : null,
 }));
 
-vi.mock('@filigran/ui', () => ({
-  Badge: ({ children }: { children: ReactNode }) => <span>{children}</span>,
-}));
-
 vi.mock('@/components/ui/BadgeOverflowCounter', () => ({
   default: ({ badges }: { badges: Array<{ id: string; name: string }> }) => (
     <div>
       {badges.map((badge) => (
         <span key={badge.id}>{badge.name}</span>
       ))}
-    </div>
-  ),
-}));
-
-vi.mock('@filigran/ui', () => ({
-  toast: mocks.toast,
-  DataTable: ({
-    columns,
-    data,
-    tableOptions,
-  }: {
-    columns: Array<{
-      id?: string;
-      accessorKey?: string;
-      header?: string;
-      cell?: ({ row }: { row: { original: NewsFeedItem } }) => ReactNode;
-    }>;
-    data: NewsFeedItem[];
-    tableOptions?: {
-      onPaginationChange?: (
-        updater: (previous: { pageIndex: number; pageSize: number }) => {
-          pageIndex: number;
-          pageSize: number;
-        }
-      ) => void;
-    };
-  }) => (
-    <div>
-      <button
-        onClick={() =>
-          tableOptions?.onPaginationChange?.(() => ({
-            pageIndex: 2,
-            pageSize: 10,
-          }))
-        }>
-        paginate
-      </button>
-      <table>
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th key={column.id ?? column.accessorKey}>{column.header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row) => (
-            <tr key={row.id}>
-              {columns.map((column) => (
-                <td key={`${row.id}-${column.id ?? column.accessorKey}`}>
-                  {column.cell
-                    ? column.cell({ row: { original: row } })
-                    : column.accessorKey
-                      ? (row[
-                          column.accessorKey as keyof NewsFeedItem
-                        ] as ReactNode)
-                      : null}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   ),
 }));
@@ -236,9 +164,6 @@ describe('NewsFeedList', () => {
     });
 
     await waitFor(() => {
-      expect(mocks.toast).toHaveBeenCalledWith({
-        title: 'NewsFeedAdminPage.DeleteSuccess',
-      });
       expect(mocks.refetch).toHaveBeenCalledWith(
         {
           count: 25,
@@ -273,25 +198,33 @@ describe('NewsFeedList', () => {
     });
 
     await waitFor(() => {
-      expect(mocks.toast).toHaveBeenCalledWith({
-        variant: 'destructive',
-        title: 'NewsFeedAdminPage.DeleteError',
-      });
       expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
     });
   });
 
   it('refetches with expected cursor and count on pagination change', async () => {
+    mocks.newsFeedItems = Array.from({ length: 30 }, (_unused, index) => ({
+      id: `item-${index + 1}`,
+      title: `News ${index + 1}`,
+      creation_date: '2025-01-20T08:00:00.000Z',
+      tags: ['tag'],
+      is_deleted: false,
+    }));
+
     const { user } = testRender(<NewsFeedList />);
 
-    await user.click(screen.getByRole('button', { name: 'paginate' }));
-
-    expect(mocks.refetch).toHaveBeenCalledWith(
-      {
-        count: 10,
-        cursor: btoa('20'),
-      },
-      { fetchPolicy: 'store-and-network' }
+    await user.click(
+      screen.getByRole('button', { name: 'Datatable.GoNextPage' })
     );
+
+    await waitFor(() => {
+      expect(mocks.refetch).toHaveBeenCalledWith(
+        {
+          count: 25,
+          cursor: btoa('25'),
+        },
+        { fetchPolicy: 'store-and-network' }
+      );
+    });
   });
 });

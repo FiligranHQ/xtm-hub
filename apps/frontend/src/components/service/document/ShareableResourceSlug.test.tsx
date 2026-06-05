@@ -5,7 +5,6 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { screen } from '@testing-library/react';
-import { ComponentPropsWithoutRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////// Mock hooks /////////////////////////////////////////////////////
@@ -20,54 +19,10 @@ vi.mock('../../../hooks/use-decoded-params', () => ({
   }),
 }));
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////// Mock children components ///////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-vi.mock('../../ui/share-link/ShareLinkButton', () => ({
-  ShareLinkButton: () => <div>ShareLinkButton</div>,
-}));
-
-vi.mock('../../ui/BadgeOverflowCounter', () => ({
-  default: () => <div>Badges</div>,
-}));
-
-vi.mock('../../ui/BreadcrumbNav', () => ({
-  BreadcrumbNav: () => <nav>Breadcrumb</nav>,
-}));
-
 vi.mock('./one-click-deploy/OneClickDeploy', () => ({
   default: () => <div>OneClickDeployComponentMock</div>,
 }));
 
-vi.mock('./ShareableResouceDetails', () => ({
-  default: () => <div>Details</div>,
-}));
-
-vi.mock('./ShareableResourceDescription', () => ({
-  default: () => <div>Description</div>,
-}));
-
-vi.mock('./ui/ShareableResourceCarouselView', () => ({
-  default: () => <div>Carousel</div>,
-}));
-
-vi.mock('@filigran/ui', () => ({
-  Button: ({
-    children,
-    onClick,
-    ...props
-  }: ComponentPropsWithoutRef<'button'>) => (
-    <button
-      onClick={onClick}
-      {...props}>
-      {children}
-    </button>
-  ),
-}));
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////// Mocks values /////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const mockSettings = {
   base_url_front: 'https://test.com',
 };

@@ -1,16 +1,7 @@
 import react from '@vitejs/plugin-react';
-import type { Plugin, PluginOption } from 'vite';
+import type { PluginOption } from 'vite';
 import relay from 'vite-plugin-relay';
 import { defineConfig } from 'vitest/config';
-
-const cssStubPlugin: Plugin = {
-  name: 'css-stub',
-  transform(_code, id) {
-    if (id.endsWith('.css')) {
-      return { code: 'export default {}' };
-    }
-  },
-};
 
 export default defineConfig({
   resolve: {
@@ -19,7 +10,7 @@ export default defineConfig({
   ssr: {
     noExternal: ['@filigran/ui', /@uiw\/.*/],
   },
-  plugins: [react() as PluginOption, relay as PluginOption, cssStubPlugin],
+  plugins: [react() as PluginOption, relay as PluginOption],
   test: {
     globals: true,
     environment: 'jsdom',
