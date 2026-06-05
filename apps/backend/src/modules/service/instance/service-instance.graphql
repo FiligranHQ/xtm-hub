@@ -114,10 +114,10 @@ type Query {
   serviceInstanceLinksByTags(
     tags: [ServiceInstanceTag!]!
   ): [SeoServiceInstance!]!
-  serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
+  serviceInstanceById(service_instance_id: ServiceInstanceId!): ServiceInstance
     @auth
   serviceInstanceByIdAndGrantAccess(
-    service_instance_id: ServiceInstanceId
+    service_instance_id: ServiceInstanceId!
   ): ServiceInstance @auth
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!

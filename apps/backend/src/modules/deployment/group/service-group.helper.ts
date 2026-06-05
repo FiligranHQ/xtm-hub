@@ -42,10 +42,12 @@ const buildGroupsByUserIdFromOldUsers = (
   const userGroups = new Map<UserId, Set<ServiceGroupId>>();
 
   for (const { user_id, group_id } of oldUsers) {
-    if (!userGroups.has(user_id)) {
-      userGroups.set(user_id, new Set());
+    let set = userGroups.get(user_id);
+    if (!set) {
+      set = new Set();
+      userGroups.set(user_id, set);
     }
-    userGroups.get(user_id).add(group_id);
+    set.add(group_id);
   }
 
   return userGroups;
@@ -58,10 +60,12 @@ const buildGroupsByUserIdFromNewUsers = (
 
   for (const { id, userIds } of newUsers) {
     for (const user_id of userIds) {
-      if (!groupsIndexedByUserId.has(user_id)) {
-        groupsIndexedByUserId.set(user_id, new Set());
+      let set = groupsIndexedByUserId.get(user_id);
+      if (!set) {
+        set = new Set();
+        groupsIndexedByUserId.set(user_id, set);
       }
-      groupsIndexedByUserId.get(user_id).add(id);
+      set.add(id);
     }
   }
 

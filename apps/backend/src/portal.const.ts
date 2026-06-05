@@ -65,7 +65,7 @@ export const SYSTEM_USER_CONTEXT: PortalContext = {
     capabilities: [],
     roles_portal: [],
   },
-} as PortalContext;
+} as unknown as PortalContext;
 
 export const CRONS_USER_CONTEXT: PortalContext = {
   user: {
@@ -89,4 +89,4 @@ export const CRONS_USER_CONTEXT: PortalContext = {
     capabilities: [],
     roles_portal: [],
   },
-} as PortalContext;
+} as unknown as PortalContext;

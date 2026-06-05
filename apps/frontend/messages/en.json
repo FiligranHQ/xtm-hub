@@ -154,6 +154,7 @@
     },
     "Server": {
       "ACCEPT_USER_IN_PENDING_ORGA_ERROR": "Error occurred while accepting users",
+      "ADD_CAPABILITIES_ERROR": "Error while adding capabilities",
       "ADD_ORGANIZATION_ERROR": "Error occurred while adding organization",
       "ADD_USER_SERVICE_ERROR": "Error while granting access to the user",
       "ADDING_USER_ERROR": "Error occurred while creating user",
@@ -167,6 +168,7 @@
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "You cannot request a free trial in your personal space",
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "A competitor with the same domain already exists",
+      "COMPETITOR_NOT_FOUND": "Competitor not found",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
       "DELETE_DOCUMENT_ERROR": "Error while deleting document",
       "DELETE_EPIC_ERROR": "An error occurred while deleting the epic.",
@@ -185,7 +187,6 @@
       "DOCUMENT_UPDATE_ERROR": "An error occurred while updating the resource.",
       "EDIT_CAPABILITIES_CANT_REMOVE_LAST_MANAGE_ACCESS": "Since you are the last user with 'manage access' capability in your organization, you cannot remove this capability.",
       "EDIT_CAPABILITIES_ERROR": "Error while editing capabilities",
-      "ADD_CAPABILITIES_ERROR": "Error while adding capabilities",
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
@@ -202,10 +203,10 @@
       "INVALID_ACTION_SIZE": "An unknown error occurred",
       "INVALID_EMAIL": "The email should be in valid format.",
       "INVALID_IMAGE_URL": "The image URL is not valid",
+      "INVALID_PLATFORM_CONFIGURATION": "Platform configuration is invalid",
       "INVALID_PLATFORM_ID": "An unknown error occurred",
       "INVALID_PLATFORM_IDENTIFIER": "Platform identifier is invalid",
       "INVALID_PLATFORM_VERSION": "Invalid platform version",
-      "INVALID_SERVICE_CONFIGURATION": "Service configuration is invalid",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during platform registration",
       "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Missing auto register platform argument",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
@@ -219,6 +220,7 @@
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "An organization with the same domain already exists",
       "ORGANIZATION_SAME_NAME_EXISTS": "An organization with the same name already exists",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "You are not allowed to do this",
+      "PLATFORM_CONFIGURATION_NOT_FOUND": "Platform configuration was not found",
       "PLATFORM_NOT_REGISTERED": "The platform is not registered",
       "PLATFORM_TYPE_NOT_SUPPORTED": "The platform type is not supported",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "An unknown error occurred while refreshing user platform token",
@@ -226,8 +228,6 @@
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "Registration on another organization is forbidden",
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "An error occurred while removing user from a pending organization",
-      "SERVICE_CONFIGURATION_NOT_FOUND": "Service configuration was not found",
-      "SERVICE_CONTRACT_NOT_FOUND": "Service contract was not found",
       "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "You are not allowed to do this",
       "SERVICE_INSTANCE_NOT_FOUND": "Service instance was not found",
@@ -243,6 +243,7 @@
       "UPLOAD_USER_PICTURE_ERROR": "An error occurred while uploading your profile picture",
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
+      "USER_NOT_FOUND": "User is not found",
       "YOU_CAN_NOT_LOGIN": "You can not login"
     },
     "SomethingWentWrong": "Something went wrong",
@@ -260,6 +261,9 @@
     }
   },
   "GoToProd": "Go to production",
+  "Header": {
+    "BrandName": "Filigran"
+  },
   "HomePage": {
     "Homepage": "Homepage",
     "Manage": "Manage",
@@ -267,6 +271,9 @@
   },
   "PublicHomePage": {
     "Title": "Discover resources and expertise"
+  },
+  "PublicPathError": {
+    "NotFound": "404 | This page could not be found"
   },
   "PublicLayout": {
     "SignIn": "Sign In",
@@ -776,6 +783,8 @@
     "Connectors": {
       "DataImport": "Data Import",
       "Description": "Explore a range of OpenCTI Connectors shared by the Filigran team",
+      "ImproveIntegrationPrefix": "If you would like to improve this integration, please take a look at",
+      "GithubRepositoryLink": "the github repository link here",
       "IntegrationDocumentationAndCode": "Integration documentation and code",
       "LastVerifiedDate": "Last verified at",
       "Name": "OpenCTI Connectors",
@@ -788,6 +797,7 @@
     "CreationStatus": "Creation status",
     "Form": {
       "Author": "Author",
+      "CapabilityAccessLabel": "{name} access: {description}",
       "ContainerImageLabel": "Container image",
       "CurrentLogo": "Current logo",
       "DatasheetUrlLabel": "Datasheet link (url)",
@@ -806,6 +816,7 @@
       "ImageLabel": "Images",
       "LogoLabel": "Logo",
       "ManagerSupportedLabel": "Manager supported",
+      "ManageAccessCapabilityLabel": "Manage access: The user can invite other users from his/her organization to this service",
       "MinimumDeployableVersionLabel": "{platform} deployable from hub version",
       "MinimumDeployableVersionPlaceholder": "1.0.0",
       "NameLabel": "Name",
@@ -1152,7 +1163,9 @@
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "Header": {
         "ActiveTrial": "Active trial",
-        "DaysRemaining": "remaining day"
+        "ActiveTrialCount": "{count} active trial{count, plural, one {} other {s}}",
+        "DaysRemaining": "remaining day",
+        "OpenInNewTab": "Open {title} in new tab"
       },
       "LearnMore": {
         "Link": "Learn more",
@@ -1344,6 +1357,9 @@
   },
   "ServiceName": {
     "custom_dashboards": "Custom Dashboard"
+  },
+  "SelectUsers": {
+    "ClearAllSelections": "Clear all selections"
   },
   "Sort Asc": "Sort Asc",
   "Sort Desc": "Sort Desc",

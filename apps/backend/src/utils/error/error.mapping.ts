@@ -1,3 +1,4 @@
+import { toError } from './error-guard.util';
 import {
   AlreadyExistsErrorCode,
   BadRequestErrorCode,
@@ -38,15 +39,16 @@ errorSetMapping.set(alreadyExistsErrorSet, AlreadyExistsError);
 errorSetMapping.set(notFoundErrorsSet, NotFoundError);
 
 export const mapToGraphQLError = (
-  error: Error,
+  error: unknown,
   customUnknownErrorCode: UnknownErrorCode = UnknownErrorCode.UnknownError
 ): CustomApolloError => {
-  const code = error.message;
+  const normalizedError = toError(error);
+  const code = normalizedError.message;
   for (const [mapping, errorBuilder] of errorSetMapping) {
     if (mapping.has(code)) {
-      return errorBuilder(code, { detail: error });
+      return errorBuilder(code, { detail: normalizedError });
     }
   }
 
-  return UnknownError(customUnknownErrorCode, { detail: error });
+  return UnknownError(customUnknownErrorCode, { detail: normalizedError });
 };

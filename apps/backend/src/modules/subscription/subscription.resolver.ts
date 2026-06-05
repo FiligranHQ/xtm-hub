@@ -1,5 +1,6 @@
 import {
   Resolvers,
+  ServiceInstance,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
 
@@ -7,31 +8,39 @@ import {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../model/kanel/public/Subscription';
-import { UnknownErrorCode } from '../../utils/error/error.code';
+import { SubscriptionCapabilityId } from '../../model/kanel/public/SubscriptionCapability';
+import {
+  NotFoundErrorCode,
+  UnknownErrorCode,
+} from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
+import { NotFoundError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
-import {
-  getServiceCapability,
-  getSubscriptionCapability,
-  getUserService,
-} from './subscription.domain';
+import { SubscriptionDomain } from './subscription.domain';
 import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
   SubscriptionId: createRelayIdScalar<SubscriptionId>('Subscription'),
   SubscriptionModel: {
-    subscription_capability: ({ id }, _) => getSubscriptionCapability(id),
-    service_instance: ({ service_instance_id }, _) =>
-      loadServiceInstanceBy({ id: service_instance_id }),
-    user_service: ({ id }, _) => getUserService(id),
+    subscription_capability: ({ id }, _) =>
+      SubscriptionDomain.getSubscriptionCapability(id as SubscriptionId),
+    service_instance: async ({ service_instance_id }, _) => {
+      const instance = await loadServiceInstanceBy({ id: service_instance_id });
+      if (!instance)
+        throw NotFoundError(NotFoundErrorCode.ServiceInstanceNotFound);
+      return instance as unknown as ServiceInstance;
+    },
+    user_service: ({ id }, _) =>
+      SubscriptionDomain.getUserService(id as SubscriptionId),
     organization: ({ organization_id }, _) =>
       OrganizationDomain.loadOrganizationBy({ id: organization_id }),
   },
   SubscriptionCapability: {
-    service_capability: ({ id }, _) => getServiceCapability(id),
+    service_capability: ({ id }, _) =>
+      SubscriptionDomain.getServiceCapability(id as SubscriptionCapabilityId),
   },
   Mutation: {
     createSubscriptions: async (_, { input }) => {
@@ -68,7 +77,7 @@ const resolvers: Resolvers = {
           id: subscription_id,
           startDate: input.start_date,
           endDate: input.end_date,
-          capabilityIds: input.capability_ids,
+          capabilityIds: input.capability_ids ?? undefined,
         })) as unknown as SubscriptionModel;
       } catch (error) {
         throw mapToGraphQLError(

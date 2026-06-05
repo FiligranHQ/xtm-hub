@@ -1,12 +1,12 @@
+import {
+  buildTypeSubtypeFilterExpression,
+  getIntegrationSubTypeMetadata,
+} from '@/components/service/integrations/Integration.utils';
 import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import { IntegrationSubTypeEnum } from '@generated/models/IntegrationSubType.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
 import { describe, expect, it } from 'vitest';
-import {
-  buildTypeSubtypeFilterExpression,
-  getIntegrationSubTypeMetadata,
-} from '@/components/service/integrations/Integration.utils';
 
 describe('integration.utils', () => {
   describe('getIntegrationSubTypeMetadata', () => {

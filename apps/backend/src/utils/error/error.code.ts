@@ -24,7 +24,7 @@ export enum ForbiddenErrorCode {
 
 export enum BadRequestErrorCode {
   InvalidImageUrl = 'INVALID_IMAGE_URL',
-  InvalidServiceConfiguration = 'INVALID_SERVICE_CONFIGURATION',
+  InvalidPlatformConfiguration = 'INVALID_PLATFORM_CONFIGURATION',
   PlatformNotRegistered = 'PLATFORM_NOT_REGISTERED',
   InvalidPlatformIdentifier = 'INVALID_PLATFORM_IDENTIFIER',
   InvalidActionSize = 'INVALID_ACTION_SIZE',
@@ -92,16 +92,17 @@ export enum AlreadyExistsErrorCode {
 }
 
 export enum NotFoundErrorCode {
-  ServiceContractNotFound = 'SERVICE_CONTRACT_NOT_FOUND',
   ServiceInstanceNotFound = 'SERVICE_INSTANCE_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   ServiceNotFound = 'SERVICE_NOT_FOUND',
-  ServiceConfigurationNotFound = 'SERVICE_CONFIGURATION_NOT_FOUND',
+  PlatformConfigurationNotFound = 'PLATFORM_CONFIGURATION_NOT_FOUND',
   DeploymentRequestNotFound = 'DEPLOYMENT_REQUEST_NOT_FOUND',
   DeploymentRequestQuotaNotFound = 'DEPLOYMENT_REQUEST_QUOTA_NOT_FOUND',
   DocumentNotFound = 'DOCUMENT_NOT_FOUND',
   NewsFeedItemNotFound = 'NEWS_FEED_ITEM_NOT_FOUND',
+  UserNotFound = 'USER_NOT_FOUND',
+  CompetitorNotFound = 'COMPETITOR_NOT_FOUND',
 }
 
 export const ErrorCode = {

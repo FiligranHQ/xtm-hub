@@ -7,7 +7,7 @@ import { ErrorCategory } from './error.type';
 describe('error mapping', () => {
   describe('mapToGraphQLError', () => {
     it('should return mapped error when error is known', () => {
-      const error = new Error(ErrorCode.InvalidServiceConfiguration);
+      const error = new Error(ErrorCode.InvalidPlatformConfiguration);
 
       const builtError = mapToGraphQLError(error);
 
@@ -16,7 +16,7 @@ describe('error mapping', () => {
 
       expect(builtError.data.http_status).toBe(400);
       expect(builtError.data.genre).toBe(ErrorCategory.BadRequest);
-      expect(builtError.message).toBe(ErrorCode.InvalidServiceConfiguration);
+      expect(builtError.message).toBe(ErrorCode.InvalidPlatformConfiguration);
     });
 
     it('should return unknown error when error is unknown', () => {

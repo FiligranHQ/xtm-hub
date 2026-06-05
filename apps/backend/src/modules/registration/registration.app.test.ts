@@ -29,12 +29,12 @@ import {
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   DeploymentRequestUseCase,
+  PlatformConfigurationStatus,
   PlatformContract,
   PlatformIdentifier,
   PlatformInput,
   PlatformRegistrationConnectivityStatus,
   PlatformRegistrationStatus,
-  ServiceConfigurationStatus,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../__generated__/resolvers-types';
@@ -59,7 +59,7 @@ import {
   deleteServiceInstanceBy,
   loadServiceInstanceBy,
 } from '../service/instance/service-instance.domain';
-import * as subscriptionDomain from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
@@ -67,9 +67,9 @@ import {
   TelemetryTargetProduct,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { registrationApp } from './registration.app';
-import { registrationDomain } from './registration.domain';
-import { ServiceConfigurationDomain } from './service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
+import { RegistrationApp } from './registration.app';
+import { RegistrationDomain } from './registration.domain';
 
 describe('registration app', () => {
   afterAll(async () => {
@@ -79,7 +79,7 @@ describe('registration app', () => {
   describe('loadPlatformAssociatedOrganization', () => {
     it('should return null when platform is not found', async () => {
       const result =
-        await registrationApp.loadPlatformAssociatedOrganization('unknown-id');
+        await RegistrationApp.loadPlatformAssociatedOrganization(uuidv4());
 
       expect(result).toBeNull();
     });
@@ -92,14 +92,14 @@ describe('registration app', () => {
         name: 'test',
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
       });
 
       const call =
-        registrationApp.loadPlatformAssociatedOrganization(platformId);
+        RegistrationApp.loadPlatformAssociatedOrganization(platformId);
 
       await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
     });
@@ -113,10 +113,10 @@ describe('registration app', () => {
         name: 'test',
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
       });
       await TestHelper.subscription.create({
         id: subscriptionId,
@@ -125,7 +125,7 @@ describe('registration app', () => {
       });
       requestContext.set(requestContextSimpleUserSecondOrga);
       const call =
-        registrationApp.loadPlatformAssociatedOrganization(platformId);
+        RegistrationApp.loadPlatformAssociatedOrganization(platformId);
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
@@ -140,14 +140,15 @@ describe('registration app', () => {
         name: 'test',
         service_definition_id: SERVICES.DEFINITIONS.OPENAEV_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId, platform_version: '2.5.0' },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        platform_version: '2.5.0',
+        status: PlatformConfigurationStatus.Active,
       });
 
       const call =
-        registrationApp.loadPlatformAssociatedOrganization(platformId);
+        RegistrationApp.loadPlatformAssociatedOrganization(platformId);
       await expect(call).rejects.toThrow(BadRequestErrorCode.TenantIdMandatory);
     });
 
@@ -160,10 +161,10 @@ describe('registration app', () => {
         name: 'test',
         service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
       });
       await TestHelper.subscription.create({
         id: subscriptionId,
@@ -174,7 +175,7 @@ describe('registration app', () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
       const result =
-        await registrationApp.loadPlatformAssociatedOrganization(platformId);
+        await RegistrationApp.loadPlatformAssociatedOrganization(platformId);
 
       expect(result).toBeDefined();
       expect(result?.id).toBe(TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID);
@@ -184,7 +185,7 @@ describe('registration app', () => {
   describe('isPlatformRegistered', () => {
     it(`should return never registered when platform is not registered`, async () => {
       const platformId = uuidv4();
-      const result = await registrationApp.isPlatformRegistered({
+      const result = await RegistrationApp.isPlatformRegistered({
         platformId,
       });
 
@@ -201,13 +202,13 @@ describe('registration app', () => {
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        status: PlatformConfigurationStatus.Active,
       });
 
-      const call = registrationApp.isPlatformRegistered({
+      const call = RegistrationApp.isPlatformRegistered({
         platformId,
       });
 
@@ -224,10 +225,11 @@ describe('registration app', () => {
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId, platform_title: platformTitle },
-        status: ServiceConfigurationStatus.Active,
+        platform_id: platformId,
+        platform_title: platformTitle,
+        status: PlatformConfigurationStatus.Active,
       });
       await TestHelper.subscription.create({
         id: subscriptionId,
@@ -235,7 +237,7 @@ describe('registration app', () => {
         service_instance_id: serviceInstanceId,
       });
 
-      const result = await registrationApp.isPlatformRegistered({
+      const result = await RegistrationApp.isPlatformRegistered({
         platformId,
       });
 
@@ -246,6 +248,7 @@ describe('registration app', () => {
       );
       expect(result.platformTitle).toBe(platformTitle);
     });
+
     it('should return unregistered when platform registration is inactive', async () => {
       const platformId = uuidv4();
       const platformTitle = 'Platform title';
@@ -256,10 +259,11 @@ describe('registration app', () => {
         id: serviceInstanceId,
         name: 'test',
       });
-      await TestHelper.serviceConfiguration.create({
+      await TestHelper.platformConfiguration.create({
         service_instance_id: serviceInstanceId,
-        config: { platform_id: platformId, platform_title: platformTitle },
-        status: ServiceConfigurationStatus.Inactive,
+        platform_id: platformId,
+        platform_title: platformTitle,
+        status: PlatformConfigurationStatus.Inactive,
       });
       await TestHelper.subscription.create({
         id: subscriptionId,
@@ -267,7 +271,7 @@ describe('registration app', () => {
         service_instance_id: serviceInstanceId,
       });
 
-      const result = await registrationApp.isPlatformRegistered({
+      const result = await RegistrationApp.isPlatformRegistered({
         platformId,
       });
 
@@ -291,7 +295,7 @@ describe('registration app', () => {
         tenantId = uuidv4();
         tenantName = 'My OpenAEV tenant';
 
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -320,7 +324,7 @@ describe('registration app', () => {
           expectedStatus: PlatformRegistrationStatus;
         }) => {
           // When
-          const result = await registrationApp.isPlatformRegistered({
+          const result = await RegistrationApp.isPlatformRegistered({
             platformId,
             tenantId: getTenantId(),
           });
@@ -347,7 +351,7 @@ describe('registration app', () => {
 
     describe('invalid configuration', async () => {
       it('should throw when platformId is not valid', async () => {
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...platform,
@@ -357,12 +361,12 @@ describe('registration app', () => {
         });
 
         await expect(call).rejects.toThrow(
-          ErrorCode.InvalidServiceConfiguration
+          ErrorCode.InvalidPlatformConfiguration
         );
       });
 
       it('should throw when platformUrl is not valid', async () => {
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...platform,
@@ -372,12 +376,12 @@ describe('registration app', () => {
         });
 
         await expect(call).rejects.toThrow(
-          ErrorCode.InvalidServiceConfiguration
+          ErrorCode.InvalidPlatformConfiguration
         );
       });
 
       it('should throw when platform version is not a valid semantic version', async () => {
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...platform,
@@ -394,7 +398,7 @@ describe('registration app', () => {
 
     it('should throw when user does not belong to the organization', async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
-      const call = registrationApp.registerPlatform({
+      const call = RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -405,7 +409,7 @@ describe('registration app', () => {
 
     it('should throw when user does not have the required capabilities', async () => {
       requestContext.set(requestContextSimpleUserSecondOrga);
-      const call = registrationApp.registerPlatform({
+      const call = RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -419,7 +423,7 @@ describe('registration app', () => {
     it('return token when platform is registered', async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      const token = await registrationApp.registerPlatform({
+      const token = await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
@@ -443,7 +447,7 @@ describe('registration app', () => {
           .spyOn(telemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform,
           identifier: platformName,
@@ -478,7 +482,7 @@ describe('registration app', () => {
 
       const tenantId = uuidv4();
       const tenantName = 'My OpenAEV tenant';
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: { ...platform, tenantId, tenantName },
         identifier: PlatformIdentifier.Openaev,
@@ -513,7 +517,7 @@ describe('registration app', () => {
         const tenantName = 'My OpenAEV tenant';
 
         // When
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -529,16 +533,14 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          config: {
-            platform_id: platformId,
-            tenant_id: tenantId,
-            tenant_name: tenantName,
-          },
+          platform_id: platformId,
+          tenant_id: tenantId,
+          tenant_name: tenantName,
         });
       });
 
@@ -547,7 +549,7 @@ describe('registration app', () => {
         const platformId = uuidv4();
 
         // When
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -561,11 +563,11 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId
           );
-        expect(configuration?.config).not.toHaveProperty('tenant_id');
-        expect(configuration?.config).not.toHaveProperty('tenant_name');
+        expect(configuration?.tenant_id).toBeNull();
+        expect(configuration?.tenant_name).toBeNull();
       });
 
       it('should create separate service instances for the same platform_id with different tenantId values', async () => {
@@ -584,7 +586,7 @@ describe('registration app', () => {
         };
 
         // When
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...basePlatform,
@@ -593,7 +595,7 @@ describe('registration app', () => {
           },
           identifier: PlatformIdentifier.Openaev,
         });
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...basePlatform,
@@ -605,28 +607,24 @@ describe('registration app', () => {
 
         // Then
         const config1 =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId: tenantId1 }
           );
         const config2 =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId: tenantId2 }
           );
         expect(config1).toMatchObject({
-          config: {
-            platform_id: platformId,
-            tenant_id: tenantId1,
-            tenant_name: tenantName1,
-          },
+          platform_id: platformId,
+          tenant_id: tenantId1,
+          tenant_name: tenantName1,
         });
         expect(config2).toMatchObject({
-          config: {
-            platform_id: platformId,
-            tenant_id: tenantId2,
-            tenant_name: tenantName2,
-          },
+          platform_id: platformId,
+          tenant_id: tenantId2,
+          tenant_name: tenantName2,
         });
         expect(config1?.service_instance_id).not.toBe(
           config2?.service_instance_id
@@ -647,19 +645,19 @@ describe('registration app', () => {
           tenantId,
           tenantName,
         };
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: openaevPlatform,
           identifier: PlatformIdentifier.Openaev,
         });
         const firstConfig =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
 
         // When — register again with the same (platform_id, tenantId)
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             ...openaevPlatform,
@@ -671,7 +669,7 @@ describe('registration app', () => {
 
         // Then — same service instance is reused, title is updated
         const secondConfig =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
@@ -679,7 +677,8 @@ describe('registration app', () => {
           firstConfig?.service_instance_id
         );
         expect(secondConfig).toMatchObject({
-          config: { platform_title: 'Updated title', tenant_name: 'newTenant' },
+          platform_title: 'Updated title',
+          tenant_name: 'newTenant',
         });
       });
     });
@@ -697,7 +696,7 @@ describe('registration app', () => {
       `(
         'should throw TENANT_ID_MANDATORY for OpenAEV $description ($version) without tenantId',
         async ({ version }: { version: string }) => {
-          const call = registrationApp.registerPlatform({
+          const call = RegistrationApp.registerPlatform({
             organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
             platform: {
               id: uuidv4(),
@@ -722,7 +721,7 @@ describe('registration app', () => {
       `(
         'should not throw TENANT_ID_MANDATORY for OpenAEV $description ($version) without tenantId',
         async ({ version }: { version: string }) => {
-          const call = registrationApp.registerPlatform({
+          const call = RegistrationApp.registerPlatform({
             organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
             platform: {
               id: uuidv4(),
@@ -739,7 +738,7 @@ describe('registration app', () => {
       );
 
       it('should not throw TENANT_ID_MANDATORY for OpenCTI regardless of version', async () => {
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: uuidv4(),
@@ -759,7 +758,7 @@ describe('registration app', () => {
         const platformId = uuidv4();
         const tenantId = uuidv4();
         const tenantName = 'My OpenAEV tenant';
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -774,7 +773,7 @@ describe('registration app', () => {
         });
 
         // When — re-register without tenantId (legacy client below threshold)
-        const call = registrationApp.registerPlatform({
+        const call = RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -796,7 +795,7 @@ describe('registration app', () => {
         const platformId = uuidv4();
         const tenantId = uuidv4();
         const tenantName = 'My OpenAEV tenant';
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -809,7 +808,7 @@ describe('registration app', () => {
         });
 
         // When — re-register after upgrade to a version that requires tenantId, with tenantId provided
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: {
             id: platformId,
@@ -825,13 +824,13 @@ describe('registration app', () => {
 
         // Then — the new configuration has tenant_id stored
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          config: expect.objectContaining({ tenant_id: tenantId }),
-          status: ServiceConfigurationStatus.Active,
+          tenant_id: tenantId,
+          status: PlatformConfigurationStatus.Active,
         });
       });
     });
@@ -857,14 +856,14 @@ describe('registration app', () => {
     it('should throw when user does not belong to the organization', async () => {
       requestContext.set(requestContextAdminUser);
 
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      const call = registrationApp.unregisterPlatform({
+      const call = RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -874,14 +873,14 @@ describe('registration app', () => {
 
     it('should throw when user does not have the required capabilities', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
       requestContext.set(requestContextSimpleUserSecondOrga);
-      const call = registrationApp.unregisterPlatform({
+      const call = RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
@@ -892,13 +891,13 @@ describe('registration app', () => {
     });
 
     it('should throw when identifier is not the right type', async () => {
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const call = registrationApp.unregisterPlatform({
+      const call = RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Openaev,
       });
@@ -907,29 +906,29 @@ describe('registration app', () => {
     });
 
     it('should unregister platform when the platform is still active', async () => {
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationApp.unregisterPlatform({
+      await RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const serviceConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+      const platformConfiguration =
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId
         );
 
-      expect(serviceConfiguration).toBeDefined();
-      expect(serviceConfiguration?.status).toBe(
-        ServiceConfigurationStatus.Inactive
+      expect(platformConfiguration).toBeDefined();
+      expect(platformConfiguration?.status).toBe(
+        PlatformConfigurationStatus.Inactive
       );
 
       const subscription = await TestHelper.subscription.load({
-        service_instance_id: serviceConfiguration!.service_instance_id,
+        service_instance_id: platformConfiguration!.service_instance_id,
       });
 
       expect(subscription).toBeDefined();
@@ -942,7 +941,7 @@ describe('registration app', () => {
       beforeEach(async () => {
         // Given — an OpenAEV platform registered with a specific tenantId
         tenantId = uuidv4();
-        await registrationApp.registerPlatform({
+        await RegistrationApp.registerPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platform: { ...platform, tenantId, tenantName: 'My OpenAEV tenant' },
           identifier: PlatformIdentifier.Openaev,
@@ -951,7 +950,7 @@ describe('registration app', () => {
 
       it('should set the specific tenant configuration to inactive', async () => {
         // When
-        await registrationApp.unregisterPlatform({
+        await RegistrationApp.unregisterPlatform({
           platformId,
           identifier: PlatformIdentifier.Openaev,
           tenantId,
@@ -959,18 +958,18 @@ describe('registration app', () => {
 
         // Then
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          status: ServiceConfigurationStatus.Inactive,
+          status: PlatformConfigurationStatus.Inactive,
         });
       });
 
       it('should not unregister when tenantId does not match any active configuration', async () => {
         // When
-        await registrationApp.unregisterPlatform({
+        await RegistrationApp.unregisterPlatform({
           platformId,
           identifier: PlatformIdentifier.Openaev,
           tenantId: uuidv4(),
@@ -978,12 +977,12 @@ describe('registration app', () => {
 
         // Then — original tenant configuration is still active
         const configuration =
-          await ServiceConfigurationDomain.loadConfigurationByPlatform(
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
             platformId,
             { tenantId }
           );
         expect(configuration).toMatchObject({
-          status: ServiceConfigurationStatus.Active,
+          status: PlatformConfigurationStatus.Active,
         });
       });
     });
@@ -991,14 +990,14 @@ describe('registration app', () => {
     it('should throw TENANT_ID_MANDATORY when unregistering a tenanted platform without providing tenantId', async () => {
       // Given — an OpenAEV platform registered with a tenantId
       const tenantId = uuidv4();
-      await registrationApp.registerPlatform({
+      await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: { ...platform, tenantId, tenantName: 'My OpenAEV tenant' },
         identifier: PlatformIdentifier.Openaev,
       });
 
       // When
-      const call = registrationApp.unregisterPlatform({
+      const call = RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Openaev,
         // no tenantId
@@ -1017,13 +1016,12 @@ describe('registration app', () => {
     let loadSubscriptionBySpy: MockInstance;
 
     const buildResolved = (overrides = {}) => ({
-      serviceConfiguration: { service_instance_id: uuidv4() },
+      platformConfiguration: { service_instance_id: uuidv4() },
       serviceDefinition: {
         id: uuidv4(),
         identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
       },
       platformIdentifier: PlatformIdentifier.Opencti,
-      config: {},
       ...overrides,
     });
 
@@ -1033,11 +1031,11 @@ describe('registration app', () => {
         'isUserAllowedOnOrganization'
       );
       loadResolvedConfigurationByPlatformSpy = vi.spyOn(
-        ServiceConfigurationDomain,
+        PlatformConfigurationDomain,
         'loadResolvedConfigurationByPlatform'
       );
       loadSubscriptionBySpy = vi.spyOn(
-        subscriptionDomain,
+        SubscriptionDomain,
         'loadSubscriptionBy'
       );
     });
@@ -1047,7 +1045,7 @@ describe('registration app', () => {
         Promise.resolve(undefined)
       );
 
-      const call = registrationApp.canUnregisterPlatform({
+      const call = RegistrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -1060,7 +1058,7 @@ describe('registration app', () => {
       );
       loadSubscriptionBySpy.mockReturnValue(Promise.resolve(null));
 
-      const call = registrationApp.canUnregisterPlatform({
+      const call = RegistrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -1079,7 +1077,7 @@ describe('registration app', () => {
         Promise.resolve({ organization_id: organizationId })
       );
 
-      const result = await registrationApp.canUnregisterPlatform({
+      const result = await RegistrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -1099,7 +1097,7 @@ describe('registration app', () => {
         Promise.resolve({ isAllowed: false, isInOrganization: false })
       );
 
-      const result = await registrationApp.canUnregisterPlatform({
+      const result = await RegistrationApp.canUnregisterPlatform({
         platformId,
       });
 
@@ -1114,7 +1112,7 @@ describe('registration app', () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
     });
     it('should return inactive when platform is not registered', async () => {
-      const result = await registrationApp.loadPlatformRegistrationStatus({
+      const result = await RegistrationApp.loadPlatformRegistrationStatus({
         platformId: uuidv4(),
         token: uuidv4(),
       });
@@ -1126,7 +1124,7 @@ describe('registration app', () => {
 
     it('should return active when platform is registered', async () => {
       const platformId = uuidv4();
-      const token = await registrationApp.registerPlatform({
+      const token = await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
           id: platformId,
@@ -1138,7 +1136,7 @@ describe('registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const result = await registrationApp.loadPlatformRegistrationStatus({
+      const result = await RegistrationApp.loadPlatformRegistrationStatus({
         platformId,
         token,
       });
@@ -1148,7 +1146,7 @@ describe('registration app', () => {
 
     it('should return inactive when platform is unregistered', async () => {
       const platformId = uuidv4();
-      const token = await registrationApp.registerPlatform({
+      const token = await RegistrationApp.registerPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platform: {
           id: platformId,
@@ -1160,12 +1158,12 @@ describe('registration app', () => {
         identifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationApp.unregisterPlatform({
+      await RegistrationApp.unregisterPlatform({
         platformId,
         identifier: PlatformIdentifier.Opencti,
       });
 
-      const result = await registrationApp.loadPlatformRegistrationStatus({
+      const result = await RegistrationApp.loadPlatformRegistrationStatus({
         platformId: platformId,
         token,
       });
@@ -1179,7 +1177,7 @@ describe('registration app', () => {
   describe('refreshUserPlatformToken', () => {
     it('should generate a token and add it to the user each time it is called', async () => {
       requestContext.set(requestContextAdminUser);
-      const { token } = await registrationApp.refreshUserPlatformToken(
+      const { token } = await RegistrationApp.refreshUserPlatformToken(
         contextBypassUser.user.id
       );
       const user = await TestHelper.user.load({
@@ -1189,7 +1187,7 @@ describe('registration app', () => {
       expect(token).toBe(user.platform_token);
 
       const { token: anotherToken } =
-        await registrationApp.refreshUserPlatformToken(
+        await RegistrationApp.refreshUserPlatformToken(
           contextBypassUser.user.id
         );
       const updatedUser = await TestHelper.user.load({
@@ -1214,7 +1212,7 @@ describe('registration app', () => {
     beforeEach(async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      const serviceInstanceId = await registrationDomain.registerNewPlatform({
+      const serviceInstanceId = await RegistrationDomain.registerNewPlatform({
         serviceDefinitionId: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platformIdentifier: PlatformIdentifier.Opencti,
@@ -1244,11 +1242,11 @@ describe('registration app', () => {
     });
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceConfigurationDomain.deleteConfigurationBy({});
+      await PlatformConfigurationDomain.deleteConfigurationBy({});
       await deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
-      const call = registrationApp.autoRegisterPlatform(uuidv4(), {
+      const call = RegistrationApp.autoRegisterPlatform(uuidv4(), {
         platform: platformConfiguration,
       });
       await expect(call).rejects.toThrow(
@@ -1261,7 +1259,7 @@ describe('registration app', () => {
         { platform_id: uuidv4() }
       );
 
-      const call = registrationApp.autoRegisterPlatform(
+      const call = RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: { ...platformConfiguration, id: uuidv4() } }
       );
@@ -1277,7 +1275,7 @@ describe('registration app', () => {
         }
       );
 
-      const call = registrationApp.autoRegisterPlatform(
+      const call = RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: platformConfiguration }
       );
@@ -1286,7 +1284,7 @@ describe('registration app', () => {
       );
     });
     it('should register the provided platform', async () => {
-      await registrationApp.autoRegisterPlatform(
+      await RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: platformConfiguration }
       );
@@ -1295,25 +1293,23 @@ describe('registration app', () => {
         id: deploymentRequest.service_instance_id,
       });
       const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       expect(serviceInstance.creation_status).toBe(
         ServiceInstanceCreationStatus.Ready
       );
       expect(configuration).toMatchObject({
-        config: {
-          platform_contract: platformConfiguration.contract,
-          platform_id: platformConfiguration.id,
-          platform_title: platformConfiguration.title,
-          platform_url: platformConfiguration.url,
-          platform_version: platformConfiguration.version,
-          registerer_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
-          token: deploymentRequest.platform_token,
-        },
+        platform_contract: platformConfiguration.contract,
+        platform_id: platformConfiguration.id,
+        platform_title: platformConfiguration.title,
+        platform_url: platformConfiguration.url,
+        platform_version: platformConfiguration.version,
+        registerer_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+        token: deploymentRequest.platform_token,
         service_instance_id: deploymentRequest.service_instance_id,
-        status: ServiceConfigurationStatus.Active,
+        status: PlatformConfigurationStatus.Active,
       });
     });
     it("should successfully register the provided platform if it's already registered", async () => {
@@ -1324,38 +1320,36 @@ describe('registration app', () => {
         contract: PlatformContract.Trial,
         version: 'A.B.C',
       };
-      await registrationApp.autoRegisterPlatform(
+      await RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: platformConfiguration }
       );
 
-      await registrationApp.autoRegisterPlatform(
+      await RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: newPlatformConfiguration }
       );
 
       const oldConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
         );
       const newConfiguration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           newPlatformConfiguration.id
         );
       expect(oldConfiguration).toBeUndefined();
       expect(newConfiguration).toMatchObject({
-        config: {
-          platform_contract: newPlatformConfiguration.contract,
-          platform_id: newPlatformConfiguration.id,
-          platform_title: newPlatformConfiguration.title,
-          platform_url: newPlatformConfiguration.url,
-          platform_version: newPlatformConfiguration.version,
-          registerer_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
-          token: deploymentRequest.platform_token,
-        },
+        platform_contract: newPlatformConfiguration.contract,
+        platform_id: newPlatformConfiguration.id,
+        platform_title: newPlatformConfiguration.title,
+        platform_url: newPlatformConfiguration.url,
+        platform_version: newPlatformConfiguration.version,
+        registerer_id:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+        token: deploymentRequest.platform_token,
         service_instance_id: deploymentRequest.service_instance_id,
-        status: ServiceConfigurationStatus.Active,
+        status: PlatformConfigurationStatus.Active,
       });
     });
 
@@ -1369,7 +1363,7 @@ describe('registration app', () => {
           .spyOn(telemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
-        await registrationApp.autoRegisterPlatform(
+        await RegistrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
           { platform: platformConfiguration }
         );
@@ -1399,7 +1393,7 @@ describe('registration app', () => {
           .spyOn(telemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
-        await registrationApp.autoRegisterPlatform(
+        await RegistrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
           { platform: platformConfiguration, existing_users_count: 42 }
         );
@@ -1426,7 +1420,7 @@ describe('registration app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
 
-        const serviceInstanceId = await registrationDomain.registerNewPlatform({
+        const serviceInstanceId = await RegistrationDomain.registerNewPlatform({
           serviceDefinitionId: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           platformIdentifier: PlatformIdentifier.Openaev,
@@ -1468,7 +1462,7 @@ describe('registration app', () => {
           tenantId: uuidv4(),
           tenantName: 'My OpenAEV tenant',
         };
-        await registrationApp.autoRegisterPlatform(
+        await RegistrationApp.autoRegisterPlatform(
           deploymentRequest.platform_token as string,
           { platform: openaevPlatformConfiguration }
         );
@@ -1497,30 +1491,24 @@ describe('registration app', () => {
       const tenantName = 'My OpenAEV tenant';
 
       // When
-      await registrationApp.autoRegisterPlatform(
+      await RegistrationApp.autoRegisterPlatform(
         deploymentRequest.platform_token as string,
         { platform: { ...platformConfiguration, tenantId, tenantName } }
       );
 
       // Then
       const configuration =
-        await ServiceConfigurationDomain.loadConfigurationByPlatform(
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id,
           { tenantId }
         );
       expect(configuration).toMatchObject({
-        config: {
-          platform_id: platformConfiguration.id,
-          tenant_id: tenantId,
-          tenant_name: tenantName,
-        },
+        platform_id: platformConfiguration.id,
+        tenant_id: tenantId,
+        tenant_name: tenantName,
         service_instance_id: deploymentRequest.service_instance_id,
-        status: ServiceConfigurationStatus.Active,
+        status: PlatformConfigurationStatus.Active,
       });
     });
-  });
-
-  afterAll(async () => {
-    vi.useRealTimers();
   });
 });

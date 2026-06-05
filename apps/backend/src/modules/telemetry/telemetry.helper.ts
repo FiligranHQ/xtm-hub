@@ -36,6 +36,13 @@ import {
   UpdateOrganizationEvent,
 } from './telemetry.types';
 
+function getOrThrow<K, V>(map: Map<K, V>, key: K): V {
+  const value = map.get(key);
+  if (value === undefined)
+    throw new Error(`No mapping found for key "${String(key)}"`);
+  return value;
+}
+
 function buildBaseEvent(
   organization: Organization | undefined,
   user_id: UserId | undefined,
@@ -122,6 +129,7 @@ const buildServiceTypeEvent = async (resource_id: string) => {
   const integration_type =
     await DocumentMetadataDomain.loadIntegrationType(resource_id);
 
+  if (integration_type === null) return undefined;
   return IntegrationTypeToEventServiceType.get(integration_type);
 };
 
@@ -148,7 +156,7 @@ export function buildSubscribeEvent(
   return {
     event_type: TelemetryEventType.SUBSCRIBE,
     ...baseEvent,
-    service: ServiceIdentifierToEventService.get(service),
+    service: getOrThrow(ServiceIdentifierToEventService, service),
   };
 }
 
@@ -165,7 +173,7 @@ export async function buildDownloadEvent(
   return {
     event_type: TelemetryEventType.DOWNLOAD,
     ...baseEvent,
-    service: ServiceIdentifierToEventService.get(service),
+    service: getOrThrow(ServiceIdentifierToEventService, service),
     service_type: await buildServiceTypeEvent(resource_id),
     resource_id: resource_id,
     resource_title: resource_title,
@@ -185,7 +193,7 @@ export async function buildShareEvent(
   return {
     event_type: TelemetryEventType.SHARE,
     ...baseEvent,
-    service: ServiceIdentifierToEventService.get(service),
+    service: getOrThrow(ServiceIdentifierToEventService, service),
     service_type: await buildServiceTypeEvent(resource_id),
     resource_id: resource_id,
     resource_title: resource_title,
@@ -203,17 +211,28 @@ export async function buildCreateEvent(
 
   const baseEvent = buildBaseEvent(selectedOrga, user.id, timestamp);
 
+  if (!document.service_instance_id) {
+    throw new Error(`Document ${document.id} has no service_instance_id`);
+  }
   const serviceDefinition = await loadServiceDefinitionByServiceInstance(
     document.service_instance_id
   );
+  if (!serviceDefinition) {
+    throw new Error(
+      `No service definition found for instance ${document.service_instance_id}`
+    );
+  }
 
   return {
     event_type: TelemetryEventType.CREATE,
     ...baseEvent,
-    service: ServiceIdentifierToEventService.get(serviceDefinition.identifier),
+    service: getOrThrow(
+      ServiceIdentifierToEventService,
+      serviceDefinition.identifier
+    ),
     service_type: await buildServiceTypeEvent(document.id),
     resource_id: document.id,
-    resource_title: document.name,
+    resource_title: document.name ?? '',
     status: document.active ? 'published' : 'draft',
   };
 }
@@ -235,8 +254,10 @@ export function buildRegisterEvent(
   return {
     event_type: TelemetryEventType.REGISTER,
     ...baseEvent,
-    target_product:
-      TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
+    target_product: getOrThrow(
+      TelemetryTargetProductMappedByPlatformIdentifier,
+      platform_identifier
+    ),
     platform_id,
     platform_contract,
     platform_version,
@@ -265,9 +286,11 @@ export async function buildOneClickDeployEvent(
   return {
     event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
     ...baseEvent,
-    target_product:
-      TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
-    service: ServiceIdentifierToEventService.get(service),
+    target_product: getOrThrow(
+      TelemetryTargetProductMappedByPlatformIdentifier,
+      platform_identifier
+    ),
+    service: getOrThrow(ServiceIdentifierToEventService, service),
     service_type: await buildServiceTypeEvent(resource_id),
     resource_id,
     resource_title,
@@ -287,7 +310,7 @@ export function buildUpdateOrganizationEvent(
   return {
     event_type: TelemetryEventType.UPDATE_ORGANIZATION,
     ...baseEvent,
-    domains: organization.domains,
+    domains: organization.domains ?? [],
   };
 }
 
@@ -301,7 +324,7 @@ export function buildCreateOrganizationEvent(
   return {
     event_type: TelemetryEventType.CREATE_ORGANIZATION,
     ...baseEvent,
-    domains: organization.domains,
+    domains: organization.domains ?? [],
   };
 }
 
@@ -327,8 +350,10 @@ export function buildCreateDeploymentEvent(
     ...baseEvent,
     ...additional_data,
     event_type: TelemetryEventType.CREATE_DEPLOYMENT,
-    target_product:
-      TelemetryTargetProductMappedByPlatformIdentifier.get(platform_identifier),
+    target_product: getOrThrow(
+      TelemetryTargetProductMappedByPlatformIdentifier,
+      platform_identifier
+    ),
   };
 }
 

@@ -16,7 +16,7 @@ type RegisteredPlatform implements Node {
   version: String
   illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
-  last_connectivity_check: Date!
+  last_connectivity_check: Date
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
 }
@@ -162,7 +162,7 @@ type Query {
     input: CanUnregisterPlatformInput!
   ): CanUnregisterResponse! @auth
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform @auth
-  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
+  registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
     @auth
   platformAssociatedOrganization(
     platformId: String!
@@ -172,7 +172,7 @@ type Query {
 
 type Mutation {
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse! @auth
-  unregisterPlatform(input: UnregisterPlatformInput): Success! @auth
+  unregisterPlatform(input: UnregisterPlatformInput!): Success! @auth
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse! @auth
   # Warning ! Used by OpenCTI
   refreshPlatformRegistrationConnectivityStatus(

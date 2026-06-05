@@ -18,7 +18,7 @@ import * as errorMapping from '../../utils/error/error.mapping';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
-import * as subscriptionDomain from './subscription.domain';
+import { SubscriptionDomain } from './subscription.domain';
 import * as subscriptionHelper from './subscription.helper';
 import subscriptionResolver from './subscription.resolver';
 
@@ -32,10 +32,10 @@ describe('subscription resolver - unit tests', () => {
       // Given
       const id = uuidv4();
       const expected = [] as unknown as Awaited<
-        ReturnType<typeof subscriptionDomain.getSubscriptionCapability>
+        ReturnType<typeof SubscriptionDomain.getSubscriptionCapability>
       >;
       vi.spyOn(
-        subscriptionDomain,
+        SubscriptionDomain,
         'getSubscriptionCapability'
       ).mockResolvedValue(expected);
 
@@ -50,7 +50,7 @@ describe('subscription resolver - unit tests', () => {
       );
 
       // Then
-      expect(subscriptionDomain.getSubscriptionCapability).toHaveBeenCalledWith(
+      expect(SubscriptionDomain.getSubscriptionCapability).toHaveBeenCalledWith(
         id
       );
       expect(result).toEqual(expected);
@@ -91,9 +91,9 @@ describe('subscription resolver - unit tests', () => {
       // Given
       const id = uuidv4();
       const expected = [] as unknown as Awaited<
-        ReturnType<typeof subscriptionDomain.getUserService>
+        ReturnType<typeof SubscriptionDomain.getUserService>
       >;
-      vi.spyOn(subscriptionDomain, 'getUserService').mockResolvedValue(
+      vi.spyOn(SubscriptionDomain, 'getUserService').mockResolvedValue(
         expected
       );
 
@@ -108,7 +108,7 @@ describe('subscription resolver - unit tests', () => {
       );
 
       // Then
-      expect(subscriptionDomain.getUserService).toHaveBeenCalledWith(id);
+      expect(SubscriptionDomain.getUserService).toHaveBeenCalledWith(id);
       expect(result).toEqual(expected);
     });
 
@@ -146,9 +146,9 @@ describe('subscription resolver - unit tests', () => {
       // Given
       const id = uuidv4();
       const expected = { id: uuidv4() } as unknown as Awaited<
-        ReturnType<typeof subscriptionDomain.getServiceCapability>
+        ReturnType<typeof SubscriptionDomain.getServiceCapability>
       >;
-      vi.spyOn(subscriptionDomain, 'getServiceCapability').mockResolvedValue(
+      vi.spyOn(SubscriptionDomain, 'getServiceCapability').mockResolvedValue(
         expected
       );
 
@@ -163,7 +163,7 @@ describe('subscription resolver - unit tests', () => {
       );
 
       // Then
-      expect(subscriptionDomain.getServiceCapability).toHaveBeenCalledWith(id);
+      expect(SubscriptionDomain.getServiceCapability).toHaveBeenCalledWith(id);
       expect(result).toEqual(expected);
     });
   });

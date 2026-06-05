@@ -64,7 +64,6 @@ type DefaultDocument implements Node & Document {
   short_description: String
   description: String
   file_name: String @auth
-  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -73,7 +72,7 @@ type DefaultDocument implements Node & Document {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId! @auth
+  service_instance_id: ServiceInstanceId @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -88,7 +87,6 @@ interface Document implements Node {
   short_description: String
   description: String
   file_name: String @auth
-  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -97,7 +95,7 @@ interface Document implements Node {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId! @auth
+  service_instance_id: ServiceInstanceId @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]
@@ -143,7 +141,7 @@ type Mutation {
   createDocument(
     input: CreateDocumentInput!
     metadata: [DocumentMetadata!]!
-    serviceInstanceId: ServiceInstanceId
+    serviceInstanceId: ServiceInstanceId!
     sourceDocument: Upload
     logo: Upload
     images: [Upload!]
@@ -152,24 +150,24 @@ type Mutation {
     documentId: DocumentId!
     input: UpdateDocumentInput!
     metadata: [DocumentMetadata!]!
-    serviceInstanceId: ServiceInstanceId
+    serviceInstanceId: ServiceInstanceId!
     sourceDocument: Upload
     logo: Upload
     images: [Upload!]
     existingImageIds: [DocumentId!]
   ): Document! @auth @service_capa(requires: [UPLOAD])
   deleteDocument(
-    documentId: DocumentId
-    service_instance_id: ServiceInstanceId
+    documentId: DocumentId!
+    service_instance_id: ServiceInstanceId!
     forceDelete: Boolean
   ): Document! @auth @service_capa(requires: [DELETE])
-  incrementShareNumberDocument(documentId: DocumentId): Document!
+  incrementShareNumberDocument(documentId: DocumentId!): Document!
 }
 
 type Query {
   documentExists(
     documentName: String
-    service_instance_id: ServiceInstanceId
+    service_instance_id: ServiceInstanceId!
   ): Boolean @auth @service_capa(requires: [UPLOAD])
   publicDocuments(
     slug: String!
@@ -193,11 +191,11 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     logicalFilters: LogicalFilterInput
-    serviceInstanceId: ServiceInstanceId
+    serviceInstanceId: ServiceInstanceId!
     parentsOnly: Boolean
   ): DocumentConnection! @auth
   document(
-    documentId: DocumentId
-    serviceInstanceId: ServiceInstanceId
+    documentId: DocumentId!
+    serviceInstanceId: ServiceInstanceId!
   ): Document @auth
 }

@@ -31,7 +31,7 @@ enum LogicalOperator {
 }
 
 input Filter {
-  key: FilterKey
+  key: FilterKey!
   value: [String!]!
 }
 
@@ -96,16 +96,16 @@ input UpdateCompetitorInput {
 type Query {
   competitors(first: Int!, after: ID, orderBy: CompetitorOrdering!, orderMode: OrderingMode!): CompetitorConnection!
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
-  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
+  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier!): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
-  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments!
+  trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments!
   serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
-  documentExists(documentName: String, service_instance_id: ServiceInstanceId): Boolean
+  documentExists(documentName: String, service_instance_id: ServiceInstanceId!): Boolean
   publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId!): DocumentConnection!
   publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
   publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
-  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId, parentsOnly: Boolean): DocumentConnection!
-  document(documentId: DocumentId, serviceInstanceId: ServiceInstanceId): Document
+  documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId!, parentsOnly: Boolean): DocumentConnection!
+  document(documentId: DocumentId!, serviceInstanceId: ServiceInstanceId!): Document
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -119,16 +119,16 @@ type Query {
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
-  registeredPlatforms(input: RegisteredPlatformsInput): [RegisteredPlatform!]!
+  registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
-  serviceInstanceById(service_instance_id: ServiceInstanceId): ServiceInstance
-  serviceInstanceByIdAndGrantAccess(service_instance_id: ServiceInstanceId): ServiceInstance
+  serviceInstanceById(service_instance_id: ServiceInstanceId!): ServiceInstance
+  serviceInstanceByIdAndGrantAccess(service_instance_id: ServiceInstanceId!): ServiceInstance
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
-  updateOpenCTIManifest(tag: String): Success!
+  updateOpenCTIManifest(tag: String!): Success!
   subscriptionById(subscription_id: SubscriptionId): SubscriptionModel
   subscriptions(first: Int!, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [SubscriptionFilter!]): SubscriptionConnection!
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
@@ -141,17 +141,17 @@ type Mutation {
   createCompetitor(input: CreateCompetitorInput!): Competitor!
   updateCompetitor(input: UpdateCompetitorInput!): Competitor!
   deleteCompetitor(id: CompetitorId!): Competitor!
-  createDeploymentRequest(input: CreateDeploymentRequestInput): DeploymentRequest!
+  createDeploymentRequest(input: CreateDeploymentRequestInput!): DeploymentRequest!
   updateDeploymentRequest(input: UpdateDeploymentRequestInput!): PlatformDeploymentRequest!
   reorderDeploymentRequestInQueue(input: ReorderDeploymentRequestInQueueInput!): Success!
   cancelDeploymentRequest(deploymentRequestId: DeploymentRequestId!, cancellationReason: String): DeploymentRequest
-  adminCancelDeploymentRequest(deploymentRequestId: DeploymentRequestId): DeploymentRequest
+  adminCancelDeploymentRequest(deploymentRequestId: DeploymentRequestId!): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
-  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
-  updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
-  deleteDocument(documentId: DocumentId, service_instance_id: ServiceInstanceId, forceDelete: Boolean): Document!
-  incrementShareNumberDocument(documentId: DocumentId): Document!
+  createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
+  updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
+  deleteDocument(documentId: DocumentId!, service_instance_id: ServiceInstanceId!, forceDelete: Boolean): Document!
+  incrementShareNumberDocument(documentId: DocumentId!): Document!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
   deleteNewsFeedItem(id: NewsFeedItemId!): Boolean!
@@ -163,20 +163,20 @@ type Mutation {
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   changeSelectedOrganization(organization_id: OrganizationId!): User
-  bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput): Success
-  bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput): Success
+  bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput!): Success
+  bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput!): Success
   removePendingUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   removeUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   editMeUser(input: EditMeUserInput!): User!
   uploadUserPicture(document: Upload!): User!
   resetPassword: Success!
-  requestTransferPersonalSpace(new_email: String): Success!
+  requestTransferPersonalSpace(new_email: String!): Success!
   transferPersonalSpace(requestId: ID!): Success!
   login(email: String!, password: String): User
   logout: ID!
   contactUs(message: String, platformId: ID, platformIdentifier: PlatformIdentifier): Success!
   registerPlatform(input: RegisterPlatformInput!): RegistrationResponse!
-  unregisterPlatform(input: UnregisterPlatformInput): Success!
+  unregisterPlatform(input: UnregisterPlatformInput!): Success!
   refreshUserPlatformToken: RefreshUserPlatformTokenResponse!
   refreshPlatformRegistrationConnectivityStatus(input: RefreshPlatformRegistrationConnectivityStatusInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   refreshPlatformRegistrationConnectivityStatusSingleTenant(input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
@@ -188,7 +188,7 @@ type Mutation {
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
-  createSubscriptions(input: CreateSubscriptionsInput): [SubscriptionModel!]!
+  createSubscriptions(input: CreateSubscriptionsInput!): [SubscriptionModel!]!
   updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
   deleteSubscriptions(subscription_ids: [SubscriptionId!]!): [SubscriptionModel!]!
   sendTelemetryEvent: SendTelemetryMutation
@@ -200,7 +200,7 @@ type Mutation {
   deleteUserServices(input: UserServicesDeleteInput!, service_instance_id: ServiceInstanceId!): [UserService]
   createEpic(input: CreateEpicInput!, document: [Upload!]): Epic!
   updateEpic(id: ID!, input: UpdateEpicInput!, document: [Upload!]): Epic!
-  deleteEpic(id: ID!): Epic!
+  deleteEpic(id: ID!): Epic
 }
 
 """
@@ -572,7 +572,6 @@ type DefaultDocument implements Node & Document {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -581,7 +580,7 @@ type DefaultDocument implements Node & Document {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -596,7 +595,6 @@ interface Document implements Node {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -605,7 +603,7 @@ interface Document implements Node {
   share_number: Int
   slug: String
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -864,6 +862,11 @@ type Subscription {
   ServiceInstance: ServiceInstanceSubscription
 }
 
+enum PlatformConfigurationStatus {
+  active
+  inactive
+}
+
 input OpenCTIPlatformRegistrationStatusInput {
   platformId: String!
   token: String!
@@ -891,7 +894,7 @@ type RegisteredPlatform implements Node {
   version: String
   illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
-  last_connectivity_check: Date!
+  last_connectivity_check: Date
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
 }
@@ -1029,11 +1032,6 @@ input AutoRegisterPlatformInput {
   existing_users_count: Int
 }
 
-enum ServiceConfigurationStatus {
-  active
-  inactive
-}
-
 type RolePortal implements Node {
   id: ID!
   name: String!
@@ -1056,7 +1054,7 @@ input EditServiceCapabilityInput {
 
 input AddSubscriptionCapabilityInput {
   subscriptionsId: [SubscriptionId!]!
-  capabilitiesId: [Service_CapabilityId]!
+  capabilitiesId: [Service_CapabilityId!]!
 }
 
 type UserServiceCapability implements Node {
@@ -1080,7 +1078,7 @@ type ServiceCapability implements Node {
 
 input UserServicesAddCapabilitiesInput {
   userServiceIds: [User_ServiceId!]!
-  capabilities: [String]
+  capabilities: [String!]!
 }
 
 type ServiceLink implements Node {
@@ -1246,7 +1244,6 @@ type OpenAEVScenario implements Document & Node {
   short_description: String
   description: String
   file_name: String!
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1255,7 +1252,7 @@ type OpenAEVScenario implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1271,7 +1268,6 @@ type CustomDashboard implements Document & Node {
   short_description: String
   description: String
   file_name: String!
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1280,7 +1276,7 @@ type CustomDashboard implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1329,7 +1325,6 @@ interface Integration implements Node & Document {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1338,7 +1333,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1358,7 +1353,6 @@ type IntegrationHack implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1367,7 +1361,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1387,7 +1381,6 @@ type CsvFeed implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1396,7 +1389,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1417,7 +1410,6 @@ type Connector implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1426,7 +1418,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1455,7 +1447,6 @@ type TaxiiFeed implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1464,7 +1455,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1486,7 +1477,6 @@ type RssFeed implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1495,7 +1485,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1517,7 +1507,6 @@ type Stream implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1526,7 +1515,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1548,7 +1537,6 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   short_description: String
   description: String
   file_name: String
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1557,7 +1545,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1581,7 +1569,6 @@ type OpenCTIPlaybook implements Document & Node {
   short_description: String
   description: String
   file_name: String!
-  minio_name: String!
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -1590,7 +1577,7 @@ type OpenCTIPlaybook implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId!
+  service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
@@ -1620,7 +1607,7 @@ type SubscriptionModel implements Node {
   end_date: Date
   organization: Organization!
   service_url: String!
-  service_instance: ServiceInstance
+  service_instance: ServiceInstance!
   subscription_capability: [SubscriptionCapability]
   user_service: [UserService]!
 }
@@ -1633,7 +1620,7 @@ type SubscriptionEdge {
 input CreateSubscriptionsInput {
   service_instance_id: ServiceInstanceId!
   organization_id: [OrganizationId!]!
-  capability_ids: [Service_CapabilityId]
+  capability_ids: [Service_CapabilityId!]
   start_date: Date!
   end_date: Date
 }
@@ -1641,7 +1628,7 @@ input CreateSubscriptionsInput {
 input UpdateSubscriptionInput {
   start_date: Date
   end_date: Date
-  capability_ids: [Service_CapabilityId]
+  capability_ids: [Service_CapabilityId!]
 }
 
 type SubscriptionConnection {
@@ -1731,7 +1718,7 @@ enum UserServiceOrdering {
 
 input UserServiceAddInput {
   email: [String!]!
-  capabilities: [String]
+  capabilities: [String!]
   subscription_id: SubscriptionId!
 }
 
@@ -1746,7 +1733,7 @@ input UserServicesDeleteInput {
 
 input UserServiceEditInput {
   userServiceId: User_ServiceId!
-  capabilities: [String]
+  capabilities: [String!]!
 }
 
 type UserServiceConnection {

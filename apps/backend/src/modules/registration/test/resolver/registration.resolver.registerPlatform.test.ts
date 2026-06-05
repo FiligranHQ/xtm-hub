@@ -13,7 +13,7 @@ import {
 } from '../../../../__generated__/resolvers-types';
 import { BadRequestErrorCode } from '../../../../utils/error/error.code';
 import { ErrorType } from '../../../../utils/error/error.type';
-import { registrationApp } from '../../registration.app';
+import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('mutation.registerPlatform', () => {
@@ -34,7 +34,7 @@ describe('mutation.registerPlatform', () => {
       platform: platformInput,
       identifier: PlatformIdentifier.Opencti,
     };
-    vi.spyOn(registrationApp, 'registerPlatform').mockResolvedValue(
+    vi.spyOn(RegistrationApp, 'registerPlatform').mockResolvedValue(
       generatedToken
     );
 
@@ -47,7 +47,7 @@ describe('mutation.registerPlatform', () => {
     );
 
     // Then
-    expect(registrationApp.registerPlatform).toHaveBeenCalledWith({
+    expect(RegistrationApp.registerPlatform).toHaveBeenCalledWith({
       ...input,
       organizationId: rawOrgId,
     });
@@ -70,7 +70,7 @@ describe('mutation.registerPlatform', () => {
       },
       identifier: PlatformIdentifier.Opencti,
     };
-    vi.spyOn(registrationApp, 'registerPlatform').mockRejectedValue(
+    vi.spyOn(RegistrationApp, 'registerPlatform').mockRejectedValue(
       new Error(BadRequestErrorCode.InvalidPlatformVersion)
     );
 

@@ -17,7 +17,7 @@ type SubscriptionModel implements Node {
   end_date: Date
   organization: Organization!
   service_url: String!
-  service_instance: ServiceInstance
+  service_instance: ServiceInstance!
   subscription_capability: [SubscriptionCapability]
   user_service: [UserService]!
 }
@@ -30,7 +30,7 @@ type SubscriptionEdge {
 input CreateSubscriptionsInput {
   service_instance_id: ServiceInstanceId!
   organization_id: [OrganizationId!]!
-  capability_ids: [ServiceCapabilityId]
+  capability_ids: [ServiceCapabilityId!]
   start_date: Date!
   end_date: Date
 }
@@ -38,13 +38,13 @@ input CreateSubscriptionsInput {
 input UpdateSubscriptionInput {
   start_date: Date
   end_date: Date
-  capability_ids: [ServiceCapabilityId]
+  capability_ids: [ServiceCapabilityId!]
 }
 
 type Mutation {
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
-  createSubscriptions(input: CreateSubscriptionsInput): [SubscriptionModel!]!
+  createSubscriptions(input: CreateSubscriptionsInput!): [SubscriptionModel!]!
     @auth(portalCapa: [BYPASS])
   updateSubscription(
     subscription_id: SubscriptionId!

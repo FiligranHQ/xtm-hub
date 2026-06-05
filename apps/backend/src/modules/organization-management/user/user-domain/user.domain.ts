@@ -11,7 +11,12 @@ import {
 } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
-import User, { UserId, UserMutator } from '../../../../model/kanel/public/User';
+import User, {
+  UserId,
+  UserInitializer,
+  UserMutator,
+} from '../../../../model/kanel/public/User';
+import UserOrganization from '../../../../model/kanel/public/UserOrganization';
 import UserService from '../../../../model/kanel/public/UserService';
 import {
   UserLoadUserBy,
@@ -21,17 +26,33 @@ import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../../../portal.const';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../../../utils/app-logger.util';
-import { ErrorCode } from '../../../../utils/error/error.code';
+import {
+  ErrorCode,
+  UnknownErrorCode,
+} from '../../../../utils/error/error.code';
+import { UnknownError } from '../../../../utils/error/error.util';
 import { formatRawAggObject } from '../../../../utils/query-raw.util';
 import { addPrefixToObject } from '../../../../utils/typescript';
 import { isEmpty } from '../../../../utils/utils';
-import { isAdmin } from '../../../role-portal/role-portal.domain';
+import { RolePortalDomain } from '../../../role-portal/role-portal.domain';
 import { telemetryApp } from '../../../telemetry/telemetry.app';
 import { buildLoginEvent } from '../../../telemetry/telemetry.helper';
 
 export const UserDomain = {
   loadUsers: async (userIds: UserId[]): Promise<User[]> => {
     return db<User[]>('User').whereIn('id', userIds);
+  },
+
+  insertUser: async (initializer: UserInitializer): Promise<User> => {
+    const [insertedUser] = await db<User>('User')
+      .insert(initializer)
+      .returning('*');
+
+    if (!insertedUser) {
+      throw UnknownError(UnknownErrorCode.AddingUserError);
+    }
+
+    return insertedUser;
   },
 
   loadUser: async (
@@ -103,7 +124,7 @@ export const UserDomain = {
 
   loadUserBy: async (
     field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
-  ): Promise<UserLoadUserBy> => {
+  ): Promise<UserLoadUserBy | undefined> => {
     const [foundUser] = await db<UserLoadUserBy>('User').where(field);
     if (!foundUser) {
       return;
@@ -291,7 +312,7 @@ export const UserDomain = {
       ])
       .groupBy(['User.id']);
 
-    if (!isAdmin()) {
+    if (!RolePortalDomain.isAdmin()) {
       const { user } = requestContext.require();
       loadUserQuery.where(
         'UserOrg.organization_id',
@@ -322,7 +343,10 @@ export const UserDomain = {
     await auth0Client.resetPassword(user.email);
   },
 
-  updateUser: async (id: UserId, input: UserMutator): Promise<User> => {
+  updateUser: async (
+    id: UserId,
+    input: UserMutator
+  ): Promise<User | undefined> => {
     if (isEmpty(input)) {
       return;
     }
@@ -343,7 +367,7 @@ export const UserDomain = {
     user_id: UserId,
     organization_id: OrganizationId
   ): Promise<{ capabilities?: string[] }> => {
-    return db('User_Organization')
+    return db<UserOrganization>('User_Organization')
       .leftJoin(
         'UserOrganization_Capability',
         'User_Organization.id',
@@ -438,25 +462,35 @@ export const UserDomain = {
       last_login: new Date(),
     };
     if (organizations.length === 1) {
-      fields.selected_organization_id = organizations[0].id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      fields.selected_organization_id = organizations[0]!.id;
     }
 
     const [updatedUser] = await db<User>('User')
       .where({ id: user.id })
       .update(fields)
       .returning('*');
+    if (!updatedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
 
     try {
       const selectedOrga = user.organizations.find(
         (org) => org.id === updatedUser.selected_organization_id
       );
-      const loginEvent = buildLoginEvent(selectedOrga, user.id);
-      await telemetryApp.sendTelemetryEvent(loginEvent);
+      if (selectedOrga) {
+        const loginEvent = buildLoginEvent(selectedOrga, user.id);
+        await telemetryApp.sendTelemetryEvent(loginEvent);
+      }
     } catch (error) {
       logApp.error('Unable to send telemetry event for login', {
         error,
       });
     }
-    return UserDomain.loadUserBy({ 'User.id': user.id });
+    const reloadedUser = await UserDomain.loadUserBy({ 'User.id': user.id });
+    if (!reloadedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
+    return reloadedUser;
   },
 };

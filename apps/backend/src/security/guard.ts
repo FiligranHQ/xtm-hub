@@ -11,7 +11,7 @@ import { ServiceInstanceId } from '../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../model/user';
 import { UserOrganizationDomain } from '../modules/organization-management/user/user-organization/user-organization.domain';
 import { isUserAllowedOnOrganization } from '../modules/security-management/capability/auth.helper';
-import { loadSubscriptionBy } from '../modules/subscription/subscription.domain';
+import { SubscriptionDomain } from '../modules/subscription/subscription.domain';
 import { UserServiceDomain } from '../modules/user-service/user-service.domain';
 import { ErrorCode } from '../utils/error/error.code';
 import { BadRequestError, ForbiddenAccess } from '../utils/error/error.util';
@@ -137,11 +137,14 @@ export const assertUserCanManageService = async (
 ) => {
   if (isUserGranted(user)) return;
 
-  const subscription = await loadSubscriptionBy({
+  const subscription = await SubscriptionDomain.loadSubscriptionBy({
     service_instance_id: serviceInstanceId,
     organization_id: user.selected_organization_id,
   });
 
+  if (!subscription) {
+    throw ForbiddenAccess(ErrorCode.MissingCapabilityOnService);
+  }
   const userServiceCapability =
     await UserServiceDomain.loadUserServiceGenericCapability(
       user.id,
@@ -160,10 +163,13 @@ export const assertUserHasCapaOnService = async (
 ) => {
   if (isUserGranted(user)) return;
 
-  const subscription = await loadSubscriptionBy({
+  const subscription = await SubscriptionDomain.loadSubscriptionBy({
     service_instance_id: serviceInstanceId,
     organization_id: user.selected_organization_id,
   });
+  if (!subscription) {
+    throw ForbiddenAccess(ErrorCode.MissingCapabilityOnService);
+  }
   const [existingUserService] =
     await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
       user_id: user.id,

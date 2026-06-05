@@ -7,6 +7,7 @@ import Competitor, {
   CompetitorInitializer,
   CompetitorMutator,
 } from '../../../model/kanel/public/Competitor';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
 
 export const CompetitorDomain = {
   async loadCompetitors(opts: QueryCompetitorsArgs) {
@@ -27,6 +28,9 @@ export const CompetitorDomain = {
         }),
       })
       .returning('*');
+    if (!createdCompetitor) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
 
     return createdCompetitor;
   },
@@ -34,7 +38,7 @@ export const CompetitorDomain = {
   async updateCompetitorBy(
     field: CompetitorMutator,
     data: CompetitorMutator
-  ): Promise<Competitor> {
+  ): Promise<Competitor | undefined> {
     const [updatedCompetitor] = await db<Competitor>('Competitor')
       .where(field)
       .update({
@@ -47,7 +51,9 @@ export const CompetitorDomain = {
 
     return updatedCompetitor;
   },
-  async deleteCompetitorBy(field: CompetitorMutator): Promise<Competitor> {
+  async deleteCompetitorBy(
+    field: CompetitorMutator
+  ): Promise<Competitor | undefined> {
     const [deletedCompetitor] = await db<Competitor>('Competitor')
       .where(field)
       .delete()

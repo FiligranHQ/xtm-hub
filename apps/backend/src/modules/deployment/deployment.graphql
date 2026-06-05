@@ -282,7 +282,7 @@ extend type Query {
   ): PlatformDeploymentRequestConnection!
     @system_token(portalCapa: [MANAGE_DEPLOYMENT])
   deploymentRequestsAvailable(
-    platformIdentifier: PlatformIdentifier
+    platformIdentifier: PlatformIdentifier!
   ): [DeploymentAvailability!]!
     @auth(
       portalCapa: [BYPASS, READ_TRIALS]
@@ -297,12 +297,12 @@ extend type Query {
     orderMode: OrderingMode!
     searchTerm: String
   ): DeploymentRequestConnection! @auth(portalCapa: [BYPASS, READ_TRIALS])
-  trialDeployments(input: TrialDeploymentsInput): TrialsDeployments! @auth
+  trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments! @auth
 }
 
 extend type Mutation {
   createDeploymentRequest(
-    input: CreateDeploymentRequestInput
+    input: CreateDeploymentRequestInput!
   ): DeploymentRequest!
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   updateDeploymentRequest(
@@ -317,7 +317,7 @@ extend type Mutation {
   ): DeploymentRequest
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION])
   adminCancelDeploymentRequest(
-    deploymentRequestId: DeploymentRequestId
+    deploymentRequestId: DeploymentRequestId!
   ): DeploymentRequest @auth(portalCapa: [BYPASS, MODIFY_TRIALS])
   updateDeploymentQuotaCapacity(
     input: UpdateDeploymentQuotaCapacityInput!

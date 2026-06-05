@@ -16,8 +16,8 @@ import {
   subtractInterval,
 } from '../common/interval.helper';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import { registrationDomain } from '../registration/registration.domain';
-import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
 import { newsFeedConfigurationMapping } from './news-feed.model';
@@ -37,13 +37,13 @@ const provisionNewsFeedItemForServiceInstance = async ({
     );
   const organizationIds = organizations.map((org) => org.id);
   const registeredPlatforms =
-    await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+    await RegistrationDomain.loadRegisteredPlatformsByOrganizationIds(
       organizationIds,
       platformIdentifier
     );
-  const platformIds = registeredPlatforms
-    .filter((platform) => platform.config?.platform_id)
-    .map((platform) => platform.config.platform_id);
+  const platformIds = registeredPlatforms.map(
+    (platform) => platform.platform_id
+  );
   await NewsFeedDomain.provisionNewsFeedItem(newsFeedItemId, platformIds);
 };
 
@@ -60,7 +60,7 @@ export const NewsFeedApp = {
     }
 
     const resolvedConfiguration =
-      await ServiceConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
+      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
         {
           platform_id: platformId,
           token,
@@ -236,12 +236,12 @@ export const NewsFeedApp = {
     }
 
     const registeredPlatforms =
-      await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+      await RegistrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
         platformIdentifier
       );
-    const platformIds = registeredPlatforms
-      .filter((platform) => platform.config?.platform_id)
-      .map((platform) => platform.config.platform_id);
+    const platformIds = registeredPlatforms.map(
+      (platform) => platform.platform_id
+    );
 
     await NewsFeedDomain.provisionNewsFeedItem(newsFeedItem.id, platformIds);
   },

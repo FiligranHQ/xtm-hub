@@ -34,6 +34,12 @@ export const documentVisualizeEndpoint = (app) => {
           res.status(404).json({ message: 'Document not found' });
           throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
         }
+        if (!document.minio_name) {
+          logApp.error(
+            `VISUALIZE Error - Invalid document - Missing name for ${document.id}`
+          );
+          return res.status(404).json({ message: 'Invalid document' });
+        }
         const stream = (await MinIOClient.downloadFile(
           document.minio_name
         )) as Readable;
@@ -87,11 +93,16 @@ export const documentVisualizeEndpoint = (app) => {
           id: documentId,
         });
 
-        if (!document || !document.mime_type.startsWith('image/')) {
+        if (!document?.mime_type?.startsWith('image/')) {
           logApp.error(
             `Document not found. Required documentId: ${documentId}`
           );
           return res.status(404).json({ message: 'Document not found' });
+        }
+
+        if (!document.minio_name) {
+          logApp.error(`Invalid document - Missing name for ${documentId}`);
+          return res.status(404).json({ message: 'Invalid document' });
         }
         const stream = (await MinIOClient.downloadFile(
           document.minio_name

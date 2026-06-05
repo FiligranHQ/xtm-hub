@@ -47,18 +47,21 @@ import { formatName } from '../../utils/format';
 import { ucfirst } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
-import { registrationDomain } from '../registration/registration.domain';
-import { ServiceConfigurationDomain } from '../registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
-import { updateSubscriptionBy } from '../subscription/subscription.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildCreateDeploymentEvent,
   buildUpdateDeploymentEvent,
 } from '../telemetry/telemetry.helper';
 import { CompetitorApp } from './competitor/competitor.app';
-import { DeploymentRequestDomain } from './deployment.domain';
+import {
+  DeploymentRequestDomain,
+  FullyQualifiedDeploymentRequest,
+} from './deployment.domain';
 import {
   assertFreeTrialsLimit,
   computeHubStatus,
@@ -83,7 +86,7 @@ export const DeploymentApp = {
 
     if (await CompetitorApp.isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
-        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
+        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains?.join(', ')}') is blacklisted`
       );
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
@@ -124,7 +127,7 @@ export const DeploymentApp = {
             const ordering = (maxOrdering ?? 0) + 1;
 
             const serviceInstanceId =
-              await registrationDomain.registerNewPlatform({
+              await RegistrationDomain.registerNewPlatform({
                 serviceDefinitionId: serviceDefinition.id,
                 organizationId: user.selected_organization_id,
                 platformIdentifier: input.platform_identifier,
@@ -211,17 +214,15 @@ export const DeploymentApp = {
           to: instanceRequestedEmail,
           template: 'admin_saas_instance_requested',
           params: {
-            organizationName: user.organizations.find(
-              (o) => o.id === user.selected_organization_id
-            ).name,
+            organizationName: chosenOrganization.name,
             userName:
               user.first_name && user.last_name
                 ? `${user.first_name} ${user.last_name}`
                 : `${user.email}`,
             userEmail: user.email,
             region: input.region,
-            activitySector: input.activity_sector,
-            useCase: input.use_case,
+            activitySector: input.activity_sector ?? undefined,
+            useCase: input.use_case ?? undefined,
             platformIdentifier: input.platform_identifier,
             deploymentType: ucfirst(input.type),
           },
@@ -235,6 +236,10 @@ export const DeploymentApp = {
 
       return DeploymentRequestDomain.loadDeploymentRequestBy({
         id: createdDeploymentRequest.id,
+      }).then((result) => {
+        if (!result)
+          throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+        return result;
       });
     } catch (error) {
       logApp.error('unable to create deployment request', { error });
@@ -273,6 +278,10 @@ export const DeploymentApp = {
         id: deploymentRequestId,
       });
 
+    if (!updatedDeploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
     await sendUpdateDeploymentTelemetryEvent(
       updatedDeploymentRequest,
       updatedDeploymentRequest.user_requester_id,
@@ -283,13 +292,13 @@ export const DeploymentApp = {
       newStatus === DeploymentRequestHubStatus.Provisioning &&
       newStatus !== deploymentRequest.hub_status
     ) {
-      await sendProvisioningPlatformEmail(deploymentRequest);
+      await sendProvisioningPlatformEmail(updatedDeploymentRequest);
     }
     if (
       newStatus === DeploymentRequestHubStatus.Active &&
       newStatus !== deploymentRequest.hub_status
     ) {
-      await sendActivePlatformEmail(deploymentRequest);
+      await sendActivePlatformEmail(updatedDeploymentRequest);
     }
 
     return updatedDeploymentRequest;
@@ -465,7 +474,10 @@ export const DeploymentApp = {
       ![
         DeploymentRequestPlatformState.Unprovisioned,
         DeploymentRequestPlatformState.Provisioning,
-      ].includes(deploymentRequest.actual_state);
+      ].includes(
+        deploymentRequest.actual_state ??
+          DeploymentRequestPlatformState.Unprovisioned
+      );
 
     const target_state =
       deploymentRequest.actual_state ===
@@ -508,20 +520,30 @@ export const DeploymentApp = {
         id: deploymentRequestId,
       });
 
+    if (!updatedDeploymentRequest) {
+      throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+    }
+
     await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
 
     try {
       const [requester] = await UserDomain.loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
-      await sendMail({
-        to: requester.email,
-        template: 'free_trial_cancelled',
-        params: {
-          firstName: formatName(requester.first_name ?? ''),
-          platformIdentifier: updatedDeploymentRequest.platform_identifier,
-        },
-      });
+      if (requester) {
+        await sendMail({
+          to: requester.email,
+          template: 'free_trial_cancelled',
+          params: {
+            firstName: formatName(requester.first_name ?? ''),
+            platformIdentifier: updatedDeploymentRequest.platform_identifier,
+          },
+        });
+      } else {
+        logApp.warn('Requester not found for trial cancellation mail', {
+          deploymentRequestId: updatedDeploymentRequest.id,
+        });
+      }
     } catch (error) {
       logApp.error('Unable to send mail for trial cancellation', {
         error,
@@ -530,10 +552,17 @@ export const DeploymentApp = {
     }
 
     try {
-      await auth0Client.deleteAudienceAPI(
-        deploymentRequest.organization_requester_id,
-        deploymentRequest.platform_id
-      );
+      if (deploymentRequest.platform_id) {
+        await auth0Client.deleteAudienceAPI(
+          deploymentRequest.organization_requester_id,
+          deploymentRequest.platform_id
+        );
+      } else {
+        logApp.error('Unable to delete audience', {
+          error: 'missing platform_id',
+          deploymentRequestId: deploymentRequest.id,
+        });
+      }
     } catch (error) {
       logApp.error('Unable to delete audience', {
         error,
@@ -568,6 +597,10 @@ export const DeploymentApp = {
                 }
               );
 
+            if (!updatedDeploymentRequest) {
+              throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+            }
+
             await DeploymentApp.releaseDeploymentRequestPlace(
               previousHubStatus,
               trial.platform_identifier,
@@ -585,14 +618,20 @@ export const DeploymentApp = {
           const [requester] = await UserDomain.loadUser({
             id: trial.user_requester_id,
           });
-          await sendMail({
-            to: requester.email,
-            template: 'free_trial_expired',
-            params: {
-              firstName: formatName(requester.first_name ?? ''),
-              platformIdentifier: trial.platform_identifier,
-            },
-          });
+          if (requester) {
+            await sendMail({
+              to: requester.email,
+              template: 'free_trial_expired',
+              params: {
+                firstName: formatName(requester.first_name ?? ''),
+                platformIdentifier: trial.platform_identifier,
+              },
+            });
+          } else {
+            logApp.warn('Requester not found for trial expiration mail', {
+              trialId: trial.id,
+            });
+          }
         } catch (error) {
           logApp.error('Unable to send mail for trial expiration', {
             error,
@@ -601,10 +640,17 @@ export const DeploymentApp = {
         }
 
         try {
-          await auth0Client.deleteAudienceAPI(
-            trial.organization_requester_id,
-            trial.platform_id
-          );
+          if (trial.platform_id) {
+            await auth0Client.deleteAudienceAPI(
+              trial.organization_requester_id,
+              trial.platform_id
+            );
+          } else {
+            logApp.error('Unable to delete audience', {
+              error: 'missing platform_id',
+              deploymentRequestId: trial.id,
+            });
+          }
         } catch (error) {
           logApp.error('Unable to delete audience', {
             error,
@@ -669,7 +715,7 @@ export const DeploymentApp = {
     const deploymentRequests =
       await DeploymentRequestDomain.loadTrialsForOrganization(
         user.selected_organization_id,
-        input.platformIdentifiers
+        input.platformIdentifiers ?? undefined
       );
 
     const deployedIdentifiers = new Set(
@@ -784,7 +830,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
     async () => {
       const shouldUpdateSubscriptionDates = input.start_date || input.end_date;
       if (shouldUpdateSubscriptionDates) {
-        await updateSubscriptionBy(
+        await SubscriptionDomain.updateSubscriptionBy(
           { service_instance_id: deploymentRequest.service_instance_id },
           {
             start_date: input.start_date,
@@ -799,7 +845,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
         platform_id: input.platform_id,
         failure_reason: input.failure_reason,
         actual_state: input.actual_state,
-        ordering: input.ordering,
+        ordering: input.ordering ?? undefined,
         hub_status: newStatus,
       };
 
@@ -825,15 +871,20 @@ const sendProvisioningPlatformEmail = async (
     const [user] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
-
-    await sendMail({
-      to: user.email,
-      template: 'free_trial_provisioning',
-      params: {
-        firstName: formatName(user.first_name ?? ''),
-        platformIdentifier: deploymentRequest.platform_identifier,
-      },
-    });
+    if (user) {
+      await sendMail({
+        to: user.email,
+        template: 'free_trial_provisioning',
+        params: {
+          firstName: formatName(user.first_name ?? ''),
+          platformIdentifier: deploymentRequest.platform_identifier,
+        },
+      });
+    } else {
+      logApp.warn('Requester not found for provisioning platform mail', {
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
   } catch (error) {
     logApp.error('Unable to send mail', {
       error,
@@ -843,28 +894,49 @@ const sendProvisioningPlatformEmail = async (
 };
 
 const sendActivePlatformEmail = async (
-  deploymentRequest: DeploymentRequestModel
+  deploymentRequest: FullyQualifiedDeploymentRequest
 ) => {
   try {
+    if (!deploymentRequest.platform_id) {
+      logApp.error('Unable to send mail after deployment request is active', {
+        error: 'platform_id not set for active platform',
+        deploymentRequestId: deploymentRequest.id,
+      });
+      return;
+    }
+
+    const platformConfiguration =
+      await PlatformConfigurationDomain.loadConfigurationByPlatform(
+        deploymentRequest.platform_id
+      );
+
+    if (!platformConfiguration) {
+      logApp.error('Unable to send mail after deployment request is active', {
+        error: NotFoundErrorCode.PlatformConfigurationNotFound,
+        deploymentRequestId: deploymentRequest.id,
+        platformId: deploymentRequest.platform_id,
+      });
+      return;
+    }
+
     const [user] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
 
-    const serviceConfiguration =
-      await ServiceConfigurationDomain.loadConfigurationByPlatform(
-        deploymentRequest.platform_id
-      );
-
-    const parsedConfig = JSON.parse(
-      JSON.stringify(serviceConfiguration.config)
-    );
+    if (!user) {
+      logApp.error('Unable to send mail after deployment request is active', {
+        error: 'Requester not found',
+        deploymentRequestId: deploymentRequest.id,
+      });
+      return;
+    }
 
     await sendMail({
       to: user.email,
       template: 'free_trial_registered',
       params: {
         firstName: formatName(user.first_name ?? ''),
-        platformUrl: parsedConfig.platform_url,
+        platformUrl: platformConfiguration?.platform_url,
         platformIdentifier: deploymentRequest.platform_identifier,
         globalServiceInstanceId: toGlobalId(
           'ServiceInstance',
@@ -874,7 +946,7 @@ const sendActivePlatformEmail = async (
     });
   } catch (error) {
     logApp.error('Unable to send mail after deployment request is active', {
-      error: error,
+      error,
       deploymentRequestId: deploymentRequest.id,
     });
   }
@@ -909,10 +981,10 @@ const sendUpdateDeploymentTelemetryEvent = async (
         deployment_id: deploymentRequest.id,
         deployment_type: deploymentRequest.type,
         platform_id: deploymentRequest.platform_id,
-        ...(deploymentRequest.hub_status ===
-          DeploymentRequestHubStatus.Cancelled && {
-          cancellation_reason: deploymentRequest.cancellation_reason,
-        }),
+        cancellation_reason:
+          deploymentRequest.hub_status === DeploymentRequestHubStatus.Cancelled
+            ? deploymentRequest.cancellation_reason
+            : undefined,
       }
     );
 

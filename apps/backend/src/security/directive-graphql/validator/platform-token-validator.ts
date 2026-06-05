@@ -5,12 +5,12 @@ import { requestContext } from '../../../context/request.context';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { OrganizationDomain } from '../../../modules/organization-management/organization/organization.domain';
-import { ServiceConfigurationDomain } from '../../../modules/registration/service-configuration/service-configuration.domain';
+import { PlatformConfigurationDomain } from '../../../modules/registration/platform-configuration/platform-configuration.domain';
 import {
   extractPlatformId,
   extractPlatformToken,
   validateAndGetRequestedPlatformToken,
-  validateExistsToken,
+  validateExistsPlatformAndToken,
 } from '../../../modules/security-management/token/platform-token.util';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
 
@@ -21,16 +21,20 @@ export {
   PLATFORM_TOKEN_HEADER,
   validateActivePlatformToken,
   validateAndGetRequestedPlatformToken,
-  validateExistsToken,
+  validateExistsPlatformAndToken,
 } from '../../../modules/security-management/token/platform-token.util';
 export const PLATFORM_TOKEN_DIRECTIVE_NAME = 'platform_token';
 
 const loadOrganizationFromPlatformIdAndTokenHeaders = async (
   req: express.Request
 ) => {
-  if (!validateExistsToken(req)) {
+  if (!validateExistsPlatformAndToken(req)) {
     throw new Error('Invalid platform token provided');
   }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const platform_id = extractPlatformId(req)!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const token = extractPlatformToken(req)!;
 
   const deploymentRequest = await validateAndGetRequestedPlatformToken(req);
   if (deploymentRequest) {
@@ -39,14 +43,14 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
     });
   }
 
-  const serviceConfiguration =
-    await ServiceConfigurationDomain.loadConfigurationByPlatformAndToken({
-      platform_id: extractPlatformId(req),
-      token: extractPlatformToken(req),
+  const platformConfiguration =
+    await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
+      platform_id,
+      token,
     });
-  if (serviceConfiguration) {
+  if (platformConfiguration) {
     return OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
-      serviceConfiguration.service_instance_id
+      platformConfiguration.service_instance_id
     );
   }
 
@@ -81,7 +85,7 @@ export const createPlatformTokenResolver = (originalResolve) => {
       selected_org_capabilities: [
         OrganizationCapability.ManagePlatformRegistration,
       ],
-    } as UserLoadUserBy;
+    } as unknown as UserLoadUserBy;
 
     // If token is valid, override context with system user
     const enhancedContext: PortalContext = {

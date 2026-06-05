@@ -5,11 +5,12 @@ import {
   addRoleToUser,
   ensureUserOrganizationExist,
 } from '../../../server/initialize.helper';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { isEmptyField } from '../../../utils/utils';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { getOrCreateUser } from '../../organization-management/user/user.helper';
-import { removeAllUserRolePortal } from '../../role-portal/role-portal.domain';
+import { RolePortalDomain } from '../../role-portal/role-portal.domain';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {
   // region test the groups existence and eventually auto create groups
@@ -21,18 +22,25 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   const isFiligranUser = email.endsWith('@filigran.io');
 
   const user = await getOrCreateUser(userInfo, true, isFiligranUser);
+  if (!user) {
+    throw new Error(ErrorCode.UserNotFound);
+  }
   if (user.disabled) {
     throw ForbiddenAccess('You are not allowed to log in');
   }
   // Check if the user has the admin role, so in creation we create user then add admin role
   if (isFiligranUser) {
     await ensureUserOrganizationExist(user.id, PLATFORM_ORGANIZATION_UUID);
-    await removeAllUserRolePortal(user.id);
+    await RolePortalDomain.removeAllUserRolePortal(user.id);
     if (userInfo.roles.length > 0) {
       await Promise.all(
         userInfo.roles.map((role) => addRoleToUser(user.id, role))
       );
-      return UserDomain.loadUserBy({ 'User.id': user.id });
+      const reloadedUser = await UserDomain.loadUserBy({ 'User.id': user.id });
+      if (!reloadedUser) {
+        throw new Error(ErrorCode.UserNotFound);
+      }
+      return reloadedUser;
     }
   }
 

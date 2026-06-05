@@ -12,8 +12,10 @@ import UserOrganization, {
   UserOrganizationInitializer,
   UserOrganizationMutator,
 } from '../../../../model/kanel/public/UserOrganization';
+import UserOrganizationPending from '../../../../model/kanel/public/UserOrganizationPending';
 import { securityGuard } from '../../../../security/guard';
 import { sendMail } from '../../../../server/mail-service';
+import { UnknownErrorCode } from '../../../../utils/error/error.code';
 import { isEmpty } from '../../../../utils/utils';
 import {
   createUserOrganizationCapability,
@@ -25,7 +27,9 @@ export const UserOrganizationDomain = {
   insertNewUserOrganization: (
     field: UserOrganizationInitializer | UserOrganizationInitializer[]
   ): Promise<UserOrganization[]> => {
-    return db('User_Organization').insert(field).returning('*');
+    return db<UserOrganization>('User_Organization')
+      .insert(field)
+      .returning('*');
   },
 
   createUserOrganizationRelationAndRemovePending: async ({
@@ -73,13 +77,13 @@ export const UserOrganizationDomain = {
 
   updateMultipleUserOrgWithCapabilities: async (
     userId: UserId,
-    orgCapabilities?: OrganizationCapabilitiesInput[]
+    orgCapabilities: OrganizationCapabilitiesInput[] | null = []
   ) => {
     await db<UserOrganization>('User_Organization')
       .where('user_id', '=', userId)
       .whereNot('organization_id', userId) // Should not touch personal space
       .del();
-    if (isEmpty(orgCapabilities)) {
+    if (!orgCapabilities || isEmpty(orgCapabilities)) {
       return;
     }
     for (const orgCapa of orgCapabilities) {
@@ -90,6 +94,9 @@ export const UserOrganizationDomain = {
             user_id: userId,
             organization_id,
           });
+        if (!newUserOrganization) {
+          throw new Error(UnknownErrorCode.UnknownError);
+        }
         await createUserOrganizationCapability({
           user_organization_id: newUserOrganization.id,
           capabilities_name: orgCapa.capabilities,
@@ -106,7 +113,7 @@ export const UserOrganizationDomain = {
   }: {
     user_id: UserId;
     organization_id: OrganizationId;
-    orgCapabilities?: string[];
+    orgCapabilities?: string[] | null;
   }) => {
     await securityGuard.assertUserCapabilities(
       [
@@ -121,6 +128,9 @@ export const UserOrganizationDomain = {
         user_id,
         organization_id,
       });
+    if (!userOrganization) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     await updateUserOrganizationCapability({
       user_organization_id: userOrganization.id,
       capabilities_name: orgCapabilities,
@@ -144,6 +154,9 @@ export const UserOrganizationDomain = {
         user_id: user.id,
         organization_id: organization.id,
       });
+    if (!userOrganization) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     const { user: contextUser } = requestContext.require();
     await securityGuard.assertUserCapabilities(
       [
@@ -187,7 +200,7 @@ export const UserOrganizationDomain = {
     user_id: UserId;
     organization_id: OrganizationId;
   }) => {
-    return db('User_Organization_Pending')
+    return db<UserOrganizationPending>('User_Organization_Pending')
       .where({
         user_id,
         organization_id,

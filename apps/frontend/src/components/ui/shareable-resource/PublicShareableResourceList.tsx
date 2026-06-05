@@ -40,7 +40,9 @@ export const PublicShareableResourceList = ({
   }, [documents]);
 
   if (documents.length === 0) {
-    return <div className="my-4 text-center">No document found</div>;
+    return (
+      <div className="my-4 text-center">{t('Utils.DocumentNotFound')}</div>
+    );
   }
 
   return (

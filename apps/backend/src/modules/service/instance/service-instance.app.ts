@@ -19,10 +19,9 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { DocumentHelper } from '../../document/document.helper';
 import { Upload } from '../../document/document.uploads.helper';
-import { PlatformConfiguration } from '../../registration/registration.domain';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import { subscriptionApp } from '../../subscription/subscription.app';
-import { loadSubscriptionBy } from '../../subscription/subscription.domain';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import {
   grantServiceAccess,
@@ -44,19 +43,27 @@ export const ServiceInstanceApp = {
     const { user } = requestContext.require();
 
     const service = await loadServiceInstanceBy({ id: serviceInstanceId });
-    let subscription = await loadSubscriptionBy({
+    if (!service) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
+    let subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id: serviceInstanceId,
       organization_id: user.selected_organization_id,
     });
 
     if (!subscription) {
-      [subscription] = await subscriptionApp.subscribeOrganizationsToService({
-        organizationIds: [user.selected_organization_id],
-        serviceInstanceId: serviceInstanceId,
-        startDate: new Date(),
-        endDate: null,
-        capabilityIds: [],
-      });
+      const [createdSubscription] =
+        await subscriptionApp.subscribeOrganizationsToService({
+          organizationIds: [user.selected_organization_id],
+          serviceInstanceId: serviceInstanceId,
+          startDate: new Date(),
+          endDate: null,
+          capabilityIds: [],
+        });
+      if (!createdSubscription) {
+        throw NotFoundError(ErrorCode.SubscriptionNotFound);
+      }
+      subscription = createdSubscription;
     }
     const userService = await UserServiceDomain.loadUserServiceBy({
       subscription_id: subscription.id,
@@ -69,13 +76,17 @@ export const ServiceInstanceApp = {
         subscription.id
       );
     }
-    return service;
+    return service as unknown as ServiceInstance;
   },
 
   loadServiceInstance: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    return loadServiceInstanceBy({ id: serviceInstanceId });
+    const service = await loadServiceInstanceBy({ id: serviceInstanceId });
+    if (!service) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
+    return service as unknown as ServiceInstance;
   },
   addServicePicture: async (
     serviceInstanceId: ServiceInstanceId,
@@ -87,12 +98,20 @@ export const ServiceInstanceApp = {
         document,
         serviceInstanceId
       );
+      if (!uploadedDocument) {
+        throw new Error(ErrorCode.DocumentFileMissing);
+      }
       const update = isLogo
         ? { logo_document_id: uploadedDocument.id }
         : { illustration_document_id: uploadedDocument.id };
       return updateServiceInstance(serviceInstanceId, update);
     });
+
+    if (!updatedServiceInstance) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
     await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
+
     return updatedServiceInstance as unknown as ServiceInstance;
   },
 
@@ -106,7 +125,6 @@ export const ServiceInstanceApp = {
       user.selected_organization_id,
       serviceInstanceId
     );
-
     if (!serviceInstance) {
       throw NotFoundError(ErrorCode.ServiceInstanceNotFound);
     }
@@ -115,7 +133,6 @@ export const ServiceInstanceApp = {
     const serviceDefinition = await loadServiceDefinitionByServiceInstance(
       serviceInstance.id
     );
-
     if (!serviceDefinition) {
       throw NotFoundError(ErrorCode.ServiceDefinitionNotFound);
     }
@@ -140,6 +157,9 @@ export const ServiceInstanceApp = {
         upload,
         serviceInstance.id
       );
+      if (!document) {
+        throw new Error(ErrorCode.DocumentFileMissing);
+      }
       updateData.illustration_document_id = document.id;
     }
 
@@ -148,24 +168,19 @@ export const ServiceInstanceApp = {
       let result = serviceInstance;
       if (Object.keys(updateData).length > 0) {
         result = await updateServiceInstance(serviceInstance.id, updateData);
+        if (!result) {
+          throw new Error(ErrorCode.ServiceInstanceNotFound);
+        }
       }
 
-      // For registered platforms, also update the configuration JSON for platform_title
+      // For registered platforms, also update the platform_title in platform configuration
       if (input.name) {
-        const currentConfig =
-          await loadPlatformConfigurationByServiceInstanceId(
-            serviceInstance.id
-          );
-
-        if (currentConfig) {
-          const config = currentConfig.config as PlatformConfiguration;
-          config.platform_title = input.name;
-
-          await updatePlatformConfigurationByServiceInstanceId(
-            serviceInstance.id,
-            config
-          );
-        }
+        await updatePlatformConfigurationByServiceInstanceId(
+          serviceInstance.id,
+          {
+            platform_title: input.name,
+          }
+        );
       }
       return result;
     });
@@ -178,22 +193,22 @@ export const ServiceInstanceApp = {
     );
 
     if (!config) {
-      throw NotFoundError(ErrorCode.ServiceConfigurationNotFound);
+      throw NotFoundError(ErrorCode.PlatformConfigurationNotFound);
     }
 
-    const platformConfig = config.config as PlatformConfiguration;
     return {
       __typename: 'RegisteredPlatform',
       id: updatedServiceInstance.id,
-      platform_id: platformConfig.platform_id,
-      title: platformConfig.platform_title,
-      url: platformConfig.platform_url,
-      contract: platformConfig.platform_contract,
-      version: platformConfig.platform_version,
+      platform_id: config.platform_id,
+      title: config.platform_title,
+      url: config.platform_url,
+      contract: config.platform_contract,
+      version: config.platform_version,
       identifier: serviceDefinition.identifier,
       illustration_document_id:
         updatedServiceInstance.illustration_document_id ?? null,
-    } as RegisteredPlatform;
+      last_connectivity_check: config.last_connectivity_check,
+    };
   },
 
   loadSeoServiceInstances: async (): Promise<SeoServiceInstance[]> => {

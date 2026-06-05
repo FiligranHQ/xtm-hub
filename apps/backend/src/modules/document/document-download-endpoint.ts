@@ -8,6 +8,7 @@ import { DocumentId } from '../../model/kanel/public/Document';
 import { UserLoadUserBy } from '../../model/user';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
@@ -107,12 +108,16 @@ export const documentDownloadEndpoint = (app) => {
           if (attach) {
             res.attachment(document.file_name);
           }
-
+          if (!document.service_instance_id) {
+            throw new Error(ErrorCode.ServiceInstanceNotFound);
+          }
           const serviceDefinition =
             await loadServiceDefinitionByServiceInstance(
               document.service_instance_id
             );
-
+          if (!serviceDefinition) {
+            throw new Error(ErrorCode.ServiceDefinitionNotFound);
+          }
           try {
             if (shouldSendEventForService(serviceDefinition.identifier)) {
               const selectedOrga = await OrganizationDomain.loadOrganizationBy({

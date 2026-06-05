@@ -8,6 +8,7 @@ import { UserId } from '../../../model/kanel/public/User';
 import { dispatch, listen } from '../../../pub';
 import { hubspotReachOutSalesHook } from '../../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../../utils/app-logger.util';
+import { getErrorMessage } from '../../../utils/error/error-guard.util';
 
 import { UserTransferRequestId } from '../../../model/kanel/public/UserTransferRequest';
 import { PortalContext } from '../../../model/portal-context';
@@ -96,7 +97,7 @@ const resolvers: Resolvers = {
         const user = await UserAdminApp.addUser(input);
         return mapUserToGraphqlUser(user);
       } catch (error) {
-        if (error.message.includes(ErrorCode.UserDisabled)) {
+        if (getErrorMessage(error).includes(ErrorCode.UserDisabled)) {
           logApp.warn('You cannot add a user who is disabled in the plaform');
           throw ForbiddenAccess(ErrorCode.CantAddDisabledUser);
         }
@@ -207,10 +208,10 @@ const resolvers: Resolvers = {
         const { ids, searchTerm, filters, excludedIds } = input;
         await UserAdminApp.bulkRemovePendingUserFromOrganization(
           context.user.selected_organization_id,
-          ids,
-          searchTerm,
-          filters,
-          excludedIds
+          ids ?? [],
+          searchTerm ?? undefined,
+          filters ?? [],
+          excludedIds ?? []
         );
 
         return { success: true };
@@ -231,10 +232,10 @@ const resolvers: Resolvers = {
 
         await UserAdminApp.bulkAcceptPendingUserInOrganization(
           context.user.selected_organization_id,
-          ids,
-          searchTerm,
-          filters,
-          excludedIds
+          ids ?? [],
+          searchTerm ?? undefined,
+          filters ?? [],
+          excludedIds ?? []
         );
         return { success: true };
       } catch (error) {
@@ -283,7 +284,7 @@ const resolvers: Resolvers = {
 
         return undefined;
       } catch (error) {
-        if (error.message.includes(ErrorCode.UserDisabled)) {
+        if (getErrorMessage(error).includes(ErrorCode.UserDisabled)) {
           throw ForbiddenAccess(ErrorCode.YouCanNotLogin);
         }
 
@@ -304,10 +305,10 @@ const resolvers: Resolvers = {
         );
 
         await hubspotReachOutSalesHook({
-          message,
+          message: message ?? undefined,
           platformToken,
-          platformId,
-          platformIdentifier,
+          platformId: platformId ?? undefined,
+          platformIdentifier: platformIdentifier ?? undefined,
         });
         return { success: true };
       } catch (error) {
@@ -323,9 +324,11 @@ const resolvers: Resolvers = {
             return true;
           }
           const user = payload.add ?? payload.delete ?? payload.edit;
-          return user.organizations
-            .map((org) => org.id)
-            .includes(extractId(args.organizationId));
+          return (
+            user?.organizations
+              ?.map((org) => org.id)
+              ?.includes(extractId(args.organizationId)) ?? false
+          );
         }),
     },
     MeUser: {
@@ -340,7 +343,7 @@ const resolvers: Resolvers = {
           (payload: UserPendingSubscription) => {
             const organizationId = payload.delete
               ? payload.delete.pending_organization_id
-              : payload.invalidate.id;
+              : payload.invalidate?.id;
             return organizationId === extractId(args.organizationId);
           }
         ),

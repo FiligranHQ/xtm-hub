@@ -62,7 +62,7 @@ export type AddServiceInput = {
 };
 
 export type AddSubscriptionCapabilityInput = {
-  capabilitiesId: Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>;
+  capabilitiesId: Array<Scalars['Service_CapabilityId']['input']>;
   subscriptionsId: Array<Scalars['SubscriptionId']['input']>;
 };
 
@@ -174,13 +174,12 @@ export type Connector = Document & Integration & Node & {
   integration_type: IntegrationType;
   manager_supported: Scalars['Boolean']['output'];
   minimum_deployable_version: Maybe<Scalars['String']['output']>;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   playbook_supported: Scalars['Boolean']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -241,7 +240,7 @@ export type CreateEpicInput = {
 };
 
 export type CreateSubscriptionsInput = {
-  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
+  capability_ids: InputMaybe<Array<Scalars['Service_CapabilityId']['input']>>;
   end_date: InputMaybe<Scalars['Date']['input']>;
   organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
@@ -262,11 +261,10 @@ export type CsvFeed = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -288,11 +286,10 @@ export type CustomDashboard = Document & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -318,10 +315,9 @@ export type DefaultDocument = Document & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Maybe<Scalars['String']['output']>;
@@ -539,10 +535,9 @@ export type Document = {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Maybe<Scalars['String']['output']>;
@@ -692,7 +687,7 @@ export enum FiligranProduct {
 }
 
 export type Filter = {
-  key: InputMaybe<FilterKey>;
+  key: FilterKey;
   value: Array<Scalars['String']['input']>;
 };
 
@@ -727,11 +722,10 @@ export type Integration = {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -757,11 +751,10 @@ export type IntegrationHack = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -875,7 +868,7 @@ export type Mutation = {
   createSubscriptions: Array<SubscriptionModel>;
   deleteCompetitor: Competitor;
   deleteDocument: Document;
-  deleteEpic: Epic;
+  deleteEpic: Maybe<Epic>;
   deleteNewsFeedItem: Scalars['Boolean']['output'];
   deleteOrganization: Maybe<Organization>;
   deleteSubscriptions: Array<SubscriptionModel>;
@@ -966,7 +959,7 @@ export type MutationAdminAddUserArgs = {
 
 
 export type MutationAdminCancelDeploymentRequestArgs = {
-  deploymentRequestId: InputMaybe<Scalars['DeploymentRequestId']['input']>;
+  deploymentRequestId: Scalars['DeploymentRequestId']['input'];
 };
 
 
@@ -983,12 +976,12 @@ export type MutationAutoRegisterPlatformArgs = {
 
 
 export type MutationBulkAcceptPendingUserInOrganizationArgs = {
-  input: InputMaybe<BulkPendingUserFromOrganizationInput>;
+  input: BulkPendingUserFromOrganizationInput;
 };
 
 
 export type MutationBulkRemovePendingUserFromOrganizationArgs = {
-  input: InputMaybe<BulkPendingUserFromOrganizationInput>;
+  input: BulkPendingUserFromOrganizationInput;
 };
 
 
@@ -1016,7 +1009,7 @@ export type MutationCreateCompetitorArgs = {
 
 
 export type MutationCreateDeploymentRequestArgs = {
-  input: InputMaybe<CreateDeploymentRequestInput>;
+  input: CreateDeploymentRequestInput;
 };
 
 
@@ -1025,7 +1018,7 @@ export type MutationCreateDocumentArgs = {
   input: CreateDocumentInput;
   logo: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
   sourceDocument: InputMaybe<Scalars['Upload']['input']>;
 };
 
@@ -1037,7 +1030,7 @@ export type MutationCreateEpicArgs = {
 
 
 export type MutationCreateSubscriptionsArgs = {
-  input: InputMaybe<CreateSubscriptionsInput>;
+  input: CreateSubscriptionsInput;
 };
 
 
@@ -1047,9 +1040,9 @@ export type MutationDeleteCompetitorArgs = {
 
 
 export type MutationDeleteDocumentArgs = {
-  documentId: InputMaybe<Scalars['DocumentId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
   forceDelete: InputMaybe<Scalars['Boolean']['input']>;
-  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1127,7 +1120,7 @@ export type MutationFrontendErrorLogArgs = {
 
 
 export type MutationIncrementShareNumberDocumentArgs = {
-  documentId: InputMaybe<Scalars['DocumentId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
 };
 
 
@@ -1175,7 +1168,7 @@ export type MutationReorderDeploymentRequestInQueueArgs = {
 
 
 export type MutationRequestTransferPersonalSpaceArgs = {
-  new_email: InputMaybe<Scalars['String']['input']>;
+  new_email: Scalars['String']['input'];
 };
 
 
@@ -1185,7 +1178,7 @@ export type MutationTransferPersonalSpaceArgs = {
 
 
 export type MutationUnregisterPlatformArgs = {
-  input: InputMaybe<UnregisterPlatformInput>;
+  input: UnregisterPlatformInput;
 };
 
 
@@ -1211,7 +1204,7 @@ export type MutationUpdateDocumentArgs = {
   input: UpdateDocumentInput;
   logo: InputMaybe<Scalars['Upload']['input']>;
   metadata: Array<DocumentMetadata>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
   sourceDocument: InputMaybe<Scalars['Upload']['input']>;
 };
 
@@ -1302,11 +1295,10 @@ export type OpenAevScenario = Document & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -1338,11 +1330,10 @@ export type OpenCtiPlaybook = Document & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -1422,6 +1413,11 @@ export type PageInfo = {
   hasPreviousPage: Scalars['Boolean']['output'];
   startCursor: Maybe<Scalars['String']['output']>;
 };
+
+export enum PlatformConfigurationStatus {
+  Active = 'active',
+  Inactive = 'inactive'
+}
 
 export enum PlatformContract {
   Ce = 'CE',
@@ -1591,7 +1587,7 @@ export type QueryDeploymentRequestsArgs = {
 
 
 export type QueryDeploymentRequestsAvailableArgs = {
-  platformIdentifier: InputMaybe<PlatformIdentifier>;
+  platformIdentifier: PlatformIdentifier;
 };
 
 
@@ -1606,14 +1602,14 @@ export type QueryDeploymentRequestsListArgs = {
 
 
 export type QueryDocumentArgs = {
-  documentId: InputMaybe<Scalars['DocumentId']['input']>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  documentId: Scalars['DocumentId']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
 export type QueryDocumentExistsArgs = {
   documentName: InputMaybe<Scalars['String']['input']>;
-  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1625,7 +1621,7 @@ export type QueryDocumentsArgs = {
   orderMode: OrderingMode;
   parentsOnly: InputMaybe<Scalars['Boolean']['input']>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1718,7 +1714,7 @@ export type QueryRegisteredPlatformArgs = {
 
 
 export type QueryRegisteredPlatformsArgs = {
-  input: InputMaybe<RegisteredPlatformsInput>;
+  input: RegisteredPlatformsInput;
 };
 
 
@@ -1733,12 +1729,12 @@ export type QueryServiceGroupsArgs = {
 
 
 export type QueryServiceInstanceByIdArgs = {
-  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
 export type QueryServiceInstanceByIdAndGrantAccessArgs = {
-  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1773,12 +1769,12 @@ export type QuerySubscriptionsArgs = {
 
 
 export type QueryTrialDeploymentsArgs = {
-  input: InputMaybe<TrialDeploymentsInput>;
+  input: TrialDeploymentsInput;
 };
 
 
 export type QueryUpdateOpenCtiManifestArgs = {
-  tag: InputMaybe<Scalars['String']['input']>;
+  tag: Scalars['String']['input'];
 };
 
 
@@ -1867,7 +1863,7 @@ export type RegisteredPlatform = Node & {
   id: Scalars['ID']['output'];
   identifier: ServiceDefinitionIdentifier;
   illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
-  last_connectivity_check: Scalars['Date']['output'];
+  last_connectivity_check: Maybe<Scalars['Date']['output']>;
   myGroups: Maybe<Array<ServiceGroup>>;
   platform_id: Scalars['String']['output'];
   subscription: Maybe<SubscriptionModel>;
@@ -1924,11 +1920,10 @@ export type RssFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -1971,11 +1966,6 @@ export type ServiceCapability = Node & {
   name: Maybe<Scalars['String']['output']>;
   service_definition_id: Maybe<Scalars['ID']['output']>;
 };
-
-export enum ServiceConfigurationStatus {
-  Active = 'active',
-  Inactive = 'inactive'
-}
 
 export type ServiceConnection = {
   __typename?: 'ServiceConnection';
@@ -2132,11 +2122,10 @@ export type Stream = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2212,7 +2201,7 @@ export type SubscriptionModel = Node & {
   id: Scalars['ID']['output'];
   organization: Organization;
   organization_id: Scalars['OrganizationId']['output'];
-  service_instance: Maybe<ServiceInstance>;
+  service_instance: ServiceInstance;
   service_instance_id: Scalars['ServiceInstanceId']['output'];
   service_url: Scalars['String']['output'];
   start_date: Maybe<Scalars['Date']['output']>;
@@ -2250,11 +2239,10 @@ export type TaxiiFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2301,12 +2289,11 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2405,7 +2392,7 @@ export type UpdateServiceGroupsInputGroup = {
 };
 
 export type UpdateSubscriptionInput = {
-  capability_ids: InputMaybe<Array<InputMaybe<Scalars['Service_CapabilityId']['input']>>>;
+  capability_ids: InputMaybe<Array<Scalars['Service_CapabilityId']['input']>>;
   end_date: InputMaybe<Scalars['Date']['input']>;
   start_date: InputMaybe<Scalars['Date']['input']>;
 };
@@ -2495,7 +2482,7 @@ export type UserService = Node & {
 };
 
 export type UserServiceAddInput = {
-  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities: InputMaybe<Array<Scalars['String']['input']>>;
   email: Array<Scalars['String']['input']>;
   subscription_id: Scalars['SubscriptionId']['input'];
 };
@@ -2534,7 +2521,7 @@ export type UserServiceEdge = {
 };
 
 export type UserServiceEditInput = {
-  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities: Array<Scalars['String']['input']>;
   userServiceId: Scalars['User_ServiceId']['input'];
 };
 
@@ -2551,7 +2538,7 @@ export enum UserServiceOrdering {
 }
 
 export type UserServicesAddCapabilitiesInput = {
-  capabilities: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  capabilities: Array<Scalars['String']['input']>;
   userServiceIds: Array<Scalars['User_ServiceId']['input']>;
 };
 
@@ -2639,8 +2626,7 @@ export const useUseCaseAddMutation = <
     )};
 
 useUseCaseAddMutation.getKey = () => ['UseCaseAdd'];
-
-
+useUseCaseAddMutation.getRootKey = () => ['UseCaseAdd'] as const;
 useUseCaseAddMutation.fetcher = (client: GraphQLClient, variables: UseCaseAddMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseAddMutation, UseCaseAddMutationVariables>(client, UseCaseAddDocument, variables, headers);
 
 export const UseCaseEditDocument = `
@@ -2669,8 +2655,7 @@ export const useUseCaseEditMutation = <
     )};
 
 useUseCaseEditMutation.getKey = () => ['UseCaseEdit'];
-
-
+useUseCaseEditMutation.getRootKey = () => ['UseCaseEdit'] as const;
 useUseCaseEditMutation.fetcher = (client: GraphQLClient, variables: UseCaseEditMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseEditMutation, UseCaseEditMutationVariables>(client, UseCaseEditDocument, variables, headers);
 
 export const UseCaseDeleteDocument = `
@@ -2699,8 +2684,7 @@ export const useUseCaseDeleteMutation = <
     )};
 
 useUseCaseDeleteMutation.getKey = () => ['UseCaseDelete'];
-
-
+useUseCaseDeleteMutation.getRootKey = () => ['UseCaseDelete'] as const;
 useUseCaseDeleteMutation.fetcher = (client: GraphQLClient, variables: UseCaseDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseDeleteMutation, UseCaseDeleteMutationVariables>(client, UseCaseDeleteDocument, variables, headers);
 
 export const UseCasesListDocument = `
@@ -2737,7 +2721,7 @@ export const useUseCasesListQuery = <
     )};
 
 useUseCasesListQuery.getKey = (variables: UseCasesListQueryVariables) => ['UseCasesList', variables];
-
+useUseCasesListQuery.getRootKey = () => ['UseCasesList'] as const;
 export const useInfiniteUseCasesListQuery = <
       TData = InfiniteData<UseCasesListQuery>,
       TError = unknown
@@ -2760,6 +2744,5 @@ export const useInfiniteUseCasesListQuery = <
     )};
 
 useInfiniteUseCasesListQuery.getKey = (variables: UseCasesListQueryVariables) => ['UseCasesList.infinite', variables];
-
-
+useInfiniteUseCasesListQuery.getRootKey = () => ['UseCasesList.infinite'] as const;
 useUseCasesListQuery.fetcher = (client: GraphQLClient, variables: UseCasesListQueryVariables, headers?: RequestInit['headers']) => fetcher<UseCasesListQuery, UseCasesListQueryVariables>(client, UseCasesListDocument, variables, headers);

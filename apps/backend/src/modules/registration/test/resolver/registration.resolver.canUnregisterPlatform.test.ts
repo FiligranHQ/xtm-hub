@@ -12,7 +12,7 @@ import {
   NotFoundErrorCode,
 } from '../../../../utils/error/error.code';
 import { ErrorType } from '../../../../utils/error/error.type';
-import { registrationApp } from '../../registration.app';
+import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.canUnregisterPlatform', () => {
@@ -31,7 +31,7 @@ describe('query.canUnregisterPlatform', () => {
     }) => {
       // Given
       const input: CanUnregisterPlatformInput = { platformId: uuidv4() };
-      vi.spyOn(registrationApp, 'canUnregisterPlatform').mockResolvedValue({
+      vi.spyOn(RegistrationApp, 'canUnregisterPlatform').mockResolvedValue({
         isAllowed: organizationId !== null,
         isInOrganization: organizationId !== null,
         organizationId,
@@ -56,7 +56,7 @@ describe('query.canUnregisterPlatform', () => {
   it('should return { isPlatformRegistered: false } when the app throws PlatformNotRegistered', async () => {
     // Given
     const input: CanUnregisterPlatformInput = { platformId: uuidv4() };
-    vi.spyOn(registrationApp, 'canUnregisterPlatform').mockRejectedValue(
+    vi.spyOn(RegistrationApp, 'canUnregisterPlatform').mockRejectedValue(
       new Error(ErrorCode.PlatformNotRegistered)
     );
 
@@ -88,7 +88,7 @@ describe('query.canUnregisterPlatform', () => {
     }) => {
       // Given
       const input: CanUnregisterPlatformInput = { platformId: uuidv4() };
-      vi.spyOn(registrationApp, 'canUnregisterPlatform').mockRejectedValue(
+      vi.spyOn(RegistrationApp, 'canUnregisterPlatform').mockRejectedValue(
         new Error(errorCode)
       );
 

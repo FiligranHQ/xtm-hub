@@ -14,6 +14,7 @@ import {
 } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { omit } from '../../../utils/utils';
 import { Document } from '../document.helper';
@@ -52,7 +53,7 @@ export const DocumentDomain = {
   createDocument: async <T extends DocumentModel>(
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T>
-  ) => {
+  ): Promise<T> => {
     const { user } = requestContext.require();
     const uploader_id = documentData.uploader_id ?? user.id;
     const [document] = await db<DocumentModel>('Document')
@@ -68,7 +69,10 @@ export const DocumentDomain = {
       })
       .returning('*');
 
-    return document;
+    if (!document) {
+      throw new Error(UnknownErrorCode.DocumentCreateError);
+    }
+    return document as T;
   },
 
   loadDocumentBy: async (
@@ -336,9 +340,9 @@ export const DocumentDomain = {
       file?: MinioFile;
       type: string;
     };
-    uploader_organization_id: OrganizationId;
+    uploader_organization_id: OrganizationId | null;
     uploader_id: UserId;
-  }): Promise<DocumentModel> => {
+  }): Promise<DocumentModel | undefined> => {
     const { user } = requestContext.require();
     const completeDocumentData = {
       ...document.data,
@@ -393,6 +397,9 @@ export const DocumentDomain = {
       })
       .returning('*');
 
+    if (!document) {
+      throw new Error(UnknownErrorCode.DocumentCreateError);
+    }
     return document;
   },
 

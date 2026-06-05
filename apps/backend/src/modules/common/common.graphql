@@ -21,7 +21,7 @@ enum LogicalOperator {
 }
 
 input Filter {
-  key: FilterKey
+  key: FilterKey!
   value: [String!]!
 }
 

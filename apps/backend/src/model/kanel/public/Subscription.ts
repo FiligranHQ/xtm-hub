@@ -11,9 +11,9 @@ export type SubscriptionId = string & { __brand: 'public.Subscription' };
 export default interface Subscription {
   id: SubscriptionId;
 
-  organization_id: OrganizationId | null;
+  organization_id: OrganizationId;
 
-  service_instance_id: ServiceInstanceId | null;
+  service_instance_id: ServiceInstanceId;
 
   start_date: Date | null;
 
@@ -24,9 +24,9 @@ export default interface Subscription {
 export interface SubscriptionInitializer {
   id: SubscriptionId;
 
-  organization_id?: OrganizationId | null;
+  organization_id: OrganizationId;
 
-  service_instance_id?: ServiceInstanceId | null;
+  service_instance_id: ServiceInstanceId;
 
   start_date?: Date | null;
 
@@ -37,9 +37,9 @@ export interface SubscriptionInitializer {
 export interface SubscriptionMutator {
   id?: SubscriptionId;
 
-  organization_id?: OrganizationId | null;
+  organization_id?: OrganizationId;
 
-  service_instance_id?: ServiceInstanceId | null;
+  service_instance_id?: ServiceInstanceId;
 
   start_date?: Date | null;
 

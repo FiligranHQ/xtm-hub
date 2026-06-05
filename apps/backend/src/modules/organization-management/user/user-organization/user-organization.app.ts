@@ -58,7 +58,7 @@ export const UserOrganizationApp = {
         ? existingUser
         : await createUserWithPersonalSpace({
             email: input.email,
-            password: input.password,
+            password: input.password ?? undefined,
             selected_organization_id: chosenOrganization.id,
           });
 
@@ -86,9 +86,13 @@ export const UserOrganizationApp = {
       return user;
     });
 
-    return UserDomain.loadUserBy({
+    const updatedUser = await UserDomain.loadUserBy({
       'User.id': user.id,
     });
+    if (!updatedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
+    return updatedUser;
   },
   changeSelectedOrganization: async (
     organization_id: OrganizationId
@@ -100,9 +104,15 @@ export const UserOrganizationApp = {
     const updatedUser = await UserDomain.updateUser(user.id, {
       selected_organization_id: organization_id,
     });
+    if (!updatedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
     const updatedUserLoadUserBy = await UserDomain.loadUserBy({
       'User.id': updatedUser.id,
     });
+    if (!updatedUserLoadUserBy) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
     requestContext.update({ user: updatedUserLoadUserBy });
 
     return updatedUserLoadUserBy;
@@ -124,9 +134,13 @@ export const UserOrganizationApp = {
       userId,
       organizationId
     );
-    return UserDomain.loadUserBy({
+    const updatedUser = await UserDomain.loadUserBy({
       'User.id': userId,
     });
+    if (!updatedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
+    return updatedUser;
   },
 
   removePendingUserFromOrganization: async ({
@@ -140,9 +154,13 @@ export const UserOrganizationApp = {
       userId,
       organizationId
     );
-    return UserDomain.loadUserBy({
+    const user = await UserDomain.loadUserBy({
       'User.id': userId,
     });
+    if (!user) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
+    return user;
   },
 
   sendPendingUsersDigest: async (): Promise<void> => {
@@ -181,7 +199,9 @@ export const UserOrganizationApp = {
                 adminName: formatName(adminUser.first_name ?? ''),
                 organizationName: organization.name,
                 users: organization.users
-                  .sort((a, b) => a.first_name.localeCompare(b.first_name))
+                  .sort((a, b) =>
+                    (a.first_name ?? '').localeCompare(b.first_name ?? '')
+                  )
                   .map(({ first_name, last_name, email }) => ({
                     firstName: formatName(first_name),
                     lastName: formatName(last_name),

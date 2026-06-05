@@ -7,6 +7,7 @@ import {
   IntegrationType,
 } from '../../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../../utils/app-logger.util';
+import { getErrorMessage } from '../../../../../utils/error/error-guard.util';
 import { fetchWithCacheForLocalTesting } from '../../../../../utils/fetch-with-cache';
 import { isValidVersion } from '../../../../../utils/versioning';
 import { Upload } from '../../../../document/document.uploads.helper';
@@ -127,8 +128,9 @@ export const extractManifestInformation = (
 
     return { validContracts, errors };
   } catch (error) {
-    logApp.error(`Error extracting manifest info: ${error.message}`);
-    errors.push({ error: `Unexpected error: ${error.message}` });
+    const errorMessage = getErrorMessage(error);
+    logApp.error(`Error extracting manifest info: ${errorMessage}`);
+    errors.push({ error: `Unexpected error: ${errorMessage}` });
     return { validContracts, errors };
   }
 };

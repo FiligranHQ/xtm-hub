@@ -34,8 +34,9 @@ import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
   IntegrationType,
+  PlatformConfigurationStatus,
+  PlatformContract,
   PlatformIdentifier,
-  ServiceConfigurationStatus,
 } from '../../__generated__/resolvers-types';
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { DocumentApp } from '../document/document.app';
@@ -106,17 +107,17 @@ describe('telemetryApp', () => {
         'loadPlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue({
         service_instance_id: platformServiceInstanceId as ServiceInstanceId,
-        config: {
-          token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
-          platform_id: platform_id,
-          platform_url: 'https://testing.oaev.staging.filigran.io/',
-          registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
-          platform_title: 'Open AEV Instance',
-          platform_version: '1.0.0',
-          platform_contract: 'EE',
-          tenant_id: 'c4a88438-abf8-4a76-8594-6df800434865',
-        },
-        status: ServiceConfigurationStatus.Active,
+        token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
+        platform_id: platform_id,
+        platform_url: 'https://testing.oaev.staging.filigran.io/',
+        registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
+        platform_title: 'Open AEV Instance',
+        platform_version: '1.0.0',
+        platform_contract: PlatformContract.Ee,
+        tenant_id: 'c4a88438-abf8-4a76-8594-6df800434865',
+        tenant_name: 'tenant_name',
+        status: PlatformConfigurationStatus.Active,
+        last_connectivity_check: new Date(),
       });
 
       const document = await DocumentApp.createDocument({
@@ -193,15 +194,17 @@ describe('telemetryApp', () => {
         'loadPlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue({
         service_instance_id: platformServiceInstanceId as ServiceInstanceId,
-        config: {
-          token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
-          platform_id: platformId,
-          platform_url: 'https://testing.oaev.staging.filigran.io/',
-          registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
-          platform_title: 'Open AEV Instance',
-          platform_contract: 'EE',
-        },
-        status: ServiceConfigurationStatus.Active,
+        token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
+        platform_id: platformId,
+        platform_url: 'https://testing.oaev.staging.filigran.io/',
+        registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
+        platform_title: 'Open AEV Instance',
+        platform_contract: PlatformContract.Ee,
+        tenant_id: null,
+        tenant_name: null,
+        platform_version: null,
+        status: PlatformConfigurationStatus.Active,
+        last_connectivity_check: new Date(),
       });
 
       const document = await DocumentApp.createDocument({
@@ -262,6 +265,7 @@ describe('telemetryApp', () => {
         resource_title: 'CsvFeed Title',
         platform_id: platformId,
         platform_version: undefined,
+        tenant_id: undefined,
         target_product: TelemetryTargetProduct.OPEN_CTI,
       });
     });
@@ -276,16 +280,17 @@ describe('telemetryApp', () => {
         'loadPlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue({
         service_instance_id: platformServiceInstanceId as ServiceInstanceId,
-        config: {
-          token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
-          platform_id: platform_id,
-          platform_url: 'https://testing.oaev.staging.filigran.io/',
-          registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
-          platform_title: 'Open AEV Instance',
-          platform_version: '1.0.0',
-          platform_contract: 'EE',
-        },
-        status: ServiceConfigurationStatus.Active,
+        token: '59dea7ba-b3b3-4b42-bb60-6326159dc937',
+        platform_id: platform_id,
+        platform_url: 'https://testing.oaev.staging.filigran.io/',
+        registerer_id: '7de5c830-ed96-45ff-91a7-b384943a4620',
+        platform_title: 'Open AEV Instance',
+        platform_contract: PlatformContract.Ee,
+        tenant_name: null,
+        tenant_id: null,
+        platform_version: '1.0.0',
+        status: PlatformConfigurationStatus.Active,
+        last_connectivity_check: new Date(),
       });
       const document = await DocumentApp.createDocument({
         input: {

@@ -1,18 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { expect } from 'vitest';
 import { db } from '../../knexfile';
-import {
-  PlatformContract,
-  ServiceConfigurationStatus,
-  ServiceDefinitionIdentifier,
-} from '../../src/__generated__/resolvers-types';
+import { ServiceDefinitionIdentifier } from '../../src/__generated__/resolvers-types';
 import ServiceCapability, {
   ServiceCapabilityId,
   ServiceCapabilityMutator,
 } from '../../src/model/kanel/public/ServiceCapability';
-import ServiceConfiguration, {
-  ServiceConfigurationMutator,
-} from '../../src/model/kanel/public/ServiceConfiguration';
 import ServiceDefinition, {
   ServiceDefinitionId,
   ServiceDefinitionMutator,
@@ -31,25 +24,13 @@ import ServiceInstance, {
 import SubscriptionCapability, {
   SubscriptionCapabilityMutator,
 } from '../../src/model/kanel/public/SubscriptionCapability';
-import { PlatformConfiguration } from '../../src/modules/registration/registration.domain';
-import { contextRegistererUserSecondOrga } from '../tests.const';
-
-export const mockPlatformConfig: PlatformConfiguration = {
-  registerer_id: contextRegistererUserSecondOrga.user.id,
-  platform_id: 'test-platform',
-  platform_title: 'Test Platform',
-  platform_url: 'https://test.com',
-  platform_contract: PlatformContract.Ee,
-  platform_version: '1.0.0',
-  last_connectivity_check: new Date(),
-  token: 'test-token',
-};
+import { SERVICES } from '../tests.const';
 
 export const TestServiceHelper = {
   serviceDefinition: {
     load: async (
       field: ServiceDefinitionMutator
-    ): Promise<ServiceDefinition> => {
+    ): Promise<ServiceDefinition | undefined> => {
       return db<ServiceDefinition>('ServiceDefinition')
         .where(field)
         .select('*')
@@ -69,7 +50,7 @@ export const TestServiceHelper = {
         })
         .returning('*');
       expect(serviceDefinition).toBeDefined();
-      return serviceDefinition;
+      return serviceDefinition!;
     },
     delete: async (field: ServiceDefinitionMutator) => {
       await db<ServiceDefinition>('ServiceDefinition').where(field).del();
@@ -89,41 +70,10 @@ export const TestServiceHelper = {
           ...data,
         })
         .returning('*');
-      return serviceCapability;
+      return serviceCapability!;
     },
     delete: async (field: ServiceCapabilityMutator) => {
       await db<ServiceCapability>('Service_Capability').where(field).del();
-    },
-  },
-  serviceConfiguration: {
-    create: async (
-      data?: Partial<ServiceConfiguration>
-    ): Promise<ServiceConfiguration> => {
-      const [serviceConfiguration] = await db<ServiceConfiguration>(
-        'Service_Configuration'
-      )
-        .insert({
-          service_instance_id: uuidv4() as ServiceInstanceId,
-          config: JSON.stringify(mockPlatformConfig),
-          status: ServiceConfigurationStatus.Active,
-          ...data,
-        })
-        .returning('*');
-      expect(serviceConfiguration).toBeDefined();
-      return serviceConfiguration;
-    },
-    delete: async (field: ServiceConfigurationMutator) => {
-      await db<ServiceConfiguration>('Service_Configuration')
-        .where(field)
-        .del();
-    },
-    load: async (
-      field: ServiceConfigurationMutator
-    ): Promise<ServiceConfiguration | undefined> => {
-      return db<ServiceConfiguration>('Service_Configuration')
-        .where(field)
-        .select('*')
-        .first();
     },
   },
   serviceInstance: {
@@ -134,13 +84,14 @@ export const TestServiceHelper = {
         .insert({
           id: uuidv4() as ServiceInstanceId,
           name: 'Default name serviceInstance',
+          service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
           tags: [],
           ...data,
         })
         .returning('*')
         .onConflict()
         .ignore();
-      return serviceInstance;
+      return serviceInstance!;
     },
     delete: async (field: ServiceInstanceMutator) => {
       await db<ServiceInstance>('ServiceInstance').where(field).del();
@@ -165,7 +116,7 @@ export const TestServiceHelper = {
         .returning('*')
         .onConflict()
         .ignore();
-      return serviceGroup;
+      return serviceGroup!;
     },
     load: async (
       field: ServiceGroupMutator
@@ -187,7 +138,7 @@ export const TestServiceHelper = {
         .returning('*')
         .onConflict()
         .ignore();
-      return serviceGroupUser;
+      return serviceGroupUser!;
     },
     load: async (
       field: ServiceGroupUserMutator

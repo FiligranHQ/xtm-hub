@@ -129,13 +129,10 @@ export const up = async function (next) {
       platform_id: string;
       platform_url: string;
     }
-    const platformData = (await database('Service_Configuration')
-      .select(
-        database.raw("config->>'platform_id' as platform_id"),
-        database.raw("config->>'platform_url' as platform_url")
-      )
-      .whereRaw("config->>'platform_id' IS NOT NULL")
-      .whereRaw("config->>'platform_url' IS NOT NULL")) as PlatformData[];
+    const platformData = (await database('PlatformConfiguration')
+      .distinct('platform_id', 'platform_url')
+      .whereNotNull('platform_id')
+      .whereNotNull('platform_url')) as PlatformData[];
     logApp.info(
       `Updating register events related to ${platformData.length} platforms`
     );

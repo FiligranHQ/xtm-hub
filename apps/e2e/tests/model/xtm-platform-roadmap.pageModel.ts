@@ -1,5 +1,4 @@
 import { Page } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
 
 const TEST_IMAGE_FILE = {
   path: './tests/tests_files/assets/test.png',

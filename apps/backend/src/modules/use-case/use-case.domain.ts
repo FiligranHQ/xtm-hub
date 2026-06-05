@@ -8,17 +8,21 @@ import UseCase, {
   UseCaseInitializer,
   UseCaseMutator,
 } from '../../model/kanel/public/UseCase';
+import { UnknownErrorCode } from '../../utils/error/error.code';
 
 export const useCaseDomain = {
   insertUseCase: async (input: UseCaseInitializer): Promise<UseCase> => {
     const [useCase] = await db<UseCase>('UseCase').insert(input).returning('*');
+    if (!useCase) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     return useCase;
   },
 
   updateUseCase: async (
     id: UseCaseId,
     fields: UseCaseMutator
-  ): Promise<UseCase> => {
+  ): Promise<UseCase | undefined> => {
     const [useCase] = await db<UseCase>('UseCase')
       .where({ id })
       .update(fields)
@@ -61,11 +65,16 @@ export const useCaseDomain = {
     return db<UseCase>('UseCase').where(field).first();
   },
 
-  loadUseCaseByLikeName: (name: string): Promise<UseCase | null> => {
-    return db('UseCase').where('name', 'ILIKE', name).select('*').first();
+  loadUseCaseByLikeName: (name: string): Promise<UseCase | undefined> => {
+    return db<UseCase>('UseCase')
+      .where('name', 'ILIKE', name)
+      .select('*')
+      .first();
   },
 
-  deleteUseCase: async (field: UseCaseMutator): Promise<UseCase> => {
+  deleteUseCase: async (
+    field: UseCaseMutator
+  ): Promise<UseCase | undefined> => {
     const [deletedUseCase] = await db<UseCase>('UseCase')
       .where(field)
       .delete('*');
