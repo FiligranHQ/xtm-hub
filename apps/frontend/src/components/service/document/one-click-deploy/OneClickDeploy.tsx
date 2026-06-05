@@ -108,7 +108,7 @@ const OneClickDeploy = ({
 
   const openEeSheet = useCallback(() => {
     if (isProduction() && typeof window.gtag === 'function') {
-      window.gtag('event', 'ee_badge_one_click_deploy', {
+      window.gtag('event', 'ee_badge_playbooks', {
         resource_id: documentData.id,
         resource_title: documentData.name ?? '',
       });
