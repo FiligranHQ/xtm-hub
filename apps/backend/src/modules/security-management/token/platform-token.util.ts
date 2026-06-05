@@ -15,7 +15,9 @@ export const extractPlatformId = (req: express.Request): string | null => {
   return (req?.headers?.[PLATFORM_ID_HEADER] as string) || null;
 };
 
-export const validateExistsToken = (req: express.Request): boolean => {
+export const validateExistsPlatformAndToken = (
+  req: express.Request
+): boolean => {
   const token = extractPlatformToken(req);
   if (!token) {
     logApp.warn('[validatePlatformToken] Missing platformToken header');
@@ -33,12 +35,16 @@ export const validateExistsToken = (req: express.Request): boolean => {
 export const validateActivePlatformToken = async (
   req: express.Request
 ): Promise<boolean> => {
-  if (!validateExistsToken(req)) return false;
+  if (!validateExistsPlatformAndToken(req)) return false;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const platform_id = extractPlatformId(req)!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const token = extractPlatformToken(req)!;
 
   const platformConfiguration =
     await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
-      platform_id: extractPlatformId(req),
-      token: extractPlatformToken(req),
+      platform_id,
+      token,
     });
 
   return platformConfiguration?.status === PlatformConfigurationStatus.Active;
@@ -47,11 +53,13 @@ export const validateActivePlatformToken = async (
 export const validateAndGetRequestedPlatformToken = async (
   req: express.Request
 ) => {
-  if (!validateExistsToken(req)) return null;
+  if (!validateExistsPlatformAndToken(req)) return null;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const platform_token = extractPlatformToken(req)!;
 
   const deploymentRequest =
     await DeploymentRequestDomain.loadDeploymentRequestBy({
-      platform_token: extractPlatformToken(req),
+      platform_token,
     });
 
   const isValid =

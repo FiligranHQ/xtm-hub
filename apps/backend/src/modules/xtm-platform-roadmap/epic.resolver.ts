@@ -39,7 +39,7 @@ const resolvers: Resolvers = {
     },
     deleteEpic: async (_, { id }) => {
       try {
-        return await EpicApp.deleteEpic(id as EpicId);
+        return (await EpicApp.deleteEpic(id as EpicId)) ?? null;
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.EpicDeleteError);
       }

@@ -12,7 +12,7 @@ import {
 } from '../../../../__generated__/resolvers-types';
 import { BadRequestErrorCode } from '../../../../utils/error/error.code';
 import { ErrorType } from '../../../../utils/error/error.type';
-import { registrationApp } from '../../registration.app';
+import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.isPlatformRegistered', () => {
@@ -24,7 +24,7 @@ describe('query.isPlatformRegistered', () => {
       platformTitle: 'My Platform',
       organization: { id: TEST_ORGANIZATIONS.FILIGRAN.ID },
     };
-    vi.spyOn(registrationApp, 'isPlatformRegistered').mockResolvedValue(
+    vi.spyOn(RegistrationApp, 'isPlatformRegistered').mockResolvedValue(
       appResponse
     );
 
@@ -37,7 +37,7 @@ describe('query.isPlatformRegistered', () => {
     );
 
     // Then
-    expect(registrationApp.isPlatformRegistered).toHaveBeenCalledWith(input);
+    expect(RegistrationApp.isPlatformRegistered).toHaveBeenCalledWith(input);
     expect(result).toMatchObject({
       status: PlatformRegistrationStatus.Registered,
       platformTitle: 'My Platform',
@@ -48,7 +48,7 @@ describe('query.isPlatformRegistered', () => {
   it('should map to BadRequest for InvalidPlatformId error', async () => {
     // Given
     const input: IsPlatformRegisteredInput = { platformId: uuidv4() };
-    vi.spyOn(registrationApp, 'isPlatformRegistered').mockRejectedValue(
+    vi.spyOn(RegistrationApp, 'isPlatformRegistered').mockRejectedValue(
       new Error(BadRequestErrorCode.InvalidPlatformId)
     );
 

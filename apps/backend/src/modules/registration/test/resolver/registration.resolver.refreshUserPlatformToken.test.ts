@@ -7,7 +7,7 @@ import {
 import { RefreshUserPlatformTokenResponse } from '../../../../__generated__/resolvers-types';
 import { NotFoundErrorCode } from '../../../../utils/error/error.code';
 import { ErrorType } from '../../../../utils/error/error.type';
-import { registrationApp } from '../../registration.app';
+import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('mutation.refreshUserPlatformToken', () => {
@@ -17,7 +17,7 @@ describe('mutation.refreshUserPlatformToken', () => {
     const tokenResponse: RefreshUserPlatformTokenResponse = {
       token: newToken,
     };
-    vi.spyOn(registrationApp, 'refreshUserPlatformToken').mockResolvedValue(
+    vi.spyOn(RegistrationApp, 'refreshUserPlatformToken').mockResolvedValue(
       tokenResponse
     );
 
@@ -31,7 +31,7 @@ describe('mutation.refreshUserPlatformToken', () => {
     );
 
     // Then
-    expect(registrationApp.refreshUserPlatformToken).toHaveBeenCalledWith(
+    expect(RegistrationApp.refreshUserPlatformToken).toHaveBeenCalledWith(
       contextSimpleUserFiligran2.user.id
     );
     expect(result).toMatchObject({ token: newToken });
@@ -39,7 +39,7 @@ describe('mutation.refreshUserPlatformToken', () => {
 
   it('should map to NotFound when app throws a not found error', async () => {
     // Given
-    vi.spyOn(registrationApp, 'refreshUserPlatformToken').mockRejectedValue(
+    vi.spyOn(RegistrationApp, 'refreshUserPlatformToken').mockRejectedValue(
       new Error(NotFoundErrorCode.ServiceDefinitionNotFound)
     );
 

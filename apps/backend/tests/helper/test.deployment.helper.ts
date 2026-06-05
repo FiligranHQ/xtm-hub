@@ -34,6 +34,7 @@ export const TestDeploymentHelper = {
           type: DeploymentRequestDeploymentType.Trial,
           platform_identifier: PlatformIdentifier.Opencti,
           region: DeploymentRequestPlatformRegion.EuWest,
+          platform_token: uuidv4(),
           ...data,
         })
         .returning('*');

@@ -13,19 +13,19 @@ export default interface Epic {
 
   title: string;
 
-  active: boolean | null;
+  active: boolean;
 
-  uploader_id: string | null;
+  uploader_id: string;
 
   short_description: string;
 
-  description: string | null;
+  description: string;
 
   product: FiligranProduct;
 
-  timeline: Timeline | null;
+  timeline: Timeline;
 
-  epic_type: EpicType | null;
+  epic_type: EpicType;
 
   document_id: DocumentId | null;
 
@@ -46,19 +46,19 @@ export interface EpicInitializer {
   title: string;
 
   /** Default value: false */
-  active?: boolean | null;
+  active?: boolean;
 
-  uploader_id?: string | null;
+  uploader_id: string;
 
   short_description: string;
 
-  description?: string | null;
+  description: string;
 
   product: FiligranProduct;
 
-  timeline?: Timeline | null;
+  timeline?: Timeline;
 
-  epic_type?: EpicType | null;
+  epic_type?: EpicType;
 
   document_id?: DocumentId | null;
 
@@ -78,19 +78,19 @@ export interface EpicMutator {
 
   title?: string;
 
-  active?: boolean | null;
+  active?: boolean;
 
-  uploader_id?: string | null;
+  uploader_id?: string;
 
   short_description?: string;
 
-  description?: string | null;
+  description?: string;
 
   product?: FiligranProduct;
 
-  timeline?: Timeline | null;
+  timeline?: Timeline;
 
-  epic_type?: EpicType | null;
+  epic_type?: EpicType;
 
   document_id?: DocumentId | null;
 

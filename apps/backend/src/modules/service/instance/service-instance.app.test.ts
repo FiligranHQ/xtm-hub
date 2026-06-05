@@ -236,6 +236,7 @@ describe('service Instance app', () => {
     it('should propagate errors from loadSubscriptionBy', async () => {
       // Given
       requestContext.set(requestContextRegistererUserSecondOrga);
+      loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
       const error = new Error('Error');
       loadSubscriptionBySpy.mockRejectedValue(error);
 
@@ -254,6 +255,7 @@ describe('service Instance app', () => {
     it('should propagate errors from grantServiceAccess', async () => {
       // Given
       requestContext.set(requestContextSimpleUserSecondOrga);
+      loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
       const error = new Error('Other error');
       loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
       loadUserServiceBySpy.mockResolvedValue([]);

@@ -16,8 +16,8 @@ import { BadRequestError } from '../../utils/error/error.util';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { ServiceGroupDomain } from '../deployment/group/service-group.domain';
 import { loadSubscriptionByServiceInstanceAndOrganization } from '../service/instance/service-instance.domain';
-import { registrationApp } from './registration.app';
-import { registrationConnectivityApp } from './registration.connectivity.app';
+import { RegistrationApp } from './registration.app';
+import { RegistrationConnectivityApp } from './registration.connectivity.app';
 
 const resolvers: Resolvers = {
   RegisteredPlatform: {
@@ -39,7 +39,7 @@ const resolvers: Resolvers = {
   Query: {
     isPlatformRegistered: async (_, { input }) => {
       try {
-        return await registrationApp.isPlatformRegistered(input);
+        return await RegistrationApp.isPlatformRegistered(input);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -49,7 +49,7 @@ const resolvers: Resolvers = {
     },
     canUnregisterPlatform: async (_, { input }) => {
       try {
-        const response = await registrationApp.canUnregisterPlatform(input);
+        const response = await RegistrationApp.canUnregisterPlatform(input);
 
         return {
           ...response,
@@ -70,18 +70,18 @@ const resolvers: Resolvers = {
       }
     },
     registeredPlatform: async (_, { input }) =>
-      registrationApp.loadRegisteredPlatform(input.service_instance_id),
+      RegistrationApp.loadRegisteredPlatform(input.service_instance_id),
     registeredPlatforms: async (_, { input }) =>
-      registrationApp.loadRegisteredPlatforms(input),
+      RegistrationApp.loadRegisteredPlatforms(input),
     /**
      * @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead.
      * This function is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the new endpoint.
      */
     openCTIPlatformRegistrationStatus: async (_, { input }) =>
-      registrationApp.loadPlatformRegistrationStatus(input),
+      RegistrationApp.loadPlatformRegistrationStatus(input),
     platformAssociatedOrganization: async (_, { platformId, tenantId }) => {
       try {
-        return await registrationApp.loadPlatformAssociatedOrganization(
+        return await RegistrationApp.loadPlatformAssociatedOrganization(
           platformId,
           tenantId
         );
@@ -98,7 +98,7 @@ const resolvers: Resolvers = {
           // type may not be an OrganizationId, but can be a IsPlatformRegisteredOrganization
           organizationId: fromGlobalId(input.organizationId).id,
         };
-        const token = await registrationApp.registerPlatform(payload);
+        const token = await RegistrationApp.registerPlatform(payload);
         return { token };
       } catch (error) {
         throw mapToGraphQLError(
@@ -109,7 +109,7 @@ const resolvers: Resolvers = {
     },
     unregisterPlatform: async (_, { input }) => {
       try {
-        await registrationApp.unregisterPlatform(input);
+        await RegistrationApp.unregisterPlatform(input);
         return { success: true };
       } catch (error) {
         throw mapToGraphQLError(
@@ -120,7 +120,7 @@ const resolvers: Resolvers = {
     },
     refreshUserPlatformToken: async (_, __, context) => {
       try {
-        return await registrationApp.refreshUserPlatformToken(context.user.id);
+        return await RegistrationApp.refreshUserPlatformToken(context.user.id);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -129,21 +129,21 @@ const resolvers: Resolvers = {
       }
     },
     refreshPlatformRegistrationConnectivityStatus: async (_, { input }) =>
-      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+      RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
         input
       ),
     refreshPlatformRegistrationConnectivityStatusSingleTenant: async (
       _,
       { input }
     ) =>
-      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+      RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
         input
       ),
     refreshPlatformRegistrationConnectivityStatusAllTenants: async (
       _,
       { input }
     ) =>
-      registrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+      RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
         input
       ),
     autoRegisterPlatform: async (
@@ -161,7 +161,7 @@ const resolvers: Resolvers = {
       }
       try {
         const token = context.req.header('XTM-Hub-Platform-Token');
-        await registrationApp.autoRegisterPlatform(token, resolvedInput);
+        await RegistrationApp.autoRegisterPlatform(token, resolvedInput);
         return { success: true };
       } catch (error) {
         throw mapToGraphQLError(

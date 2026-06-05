@@ -181,9 +181,9 @@ describe('utils', () => {
       expect(parseKeyValueArrayToObjectReverse(input)).toEqual(expectedOutput);
     });
 
-    it('should handle elements without a colon by using undefined as key', () => {
+    it('should skip elements without a colon', () => {
       const input = ['a:1', 'b2', 'c:3'];
-      const expectedOutput = { '1': 'a', undefined: 'b2', '3': 'c' };
+      const expectedOutput = { '1': 'a', '3': 'c' };
       expect(parseKeyValueArrayToObjectReverse(input)).toEqual(expectedOutput);
     });
 

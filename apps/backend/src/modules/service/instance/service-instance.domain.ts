@@ -33,7 +33,10 @@ import { isUserAdminPlatform } from '../../../security/access';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
 import { logApp } from '../../../utils/app-logger.util';
-import { UnknownErrorCode } from '../../../utils/error/error.code';
+import {
+  NotFoundErrorCode,
+  UnknownErrorCode,
+} from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import {
@@ -356,7 +359,7 @@ export const loadServiceInstanceById = async (
 export const loadServiceInstanceBy = async (
   field: ServiceInstanceMutator,
   searchTerm?: string
-) => {
+): Promise<ServiceInstance | undefined> => {
   const query = db<ServiceInstance>('ServiceInstance')
     .where(field)
     .modify((queryBuilder) => {
@@ -388,10 +391,16 @@ export const grantServiceAccess = async (
   const serviceInstance = await loadServiceInstanceBy({
     id: subscription.service_instance_id,
   });
+  if (!serviceInstance) {
+    throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
+  }
 
   const service_definition = await loadServiceDefinitionByServiceInstance(
     serviceInstance.id
   );
+  if (!service_definition) {
+    throw new Error(NotFoundErrorCode.ServiceDefinitionNotFound);
+  }
 
   for (const userId of usersId) {
     const user = await UserDomain.loadUserBy({
@@ -442,7 +451,7 @@ export const loadLinks = (id) => {
 };
 
 export const loadServiceDefinitionByServiceInstance = async (
-  service_instance_id: string
+  service_instance_id: ServiceInstanceId
 ): Promise<ServiceDefinition | undefined> => {
   return db<ServiceDefinition>('ServiceInstance')
     .where('ServiceInstance.id', '=', service_instance_id)
@@ -613,7 +622,7 @@ export const loadPlatformConfigurationByServiceInstanceId = async (
 export const updatePlatformConfigurationByServiceInstanceId = async (
   serviceInstanceId: string,
   config: PlatformConfigurationMutator
-): Promise<PlatformConfigurationModel | null> => {
+): Promise<PlatformConfigurationModel | undefined> => {
   const qb = db<PlatformConfigurationModel>('PlatformConfiguration')
     .where('service_instance_id', '=', serviceInstanceId)
     .update({ ...config })
