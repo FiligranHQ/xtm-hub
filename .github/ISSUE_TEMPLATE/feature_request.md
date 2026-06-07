@@ -1,16 +1,29 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Suggest a new feature or capability for XTM Hub
 title: 'feat: '
-labels: Feature, needs triage
-type: Feature
+labels: needs triage, feature
+assignees: ''
+type: feature
+
 ---
 
-**Overall Description**
-A clear and concise description of what the feature is about. The scope should be clearly defined.
+## Use case
 
-**Use case**
-Describe the use case for which you need a solution
+<!-- Please describe the use case for which you need a solution. -->
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## Current workaround
+
+<!-- Please describe how you currently solve or work around this problem. -->
+
+## Proposed solution
+
+<!-- Please describe the solution you would like to be provided. -->
+
+## Additional information
+
+<!-- Any additional information, including logs or screenshots if you have any. -->
+
+## If the feature request is approved, would you be willing to submit a PR?
+
+Yes / No (help can be provided if you need assistance submitting a PR)
