@@ -36,29 +36,46 @@ For general suggestions or questions about the project or the documentation, you
 
 * If you are interested in contributing to the development of XTM Hub, please refer to the [detailed documentation](https://docs.hub.filigran.io/latest/). You can either fix an issue that is meaningful to you or develop a feature requested by others.
 
-* All commits messages must be formatted as: `[package] <type>(<scope>): Message (#issueNumber)`.
-
-**Allowed types:**
- * feat: for new features
- * fix: for bug fixes
- * docs: for documentation changes
- * refactor: for code changes that neither fix a bug nor add a feature
- * chore: for maintenance commits like tooling or config
- * test: for adding or refactoring tests
-
-**Packages :**
- * backend
- * frontend
- * doc
-
-**Scope is optional and should be a component in the package**
-
-**Examples:**
-* [frontend] feat(custom dashboards): add card component (#123)
-* [backend] fix(login): handle missing auth token (#456)
-* [docs] docs: update README with installation steps (#789)
+* All commit and Pull Request titles follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention — see the **Commit, pull request & issue conventions** section below. The old `[package]` bracket prefix is **discontinued**; use the package (`backend`, `frontend`, `doc`) as the lowercase scope instead (e.g. `feat(frontend): add card component (#123)`).
 
 
 ### How can you get in touch for other questions?
 
 If you need support or you wish to engage a discussion about the XTM Hub platform, feel free to join us on our [Slack channel](https://community.filigran.io). You can also send us an [email](mailto:contact@filigran.io).
+
+
+<!-- filigran-conventions:start -->
+## Commit, pull request & issue conventions
+
+To keep the backlog consistent and searchable across all Filigran projects, this
+repository follows a shared title and label convention. The full taxonomy lives
+in [`.github/LABELS.md`](.github/LABELS.md). In short:
+
+* **Titles** — All commit, pull request and issue titles follow the
+  [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+  specification with a GitHub issue reference:
+  `type(scope?)!?: description (#issue)` (e.g.
+  `feat(api): add bulk export endpoint (#1234)`). The description starts with a
+  lowercase letter and has no trailing period; preserve acronyms and proper
+  nouns. Types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`,
+  `test`, `build`, `ci`, `revert`.
+
+* **No more bracket prefixes** — The old `[backend]` / `[frontend]` /
+  `[component]` prefixes are **discontinued**; use a Conventional Commits scope
+  instead (e.g. `fix(backend): ...`).
+
+* **GitHub reference** — Pull request titles **must** end with the related issue
+  reference, e.g. `(#1234)` (the PR title becomes the squash-merge commit). Every
+  pull request must be linked to an issue. Enforcement is preventive and applied
+  at the organization level; **Renovate** pull requests are exempt.
+
+* **Signed commits** — All commits must be signed. See the
+  [GitHub documentation on signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
+
+* **Labels** — Every issue carries one primary type label matching its title
+  prefix (`feature` for `feat:`, `bug` for `fix:`, `documentation` for `docs:`)
+  plus optional area labels. Do not use the deprecated `enhancement` /
+  `feature request` labels — use `feature`. See
+  [`.github/LABELS.md`](.github/LABELS.md) for the shared palette
+  ([`.github/labels.yml`](.github/labels.yml)).
+<!-- filigran-conventions:end -->
