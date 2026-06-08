@@ -53,7 +53,7 @@ const RegisteredPlatformsSelectColumns = [
   'PlatformConfiguration.*',
 ] as const;
 
-export const registrationDomain = {
+export const RegistrationDomain = {
   registerNewPlatform: async ({
     serviceDefinitionId,
     organizationId,

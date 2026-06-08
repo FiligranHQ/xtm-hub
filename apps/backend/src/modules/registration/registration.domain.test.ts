@@ -33,7 +33,7 @@ import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import {
   PlatformConfigurationInput,
-  registrationDomain,
+  RegistrationDomain,
 } from './registration.domain';
 
 describe('registration domain', () => {
@@ -55,7 +55,7 @@ describe('registration domain', () => {
         user: requestContextRegistererUserSecondOrga.user,
       };
       requestContext.set(testContext);
-      await registrationDomain.registerNewPlatform({
+      await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         configuration: {
@@ -105,7 +105,7 @@ describe('registration domain', () => {
     it('can create pending platforms', async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      const serviceInstanceId = await registrationDomain.registerNewPlatform({
+      const serviceInstanceId = await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         platformIdentifier: PlatformIdentifier.Opencti,
@@ -190,7 +190,7 @@ describe('registration domain', () => {
         Promise.reject('ERROR')
       );
 
-      const call = registrationDomain.refreshExistingPlatform({
+      const call = RegistrationDomain.refreshExistingPlatform({
         configuration,
         serviceInstanceId,
         targetOrganizationId,
@@ -203,7 +203,7 @@ describe('registration domain', () => {
       assertUserIsAllowedOnOrganizationSpy.mockResolvedValue({});
       loadSubscriptionBySpy.mockResolvedValue(null);
 
-      const call = registrationDomain.refreshExistingPlatform({
+      const call = RegistrationDomain.refreshExistingPlatform({
         configuration,
         serviceInstanceId,
         targetOrganizationId,
@@ -222,7 +222,7 @@ describe('registration domain', () => {
       it('should update configuration', async () => {
         assertUserIsAllowedOnOrganizationSpy.mockResolvedValue({});
 
-        await registrationDomain.refreshExistingPlatform({
+        await RegistrationDomain.refreshExistingPlatform({
           configuration,
           serviceInstanceId,
           targetOrganizationId,
@@ -249,7 +249,7 @@ describe('registration domain', () => {
         assertUserIsAllowedOnOrganizationSpy.mockResolvedValue({});
         loadOrganizationsByUserSpy.mockResolvedValue([{}, {}, {}]);
 
-        const call = registrationDomain.refreshExistingPlatform({
+        const call = RegistrationDomain.refreshExistingPlatform({
           configuration,
           serviceInstanceId,
           targetOrganizationId,
@@ -274,7 +274,7 @@ describe('registration domain', () => {
           }
         );
 
-        const call = registrationDomain.refreshExistingPlatform({
+        const call = RegistrationDomain.refreshExistingPlatform({
           configuration,
           serviceInstanceId,
           targetOrganizationId,
@@ -288,7 +288,7 @@ describe('registration domain', () => {
       it('should transfer the subscription and refresh configuration when user is allowed', async () => {
         assertUserIsAllowedOnOrganizationSpy.mockResolvedValue({});
 
-        await registrationDomain.refreshExistingPlatform({
+        await RegistrationDomain.refreshExistingPlatform({
           configuration,
           serviceInstanceId,
           targetOrganizationId,
@@ -322,7 +322,7 @@ describe('registration domain', () => {
     beforeEach(async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
+      openCTIServiceInstanceId = await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         configuration: {
@@ -339,7 +339,7 @@ describe('registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationDomain.registerNewPlatform({
+      await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId: openAEVServiceDefinitionId,
         configuration: {
@@ -363,7 +363,7 @@ describe('registration domain', () => {
     });
 
     it('should return only the registered platform linked to the service instance', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatform(
+      const platforms = await RegistrationDomain.loadRegisteredPlatform(
         openCTIServiceInstanceId
       );
 
@@ -378,7 +378,7 @@ describe('registration domain', () => {
     beforeEach(async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      serviceInstanceId = await registrationDomain.registerNewPlatform({
+      serviceInstanceId = await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         configuration: {
@@ -404,7 +404,7 @@ describe('registration domain', () => {
     it('should return an empty array when organizationIds is empty', async () => {
       // When
       const result =
-        await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+        await RegistrationDomain.loadRegisteredPlatformsByOrganizationIds(
           [],
           PlatformIdentifier.Opencti
         );
@@ -416,7 +416,7 @@ describe('registration domain', () => {
     it('should return platforms for the given organization IDs and platform identifier', async () => {
       // When
       const result =
-        await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+        await RegistrationDomain.loadRegisteredPlatformsByOrganizationIds(
           [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID],
           PlatformIdentifier.Opencti
         );
@@ -435,7 +435,7 @@ describe('registration domain', () => {
 
       // When
       const result =
-        await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+        await RegistrationDomain.loadRegisteredPlatformsByOrganizationIds(
           [randomOrgId],
           PlatformIdentifier.Opencti
         );
@@ -452,7 +452,7 @@ describe('registration domain', () => {
 
       // When
       const result =
-        await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+        await RegistrationDomain.loadRegisteredPlatformsByOrganizationIds(
           [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID],
           PlatformIdentifier.Opencti
         );
@@ -470,7 +470,7 @@ describe('registration domain', () => {
     beforeEach(async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      secondOrgServiceInstanceId = await registrationDomain.registerNewPlatform(
+      secondOrgServiceInstanceId = await RegistrationDomain.registerNewPlatform(
         {
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           serviceDefinitionId,
@@ -506,7 +506,7 @@ describe('registration domain', () => {
       async ({ registerExtraOpenAEV }: { registerExtraOpenAEV: boolean }) => {
         // Given
         if (registerExtraOpenAEV) {
-          await registrationDomain.registerNewPlatform({
+          await RegistrationDomain.registerNewPlatform({
             organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
             serviceDefinitionId: openAEVServiceDefinitionId,
             configuration: {
@@ -526,7 +526,7 @@ describe('registration domain', () => {
 
         // When
         const result =
-          await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+          await RegistrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
             PlatformIdentifier.Opencti
           );
 
@@ -539,7 +539,7 @@ describe('registration domain', () => {
     it('should return all platforms matching the identifier', async () => {
       // Given — register a second platform
       const secondPlatformId = uuidv4();
-      await registrationDomain.registerNewPlatform({
+      await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         configuration: {
@@ -558,7 +558,7 @@ describe('registration domain', () => {
 
       // When
       const result =
-        await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+        await RegistrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
           PlatformIdentifier.Opencti
         );
 
@@ -578,7 +578,7 @@ describe('registration domain', () => {
 
       // When
       const result =
-        await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+        await RegistrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
           PlatformIdentifier.Opencti
         );
 
@@ -602,7 +602,7 @@ describe('registration domain', () => {
     beforeEach(async () => {
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      openCTIServiceInstanceId = await registrationDomain.registerNewPlatform({
+      openCTIServiceInstanceId = await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         configuration: {
@@ -619,7 +619,7 @@ describe('registration domain', () => {
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      await registrationDomain.registerNewPlatform({
+      await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId: openAEVServiceDefinitionId,
         configuration: {
@@ -642,7 +642,7 @@ describe('registration domain', () => {
       await deleteServiceInstanceBy({});
     });
     it('should return all registered platform without platformIdentifier in input ', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatforms();
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms();
 
       expect(
         platforms.some(
@@ -658,7 +658,7 @@ describe('registration domain', () => {
       ).toBe(true);
     });
     it('should return only the right registered platform if platformIdentifier in input ', async () => {
-      const platforms = await registrationDomain.loadRegisteredPlatforms({
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Openaev,
       });
       expect(
@@ -676,20 +676,20 @@ describe('registration domain', () => {
         }
       );
 
-      const platforms = await registrationDomain.loadRegisteredPlatforms({
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
       });
       expect(platforms).toHaveLength(0);
     });
     it('should return platforms without configuration (not yet auto registered) ', async () => {
       const notYetRegisteredPlatformServiceInstanceId =
-        await registrationDomain.registerNewPlatform({
+        await RegistrationDomain.registerNewPlatform({
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           serviceDefinitionId,
           platformIdentifier: PlatformIdentifier.Opencti,
         });
 
-      const platforms = await registrationDomain.loadRegisteredPlatforms({
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
       });
       expect(
@@ -714,7 +714,7 @@ describe('registration domain', () => {
         request_date: new Date(),
       });
 
-      const platforms = await registrationDomain.loadRegisteredPlatforms({
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
@@ -737,7 +737,7 @@ describe('registration domain', () => {
         request_date: new Date(),
       });
 
-      const platforms = await registrationDomain.loadRegisteredPlatforms({
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
         onlyActive: true,
       });
@@ -760,7 +760,7 @@ describe('registration domain', () => {
         request_date: new Date(),
       });
 
-      const platforms = await registrationDomain.loadRegisteredPlatforms({
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
         onlyActive: true,
       });
@@ -797,13 +797,13 @@ describe('registration domain', () => {
         ordering: 1,
         request_date: new Date(),
       });
-      await registrationDomain.registerNewPlatform({
+      await RegistrationDomain.registerNewPlatform({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         serviceDefinitionId,
         platformIdentifier: PlatformIdentifier.Opencti,
       });
 
-      const platforms = await registrationDomain.loadRegisteredPlatforms({
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms({
         platformIdentifier: PlatformIdentifier.Opencti,
         onlyActive: true,
         onlyTrial: true,

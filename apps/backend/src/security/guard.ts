@@ -142,6 +142,9 @@ export const assertUserCanManageService = async (
     organization_id: user.selected_organization_id,
   });
 
+  if (!subscription) {
+    throw ForbiddenAccess(ErrorCode.MissingCapabilityOnService);
+  }
   const userServiceCapability =
     await UserServiceDomain.loadUserServiceGenericCapability(
       user.id,
@@ -164,6 +167,9 @@ export const assertUserHasCapaOnService = async (
     service_instance_id: serviceInstanceId,
     organization_id: user.selected_organization_id,
   });
+  if (!subscription) {
+    throw ForbiddenAccess(ErrorCode.MissingCapabilityOnService);
+  }
   const [existingUserService] =
     await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
       user_id: user.id,

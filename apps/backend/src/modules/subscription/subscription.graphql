@@ -17,7 +17,7 @@ type SubscriptionModel implements Node {
   end_date: Date
   organization: Organization!
   service_url: String!
-  service_instance: ServiceInstance
+  service_instance: ServiceInstance!
   subscription_capability: [SubscriptionCapability]
   user_service: [UserService]!
 }

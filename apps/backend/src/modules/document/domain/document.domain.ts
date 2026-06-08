@@ -340,7 +340,7 @@ export const DocumentDomain = {
       file?: MinioFile;
       type: string;
     };
-    uploader_organization_id: OrganizationId;
+    uploader_organization_id: OrganizationId | null;
     uploader_id: UserId;
   }): Promise<DocumentModel | undefined> => {
     const { user } = requestContext.require();

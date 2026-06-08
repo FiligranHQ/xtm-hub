@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
+  EditionType,
   EpicOrdering,
   EpicType,
   FiligranProduct,
@@ -50,6 +51,8 @@ describe('epicApp', () => {
     active: true,
     product: FiligranProduct.Opencti,
     timeline: Timeline.Now,
+    uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+    edition_type: EditionType.CommunityEdition,
   };
 
   beforeEach(async () => {
@@ -170,6 +173,7 @@ describe('epicApp', () => {
         title: 'Updated Title',
         short_description: 'Updated short description',
         active: true,
+        edition_type: EditionType.CommunityEdition,
       };
 
       // When
@@ -217,6 +221,7 @@ describe('epicApp', () => {
         title: 'Updated Title with Image',
         short_description: 'Updated short description',
         active: true,
+        edition_type: EditionType.CommunityEdition,
       };
 
       const uploads = [

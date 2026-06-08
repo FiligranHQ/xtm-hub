@@ -168,6 +168,7 @@
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "個人的なスペースで無料体験を申し込むことはできない",
       "CANT_SUBSCRIBE_YOURSELF": "自分を追加することはできません",
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "同じドメインの競合がすでに存在する",
+      "COMPETITOR_NOT_FOUND": "競合他社が見つかりません",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "配備要求の作成中にエラーが発生しました",
       "DELETE_DOCUMENT_ERROR": "ドキュメントの削除中にエラーが発生した",
       "DELETE_EPIC_ERROR": "エピックの削除中にエラーが発生した。",

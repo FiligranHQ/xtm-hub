@@ -33,7 +33,7 @@ export default interface DeploymentRequest {
 
   activity_sector: DeploymentRequestActivitySector | null;
 
-  platform_token: string | null;
+  platform_token: string;
 
   platform_id: string | null;
 
@@ -87,7 +87,7 @@ export interface DeploymentRequestInitializer {
 
   activity_sector?: DeploymentRequestActivitySector | null;
 
-  platform_token?: string | null;
+  platform_token: string;
 
   platform_id?: string | null;
 
@@ -142,7 +142,7 @@ export interface DeploymentRequestMutator {
 
   activity_sector?: DeploymentRequestActivitySector | null;
 
-  platform_token?: string | null;
+  platform_token?: string;
 
   platform_id?: string | null;
 

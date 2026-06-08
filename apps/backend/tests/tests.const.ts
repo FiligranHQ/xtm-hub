@@ -183,7 +183,7 @@ export const contextBypassUser: PortalContext = {
     capabilities: [CAPABILITY_BYPASS],
     roles_portal: [],
   },
-} as PortalContext;
+} as unknown as PortalContext;
 
 export const requestContextAdminUser = {
   user: contextBypassUser.user,
@@ -322,7 +322,7 @@ export const contextSimpleUserSecondOrga: PortalContext = {
     capabilities: [],
     roles_portal: [],
   },
-} as PortalContext;
+} as unknown as PortalContext;
 
 export const requestContextSimpleUserSecondOrga = {
   user: contextSimpleUserSecondOrga.user,
@@ -359,7 +359,7 @@ export const contextSimpleUserFiligran2: PortalContext = {
     capabilities: [],
     roles_portal: [],
   },
-} as PortalContext;
+} as unknown as PortalContext;
 
 export const requestContextSimpleUserFiligran2 = {
   user: contextSimpleUserFiligran2.user,
