@@ -12,13 +12,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@adobe/css-tools@npm:~4.3.3":
-  version: 4.3.3
-  resolution: "@adobe/css-tools@npm:4.3.3"
-  checksum: 10/0e77057efb4e18182560855503066b75edca98671be327d3f8a7ae89ec3da6821e693114b55225909fca00d7e7ed8422f3d79d71fe95dd4d5df1f2026a9fda02
-  languageName: node
-  linkType: hard
-
 "@alloc/quick-lru@npm:^5.2.0":
   version: 5.2.0
   resolution: "@alloc/quick-lru@npm:5.2.0"
@@ -12349,7 +12342,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.3.7, glob@npm:^10.4.5":
+"glob@npm:^10.3.7":
   version: 10.5.0
   resolution: "glob@npm:10.5.0"
   dependencies:
@@ -16700,13 +16693,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-cloudflare@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "pg-cloudflare@npm:1.4.0"
-  checksum: 10/7b4ad661a5f73e5ed86ae84b18a82434d38acec00ab47e79896ade7321e9d59aeecf4f88c33323cfa0504fda52c39ccfc7add508c1165a866264fd54ac30191e
-  languageName: node
-  linkType: hard
-
 "pg-connection-string@npm:2.6.2":
   version: 2.6.2
   resolution: "pg-connection-string@npm:2.6.2"
@@ -16718,13 +16704,6 @@ __metadata:
   version: 2.12.0
   resolution: "pg-connection-string@npm:2.12.0"
   checksum: 10/03e5462c1f4da57166344a9eae105f95af6887a501dfe4ca2feb85ca8d351162afe9fc581cb27d44ecdaecc59a8bd55a1ec35b66714b01a9db148f0a91c0b36c
-  languageName: node
-  linkType: hard
-
-"pg-connection-string@npm:^2.13.0":
-  version: 2.13.0
-  resolution: "pg-connection-string@npm:2.13.0"
-  checksum: 10/b38bb5e27ff375b1c53e7fd805dba7c0380674db1325860d1b59a4ad668970ef0d9a97b15b8625ce393696a4b47083af9f345d998afa8abfe99a5180de52922a
   languageName: node
   linkType: hard
 
@@ -16744,26 +16723,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-pool@npm:^3.14.0":
-  version: 3.14.0
-  resolution: "pg-pool@npm:3.14.0"
-  peerDependencies:
-    pg: ">=8.0"
-  checksum: 10/0d90984fa8304fc07c4d06f8324ac5f5f6dcf4fe387b02263fa3f4e1f7bb6e7d8f3a97471836c3d38ca1ee129dae2f1fc28cb53e72bf48cb6515a848729c863a
-  languageName: node
-  linkType: hard
-
 "pg-protocol@npm:^1.11.0, pg-protocol@npm:^1.13.0":
   version: 1.13.0
   resolution: "pg-protocol@npm:1.13.0"
   checksum: 10/302cd3920df00f178519693557c34949d64c8b3af7e2c12772b14f61547b947e4c761b4ca2319dbba5b0906207bb1b535cbfc7006d40d47fd823e277c2690a71
-  languageName: node
-  linkType: hard
-
-"pg-protocol@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "pg-protocol@npm:1.14.0"
-  checksum: 10/81c69dba142f3cecf3926afbef97c18c53ba54717d2073d759e2cde98dff61ac7b178c4676950e0e3e6bd43fcf4ba21ef96a217b2765020aadeef6bf6bf82a7e
   languageName: node
   linkType: hard
 
@@ -16809,29 +16772,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:8.21.0":
-  version: 8.21.0
-  resolution: "pg@npm:8.21.0"
-  dependencies:
-    pg-cloudflare: "npm:^1.4.0"
-    pg-connection-string: "npm:^2.13.0"
-    pg-pool: "npm:^3.14.0"
-    pg-protocol: "npm:^1.14.0"
-    pg-types: "npm:2.2.0"
-    pgpass: "npm:1.0.5"
-  peerDependencies:
-    pg-native: ">=3.0.1"
-  dependenciesMeta:
-    pg-cloudflare:
-      optional: true
-  peerDependenciesMeta:
-    pg-native:
-      optional: true
-  checksum: 10/c02cdd43f54001910cd45a181f6c702f89d3a7336d70375502c296727fc1a1ff0242b2f64dfb55fb05b0af26926ebea409810f5a52bdc0e6a9dc01dcf5fbb441
-  languageName: node
-  linkType: hard
-
-"pg@npm:^8.10.0, pg@npm:^8.20.0":
+"pg@npm:8.20.0, pg@npm:^8.10.0, pg@npm:^8.20.0":
   version: 8.20.0
   resolution: "pg@npm:8.20.0"
   dependencies:
@@ -18272,13 +18213,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sax@npm:~1.4.1":
-  version: 1.4.4
-  resolution: "sax@npm:1.4.4"
-  checksum: 10/00ff7b258baa37d98f8abfa0b5c8b3ee739ca37e9b6ecb83405be9e6e5b0b2856394a5eff142db1d987d589b54b139d4236f25830c1e17a2b640efa53c8fda72
-  languageName: node
-  linkType: hard
-
 "saxes@npm:^6.0.0":
   version: 6.0.0
   resolution: "saxes@npm:6.0.0"
@@ -18764,13 +18698,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:^0.7.3":
-  version: 0.7.6
-  resolution: "source-map@npm:0.7.6"
-  checksum: 10/c8d2da7c57c14f3fd7568f764b39ad49bbf9dd7632b86df3542b31fed117d4af2fb74a4f886fc06baf7a510fee68e37998efc3080aacdac951c36211dc29a7a3
-  languageName: node
-  linkType: hard
-
 "space-separated-tokens@npm:^2.0.0":
   version: 2.0.2
   resolution: "space-separated-tokens@npm:2.0.2"
@@ -19151,21 +19078,6 @@ __metadata:
     babel-plugin-macros:
       optional: true
   checksum: 10/ba01200e8227fe1441a719c2e7da96c8aa7ef61d14211d1500e1abce12efa118479bcb6e7e12beecb9e1db76432caad2f4e01bbc0c9be21c134b088a4ca5ffe0
-  languageName: node
-  linkType: hard
-
-"stylus@github:stylus/stylus#0.64.0":
-  version: 0.64.0
-  resolution: "stylus@https://github.com/stylus/stylus.git#commit=1086c6c1fbd7a7fd0ce9ad94f6cf4a62fc79a6e9"
-  dependencies:
-    "@adobe/css-tools": "npm:~4.3.3"
-    debug: "npm:^4.3.2"
-    glob: "npm:^10.4.5"
-    sax: "npm:~1.4.1"
-    source-map: "npm:^0.7.3"
-  bin:
-    stylus: bin/stylus
-  checksum: 10/ed20fa413fdb5d183a9efb19db34bae4cbe969b53635bb8fed2c93b0064617fe7d5c0629206a325340c7845422c1dbecc8b0f0a338fbd655f555e2286ed55444
   languageName: node
   linkType: hard
 
@@ -20843,7 +20755,6 @@ __metadata:
     eslint: "catalog:"
     eslint-config-prettier: "catalog:"
     eslint-plugin-unicorn: "npm:64.0.0"
-    stylus: "github:stylus/stylus#0.64.0"
     tsx: "catalog:"
     typescript: "catalog:"
   languageName: unknown
