@@ -334,7 +334,7 @@ export const DocumentHelper = {
     if (!document || !document.file) {
       return;
     }
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const { minioName } = await MinIOClient.sendFile(
       document.file,
       document.file.filename,

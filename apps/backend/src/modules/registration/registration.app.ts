@@ -79,7 +79,7 @@ export const RegistrationApp = {
     platformId: string,
     tenantId?: string | null
   ): Promise<Organization | null> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const resolvedConfiguration =
       await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
         platformId,
@@ -170,7 +170,7 @@ export const RegistrationApp = {
     platform,
     identifier,
   }: RegisterPlatformInput): Promise<string> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const token = uuidv4();
 
     if (platform.version && !isValidVersion(platform.version)) {
@@ -314,7 +314,7 @@ export const RegistrationApp = {
     if (identifier !== resolvedConfiguration.platformIdentifier) {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId: subscription.organization_id,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -404,7 +404,7 @@ export const RegistrationApp = {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
       user,
       {

@@ -157,7 +157,7 @@ export const UserOrganizationDomain = {
     if (!userOrganization) {
       throw new Error(UnknownErrorCode.UnknownError);
     }
-    const { user: contextUser } = requestContext.require();
+    const contextUser = requestContext.requireUser();
     await securityGuard.assertUserCapabilities(
       [
         OrganizationCapability.AdministrateOrganization,

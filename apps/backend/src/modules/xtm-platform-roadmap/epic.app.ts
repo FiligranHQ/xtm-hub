@@ -74,7 +74,7 @@ export const EpicApp = {
     input: CreateEpicInput,
     uploads: Upload[]
   ): Promise<Epic> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       slug: PLATFORM_ROADMAP_SLUG,
@@ -101,7 +101,7 @@ export const EpicApp = {
     return EpicDomain.createEpic(epicData);
   },
   updateEpic: async (id: EpicId, input: UpdateEpicInput, uploads: Upload[]) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       slug: PLATFORM_ROADMAP_SLUG,
@@ -148,7 +148,7 @@ export const EpicApp = {
   },
 
   deleteEpic: async (id: EpicId) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       slug: PLATFORM_ROADMAP_SLUG,

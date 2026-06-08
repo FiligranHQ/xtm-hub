@@ -6,7 +6,7 @@ export const restrictDocumentToActive = (qb: KnexQueryBuilder) => {
 };
 
 export const restrictDocumentToUserOrganization = (qb: KnexQueryBuilder) => {
-  const { user } = requestContext.require();
+  const user = requestContext.requireUser();
   qb.leftJoin('ServiceInstance as securityServiceInstance', function () {
     this.on('securityServiceInstance.id', '=', 'Document.service_instance_id');
   })

@@ -4,7 +4,7 @@ import { requestContext } from '../../context/request.context';
 export const restrictSubscriptionToUserOrganization = (
   qb: KnexQueryBuilder
 ) => {
-  const { user } = requestContext.require();
+  const user = requestContext.requireUser();
   return qb
     .innerJoin(
       'Subscription as securitySubscription',

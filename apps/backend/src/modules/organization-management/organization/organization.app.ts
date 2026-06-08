@@ -24,7 +24,7 @@ export const OrganizationApp = {
     }
 
     try {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       const updateOrgaEvent = buildUpdateOrganizationEvent(
         updatedOrganization,
         user.id
@@ -59,7 +59,7 @@ export const OrganizationApp = {
     });
 
     try {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       const createOrgaEvent = buildCreateOrganizationEvent(
         createdOrganization,
         user.id

@@ -275,7 +275,7 @@ export const DocumentApp = {
     );
 
     const updatedDocument = await withTransaction(async () => {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       const uploader_organization_id = input.uploader_organization_id ?? null;
       const uploader_id = input.uploader_id ?? user.id;
 

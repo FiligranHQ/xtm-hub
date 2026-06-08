@@ -40,7 +40,7 @@ export const ServiceGroupApp = {
   updateGroups: async (
     groups: UpdateGroupsPayload
   ): Promise<ServiceGroup[]> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const groupIds = groups.map(({ id }) => id);
 
     const serviceInstanceIds =

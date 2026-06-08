@@ -56,7 +56,7 @@ export const updateUserOrganizationCapability = async ({
 export const loadUserOrganizationCapabilities = async (
   organizationId: string
 ): Promise<UserOrganizationCapability[]> => {
-  const { user } = requestContext.require();
+  const user = requestContext.requireUser();
   const capabilities = await db<UserOrganizationCapability>(
     'UserOrganization_Capability'
   )

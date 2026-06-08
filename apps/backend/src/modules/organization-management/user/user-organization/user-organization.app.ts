@@ -30,7 +30,7 @@ export const UserOrganizationApp = {
   addUserToOrganization: async (
     input: AddUserInput
   ): Promise<UserLoadUserBy> => {
-    const { user: contextUser } = requestContext.require();
+    const contextUser = requestContext.requireUser();
     const [organizationFromEmail] =
       await OrganizationDomain.loadOrganizationsFromEmail(input.email);
 
@@ -103,7 +103,7 @@ export const UserOrganizationApp = {
   changeSelectedOrganization: async (
     organization_id: OrganizationId
   ): Promise<UserLoadUserBy> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     await securityGuard.assertUserIsInOrganization(user, organization_id);
 
@@ -131,7 +131,7 @@ export const UserOrganizationApp = {
     userId: UserId;
     organizationId: OrganizationId;
   }): Promise<UserLoadUserBy> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     if (userId === user.id) {
       throw new Error(ErrorCode.CantRemoveYourselfFromOrgaError);
     }

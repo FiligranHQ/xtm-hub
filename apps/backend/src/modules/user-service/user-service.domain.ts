@@ -512,7 +512,7 @@ export const UserServiceDomain = {
     opts: QueryOpts,
     subscriptionId: SubscriptionId
   ) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const userServiceQuery = db<UserService>('User_Service')
       .where('subscription_id', '=', subscriptionId)
       .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')

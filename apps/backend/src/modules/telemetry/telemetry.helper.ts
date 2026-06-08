@@ -204,7 +204,7 @@ export async function buildCreateEvent(
   document: Document,
   timestamp?: Date
 ): Promise<CreateEvent> {
-  const { user } = requestContext.require();
+  const user = requestContext.requireUser();
   const selectedOrga = await OrganizationDomain.loadOrganizationBy({
     id: user.selected_organization_id,
   });

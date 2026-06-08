@@ -133,7 +133,7 @@ export const hubspotReachOutSalesHook = async ({
   platformToken?: string;
 }) =>
   hubspotHook('reachOutSales', async () => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     let deploymentRequest: FullyQualifiedDeploymentRequest | undefined;
     if (platformId) {

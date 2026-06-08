@@ -80,7 +80,7 @@ export const telemetryApp = {
     userId: UserId;
     input: OneClickDeployInput;
   }) {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const selected_organization_id = user.selected_organization_id;
 
     const selectedOrga = await OrganizationDomain.loadOrganizationBy({
