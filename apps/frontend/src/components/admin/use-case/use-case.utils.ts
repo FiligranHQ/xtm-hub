@@ -1,33 +1,21 @@
-import {
-  useCaseFragment,
-  useCaseListFragment,
-  UseCaseListQuery,
-} from '@/components/admin/use-case/use-case.graphql';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { formatName } from '@/utils/format/name';
-import { useCaseListQuery } from '@generated/useCaseListQuery.graphql';
-import { useCase_fragment$key } from '@generated/useCase_fragment.graphql';
-import { useCase_list_fragment$key } from '@generated/useCase_list_fragment.graphql';
 import {
-  readInlineData,
-  useLazyLoadQuery,
-  useRefetchableFragment,
-} from 'react-relay';
+  OrderingMode,
+  UseCaseOrdering,
+  useUseCasesListQuery,
+} from '@graphql/generated';
 
 export const getUseCases = (documentType?: string) => {
-  const queryData = useLazyLoadQuery<useCaseListQuery>(
-    UseCaseListQuery,
-    { count: 500, orderBy: 'name', orderMode: 'asc', documentType },
-    { fetchPolicy: 'network-only' }
-  );
-  const [data] = useRefetchableFragment<
-    useCaseListQuery,
-    useCase_list_fragment$key
-  >(useCaseListFragment, queryData);
-  return (data.useCases?.edges ?? [])
-    .map(({ node }) =>
-      readInlineData<useCase_fragment$key>(useCaseFragment, node)
-    )
-    .filter((l) => !!l)
+  const variables = {
+    count: 500,
+    orderBy: UseCaseOrdering.Name,
+    orderMode: OrderingMode.Asc,
+    documentType: documentType ?? null,
+  };
+  const { data } = useUseCasesListQuery(portalGraphqlClient, variables);
+  return (data?.useCases?.edges ?? [])
+    .map(({ node }) => node)
     .map(({ id, name, color }) => ({
       id,
       name: formatName(name),
