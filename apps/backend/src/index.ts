@@ -268,7 +268,13 @@ const middlewareExpress = expressMiddleware(server, {
 
     // TODO Add build session from request authorization
 
-    const portalContext: PortalContext = { user, req, res };
+    // user may be undefined for unauthenticated requests;
+    // the @auth directive enforces authentication before any resolver accesses it.
+    const portalContext: PortalContext = {
+      user: user as UserLoadUserBy,
+      req,
+      res,
+    };
 
     return portalContext;
   },
