@@ -53,7 +53,7 @@ export async function networkFetch({
   options?: RequestInit;
 }): Promise<GraphQLResponse> {
   if (isDevelopment()) {
-    logGraphQLOperation(request, variables, apiUri);
+    logGraphQLOperation(request, variables, apiUri, options.cache);
   }
 
   const headers: { [k: string]: string } = {
@@ -131,7 +131,8 @@ export function fetchOrSubscribe(
 export function logGraphQLOperation(
   request: RequestParameters,
   variables: Variables,
-  apiUri: string
+  apiUri: string,
+  cache?: RequestCache
 ) {
   const operationName = request.name || 'Anonymous';
   const query = request.text || '';
@@ -143,5 +144,6 @@ export function logGraphQLOperation(
   // eslint-disable-next-line no-console
   console.log(`[GraphQL:Relay ${operationType}] ${operationName} → ${apiUri}`, {
     variables: scrubSensitiveVariables(variables ?? {}),
+    cache: cache ?? 'auto (default)',
   });
 }
