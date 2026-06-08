@@ -77,7 +77,7 @@ export const SubscriptionDomain = {
 
   loadSubscriptionBy: async (
     field: SubscriptionMutator
-  ): Promise<Subscription | null> => {
+  ): Promise<Subscription | undefined> => {
     return db<Subscription>('Subscription').where(field).first();
   },
 

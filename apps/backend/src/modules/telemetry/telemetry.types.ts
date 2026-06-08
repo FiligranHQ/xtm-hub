@@ -78,7 +78,7 @@ export interface RegisterPlatformEvent extends BaseTelemetryEvent {
   target_product: TelemetryTargetProduct;
   platform_id: string;
   platform_contract: string;
-  platform_version: string;
+  platform_version: string | null | undefined;
   platform_url: string;
   existing_users_count?: number;
   tenant_id?: string;

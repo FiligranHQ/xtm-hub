@@ -78,7 +78,7 @@ export const subscriptionApp = {
   deleteSubscriptions: async (
     ids: SubscriptionId[]
   ): Promise<Subscription[]> => {
-    return SubscriptionDomain.deleteSubscriptions(ids);
+    return (await SubscriptionDomain.deleteSubscriptions(ids)) ?? [];
   },
 
   updateSubscription: async ({

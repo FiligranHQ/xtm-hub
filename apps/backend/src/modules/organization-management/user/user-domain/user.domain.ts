@@ -259,10 +259,7 @@ export const UserDomain = {
       )
       .where('User_Organization.organization_id', '=', organizationId)
       .andWhere((qb) => {
-        qb.where('UserOrganization_Capability.name', '=', capabilities[0]);
-        for (let i = 1; i < capabilities.length; i++) {
-          qb.orWhere('UserOrganization_Capability.name', '=', capabilities[i]);
-        }
+        qb.whereIn('UserOrganization_Capability.name', capabilities);
       })
       .select('User.*')
       .distinct();

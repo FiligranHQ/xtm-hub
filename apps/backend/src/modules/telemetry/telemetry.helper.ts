@@ -244,7 +244,7 @@ export function buildRegisterEvent(
   platform_identifier: PlatformIdentifier,
   platform_id: string,
   platform_contract: PlatformContract,
-  platform_version: string,
+  platform_version: string | null | undefined,
   platform_url: string,
   existingUsersCount?: number,
   tenantId?: string,

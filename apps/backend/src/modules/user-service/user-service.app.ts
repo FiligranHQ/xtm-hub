@@ -50,8 +50,12 @@ export const UserServiceApp = {
     userServiceIds: UserServiceId[],
     serviceInstanceId: ServiceInstanceId
   ) => {
+    const [firstUserServiceId] = userServiceIds;
+    if (!firstUserServiceId) {
+      return [];
+    }
     const userServiceIsInService = await checkUserServiceIsInServiceInstance(
-      userServiceIds[0],
+      firstUserServiceId,
       serviceInstanceId
     );
     if (!userServiceIsInService) {
