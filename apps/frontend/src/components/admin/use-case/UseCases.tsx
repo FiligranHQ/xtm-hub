@@ -25,6 +25,7 @@ const UseCases = () => {
     count: 100,
     orderMode: OrderingMode.Asc,
     orderBy: UseCaseOrdering.Name,
+    documentType: null,
   };
 
   const { data: queryData, isError } = useUseCasesListQuery(
