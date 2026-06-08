@@ -79,6 +79,10 @@ export const DeploymentApp = {
       id: user.selected_organization_id,
     });
 
+    if (!chosenOrganization) {
+      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+    }
+
     if (chosenOrganization.personal_space) {
       logApp.warn('Free trial requests are not allowed in personal spaces');
       throw new Error(ErrorCode.CantRequestFreeTrialInPersonalSpace);
@@ -707,6 +711,9 @@ export const DeploymentApp = {
     const organization = await OrganizationDomain.loadOrganizationBy({
       id: input.organizationId,
     });
+    if (!organization) {
+      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+    }
     if (organization.personal_space) {
       return {
         availableTrials: [],
@@ -974,6 +981,9 @@ const sendUpdateDeploymentTelemetryEvent = async (
     const organization = await OrganizationDomain.loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,
     });
+    if (!organization) {
+      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+    }
     const updateDeploymentEvent = buildUpdateDeploymentEvent(
       organization,
       userId,

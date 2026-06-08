@@ -276,7 +276,7 @@ export async function buildOneClickDeployEvent(
   service: ServiceDefinitionIdentifier,
   platform_identifier: PlatformIdentifier,
   platform_id: string,
-  platform_version: string,
+  platform_version: string | undefined,
   resource_id: string,
   resource_title: string,
   tenant_id?: string,

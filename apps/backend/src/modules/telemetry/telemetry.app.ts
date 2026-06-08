@@ -6,6 +6,7 @@ import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
+import { NotFoundErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
@@ -85,11 +86,18 @@ export const telemetryApp = {
     const selectedOrga = await OrganizationDomain.loadOrganizationBy({
       id: selected_organization_id,
     });
+    if (!selectedOrga) {
+      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+    }
+
     const serviceDefinition =
       await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
         input.service_instance_id
       );
 
+    if (!serviceDefinition) {
+      throw new Error(NotFoundErrorCode.ServiceNotFound);
+    }
     const platformServiceInstanceId = extractId<'RegisteredPlatform'>(
       input.platform_service_instance_id
     );
@@ -97,6 +105,9 @@ export const telemetryApp = {
       await ServiceInstanceDomain.loadPlatformConfigurationByServiceInstanceId(
         platformServiceInstanceId
       );
+    if (!platformConfiguration) {
+      throw new Error(NotFoundErrorCode.PlatformConfigurationNotFound);
+    }
 
     const event = await buildOneClickDeployEvent(
       selectedOrga,

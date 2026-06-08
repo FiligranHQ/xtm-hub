@@ -14,7 +14,10 @@ import { isUserAdminPlatform } from '../../../../security/access';
 import { securityGuard } from '../../../../security/guard';
 import { sendMail } from '../../../../server/mail-service';
 import { logApp } from '../../../../utils/app-logger.util';
-import { ErrorCode } from '../../../../utils/error/error.code';
+import {
+  ErrorCode,
+  NotFoundErrorCode,
+} from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { formatName } from '../../../../utils/format';
 import { OrganizationDomain } from '../../organization/organization.domain';
@@ -35,6 +38,9 @@ export const UserOrganizationApp = {
       id: contextUser.selected_organization_id,
     });
 
+    if (!chosenOrganization) {
+      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+    }
     if (chosenOrganization.personal_space) {
       logApp.warn('You cannot add a user in your personal space');
       throw new Error(ErrorCode.CantAddUserToPersonalSpace);

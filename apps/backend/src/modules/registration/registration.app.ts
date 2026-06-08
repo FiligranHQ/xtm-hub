@@ -118,9 +118,10 @@ export const RegistrationApp = {
       throw new Error(ErrorCode.UserIsNotInOrganization);
     }
 
-    return OrganizationDomain.loadOrganizationBy({
+    const orga = await OrganizationDomain.loadOrganizationBy({
       id: subscription.organization_id,
     });
+    return orga ?? null;
   },
 
   loadRegisteredPlatform: async (
@@ -256,6 +257,9 @@ export const RegistrationApp = {
       const selectedOrga = await OrganizationDomain.loadOrganizationBy({
         id: organizationId as OrganizationId,
       });
+      if (!selectedOrga) {
+        throw new Error(NotFoundErrorCode.OrganizationNotFound);
+      }
 
       const registerEvent = buildRegisterEvent(
         selectedOrga,
@@ -475,6 +479,9 @@ export const RegistrationApp = {
           id: deploymentRequest.organization_requester_id,
         });
 
+        if (!selectedOrga) {
+          throw new Error(NotFoundErrorCode.OrganizationNotFound);
+        }
         const registerEvent = buildRegisterEvent(
           selectedOrga,
           deploymentRequest.user_requester_id,

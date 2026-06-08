@@ -91,7 +91,7 @@ export interface OneClickDeployEvent extends BaseTelemetryEvent {
   service_type?: TelemetryEventServiceType;
   resource_id: string;
   platform_id: string;
-  platform_version: string;
+  platform_version: string | undefined;
   resource_title: string;
   tenant_id?: string;
 }

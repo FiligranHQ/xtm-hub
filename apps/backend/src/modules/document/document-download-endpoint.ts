@@ -8,7 +8,7 @@ import { DocumentId } from '../../model/kanel/public/Document';
 import { UserLoadUserBy } from '../../model/user';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
+import { ErrorCode, NotFoundErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
@@ -139,6 +139,9 @@ export const documentDownloadEndpoint = (app) => {
                 id: user.selected_organization_id,
               });
 
+              if (!selectedOrga) {
+                throw new Error(NotFoundErrorCode.OrganizationNotFound);
+              }
               const downloadEvent = await buildDownloadEvent(
                 selectedOrga,
                 user.id,

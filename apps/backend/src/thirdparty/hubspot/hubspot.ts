@@ -102,14 +102,16 @@ export const hubspotLoginHook = async (userId: string) =>
     if (!user) {
       throw new Error(ErrorCode.UserNotFound);
     }
-    const is_admin = user.organization_capabilities.some((orga_capa) => {
-      return (
-        orga_capa.organization.personal_space === false &&
-        orga_capa.capabilities.some((capa) =>
-          [OrganizationCapability.AdministrateOrganization].includes(capa)
-        )
-      );
-    });
+    const is_admin = (user.organization_capabilities ?? []).some(
+      (orga_capa) => {
+        return (
+          !orga_capa.organization.personal_space &&
+          orga_capa.capabilities.some((capa) =>
+            [OrganizationCapability.AdministrateOrganization].includes(capa)
+          )
+        );
+      }
+    );
 
     return {
       email: user.email,
@@ -151,10 +153,9 @@ export const hubspotReachOutSalesHook = async ({
           `Deployment request ${deploymentRequest.id} is not a trial deployment request`
         );
       }
-
+      const request = deploymentRequest;
       const hasUserRightsOnRequest = user.organizations.some(
-        (organization) =>
-          organization.id === deploymentRequest.organization_requester_id
+        (organization) => organization.id === request.organization_requester_id
       );
       if (!hasUserRightsOnRequest) {
         throw new Error(

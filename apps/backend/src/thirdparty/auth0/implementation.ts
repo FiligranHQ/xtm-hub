@@ -91,7 +91,7 @@ export const auth0ClientImplementation: Auth0Client = {
       id: organization_id,
     });
     logApp.info(
-      `Delete API Audience for organization ${organization.name} with platform_id ${platform_id}`
+      `Delete API Audience for organization ${organization?.name} with platform_id ${platform_id}`
     );
     await managementClient.resourceServers.delete(platform_id);
   },
