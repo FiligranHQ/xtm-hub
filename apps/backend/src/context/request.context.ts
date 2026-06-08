@@ -7,7 +7,9 @@ export interface RequestContext {
 }
 
 // Create typed AsyncLocalStorage
-const requestContextStorage = new AsyncLocalStorage<RequestContext>();
+const requestContextStorage = new AsyncLocalStorage<
+  RequestContext | undefined
+>();
 
 export const requestContext = {
   // Get current context

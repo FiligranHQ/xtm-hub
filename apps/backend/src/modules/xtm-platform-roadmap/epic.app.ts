@@ -184,6 +184,7 @@ export const EpicApp = {
     await sendMail({
       to: 'product.managers@filigran.io',
       template: 'public_roadmap_monthly_reminder',
+      params: {},
     });
   },
 };

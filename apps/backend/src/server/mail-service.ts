@@ -26,7 +26,7 @@ const templateCache = new Map<string, HandlebarsTemplateDelegate>();
 interface SendMailParams<T extends keyof MailTemplates> {
   to: string | string[];
   template: T;
-  params?: MailTemplates[T];
+  params: MailTemplates[T];
 }
 
 const useQueueProcessing = (): boolean =>
