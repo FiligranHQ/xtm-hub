@@ -13,10 +13,17 @@ const resolvers: Resolvers = {
     uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
     uploader_organization: ({ id }, _) =>
       DocumentDomain.loadUploaderOrganization(id),
-    service_instance: ({ service_instance_id }, _) =>
-      getServiceInstance(service_instance_id),
-    subscription: async ({ service_instance_id }, _, context) =>
-      subscriptionApp.loadSubscriptionModel(context.user, service_instance_id),
+    service_instance: ({ service_instance_id }, _) => {
+      if (!service_instance_id) return null;
+      return getServiceInstance(service_instance_id);
+    },
+    subscription: async ({ service_instance_id }, _, context) => {
+      if (!service_instance_id) return null;
+      return subscriptionApp.loadSubscriptionModel(
+        context.user,
+        service_instance_id
+      );
+    },
   },
 };
 

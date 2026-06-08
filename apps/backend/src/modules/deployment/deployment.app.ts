@@ -48,7 +48,7 @@ import { ucfirst } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
-import { registrationDomain } from '../registration/registration.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
@@ -86,7 +86,7 @@ export const DeploymentApp = {
 
     if (await CompetitorApp.isOrganizationBlacklisted(chosenOrganization)) {
       logApp.warn(
-        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains.join(', ')}') is blacklisted`
+        `Free trial request is blocked as at least one of organization domains ('${chosenOrganization.domains?.join(', ')}') is blacklisted`
       );
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
@@ -127,7 +127,7 @@ export const DeploymentApp = {
             const ordering = (maxOrdering ?? 0) + 1;
 
             const serviceInstanceId =
-              await registrationDomain.registerNewPlatform({
+              await RegistrationDomain.registerNewPlatform({
                 serviceDefinitionId: serviceDefinition.id,
                 organizationId: user.selected_organization_id,
                 platformIdentifier: input.platform_identifier,
@@ -214,9 +214,7 @@ export const DeploymentApp = {
           to: instanceRequestedEmail,
           template: 'admin_saas_instance_requested',
           params: {
-            organizationName: user.organizations.find(
-              (o) => o.id === user.selected_organization_id
-            ).name,
+            organizationName: chosenOrganization.name,
             userName:
               user.first_name && user.last_name
                 ? `${user.first_name} ${user.last_name}`
@@ -476,7 +474,10 @@ export const DeploymentApp = {
       ![
         DeploymentRequestPlatformState.Unprovisioned,
         DeploymentRequestPlatformState.Provisioning,
-      ].includes(deploymentRequest.actual_state);
+      ].includes(
+        deploymentRequest.actual_state ??
+          DeploymentRequestPlatformState.Unprovisioned
+      );
 
     const target_state =
       deploymentRequest.actual_state ===
@@ -551,10 +552,17 @@ export const DeploymentApp = {
     }
 
     try {
-      await auth0Client.deleteAudienceAPI(
-        deploymentRequest.organization_requester_id,
-        deploymentRequest.platform_id
-      );
+      if (deploymentRequest.platform_id) {
+        await auth0Client.deleteAudienceAPI(
+          deploymentRequest.organization_requester_id,
+          deploymentRequest.platform_id
+        );
+      } else {
+        logApp.error('Unable to delete audience', {
+          error: 'missing platform_id',
+          deploymentRequestId: deploymentRequest.id,
+        });
+      }
     } catch (error) {
       logApp.error('Unable to delete audience', {
         error,
@@ -632,10 +640,17 @@ export const DeploymentApp = {
         }
 
         try {
-          await auth0Client.deleteAudienceAPI(
-            trial.organization_requester_id,
-            trial.platform_id
-          );
+          if (trial.platform_id) {
+            await auth0Client.deleteAudienceAPI(
+              trial.organization_requester_id,
+              trial.platform_id
+            );
+          } else {
+            logApp.error('Unable to delete audience', {
+              error: 'missing platform_id',
+              deploymentRequestId: trial.id,
+            });
+          }
         } catch (error) {
           logApp.error('Unable to delete audience', {
             error,
@@ -966,10 +981,10 @@ const sendUpdateDeploymentTelemetryEvent = async (
         deployment_id: deploymentRequest.id,
         deployment_type: deploymentRequest.type,
         platform_id: deploymentRequest.platform_id,
-        ...(deploymentRequest.hub_status ===
-          DeploymentRequestHubStatus.Cancelled && {
-          cancellation_reason: deploymentRequest.cancellation_reason,
-        }),
+        cancellation_reason:
+          deploymentRequest.hub_status === DeploymentRequestHubStatus.Cancelled
+            ? deploymentRequest.cancellation_reason
+            : undefined,
       }
     );
 

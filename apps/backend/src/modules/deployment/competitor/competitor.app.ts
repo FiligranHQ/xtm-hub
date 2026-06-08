@@ -7,7 +7,7 @@ import {
 import { CompetitorId } from '../../../model/kanel/public/Competitor';
 import Organization from '../../../model/kanel/public/Organization';
 import { toError } from '../../../utils/error/error-guard.util';
-import { ErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode, NotFoundErrorCode } from '../../../utils/error/error.code';
 import { AlreadyExistsError } from '../../../utils/error/error.util';
 import { omit } from '../../../utils/utils';
 import { CompetitorDomain } from './competitor.domain';
@@ -35,17 +35,25 @@ export const CompetitorApp = {
   },
   async updateCompetitorById(data: UpdateCompetitorInput): Promise<Competitor> {
     try {
-      return await CompetitorDomain.updateCompetitorBy(
+      const competitor = await CompetitorDomain.updateCompetitorBy(
         { id: data.id },
         { ...omit(data, ['id']) }
       );
+      if (!competitor) {
+        throw new Error(NotFoundErrorCode.CompetitorNotFound);
+      }
+      return competitor;
     } catch (error) {
       throwIfUniqueViolation(error);
       throw error;
     }
   },
   async deleteCompetitorById(id: CompetitorId): Promise<Competitor> {
-    return await CompetitorDomain.deleteCompetitorBy({ id });
+    const competitor = await CompetitorDomain.deleteCompetitorBy({ id });
+    if (!competitor) {
+      throw new Error(NotFoundErrorCode.CompetitorNotFound);
+    }
+    return competitor;
   },
   async isOrganizationBlacklisted(
     organization: Organization

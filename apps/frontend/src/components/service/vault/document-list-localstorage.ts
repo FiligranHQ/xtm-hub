@@ -1,7 +1,12 @@
+import { isValueInEnum } from '@/utils/is-value-in-enum';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { OrderingMode } from '@generated/documentsQuery.graphql';
+import {
+  DocumentOrdering,
+  OrderingMode,
+} from '@generated/documentsQuery.graphql';
 import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
 import { ColumnDef } from '@tanstack/react-table';
+import { useEffect } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 export const documentListLocalStorage = (
@@ -14,14 +19,16 @@ export const documentListLocalStorage = (
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>('orderModeDocumentList', 'desc');
   const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<DocumentOrderingEnum>(
+    useLocalStorage<DocumentOrdering>(
       'orderByDocumentList',
-      DocumentOrderingEnum.CREATED_AT
+      DocumentOrderingEnum.CREATED_AT as DocumentOrdering
     );
-  const documentOrderingValues = Object.values(DocumentOrderingEnum);
-  if (!documentOrderingValues.includes(orderBy)) {
-    setOrderBy(DocumentOrderingEnum.CREATED_AT);
-  }
+
+  useEffect(() => {
+    if (!isValueInEnum(orderBy, DocumentOrderingEnum)) {
+      setOrderBy(DocumentOrderingEnum.CREATED_AT as DocumentOrdering);
+    }
+  }, [orderBy, setOrderBy]);
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countDocumentList',
     50

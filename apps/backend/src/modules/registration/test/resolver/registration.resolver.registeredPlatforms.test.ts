@@ -10,7 +10,7 @@ import {
   RegisteredPlatformsInput,
 } from '../../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
-import { registrationApp } from '../../registration.app';
+import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.registeredPlatform', () => {
@@ -18,7 +18,7 @@ describe('query.registeredPlatform', () => {
     // Given
     const rawId = uuidv4() as ServiceInstanceId;
     const expectedPlatform = { id: rawId, title: 'My Platform' };
-    vi.spyOn(registrationApp, 'loadRegisteredPlatform').mockResolvedValue(
+    vi.spyOn(RegistrationApp, 'loadRegisteredPlatform').mockResolvedValue(
       expectedPlatform as unknown as RegisteredPlatform
     );
 
@@ -31,7 +31,7 @@ describe('query.registeredPlatform', () => {
     );
 
     // Then
-    expect(registrationApp.loadRegisteredPlatform).toHaveBeenCalledWith(rawId);
+    expect(RegistrationApp.loadRegisteredPlatform).toHaveBeenCalledWith(rawId);
     expect(result).toMatchObject({ id: rawId, title: 'My Platform' });
   });
 });
@@ -45,7 +45,7 @@ describe('query.registeredPlatforms', () => {
       onlyTrial: false,
     };
     const platforms = [{ id: uuidv4(), title: 'Platform A' }];
-    vi.spyOn(registrationApp, 'loadRegisteredPlatforms').mockResolvedValue(
+    vi.spyOn(RegistrationApp, 'loadRegisteredPlatforms').mockResolvedValue(
       platforms as unknown as RegisteredPlatform[]
     );
 
@@ -58,7 +58,7 @@ describe('query.registeredPlatforms', () => {
     );
 
     // Then
-    expect(registrationApp.loadRegisteredPlatforms).toHaveBeenCalledWith(input);
+    expect(RegistrationApp.loadRegisteredPlatforms).toHaveBeenCalledWith(input);
     expect(result).toEqual(platforms);
   });
 });

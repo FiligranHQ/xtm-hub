@@ -37,6 +37,7 @@ test.describe('Organization switcher', async () => {
       ordering: 1,
       counts_in_orga_quota: true,
       region: 'us-west',
+      platform_token: uuidv4(),
     });
     // Have subscription
     await loginPage.navigateToAndLogin();

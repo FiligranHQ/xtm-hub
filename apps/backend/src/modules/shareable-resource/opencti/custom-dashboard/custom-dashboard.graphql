@@ -7,7 +7,6 @@ type CustomDashboard implements Document & Node {
   short_description: String
   description: String
   file_name: String! @auth
-  minio_name: String! @auth
   active: Boolean!
   created_at: Date!
   updated_at: Date
@@ -16,7 +15,7 @@ type CustomDashboard implements Document & Node {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  service_instance_id: ServiceInstanceId! @auth
+  service_instance_id: ServiceInstanceId @auth
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
   children_documents: [ShareableResource!]

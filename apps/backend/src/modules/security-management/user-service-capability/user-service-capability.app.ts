@@ -16,17 +16,19 @@ export const userServiceCapabilityApp = {
     const userServices =
       await UserServiceDomain.loadUserServicesByIds(userServiceIds);
 
+    const [firstUserService] = userServices;
+    if (!firstUserService || !capabilities.length) {
+      return userServices;
+    }
+
     const isUserServiceInCorrectService =
       await checkUserServiceIsInServiceInstance(
-        userServices[0].id,
+        firstUserService.id,
         serviceInstanceId
       );
 
     if (!isUserServiceInCorrectService) {
       throw new Error(ForbiddenErrorCode.ServiceNotManageable);
-    }
-    if (!userServices.length || !capabilities.length) {
-      return userServices;
     }
 
     await insertCapabilities(capabilities, userServices);

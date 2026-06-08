@@ -91,9 +91,9 @@ export const TestDocumentHelper = {
         })
         .returning('*');
       expect(document).toBeDefined();
-      return document;
+      return document!;
     },
-    load: async (field: DocumentMutator): Promise<Document> => {
+    load: async (field: DocumentMutator): Promise<Document | undefined> => {
       return db<Document>('Document').where(field).select('*').first();
     },
     loadAll: async (field: DocumentMutator): Promise<Document[]> => {
@@ -119,7 +119,7 @@ export const TestDocumentHelper = {
         })
         .returning('*');
       expect(documentChildren).toBeDefined();
-      return documentChildren;
+      return documentChildren!;
     },
     delete: async (field: DocumentChildrenMutator) => {
       await db<DocumentChildren>('Document_Children').where(field).del();
@@ -140,7 +140,7 @@ export const TestDocumentHelper = {
         .insert(data)
         .returning('*');
       expect(metadata).toBeDefined();
-      return metadata;
+      return metadata!;
     },
     delete: async (field: DocumentMetadataMutator) => {
       await db<DocumentMetadata>('Document_Metadata').where(field).del();

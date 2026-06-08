@@ -19,6 +19,7 @@ import { logApp } from '../../../../utils/app-logger.util';
 import { toError } from '../../../../utils/error/error-guard.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
+import { stripNulls } from '../../../../utils/typescript';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
@@ -132,11 +133,14 @@ export const UserAdminApp = {
         mappedCapabilities
       );
     }
-    const updatedUser = await UserDomain.updateUser(userId, userInput);
+    const updatedUser = await UserDomain.updateUser(
+      userId,
+      stripNulls(userInput)
+    );
     if (updatedUser) {
       try {
         await auth0Client.updateUser({
-          ...input,
+          ...stripNulls(input),
           email: updatedUser.email,
         });
       } catch (err) {

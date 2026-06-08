@@ -44,22 +44,22 @@ export const compareVersions = (a: string, b: string) => {
 const compareLtsVersions = (a: string, b: string) => {
   const splittedA = a.split('.');
   const splittedB = b.split('.');
-  const aMajorVersion = +splittedA[0];
-  const bMajorVersion = +splittedB[0];
+  const aMajorVersion = +(splittedA[0] ?? 0);
+  const bMajorVersion = +(splittedB[0] ?? 0);
 
   if (aMajorVersion !== bMajorVersion) {
     return aMajorVersion > bMajorVersion ? 1 : -1;
   }
 
-  const aDateVersion = +splittedA[1];
-  const bDateVersion = +splittedB[1];
+  const aDateVersion = +(splittedA[1] ?? 0);
+  const bDateVersion = +(splittedB[1] ?? 0);
 
   if (aDateVersion !== bDateVersion) {
     return aDateVersion > bDateVersion ? 1 : -1;
   }
 
-  const aMinorVersion = +splittedA[2].replace('-lts', '');
-  const bMinorVersion = +splittedB[2].replace('-lts', '');
+  const aMinorVersion = +(splittedA[2] ?? '0').replace('-lts', '');
+  const bMinorVersion = +(splittedB[2] ?? '0').replace('-lts', '');
 
   if (aMinorVersion !== bMinorVersion) {
     return aMinorVersion > bMinorVersion ? 1 : -1;
@@ -78,8 +78,8 @@ const compareSemanticVersions = (a: string, b: string) => {
   const a1 = a.split('.');
   const b1 = b.split('.');
   for (let i = 0; i < a1.length; i++) {
-    const a2 = +a1[i] || 0;
-    const b2 = +b1[i] || 0;
+    const a2 = +(a1[i] ?? 0);
+    const b2 = +(b1[i] ?? 0);
 
     if (a2 !== b2) {
       return a2 > b2 ? 1 : -1;
