@@ -8,19 +8,19 @@ export type CapabilityPortalId = string & { __brand: 'public.CapabilityPortal' }
 export default interface CapabilityPortal {
   id: CapabilityPortalId;
 
-  name: string | null;
+  name: string;
 }
 
 /** Represents the initializer for the table public.CapabilityPortal */
 export interface CapabilityPortalInitializer {
   id: CapabilityPortalId;
 
-  name?: string | null;
+  name: string;
 }
 
 /** Represents the mutator for the table public.CapabilityPortal */
 export interface CapabilityPortalMutator {
   id?: CapabilityPortalId;
 
-  name?: string | null;
+  name?: string;
 }

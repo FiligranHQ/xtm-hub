@@ -6,6 +6,7 @@ import {
   DocumentSourceType,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
+import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
   default as DocumentModel,
@@ -59,6 +60,7 @@ export const DocumentChildrenDomain = {
     documentId: string,
     include_metadata: DocumentMetadataKeyCode[] = []
   ): Promise<Document[]> => {
+    const context = requestContext.get();
     const query = db<Document>('Document_Children')
       .leftJoin(
         'Document',
@@ -66,7 +68,12 @@ export const DocumentChildrenDomain = {
         'Document_Children.child_document_id'
       )
       .where('Document_Children.parent_document_id', '=', documentId)
-      .tap(restrictDocumentToUserOrganization)
+      .modify((qb) => {
+        // No restriction when unauthenticated: parent query enforces public-only boundary
+        if (context?.user) {
+          restrictDocumentToUserOrganization(qb);
+        }
+      })
       .orderBy('created_at', 'asc')
       .select('Document.*')
       .groupBy('Document.id');

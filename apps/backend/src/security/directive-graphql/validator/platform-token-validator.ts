@@ -13,6 +13,7 @@ import {
   validateExistsPlatformAndToken,
 } from '../../../modules/security-management/token/platform-token.util';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
+import { NotFoundErrorCode } from '../../../utils/error/error.code';
 
 export {
   extractPlatformId,
@@ -67,6 +68,9 @@ export const createPlatformTokenResolver = (originalResolve) => {
     const organization = await loadOrganizationFromPlatformIdAndTokenHeaders(
       portalContext.req
     );
+    if (!organization) {
+      throw NotFoundErrorCode.OrganizationNotFound;
+    }
 
     const platformUser = {
       id: PLATFORM_USER_UUID,
