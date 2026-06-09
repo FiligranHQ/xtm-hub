@@ -12,4 +12,8 @@ export const RequiredPlatformVersions: Record<
     [PlatformIdentifier.Opencti]: null, // OpenCTI never requires a tenantId
     [PlatformIdentifier.Openaev]: '2.4.0',
   },
+  NewsFeedSupport: {
+    [PlatformIdentifier.Opencti]: '7.260527.0', // OpenCTI 7.260527.0 is the first version to support news feed
+    [PlatformIdentifier.Openaev]: null,
+  },
 };

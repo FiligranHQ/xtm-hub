@@ -20,7 +20,35 @@ import { PlatformConfigurationDomain } from '../registration/platform-configurat
 import { registrationDomain } from '../registration/registration.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
+import { doesPlatformSupportNewsFeed } from './news-feed.helper';
 import { newsFeedConfigurationMapping } from './news-feed.model';
+
+const getSupportedPlatformIds = (
+  registeredPlatforms: {
+    platform_id: string;
+    platform_version: string | null;
+  }[],
+  platformIdentifier: PlatformIdentifier
+): string[] =>
+  registeredPlatforms
+    .filter((platform) => {
+      const supported = doesPlatformSupportNewsFeed(
+        platformIdentifier,
+        platform.platform_version
+      );
+      if (!supported) {
+        logApp.debug(
+          'Skipping news feed provisioning for unsupported platform',
+          {
+            platformId: platform.platform_id,
+            platformVersion: platform.platform_version,
+            platformIdentifier,
+          }
+        );
+      }
+      return supported;
+    })
+    .map((platform) => platform.platform_id);
 
 const provisionNewsFeedItemForServiceInstance = async ({
   newsFeedItemId,
@@ -41,8 +69,9 @@ const provisionNewsFeedItemForServiceInstance = async ({
       organizationIds,
       platformIdentifier
     );
-  const platformIds = registeredPlatforms.map(
-    (platform) => platform.platform_id
+  const platformIds = getSupportedPlatformIds(
+    registeredPlatforms,
+    platformIdentifier
   );
   await NewsFeedDomain.provisionNewsFeedItem(newsFeedItemId, platformIds);
 };
@@ -239,8 +268,9 @@ export const NewsFeedApp = {
       await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
         platformIdentifier
       );
-    const platformIds = registeredPlatforms.map(
-      (platform) => platform.platform_id
+    const platformIds = getSupportedPlatformIds(
+      registeredPlatforms,
+      platformIdentifier
     );
 
     await NewsFeedDomain.provisionNewsFeedItem(newsFeedItem.id, platformIds);
