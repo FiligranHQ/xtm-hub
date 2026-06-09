@@ -66,11 +66,15 @@ const nextConfig = {
       // -------------------------
 
       {
+        source: '/cybersecurity-solutions/public-roadmap',
+        destination: '/cybersecurity-solutions/xtm-platform-roadmap',
+        permanent: true,
+      },
+      {
         source: '/cybersecurity-solutions/free-trial',
         destination: '/cybersecurity-solutions/opencti-free-trial',
         permanent: true,
       },
-
       {
         source:
           '/cybersecurity-solutions/(open-bas-scenarios|obas-scenarios|open-aev-scenarios)/:path*',
@@ -147,7 +151,7 @@ const nextConfig = {
     const styleSrc = [
       "'self'",
       "'unsafe-inline'",
-      ...(!isProductionOrStaging ? ['https://fonts.googleapis.com'] : []),
+      'https://fonts.googleapis.com',
     ].join(' ');
 
     const manifestSrc = !isProductionOrStaging

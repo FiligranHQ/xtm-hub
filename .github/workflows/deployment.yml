@@ -3,15 +3,11 @@ name: Create Deployment
 on:
   workflow_dispatch:
     inputs:
-      version_type:
-        description: "Deployment version type"
-        required: true
-        default: "patch"
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+      bump_major:
+        description: "Bump the MAJOR version number"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   deploy:
@@ -70,16 +66,38 @@ jobs:
         run: |
           yarn install
 
-      - name: Bump deployment version in backend
-        working-directory: ./apps/backend
+      - name: Compute new version (MAJOR.YYMMDD.SEQ)
         run: |
-          yarn version ${{ github.event.inputs.version_type }}
-          echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+          CURRENT_VERSION=$(node -p "require('./apps/backend/package.json').version")
+          CURRENT_MAJOR=$(echo "$CURRENT_VERSION" | cut -d. -f1)
 
-      - name: Sync deployment version in frontend
+          if [ "${{ github.event.inputs.bump_major }}" == "true" ]; then
+            MAJOR=$((CURRENT_MAJOR + 1))
+          else
+            MAJOR=$CURRENT_MAJOR
+          fi
+
+          YYMMDD=$(date -u +%y%m%d)
+
+          SEQ=0
+          for tag in $(git tag -l "v${MAJOR}.${YYMMDD}.*"); do
+            TAG_SEQ=$(echo "$tag" | cut -d. -f3)
+            if [ "$TAG_SEQ" -ge "$SEQ" ]; then
+              SEQ=$((TAG_SEQ + 1))
+            fi
+          done
+
+          NEW_VERSION="${MAJOR}.${YYMMDD}.${SEQ}"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "✅ Computed version: $NEW_VERSION"
+
+      - name: Set version in backend
+        working-directory: ./apps/backend
+        run: yarn version "${{ env.NEW_VERSION }}"
+
+      - name: Set version in frontend
         working-directory: ./apps/frontend
-        run: |
-          yarn version ${{ env.NEW_VERSION }}
+        run: yarn version "${{ env.NEW_VERSION }}"
 
       - name: Commit and tag changes
         run: |
@@ -130,7 +148,8 @@ jobs:
         run: |
           echo "## Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
           echo "- **New Version:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version Type:** ${{ github.event.inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Major Bumped:** ${{ github.event.inputs.bump_major }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Format:** MAJOR.YYMMDD.SEQ" >> $GITHUB_STEP_SUMMARY
           echo "- **Components Updated:** apps/backend, apps/frontend" >> $GITHUB_STEP_SUMMARY
           echo "- **Tag Created:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Deployment Workflow:** Triggered automatically" >> $GITHUB_STEP_SUMMARY
