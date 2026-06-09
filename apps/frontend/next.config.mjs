@@ -151,7 +151,7 @@ const nextConfig = {
     const styleSrc = [
       "'self'",
       "'unsafe-inline'",
-      ...(!isProductionOrStaging ? ['https://fonts.googleapis.com'] : []),
+      'https://fonts.googleapis.com',
     ].join(' ');
 
     const manifestSrc = !isProductionOrStaging
