@@ -132,6 +132,9 @@ export const UserServiceDomain = {
     const subscription = await SubscriptionDomain.loadSubscriptionBy({
       id: subscription_id as SubscriptionId,
     });
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
     const userOrganizations = await UserOrganizationDomain.loadUserOrganization(
       {
         user_id,

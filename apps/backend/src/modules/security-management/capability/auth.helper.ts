@@ -12,6 +12,7 @@ import { SubscriptionMutator } from '../../../model/kanel/public/Subscription';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserLoadUserBy } from '../../../model/user';
 import { ServiceCapabilityArgs } from '../../../security/directive-graphql/validator/service-capability.validator';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { UserOrganizationDomain } from '../../organization-management/user/user-organization/user-organization.domain';
 import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
@@ -107,9 +108,15 @@ export const getCapabilityUser = (
     ? loadCapabilitiesByServiceId(user, args.service_instance_id)
     : SubscriptionDomain.loadSubscriptionBy({
         id: args.subscription_id,
-      } as SubscriptionMutator).then((subscription) =>
-        loadCapabilitiesByServiceId(user, subscription.service_instance_id)
-      );
+      } as SubscriptionMutator).then((subscription) => {
+        if (!subscription) {
+          throw new Error(ErrorCode.SubscriptionNotFound);
+        }
+        return loadCapabilitiesByServiceId(
+          user,
+          subscription.service_instance_id
+        );
+      });
 
 export const isUserAllowed = ({
   userCapabilities,

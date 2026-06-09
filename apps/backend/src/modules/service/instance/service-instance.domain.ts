@@ -237,7 +237,7 @@ export const ServiceInstanceDomain = {
   },
 
   loadServiceInstanceSubscriptions: async (id: ServiceInstanceId) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     const queryBuilder = db<Subscription>('Subscription')
       .where('Subscription.service_instance_id', '=', id)
