@@ -11,7 +11,7 @@ import Organization from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
 import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { OrganizationDomain } from '../organization/organization.domain';
@@ -59,7 +59,7 @@ describe('user helpers', async () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
       await createNewUserFromInvitation({

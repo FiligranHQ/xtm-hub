@@ -7,8 +7,8 @@ import { toError } from '../../../../../utils/error/error-guard.util';
 import { omit } from '../../../../../utils/utils';
 import { DocumentApp } from '../../../../document/document.app';
 import { DocumentDomain } from '../../../../document/domain/document.domain';
-import { telemetryApp } from '../../../../telemetry/telemetry.app';
-import { buildCreateEvent } from '../../../../telemetry/telemetry.helper';
+import { TelemetryApp } from '../../../../telemetry/telemetry.app';
+import { TelemetryHelper } from '../../../../telemetry/telemetry.helper';
 import {
   Connector,
   INTEGRATION_CONNECTOR_METADATA_KEYS,
@@ -68,8 +68,8 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
       );
       const newDocIsCreated = !doc.updated_at;
       if (newDocIsCreated) {
-        const createEvent = await buildCreateEvent(doc);
-        await telemetryApp.sendTelemetryEvent(createEvent);
+        const createEvent = await TelemetryHelper.buildCreateEvent(doc);
+        await TelemetryApp.sendTelemetryEvent(createEvent);
       }
 
       results.push(doc);

@@ -60,7 +60,7 @@ import {
   loadServiceInstanceBy,
 } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
   TelemetrySource,
@@ -444,7 +444,7 @@ describe('registration app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
         const telemetrySpy = vi
-          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
         await RegistrationApp.registerPlatform({
@@ -477,7 +477,7 @@ describe('registration app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
       const tenantId = uuidv4();
@@ -1360,7 +1360,7 @@ describe('registration app', () => {
         vi.setSystemTime(date);
 
         const telemetrySpy = vi
-          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
         await RegistrationApp.autoRegisterPlatform(
@@ -1390,7 +1390,7 @@ describe('registration app', () => {
         vi.setSystemTime(date);
 
         const telemetrySpy = vi
-          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
         await RegistrationApp.autoRegisterPlatform(
@@ -1450,7 +1450,7 @@ describe('registration app', () => {
           })) as DeploymentRequest;
 
         const telemetrySpy = vi
-          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
         const openaevPlatformConfiguration = {

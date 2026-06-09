@@ -35,8 +35,8 @@ import { formatRawAggObject } from '../../../../utils/query-raw.util';
 import { addPrefixToObject } from '../../../../utils/typescript';
 import { isEmpty } from '../../../../utils/utils';
 import { RolePortalDomain } from '../../../role-portal/role-portal.domain';
-import { telemetryApp } from '../../../telemetry/telemetry.app';
-import { buildLoginEvent } from '../../../telemetry/telemetry.helper';
+import { TelemetryApp } from '../../../telemetry/telemetry.app';
+import { TelemetryHelper } from '../../../telemetry/telemetry.helper';
 
 export const UserDomain = {
   loadUsers: async (userIds: UserId[]): Promise<User[]> => {
@@ -479,8 +479,11 @@ export const UserDomain = {
         (org) => org.id === updatedUser.selected_organization_id
       );
       if (selectedOrga) {
-        const loginEvent = buildLoginEvent(selectedOrga, user.id);
-        await telemetryApp.sendTelemetryEvent(loginEvent);
+        const loginEvent = TelemetryHelper.buildLoginEvent(
+          selectedOrga,
+          user.id
+        );
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
       }
     } catch (error) {
       logApp.error('Unable to send telemetry event for login', {

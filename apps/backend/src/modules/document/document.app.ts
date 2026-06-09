@@ -23,8 +23,8 @@ import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { buildCreateEvent } from '../telemetry/telemetry.helper';
+import { TelemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
 import { useCaseApp } from '../use-case/use-case.app';
 import {
@@ -169,8 +169,9 @@ export const DocumentApp = {
     });
 
     try {
-      const createEvent = await buildCreateEvent(createdDocument);
-      await telemetryApp.sendTelemetryEvent(createEvent);
+      const createEvent =
+        await TelemetryHelper.buildCreateEvent(createdDocument);
+      await TelemetryApp.sendTelemetryEvent(createEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for document creation', {
         error,

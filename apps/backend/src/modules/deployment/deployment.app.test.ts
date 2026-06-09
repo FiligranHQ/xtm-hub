@@ -59,7 +59,7 @@ import {
 } from '../../utils/error/error.code';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { deleteSubscription } from '../subscription/subscription.helper';
-import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
   TelemetrySource,
@@ -97,7 +97,7 @@ describe('deployment app', () => {
 
   beforeEach(() => {
     telemetrySpy = vi
-      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .spyOn(TelemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
     mockSendMail = vi.spyOn(mailService, 'sendMail');
   });

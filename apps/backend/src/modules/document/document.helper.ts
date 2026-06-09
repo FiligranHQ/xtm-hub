@@ -44,7 +44,7 @@ import {
   OPENCTI_PLAYBOOK_METADATA,
   OPENCTI_PLAYBOOK_METADATA_KEYS,
 } from '../shareable-resource/opencti/playbook/playbook.model';
-import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
@@ -358,11 +358,11 @@ export const DocumentHelper = {
     let share_number = 0;
     try {
       [download_number, share_number] = await Promise.all([
-        telemetryApp.countEventsByDocumentId(
+        TelemetryApp.countEventsByDocumentId(
           TelemetryEventType.DOWNLOAD,
           document.id
         ),
-        telemetryApp.countEventsByDocumentId(
+        TelemetryApp.countEventsByDocumentId(
           TelemetryEventType.SHARE,
           document.id
         ),

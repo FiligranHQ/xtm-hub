@@ -47,8 +47,8 @@ import { isUserAllowedOnOrganization } from '../security-management/capability/a
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { updateServiceInstance } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { buildRegisterEvent } from '../telemetry/telemetry.helper';
+import { TelemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import {
   DomainRegisteredPlatform,
@@ -257,7 +257,7 @@ export const RegistrationApp = {
         id: organizationId as OrganizationId,
       });
 
-      const registerEvent = buildRegisterEvent(
+      const registerEvent = TelemetryHelper.buildRegisterEvent(
         selectedOrga,
         user.id,
         identifier,
@@ -268,7 +268,7 @@ export const RegistrationApp = {
         undefined,
         platform.tenantId ?? undefined
       );
-      await telemetryApp.sendTelemetryEvent(registerEvent);
+      await TelemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for registration', {
         error,
@@ -472,7 +472,7 @@ export const RegistrationApp = {
           id: deploymentRequest.organization_requester_id,
         });
 
-        const registerEvent = buildRegisterEvent(
+        const registerEvent = TelemetryHelper.buildRegisterEvent(
           selectedOrga,
           deploymentRequest.user_requester_id,
           deploymentRequest.platform_identifier,
@@ -483,7 +483,7 @@ export const RegistrationApp = {
           input.existing_users_count ?? undefined,
           input.platform.tenantId ?? undefined
         );
-        await telemetryApp.sendTelemetryEvent(registerEvent);
+        await TelemetryApp.sendTelemetryEvent(registerEvent);
       } catch (error) {
         logApp.error('Unable to send telemetry event for registration', {
           error,
