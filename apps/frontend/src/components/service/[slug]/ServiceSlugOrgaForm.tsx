@@ -11,6 +11,7 @@ import { subscriptionInServiceCreateMutation } from '@generated/subscriptionInSe
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 import { useSubscriptionDefaultValues } from './use-subscription-default-values';
 
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import {
   Button,
   Checkbox,
@@ -32,6 +33,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
+import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 
 interface ServiceSlugAddOrgaFormSheetProps {
@@ -59,7 +61,7 @@ export const ServiceSlugOrgaForm = ({
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
   const t = useTranslations();
   const { toast } = useToast();
-  const [organizationsData] = getOrganizations();
+  const { organizationsData, refetch } = getOrganizations();
   const organizations = useUnsubscribedOrganizations(
     organizationsData,
     subscriptions,
@@ -167,6 +169,15 @@ export const ServiceSlugOrgaForm = ({
     });
   };
 
+  const handleOrganizationsInputChange = useDebounceCallback(
+    (search: string) => {
+      refetch({
+        searchTerm: search,
+      });
+    },
+    DEBOUNCE_TIME
+  );
+
   return (
     <>
       <Form {...form}>
@@ -184,12 +195,14 @@ export const ServiceSlugOrgaForm = ({
                   </FormLabel>
                   <FormControl>
                     <MultiSelectFormField
+                      shouldFilter={false}
                       options={organizations}
                       keyValue="id"
                       keyLabel="name"
                       value={field.value}
                       defaultValue={field.value}
                       onValueChange={field.onChange}
+                      onInputChange={handleOrganizationsInputChange}
                       noResultString={t('Utils.NotFound')}
                       placeholder={t(
                         'OrganizationInServiceAction.SelectOrganization'

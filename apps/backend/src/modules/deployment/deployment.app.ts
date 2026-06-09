@@ -50,7 +50,7 @@ import { UserDomain } from '../organization-management/user/user-domain/user.dom
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
-import { updateServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
@@ -503,9 +503,12 @@ export const DeploymentApp = {
           }
         );
         if (!countsInOrgaQuota) {
-          await updateServiceInstance(deploymentRequest.service_instance_id, {
-            creation_status: ServiceInstanceCreationStatus.Disabled,
-          });
+          await ServiceInstanceDomain.updateServiceInstance(
+            deploymentRequest.service_instance_id,
+            {
+              creation_status: ServiceInstanceCreationStatus.Disabled,
+            }
+          );
         }
         await DeploymentApp.releaseDeploymentRequestPlace(
           previousHubStatus,

@@ -12,6 +12,7 @@ import {
   it,
   vi,
 } from 'vitest';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SubscriptionSpy } from '../../../../tests/test-utils';
 import {
   contextAdminSecondOrga,
@@ -41,10 +42,6 @@ import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { loginFromProvider } from '../../security-management/authentication/auth-user';
-import {
-  deleteSubscription,
-  insertSubscription,
-} from '../../subscription/subscription.helper';
 import { UserAdminApp } from './user-admin/user.admin.app';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
@@ -52,13 +49,14 @@ import { UserOrganizationPendingDomain } from './user-pending/user-organization-
 import { removeUser } from './user.helper';
 import usersResolver from './user.resolver';
 
-const SUBSCRIPTION_ID = '7c6e887e-9553-439b-aeaf-a81911c399d2';
+const SUBSCRIPTION_ID =
+  '7c6e887e-9553-439b-aeaf-a81911c399d2' as SubscriptionId;
 const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
 
 describe('user query resolver', () => {
   describe('userHasOrganizationWithSubscription', () => {
     beforeEach(async () => {
-      await insertSubscription({
+      await TestHelper.subscription.create({
         id: SUBSCRIPTION_ID,
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: SERVICES.INSTANCES.EPIC.ID,
@@ -66,8 +64,8 @@ describe('user query resolver', () => {
     });
 
     afterEach(async () => {
-      await deleteSubscription({
-        id: SUBSCRIPTION_ID as SubscriptionId,
+      await TestHelper.subscription.delete({
+        id: SUBSCRIPTION_ID,
       });
     });
 

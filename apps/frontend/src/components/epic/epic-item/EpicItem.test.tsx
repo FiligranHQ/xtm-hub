@@ -5,6 +5,7 @@ import { EditionTypeEnum } from '@generated/models/EditionType.enum';
 import { EpicTypeEnum } from '@generated/models/EpicType.enum';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { screen, within } from '@testing-library/react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createMockEnvironment } from 'relay-test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -32,12 +33,30 @@ describe('EpicItem', () => {
     userCanUpdate: false,
   };
 
+  const mockReplace = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
     useEpicListContextMock.mockReturnValue({
       connectionID: 'connection-id-1',
       filterByProduct: vi.fn(),
     });
+
+    vi.mocked(usePathname).mockReturnValue('/epics');
+
+    vi.mocked(useRouter).mockReturnValue({
+      push: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      refresh: vi.fn(),
+      replace: mockReplace,
+      prefetch: vi.fn(),
+    });
+
+    vi.mocked(useSearchParams).mockReturnValue({
+      get: vi.fn().mockReturnValue(null),
+      toString: vi.fn().mockReturnValue(''),
+    } as unknown as ReturnType<typeof useSearchParams>);
   });
 
   it('renders card and passes expected props', () => {
@@ -67,31 +86,32 @@ describe('EpicItem', () => {
     await user.click(within(card).getByText(epic.title));
 
     // Then
-    const dialog = screen.getByRole('dialog');
-    expect(within(dialog).getByText(epic.description)).toBeInTheDocument();
-    expect(
-      within(dialog).queryByText(epic.short_description)
-    ).not.toBeInTheDocument();
-
-    expect(within(card).getByText(epic.title)).toBeInTheDocument();
+    expect(mockReplace).toHaveBeenCalledOnce();
+    expect(mockReplace).toHaveBeenCalledWith('/epics?epicId=epic-1', {
+      scroll: false,
+    });
   });
 
   it('closes detail dialog when dialog emits close event', async () => {
     // Given
+    vi.mocked(useSearchParams).mockReturnValue({
+      get: vi.fn().mockReturnValue('epic-1'),
+      toString: vi.fn().mockReturnValue('epicId=epic-1'),
+    } as unknown as ReturnType<typeof useSearchParams>);
+
     const environment = createMockEnvironment();
-    const { user, queryByText } = testRender(<EpicItem {...defaultProps} />, {
+    const { user } = testRender(<EpicItem {...defaultProps} />, {
       relayConfig: environment,
     });
 
-    const card = screen.getByRole('listitem');
-    await user.click(within(card).getByText(epic.title));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText(epic.description)).toBeInTheDocument();
 
     // When
     await user.click(screen.getByRole('button', { name: 'Close' }));
 
     // Then
-    expect(queryByText(epic.title)).toBeInTheDocument();
-    expect(queryByText(epic.short_description)).toBeInTheDocument();
-    expect(queryByText(epic.description)).not.toBeInTheDocument();
+    expect(mockReplace).toHaveBeenCalledOnce();
+    expect(mockReplace).toHaveBeenCalledWith('/epics', { scroll: false });
   });
 });

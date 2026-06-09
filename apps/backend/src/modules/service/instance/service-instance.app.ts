@@ -23,18 +23,7 @@ import { GenericServiceCapabilityIds } from '../../security-management/service-c
 import { subscriptionApp } from '../../subscription/subscription.app';
 import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
-import {
-  grantServiceAccess,
-  loadPlatformConfigurationByServiceInstanceId,
-  loadPlatformServiceInstance,
-  loadSeoServiceInstanceBySlug,
-  loadSeoServiceInstances,
-  loadServiceDefinitionByServiceInstance,
-  loadServiceInstanceBy,
-  ServiceInstanceDomain,
-  updatePlatformConfigurationByServiceInstanceId,
-  updateServiceInstance,
-} from './service-instance.domain';
+import { ServiceInstanceDomain } from './service-instance.domain';
 
 export const ServiceInstanceApp = {
   loadServiceInstanceAndGrantAccess: async (
@@ -42,7 +31,9 @@ export const ServiceInstanceApp = {
   ): Promise<ServiceInstance> => {
     const { user } = requestContext.require();
 
-    const service = await loadServiceInstanceBy({ id: serviceInstanceId });
+    const service = await ServiceInstanceDomain.loadServiceInstanceBy({
+      id: serviceInstanceId,
+    });
     if (!service) {
       throw new Error(ErrorCode.ServiceInstanceNotFound);
     }
@@ -70,7 +61,7 @@ export const ServiceInstanceApp = {
       user_id: user.id,
     });
     if (userService.length === 0) {
-      await grantServiceAccess(
+      await ServiceInstanceDomain.grantServiceAccess(
         [GenericServiceCapabilityIds.AccessId],
         [user.id],
         subscription.id
@@ -82,7 +73,9 @@ export const ServiceInstanceApp = {
   loadServiceInstance: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    const service = await loadServiceInstanceBy({ id: serviceInstanceId });
+    const service = await ServiceInstanceDomain.loadServiceInstanceBy({
+      id: serviceInstanceId,
+    });
     if (!service) {
       throw new Error(ErrorCode.ServiceInstanceNotFound);
     }
@@ -104,7 +97,10 @@ export const ServiceInstanceApp = {
       const update = isLogo
         ? { logo_document_id: uploadedDocument.id }
         : { illustration_document_id: uploadedDocument.id };
-      return updateServiceInstance(serviceInstanceId, update);
+      return ServiceInstanceDomain.updateServiceInstance(
+        serviceInstanceId,
+        update
+      );
     });
 
     if (!updatedServiceInstance) {
@@ -121,18 +117,20 @@ export const ServiceInstanceApp = {
     input: UpdatePlatformServiceMetadataInput,
     upload: Upload | null
   ): Promise<RegisteredPlatform> => {
-    const serviceInstance = await loadPlatformServiceInstance(
-      user.selected_organization_id,
-      serviceInstanceId
-    );
+    const serviceInstance =
+      await ServiceInstanceDomain.loadPlatformServiceInstance(
+        user.selected_organization_id,
+        serviceInstanceId
+      );
     if (!serviceInstance) {
       throw NotFoundError(ErrorCode.ServiceInstanceNotFound);
     }
 
     // Get service definition
-    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      serviceInstance.id
-    );
+    const serviceDefinition =
+      await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstance.id
+      );
     if (!serviceDefinition) {
       throw NotFoundError(ErrorCode.ServiceDefinitionNotFound);
     }
@@ -167,7 +165,10 @@ export const ServiceInstanceApp = {
       // Update ServiceInstance if there are fields to update
       let result = serviceInstance;
       if (Object.keys(updateData).length > 0) {
-        result = await updateServiceInstance(serviceInstance.id, updateData);
+        result = await ServiceInstanceDomain.updateServiceInstance(
+          serviceInstance.id,
+          updateData
+        );
         if (!result) {
           throw new Error(ErrorCode.ServiceInstanceNotFound);
         }
@@ -175,7 +176,7 @@ export const ServiceInstanceApp = {
 
       // For registered platforms, also update the platform_title in platform configuration
       if (input.name) {
-        await updatePlatformConfigurationByServiceInstanceId(
+        await ServiceInstanceDomain.updatePlatformConfigurationByServiceInstanceId(
           serviceInstance.id,
           {
             platform_title: input.name,
@@ -188,9 +189,10 @@ export const ServiceInstanceApp = {
     await dispatch('ServiceInstance', 'edit', updatedServiceInstance);
 
     // Build RegisteredPlatform response
-    const config = await loadPlatformConfigurationByServiceInstanceId(
-      updatedServiceInstance.id
-    );
+    const config =
+      await ServiceInstanceDomain.loadPlatformConfigurationByServiceInstanceId(
+        updatedServiceInstance.id
+      );
 
     if (!config) {
       throw NotFoundError(ErrorCode.PlatformConfigurationNotFound);
@@ -212,11 +214,12 @@ export const ServiceInstanceApp = {
   },
 
   loadSeoServiceInstances: async (): Promise<SeoServiceInstance[]> => {
-    return await loadSeoServiceInstances();
+    return await ServiceInstanceDomain.loadSeoServiceInstances();
   },
 
   loadSeoServiceInstance: async (slug: string): Promise<SeoServiceInstance> => {
-    const serviceInstance = await loadSeoServiceInstanceBySlug(slug);
+    const serviceInstance =
+      await ServiceInstanceDomain.loadSeoServiceInstanceBySlug(slug);
     if (!serviceInstance) {
       throw Error(ErrorCode.ServiceNotFound);
     }

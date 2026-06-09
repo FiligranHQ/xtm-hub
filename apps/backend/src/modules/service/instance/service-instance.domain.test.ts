@@ -34,7 +34,9 @@ import { UserServiceId } from '../../../model/kanel/public/UserService';
 import * as mailService from '../../../server/mail-service';
 import { PlatformConfigurationInput } from '../../registration/registration.domain';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
-import {
+import { ServiceInstanceDomain } from './service-instance.domain';
+
+const {
   getUserJoined,
   grantServiceAccess,
   loadLinks,
@@ -43,10 +45,10 @@ import {
   loadServiceInstanceSubscriptions,
   loadSubscribedServiceInstancesByIdentifier,
   loadSubscriptionByServiceInstanceAndOrganization,
-  ServiceInstanceDomain,
   updatePlatformConfigurationByServiceInstanceId,
   updateServiceInstance,
-} from './service-instance.domain';
+  loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription,
+} = ServiceInstanceDomain;
 
 describe('service instance domain', () => {
   afterEach(async () => {
@@ -62,7 +64,7 @@ describe('service instance domain', () => {
     it('should return service instances linked to service definition and with tags', async () => {
       // When
       const serviceInstances =
-        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+        await loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
           ServiceDefinitionIdentifier.Link,
           [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
         );
@@ -92,7 +94,7 @@ describe('service instance domain', () => {
 
       // When
       const serviceInstances =
-        await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+        await loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
           ServiceDefinitionIdentifier.Link,
           [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
         );
@@ -122,7 +124,7 @@ describe('service instance domain', () => {
 
         // When
         const result =
-          await ServiceInstanceDomain.loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
+          await loadServiceInstancesByServiceDefinitionAndTagsWithoutSubscription(
             ServiceDefinitionIdentifier.Link,
             [ServiceInstanceTag.OpenCti, ServiceInstanceTag.Trial]
           );

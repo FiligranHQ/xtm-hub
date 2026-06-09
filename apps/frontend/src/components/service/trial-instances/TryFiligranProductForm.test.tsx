@@ -47,8 +47,7 @@ type FieldConfig = Record<
   }
 >;
 
-vi.mock('@filigran/ui', async (importOriginal) => ({
-  ...(await importOriginal()),
+vi.mock('@filigran/ui', () => ({
   AutoForm: ({
     fieldConfig,
     children,

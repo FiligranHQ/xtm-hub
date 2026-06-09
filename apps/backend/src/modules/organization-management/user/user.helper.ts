@@ -43,7 +43,7 @@ import { hashPassword } from '../../../utils/hash-password.util';
 import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscription/subscription.helper';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
 import { OrganizationDomain } from '../organization/organization.domain';
@@ -249,7 +249,7 @@ export const insertUserIntoOrganization = async (
   subscriptionId: SubscriptionId
 ) => {
   const [subscription] =
-    await loadSubscriptionWithOrganizationAndCapabilitiesBy({
+    await SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
   const [organization] = await OrganizationDomain.loadOrganizationsFromEmail(
