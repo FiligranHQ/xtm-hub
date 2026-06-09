@@ -17,7 +17,7 @@ import { formatRawObject } from '../../utils/query-raw.util';
 export const SubscriptionDomain = {
   deleteSubscriptions: async (
     ids: SubscriptionId[]
-  ): Promise<Subscription[] | null> => {
+  ): Promise<Subscription[]> => {
     return db<Subscription>('Subscription').whereIn('id', ids).delete('*');
   },
 
@@ -77,7 +77,7 @@ export const SubscriptionDomain = {
 
   loadSubscriptionBy: async (
     field: SubscriptionMutator
-  ): Promise<Subscription | null> => {
+  ): Promise<Subscription | undefined> => {
     return db<Subscription>('Subscription').where(field).first();
   },
 

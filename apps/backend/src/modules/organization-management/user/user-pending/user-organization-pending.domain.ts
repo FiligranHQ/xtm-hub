@@ -55,7 +55,7 @@ export const UserOrganizationPendingDomain = {
   },
 
   loadPendingUsers: (opts: QueryUsersArgs): Promise<UserConnection> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const loadPendingUserQuery = db<UserGenerated>('User');
     loadPendingUserQuery
       .leftJoin(

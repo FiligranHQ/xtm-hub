@@ -6,7 +6,9 @@ import {
 
 export const extractRole = (roles: string[] = []): string[] => {
   const roleMapping = getRoleMapping();
-  return roles.map((role) => roleMapping[role]).filter((role) => !!role);
+  return roles
+    .map((role) => roleMapping[role])
+    .filter((role): role is string => !!role);
 };
 
 const getRoleMapping = () => {

@@ -185,7 +185,9 @@ const httpServer = createServer(app);
 const schema = createSchema();
 app.use(graphqlUploadExpress());
 
-if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
+if (
+  !['production', 'staging', 'development'].includes(process.env.NODE_ENV ?? '')
+) {
   const printedSchema = printSchema(schema);
   fs.writeFileSync('../frontend/schema.graphql', printedSchema);
 }
@@ -266,7 +268,13 @@ const middlewareExpress = expressMiddleware(server, {
 
     // TODO Add build session from request authorization
 
-    const portalContext: PortalContext = { user, req, res };
+    // user may be undefined for unauthenticated requests;
+    // the @auth directive enforces authentication before any resolver accesses it.
+    const portalContext: PortalContext = {
+      user: user as UserLoadUserBy,
+      req,
+      res,
+    };
 
     return portalContext;
   },

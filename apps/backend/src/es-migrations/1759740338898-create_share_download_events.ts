@@ -15,10 +15,18 @@ interface TermsBucket {
   doc_count: number;
 }
 
+interface Doc {
+  id: string;
+  name: string;
+  download_number: number;
+  share_number: number;
+  type: string;
+}
+
 const event_timestamp = new Date(Date.UTC(2025, 0, 1));
 
 async function buildDocumentList(
-  downloaded_docs,
+  downloaded_docs: Doc[],
   event_type: 'download' | 'share'
 ) {
   const result = await esDbClient.search({
@@ -63,7 +71,9 @@ async function buildDocumentList(
     const serviceType =
       doc.type === 'csv_feed' ? TelemetryEventServiceType.CSV_FEEDS : undefined;
 
-    const events = [];
+    const events: NonNullable<
+      Parameters<typeof esDbClient.bulk>[0]['operations']
+    > = [];
     for (let i = 0; i < newEventsCount; i++) {
       events.push(
         { index: { _index: 'telemetry_v1' } },

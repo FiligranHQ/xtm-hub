@@ -74,10 +74,14 @@ export const DeploymentApp = {
   createDeploymentRequest: async (
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const chosenOrganization = await OrganizationDomain.loadOrganizationBy({
       id: user.selected_organization_id,
     });
+
+    if (!chosenOrganization) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
 
     if (chosenOrganization.personal_space) {
       logApp.warn('Free trial requests are not allowed in personal spaces');
@@ -250,7 +254,7 @@ export const DeploymentApp = {
   updateDeploymentRequest: async (
     input: UpdateDeploymentRequestInput
   ): Promise<PlatformDeploymentRequest> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageDeployment,
@@ -307,7 +311,7 @@ export const DeploymentApp = {
   loadPlatformDeploymentRequests: async (
     args: QueryDeploymentRequestsArgs
   ): Promise<PlatformDeploymentRequestConnection> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageDeployment,
@@ -394,7 +398,7 @@ export const DeploymentApp = {
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await DeploymentQuotaDomain.withLockedQuotaTransaction(
       { platformIdentifier, region },
       async () => {
@@ -449,7 +453,7 @@ export const DeploymentApp = {
     isAdmin: boolean,
     cancellationReason?: string
   ): Promise<DeploymentRequest> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const deploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         id: deploymentRequestId,
@@ -689,7 +693,7 @@ export const DeploymentApp = {
         region
       );
     if (updatedDeploymentRequest) {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
 
       await sendUpdateDeploymentTelemetryEvent(
         updatedDeploymentRequest,
@@ -701,12 +705,15 @@ export const DeploymentApp = {
     await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await securityGuard.assertUserIsInOrganization(user, input.organizationId);
 
     const organization = await OrganizationDomain.loadOrganizationBy({
       id: input.organizationId,
     });
+    if (!organization) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
     if (organization.personal_space) {
       return {
         availableTrials: [],
@@ -974,6 +981,9 @@ const sendUpdateDeploymentTelemetryEvent = async (
     const organization = await OrganizationDomain.loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,
     });
+    if (!organization) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
     const updateDeploymentEvent = buildUpdateDeploymentEvent(
       organization,
       userId,

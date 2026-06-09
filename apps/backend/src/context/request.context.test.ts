@@ -59,6 +59,36 @@ describe('requestContext', () => {
     });
   });
 
+  describe('requireUser()', () => {
+    it.each([
+      { description: 'no context at all', context: undefined },
+      {
+        description: 'context exists but user is absent',
+        context: { correlationId: 'abc' },
+      },
+    ])(
+      'should throw when $description',
+      ({ context }: { context: RequestContext | undefined }) => {
+        requestContext.set(context);
+        expect(() => requestContext.requireUser()).toThrow(
+          UnknownErrorCode.NoAsyncContextAvailableError
+        );
+      }
+    );
+
+    it('should return the user when context and user are both present', () => {
+      const testContext: RequestContext = {
+        user: mockUser,
+        correlationId: mockCorrelationId,
+      };
+
+      requestContext.set(testContext);
+      const retrievedUser = requestContext.requireUser();
+
+      expect(retrievedUser).toBe(mockUser);
+    });
+  });
+
   describe('set()', () => {
     it('should set a new context', () => {
       const testContext: RequestContext = {
@@ -171,18 +201,18 @@ describe('requestContext', () => {
 
       // Set initial context
       requestContext.set(context1);
-      expect(requestContext.get()?.user.id).toBe(1);
+      expect(requestContext.get()?.user?.id).toBe(1);
 
       // Run with different context
       await new Promise<void>((resolve) => {
         requestContext.run(context2, () => {
-          expect(requestContext.get()?.user.id).toBe(2);
+          expect(requestContext.get()?.user?.id).toBe(2);
           resolve();
         });
       });
 
       // Original context should still be available outside
-      expect(requestContext.get()?.user.id).toBe(1);
+      expect(requestContext.get()?.user?.id).toBe(1);
     });
 
     it('should allow nested context runs', () => {

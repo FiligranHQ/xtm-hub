@@ -204,7 +204,7 @@ export async function buildCreateEvent(
   document: Document,
   timestamp?: Date
 ): Promise<CreateEvent> {
-  const { user } = requestContext.require();
+  const user = requestContext.requireUser();
   const selectedOrga = await OrganizationDomain.loadOrganizationBy({
     id: user.selected_organization_id,
   });
@@ -244,7 +244,7 @@ export function buildRegisterEvent(
   platform_identifier: PlatformIdentifier,
   platform_id: string,
   platform_contract: PlatformContract,
-  platform_version: string,
+  platform_version: string | null | undefined,
   platform_url: string,
   existingUsersCount?: number,
   tenantId?: string,
@@ -276,7 +276,7 @@ export async function buildOneClickDeployEvent(
   service: ServiceDefinitionIdentifier,
   platform_identifier: PlatformIdentifier,
   platform_id: string,
-  platform_version: string,
+  platform_version: string | undefined,
   resource_id: string,
   resource_title: string,
   tenant_id?: string,

@@ -927,6 +927,7 @@ describe('documentApp', () => {
       const input = {
         ...documentData,
         uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       };
 
       // When
@@ -959,6 +960,7 @@ describe('documentApp', () => {
         ...documentData,
         uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         slug: 'unique-slug',
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       };
       vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
         {
