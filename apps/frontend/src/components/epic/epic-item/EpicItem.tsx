@@ -4,6 +4,7 @@ import { EpicItemDetailed } from '@/components/epic/epic-item/EpicItemDetailed';
 import { Dialog, DialogContent } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 
 interface EpicItemProps {
   epic: epic_fragment$data;
@@ -24,13 +25,20 @@ export const EpicItem = ({
 
   const isOpen = searchParams.get('epicId') === epic.id;
 
-  const handleClose = (open: boolean) => {
-    if (!open) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete('epicId');
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    }
-  };
+  const handleClose = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('epicId');
+
+        const queryString = params.toString();
+        const targetUrl = queryString ? `${pathname}?${queryString}` : pathname;
+
+        router.replace(targetUrl, { scroll: false });
+      }
+    },
+    [router, pathname, searchParams]
+  );
 
   return (
     <li className="group overflow-hidden border-light flex flex-col relative rounded border hover:cursor-pointer bg-page-background h-[183px]">

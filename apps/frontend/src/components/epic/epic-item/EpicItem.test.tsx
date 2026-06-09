@@ -33,7 +33,7 @@ describe('EpicItem', () => {
     userCanUpdate: false,
   };
 
-  const mockPush = vi.fn();
+  const mockReplace = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -45,11 +45,11 @@ describe('EpicItem', () => {
     vi.mocked(usePathname).mockReturnValue('/epics');
 
     vi.mocked(useRouter).mockReturnValue({
-      push: mockPush,
+      push: vi.fn(),
       back: vi.fn(),
       forward: vi.fn(),
       refresh: vi.fn(),
-      replace: vi.fn(),
+      replace: mockReplace,
       prefetch: vi.fn(),
     });
 
@@ -86,8 +86,8 @@ describe('EpicItem', () => {
     await user.click(within(card).getByText(epic.title));
 
     // Then
-    expect(mockPush).toHaveBeenCalledOnce();
-    expect(mockPush).toHaveBeenCalledWith('/epics?epicId=epic-1', {
+    expect(mockReplace).toHaveBeenCalledOnce();
+    expect(mockReplace).toHaveBeenCalledWith('/epics?epicId=epic-1', {
       scroll: false,
     });
   });
@@ -111,7 +111,7 @@ describe('EpicItem', () => {
     await user.click(screen.getByRole('button', { name: 'Close' }));
 
     // Then
-    expect(mockPush).toHaveBeenCalledOnce();
-    expect(mockPush).toHaveBeenCalledWith('/epics?', { scroll: false });
+    expect(mockReplace).toHaveBeenCalledOnce();
+    expect(mockReplace).toHaveBeenCalledWith('/epics', { scroll: false });
   });
 });

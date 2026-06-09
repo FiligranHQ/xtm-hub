@@ -3,7 +3,7 @@ import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { MouseEvent } from 'react';
+import { MouseEvent, useCallback } from 'react';
 
 interface EpicItemCardProps {
   epic: epic_fragment$data;
@@ -21,24 +21,27 @@ export const EpicItemCard = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  // Do not open details if it's a click in admin menu
-  const handleOpenDetail = (event: MouseEvent<HTMLDivElement>) => {
-    const { currentTarget, target } = event;
-    if (!(target instanceof Node) || !currentTarget.contains(target)) {
-      return;
-    }
 
-    if (
-      target instanceof HTMLElement &&
-      target.closest(' [data-no-open-detail]')
-    ) {
-      return;
-    }
+  const handleOpenDetail = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      const { currentTarget, target } = event;
+      if (!(target instanceof Node) || !currentTarget.contains(target)) {
+        return;
+      }
 
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('epicId', epic.id);
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  };
+      if (
+        target instanceof HTMLElement &&
+        target.closest('[data-no-open-detail]')
+      ) {
+        return;
+      }
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('epicId', epic.id);
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [router, pathname, searchParams, epic.id]
+  );
 
   return (
     <>

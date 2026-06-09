@@ -26,7 +26,7 @@ describe('EpicItemCard', () => {
     description: 'long description',
   } as epic_fragment$data;
 
-  const mockPush = vi.fn();
+  const mockReplace = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,11 +38,11 @@ describe('EpicItemCard', () => {
     vi.mocked(usePathname).mockReturnValue('/epics');
 
     vi.mocked(useRouter).mockReturnValue({
-      push: mockPush,
+      push: vi.fn(),
       back: vi.fn(),
       forward: vi.fn(),
       refresh: vi.fn(),
-      replace: vi.fn(),
+      replace: mockReplace,
       prefetch: vi.fn(),
     });
 
@@ -92,8 +92,8 @@ describe('EpicItemCard', () => {
     await user.click(screen.getByText(epic.title));
 
     // Then
-    expect(mockPush).toHaveBeenCalledOnce();
-    expect(mockPush).toHaveBeenCalledWith('/epics?epicId=epic-1', {
+    expect(mockReplace).toHaveBeenCalledOnce();
+    expect(mockReplace).toHaveBeenCalledWith('/epics?epicId=epic-1', {
       scroll: false,
     });
   });
@@ -116,6 +116,6 @@ describe('EpicItemCard', () => {
     await user.click(screen.getByRole('button', { name: 'Utils.OpenMenu' }));
 
     // Then
-    expect(mockPush).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 });
