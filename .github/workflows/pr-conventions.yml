@@ -14,17 +14,14 @@ jobs:
     steps:
       - uses: Slashgear/action-check-pr-title@76166c63ec0b25cdbe693e5e972e83ca186313fb
         with:
-          regexp: '^(\[(frontend|backend|e2e-tests)(/(frontend|backend|e2e-tests))*\] )?(feat|fix|docs|refactor|chore|test)(\([^)]+\))?: .+ \(#[0-9]+\)$'
+          regexp: '^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)(\([a-z0-9._/-]+\))?!?: .+ \(#[0-9]+\)$'
           helpMessage: |
-            PR title must follow the convention: '[package] type(scope): Message (#issuenumber)'
+            PR title must follow Conventional Commits: 'type(scope?): description (#issuenumber)'
 
-            Package  : optional — frontend, backend, e2e-tests (combinable with /)
-            Types    : feat, fix, docs, refactor, chore, test
-            Scope    : optional, free text in parentheses
+            Types : feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
+            Scope : optional, lowercase (e.g. frontend, backend) - bracket prefixes are discontinued
 
             Examples:
-              [frontend] feat(custom-dashboards): add card component (#123)
-              [backend]  fix(login): handle missing auth token (#456)
-              [frontend/backend] refactor(auth): extract shared token logic (#789)
+              feat(frontend): add card component (#123)
+              fix(backend): handle missing auth token (#456)
               chore(ci): update docker base image (#101)
-              [e2e-tests] test(login): add SSO flow coverage (#202)
