@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DeploymentRequestActivitySector,
@@ -17,16 +18,16 @@ import DeploymentRequest, {
   DeploymentRequestInitializer,
 } from '../../model/kanel/public/DeploymentRequest';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../registration/registration.mapping';
-import { insertServiceInstance } from '../service/instance/service-instance.domain';
-import { insertSubscription } from '../subscription/subscription.helper';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { DeploymentRequestDomain } from './deployment.domain';
 
 export async function insertDeploymentRequest(
   deploymentRequest: Partial<DeploymentRequestInitializer>
 ): Promise<DeploymentRequest> {
   const serviceInstanceId = uuidv4() as ServiceInstanceId;
-  await insertServiceInstance({
+  await ServiceInstanceDomain.insertServiceInstance({
     id: serviceInstanceId,
     name: 'oneRandomTrialInstance',
     description: '',
@@ -37,11 +38,13 @@ export async function insertDeploymentRequest(
     ],
     service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
   });
-  await insertSubscription({
-    id: uuidv4(),
+
+  await TestHelper.subscription.create({
+    id: uuidv4() as SubscriptionId,
     organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
     service_instance_id: serviceInstanceId,
   });
+
   const defaultDeploymentRequestValues = {
     activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
     id: uuidv4() as DeploymentRequestId,

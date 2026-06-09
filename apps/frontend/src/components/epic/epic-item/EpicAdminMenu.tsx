@@ -1,6 +1,7 @@
 import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
 import { DeleteEpic } from '@/components/epic/epic-item/DeleteEpic';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { useEpicListContext } from '@/hooks/use-epic-list-context';
 import { MoreVertIcon } from '@filigran/icon';
 import { Badge } from '@filigran/ui/servers';
@@ -28,6 +29,14 @@ export const EpicAdminMenu = ({
   const [updateEpic, setUpdateEpic] = useState<epic_fragment$data | undefined>(
     undefined
   );
+
+  let shareableUrl = '';
+  if (typeof window !== 'undefined') {
+    const url = new URL(window.location.href);
+    url.searchParams.set('epicId', epic.id);
+    shareableUrl = url.toString();
+  }
+
   return (
     <>
       <div
@@ -44,6 +53,10 @@ export const EpicAdminMenu = ({
             {t('Epic.Timeline.draft')}
           </Badge>
         )}
+        <ShareLinkButton
+          url={shareableUrl}
+          documentId={epic.document_id}
+        />
         {(userCanDelete || userCanUpdate) && (
           <IconActions
             icon={

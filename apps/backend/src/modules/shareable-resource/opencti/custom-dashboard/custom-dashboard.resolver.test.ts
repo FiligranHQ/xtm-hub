@@ -17,7 +17,7 @@ import UseCase from '../../../../model/kanel/public/UseCase';
 import User from '../../../../model/kanel/public/User';
 import { DocumentChildrenDomain } from '../../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../../document/domain/document.domain';
-import * as serviceInstanceDomain from '../../../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../../../service/instance/service-instance.domain';
 import { subscriptionApp } from '../../../subscription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
 import customDashboardResolver from './custom-dashboard.resolver';
@@ -133,7 +133,7 @@ describe('customDashboard field resolvers', () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID;
       const expected = { id: serviceInstanceId, name: 'custom-dashboards' };
-      vi.spyOn(serviceInstanceDomain, 'getServiceInstance').mockResolvedValue(
+      vi.spyOn(ServiceInstanceDomain, 'getServiceInstance').mockResolvedValue(
         expected as unknown as ServiceInstance | undefined
       );
 
@@ -149,7 +149,7 @@ describe('customDashboard field resolvers', () => {
       );
 
       // Then
-      expect(serviceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
+      expect(ServiceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
         serviceInstanceId
       );
       expect(result).toEqual(expected);

@@ -13,10 +13,7 @@ import { AlreadyExistsError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
 import { stripNulls } from '../../utils/typescript';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import {
-  getServiceInstance,
-  loadServiceDefinitionByServiceInstance,
-} from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
@@ -96,7 +93,7 @@ const resolvers: Resolvers = {
             throw new Error(ErrorCode.ServiceInstanceNotFound);
           }
           const serviceDefinition =
-            await loadServiceDefinitionByServiceInstance(
+            await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
               document.service_instance_id
             );
           if (!serviceDefinition) {
@@ -180,7 +177,7 @@ const resolvers: Resolvers = {
       DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
       if (!service_instance_id) return null;
-      return getServiceInstance(service_instance_id);
+      return ServiceInstanceDomain.getServiceInstance(service_instance_id);
     },
     subscription: async ({ service_instance_id }, _, context) => {
       if (!service_instance_id) return null;

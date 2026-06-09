@@ -20,7 +20,7 @@ export const AutocompleteOrganization = ({
   onValueChange,
 }: AutocompleteOrganizationProps) => {
   const t = useTranslations();
-  const [organizationsData, refetch] = getOrganizations();
+  const { organizationsData, refetch } = getOrganizations();
 
   const isOrganizationAlreadySelected = (id: string) => {
     return selectedOrganizationCapabilities.find(

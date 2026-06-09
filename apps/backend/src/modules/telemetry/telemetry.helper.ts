@@ -12,7 +12,7 @@ import { OrganizationDomain } from '../organization-management/organization/orga
 
 import { requestContext } from '../../context/request.context';
 import { DocumentMetadataDomain } from '../document/domain/document.metadata.domain';
-import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
@@ -213,9 +213,10 @@ export const TelemetryHelper = {
     if (!document.service_instance_id) {
       throw new Error(`Document ${document.id} has no service_instance_id`);
     }
-    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      document.service_instance_id
-    );
+    const serviceDefinition =
+      await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+        document.service_instance_id
+      );
     if (!serviceDefinition) {
       throw new Error(
         `No service definition found for instance ${document.service_instance_id}`

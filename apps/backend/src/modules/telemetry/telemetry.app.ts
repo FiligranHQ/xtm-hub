@@ -8,10 +8,7 @@ import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
 import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import {
-  loadPlatformConfigurationByServiceInstanceId,
-  loadServiceDefinitionByServiceInstance,
-} from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { TelemetryHelper } from './telemetry.helper';
 import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
 
@@ -88,15 +85,16 @@ export const TelemetryApp = {
     const selectedOrga = await OrganizationDomain.loadOrganizationBy({
       id: selected_organization_id,
     });
-    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      input.service_instance_id
-    );
+    const serviceDefinition =
+      await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+        input.service_instance_id
+      );
 
     const platformServiceInstanceId = extractId<'RegisteredPlatform'>(
       input.platform_service_instance_id
     );
     const platformConfiguration =
-      await loadPlatformConfigurationByServiceInstanceId(
+      await ServiceInstanceDomain.loadPlatformConfigurationByServiceInstanceId(
         platformServiceInstanceId
       );
 

@@ -46,7 +46,7 @@ import { GenericServiceCapabilityIds } from '../../security-management/service-c
 import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { ServiceInstanceApp } from './service-instance.app';
-import * as serviceInstanceDomain from './service-instance.domain';
+import { ServiceInstanceDomain } from './service-instance.domain';
 
 describe('service Instance app', () => {
   describe('loadServiceInstance', () => {
@@ -91,11 +91,11 @@ describe('service Instance app', () => {
       );
       loadUserServiceBySpy = vi.spyOn(UserServiceDomain, 'loadUserServiceBy');
       loadServiceInstanceBySpy = vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadServiceInstanceBy'
       );
       grantServiceAccessSpy = vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'grantServiceAccess'
       );
     });
@@ -394,7 +394,7 @@ describe('service Instance app', () => {
 
       // Then
       const unchangedInstance =
-        await serviceInstanceDomain.loadServiceInstanceBy({
+        await ServiceInstanceDomain.loadServiceInstanceBy({
           id: serviceInstance.id,
         });
       expect(unchangedInstance.name).toBe('Default name serviceInstance');
@@ -445,11 +445,11 @@ describe('service Instance app', () => {
       // Given
       const mockId = uuidv4() as ServiceInstanceId;
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadPlatformServiceInstance'
       ).mockResolvedValue({ id: mockId, name: 'Mock Platform' });
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(undefined);
 
@@ -471,11 +471,11 @@ describe('service Instance app', () => {
       // Given
       const mockId = uuidv4() as ServiceInstanceId;
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadPlatformServiceInstance'
       ).mockResolvedValue({ id: mockId, name: 'Mock Platform' });
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue({
         id: uuidv4(),
@@ -536,7 +536,7 @@ describe('service Instance app', () => {
         status: PlatformConfigurationStatus.Active,
       } as PlatformConfiguration;
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadPlatformServiceInstance'
       ).mockResolvedValue({
         id: mockId,
@@ -544,7 +544,7 @@ describe('service Instance app', () => {
         illustration_document_id: null,
       });
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue({
         id: uuidv4(),
@@ -556,20 +556,20 @@ describe('service Instance app', () => {
         'assertUserCanModifyPlatformService'
       ).mockResolvedValue(undefined);
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'updateServiceInstance'
       ).mockResolvedValue({
         id: mockId,
         name: 'Mock Platform',
       } as ServiceInstance);
       const configSpy = vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadPlatformConfigurationByServiceInstanceId'
       );
 
       configSpy.mockResolvedValueOnce(null);
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'updatePlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue(mockPlatformConfiguration);
 
@@ -779,7 +779,7 @@ describe('service Instance app', () => {
     beforeEach(() => {
       uploadNewFileSpy = vi.spyOn(DocumentHelper, 'uploadNewFile');
       updateServiceInstanceSpy = vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'updateServiceInstance'
       );
       dispatchSpy = vi.spyOn(pub, 'dispatch');

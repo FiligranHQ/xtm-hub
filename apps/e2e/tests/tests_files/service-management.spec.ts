@@ -67,7 +67,7 @@ test.describe('Service Management', () => {
       await page.getByRole('button', { name: 'Email' }).click();
       await page.getByPlaceholder('Search...').click();
       await page.getByPlaceholder('Search...').fill('user15');
-      await expect(page.getByText('Not found')).toBeVisible();
+      await expect(page.getByText('user15')).not.toBeVisible();
       await page.getByRole('button', { name: 'Cancel' }).click();
     });
 

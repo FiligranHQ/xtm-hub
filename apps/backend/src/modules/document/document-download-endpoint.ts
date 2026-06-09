@@ -16,7 +16,7 @@ import {
   extractPlatformToken,
   validateActivePlatformToken,
 } from '../security-management/token/platform-token.util';
-import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { DocumentDomain } from './domain/document.domain';
@@ -109,7 +109,7 @@ export const documentDownloadEndpoint = (app) => {
             throw new Error(ErrorCode.ServiceInstanceNotFound);
           }
           const serviceDefinition =
-            await loadServiceDefinitionByServiceInstance(
+            await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
               document.service_instance_id
             );
           if (!serviceDefinition) {

@@ -35,7 +35,7 @@ describe('registeredPlatform type resolvers', () => {
       };
       const loadSubscriptionByServiceInstanceAndOrganizationSpy = vi
         .spyOn(
-          ServiceInstanceDomain,
+          ServiceInstanceDomain.ServiceInstanceDomain,
           'loadSubscriptionByServiceInstanceAndOrganization'
         )
         .mockResolvedValue(expectedSubscription);

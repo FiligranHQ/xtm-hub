@@ -3,6 +3,7 @@ import { TrialsTabType } from '@/components/trials/trials.const';
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { act, fireEvent, screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 // Mocks
@@ -39,19 +40,20 @@ vi.mock('react-relay', async (importOriginal) => ({
   ],
   useMutation: () => [vi.fn(), {}],
 }));
-vi.mock('@filigran/ui', async (importOriginal) => {
-  return {
-    ...(await importOriginal()),
-    toast: vi.fn(),
-    DataTable: ({ toolbar }: { toolbar: React.ReactNode }) => (
-      <div>
-        <div>DataTable</div>
-        {toolbar}
-      </div>
-    ),
-    DataTableHeadBarOptions: () => <div>HeadBarOptions</div>,
-  };
-});
+vi.mock('@filigran/ui', () => ({
+  toast: vi.fn(),
+  DataTable: ({ toolbar }: { toolbar: ReactNode }) => (
+    <div>
+      <div>DataTable</div>
+      {toolbar}
+    </div>
+  ),
+  DataTableHeadBarOptions: () => <div>HeadBarOptions</div>,
+  Tooltip: ({ children }: { children: ReactNode }) => <>{children}</>,
+  TooltipProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+  TooltipTrigger: ({ children }: { children: ReactNode }) => <>{children}</>,
+  TooltipContent: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
 
 const defaultProps = {
   platformIdentifier: PlatformIdentifierEnum.OPENCTI,

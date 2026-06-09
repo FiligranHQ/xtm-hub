@@ -41,7 +41,7 @@ import {
 import type { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { DocumentApp } from '../document/document.app';
 import { DocumentUploadsHelper } from '../document/document.uploads.helper';
-import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { INTEGRATION_SERVICE_INSTANCE_ID } from '../shareable-resource/opencti/integration/integration.model';
 
 vi.mock('config', async (importOriginal) => {
@@ -103,7 +103,7 @@ describe('telemetryApp', () => {
       const platform_id = '916121bf-d246-4a43-8522-24be19537b91';
       const platformServiceInstanceId = '5891d6cf-1737-48bb-8f60-de520a93f2bd';
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadPlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue({
         service_instance_id: platformServiceInstanceId as ServiceInstanceId,
@@ -190,7 +190,7 @@ describe('telemetryApp', () => {
       const platformId = '916121bf-d246-4a43-8522-24be19537b91';
       const platformServiceInstanceId = '5891d6cf-1737-48bb-8f60-de520a93f2bd';
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadPlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue({
         service_instance_id: platformServiceInstanceId as ServiceInstanceId,
@@ -276,7 +276,7 @@ describe('telemetryApp', () => {
       const platform_id = '916121bf-d246-4a43-8522-24be19537b91';
       const platformServiceInstanceId = '5891d6cf-1737-48bb-8f60-de520a93f2bd';
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadPlatformConfigurationByServiceInstanceId'
       ).mockResolvedValue({
         service_instance_id: platformServiceInstanceId as ServiceInstanceId,

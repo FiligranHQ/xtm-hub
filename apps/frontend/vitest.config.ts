@@ -7,6 +7,9 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  ssr: {
+    noExternal: ['@filigran/ui', /@uiw\/.*/],
+  },
   plugins: [react() as PluginOption, relay as PluginOption],
   test: {
     globals: true,
