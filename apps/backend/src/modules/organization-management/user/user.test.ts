@@ -10,7 +10,7 @@ import { requestContext } from '../../../context/request.context';
 import Organization from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
-import { NotFoundErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { telemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
@@ -79,7 +79,7 @@ describe('user helpers', async () => {
         name: organizationName,
       });
       if (!newOrganization) {
-        throw new Error(NotFoundErrorCode.OrganizationNotFound);
+        throw new Error(ErrorCode.OrganizationNotFound);
       }
       const userOrgCapa = await UserDomain.loadUserCapabilitiesByOrganization(
         newUser.id as UserId,

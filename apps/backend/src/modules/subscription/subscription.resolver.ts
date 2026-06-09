@@ -10,6 +10,7 @@ import {
 } from '../../model/kanel/public/Subscription';
 import { SubscriptionCapabilityId } from '../../model/kanel/public/SubscriptionCapability';
 import {
+  ErrorCode,
   NotFoundErrorCode,
   UnknownErrorCode,
 } from '../../utils/error/error.code';
@@ -41,7 +42,7 @@ const resolvers: Resolvers = {
         id: organization_id,
       });
       if (!orga) {
-        throw new Error(NotFoundErrorCode.OrganizationNotFound);
+        throw new Error(ErrorCode.OrganizationNotFound);
       }
       return orga;
     },

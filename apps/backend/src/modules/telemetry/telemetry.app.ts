@@ -6,7 +6,7 @@ import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
-import { NotFoundErrorCode } from '../../utils/error/error.code';
+import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
@@ -87,7 +87,7 @@ export const telemetryApp = {
       id: selected_organization_id,
     });
     if (!selectedOrga) {
-      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+      throw new Error(ErrorCode.OrganizationNotFound);
     }
 
     const serviceDefinition =
@@ -96,7 +96,7 @@ export const telemetryApp = {
       );
 
     if (!serviceDefinition) {
-      throw new Error(NotFoundErrorCode.ServiceNotFound);
+      throw new Error(ErrorCode.ServiceNotFound);
     }
     const platformServiceInstanceId = extractId<'RegisteredPlatform'>(
       input.platform_service_instance_id
@@ -106,7 +106,7 @@ export const telemetryApp = {
         platformServiceInstanceId
       );
     if (!platformConfiguration) {
-      throw new Error(NotFoundErrorCode.PlatformConfigurationNotFound);
+      throw new Error(ErrorCode.PlatformConfigurationNotFound);
     }
 
     const event = await buildOneClickDeployEvent(

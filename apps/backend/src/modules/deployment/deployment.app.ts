@@ -80,7 +80,7 @@ export const DeploymentApp = {
     });
 
     if (!chosenOrganization) {
-      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+      throw new Error(ErrorCode.OrganizationNotFound);
     }
 
     if (chosenOrganization.personal_space) {
@@ -712,7 +712,7 @@ export const DeploymentApp = {
       id: input.organizationId,
     });
     if (!organization) {
-      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+      throw new Error(ErrorCode.OrganizationNotFound);
     }
     if (organization.personal_space) {
       return {
@@ -982,7 +982,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
       id: deploymentRequest.organization_requester_id,
     });
     if (!organization) {
-      throw new Error(NotFoundErrorCode.OrganizationNotFound);
+      throw new Error(ErrorCode.OrganizationNotFound);
     }
     const updateDeploymentEvent = buildUpdateDeploymentEvent(
       organization,

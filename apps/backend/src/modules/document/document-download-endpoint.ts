@@ -1,15 +1,15 @@
 import cors from 'cors';
 import { Request } from 'express';
 import rateLimit from 'express-rate-limit';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { UserLoadUserBy } from '../../model/user';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode, NotFoundErrorCode } from '../../utils/error/error.code';
+import { ErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
+import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import {
@@ -99,7 +99,7 @@ export const documentDownloadEndpoint = (app) => {
 
         try {
           const document = await DocumentDomain.loadDocumentBy({
-            id: fromGlobalId(filename).id as DocumentId,
+            id: extractId<DocumentId>(filename),
           });
 
           if (!document) {
@@ -140,7 +140,7 @@ export const documentDownloadEndpoint = (app) => {
               });
 
               if (!selectedOrga) {
-                throw new Error(NotFoundErrorCode.OrganizationNotFound);
+                throw new Error(ErrorCode.OrganizationNotFound);
               }
               const downloadEvent = await buildDownloadEvent(
                 selectedOrga,
