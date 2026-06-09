@@ -45,7 +45,7 @@ import { UserDomain } from '../organization-management/user/user-domain/user.dom
 import { UserOrganizationDomain } from '../organization-management/user/user-organization/user-organization.domain';
 import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
-import { updateServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import { buildRegisterEvent } from '../telemetry/telemetry.helper';
@@ -462,9 +462,12 @@ export const RegistrationApp = {
           deploymentRequest.service_instance_id,
           configuration
         ),
-        updateServiceInstance(deploymentRequest.service_instance_id, {
-          creation_status: ServiceInstanceCreationStatus.Ready,
-        }),
+        ServiceInstanceDomain.updateServiceInstance(
+          deploymentRequest.service_instance_id,
+          {
+            creation_status: ServiceInstanceCreationStatus.Ready,
+          }
+        ),
       ]);
 
       try {

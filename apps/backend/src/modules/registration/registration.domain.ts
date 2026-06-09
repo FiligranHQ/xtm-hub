@@ -15,6 +15,7 @@ import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import PlatformConfigurationModel from '../../model/kanel/public/PlatformConfiguration';
+import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../model/kanel/public/ServiceInstance';
@@ -61,7 +62,7 @@ export const RegistrationDomain = {
     platformIdentifier,
     serviceInstanceCreationStatus = ServiceInstanceCreationStatus.Ready,
   }: {
-    serviceDefinitionId: string;
+    serviceDefinitionId: ServiceDefinitionId;
     organizationId: OrganizationId;
     configuration?: PlatformConfigurationInput;
     platformIdentifier: PlatformIdentifier;

@@ -17,10 +17,9 @@ import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { NotFoundError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import { loadServiceInstanceBy } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { subscriptionApp } from './subscription.app';
 import { SubscriptionDomain } from './subscription.domain';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from './subscription.helper';
 
 const resolvers: Resolvers = {
   SubscriptionId: createRelayIdScalar<SubscriptionId>('Subscription'),
@@ -28,7 +27,9 @@ const resolvers: Resolvers = {
     subscription_capability: ({ id }, _) =>
       SubscriptionDomain.getSubscriptionCapability(id as SubscriptionId),
     service_instance: async ({ service_instance_id }, _) => {
-      const instance = await loadServiceInstanceBy({ id: service_instance_id });
+      const instance = await ServiceInstanceDomain.loadServiceInstanceBy({
+        id: service_instance_id,
+      });
       if (!instance)
         throw NotFoundError(NotFoundErrorCode.ServiceInstanceNotFound);
       return instance as unknown as ServiceInstance;
@@ -90,9 +91,11 @@ const resolvers: Resolvers = {
   Query: {
     subscriptionById: async (_, { subscription_id }) => {
       const subscriptions =
-        await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-          'Subscription.id': subscription_id,
-        } as SubscriptionMutator);
+        await SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy(
+          {
+            'Subscription.id': subscription_id,
+          } as SubscriptionMutator
+        );
 
       return subscriptions[0];
     },

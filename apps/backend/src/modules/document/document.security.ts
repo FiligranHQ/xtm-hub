@@ -7,7 +7,7 @@ import { UserLoadUserBy } from '../../model/user';
 import { isUserGranted } from '../../security/access';
 import { ErrorCode } from '../../utils/error/error.code';
 import { loadCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
-import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 
 export const isUserRestrictedToActiveDocument = async (
   user: UserLoadUserBy,
@@ -23,7 +23,9 @@ export const isUserRestrictedToActiveDocument = async (
     user.selected_organization_id
   );
   const serviceDef =
-    await loadServiceDefinitionByServiceInstance(serviceInstanceId);
+    await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+      serviceInstanceId
+    );
   if (!serviceDef) {
     throw new Error(ErrorCode.ServiceDefinitionNotFound);
   }
