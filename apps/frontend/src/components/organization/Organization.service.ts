@@ -57,10 +57,11 @@ export const getOrganizations = ({
       orderMode,
     }
   );
-  return useRefetchableFragment<
+  const [data, refetch] = useRefetchableFragment<
     organizationSelectQuery,
     organizationList_organizations$key
   >(organizationsFragment, organizationData);
+  return { organizationsData: data, refetch };
 };
 
 interface AvailableOrganization {
