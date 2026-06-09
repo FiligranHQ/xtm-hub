@@ -31,23 +31,9 @@ const getSupportedPlatformIds = (
   platformIdentifier: PlatformIdentifier
 ): string[] =>
   registeredPlatforms
-    .filter((platform) => {
-      const supported = doesPlatformSupportNewsFeed(
-        platformIdentifier,
-        platform.platform_version
-      );
-      if (!supported) {
-        logApp.debug(
-          'Skipping news feed provisioning for unsupported platform',
-          {
-            platformId: platform.platform_id,
-            platformVersion: platform.platform_version,
-            platformIdentifier,
-          }
-        );
-      }
-      return supported;
-    })
+    .filter((platform) =>
+      doesPlatformSupportNewsFeed(platformIdentifier, platform.platform_version)
+    )
     .map((platform) => platform.platform_id);
 
 const provisionNewsFeedItemForServiceInstance = async ({
