@@ -8,8 +8,14 @@ query UseCasesList(
   $count: Int!
   $orderBy: UseCaseOrdering!
   $orderMode: OrderingMode!
+  $documentType: String
 ) {
-  useCases(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+  useCases(
+    first: $count
+    orderBy: $orderBy
+    orderMode: $orderMode
+    documentType: $documentType
+  ) {
     totalCount
     edges {
       node {

@@ -2587,6 +2587,7 @@ export type UseCasesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
   orderBy: UseCaseOrdering;
   orderMode: OrderingMode;
+  documentType: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -2688,8 +2689,13 @@ useUseCaseDeleteMutation.getRootKey = () => ['UseCaseDelete'] as const;
 useUseCaseDeleteMutation.fetcher = (client: GraphQLClient, variables: UseCaseDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseDeleteMutation, UseCaseDeleteMutationVariables>(client, UseCaseDeleteDocument, variables, headers);
 
 export const UseCasesListDocument = `
-    query UseCasesList($count: Int!, $orderBy: UseCaseOrdering!, $orderMode: OrderingMode!) {
-  useCases(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+    query UseCasesList($count: Int!, $orderBy: UseCaseOrdering!, $orderMode: OrderingMode!, $documentType: String) {
+  useCases(
+    first: $count
+    orderBy: $orderBy
+    orderMode: $orderMode
+    documentType: $documentType
+  ) {
     totalCount
     edges {
       node {
