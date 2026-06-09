@@ -8,19 +8,20 @@ export type RolePortalId = string & { __brand: 'public.RolePortal' };
 export default interface RolePortal {
   id: RolePortalId;
 
-  name: string | null;
+  name: string;
 }
 
 /** Represents the initializer for the table public.RolePortal */
 export interface RolePortalInitializer {
   id: RolePortalId;
 
-  name?: string | null;
+  /** Default value: ''::character varying */
+  name?: string;
 }
 
 /** Represents the mutator for the table public.RolePortal */
 export interface RolePortalMutator {
   id?: RolePortalId;
 
-  name?: string | null;
+  name?: string;
 }

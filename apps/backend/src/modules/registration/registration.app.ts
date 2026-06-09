@@ -53,9 +53,9 @@ import { PlatformConfigurationDomain } from './platform-configuration/platform-c
 import {
   DomainRegisteredPlatform,
   PlatformConfigurationInput,
-  registrationDomain,
+  RegistrationDomain,
 } from './registration.domain';
-import { isTenantIdRequired } from './registration.helper';
+import { RegistrationHelper } from './registration.helper';
 
 const buildPlatformConfiguration = (
   platform: PlatformInput,
@@ -74,7 +74,7 @@ const buildPlatformConfiguration = (
   token,
 });
 
-export const registrationApp = {
+export const RegistrationApp = {
   loadPlatformAssociatedOrganization: async (
     platformId: string,
     tenantId?: string | null
@@ -91,7 +91,7 @@ export const registrationApp = {
 
     if (!tenantId) {
       if (
-        isTenantIdRequired(
+        RegistrationHelper.isTenantIdRequired(
           resolvedConfiguration.platformIdentifier,
           resolvedConfiguration.platformConfiguration.platform_version
         )
@@ -127,7 +127,7 @@ export const registrationApp = {
     serviceInstanceId: ServiceInstanceId
   ): Promise<RegisteredPlatform | null> => {
     const [platform] =
-      await registrationDomain.loadRegisteredPlatform(serviceInstanceId);
+      await RegistrationDomain.loadRegisteredPlatform(serviceInstanceId);
 
     return platform ? mapDomainRegisteredPlatformToGraphQL(platform) : null;
   },
@@ -135,7 +135,7 @@ export const registrationApp = {
   loadRegisteredPlatforms: async (
     input: RegisteredPlatformsInput
   ): Promise<RegisteredPlatform[]> => {
-    const platforms = await registrationDomain.loadRegisteredPlatforms({
+    const platforms = await RegistrationDomain.loadRegisteredPlatforms({
       platformIdentifier: input?.identifier ?? undefined,
       onlyActive: input?.onlyActive ?? false,
       onlyTrial: input?.onlyTrial ?? false,
@@ -177,7 +177,7 @@ export const registrationApp = {
     }
 
     if (
-      isTenantIdRequired(identifier, platform.version) &&
+      RegistrationHelper.isTenantIdRequired(identifier, platform.version) &&
       !platform.tenantId
     ) {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
@@ -216,13 +216,13 @@ export const registrationApp = {
 
     await withTransaction(async () => {
       if (platformConfiguration) {
-        await registrationDomain.refreshExistingPlatform({
+        await RegistrationDomain.refreshExistingPlatform({
           serviceInstanceId: platformConfiguration.service_instance_id,
           targetOrganizationId: organizationId as OrganizationId,
           configuration,
         });
       } else {
-        await registrationDomain.registerNewPlatform({
+        await RegistrationDomain.registerNewPlatform({
           serviceDefinitionId: serviceDefinition.id,
           organizationId: organizationId as OrganizationId,
           configuration,
@@ -441,7 +441,7 @@ export const registrationApp = {
     assertValidDeploymentRequest(deploymentRequest, input.platform.id);
 
     if (
-      isTenantIdRequired(
+      RegistrationHelper.isTenantIdRequired(
         deploymentRequest.platform_identifier,
         input.platform.version
       ) &&

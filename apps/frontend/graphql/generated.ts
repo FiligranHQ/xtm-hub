@@ -174,13 +174,12 @@ export type Connector = Document & Integration & Node & {
   integration_type: IntegrationType;
   manager_supported: Scalars['Boolean']['output'];
   minimum_deployable_version: Maybe<Scalars['String']['output']>;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   playbook_supported: Scalars['Boolean']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -262,11 +261,10 @@ export type CsvFeed = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -288,11 +286,10 @@ export type CustomDashboard = Document & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -318,10 +315,9 @@ export type DefaultDocument = Document & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Maybe<Scalars['String']['output']>;
@@ -539,10 +535,9 @@ export type Document = {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Maybe<Scalars['String']['output']>;
@@ -727,11 +722,10 @@ export type Integration = {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -757,11 +751,10 @@ export type IntegrationHack = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -875,7 +868,7 @@ export type Mutation = {
   createSubscriptions: Array<SubscriptionModel>;
   deleteCompetitor: Competitor;
   deleteDocument: Document;
-  deleteEpic: Epic;
+  deleteEpic: Maybe<Epic>;
   deleteNewsFeedItem: Scalars['Boolean']['output'];
   deleteOrganization: Maybe<Organization>;
   deleteSubscriptions: Array<SubscriptionModel>;
@@ -1303,11 +1296,10 @@ export type OpenAevScenario = Document & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -1339,11 +1331,10 @@ export type OpenCtiPlaybook = Document & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -1619,7 +1610,7 @@ export type QueryDocumentArgs = {
 
 export type QueryDocumentExistsArgs = {
   documentName: InputMaybe<Scalars['String']['input']>;
-  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1631,7 +1622,7 @@ export type QueryDocumentsArgs = {
   orderMode: OrderingMode;
   parentsOnly: InputMaybe<Scalars['Boolean']['input']>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1930,11 +1921,10 @@ export type RssFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2133,11 +2123,10 @@ export type Stream = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2213,7 +2202,7 @@ export type SubscriptionModel = Node & {
   id: Scalars['ID']['output'];
   organization: Organization;
   organization_id: Scalars['OrganizationId']['output'];
-  service_instance: Maybe<ServiceInstance>;
+  service_instance: ServiceInstance;
   service_instance_id: Scalars['ServiceInstanceId']['output'];
   service_url: Scalars['String']['output'];
   start_date: Maybe<Scalars['Date']['output']>;
@@ -2251,11 +2240,10 @@ export type TaxiiFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2302,12 +2290,11 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  minio_name: Scalars['String']['output'];
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
@@ -2601,6 +2588,7 @@ export type UseCasesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
   orderBy: UseCaseOrdering;
   orderMode: OrderingMode;
+  documentType: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -2702,8 +2690,13 @@ useUseCaseDeleteMutation.getRootKey = () => ['UseCaseDelete'] as const;
 useUseCaseDeleteMutation.fetcher = (client: GraphQLClient, variables: UseCaseDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseDeleteMutation, UseCaseDeleteMutationVariables>(client, UseCaseDeleteDocument, variables, headers);
 
 export const UseCasesListDocument = `
-    query UseCasesList($count: Int!, $orderBy: UseCaseOrdering!, $orderMode: OrderingMode!) {
-  useCases(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+    query UseCasesList($count: Int!, $orderBy: UseCaseOrdering!, $orderMode: OrderingMode!, $documentType: String) {
+  useCases(
+    first: $count
+    orderBy: $orderBy
+    orderMode: $orderMode
+    documentType: $documentType
+  ) {
     totalCount
     edges {
       node {

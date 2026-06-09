@@ -58,7 +58,10 @@ export const isImgUrl = async (url: string): Promise<boolean> => {
   try {
     const response = await fetch(url, { method: 'HEAD' });
     const contentType = response.headers.get('Content-Type');
-    return contentType.startsWith('img') || contentType.startsWith('image');
+    return (
+      contentType !== null &&
+      (contentType.startsWith('img') || contentType.startsWith('image'))
+    );
   } catch (err) {
     logApp.debug(getErrorMessage(err));
     return false;
@@ -74,23 +77,21 @@ export const getNestedPropertyValue = (obj: object, paths: string) => {
   return paths.split('.').reduce((acc, path) => acc && acc[path], obj) ?? [];
 };
 
-export const parseKeyValueArrayToObject = (array: string[]) => {
-  const result = {};
-  for (const item of array) {
-    const [key, value] = item.split(':');
-    result[key] = value;
-  }
-  return result;
-};
+export const parseKeyValueArrayToObject = (array: string[]) =>
+  Object.fromEntries(
+    array.flatMap((item) => {
+      const [key, value] = item.split(':');
+      return key !== undefined ? [[key, value]] : [];
+    })
+  );
 
-export const parseKeyValueArrayToObjectReverse = (array: string[]) => {
-  const result = {};
-  for (const item of array) {
-    const [key, value] = item.split(':');
-    result[value] = key;
-  }
-  return result;
-};
+export const parseKeyValueArrayToObjectReverse = (array: string[]) =>
+  Object.fromEntries(
+    array.flatMap((item) => {
+      const [key, value] = item.split(':');
+      return value !== undefined ? [[value, key]] : [];
+    })
+  );
 
 export const keysOf = <T>(): Array<keyof T> => [] as unknown as Array<keyof T>;
 

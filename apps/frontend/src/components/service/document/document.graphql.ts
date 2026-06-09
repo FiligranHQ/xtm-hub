@@ -72,7 +72,7 @@ export const DocumentDeleteMutation = graphql`
 export const DocumentExistsQuery = graphql`
   query documentExistsQuery(
     $documentName: String
-    $serviceInstanceId: ServiceInstanceId
+    $serviceInstanceId: ServiceInstanceId!
   ) {
     documentExists(
       documentName: $documentName
@@ -225,7 +225,7 @@ export const DocumentsListQuery = graphql`
     $orderMode: OrderingMode!
     $logicalFilters: LogicalFilterInput
     $searchTerm: String
-    $serviceInstanceId: ServiceInstanceId
+    $serviceInstanceId: ServiceInstanceId!
     $parentsOnly: Boolean
   ) {
     ...documentsList

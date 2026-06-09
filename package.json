@@ -18,7 +18,6 @@
   "devDependencies": {
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
-    "stylus": "github:stylus/stylus#0.64.0",
     "typescript": "catalog:"
   },
   "dependencies": {

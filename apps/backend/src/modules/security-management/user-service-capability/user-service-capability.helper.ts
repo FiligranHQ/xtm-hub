@@ -9,7 +9,7 @@ import UserServiceCapability, {
   UserServiceCapabilityId,
   UserServiceCapabilityInitializer,
 } from '../../../model/kanel/public/UserServiceCapability';
-import { ErrorCode } from '../../../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { loadGenericServiceCapabilityBy } from '../service-capability/generic-service-capability.helper';
 import { loadServiceCapabilitiesBy } from '../service-capability/service-capability.domain';
 import { loadSubscriptionCapabilitiesBy } from '../subscription-capability/subscription-capability.domain';
@@ -34,16 +34,25 @@ export const insertCapabilities = async (
       });
       await insertUserServiceCapability(data);
     } else {
+      const [firstUserService] = userServices;
+      if (!firstUserService) {
+        throw new Error(UnknownErrorCode.UnknownError);
+      }
+
       const [serviceCapability] = await loadServiceCapabilitiesBy({
         id: fromGlobalId(insertingCapability).id as ServiceCapabilityId,
       });
 
+      if (!serviceCapability) {
+        throw new Error(UnknownErrorCode.UnknownError);
+      }
+
       const [subscriptionCapability] = await loadSubscriptionCapabilitiesBy({
         service_capability_id: serviceCapability.id,
-        subscription_id: userServices[0].subscription_id,
+        subscription_id: firstUserService.subscription_id,
       });
       const subscriptionCapabilities = await loadSubscriptionCapabilitiesBy({
-        subscription_id: userServices[0].subscription_id,
+        subscription_id: firstUserService.subscription_id,
       });
       const isCapabilityGrantedForOrganization = subscriptionCapabilities.some(
         (subscriptionCapability) => {

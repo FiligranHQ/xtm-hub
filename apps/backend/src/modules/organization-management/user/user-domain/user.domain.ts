@@ -11,7 +11,11 @@ import {
 } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
-import User, { UserId, UserMutator } from '../../../../model/kanel/public/User';
+import User, {
+  UserId,
+  UserInitializer,
+  UserMutator,
+} from '../../../../model/kanel/public/User';
 import UserOrganization from '../../../../model/kanel/public/UserOrganization';
 import UserService from '../../../../model/kanel/public/UserService';
 import {
@@ -22,7 +26,11 @@ import { ADMIN_UUID, CAPABILITY_BYPASS } from '../../../../portal.const';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { hubspotLoginHook } from '../../../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../../../utils/app-logger.util';
-import { ErrorCode } from '../../../../utils/error/error.code';
+import {
+  ErrorCode,
+  UnknownErrorCode,
+} from '../../../../utils/error/error.code';
+import { UnknownError } from '../../../../utils/error/error.util';
 import { formatRawAggObject } from '../../../../utils/query-raw.util';
 import { addPrefixToObject } from '../../../../utils/typescript';
 import { isEmpty } from '../../../../utils/utils';
@@ -33,6 +41,18 @@ import { buildLoginEvent } from '../../../telemetry/telemetry.helper';
 export const UserDomain = {
   loadUsers: async (userIds: UserId[]): Promise<User[]> => {
     return db<User[]>('User').whereIn('id', userIds);
+  },
+
+  insertUser: async (initializer: UserInitializer): Promise<User> => {
+    const [insertedUser] = await db<User>('User')
+      .insert(initializer)
+      .returning('*');
+
+    if (!insertedUser) {
+      throw UnknownError(UnknownErrorCode.AddingUserError);
+    }
+
+    return insertedUser;
   },
 
   loadUser: async (
@@ -442,20 +462,26 @@ export const UserDomain = {
       last_login: new Date(),
     };
     if (organizations.length === 1) {
-      fields.selected_organization_id = organizations[0].id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      fields.selected_organization_id = organizations[0]!.id;
     }
 
     const [updatedUser] = await db<User>('User')
       .where({ id: user.id })
       .update(fields)
       .returning('*');
+    if (!updatedUser) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
 
     try {
       const selectedOrga = user.organizations.find(
         (org) => org.id === updatedUser.selected_organization_id
       );
-      const loginEvent = buildLoginEvent(selectedOrga, user.id);
-      await telemetryApp.sendTelemetryEvent(loginEvent);
+      if (selectedOrga) {
+        const loginEvent = buildLoginEvent(selectedOrga, user.id);
+        await telemetryApp.sendTelemetryEvent(loginEvent);
+      }
     } catch (error) {
       logApp.error('Unable to send telemetry event for login', {
         error,

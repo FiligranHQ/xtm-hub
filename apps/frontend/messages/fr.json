@@ -168,6 +168,7 @@
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "Vous ne pouvez pas demander d'essai gratuit dans votre espace personnel",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "Il existe déjà un concurrent avec le même domaine",
+      "COMPETITOR_NOT_FOUND": "Concurrent non trouvé",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error lors de la creation de la requête de deploiement",
       "DELETE_DOCUMENT_ERROR": "Erreur lors de la suppression du document",
       "DELETE_EPIC_ERROR": "Une erreur s'est produite lors de la suppression de l'épic.",

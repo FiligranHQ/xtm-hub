@@ -17,7 +17,7 @@ import {
 } from '../common/interval.helper';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
-import { registrationDomain } from '../registration/registration.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
 import { doesPlatformSupportNewsFeed } from './news-feed.helper';
@@ -65,7 +65,7 @@ const provisionNewsFeedItemForServiceInstance = async ({
     );
   const organizationIds = organizations.map((org) => org.id);
   const registeredPlatforms =
-    await registrationDomain.loadRegisteredPlatformsByOrganizationIds(
+    await RegistrationDomain.loadRegisteredPlatformsByOrganizationIds(
       organizationIds,
       platformIdentifier
     );
@@ -265,7 +265,7 @@ export const NewsFeedApp = {
     }
 
     const registeredPlatforms =
-      await registrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
+      await RegistrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
         platformIdentifier
       );
     const platformIds = getSupportedPlatformIds(
