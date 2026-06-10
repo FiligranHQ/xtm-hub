@@ -301,7 +301,7 @@ export const DocumentDomain = {
         'ServiceInstance.id'
       )
       .whereNotExists(function () {
-        this.select('*')
+        this.select(dbRaw('1'))
           .from('Document_Children')
           .whereRaw(
             '"Document_Children"."child_document_id" = "Document"."id"'

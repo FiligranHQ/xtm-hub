@@ -137,30 +137,38 @@ export const DocumentMetadataDomain = {
     qb: Knex.QueryBuilder,
     include_metadata: DocumentMetadataKeyCode[] = []
   ) => {
-    include_metadata.forEach((metaKey, index) => {
-      const metaAlias = `meta${index}`;
+    if (!include_metadata.length) return;
 
+    // Single JOIN filtered to the keys we need — avoids N separate LEFT JOINs.
+    // Using andOnIn so the filter is part of the JOIN condition (not WHERE),
+    // preserving LEFT JOIN semantics for documents with no metadata rows.
+    qb.leftJoin({ dm_pivot: 'Document_Metadata' }, function () {
+      this.on('dm_pivot.document_id', '=', 'Document.id').andOnIn(
+        'dm_pivot.key',
+        include_metadata
+      );
+    });
+
+    // Pivot each key with conditional aggregation.
+    // Because these are aggregate expressions, they do NOT need to appear in
+    // GROUP BY — only the non-aggregated Document.id does (already added by
+    // the caller via .groupBy(['Document.id'])).
+    include_metadata.forEach((metaKey) => {
       if (BOOLEAN_METADATA.includes(metaKey)) {
         qb.select(
-          dbRaw(`
-          CASE 
-            WHEN "${metaAlias}"."value" = 'true' THEN true 
-            WHEN "${metaAlias}"."value" = 'false' THEN false 
-            ELSE "${metaAlias}"."value"::boolean 
-          END as ${metaKey}
-        `)
+          dbRaw(
+            `(MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) = 'true') as "${metaKey}"`,
+            [metaKey]
+          )
         );
       } else {
-        qb.select(`${metaAlias}.value as ${metaKey}`);
-      }
-
-      qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-        this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-          `${metaAlias}.key`,
-          '=',
-          metaKey
+        qb.select(
+          dbRaw(
+            `MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) as "${metaKey}"`,
+            [metaKey]
+          )
         );
-      }).groupBy([metaKey]);
+      }
     });
   },
 };
