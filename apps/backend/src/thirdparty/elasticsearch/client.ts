@@ -12,10 +12,15 @@ class ElasticSearchService {
       node: `${portalConfig.elasticsearch.protocol}://${portalConfig.elasticsearch.host}:${portalConfig.elasticsearch.port}`,
     };
 
-    config.auth = {
-      username: portalConfig.elasticsearch.username,
-      password: portalConfig.elasticsearch.password,
-    };
+    if (
+      portalConfig.elasticsearch.username &&
+      portalConfig.elasticsearch.password
+    ) {
+      config.auth = {
+        username: portalConfig.elasticsearch.username,
+        password: portalConfig.elasticsearch.password,
+      };
+    }
     const ca_path = portalConfig.elasticsearch.tls.ca_path;
     config.tls = {
       ca: ca_path ? fs.readFileSync(ca_path) : undefined,
@@ -56,7 +61,9 @@ class ElasticSearchService {
       sort,
     });
 
-    return result.hits.hits.map((hit) => hit._source);
+    return result.hits.hits.flatMap((hit) =>
+      hit._source !== undefined ? [hit._source] : []
+    );
   }
 
   async create<T = unknown>(

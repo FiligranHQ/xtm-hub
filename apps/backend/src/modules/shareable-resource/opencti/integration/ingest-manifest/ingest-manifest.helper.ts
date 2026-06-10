@@ -168,7 +168,7 @@ export const base64ToUpload = (
 
   // Extract MIME type
   const mimeMatch = base64String.match(/^data:(.*?);base64,/);
-  const mimetype = mimeMatch ? mimeMatch[1] : 'image/png';
+  const mimetype = mimeMatch?.[1] ?? 'image/png';
 
   // Convert to Buffer
   const buffer = Buffer.from(base64Data, 'base64');

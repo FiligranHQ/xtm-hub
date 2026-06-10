@@ -40,23 +40,27 @@ export const ServiceGroupApp = {
   updateGroups: async (
     groups: UpdateGroupsPayload
   ): Promise<ServiceGroup[]> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const groupIds = groups.map(({ id }) => id);
 
     const serviceInstanceIds =
       await ServiceGroupDomain.loadGroupsServiceInstanceIds(groupIds);
-    if (serviceInstanceIds.length !== 1) {
+    const [firstServiceInstanceId] = serviceInstanceIds;
+    if (!firstServiceInstanceId || serviceInstanceIds.length !== 1) {
       throw new Error(ErrorCode.ServiceGroupsLinkedToMultipleServiceInstances);
     }
 
     const oldUsers = await ServiceGroupDomain.loadServiceInstanceGroupUsers(
-      serviceInstanceIds[0]
+      firstServiceInstanceId
     );
 
     const serviceGroupsOrganization =
       await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
-        serviceInstanceIds[0]
+        firstServiceInstanceId
       );
+    if (!serviceGroupsOrganization) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
     if (
       !userHasBypassCapability(user) &&
       serviceGroupsOrganization.id !== user.selected_organization_id
@@ -78,7 +82,7 @@ export const ServiceGroupApp = {
 
       await Promise.all(addUserToGroupPromises);
 
-      await updateAuth0Groups(oldUsers, groups, serviceInstanceIds[0]);
+      await updateAuth0Groups(oldUsers, groups, firstServiceInstanceId);
     });
 
     if (addedUserIds.length > 0) {
@@ -211,6 +215,14 @@ const updateAuth0Groups = async (
       service_instance_id: serviceInstanceId,
     });
 
+  if (!deploymentRequest) {
+    throw new Error(ErrorCode.DeploymentRequestNotFound);
+  }
+  const { platform_id } = deploymentRequest;
+  if (!platform_id) {
+    throw new Error(ErrorCode.InvalidPlatformId);
+  }
+
   await Promise.all(
     updatedUsers.map(async (updatedUser) => {
       const email = userEmailMap.get(updatedUser.user_id);
@@ -219,9 +231,9 @@ const updateAuth0Groups = async (
       }
 
       await auth0Client.updateUserRBACInstance(email, {
-        [deploymentRequest.platform_id]: {
-          groups: updatedUser.group_ids.map((group_id) =>
-            groupNameIndexedByGroupId.get(group_id)
+        [platform_id]: {
+          groups: updatedUser.group_ids.flatMap(
+            (group_id) => groupNameIndexedByGroupId.get(group_id) ?? []
           ),
         },
       });

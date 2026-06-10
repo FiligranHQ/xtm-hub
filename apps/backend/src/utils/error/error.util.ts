@@ -115,7 +115,7 @@ export const StillReferencedError: ErrorBuilder = (
 ): CustomApolloError => {
   return errorUtil(
     ErrorType.StillReference,
-    message,
+    message || 'Resource is still referenced',
     {
       http_status: 200,
       genre: ErrorCategory.Conflict,
@@ -132,7 +132,7 @@ export const AlreadyExistsError: ErrorBuilder = (
 ): CustomApolloError => {
   return errorUtil(
     ErrorType.AlreadyExists,
-    message,
+    message || 'Resource already exists',
     {
       http_status: 200,
       genre: ErrorCategory.Conflict,
@@ -149,7 +149,7 @@ export const NotFoundError: ErrorBuilder = (
 ): CustomApolloError => {
   return errorUtil(
     ErrorType.NotFound,
-    message,
+    message || 'Resource not found',
     {
       http_status: 200,
       genre: ErrorCategory.BadRequest,

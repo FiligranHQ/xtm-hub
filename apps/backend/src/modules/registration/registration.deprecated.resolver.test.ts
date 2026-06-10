@@ -17,6 +17,7 @@ import { requestContext } from '../../context/request.context';
 import { PortalContext } from '../../model/portal-context';
 import { BadRequestErrorCode } from '../../utils/error/error.code';
 import { ErrorType } from '../../utils/error/error.type';
+import { PLATFORM_TOKEN_HEADER } from '../security-management/token/platform-token.util';
 import { RegistrationApp } from './registration.app';
 import registrationResolver from './registration.resolver';
 
@@ -24,7 +25,7 @@ const PLATFORM_TOKEN = uuidv4();
 
 const contextWithPlatformToken = {
   ...contextSimpleUserSecondOrga,
-  req: { header: (_name: string) => PLATFORM_TOKEN },
+  req: { headers: { [PLATFORM_TOKEN_HEADER]: PLATFORM_TOKEN } },
 } as PortalContext;
 
 const platformInput: PlatformInput = {

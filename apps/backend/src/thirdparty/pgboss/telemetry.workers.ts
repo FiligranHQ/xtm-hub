@@ -1,12 +1,12 @@
 import type { PgBoss } from 'pg-boss';
-import { indexTelemetryEvent } from '../../modules/telemetry/telemetry.app';
+import { TelemetryApp } from '../../modules/telemetry/telemetry.app';
 import { logApp } from '../../utils/app-logger.util';
 import { RETRY_STRATEGIES } from './retry-strategies';
 import { TELEMETRY_QUEUES, type TelemetryJobData } from './telemetry.jobs';
 import { createBatchHandler } from './workers';
 
 const handleTelemetryJob = createBatchHandler<TelemetryJobData>(async (job) =>
-  indexTelemetryEvent(job.data.event)
+  TelemetryApp.indexTelemetryEvent(job.data.event)
 );
 
 export const TelemetryWorkers = {

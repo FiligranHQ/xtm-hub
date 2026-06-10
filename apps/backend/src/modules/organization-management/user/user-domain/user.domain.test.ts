@@ -15,7 +15,7 @@ import {
 import { requestContext } from '../../../../context/request.context';
 import User, { UserId } from '../../../../model/kanel/public/User';
 import { ROLE_ADMIN } from '../../../../portal.const';
-import { telemetryApp } from '../../../telemetry/telemetry.app';
+import { TelemetryApp } from '../../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../../telemetry/telemetry.const';
 import { UserDomain } from './user.domain';
 
@@ -89,7 +89,7 @@ describe('users domain', () => {
     const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
     vi.setSystemTime(date);
     const telemetrySpy = vi
-      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .spyOn(TelemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
 
     await UserDomain.updateUserAtLogin(contextSimpleUserSecondOrga.user);

@@ -8,12 +8,13 @@ import {
 import { PortalContext } from '../../../../model/portal-context';
 import { BadRequestErrorCode } from '../../../../utils/error/error.code';
 import { ErrorType } from '../../../../utils/error/error.type';
+import { PLATFORM_TOKEN_HEADER } from '../../../security-management/token/platform-token.util';
 import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 const makeContext = (token: string | null = null): PortalContext =>
   ({
-    req: { header: vi.fn().mockReturnValue(token) },
+    req: { headers: { ...(token ? { [PLATFORM_TOKEN_HEADER]: token } : {}) } },
   }) as unknown as PortalContext;
 
 const validInput: AutoRegisterPlatformInput = {
@@ -62,6 +63,7 @@ describe('mutation.autoRegisterPlatform', () => {
   });
 
   it('should use legacy platform arg when input is null', async () => {
+    const token = uuidv4();
     vi.spyOn(RegistrationApp, 'autoRegisterPlatform').mockResolvedValue(
       undefined
     );
@@ -69,17 +71,18 @@ describe('mutation.autoRegisterPlatform', () => {
     const result = await registrationResolver.Mutation!.autoRegisterPlatform!(
       {},
       { platform: validInput.platform, input: null },
-      makeContext(),
+      makeContext(token),
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(RegistrationApp.autoRegisterPlatform).toHaveBeenCalledWith(null, {
+    expect(RegistrationApp.autoRegisterPlatform).toHaveBeenCalledWith(token, {
       platform: validInput.platform,
     });
     expect(result).toMatchObject({ success: true });
   });
 
   it('should map to BadRequest for InvalidPlatformIdentifier error', async () => {
+    const token = uuidv4();
     vi.spyOn(RegistrationApp, 'autoRegisterPlatform').mockRejectedValue(
       new Error(BadRequestErrorCode.InvalidPlatformIdentifier)
     );
@@ -87,7 +90,7 @@ describe('mutation.autoRegisterPlatform', () => {
     const call = registrationResolver.Mutation!.autoRegisterPlatform!(
       {},
       { input: validInput, platform: null },
-      makeContext(),
+      makeContext(token),
       GRAPHQL_RESOLVE_INFO
     );
 

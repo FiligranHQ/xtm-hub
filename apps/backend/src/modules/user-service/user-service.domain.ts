@@ -132,6 +132,9 @@ export const UserServiceDomain = {
     const subscription = await SubscriptionDomain.loadSubscriptionBy({
       id: subscription_id as SubscriptionId,
     });
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
     const userOrganizations = await UserOrganizationDomain.loadUserOrganization(
       {
         user_id,
@@ -512,7 +515,7 @@ export const UserServiceDomain = {
     opts: QueryOpts,
     subscriptionId: SubscriptionId
   ) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const userServiceQuery = db<UserService>('User_Service')
       .where('subscription_id', '=', subscriptionId)
       .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')

@@ -44,7 +44,7 @@ import {
   OPENCTI_PLAYBOOK_METADATA,
   OPENCTI_PLAYBOOK_METADATA_KEYS,
 } from '../shareable-resource/opencti/playbook/playbook.model';
-import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
@@ -135,11 +135,12 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
         INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA,
       [IntegrationType.Connector]: INTEGRATION_CONNECTOR_METADATA,
     };
-    if (!Object.keys(metadataKeysMapping).includes(integrationType)) {
+    const result = metadataKeysMapping[integrationType];
+    if (!result) {
       throw new Error(ErrorCode.IntegrationTypeNotManageable);
     }
 
-    return metadataKeysMapping[integrationType];
+    return result;
   },
   [ServiceDefinitionIdentifier.OpenaevScenarios]: () =>
     OPENAEV_SCENARIO_METADATA,
@@ -255,10 +256,12 @@ export const DocumentHelper = {
       (meta) => meta.key === DocumentMetadataKeyCode.IntegrationType
     )?.value as unknown as IntegrationType | undefined;
 
-    const isFileProhibited = [
-      IntegrationType.Connector,
-      IntegrationType.ThirdPartyIntegration,
-    ].includes(integrationType);
+    const isFileProhibited =
+      integrationType !== undefined &&
+      [
+        IntegrationType.Connector,
+        IntegrationType.ThirdPartyIntegration,
+      ].includes(integrationType);
 
     return !isFileProhibited;
   },
@@ -289,8 +292,8 @@ export const DocumentHelper = {
       await MinIOClient.deleteFile(document.minio_name);
     }
     await Promise.all(
-      childrenDocumentFromDB.map((document) =>
-        MinIOClient.deleteFile(document.minio_name)
+      childrenDocumentFromDB.flatMap((doc) =>
+        doc.minio_name !== null ? [MinIOClient.deleteFile(doc.minio_name)] : []
       )
     );
   },
@@ -331,7 +334,7 @@ export const DocumentHelper = {
     if (!document || !document.file) {
       return;
     }
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const { minioName } = await MinIOClient.sendFile(
       document.file,
       document.file.filename,
@@ -358,11 +361,11 @@ export const DocumentHelper = {
     let share_number = 0;
     try {
       [download_number, share_number] = await Promise.all([
-        telemetryApp.countEventsByDocumentId(
+        TelemetryApp.countEventsByDocumentId(
           TelemetryEventType.DOWNLOAD,
           document.id
         ),
-        telemetryApp.countEventsByDocumentId(
+        TelemetryApp.countEventsByDocumentId(
           TelemetryEventType.SHARE,
           document.id
         ),

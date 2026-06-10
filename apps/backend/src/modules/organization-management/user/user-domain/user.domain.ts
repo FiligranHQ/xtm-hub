@@ -35,8 +35,8 @@ import { formatRawAggObject } from '../../../../utils/query-raw.util';
 import { addPrefixToObject } from '../../../../utils/typescript';
 import { isEmpty } from '../../../../utils/utils';
 import { RolePortalDomain } from '../../../role-portal/role-portal.domain';
-import { telemetryApp } from '../../../telemetry/telemetry.app';
-import { buildLoginEvent } from '../../../telemetry/telemetry.helper';
+import { TelemetryApp } from '../../../telemetry/telemetry.app';
+import { TelemetryHelper } from '../../../telemetry/telemetry.helper';
 
 export const UserDomain = {
   loadUsers: async (userIds: UserId[]): Promise<User[]> => {
@@ -259,10 +259,7 @@ export const UserDomain = {
       )
       .where('User_Organization.organization_id', '=', organizationId)
       .andWhere((qb) => {
-        qb.where('UserOrganization_Capability.name', '=', capabilities[0]);
-        for (let i = 1; i < capabilities.length; i++) {
-          qb.orWhere('UserOrganization_Capability.name', '=', capabilities[i]);
-        }
+        qb.whereIn('UserOrganization_Capability.name', capabilities);
       })
       .select('User.*')
       .distinct();
@@ -313,7 +310,7 @@ export const UserDomain = {
       .groupBy(['User.id']);
 
     if (!RolePortalDomain.isAdmin()) {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       loadUserQuery.where(
         'UserOrg.organization_id',
         user.selected_organization_id
@@ -339,7 +336,7 @@ export const UserDomain = {
   },
 
   resetPassword: async (): Promise<void> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await auth0Client.resetPassword(user.email);
   },
 
@@ -443,7 +440,7 @@ export const UserDomain = {
   },
 
   userHasOrganizationWithSubscription: async () => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const organizationIds = user.organizations.map((org) => org.id);
     if (organizationIds.length === 0) {
       return false;
@@ -479,8 +476,11 @@ export const UserDomain = {
         (org) => org.id === updatedUser.selected_organization_id
       );
       if (selectedOrga) {
-        const loginEvent = buildLoginEvent(selectedOrga, user.id);
-        await telemetryApp.sendTelemetryEvent(loginEvent);
+        const loginEvent = TelemetryHelper.buildLoginEvent(
+          selectedOrga,
+          user.id
+        );
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
       }
     } catch (error) {
       logApp.error('Unable to send telemetry event for login', {

@@ -47,8 +47,8 @@ import { isUserAllowedOnOrganization } from '../security-management/capability/a
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import { buildRegisterEvent } from '../telemetry/telemetry.helper';
+import { TelemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import {
   DomainRegisteredPlatform,
@@ -79,7 +79,7 @@ export const RegistrationApp = {
     platformId: string,
     tenantId?: string | null
   ): Promise<Organization | null> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const resolvedConfiguration =
       await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
         platformId,
@@ -118,9 +118,10 @@ export const RegistrationApp = {
       throw new Error(ErrorCode.UserIsNotInOrganization);
     }
 
-    return OrganizationDomain.loadOrganizationBy({
+    const orga = await OrganizationDomain.loadOrganizationBy({
       id: subscription.organization_id,
     });
+    return orga ?? null;
   },
 
   loadRegisteredPlatform: async (
@@ -169,7 +170,7 @@ export const RegistrationApp = {
     platform,
     identifier,
   }: RegisterPlatformInput): Promise<string> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const token = uuidv4();
 
     if (platform.version && !isValidVersion(platform.version)) {
@@ -256,8 +257,11 @@ export const RegistrationApp = {
       const selectedOrga = await OrganizationDomain.loadOrganizationBy({
         id: organizationId as OrganizationId,
       });
+      if (!selectedOrga) {
+        throw new Error(NotFoundErrorCode.OrganizationNotFound);
+      }
 
-      const registerEvent = buildRegisterEvent(
+      const registerEvent = TelemetryHelper.buildRegisterEvent(
         selectedOrga,
         user.id,
         identifier,
@@ -268,7 +272,7 @@ export const RegistrationApp = {
         undefined,
         platform.tenantId ?? undefined
       );
-      await telemetryApp.sendTelemetryEvent(registerEvent);
+      await TelemetryApp.sendTelemetryEvent(registerEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for registration', {
         error,
@@ -310,7 +314,7 @@ export const RegistrationApp = {
     if (identifier !== resolvedConfiguration.platformIdentifier) {
       throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId: subscription.organization_id,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -400,7 +404,7 @@ export const RegistrationApp = {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
 
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
       user,
       {
@@ -475,7 +479,10 @@ export const RegistrationApp = {
           id: deploymentRequest.organization_requester_id,
         });
 
-        const registerEvent = buildRegisterEvent(
+        if (!selectedOrga) {
+          throw new Error(NotFoundErrorCode.OrganizationNotFound);
+        }
+        const registerEvent = TelemetryHelper.buildRegisterEvent(
           selectedOrga,
           deploymentRequest.user_requester_id,
           deploymentRequest.platform_identifier,
@@ -486,7 +493,7 @@ export const RegistrationApp = {
           input.existing_users_count ?? undefined,
           input.platform.tenantId ?? undefined
         );
-        await telemetryApp.sendTelemetryEvent(registerEvent);
+        await TelemetryApp.sendTelemetryEvent(registerEvent);
       } catch (error) {
         logApp.error('Unable to send telemetry event for registration', {
           error,

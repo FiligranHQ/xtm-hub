@@ -319,11 +319,13 @@ const resolvers: Resolvers = {
   Subscription: {
     User: {
       subscribe: (_, args, context, info) =>
-        listen(context, ['User'], info, (payload: UserSubscription) => {
-          if (!args.organizationId || payload.merge) {
+        listen(context, ['User'], info, (payload: unknown) => {
+          const typedPayload = payload as UserSubscription;
+          if (!args.organizationId || typedPayload.merge) {
             return true;
           }
-          const user = payload.add ?? payload.delete ?? payload.edit;
+          const user =
+            typedPayload.add ?? typedPayload.delete ?? typedPayload.edit;
           return (
             user?.organizations
               ?.map((org) => org.id)
@@ -336,17 +338,13 @@ const resolvers: Resolvers = {
     },
     UserPending: {
       subscribe: (_, args, context, info) =>
-        listen(
-          context,
-          ['UserPending'],
-          info,
-          (payload: UserPendingSubscription) => {
-            const organizationId = payload.delete
-              ? payload.delete.pending_organization_id
-              : payload.invalidate?.id;
-            return organizationId === extractId(args.organizationId);
-          }
-        ),
+        listen(context, ['UserPending'], info, (payload: unknown) => {
+          const typedPayload = payload as UserPendingSubscription;
+          const organizationId = typedPayload.delete
+            ? typedPayload.delete.pending_organization_id
+            : typedPayload.invalidate?.id;
+          return organizationId === extractId(args.organizationId);
+        }),
     },
   },
 };

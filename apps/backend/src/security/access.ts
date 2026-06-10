@@ -17,7 +17,7 @@ import {
 } from './user-security-access';
 
 import { isUserAllowed } from '../modules/security-management/capability/auth.helper';
-import { ErrorCode } from '../utils/error/error.code';
+import { ErrorCode, UnknownErrorCode } from '../utils/error/error.code';
 
 export type SecuryQueryHandlers = {
   [key in MethodType]: (
@@ -32,11 +32,12 @@ export const isUserGranted = (
 ) => {
   return (
     !!user &&
-    isUserAllowed({
-      userCapabilities: user.capabilities,
-      organizationCapabilities: user.selected_org_capabilities,
-      requiredCapability: requiredCapability,
-    })
+    (!requiredCapability ||
+      isUserAllowed({
+        userCapabilities: user.capabilities,
+        organizationCapabilities: user.selected_org_capabilities,
+        requiredCapability: requiredCapability,
+      }))
   );
 };
 
@@ -83,6 +84,9 @@ export const isNodeAccessible = async (
     UserPending: userPendingSSESecurity,
   };
   const node = Object.values(data)[0];
+  if (!node) {
+    throw new Error(UnknownErrorCode.UnknownError);
+  }
   const type = node.__typename;
 
   const selectedFunction = mapping[topic] || applySSESecurity;

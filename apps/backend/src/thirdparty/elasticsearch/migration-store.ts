@@ -39,7 +39,7 @@ export function createEsStateStorage(
   state?: MigrationState
 ): StateStore {
   const esClient = client || esDbClient;
-  let loadedState: MigrationState = state;
+  let loadedState: MigrationState | undefined = state;
 
   return {
     load: async (fn) => {

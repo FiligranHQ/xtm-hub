@@ -16,7 +16,8 @@ const resolvers: Resolvers = {
     },
   },
   Node: {
-    id: (node) => toGlobalId(node.__typename, node.id),
+    id: (node) =>
+      node.__typename ? toGlobalId(node.__typename, node.id) : node.id,
     __resolveType: (node) => {
       return node.__typename;
     },

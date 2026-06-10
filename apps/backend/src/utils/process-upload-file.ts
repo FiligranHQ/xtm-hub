@@ -32,7 +32,7 @@ export const streamToBlob = (stream, mimeType) => {
     throw new Error('Invalid mimetype, expected string.');
   }
   return new Promise((resolve, reject) => {
-    const chunks = [];
+    const chunks: Buffer[] = [];
     stream
       .on('data', (chunk) => chunks.push(chunk))
       .once('end', () => {
