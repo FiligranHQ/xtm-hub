@@ -12,7 +12,7 @@ import { UserLoadUserBy } from '../../model/user';
 import * as access from '../../security/access';
 import { ErrorCode } from '../../utils/error/error.code';
 import * as capabilityHelper from '../security-management/user-service-capability/user-service-capability.helper';
-import * as serviceInstanceDomain from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { isUserRestrictedToActiveDocument } from './document.security';
 
 const organizationId = uuidv4() as OrganizationId;
@@ -50,7 +50,7 @@ describe('document security', () => {
       vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
       vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([]);
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(
         mockServiceDefinition(
@@ -78,7 +78,7 @@ describe('document security', () => {
 
     it('should return false when user lacks Upload capability but service definition is not restricted', async () => {
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(
         mockServiceDefinition(ServiceDefinitionIdentifier.Link)
@@ -114,7 +114,7 @@ describe('document security', () => {
 
     it('should throw when service definition is not found', async () => {
       vi.spyOn(
-        serviceInstanceDomain,
+        ServiceInstanceDomain,
         'loadServiceDefinitionByServiceInstance'
       ).mockResolvedValue(undefined);
       const call = isUserRestrictedToActiveDocument(

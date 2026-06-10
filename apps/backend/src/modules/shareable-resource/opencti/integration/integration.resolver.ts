@@ -5,7 +5,7 @@ import {
 import { logApp } from '../../../../utils/app-logger.util';
 import { DocumentChildrenDomain } from '../../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../../document/domain/document.domain';
-import { getServiceInstance } from '../../../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../../../service/instance/service-instance.domain';
 import { subscriptionApp } from '../../../subscription/subscription.app';
 import { useCaseDomain } from '../../../use-case/use-case.domain';
 
@@ -38,7 +38,7 @@ const resolvers: Resolvers = {
       DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
       if (!service_instance_id) return null;
-      return getServiceInstance(service_instance_id);
+      return ServiceInstanceDomain.getServiceInstance(service_instance_id);
     },
     subscription: ({ service_instance_id }, _, context) => {
       if (!service_instance_id) return null;

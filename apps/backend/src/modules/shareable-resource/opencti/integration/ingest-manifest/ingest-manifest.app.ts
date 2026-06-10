@@ -14,7 +14,7 @@ const getOpenCTIConnectorsManifest = (tag: string) =>
 
 export const IngestManifestApp = {
   async updateOpenCTIManifest(tag: string): Promise<ManifestExtractionResult> {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageConnectorsIngestions,

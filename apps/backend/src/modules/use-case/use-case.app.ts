@@ -4,7 +4,8 @@ import UseCase, {
   UseCaseInitializer,
   UseCaseMutator,
 } from '../../model/kanel/public/UseCase';
-import { UnknownErrorCode } from '../../utils/error/error.code';
+import { ErrorCode } from '../../utils/error/error.code';
+import { stripNulls } from '../../utils/typescript';
 import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseDomain } from './use-case.domain';
 
@@ -23,12 +24,15 @@ export const useCaseApp = {
 
   deleteUseCaseBy: async (field: UseCaseMutator): Promise<UseCase> => {
     const useCase = await useCaseDomain.loadUseCaseBy(field);
+    if (!useCase) {
+      throw new Error(ErrorCode.UseCaseNotFound);
+    }
     await objectUseCaseDomain.deleteObjectUseCaseBy({
       use_case_id: useCase.id,
     });
     const deletedUseCase = await useCaseDomain.deleteUseCase(field);
     if (!deletedUseCase) {
-      throw new Error(UnknownErrorCode.UnknownError);
+      throw new Error(ErrorCode.UseCaseNotFound);
     }
     return deletedUseCase;
   },
@@ -37,9 +41,9 @@ export const useCaseApp = {
     id: UseCaseId,
     input: EditUseCaseInput
   ): Promise<UseCase> => {
-    const updated = await useCaseDomain.updateUseCase(id, input);
+    const updated = await useCaseDomain.updateUseCase(id, stripNulls(input));
     if (!updated) {
-      throw new Error(UnknownErrorCode.UnknownError);
+      throw new Error(ErrorCode.UseCaseNotFound);
     }
     return updated;
   },

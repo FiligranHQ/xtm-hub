@@ -1,7 +1,6 @@
 import cors from 'cors';
 import { Request } from 'express';
 import rateLimit from 'express-rate-limit';
-import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../context/request.context';
 import { DocumentId } from '../../model/kanel/public/Document';
@@ -10,13 +9,14 @@ import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NotFoundError } from '../../utils/error/error.util';
+import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import {
   extractPlatformToken,
   validateActivePlatformToken,
 } from '../security-management/token/platform-token.util';
-import { loadServiceDefinitionByServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { telemetryApp } from '../telemetry/telemetry.app';
 import {
   buildDownloadEvent,
@@ -36,7 +36,7 @@ const loadUser = async (
   user: UserLoadUserBy | null;
   isLoadedFromUserPlatformToken?: boolean;
 }> => {
-  const userLoadFromCookie: UserLoadUserBy | null = req.session.user;
+  const userLoadFromCookie: UserLoadUserBy | undefined = req.session.user;
   if (userLoadFromCookie) {
     return { user: userLoadFromCookie };
   }
@@ -50,7 +50,7 @@ const loadUser = async (
     'User.platform_token': user_platform_token,
   });
   return {
-    user: userLoadFromUserPlatformToken,
+    user: userLoadFromUserPlatformToken ?? null,
     isLoadedFromUserPlatformToken: true,
   };
 };
@@ -83,15 +83,23 @@ export const documentDownloadEndpoint = (app) => {
           }
         }
 
-        logApp.info('Downloading file:', { filename: req.params.filename });
+        const filename = Array.isArray(req.params.filename)
+          ? req.params.filename[0]
+          : req.params.filename;
+
+        if (!filename) {
+          logApp.error(
+            'Error while retrieving document: filename not provided'
+          );
+          res.status(400).json({ message: 'Missing filename parameter' });
+          return;
+        }
+
+        logApp.info('Downloading file:', { filename });
 
         try {
           const document = await DocumentDomain.loadDocumentBy({
-            id: fromGlobalId(
-              Array.isArray(req.params.filename)
-                ? req.params.filename[0]
-                : req.params.filename
-            ).id as DocumentId,
+            id: extractId<DocumentId>(filename),
           });
 
           if (!document) {
@@ -100,6 +108,13 @@ export const documentDownloadEndpoint = (app) => {
             );
             res.status(404).json({ message: 'Document not found' });
             throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
+          }
+
+          if (!document.minio_name) {
+            logApp.error(
+              `Download Error - Invalid document - Missing name for ${document.id}`
+            );
+            return res.status(404).json({ message: 'Invalid document' });
           }
 
           const stream = (await MinIOClient.downloadFile(
@@ -112,7 +127,7 @@ export const documentDownloadEndpoint = (app) => {
             throw new Error(ErrorCode.ServiceInstanceNotFound);
           }
           const serviceDefinition =
-            await loadServiceDefinitionByServiceInstance(
+            await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
               document.service_instance_id
             );
           if (!serviceDefinition) {
@@ -124,12 +139,15 @@ export const documentDownloadEndpoint = (app) => {
                 id: user.selected_organization_id,
               });
 
+              if (!selectedOrga) {
+                throw new Error(ErrorCode.OrganizationNotFound);
+              }
               const downloadEvent = await buildDownloadEvent(
                 selectedOrga,
                 user.id,
                 serviceDefinition.identifier,
                 document.id,
-                document.name
+                document.name ?? ''
               );
               await telemetryApp.sendTelemetryEvent(downloadEvent);
             }

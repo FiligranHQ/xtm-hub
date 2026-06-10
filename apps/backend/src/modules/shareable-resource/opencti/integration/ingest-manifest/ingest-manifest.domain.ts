@@ -27,7 +27,9 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
 
   const connectorsMappedBySlug: Map<string, Connector> =
     existingConnectors.reduce((acc, current) => {
-      acc.set(current.slug, current as Connector);
+      if (current.slug) {
+        acc.set(current.slug, current as Connector);
+      }
       return acc;
     }, new Map<string, Connector>());
 
@@ -37,6 +39,10 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
         connector.logo,
         `${connector.name}-logo.png`
       );
+      if (!connector.slug) {
+        logApp.warn(`Skipping connector without slug: ${connector.name}`);
+        continue;
+      }
 
       const existingConnector = connectorsMappedBySlug.get(connector.slug);
       if (existingConnector) {

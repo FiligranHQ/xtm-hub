@@ -4,77 +4,8 @@ import { RegisterOrganizationForm } from '@/components/registration/register/Org
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
-import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
+import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-
-vi.mock('@filigran/ui/clients', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@filigran/ui/clients')>()),
-  FormControl: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  FormItem: ({
-    children,
-    className,
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) => <div className={className}>{children}</div>,
-  FormLabel: ({
-    children,
-    id,
-    className,
-  }: {
-    children: React.ReactNode;
-    id?: string;
-    className?: string;
-  }) => (
-    <label
-      id={id}
-      className={className}>
-      {children}
-    </label>
-  ),
-  FormMessage: () => null,
-}));
-
-type AutoFormMockProps = {
-  onSubmit: (values: { organizationId: string }) => void;
-  children: React.ReactNode;
-  fieldConfig?: {
-    organizationId?: {
-      fieldType?: (props: {
-        field: { value: string; onChange: (v: string) => void };
-      }) => React.ReactNode;
-    };
-  };
-  values?: { organizationId: string };
-};
-
-vi.mock('@filigran/ui', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@filigran/ui')>()),
-  AutoForm: ({
-    onSubmit,
-    children,
-    fieldConfig,
-    values,
-  }: AutoFormMockProps) => {
-    const fieldElement = fieldConfig?.organizationId?.fieldType?.({
-      field: {
-        value: values?.organizationId ?? '',
-        onChange: vi.fn(),
-      },
-    });
-    return (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit({ organizationId: values?.organizationId ?? '' });
-        }}>
-        {fieldElement}
-        {children}
-      </form>
-    );
-  },
-}));
 
 const twoOrgs: organizationListUserOrganizationsQuery$data = {
   userOrganizations: [
@@ -131,13 +62,15 @@ describe('RegisterOrganizationForm', () => {
     expect(cancel).toHaveBeenCalledOnce();
   });
 
-  it('calls confirm with the first organization id when the form is submitted', () => {
+  it('calls confirm with the first organization id when the form is submitted', async () => {
     const confirm = vi.fn();
-    renderForm(twoOrgs, vi.fn(), confirm);
-    fireEvent.submit(
-      screen.getByRole('button', { name: 'Register.Confirm' }).closest('form')!
-    );
-    expect(confirm).toHaveBeenCalledWith('org-1');
+    const { user } = renderForm(twoOrgs, vi.fn(), confirm);
+
+    await user.click(screen.getByRole('button', { name: 'Register.Confirm' }));
+
+    await waitFor(() => {
+      expect(confirm).toHaveBeenCalledWith('org-1');
+    });
   });
 
   it('renders no radio buttons when there are no organizations', () => {
@@ -155,12 +88,14 @@ describe('RegisterOrganizationForm', () => {
     ]);
   });
 
-  it('defaults to the first professional organization when submitted', () => {
+  it('defaults to the first professional organization when submitted', async () => {
     const confirm = vi.fn();
-    renderForm(mixedOrgs, vi.fn(), confirm);
-    fireEvent.submit(
-      screen.getByRole('button', { name: 'Register.Confirm' }).closest('form')!
-    );
-    expect(confirm).toHaveBeenCalledWith('org-pro-1');
+    const { user } = renderForm(mixedOrgs, vi.fn(), confirm);
+
+    await user.click(screen.getByRole('button', { name: 'Register.Confirm' }));
+
+    await waitFor(() => {
+      expect(confirm).toHaveBeenCalledWith('org-pro-1');
+    });
   });
 });

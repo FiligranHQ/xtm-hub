@@ -1,5 +1,6 @@
 import { afterEach, beforeAll } from 'vitest';
 import { requestContext, RequestContext } from '../src/context/request.context';
+import { UnknownErrorCode } from '../src/utils/error/error.code';
 import { closeDbTestConnection, getDbTestConnection } from './config-test';
 import { requestContextSimpleUserFiligran2 } from './tests.const';
 
@@ -32,6 +33,7 @@ function mockRequestContext() {
   const originalRequestContext = {
     get: requestContext.get,
     require: requestContext.require,
+    requireUser: requestContext.requireUser,
     update: requestContext.update,
     set: requestContext.set,
     run: requestContext.run,
@@ -49,9 +51,17 @@ function mockRequestContext() {
   requestContext.require = vi.fn(() => {
     const context = requestContext.get();
     if (!context) {
-      throw new Error('No async context available');
+      throw UnknownErrorCode.NoAsyncContextAvailableError;
     }
     return context;
+  });
+
+  requestContext.requireUser = vi.fn(() => {
+    const context = requestContext.get();
+    if (!context?.user) {
+      throw UnknownErrorCode.NoAsyncContextAvailableError;
+    }
+    return context.user;
   });
 
   requestContext.update = vi.fn((updates) => {

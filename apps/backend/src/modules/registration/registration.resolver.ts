@@ -15,14 +15,15 @@ import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { BadRequestError } from '../../utils/error/error.util';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { ServiceGroupDomain } from '../deployment/group/service-group.domain';
-import { loadSubscriptionByServiceInstanceAndOrganization } from '../service/instance/service-instance.domain';
+import { extractPlatformToken } from '../security-management/token/platform-token.util';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { RegistrationApp } from './registration.app';
 import { RegistrationConnectivityApp } from './registration.connectivity.app';
 
 const resolvers: Resolvers = {
   RegisteredPlatform: {
     subscription: ({ id }, _, context) =>
-      loadSubscriptionByServiceInstanceAndOrganization(
+      ServiceInstanceDomain.loadSubscriptionByServiceInstanceAndOrganization(
         context.user.selected_organization_id,
         id as ServiceInstanceId
       ),
@@ -159,8 +160,11 @@ const resolvers: Resolvers = {
           BadRequestErrorCode.MissingAutoRegisterPlatformArgument
         );
       }
+      const token = extractPlatformToken(context.req);
+      if (!token) {
+        throw BadRequestError(UnknownErrorCode.UnknownError);
+      }
       try {
-        const token = context.req.header('XTM-Hub-Platform-Token');
         await RegistrationApp.autoRegisterPlatform(token, resolvedInput);
         return { success: true };
       } catch (error) {

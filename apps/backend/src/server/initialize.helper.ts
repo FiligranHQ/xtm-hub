@@ -259,6 +259,9 @@ const ensureUserOrganizationExists = async (
       .returning('id');
 
     const [insertedRecord] = await query;
+    if (!insertedRecord) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     return { id: insertedRecord.id };
   }
   return userOrg;

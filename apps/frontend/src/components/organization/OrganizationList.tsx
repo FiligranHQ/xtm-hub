@@ -101,12 +101,12 @@ const OrganizationList = () => {
     resetAll,
   } = useOrganizationListLocalstorage(columns);
 
-  const [organizationData, refetch] = getOrganizations({
+  const { organizationsData, refetch } = getOrganizations({
     count: pageSize,
     orderMode,
     orderBy,
   });
-  const organizationDataTable = organizationData.organizations.edges.map(
+  const organizationDataTable = organizationsData.organizations.edges.map(
     ({ node }) => node
   ) as organizationItem_fragment$data[];
 
@@ -198,7 +198,7 @@ const OrganizationList = () => {
               <div className="flex w-full items-center justify-between gap-s sm:w-auto">
                 <DataTableHeadBarOptions />
                 <CreateOrganization
-                  connectionId={organizationData.organizations.__id}
+                  connectionId={organizationsData.organizations.__id}
                 />
               </div>
             </div>
@@ -211,7 +211,7 @@ const OrganizationList = () => {
             manualPagination: true,
             onColumnOrderChange: setColumnOrder,
             onColumnVisibilityChange: setColumnVisibility,
-            rowCount: organizationData.organizations.totalCount,
+            rowCount: organizationsData.organizations.totalCount,
           }}
           i18nKey={i18nKey(t)}
           tableState={{
@@ -238,7 +238,7 @@ const OrganizationList = () => {
       {deleteOrganization && (
         <DeleteOrganization
           key={`delete-${deleteOrganization.id}`}
-          connectionId={organizationData.organizations.__id}
+          connectionId={organizationsData.organizations.__id}
           organization={deleteOrganization}
           open={!!deleteOrganization}
           setOpen={(open) =>
