@@ -1,12 +1,7 @@
-import { FlatCompat } from '@eslint/eslintrc';
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 import nextTypescript from 'eslint-config-next/typescript';
+import eslintConfigPrettier from 'eslint-config-prettier';
 import unicorn from 'eslint-plugin-unicorn';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const restrictedGlobalTestMocks = new Set([
   'next-intl',
@@ -183,10 +178,6 @@ const localI18nRulesPlugin = {
   },
 };
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
 const eslintConfig = [
   {
     plugins: {
@@ -195,7 +186,7 @@ const eslintConfig = [
   },
   ...nextCoreWebVitals,
   ...nextTypescript,
-  ...compat.extends('prettier'),
+  eslintConfigPrettier,
   {
     rules: {
       '@typescript-eslint/no-unused-vars': [
@@ -325,6 +316,14 @@ const eslintConfig = [
       'graphql/generated.ts',
       'graphql/mocks.ts',
     ],
+  },
+  {
+    settings: {
+      // Fix for ESLint 10+: eslint-plugin-react uses context.getFilename() (legacy API)
+      // which was removed in ESLint 10 flat config. Declaring the version explicitly
+      // prevents the plugin from trying to auto-detect it and failing.
+      react: { version: '19' },
+    },
   },
 ];
 
