@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { telemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
 import { OrganizationApp } from './organization.app';
@@ -19,7 +19,7 @@ describe('organizationApp', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
       await OrganizationApp.updateOrganization(
@@ -55,7 +55,7 @@ describe('organizationApp', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
       await OrganizationApp.createOrganization({

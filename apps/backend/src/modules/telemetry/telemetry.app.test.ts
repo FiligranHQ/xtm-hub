@@ -13,7 +13,7 @@ import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
-import { telemetryApp } from './telemetry.app';
+import { TelemetryApp } from './telemetry.app';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
@@ -147,10 +147,10 @@ describe('telemetryApp', () => {
       const documentId = document!.id;
 
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await telemetryApp.sendOneClickDeployEvent({
+      await TelemetryApp.sendOneClickDeployEvent({
         userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
@@ -234,10 +234,10 @@ describe('telemetryApp', () => {
       const documentId = document!.id;
 
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await telemetryApp.sendOneClickDeployEvent({
+      await TelemetryApp.sendOneClickDeployEvent({
         userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
@@ -319,9 +319,9 @@ describe('telemetryApp', () => {
       const documentId = document!.id;
 
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
-      await telemetryApp.sendOneClickDeployEvent({
+      await TelemetryApp.sendOneClickDeployEvent({
         userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         input: {
           platform_identifier: PlatformIdentifier.Opencti,
@@ -403,7 +403,7 @@ describe('telemetryApp', () => {
       });
 
       it('should send directly to Elasticsearch', async () => {
-        await telemetryApp.sendTelemetryEvent(loginEvent);
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
 
         expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
           index: 'telemetry',
@@ -416,7 +416,7 @@ describe('telemetryApp', () => {
         indexSpy.mockRejectedValue(new Error('Connection failed'));
         const logErrorSpy = vi.spyOn(logApp, 'error');
 
-        await telemetryApp.sendTelemetryEvent(loginEvent);
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
         await Promise.resolve();
         expect(logErrorSpy).toHaveBeenCalledOnce();
         expect(pgBossSendSpy).not.toHaveBeenCalled();
@@ -440,7 +440,7 @@ describe('telemetryApp', () => {
       });
 
       it('should enqueue all events via PgBossProducer', async () => {
-        await telemetryApp.sendTelemetryEvent(loginEvent);
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
@@ -450,7 +450,7 @@ describe('telemetryApp', () => {
       });
 
       it('should enqueue any event type when list is empty', async () => {
-        await telemetryApp.sendTelemetryEvent(subscribeEvent);
+        await TelemetryApp.sendTelemetryEvent(subscribeEvent);
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
@@ -463,7 +463,7 @@ describe('telemetryApp', () => {
         const sendError = new Error('PgBoss connection lost');
         pgBossSendSpy.mockRejectedValue(sendError);
 
-        await telemetryApp.sendTelemetryEvent(loginEvent);
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
 
         expect(logSpy).toHaveBeenCalledWith(
           'Failed to enqueue telemetry event',
@@ -490,7 +490,7 @@ describe('telemetryApp', () => {
       });
 
       it('should enqueue events whose type is in the list', async () => {
-        await telemetryApp.sendTelemetryEvent(loginEvent);
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
@@ -500,7 +500,7 @@ describe('telemetryApp', () => {
       });
 
       it('should send directly to ES for events not in the list', async () => {
-        await telemetryApp.sendTelemetryEvent(subscribeEvent);
+        await TelemetryApp.sendTelemetryEvent(subscribeEvent);
 
         expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
           index: 'telemetry',

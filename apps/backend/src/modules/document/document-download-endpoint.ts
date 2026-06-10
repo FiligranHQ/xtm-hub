@@ -17,11 +17,8 @@ import {
   validateActivePlatformToken,
 } from '../security-management/token/platform-token.util';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import {
-  buildDownloadEvent,
-  shouldSendEventForService,
-} from '../telemetry/telemetry.helper';
+import { TelemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { DocumentDomain } from './domain/document.domain';
 const documentDownloadRateLimiter = rateLimit({
   windowMs: 180 * 1000, // 3 minutes
@@ -134,7 +131,11 @@ export const documentDownloadEndpoint = (app) => {
             throw new Error(ErrorCode.ServiceDefinitionNotFound);
           }
           try {
-            if (shouldSendEventForService(serviceDefinition.identifier)) {
+            if (
+              TelemetryHelper.shouldSendEventForService(
+                serviceDefinition.identifier
+              )
+            ) {
               const selectedOrga = await OrganizationDomain.loadOrganizationBy({
                 id: user.selected_organization_id,
               });
@@ -142,14 +143,14 @@ export const documentDownloadEndpoint = (app) => {
               if (!selectedOrga) {
                 throw new Error(ErrorCode.OrganizationNotFound);
               }
-              const downloadEvent = await buildDownloadEvent(
+              const downloadEvent = await TelemetryHelper.buildDownloadEvent(
                 selectedOrga,
                 user.id,
                 serviceDefinition.identifier,
                 document.id,
                 document.name ?? ''
               );
-              await telemetryApp.sendTelemetryEvent(downloadEvent);
+              await TelemetryApp.sendTelemetryEvent(downloadEvent);
             }
           } catch (error) {
             logApp.error('Unable to send telemetry event for download', {

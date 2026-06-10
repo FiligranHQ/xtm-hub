@@ -19,11 +19,8 @@ import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/op
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
 import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../shareable-resource/opencti/playbook/playbook.model';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import {
-  buildShareEvent,
-  shouldSendEventForService,
-} from '../telemetry/telemetry.helper';
+import { TelemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { DocumentApp } from './document.app';
 import { DocumentHelper } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
@@ -103,21 +100,25 @@ const resolvers: Resolvers = {
             throw new Error(ErrorCode.ServiceDefinitionNotFound);
           }
 
-          if (shouldSendEventForService(serviceDefinition.identifier)) {
+          if (
+            TelemetryHelper.shouldSendEventForService(
+              serviceDefinition.identifier
+            )
+          ) {
             const selectedOrga = context.user
               ? await OrganizationDomain.loadOrganizationBy({
                   id: context.user.selected_organization_id,
                 })
               : undefined;
 
-            const shareEvent = await buildShareEvent(
+            const shareEvent = await TelemetryHelper.buildShareEvent(
               selectedOrga,
               context.user?.id,
               serviceDefinition.identifier,
               document.id,
               document.name ?? ''
             );
-            await telemetryApp.sendTelemetryEvent(shareEvent);
+            await TelemetryApp.sendTelemetryEvent(shareEvent);
           }
         } catch (error) {
           logApp.error('Unable to send telemetry event', {
