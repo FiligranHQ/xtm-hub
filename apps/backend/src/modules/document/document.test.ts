@@ -33,7 +33,7 @@ import {
   INTEGRATION_CSV_FEED_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../shareable-resource/opencti/integration/integration.model';
-import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
@@ -274,7 +274,7 @@ describe('increment shared counter', () => {
       },
       INTEGRATION_CSV_FEED_METADATA_KEYS
     );
-    vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+    vi.spyOn(TelemetryApp, 'countEventsByDocumentId').mockImplementation(
       async (eventType: TelemetryEventType, documentId: string) => {
         if (
           documentId === documentId &&
@@ -298,7 +298,7 @@ describe('increment shared counter', () => {
     const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
     vi.setSystemTime(date);
     const telemetrySpy = vi
-      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .spyOn(TelemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
 
     await documentResolver.Mutation.incrementShareNumberDocument(
@@ -328,7 +328,7 @@ describe('increment shared counter', () => {
     const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
     vi.setSystemTime(date);
     const telemetrySpy = vi
-      .spyOn(telemetryApp, 'sendTelemetryEvent')
+      .spyOn(TelemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
 
     await documentResolver.Mutation.incrementShareNumberDocument(

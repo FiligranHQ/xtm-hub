@@ -10,17 +10,10 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
-import { buildOneClickDeployEvent } from './telemetry.helper';
+import { TelemetryHelper } from './telemetry.helper';
 import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
 
 const TELEMETRY_INDEX = 'telemetry';
-
-export async function indexTelemetryEvent(event: TelemetryEvent) {
-  await esDbClient.index({
-    index: TELEMETRY_INDEX,
-    document: event,
-  });
-}
 
 const useQueueProcessing = (): boolean =>
   config.get<boolean>('telemetry_use_queue_processing');
@@ -28,7 +21,14 @@ const useQueueProcessing = (): boolean =>
 const getQueuedEventTypes = (): string[] =>
   config.get<string[]>('telemetry_queued_event_types');
 
-export const telemetryApp = {
+export const TelemetryApp = {
+  async indexTelemetryEvent(event: TelemetryEvent) {
+    await esDbClient.index({
+      index: TELEMETRY_INDEX,
+      document: event,
+    });
+  },
+
   async sendTelemetryEvent(event: TelemetryEvent) {
     try {
       if (useQueueProcessing()) {
@@ -45,7 +45,7 @@ export const telemetryApp = {
           return;
         }
       }
-      indexTelemetryEvent(event).catch((error) => {
+      TelemetryApp.indexTelemetryEvent(event).catch((error) => {
         logApp.error('Error sending telemetry event synchronously', {
           event,
           error,
@@ -109,7 +109,7 @@ export const telemetryApp = {
       throw new Error(ErrorCode.PlatformConfigurationNotFound);
     }
 
-    const event = await buildOneClickDeployEvent(
+    const event = await TelemetryHelper.buildOneClickDeployEvent(
       selectedOrga,
       userId,
       serviceDefinition.identifier,
@@ -120,6 +120,6 @@ export const telemetryApp = {
       input.resource_title,
       platformConfiguration?.tenant_id ?? undefined
     );
-    await telemetryApp.sendTelemetryEvent(event);
+    await TelemetryApp.sendTelemetryEvent(event);
   },
 };

@@ -5,11 +5,8 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { dispatch } from '../../../pub';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import {
-  buildCreateOrganizationEvent,
-  buildUpdateOrganizationEvent,
-} from '../../telemetry/telemetry.helper';
+import { TelemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryHelper } from '../../telemetry/telemetry.helper';
 import { OrganizationDomain } from './organization.domain';
 
 export const OrganizationApp = {
@@ -25,11 +22,11 @@ export const OrganizationApp = {
 
     try {
       const user = requestContext.requireUser();
-      const updateOrgaEvent = buildUpdateOrganizationEvent(
+      const updateOrgaEvent = TelemetryHelper.buildUpdateOrganizationEvent(
         updatedOrganization,
         user.id
       );
-      await telemetryApp.sendTelemetryEvent(updateOrgaEvent);
+      await TelemetryApp.sendTelemetryEvent(updateOrgaEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for update organization', {
         error,
@@ -60,11 +57,11 @@ export const OrganizationApp = {
 
     try {
       const user = requestContext.requireUser();
-      const createOrgaEvent = buildCreateOrganizationEvent(
+      const createOrgaEvent = TelemetryHelper.buildCreateOrganizationEvent(
         createdOrganization,
         user.id
       );
-      await telemetryApp.sendTelemetryEvent(createOrgaEvent);
+      await TelemetryApp.sendTelemetryEvent(createOrgaEvent);
     } catch (error) {
       logApp.error('Unable to send telemetry event for create organization', {
         error,

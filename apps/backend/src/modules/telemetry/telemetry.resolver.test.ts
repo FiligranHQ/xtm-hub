@@ -10,7 +10,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
-import { telemetryApp } from './telemetry.app';
+import { TelemetryApp } from './telemetry.app';
 import telemetryResolver from './telemetry.resolver';
 
 const buildInput = (): OneClickDeployInput => ({
@@ -37,10 +37,10 @@ describe('send telemetry event GraphQL mutation', () => {
 });
 
 describe('one click deploy GraphQL mutation', () => {
-  it('should call telemetryApp.sendOneClickDeployEvent and return result true on success', async () => {
+  it('should call TelemetryApp.sendOneClickDeployEvent and return result true on success', async () => {
     // Given
     const input = buildInput();
-    vi.spyOn(telemetryApp, 'sendOneClickDeployEvent').mockResolvedValue(
+    vi.spyOn(TelemetryApp, 'sendOneClickDeployEvent').mockResolvedValue(
       undefined
     );
 
@@ -54,7 +54,7 @@ describe('one click deploy GraphQL mutation', () => {
     );
 
     // Then
-    expect(telemetryApp.sendOneClickDeployEvent).toHaveBeenCalledWith({
+    expect(TelemetryApp.sendOneClickDeployEvent).toHaveBeenCalledWith({
       userId: contextSimpleUserFiligran2.user.id as UserId,
       input,
     });
@@ -65,7 +65,7 @@ describe('one click deploy GraphQL mutation', () => {
     // Given
     const errorMessage = 'Telemetry service unavailable';
     const input = buildInput();
-    vi.spyOn(telemetryApp, 'sendOneClickDeployEvent').mockRejectedValue(
+    vi.spyOn(TelemetryApp, 'sendOneClickDeployEvent').mockRejectedValue(
       new Error(errorMessage)
     );
     vi.spyOn(logApp, 'error').mockImplementation(() => undefined);
@@ -92,7 +92,7 @@ describe('one click deploy GraphQL mutation', () => {
     const input = buildInput();
     const errorWithNoMessage = new Error();
     errorWithNoMessage.message = '';
-    vi.spyOn(telemetryApp, 'sendOneClickDeployEvent').mockRejectedValue(
+    vi.spyOn(TelemetryApp, 'sendOneClickDeployEvent').mockRejectedValue(
       errorWithNoMessage
     );
     vi.spyOn(logApp, 'error').mockImplementation(() => undefined);

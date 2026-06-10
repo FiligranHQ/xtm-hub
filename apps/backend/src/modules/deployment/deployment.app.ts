@@ -52,11 +52,8 @@ import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import {
-  buildCreateDeploymentEvent,
-  buildUpdateDeploymentEvent,
-} from '../telemetry/telemetry.helper';
+import { TelemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { CompetitorApp } from './competitor/competitor.app';
 import {
   DeploymentRequestDomain,
@@ -164,23 +161,24 @@ export const DeploymentApp = {
         );
 
       try {
-        const createDeploymentEvent = buildCreateDeploymentEvent(
-          chosenOrganization,
-          user.id,
-          input.platform_identifier,
-          input.source,
-          {
-            region: createdDeploymentRequest.region,
-            status: createdDeploymentRequest.hub_status,
-            activity_sector: createdDeploymentRequest.activity_sector,
-            job_title: createdDeploymentRequest.job_title,
-            use_case: createdDeploymentRequest.use_case,
-            email: user.email,
-            deployment_id: createdDeploymentRequest.id,
-            deployment_type: createdDeploymentRequest.type,
-          }
-        );
-        await telemetryApp.sendTelemetryEvent(createDeploymentEvent);
+        const createDeploymentEvent =
+          TelemetryHelper.buildCreateDeploymentEvent(
+            chosenOrganization,
+            user.id,
+            input.platform_identifier,
+            input.source,
+            {
+              region: createdDeploymentRequest.region,
+              status: createdDeploymentRequest.hub_status,
+              activity_sector: createdDeploymentRequest.activity_sector,
+              job_title: createdDeploymentRequest.job_title,
+              use_case: createdDeploymentRequest.use_case,
+              email: user.email,
+              deployment_id: createdDeploymentRequest.id,
+              deployment_type: createdDeploymentRequest.type,
+            }
+          );
+        await TelemetryApp.sendTelemetryEvent(createDeploymentEvent);
       } catch (error) {
         logApp.error('Unable to send telemetry event', {
           error,
@@ -984,7 +982,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
     if (!organization) {
       throw new Error(ErrorCode.OrganizationNotFound);
     }
-    const updateDeploymentEvent = buildUpdateDeploymentEvent(
+    const updateDeploymentEvent = TelemetryHelper.buildUpdateDeploymentEvent(
       organization,
       userId,
       {
@@ -1001,7 +999,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
       }
     );
 
-    await telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    await TelemetryApp.sendTelemetryEvent(updateDeploymentEvent);
   } catch (error) {
     logApp.error(
       `Unable to send telemetry event when updating deployment request with status ${deploymentRequest.hub_status}`,

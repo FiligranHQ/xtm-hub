@@ -44,8 +44,8 @@ import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { SubscriptionDomain } from '../../subscription/subscription.domain';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
+import { TelemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryHelper } from '../../telemetry/telemetry.helper';
 import { OrganizationDomain } from '../organization/organization.domain';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
@@ -124,11 +124,11 @@ async function createOrganisationWithAdminUser(email: string) {
   });
 
   try {
-    const createOrgaEvent = buildCreateOrganizationEvent(
+    const createOrgaEvent = TelemetryHelper.buildCreateOrganizationEvent(
       newOrganization,
       addedUser.id
     );
-    await telemetryApp.sendTelemetryEvent(createOrgaEvent);
+    await TelemetryApp.sendTelemetryEvent(createOrgaEvent);
   } catch (error) {
     logApp.error('Unable to send telemetry event for create organization', {
       error,
