@@ -9,7 +9,7 @@ import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
-import { loadCapabilities } from '../../security-management/user-service-capability/user-service-capability.helper';
+import { UserServiceCapabilityHelper } from '../../security-management/user-service-capability/user-service-capability.helper';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
@@ -52,7 +52,7 @@ const resolvers: Resolvers = {
         id as ServiceInstanceId
       ),
     capabilities: ({ id }, _, context) =>
-      loadCapabilities(
+      UserServiceCapabilityHelper.loadCapabilities(
         id,
         context.user.id,
         context.user.selected_organization_id

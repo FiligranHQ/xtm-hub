@@ -4,7 +4,7 @@ import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapabili
 import ServiceDefinition, {
   ServiceDefinitionId,
 } from '../../../model/kanel/public/ServiceDefinition';
-import { loadServiceCapabilitiesBy } from './service-capability.domain';
+import { ServiceCapabilityDomain } from './service-capability.domain';
 
 describe('service Capability domain', () => {
   let serviceDefinition1: ServiceDefinition;
@@ -61,9 +61,10 @@ describe('service Capability domain', () => {
 
   describe('loadServiceCapabilitiesBy', () => {
     it('should load service capabilities by service_definition_id', async () => {
-      const capabilities = await loadServiceCapabilitiesBy({
-        service_definition_id: serviceDefinition1.id,
-      });
+      const capabilities =
+        await ServiceCapabilityDomain.loadServiceCapabilitiesBy({
+          service_definition_id: serviceDefinition1.id,
+        });
 
       expect(capabilities).toHaveLength(2);
       expect(capabilities[0]?.service_definition_id).toBe(
@@ -78,9 +79,10 @@ describe('service Capability domain', () => {
     });
 
     it('should load service capabilities by id', async () => {
-      const capabilities = await loadServiceCapabilitiesBy({
-        id: testCapabilityIds[0],
-      });
+      const capabilities =
+        await ServiceCapabilityDomain.loadServiceCapabilitiesBy({
+          id: testCapabilityIds[0],
+        });
 
       expect(capabilities).toHaveLength(1);
       expect(capabilities[0]?.id).toBe(testCapabilityIds[0]);
@@ -88,9 +90,10 @@ describe('service Capability domain', () => {
     });
 
     it('should load service capabilities by name', async () => {
-      const capabilities = await loadServiceCapabilitiesBy({
-        name: 'Test Capability 2',
-      });
+      const capabilities =
+        await ServiceCapabilityDomain.loadServiceCapabilitiesBy({
+          name: 'Test Capability 2',
+        });
 
       expect(capabilities).toHaveLength(1);
       expect(capabilities[0]?.name).toBe('Test Capability 2');
@@ -98,19 +101,21 @@ describe('service Capability domain', () => {
     });
 
     it('should return empty array when no capabilities match', async () => {
-      const capabilities = await loadServiceCapabilitiesBy({
-        name: 'Non-existent Capability',
-      });
+      const capabilities =
+        await ServiceCapabilityDomain.loadServiceCapabilitiesBy({
+          name: 'Non-existent Capability',
+        });
 
       expect(capabilities).toHaveLength(0);
       expect(capabilities).toEqual([]);
     });
 
     it('should handle multiple criteria', async () => {
-      const capabilities = await loadServiceCapabilitiesBy({
-        service_definition_id: serviceDefinition1.id,
-        name: 'Test Capability 1',
-      });
+      const capabilities =
+        await ServiceCapabilityDomain.loadServiceCapabilitiesBy({
+          service_definition_id: serviceDefinition1.id,
+          name: 'Test Capability 1',
+        });
 
       expect(capabilities).toHaveLength(1);
       expect(capabilities[0]?.name).toBe('Test Capability 1');

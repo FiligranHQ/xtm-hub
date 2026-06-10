@@ -15,7 +15,7 @@ import { formatName } from '../../../utils/format';
 import { OrganizationDomain } from '../../organization-management/organization/organization.domain';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { PlatformConfigurationDomain } from '../../registration/platform-configuration/platform-configuration.domain';
-import { userHasBypassCapability } from '../../security-management/capability/auth.helper';
+import { AuthHelper } from '../../security-management/capability/auth.helper';
 import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
 import { ServiceGroupHelper } from './service-group.helper';
@@ -62,7 +62,7 @@ export const ServiceGroupApp = {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
     if (
-      !userHasBypassCapability(user) &&
+      !AuthHelper.userHasBypassCapability(user) &&
       serviceGroupsOrganization.id !== user.selected_organization_id
     ) {
       throw new Error(ErrorCode.OrganizationDoesNotMatchSelectedOrganization);

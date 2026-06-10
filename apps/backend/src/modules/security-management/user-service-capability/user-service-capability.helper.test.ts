@@ -7,7 +7,7 @@ import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { GenericServiceCapabilityIds } from '../service-capability/generic-service-capability.const';
-import { insertUserServiceCapability } from './user-service-capability.helper';
+import { UserServiceCapabilityHelper } from './user-service-capability.helper';
 
 describe('insertUserServiceCapability', () => {
   let subscriptionId: SubscriptionId | undefined;
@@ -56,7 +56,7 @@ describe('insertUserServiceCapability', () => {
       subscription_capability_id: null,
     });
 
-    await insertUserServiceCapability([
+    await UserServiceCapabilityHelper.insertUserServiceCapability([
       {
         id: duplicatedCandidateId,
         user_service_id: userServiceId,

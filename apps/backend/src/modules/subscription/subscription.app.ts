@@ -14,10 +14,7 @@ import Subscription, {
 import { UserLoadUserBy } from '../../model/user';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, NotFoundErrorCode } from '../../utils/error/error.code';
-import {
-  addCapabilitiesToSubscription,
-  replaceCapabilitiesForSubscription,
-} from '../security-management/subscription-capability/subscription-capability.domain';
+import { SubscriptionCapabilityDomain } from '../security-management/subscription-capability/subscription-capability.domain';
 import { SubscriptionDomain } from './subscription.domain';
 
 export const subscriptionApp = {
@@ -64,7 +61,7 @@ export const subscriptionApp = {
           }
         );
 
-        await addCapabilitiesToSubscription(
+        await SubscriptionCapabilityDomain.addCapabilitiesToSubscription(
           createdSubscription.id,
           capabilityIds
         );
@@ -114,7 +111,10 @@ export const subscriptionApp = {
       }
 
       if (capabilityIds !== undefined) {
-        await replaceCapabilitiesForSubscription(id, capabilityIds);
+        await SubscriptionCapabilityDomain.replaceCapabilitiesForSubscription(
+          id,
+          capabilityIds
+        );
       }
 
       return updatedSubscription;

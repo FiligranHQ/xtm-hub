@@ -4,10 +4,10 @@ import UserService, {
 } from '../../../model/kanel/public/UserService';
 import { ForbiddenErrorCode } from '../../../utils/error/error.code';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
-import { checkUserServiceIsInServiceInstance } from '../capability/auth.helper';
-import { insertCapabilities } from './user-service-capability.helper';
+import { AuthHelper } from '../capability/auth.helper';
+import { UserServiceCapabilityHelper } from './user-service-capability.helper';
 
-export const userServiceCapabilityApp = {
+export const UserServiceCapabilityApp = {
   addCapabilitiesToUserServices: async (
     userServiceIds: UserServiceId[],
     capabilities: string[],
@@ -22,7 +22,7 @@ export const userServiceCapabilityApp = {
     }
 
     const isUserServiceInCorrectService =
-      await checkUserServiceIsInServiceInstance(
+      await AuthHelper.checkUserServiceIsInServiceInstance(
         firstUserService.id,
         serviceInstanceId
       );
@@ -31,7 +31,10 @@ export const userServiceCapabilityApp = {
       throw new Error(ForbiddenErrorCode.ServiceNotManageable);
     }
 
-    await insertCapabilities(capabilities, userServices);
+    await UserServiceCapabilityHelper.insertCapabilities(
+      capabilities,
+      userServices
+    );
 
     return UserServiceDomain.loadUserServicesByIds(userServiceIds);
   },

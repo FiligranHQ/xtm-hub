@@ -7,10 +7,7 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserLoadUserBy } from '../../model/user';
 import { ErrorCode } from '../../utils/error/error.code';
-import {
-  addCapabilitiesToSubscription,
-  loadSubscriptionCapabilities,
-} from '../security-management/subscription-capability/subscription-capability.domain';
+import { SubscriptionCapabilityDomain } from '../security-management/subscription-capability/subscription-capability.domain';
 import { subscriptionApp } from './subscription.app';
 import { SubscriptionDomain } from './subscription.domain';
 
@@ -109,7 +106,7 @@ describe('subscription app', () => {
         start_date: startDate,
         end_date: endDate,
       });
-      await addCapabilitiesToSubscription(id, [
+      await SubscriptionCapabilityDomain.addCapabilitiesToSubscription(id, [
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
       ]);
@@ -129,7 +126,8 @@ describe('subscription app', () => {
         '2026-03-10'
       );
 
-      const capabilities = await loadSubscriptionCapabilities(id);
+      const capabilities =
+        await SubscriptionCapabilityDomain.loadSubscriptionCapabilities(id);
       expect(capabilities).toHaveLength(2);
     });
 
@@ -145,7 +143,7 @@ describe('subscription app', () => {
         start_date: startDate,
         end_date: endDate,
       });
-      await addCapabilitiesToSubscription(id, [
+      await SubscriptionCapabilityDomain.addCapabilitiesToSubscription(id, [
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
       ]);
 
@@ -162,7 +160,8 @@ describe('subscription app', () => {
         '2026-02-10'
       );
 
-      const capabilities = await loadSubscriptionCapabilities(id);
+      const capabilities =
+        await SubscriptionCapabilityDomain.loadSubscriptionCapabilities(id);
       expect(capabilities).toHaveLength(1);
       expect(capabilities[0].service_capability_id).toBe(
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID
@@ -178,7 +177,7 @@ describe('subscription app', () => {
         start_date: new Date('2026-04-01'),
         end_date: new Date('2026-04-30'),
       });
-      await addCapabilitiesToSubscription(id, [
+      await SubscriptionCapabilityDomain.addCapabilitiesToSubscription(id, [
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
       ]);
 
@@ -194,7 +193,8 @@ describe('subscription app', () => {
         '2026-04-01'
       );
 
-      const capabilities = await loadSubscriptionCapabilities(id);
+      const capabilities =
+        await SubscriptionCapabilityDomain.loadSubscriptionCapabilities(id);
       expect(capabilities).toHaveLength(1);
       expect(capabilities[0].service_capability_id).toBe(
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID
@@ -271,7 +271,7 @@ describe('subscription app', () => {
         start_date: new Date(),
         end_date: null,
       });
-      await addCapabilitiesToSubscription(id, [
+      await SubscriptionCapabilityDomain.addCapabilitiesToSubscription(id, [
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
       ]);
 
@@ -280,7 +280,8 @@ describe('subscription app', () => {
       const deletedSubscription = await TestHelper.subscription.load({ id });
       expect(deletedSubscription).toBeUndefined();
 
-      const capabilities = await loadSubscriptionCapabilities(id);
+      const capabilities =
+        await SubscriptionCapabilityDomain.loadSubscriptionCapabilities(id);
       expect(capabilities).toHaveLength(0);
     });
   });

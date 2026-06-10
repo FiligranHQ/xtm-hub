@@ -10,7 +10,7 @@ import { OrganizationId } from '../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../model/user';
 import { UserOrganizationDomain } from '../modules/organization-management/user/user-organization/user-organization.domain';
-import { isUserAllowedOnOrganization } from '../modules/security-management/capability/auth.helper';
+import { AuthHelper } from '../modules/security-management/capability/auth.helper';
 import { SubscriptionDomain } from '../modules/subscription/subscription.domain';
 import { UserServiceDomain } from '../modules/user-service/user-service.domain';
 import { ErrorCode } from '../utils/error/error.code';
@@ -43,13 +43,11 @@ export const securityGuard = {
       requiredCapability: OrganizationCapability;
     }
   ) => {
-    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      user,
-      {
+    const { isAllowed, isInOrganization } =
+      await AuthHelper.isUserAllowedOnOrganization(user, {
         organizationId,
         requiredCapability,
-      }
-    );
+      });
 
     if (!isAllowed) {
       const errorCode = isInOrganization
