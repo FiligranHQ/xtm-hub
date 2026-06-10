@@ -76,7 +76,11 @@ export function createClientSideRelayEnvironment() {
       ).catch(handleUnauthenticated);
     }
     // If we don't have hydration responses, execute the request as usual.
-    return networkFetch({ request, variables }).catch(handleUnauthenticated);
+    return networkFetch({
+      request,
+      variables,
+      cache: 'no-store',
+    }).catch(handleUnauthenticated);
   };
 
   // Create a new helper or reuse the existing one, if one has already been created.
