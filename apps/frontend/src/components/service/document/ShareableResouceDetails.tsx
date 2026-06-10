@@ -10,7 +10,7 @@ import { formatPersonNames } from '@/utils/format/name';
 import { platformIdentifierMappedByShareableResourceType } from '@/utils/services';
 import {
   isIntegrationItem,
-  PublicDocumentData,
+  PublicDocumentDetailsData,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
@@ -24,7 +24,7 @@ import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 interface ShareableResourceDetailsProps {
-  documentData: documentItem_fragment$data | PublicDocumentData;
+  documentData: documentItem_fragment$data | PublicDocumentDetailsData;
   downloadNumber?: number | null;
 }
 

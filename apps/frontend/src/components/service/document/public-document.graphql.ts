@@ -5,17 +5,11 @@ export const publicDocumentListItem = graphql`
     __typename
     id
     name
-    description
     short_description
-    created_at
-    updated_at
     slug
-    download_number
-    share_number
     children_documents {
       id
       image_type
-      source_type
     }
     use_cases {
       id
@@ -29,61 +23,24 @@ export const publicDocumentListItem = graphql`
     }
     active
     type
-    uploader_organization {
-      id
-      personal_space
-      name
-    }
 
     ... on Integration {
       integration_type
-      datasheet_url
-      blogpost_url
-      demo_url
-    }
-
-    ... on CustomDashboard {
-      product_version
-    }
-
-    ... on CsvFeed {
-      feed_url
-    }
-
-    ... on TaxiiFeed {
-      feed_url
     }
 
     ... on RssFeed {
       integration_subtype
-      feed_url
-    }
-
-    ... on Stream {
-      feed_url
     }
 
     ... on ThirdPartyIntegration {
       integration_subtype
-      product_version
-      vendor_url
-      github_url
     }
 
     ... on Connector {
       integration_subtype
       product_version
-      container_image
       verified
-      source_code
-      subscription_link
       manager_supported
-      playbook_supported
-      minimum_deployable_version
-    }
-
-    ... on OpenAEVScenario {
-      product_version
     }
   }
 `;

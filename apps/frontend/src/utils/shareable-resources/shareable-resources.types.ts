@@ -8,6 +8,10 @@ export type PublicDocumentData =
   | publicDocumentByServiceSlugItemFragment$data
   | publicDocumentBySlugItemFragment$data;
 
+export type PublicDocumentDetailsData =
+  | publicDocumentByServiceSlugItemFragment$data
+  | publicDocumentBySlugItemFragment$data;
+
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',
   OPENCTI_INTEGRATION = 'opencti_integration',
