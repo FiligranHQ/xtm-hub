@@ -18,7 +18,7 @@ export const willManageAccessBeConserved = async (
   userServiceId: UserServiceId,
   capabilities: string[]
 ) => {
-  const { user } = requestContext.require();
+  const user = requestContext.requireUser();
   const manageAccessWillLeft = await getManageAccessLeft(userServiceId);
   const userService =
     await UserServiceDomain.loadUserServiceById(userServiceId);

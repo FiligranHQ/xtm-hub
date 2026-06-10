@@ -154,7 +154,7 @@ export const userProfileApp = {
         throw new Error();
       }
 
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       if (userTransferRequest.to_user_id !== user.id) {
         throw ForbiddenAccess(ErrorCode.UserIsNotInOrganization);
       }

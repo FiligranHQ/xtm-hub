@@ -35,7 +35,7 @@ import {
 
 export const UserAdminApp = {
   addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {
-    const { user: contextUser } = requestContext.require();
+    const contextUser = requestContext.requireUser();
     const [organizationFromEmail] =
       await OrganizationDomain.loadOrganizationsFromEmail(input.email);
     // In most of the case there will be only one organization in the list, but in case where the scenario is an admin pltfm it can be multiple or none
@@ -94,7 +94,7 @@ export const UserAdminApp = {
     userId: UserId;
     input: AdminEditUserInput;
   }) => {
-    const { user: contextUser } = requestContext.require();
+    const contextUser = requestContext.requireUser();
     if (!isUserAdminPlatform(contextUser)) {
       await securityGuard.assertUserCapabilities(
         [
@@ -176,7 +176,7 @@ export const UserAdminApp = {
     userId: UserId;
     input: EditUserCapabilitiesInput;
   }) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const organizationId = user.selected_organization_id;
     await preventAdministratorRemovalOfOneOrganization(
       userId,

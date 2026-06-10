@@ -68,7 +68,7 @@ export const RegistrationDomain = {
     platformIdentifier: PlatformIdentifier;
     serviceInstanceCreationStatus?: ServiceInstanceCreationStatus;
   }): Promise<ServiceInstanceId> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -107,7 +107,7 @@ export const RegistrationDomain = {
     serviceInstanceId: ServiceInstanceId;
     targetOrganizationId: OrganizationId;
   }) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await securityGuard.assertUserIsAllowedOnOrganization(user, {
       organizationId: targetOrganizationId,
       requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -283,7 +283,7 @@ const getRegisteredPlatformsDataQuery = (): Knex.QueryBuilder<
   ServiceInstance,
   DomainRegisteredPlatform[]
 > => {
-  const { user } = requestContext.require();
+  const user = requestContext.requireUser();
   const userSelectedOrganization = user.selected_organization_id;
   return db<ServiceInstance>('ServiceInstance')
     .leftJoin(

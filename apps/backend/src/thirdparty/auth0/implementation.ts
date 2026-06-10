@@ -33,16 +33,17 @@ export const auth0ClientImplementation: Auth0Client = {
     }
 
     await Promise.all(
-      auth0_users.map((auth0_user) =>
-        managementClient.users.update(auth0_user.user_id, {
+      auth0_users.map(async (auth0_user) => {
+        if (!auth0_user.user_id) return;
+        await managementClient.users.update(auth0_user.user_id, {
           given_name: user.first_name,
           family_name: user.last_name,
           user_metadata: {
             country: user.country,
           },
           picture: user.picture,
-        })
-      )
+        });
+      })
     );
   },
   updateUserRBACInstance: async (
@@ -57,12 +58,13 @@ export const auth0ClientImplementation: Auth0Client = {
     }
 
     await Promise.all(
-      auth0_users.map((auth0_user) =>
-        managementClient.users.update(
+      auth0_users.map(async (auth0_user) => {
+        if (!auth0_user.user_id) return;
+        await managementClient.users.update(
           auth0_user.user_id,
           buildUserMetadataUpdate(auth0_user, userRBACInstance)
-        )
-      )
+        );
+      })
     );
   },
   resetPassword: async (email: string): Promise<void> => {
@@ -89,7 +91,7 @@ export const auth0ClientImplementation: Auth0Client = {
       id: organization_id,
     });
     logApp.info(
-      `Delete API Audience for organization ${organization.name} with platform_id ${platform_id}`
+      `Delete API Audience for organization ${organization?.name} with platform_id ${platform_id}`
     );
     await managementClient.resourceServers.delete(platform_id);
   },

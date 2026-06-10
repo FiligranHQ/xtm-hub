@@ -5,7 +5,7 @@ import { ROLE_ADMIN } from '../../portal.const';
 
 export const RolePortalDomain = {
   isAdmin: () => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     return user.roles_portal.some((role) => role.id === ROLE_ADMIN.id);
   },
 

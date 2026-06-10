@@ -83,7 +83,7 @@ export const securityGuard = {
     requiredCapabilities: OrganizationCapability[],
     organizationId?: OrganizationId
   ) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     if (isUserAdminPlatform(user)) return;
 

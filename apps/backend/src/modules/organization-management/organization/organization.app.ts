@@ -21,7 +21,7 @@ export const OrganizationApp = {
     }
 
     try {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       const updateOrgaEvent = TelemetryHelper.buildUpdateOrganizationEvent(
         updatedOrganization,
         user.id
@@ -56,7 +56,7 @@ export const OrganizationApp = {
     });
 
     try {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       const createOrgaEvent = TelemetryHelper.buildCreateOrganizationEvent(
         createdOrganization,
         user.id

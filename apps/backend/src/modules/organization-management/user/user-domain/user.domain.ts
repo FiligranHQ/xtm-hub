@@ -259,10 +259,7 @@ export const UserDomain = {
       )
       .where('User_Organization.organization_id', '=', organizationId)
       .andWhere((qb) => {
-        qb.where('UserOrganization_Capability.name', '=', capabilities[0]);
-        for (let i = 1; i < capabilities.length; i++) {
-          qb.orWhere('UserOrganization_Capability.name', '=', capabilities[i]);
-        }
+        qb.whereIn('UserOrganization_Capability.name', capabilities);
       })
       .select('User.*')
       .distinct();
@@ -313,7 +310,7 @@ export const UserDomain = {
       .groupBy(['User.id']);
 
     if (!RolePortalDomain.isAdmin()) {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       loadUserQuery.where(
         'UserOrg.organization_id',
         user.selected_organization_id
@@ -339,7 +336,7 @@ export const UserDomain = {
   },
 
   resetPassword: async (): Promise<void> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await auth0Client.resetPassword(user.email);
   },
 
@@ -443,7 +440,7 @@ export const UserDomain = {
   },
 
   userHasOrganizationWithSubscription: async () => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const organizationIds = user.organizations.map((org) => org.id);
     if (organizationIds.length === 0) {
       return false;

@@ -14,6 +14,7 @@ import ServiceGroupUser, {
 } from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
+import { UnknownErrorCode } from '../../../utils/error/error.code';
 
 export enum ServiceGroupName {
   Admin = 'Admin',
@@ -208,6 +209,9 @@ export const ServiceGroupDomain = {
     const findAdminGroupId = insertResponse.find(
       (group) => group.name === ServiceGroupName.Admin
     );
+    if (!findAdminGroupId) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     await ServiceGroupDomain.addUsersToGroup(findAdminGroupId.id, [
       userAdminId,
     ]);

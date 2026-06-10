@@ -203,7 +203,7 @@ export const TelemetryHelper = {
     document: Document,
     timestamp?: Date
   ): Promise<CreateEvent> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const selectedOrga = await OrganizationDomain.loadOrganizationBy({
       id: user.selected_organization_id,
     });
@@ -243,7 +243,7 @@ export const TelemetryHelper = {
     platform_identifier: PlatformIdentifier,
     platform_id: string,
     platform_contract: PlatformContract,
-    platform_version: string,
+    platform_version: string | null | undefined,
     platform_url: string,
     existingUsersCount?: number,
     tenantId?: string,
@@ -275,7 +275,7 @@ export const TelemetryHelper = {
     service: ServiceDefinitionIdentifier,
     platform_identifier: PlatformIdentifier,
     platform_id: string,
-    platform_version: string,
+    platform_version: string | undefined,
     resource_id: string,
     resource_title: string,
     tenant_id?: string,

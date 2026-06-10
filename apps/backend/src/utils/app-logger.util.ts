@@ -44,13 +44,13 @@ export interface AppLogsConfig {
 const appLogsConfig = config.get<AppLogsConfig>('app_logs');
 
 const buildMetaErrors = (error: Error) => {
-  const errors = [];
+  const errors: Error[] = [];
   if (error instanceof GraphQLError) {
     const extensions = error.extensions ?? {};
     const extensionsData = (extensions.data ?? {}) as Record<string, unknown>;
     const attributes = omit(extensionsData, ['cause']);
     const baseError = {
-      name: extensions.code ?? error.name,
+      name: (extensions.code as string | undefined) ?? error.name,
       message: error.message,
       stack: error.stack,
       attributes,
@@ -72,7 +72,7 @@ const buildMetaErrors = (error: Error) => {
 
 const addBasicMetaInformation = (
   category: AppLogsCategory,
-  error: Error,
+  error: Error | null,
   meta: Record<string, unknown> & { user?: User }
 ) => {
   const context = requestContext.get();
@@ -112,7 +112,7 @@ export const logApp = {
   _log: (
     level: AppLogsLevel,
     message: string,
-    error: Error,
+    error: Error | null,
     meta: Record<string, unknown> = {},
     category: AppLogsCategory = AppLogsCategory.BACKEND
   ) => {
@@ -138,7 +138,7 @@ export const logApp = {
   ) => {
     const isError = messageOrError instanceof Error;
     const message = isError ? messageOrError.message : messageOrError;
-    let error = null;
+    let error: Error | null = null;
     if (isError) {
       if (messageOrError instanceof GraphQLError) {
         error = messageOrError;

@@ -1,4 +1,4 @@
-import { load, Migration, MigrationSet } from 'migrate';
+import { FileStore, load, Migration, MigrationSet } from 'migrate';
 import { logApp } from '../../utils/app-logger.util';
 import { esStateStorage } from './migration-store';
 import { MIGRATION_DIRECTORY, MigrationCommandType } from './migration.const';
@@ -7,7 +7,7 @@ function loadMigrations(migrationsDirectory: string): Promise<MigrationSet> {
   return new Promise((resolve, reject) => {
     load(
       {
-        stateStore: esStateStorage,
+        stateStore: esStateStorage as unknown as FileStore,
         migrationsDirectory: migrationsDirectory,
       },
       function (err, set) {
@@ -46,7 +46,7 @@ export async function runESMigrations({
 
 function runMigrationsUp(set: MigrationSet): Promise<void> {
   return new Promise((resolve, reject) => {
-    set.up((error: Error) => {
+    set.up((error: Error | null) => {
       if (error) {
         logApp.error('[ES migration] Up migration error:', { error: error });
         reject(error);
@@ -72,7 +72,8 @@ function runMigrationsDown(
       }
       migrationToDown = lastMigration.title;
     }
-    set.down(migrationToDown, (error: Error) => {
+    if (!migrationToDown) return resolve();
+    set.down(migrationToDown, (error: Error | null) => {
       if (error) {
         logApp.error('[ES migration] Down migration error:', { error: error });
         reject(error);

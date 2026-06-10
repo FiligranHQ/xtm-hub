@@ -121,6 +121,10 @@ export const NewsFeedDomain = {
       })
       .returning('*');
 
+    if (!newsFeedItem) {
+      throw new Error(ErrorCode.NewsFeedItemNotFound);
+    }
+
     const globalDocumentId = toGlobalId('Document', document.id);
 
     await db('NewsFeedItemMetadata').insert([
@@ -162,7 +166,7 @@ export const NewsFeedDomain = {
   updateNewsFeedItem: async (
     id: NewsFeedItemId,
     { title, tags }: { title: string; tags: string[] }
-  ): Promise<NewsFeedItem> => {
+  ): Promise<NewsFeedItem | undefined> => {
     const [updated] = await db<NewsFeedItem>('NewsFeedItem')
       .where({ id })
       .update({ title, tags })
