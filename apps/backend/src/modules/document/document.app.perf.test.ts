@@ -68,24 +68,21 @@ async function seed(
   allCreatedImageDocumentIds.push(...imageDocumentIds);
 }
 
-describe('loadPublicDocuments — performance benchmarks', () => {
+const describePerf = describe.runIf(process.env.RUN_PERF_TESTS === 'true');
+
+describePerf('loadPublicDocuments — performance benchmarks', () => {
   afterAll(async () => {
-    // 1. Remove child links first (respects FK constraints on Document_Children)
     await Promise.all(
       allCreatedImageDocumentIds.map((id) =>
         TestHelper.documentChildren.delete({ child_document_id: id })
       )
     );
-    // 2. Delete image documents
     await Promise.all(
       allCreatedImageDocumentIds.map((id) => TestHelper.document.delete({ id }))
     );
-    // 3. Delete parent documents (metadata rows cascade via the app layer or
-    //    are cleaned up implicitly since Document_Metadata has no FK back-ref)
     await Promise.all(
       allCreatedDocumentIds.map((id) => TestHelper.document.delete({ id }))
     );
-    // 4. Delete the test service instances created for this run
     await Promise.all(
       allCreatedServiceInstanceIds.map((id) =>
         TestHelper.serviceInstance.delete({ id })
