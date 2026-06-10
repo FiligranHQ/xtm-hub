@@ -32,6 +32,12 @@ import { TestNewsfeedHelper } from './test.newsfeed.helper';
 import { TestServiceHelper } from './test.service.helper';
 import { TestUserHelper } from './test.user.helper';
 
+export { seedDocuments } from './perf/test.document.perf.helper';
+export type {
+  SeedDocumentsOpts,
+  SeedDocumentsResult,
+} from './perf/test.document.perf.helper';
+export { measureAvgDuration } from './perf/test.perf.helper';
 export { mockPlatformConfig };
 
 export const TestHelper = {
