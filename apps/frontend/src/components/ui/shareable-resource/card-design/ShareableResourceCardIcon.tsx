@@ -1,3 +1,4 @@
+import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { CampaignIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import {
@@ -8,11 +9,10 @@ import {
 } from '@filigran/ui/clients';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
 
 interface ShareableResourceCardIconProps {
-  document: documentItem_fragment$data | publicDocumentItemFragment$data;
+  document: documentItem_fragment$data | PublicDocumentData;
   shouldDisplayBothIcons: boolean;
 }
 export const ShareableResourceCardIcon = ({

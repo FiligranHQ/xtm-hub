@@ -3,12 +3,14 @@ import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-res
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
 import useScrollPosition from '@/hooks/use-scroll-position';
-import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  PublicDocumentData,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
 import Link from 'next/link';
 import { ReactNode } from 'react';
@@ -20,7 +22,7 @@ interface ShareableServiceInstance {
   } | null;
 }
 interface ShareableResourceCardProps {
-  document: documentItem_fragment$data | publicDocumentItemFragment$data;
+  document: documentItem_fragment$data | PublicDocumentData;
   detailUrl: string;
   shareLinkUrl: string;
   extraContent?: ReactNode;

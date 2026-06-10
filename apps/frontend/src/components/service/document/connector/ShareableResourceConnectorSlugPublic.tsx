@@ -5,9 +5,9 @@ import BadgeOverflowCounter, {
 } from '@/components/ui/BadgeOverflowCounter';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
@@ -16,7 +16,7 @@ import { MarkdownAsync } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 interface ShareableResourceConnectorSlugPublicProps {
-  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
+  documentData: documentItem_fragment$data | PublicDocumentData;
   serviceInstance:
     | seoServiceInstanceFragment$data
     | serviceInstance_fragment$data;

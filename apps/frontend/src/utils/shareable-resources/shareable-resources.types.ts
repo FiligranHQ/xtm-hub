@@ -1,5 +1,12 @@
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
+import type { publicDocumentByServiceSlugItemFragment$data } from '@generated/publicDocumentByServiceSlugItemFragment.graphql';
+import type { publicDocumentBySlugItemFragment$data } from '@generated/publicDocumentBySlugItemFragment.graphql';
+import type { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
+
+export type PublicDocumentData =
+  | publicDocumentListItemFragment$data
+  | publicDocumentByServiceSlugItemFragment$data
+  | publicDocumentBySlugItemFragment$data;
 
 export enum ShareableResourceType {
   OPENAEV_SCENARIO = 'openaev_scenario',
@@ -16,13 +23,13 @@ export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
 };
 
 export const isIntegrationItem = (
-  resource: documentItem_fragment$data | publicDocumentItemFragment$data
+  resource: documentItem_fragment$data | PublicDocumentData
 ): boolean => {
   return resource.type === ShareableResourceType.OPENCTI_INTEGRATION;
 };
 
 export const isConnectorResource = (
-  resource: documentItem_fragment$data | publicDocumentItemFragment$data
+  resource: documentItem_fragment$data | PublicDocumentData
 ): boolean => {
   return resource.__typename === 'Connector';
 };
