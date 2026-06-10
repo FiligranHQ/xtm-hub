@@ -66,6 +66,7 @@ type SubscriptionConnection {
 }
 enum SubscriptionFilterKey {
   organization_name
+  organization_id
   service_instance_id
 }
 input SubscriptionFilter {

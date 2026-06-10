@@ -2185,6 +2185,7 @@ export type SubscriptionFilter = {
 };
 
 export enum SubscriptionFilterKey {
+  OrganizationId = 'organization_id',
   OrganizationName = 'organization_name',
   ServiceInstanceId = 'service_instance_id'
 }

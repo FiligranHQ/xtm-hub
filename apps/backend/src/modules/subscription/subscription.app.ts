@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { paginate, QueryOpts } from '../../../knexfile';
+import { db, paginate, QueryOpts } from '../../../knexfile';
 import {
   SubscriptionConnection,
   SubscriptionModel,
+  SubscriptionOrdering,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
@@ -123,13 +124,108 @@ export const subscriptionApp = {
 
   loadSubscriptions: async (opts: QueryOpts) => {
     const { filters, searchTerm, orderBy } = opts;
-    return paginate<Subscription, SubscriptionConnection>('Subscription', {
-      ...opts,
-      orderBy: `Subscription.${orderBy}`,
-      filters,
-      searchTerm,
-    });
+    const subscriptionOrderBy = getSubscriptionOrdering(orderBy);
+    const queryContext = db<Subscription>('Subscription');
+    const normalizedSearchTerm = searchTerm?.trim();
+    const shouldJoinOrganization =
+      normalizedSearchTerm !== undefined && normalizedSearchTerm.length > 0
+        ? true
+        : subscriptionOrderBy === SubscriptionOrdering.OrganizationName;
+    const shouldJoinServiceInstanceAndDefinition =
+      normalizedSearchTerm !== undefined && normalizedSearchTerm.length > 0
+        ? true
+        : subscriptionOrderBy === SubscriptionOrdering.ServiceName ||
+          subscriptionOrderBy === SubscriptionOrdering.ServiceDescription ||
+          subscriptionOrderBy === SubscriptionOrdering.ServiceProvider ||
+          subscriptionOrderBy === SubscriptionOrdering.ServiceType;
+
+    if (shouldJoinOrganization) {
+      queryContext.leftJoin(
+        'Organization',
+        'Organization.id',
+        'Subscription.organization_id'
+      );
+    }
+    if (shouldJoinServiceInstanceAndDefinition) {
+      queryContext
+        .leftJoin(
+          'ServiceInstance',
+          'ServiceInstance.id',
+          'Subscription.service_instance_id'
+        )
+        .leftJoin(
+          'ServiceDefinition',
+          'ServiceDefinition.id',
+          'ServiceInstance.service_definition_id'
+        );
+    }
+
+    if (normalizedSearchTerm) {
+      queryContext.andWhere((qb) => {
+        qb.whereILike('Organization.name', `%${normalizedSearchTerm}%`)
+          .orWhereILike('ServiceInstance.name', `%${normalizedSearchTerm}%`)
+          .orWhereILike(
+            'ServiceDefinition.identifier',
+            `%${normalizedSearchTerm}%`
+          )
+          .orWhereILike(
+            'ServiceInstance.creation_status',
+            `%${normalizedSearchTerm}%`
+          )
+          .orWhereRaw(
+            `EXISTS (
+              SELECT 1
+              FROM unnest("ServiceInstance"."tags"::text[]) AS tag
+              WHERE LOWER(tag) = LOWER(?)
+            )`,
+            [normalizedSearchTerm]
+          );
+      });
+    }
+
+    return paginate<Subscription, SubscriptionConnection>(
+      'Subscription',
+      {
+        ...opts,
+        orderBy: mapSubscriptionOrderingToColumn(subscriptionOrderBy),
+        filters,
+        searchTerm: undefined,
+      },
+      {},
+      queryContext
+    );
   },
+};
+
+const subscriptionOrderings = new Set(Object.values(SubscriptionOrdering));
+const getSubscriptionOrdering = (
+  orderBy: string | null | undefined
+): SubscriptionOrdering => {
+  if (orderBy && subscriptionOrderings.has(orderBy as SubscriptionOrdering)) {
+    return orderBy as SubscriptionOrdering;
+  }
+  return SubscriptionOrdering.StartDate;
+};
+
+const mapSubscriptionOrderingToColumn = (orderBy: SubscriptionOrdering) => {
+  switch (orderBy) {
+    case SubscriptionOrdering.OrganizationName:
+      return 'Organization.name';
+    case SubscriptionOrdering.StartDate:
+      return 'Subscription.start_date';
+    case SubscriptionOrdering.EndDate:
+      return 'Subscription.end_date';
+    case SubscriptionOrdering.ServiceName:
+      return 'ServiceInstance.name';
+    case SubscriptionOrdering.ServiceDescription:
+      return 'ServiceDefinition.description';
+    case SubscriptionOrdering.ServiceType:
+      return 'ServiceDefinition.identifier';
+    case SubscriptionOrdering.ServiceProvider:
+      return 'ServiceDefinition.name';
+    default:
+      return 'Subscription.start_date';
+  }
 };
 
 const assertOrganizationIsNotAlreadySubscribed = async ({

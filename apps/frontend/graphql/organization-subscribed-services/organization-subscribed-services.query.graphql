@@ -1,0 +1,46 @@
+fragment OrganizationSubscribedServiceRow on SubscriptionModel {
+  id
+  start_date
+  service_instance {
+    id
+    name
+    creation_status
+    tags
+    service_definition {
+      id
+      name
+      identifier
+    }
+  }
+}
+
+query OrganizationSubscribedServicesList(
+  $count: Int!
+  $after: ID
+  $orderBy: SubscriptionOrdering!
+  $orderMode: OrderingMode!
+  $searchTerm: String
+  $filters: [SubscriptionFilter!]
+) {
+  subscriptions(
+    first: $count
+    after: $after
+    orderBy: $orderBy
+    orderMode: $orderMode
+    searchTerm: $searchTerm
+    filters: $filters
+  ) {
+    totalCount
+    edges {
+      node {
+        ...OrganizationSubscribedServiceRow
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}
