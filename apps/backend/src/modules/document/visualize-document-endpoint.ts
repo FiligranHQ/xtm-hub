@@ -21,6 +21,10 @@ export const documentVisualizeEndpoint = (app: Application) => {
       const filename = Array.isArray(req.params.filename)
         ? req.params.filename[0]
         : req.params.filename;
+      if (!filename) {
+        res.status(400).json({ message: 'Missing filename parameter' });
+        return;
+      }
       const { user } = req.session;
       if (!user) {
         res.status(401).json({ message: 'You must be logged in' });
@@ -48,10 +52,13 @@ export const documentVisualizeEndpoint = (app: Application) => {
           document.minio_name
         )) as Readable;
 
-        res.setHeader('Content-Type', document.mime_type);
+        res.setHeader(
+          'Content-Type',
+          document.mime_type ?? 'application/octet-stream'
+        );
         res.setHeader(
           'Content-Disposition',
-          `inline; filename="${document.file_name}"`
+          `inline; filename="${document.file_name ?? 'document'}"`
         );
 
         stream.pipe(res);
@@ -75,6 +82,11 @@ export const documentVisualizeEndpoint = (app: Application) => {
         const documentIdParam = Array.isArray(req.params.documentId)
           ? req.params.documentId[0]
           : req.params.documentId;
+        if (!serviceInstanceIdParam || !documentIdParam) {
+          return res.status(400).json({
+            message: 'Missing serviceInstanceId or documentId parameter',
+          });
+        }
         const serviceInstanceId = extractId<ServiceInstanceId>(
           serviceInstanceIdParam
         );
@@ -121,10 +133,13 @@ export const documentVisualizeEndpoint = (app: Application) => {
           document.minio_name
         )) as Readable;
 
-        res.setHeader('Content-Type', document.mime_type);
+        res.setHeader(
+          'Content-Type',
+          document.mime_type ?? 'application/octet-stream'
+        );
         res.setHeader(
           'Content-Disposition',
-          `inline; filename="${document.file_name}"`
+          `inline; filename="${document.file_name ?? 'document'}"`
         );
 
         stream.pipe(res);

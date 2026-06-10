@@ -35,13 +35,22 @@ const resolvers: Resolvers = {
         [OPENCTI_PLAYBOOK_DOCUMENT_TYPE]: 'OpenCTIPlaybook',
       };
 
-      if (service_instance.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
-        return (
-          integrationMapping[service_instance.integration_type] ??
-          typeMapping[service_instance.type]
-        );
+      const serviceType = service_instance.type;
+      if (!serviceType) {
+        return 'SeoServiceInstance';
       }
-      return typeMapping[service_instance.type] ?? 'SeoServiceInstance';
+
+      if (serviceType === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
+        const integrationType = service_instance.integration_type;
+
+        if (integrationType) {
+          return (
+            integrationMapping[integrationType] ?? typeMapping[serviceType]
+          );
+        }
+        return typeMapping[serviceType];
+      }
+      return typeMapping[serviceType] ?? 'SeoServiceInstance';
     },
     links: ({ id }, _) =>
       ServiceInstanceDomain.loadLinks(id as ServiceInstanceId),

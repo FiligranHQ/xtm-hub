@@ -118,7 +118,7 @@ export const documentDownloadEndpoint = (app: Express) => {
             document.minio_name
           )) as Readable;
           if (attach) {
-            res.attachment(document.file_name);
+            res.attachment(document.file_name ?? undefined);
           }
           if (!document.service_instance_id) {
             throw new Error(ErrorCode.ServiceInstanceNotFound);

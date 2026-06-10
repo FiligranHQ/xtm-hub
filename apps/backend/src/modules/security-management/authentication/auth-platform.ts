@@ -29,7 +29,15 @@ export const initAuthPlatform = async (app: Express) => {
     authProviderRateLimiter,
     (req: Request, res: Response, next: NextFunction) => {
       try {
-        const { provider } = req.params;
+        const providerParam = req.params.provider;
+        const provider = Array.isArray(providerParam)
+          ? providerParam[0]
+          : providerParam;
+        if (!provider) {
+          setCookieError(res, 'Missing authentication provider');
+          res.redirect('/');
+          return;
+        }
         const redirect = req.query.redirect;
         // Referer header is attacker-controlled — not trusted as redirect destination
         req.session.referer =
@@ -53,7 +61,15 @@ export const initAuthPlatform = async (app: Express) => {
     `/auth/:provider/callback`,
     urlencodedParser,
     async (req: Request, res: Response, next: NextFunction) => {
-      const { provider } = req.params;
+      const providerParam = req.params.provider;
+      const provider = Array.isArray(providerParam)
+        ? providerParam[0]
+        : providerParam;
+      if (!provider) {
+        setCookieError(res, 'Missing authentication provider');
+        res.redirect('/');
+        return;
+      }
       let referer = req.session.referer;
       try {
         requestContext.set(SYSTEM_USER_CONTEXT);

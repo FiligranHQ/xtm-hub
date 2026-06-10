@@ -81,7 +81,7 @@ export const insertCapabilities = async (
               generic_service_capability_id:
                 null as GenericServiceCapabilityId | null,
               subscription_capability_id:
-                subscriptionCapability.id as SubscriptionCapabilityId,
+                subscriptionCapability?.id as SubscriptionCapabilityId,
             };
           }
         );
