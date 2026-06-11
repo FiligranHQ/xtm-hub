@@ -42,6 +42,21 @@ import {
   DocumentMetadataKeys,
 } from './domain/document.metadata.domain';
 
+type DocumentMetadataValue = string | boolean | null;
+type DocumentWithDynamicMetadata = DocumentModel &
+  Record<string, DocumentMetadataValue>;
+
+const toObjectUseCaseObjectId = (id: string): ObjectUseCaseObjectId =>
+  id as ObjectUseCaseObjectId;
+
+const setDocumentMetadataValue = (
+  document: DocumentModel,
+  key: string,
+  value: DocumentMetadataValue
+): void => {
+  (document as DocumentWithDynamicMetadata)[key] = value;
+};
+
 export const DocumentApp = {
   createDocument: async ({
     input,
@@ -79,7 +94,7 @@ export const DocumentApp = {
       serviceInstanceId
     );
 
-    const documentMetadata =
+    const documentMetadata: DocumentMetadataResolverType[] =
       DocumentHelper.buildCompleteMetadataFromDocumentFile({
         sourceDocumentFile,
         metadata,
@@ -136,7 +151,7 @@ export const DocumentApp = {
         );
 
         for (const meta of documentMetadata) {
-          document[meta.key] = meta.value;
+          setDocumentMetadataValue(document, meta.key, meta.value);
         }
       }
 
@@ -159,7 +174,7 @@ export const DocumentApp = {
       if (documentData.use_cases?.length) {
         await objectUseCaseDomain.insertObjectUseCase(
           documentData.use_cases.map((id) => ({
-            object_id: document.id as unknown as ObjectUseCaseObjectId,
+            object_id: toObjectUseCaseObjectId(document.id),
             use_case_id: id,
           }))
         );
@@ -305,13 +320,13 @@ export const DocumentApp = {
       // If use_cases is null => that mean we want to update the field to empty
       if (input.use_cases !== undefined) {
         await objectUseCaseDomain.deleteObjectUseCaseBy({
-          object_id: parentDocumentId as unknown as ObjectUseCaseObjectId,
+          object_id: toObjectUseCaseObjectId(parentDocumentId),
         });
 
         if (input.use_cases && input.use_cases.length > 0) {
           await objectUseCaseDomain.insertObjectUseCase(
             input.use_cases.map((id) => ({
-              object_id: parentDocumentId as unknown as ObjectUseCaseObjectId,
+              object_id: toObjectUseCaseObjectId(parentDocumentId),
               use_case_id: id,
             }))
           );
@@ -326,9 +341,13 @@ export const DocumentApp = {
         );
 
         for (const meta of documentMetadata) {
-          doc[meta.key] = BOOLEAN_METADATA.includes(meta.key)
-            ? meta.value === 'true'
-            : meta.value;
+          setDocumentMetadataValue(
+            doc,
+            meta.key,
+            BOOLEAN_METADATA.includes(meta.key)
+              ? meta.value === 'true'
+              : meta.value
+          );
         }
       }
 
@@ -395,7 +414,7 @@ export const DocumentApp = {
         );
 
         for (const metadata of metadatas) {
-          document[metadata.key] = metadata.value;
+          setDocumentMetadataValue(document, metadata.key, metadata.value);
         }
       }
 
@@ -459,7 +478,7 @@ export const DocumentApp = {
 
         // Use Cases
         await objectUseCaseDomain.deleteObjectUseCaseBy({
-          object_id: documentId as unknown as ObjectUseCaseObjectId,
+          object_id: toObjectUseCaseObjectId(documentId),
         });
       });
       await DocumentHelper.deleteFileFromMinIO(
@@ -605,7 +624,7 @@ const upsertDocument = async <T extends DocumentModel>(
     if (documentData.use_cases?.length) {
       if (documentWasUpdated) {
         await objectUseCaseDomain.deleteObjectUseCaseBy({
-          object_id: document.id as unknown as ObjectUseCaseObjectId,
+          object_id: toObjectUseCaseObjectId(document.id),
         });
       }
       const insertObjectUseCase: ObjectUseCaseInitializer[] = [];
@@ -615,7 +634,7 @@ const upsertDocument = async <T extends DocumentModel>(
           color: '#0099cc',
         });
         insertObjectUseCase.push({
-          object_id: document.id as unknown as ObjectUseCaseObjectId,
+          object_id: toObjectUseCaseObjectId(document.id),
           use_case_id: useCase.id,
         });
       }
@@ -634,7 +653,11 @@ const upsertDocument = async <T extends DocumentModel>(
           document.id
         );
         if (existingVersion) {
-          document[DocumentMetadataKeyCode.ProductVersion] = existingVersion;
+          setDocumentMetadataValue(
+            document,
+            DocumentMetadataKeyCode.ProductVersion,
+            existingVersion
+          );
         }
       }
 
@@ -651,7 +674,7 @@ const upsertDocument = async <T extends DocumentModel>(
       );
 
       for (const metadata of metadatas) {
-        document[metadata.key] = metadata.value;
+        setDocumentMetadataValue(document, metadata.key, metadata.value);
       }
     }
 

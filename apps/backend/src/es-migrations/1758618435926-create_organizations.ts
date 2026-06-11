@@ -7,7 +7,7 @@ import { TelemetryEventType } from '../modules/telemetry/telemetry.types';
 import { ADMIN_UUID } from '../portal.const';
 import { esDbClient } from '../thirdparty/elasticsearch/client';
 
-export const up = async function (next) {
+export const up = async function (next: () => void) {
   const database = knex(baseConfig);
 
   const organizations = await database('Organization')
@@ -34,7 +34,7 @@ export const up = async function (next) {
   next();
 };
 
-export const down = async function (next) {
+export const down = async function (next: () => void) {
   await esDbClient.deleteByQuery({
     index: 'telemetry_v1',
     query: {

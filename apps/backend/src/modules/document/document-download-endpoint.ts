@@ -1,5 +1,5 @@
 import cors from 'cors';
-import { Request } from 'express';
+import { Express, Request } from 'express';
 import rateLimit from 'express-rate-limit';
 import { Readable } from 'stream';
 import { requestContext } from '../../context/request.context';
@@ -52,7 +52,7 @@ const loadUser = async (
   };
 };
 
-export const documentDownloadEndpoint = (app) => {
+export const documentDownloadEndpoint = (app: Express) => {
   app
     .options(`/document/get/:serviceInstanceId/:filename`, cors())
     .get(
@@ -118,7 +118,7 @@ export const documentDownloadEndpoint = (app) => {
             document.minio_name
           )) as Readable;
           if (attach) {
-            res.attachment(document.file_name);
+            res.attachment(document.file_name ?? undefined);
           }
           if (!document.service_instance_id) {
             throw new Error(ErrorCode.ServiceInstanceNotFound);

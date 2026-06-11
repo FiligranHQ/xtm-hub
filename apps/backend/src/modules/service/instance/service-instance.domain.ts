@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { db, dbRaw, paginate } from '../../../../knexfile';
+import { db, dbRaw, paginate, QueryOpts } from '../../../../knexfile';
 import {
   PlatformIdentifier,
   SeoServiceInstance,
@@ -11,8 +11,10 @@ import {
   ServiceLink,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
+import { GenericServiceCapabilityId } from '../../../model/kanel/public/GenericServiceCapability';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import PlatformConfigurationModel, {
+import {
+  default as PlatformConfigurationModel,
   PlatformConfigurationMutator,
 } from '../../../model/kanel/public/PlatformConfiguration';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
@@ -26,9 +28,7 @@ import Subscription, {
   SubscriptionMutator,
 } from '../../../model/kanel/public/Subscription';
 import { UserId, UserMutator } from '../../../model/kanel/public/User';
-import UserService, {
-  UserServiceId,
-} from '../../../model/kanel/public/UserService';
+import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { isUserAdminPlatform } from '../../../security/access';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
@@ -129,7 +129,7 @@ export const ServiceInstanceDomain = {
     user_id: UserId,
     identifier: string
   ) => {
-    const subServiceInstance = await db<UserService>('ServiceInstance')
+    const subServiceInstance = await db<ServiceInstance>('ServiceInstance')
       .leftJoin(
         'ServiceDefinition',
         'ServiceDefinition.id',
@@ -195,7 +195,9 @@ export const ServiceInstanceDomain = {
 
     return subServiceInstance.map((sub) => ({
       ...sub,
-      configurations: sub.configurations.filter((config) => !!config),
+      configurations: sub.configurations.filter(
+        (config: PlatformConfigurationModel) => !!config
+      ),
     }));
   },
 
@@ -226,7 +228,7 @@ export const ServiceInstanceDomain = {
     return serviceInstance?.organization_subscribed ?? false;
   },
 
-  loadServiceInstances: async (opts) => {
+  loadServiceInstances: async (opts: QueryOpts) => {
     const { filters, searchTerm, orderBy } = opts;
     return paginate<ServiceInstance, ServiceConnection>('ServiceInstance', {
       ...opts,
@@ -401,7 +403,8 @@ export const ServiceInstanceDomain = {
         (insertedUserService) => ({
           id: uuidv4() as UserServiceCapabilityId,
           user_service_id: insertedUserService.id,
-          generic_service_capability_id: capabilityId,
+          generic_service_capability_id:
+            capabilityId as GenericServiceCapabilityId,
         })
       );
       await insertServiceCapability(dataServiceCapabilities);

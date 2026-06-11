@@ -140,7 +140,7 @@ const resolvers: Resolvers = {
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'CustomDashboard',
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_PLAYBOOK_DOCUMENT_TYPE]: 'OpenCTIPlaybook',
-      };
+      } as const;
       const INTEGRATION_MAPPINGS = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
@@ -148,14 +148,19 @@ const resolvers: Resolvers = {
         [IntegrationType.RssFeed]: 'RssFeed',
         [IntegrationType.Stream]: 'Stream',
         [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
-      };
-      if (TYPE_MAPPINGS[document.type]) {
-        return TYPE_MAPPINGS[document.type];
+      } as const;
+      const mappedType =
+        TYPE_MAPPINGS[document.type as keyof typeof TYPE_MAPPINGS];
+      if (mappedType) {
+        return mappedType;
       } else if (document.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         const integrationType =
           await DocumentMetadataDomain.loadIntegrationType(document.id);
         if (integrationType) {
-          const responseType = INTEGRATION_MAPPINGS[integrationType];
+          const responseType =
+            INTEGRATION_MAPPINGS[
+              integrationType as keyof typeof INTEGRATION_MAPPINGS
+            ];
           if (responseType) {
             return responseType;
           }

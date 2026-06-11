@@ -5,7 +5,7 @@ import { baseConfig } from '../../knexconfig.js';
 import { esDbClient } from '../thirdparty/elasticsearch/client.js';
 import { logApp } from '../utils/app-logger.util';
 
-export const up = async function (next) {
+export const up = async function (next: () => void) {
   await esDbClient.getIndices().putIndexTemplate({
     name: 'telemetry-template',
     index_patterns: ['telemetry_v*'], // Will match telemetry_v1, telemetry_v2, etc.
@@ -168,7 +168,7 @@ export const up = async function (next) {
   next();
 };
 
-export const down = async function (next) {
+export const down = async function (next: () => void) {
   await esDbClient.updateByQuery({
     index: 'telemetry_v1',
     refresh: true,

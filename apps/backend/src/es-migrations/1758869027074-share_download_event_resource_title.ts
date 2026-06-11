@@ -2,7 +2,7 @@ import knex from 'knex';
 import { baseConfig } from '../../knexconfig.js';
 import { esDbClient } from '../thirdparty/elasticsearch/client';
 
-export const up = async function (next) {
+export const up = async function (next: () => void) {
   const database = knex(baseConfig);
 
   const result = await esDbClient.search({
@@ -58,7 +58,7 @@ export const up = async function (next) {
   next();
 };
 
-export const down = async function (next) {
+export const down = async function (next: () => void) {
   const database = knex(baseConfig);
 
   const result = await esDbClient.search({
