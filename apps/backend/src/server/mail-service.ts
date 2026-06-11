@@ -2,7 +2,7 @@ import config from 'config';
 import * as fsPromises from 'fs/promises';
 import { toGlobalId } from 'graphql-relay/node/node.js';
 import Handlebars from 'handlebars';
-import nodemailer from 'nodemailer';
+import nodemailer, { TransportOptions } from 'nodemailer';
 import * as path from 'path';
 import { PlatformIdentifier } from '../__generated__/resolvers-types';
 import { MAIL_QUEUES, type MailJobData } from '../thirdparty/pgboss/mail.jobs';
@@ -18,7 +18,7 @@ Handlebars.registerHelper('eq', function (a, b) {
   return a === b;
 });
 
-const smtpOptions = config.get('smtp_options');
+const smtpOptions = config.get<TransportOptions>('smtp_options');
 const transporter = nodemailer.createTransport(smtpOptions);
 
 const templateCache = new Map<string, HandlebarsTemplateDelegate>();

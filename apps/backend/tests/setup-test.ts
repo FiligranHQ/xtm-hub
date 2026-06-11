@@ -125,7 +125,7 @@ beforeAll(async ({}, suite) => {
     const [lastMigration] = await db('migrations')
       .orderBy('id', 'desc')
       .limit(1)
-      .catch(() => [null]);
+      .catch((): [null] => [null]);
 
     if (!lastMigration) {
       console.log('📦 Running migrations...');

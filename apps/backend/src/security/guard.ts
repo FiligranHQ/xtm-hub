@@ -177,11 +177,14 @@ export const assertUserHasCapaOnService = async (
     });
 
   if (
-    !existingUserService.user_service_capability.some((c) =>
-      capabilities.includes(
-        c?.subscription_capability?.service_capability
-          ?.name as ServiceRestriction
-      )
+    !existingUserService.user_service_capability.some(
+      (c: {
+        subscription_capability?: { service_capability?: { name?: string } };
+      }) =>
+        capabilities.includes(
+          c?.subscription_capability?.service_capability
+            ?.name as ServiceRestriction
+        )
     )
   ) {
     throw ForbiddenAccess(ErrorCode.MissingCapabilityOnService);

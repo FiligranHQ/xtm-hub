@@ -19,9 +19,10 @@ const resolvers: Resolvers = {
         [IntegrationType.RssFeed]: 'RssFeed',
         [IntegrationType.Stream]: 'Stream',
         [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
-      };
+      } as const;
 
-      const resolvedType = mapping[feed.integration_type];
+      const resolvedType =
+        mapping[feed.integration_type as keyof typeof mapping];
       if (!resolvedType) {
         logApp.error(
           `Unknown resolve type for integration ${feed.id} and integration type ${feed.integration_type}`

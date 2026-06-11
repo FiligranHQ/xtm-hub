@@ -10,8 +10,5 @@
   "enabled_emails": {
     "pending_user_digest": true
   },
-  "base_url_front": "https://hub.filigran.io",
-  "init_service_definitions": [],
-  "init_services": [],
-  "init_service_capabilities": []
+  "base_url_front": "https://hub.filigran.io"
 }
