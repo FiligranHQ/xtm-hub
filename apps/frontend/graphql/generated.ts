@@ -1242,6 +1242,7 @@ export type NewsFeedItem = Node & {
   creation_date: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   is_deleted: Scalars['Boolean']['output'];
+  metadata: Array<NewsFeedItemMetadata>;
   tags: Array<Scalars['String']['output']>;
   title: Scalars['String']['output'];
 };

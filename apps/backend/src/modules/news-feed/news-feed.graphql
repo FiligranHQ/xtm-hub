@@ -37,6 +37,7 @@ type NewsFeedItem implements Node {
   creation_date: Date!
   tags: [String!]!
   is_deleted: Boolean!
+  metadata: [NewsFeedItemMetadata!]!
 }
 
 type NewsFeedItemEdge {

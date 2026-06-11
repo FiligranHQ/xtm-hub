@@ -12,7 +12,7 @@ import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
 import { MoreVertIcon } from '@filigran/icon';
 import { DataTable, toast } from '@filigran/ui';
-import { Badge } from '@filigran/ui/servers';
+import { Badge, Button } from '@filigran/ui/servers';
 import { newsFeedDeleteMutation } from '@generated/newsFeedDeleteMutation.graphql';
 import {
   newsFeedItem_fragment$data,
@@ -22,6 +22,7 @@ import { newsFeedList_fragment$key } from '@generated/newsFeedList_fragment.grap
 import { newsFeedListQuery } from '@generated/newsFeedListQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import {
   readInlineData,
@@ -113,9 +114,22 @@ const NewsFeedList = () => {
         accessorKey: 'title',
         id: 'title',
         header: t('NewsFeedAdminPage.Title'),
-        cell: ({ row }) => (
-          <span className="truncate">{row.original.title}</span>
-        ),
+        cell: ({ row }) => {
+          const urlPath = row.original.metadata.find(
+            (m) => m.key === 'url_path'
+          )?.value;
+          if (!urlPath) {
+            return <span className="truncate">{row.original.title}</span>;
+          }
+          return (
+            <Button
+              className="h-auto truncate p-0"
+              variant="link"
+              asChild>
+              <Link href={`/${urlPath}`}>{row.original.title}</Link>
+            </Button>
+          );
+        },
       },
       {
         accessorKey: 'creation_date',
