@@ -50,13 +50,10 @@ import { UserDomain } from '../organization-management/user/user-domain/user.dom
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
-import { updateServiceInstance } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import {
-  buildCreateDeploymentEvent,
-  buildUpdateDeploymentEvent,
-} from '../telemetry/telemetry.helper';
+import { TelemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { CompetitorApp } from './competitor/competitor.app';
 import {
   DeploymentRequestDomain,
@@ -74,10 +71,14 @@ export const DeploymentApp = {
   createDeploymentRequest: async (
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const chosenOrganization = await OrganizationDomain.loadOrganizationBy({
       id: user.selected_organization_id,
     });
+
+    if (!chosenOrganization) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
 
     if (chosenOrganization.personal_space) {
       logApp.warn('Free trial requests are not allowed in personal spaces');
@@ -160,23 +161,24 @@ export const DeploymentApp = {
         );
 
       try {
-        const createDeploymentEvent = buildCreateDeploymentEvent(
-          chosenOrganization,
-          user.id,
-          input.platform_identifier,
-          input.source,
-          {
-            region: createdDeploymentRequest.region,
-            status: createdDeploymentRequest.hub_status,
-            activity_sector: createdDeploymentRequest.activity_sector,
-            job_title: createdDeploymentRequest.job_title,
-            use_case: createdDeploymentRequest.use_case,
-            email: user.email,
-            deployment_id: createdDeploymentRequest.id,
-            deployment_type: createdDeploymentRequest.type,
-          }
-        );
-        await telemetryApp.sendTelemetryEvent(createDeploymentEvent);
+        const createDeploymentEvent =
+          TelemetryHelper.buildCreateDeploymentEvent(
+            chosenOrganization,
+            user.id,
+            input.platform_identifier,
+            input.source,
+            {
+              region: createdDeploymentRequest.region,
+              status: createdDeploymentRequest.hub_status,
+              activity_sector: createdDeploymentRequest.activity_sector,
+              job_title: createdDeploymentRequest.job_title,
+              use_case: createdDeploymentRequest.use_case,
+              email: user.email,
+              deployment_id: createdDeploymentRequest.id,
+              deployment_type: createdDeploymentRequest.type,
+            }
+          );
+        await TelemetryApp.sendTelemetryEvent(createDeploymentEvent);
       } catch (error) {
         logApp.error('Unable to send telemetry event', {
           error,
@@ -250,7 +252,7 @@ export const DeploymentApp = {
   updateDeploymentRequest: async (
     input: UpdateDeploymentRequestInput
   ): Promise<PlatformDeploymentRequest> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageDeployment,
@@ -307,7 +309,7 @@ export const DeploymentApp = {
   loadPlatformDeploymentRequests: async (
     args: QueryDeploymentRequestsArgs
   ): Promise<PlatformDeploymentRequestConnection> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageDeployment,
@@ -394,7 +396,7 @@ export const DeploymentApp = {
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await DeploymentQuotaDomain.withLockedQuotaTransaction(
       { platformIdentifier, region },
       async () => {
@@ -449,7 +451,7 @@ export const DeploymentApp = {
     isAdmin: boolean,
     cancellationReason?: string
   ): Promise<DeploymentRequest> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const deploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         id: deploymentRequestId,
@@ -503,9 +505,12 @@ export const DeploymentApp = {
           }
         );
         if (!countsInOrgaQuota) {
-          await updateServiceInstance(deploymentRequest.service_instance_id, {
-            creation_status: ServiceInstanceCreationStatus.Disabled,
-          });
+          await ServiceInstanceDomain.updateServiceInstance(
+            deploymentRequest.service_instance_id,
+            {
+              creation_status: ServiceInstanceCreationStatus.Disabled,
+            }
+          );
         }
         await DeploymentApp.releaseDeploymentRequestPlace(
           previousHubStatus,
@@ -686,7 +691,7 @@ export const DeploymentApp = {
         region
       );
     if (updatedDeploymentRequest) {
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
 
       await sendUpdateDeploymentTelemetryEvent(
         updatedDeploymentRequest,
@@ -698,12 +703,15 @@ export const DeploymentApp = {
     await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     await securityGuard.assertUserIsInOrganization(user, input.organizationId);
 
     const organization = await OrganizationDomain.loadOrganizationBy({
       id: input.organizationId,
     });
+    if (!organization) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
     if (organization.personal_space) {
       return {
         availableTrials: [],
@@ -971,7 +979,10 @@ const sendUpdateDeploymentTelemetryEvent = async (
     const organization = await OrganizationDomain.loadOrganizationBy({
       id: deploymentRequest.organization_requester_id,
     });
-    const updateDeploymentEvent = buildUpdateDeploymentEvent(
+    if (!organization) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
+    const updateDeploymentEvent = TelemetryHelper.buildUpdateDeploymentEvent(
       organization,
       userId,
       {
@@ -988,7 +999,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
       }
     );
 
-    await telemetryApp.sendTelemetryEvent(updateDeploymentEvent);
+    await TelemetryApp.sendTelemetryEvent(updateDeploymentEvent);
   } catch (error) {
     logApp.error(
       `Unable to send telemetry event when updating deployment request with status ${deploymentRequest.hub_status}`,

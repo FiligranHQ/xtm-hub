@@ -18,7 +18,6 @@ import UserTransferRequest, {
   UserTransferRequestId,
 } from '../../../../model/kanel/public/UserTransferRequest';
 import * as mailService from '../../../../server/mail-service';
-import { deleteSubscription } from '../../../subscription/subscription.helper';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserTransferRequestDomain } from '../user-transferRequest/user-transfer-request.domain';
 import { userProfileApp } from './user.profile.app';
@@ -123,7 +122,7 @@ describe('user profile app', () => {
       });
     });
     afterEach(async () => {
-      await deleteSubscription({
+      await TestHelper.subscription.delete({
         id: newSubscription.id as SubscriptionId,
       });
       await UserTransferRequestDomain.deleteUserTransferRequest({

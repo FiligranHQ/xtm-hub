@@ -1,7 +1,52 @@
 import { graphql } from 'react-relay';
 
-export const publicDocumentItem = graphql`
-  fragment publicDocumentItemFragment on Document @inline {
+export const publicDocumentListItem = graphql`
+  fragment publicDocumentListItemFragment on Document @inline {
+    __typename
+    id
+    name
+    short_description
+    slug
+    children_documents {
+      id
+      image_type
+    }
+    use_cases {
+      id
+      name
+      color
+    }
+    uploader {
+      first_name
+      last_name
+      picture
+    }
+    active
+    type
+
+    ... on Integration {
+      integration_type
+    }
+
+    ... on RssFeed {
+      integration_subtype
+    }
+
+    ... on ThirdPartyIntegration {
+      integration_subtype
+    }
+
+    ... on Connector {
+      integration_subtype
+      product_version
+      verified
+      manager_supported
+    }
+  }
+`;
+
+export const publicDocumentByServiceSlugItem = graphql`
+  fragment publicDocumentByServiceSlugItemFragment on Document @inline {
     __typename
     id
     name
@@ -88,6 +133,95 @@ export const publicDocumentItem = graphql`
   }
 `;
 
+export const publicDocumentBySlugItem = graphql`
+  fragment publicDocumentBySlugItemFragment on Document @inline {
+    __typename
+    id
+    name
+    description
+    short_description
+    created_at
+    updated_at
+    slug
+    download_number
+    share_number
+    children_documents {
+      id
+      image_type
+      source_type
+    }
+    use_cases {
+      id
+      name
+      color
+    }
+    uploader {
+      id
+      first_name
+      last_name
+      picture
+    }
+    active
+    type
+    uploader_organization {
+      id
+      personal_space
+      name
+    }
+
+    ... on Integration {
+      integration_type
+      datasheet_url
+      blogpost_url
+      demo_url
+    }
+
+    ... on CustomDashboard {
+      product_version
+    }
+
+    ... on CsvFeed {
+      feed_url
+    }
+
+    ... on TaxiiFeed {
+      feed_url
+    }
+
+    ... on RssFeed {
+      integration_subtype
+      feed_url
+    }
+
+    ... on Stream {
+      feed_url
+    }
+
+    ... on ThirdPartyIntegration {
+      integration_subtype
+      product_version
+      vendor_url
+      github_url
+    }
+
+    ... on Connector {
+      integration_subtype
+      product_version
+      container_image
+      verified
+      source_code
+      subscription_link
+      manager_supported
+      playbook_supported
+      minimum_deployable_version
+    }
+
+    ... on OpenAEVScenario {
+      product_version
+    }
+  }
+`;
+
 export const PublicDocumentListFragment = graphql`
   fragment publicDocumentList on Query
   @refetchable(queryName: "PublicDocumentListQuery") {
@@ -105,7 +239,7 @@ export const PublicDocumentListFragment = graphql`
       totalCount
       edges {
         node {
-          ...publicDocumentItemFragment
+          ...publicDocumentListItemFragment
         }
       }
     }
@@ -130,7 +264,7 @@ export const PublicDocumentListQuery = graphql`
 export const PublicDocumentsByServiceSlugQuery = graphql`
   query publicDocumentsByServiceSlugQuery($serviceInstanceSlug: String!) {
     publicDocumentsByServiceSlug(serviceInstanceSlug: $serviceInstanceSlug) {
-      ...publicDocumentItemFragment
+      ...publicDocumentByServiceSlugItemFragment
     }
   }
 `;
@@ -141,7 +275,7 @@ export const PublicDocumentBySlugQuery = graphql`
     $slug: String!
   ) {
     publicDocumentBySlug(serviceInstanceId: $serviceInstanceId, slug: $slug) {
-      ...publicDocumentItemFragment
+      ...publicDocumentBySlugItemFragment
     }
   }
 `;

@@ -6,23 +6,14 @@ import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
+import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import {
-  loadPlatformConfigurationByServiceInstanceId,
-  loadServiceDefinitionByServiceInstance,
-} from '../service/instance/service-instance.domain';
-import { buildOneClickDeployEvent } from './telemetry.helper';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
+import { TelemetryHelper } from './telemetry.helper';
 import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
 
 const TELEMETRY_INDEX = 'telemetry';
-
-export async function indexTelemetryEvent(event: TelemetryEvent) {
-  await esDbClient.index({
-    index: TELEMETRY_INDEX,
-    document: event,
-  });
-}
 
 const useQueueProcessing = (): boolean =>
   config.get<boolean>('telemetry_use_queue_processing');
@@ -30,7 +21,14 @@ const useQueueProcessing = (): boolean =>
 const getQueuedEventTypes = (): string[] =>
   config.get<string[]>('telemetry_queued_event_types');
 
-export const telemetryApp = {
+export const TelemetryApp = {
+  async indexTelemetryEvent(event: TelemetryEvent) {
+    await esDbClient.index({
+      index: TELEMETRY_INDEX,
+      document: event,
+    });
+  },
+
   async sendTelemetryEvent(event: TelemetryEvent) {
     try {
       if (useQueueProcessing()) {
@@ -47,7 +45,7 @@ export const telemetryApp = {
           return;
         }
       }
-      indexTelemetryEvent(event).catch((error) => {
+      TelemetryApp.indexTelemetryEvent(event).catch((error) => {
         logApp.error('Error sending telemetry event synchronously', {
           event,
           error,
@@ -82,25 +80,36 @@ export const telemetryApp = {
     userId: UserId;
     input: OneClickDeployInput;
   }) {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const selected_organization_id = user.selected_organization_id;
 
     const selectedOrga = await OrganizationDomain.loadOrganizationBy({
       id: selected_organization_id,
     });
-    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      input.service_instance_id
-    );
+    if (!selectedOrga) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
 
+    const serviceDefinition =
+      await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+        input.service_instance_id
+      );
+
+    if (!serviceDefinition) {
+      throw new Error(ErrorCode.ServiceNotFound);
+    }
     const platformServiceInstanceId = extractId<'RegisteredPlatform'>(
       input.platform_service_instance_id
     );
     const platformConfiguration =
-      await loadPlatformConfigurationByServiceInstanceId(
+      await ServiceInstanceDomain.loadPlatformConfigurationByServiceInstanceId(
         platformServiceInstanceId
       );
+    if (!platformConfiguration) {
+      throw new Error(ErrorCode.PlatformConfigurationNotFound);
+    }
 
-    const event = await buildOneClickDeployEvent(
+    const event = await TelemetryHelper.buildOneClickDeployEvent(
       selectedOrga,
       userId,
       serviceDefinition.identifier,
@@ -111,6 +120,6 @@ export const telemetryApp = {
       input.resource_title,
       platformConfiguration?.tenant_id ?? undefined
     );
-    await telemetryApp.sendTelemetryEvent(event);
+    await TelemetryApp.sendTelemetryEvent(event);
   },
 };

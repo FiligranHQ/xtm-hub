@@ -43,9 +43,9 @@ import { hashPassword } from '../../../utils/hash-password.util';
 import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
 import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../../subscription/subscription.helper';
-import { telemetryApp } from '../../telemetry/telemetry.app';
-import { buildCreateOrganizationEvent } from '../../telemetry/telemetry.helper';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
+import { TelemetryApp } from '../../telemetry/telemetry.app';
+import { TelemetryHelper } from '../../telemetry/telemetry.helper';
 import { OrganizationDomain } from '../organization/organization.domain';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
@@ -124,11 +124,11 @@ async function createOrganisationWithAdminUser(email: string) {
   });
 
   try {
-    const createOrgaEvent = buildCreateOrganizationEvent(
+    const createOrgaEvent = TelemetryHelper.buildCreateOrganizationEvent(
       newOrganization,
       addedUser.id
     );
-    await telemetryApp.sendTelemetryEvent(createOrgaEvent);
+    await TelemetryApp.sendTelemetryEvent(createOrgaEvent);
   } catch (error) {
     logApp.error('Unable to send telemetry event for create organization', {
       error,
@@ -249,7 +249,7 @@ export const insertUserIntoOrganization = async (
   subscriptionId: SubscriptionId
 ) => {
   const [subscription] =
-    await loadSubscriptionWithOrganizationAndCapabilitiesBy({
+    await SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy({
       'Subscription.id': subscriptionId,
     } as SubscriptionMutator);
   const [organization] = await OrganizationDomain.loadOrganizationsFromEmail(

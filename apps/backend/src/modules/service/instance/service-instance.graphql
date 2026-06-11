@@ -92,7 +92,7 @@ type Mutation {
   addServicePicture(
     serviceInstanceId: ServiceInstanceId!
     document: Upload
-    isLogo: Boolean
+    isLogo: Boolean!
   ): ServiceInstance
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION])
   updatePlatformServiceMetadata(

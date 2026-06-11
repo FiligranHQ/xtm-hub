@@ -4,7 +4,7 @@ import portalConfig from './src/config';
 export const baseConfig: Knex.Config = {
   asyncStackTraces:
     process.env.LOCAL_DEV === 'true' ||
-    ['development', 'test'].includes(process.env.NODE_ENV),
+    ['development', 'test'].includes(process.env.NODE_ENV ?? ''),
   client: 'pg',
   connection: {
     host: portalConfig.database.host,

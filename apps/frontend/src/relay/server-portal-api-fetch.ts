@@ -30,6 +30,7 @@ export default async function serverPortalApiFetch<
     request: request.params,
     variables,
     cookieList,
+    cache: 'force-cache', //force cache on server-side, can be override by adding options
     options,
   }).catch((e: unknown) => {
     if (e instanceof UnauthenticatedError) {
@@ -59,7 +60,7 @@ export async function serverFetchGraphQL<TQuery extends OperationType>(
 export async function serverMutateGraphQL<TMutation extends OperationType>(
   request: ConcreteRequest,
   variables: VariablesOf<TMutation>,
-  options: RequestInit = {}
+  options: RequestInit = { cache: 'default' }
 ): Promise<{ data: TMutation['response'] }> {
   const rawResponse = await serverPortalApiFetch<typeof request, TMutation>(
     request,

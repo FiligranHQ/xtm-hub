@@ -9,7 +9,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { deleteServiceInstanceBy } from '../../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../../service/instance/service-instance.domain';
 import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupDomain } from './service-group.domain';
 
@@ -152,7 +152,7 @@ describe('serviceGroupDomain', () => {
         .whereIn('service_instance_id', trackedServiceInstanceIds)
         .delete();
       for (const id of trackedServiceInstanceIds) {
-        await deleteServiceInstanceBy({ id });
+        await ServiceInstanceDomain.deleteServiceInstanceBy({ id });
       }
       trackedServiceInstanceIds.length = 0;
     });

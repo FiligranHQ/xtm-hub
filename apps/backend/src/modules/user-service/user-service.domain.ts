@@ -45,11 +45,8 @@ import {
   insertCapabilities,
   insertUserServiceCapability,
 } from '../security-management/user-service-capability/user-service-capability.helper';
-import {
-  loadServiceDefinitionByServiceInstance,
-  loadServiceInstanceBy,
-} from '../service/instance/service-instance.domain';
-import { loadSubscriptionBy } from '../subscription/subscription.helper';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 
 export const UserServiceDomain = {
   addServiceToUsers: async (
@@ -111,7 +108,7 @@ export const UserServiceDomain = {
     const dataCapabilities = capabilitiesId.map((capabilityId) => ({
       id: uuidv4() as UserServiceCapabilityId,
       user_service_id: userService.id,
-      generic_service_capability_id: capabilityId,
+      generic_service_capability_id: capabilityId as GenericServiceCapabilityId,
     }));
     await insertServiceCapability(dataCapabilities);
   },
@@ -132,9 +129,12 @@ export const UserServiceDomain = {
     };
 
     // Check the user is in the current organization
-    const [subscription] = await loadSubscriptionBy({
+    const subscription = await SubscriptionDomain.loadSubscriptionBy({
       id: subscription_id as SubscriptionId,
     });
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
     const userOrganizations = await UserOrganizationDomain.loadUserOrganization(
       {
         user_id,
@@ -173,15 +173,16 @@ export const UserServiceDomain = {
     if (!user) {
       throw new Error(ErrorCode.UserNotFound);
     }
-    const serviceInstance = await loadServiceInstanceBy({
+    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       id: subscription.service_instance_id,
     });
     if (!serviceInstance) {
       throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
     }
-    const serviceDefinition = await loadServiceDefinitionByServiceInstance(
-      serviceInstance.id
-    );
+    const serviceDefinition =
+      await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+        serviceInstance.id
+      );
     if (!serviceDefinition) {
       throw new Error(NotFoundErrorCode.ServiceDefinitionNotFound);
     }
@@ -483,7 +484,13 @@ export const UserServiceDomain = {
 
     const userServiceCapability = [
       ...generic_service_capabilities.map(
-        ({ userServcapaId, ...generic_service_capability }) => ({
+        ({
+          userServcapaId,
+          ...generic_service_capability
+        }: {
+          userServcapaId: string;
+          [key: string]: unknown;
+        }) => ({
           id: userServcapaId,
           user_service_id: userServiceId,
           generic_service_capability: {
@@ -493,7 +500,15 @@ export const UserServiceDomain = {
         })
       ),
       ...subscription_capabilities.map(
-        ({ userServcapaId, subscriptionCapaId, ...service_capability }) => ({
+        ({
+          userServcapaId,
+          subscriptionCapaId,
+          ...service_capability
+        }: {
+          userServcapaId: string;
+          subscriptionCapaId: string;
+          [key: string]: unknown;
+        }) => ({
           id: userServcapaId,
           user_service_id: userServiceId,
           subscription_capability: {
@@ -514,7 +529,7 @@ export const UserServiceDomain = {
     opts: QueryOpts,
     subscriptionId: SubscriptionId
   ) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const userServiceQuery = db<UserService>('User_Service')
       .where('subscription_id', '=', subscriptionId)
       .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')

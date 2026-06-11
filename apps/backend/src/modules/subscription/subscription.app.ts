@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { paginate } from '../../../knexfile';
+import { paginate, QueryOpts } from '../../../knexfile';
 import {
   SubscriptionConnection,
   SubscriptionModel,
@@ -121,7 +121,7 @@ export const subscriptionApp = {
     });
   },
 
-  loadSubscriptions: async (opts) => {
+  loadSubscriptions: async (opts: QueryOpts) => {
     const { filters, searchTerm, orderBy } = opts;
     return paginate<Subscription, SubscriptionConnection>('Subscription', {
       ...opts,

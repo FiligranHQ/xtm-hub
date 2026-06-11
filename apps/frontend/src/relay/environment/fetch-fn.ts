@@ -42,7 +42,7 @@ export async function networkFetch({
   request,
   variables,
   cookieList,
-  cache = cookieList?.length ? 'no-store' : undefined,
+  cache,
   options = {},
 }: {
   apiUri?: string;
@@ -52,8 +52,9 @@ export async function networkFetch({
   cache?: RequestCache;
   options?: RequestInit;
 }): Promise<GraphQLResponse> {
+  const cacheConfig = Boolean(options.cache) ? options.cache : cache;
   if (isDevelopment()) {
-    logGraphQLOperation(request, variables, apiUri, options.cache);
+    logGraphQLOperation(request, variables, apiUri, cacheConfig);
   }
 
   const headers: { [k: string]: string } = {
@@ -66,11 +67,7 @@ export async function networkFetch({
     headers.cookie = cookieHeader;
   }
 
-  const activeCacheConfig = isDevelopment()
-    ? 'no-store'
-    : Boolean(options.cache)
-      ? options.cache
-      : cache;
+  const activeCacheConfig = isDevelopment() ? 'no-store' : cacheConfig;
 
   if (activeCacheConfig === 'no-store' && options.next?.revalidate) {
     delete options.next.revalidate;

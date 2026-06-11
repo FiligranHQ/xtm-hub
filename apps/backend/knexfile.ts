@@ -11,6 +11,7 @@ import {
   LogicalOperator,
   ServiceInstanceFilter,
   ServiceInstanceFilterKey,
+  SubscriptionFilter,
 } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
@@ -20,7 +21,11 @@ import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 import { compareVersions, isValidVersion } from './src/utils/versioning';
 
-type Filters = Filter[] | DeploymentRequestFilter[] | ServiceInstanceFilter[];
+type Filters =
+  | Filter[]
+  | DeploymentRequestFilter[]
+  | ServiceInstanceFilter[]
+  | SubscriptionFilter[];
 
 export interface SecuryQueryOpts {
   [key: string]: string | number | boolean | string[] | MethodType | Filters;
@@ -173,7 +178,7 @@ export const dbConnections = <T>(
   nodes: T[],
   offset: string | undefined,
   limit: number | undefined,
-  totalCount
+  totalCount: number
 ) => {
   const currentOffset = offset ? Number(atob(offset)) : 0;
   const edges: { cursor: string; node: T }[] = nodes.map((n, index) => {
@@ -203,6 +208,18 @@ const searchAttributes = [
   'country',
   'title',
 ];
+
+// Cache column names per table so applySearch never calls columnInfo() twice
+// for the same table during the lifetime of the process.
+const columnInfoCache = new Map<DatabaseType, string[]>();
+
+const getCachedColumnInfo = async (type: DatabaseType): Promise<string[]> => {
+  const cached = columnInfoCache.get(type);
+  if (cached) return cached;
+  const columns = Object.keys(await database(type).columnInfo());
+  columnInfoCache.set(type, columns);
+  return columns;
+};
 
 type JoinFn = (qb: Knex.QueryBuilder, type: DatabaseType) => void;
 type WhereFn = (
@@ -258,16 +275,6 @@ const createServiceDefinitionIdentifierFilter = (): FilterHandler => ({
 
 const createProductVersionFilter = (): FilterHandler => ({
   key: FilterKey.ProductVersion,
-  addJoin: (qb, _type) => {
-    const metaAlias = `metaFilter${FilterKey.ProductVersion}`;
-    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-      this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-        `${metaAlias}.key`,
-        '=',
-        FilterKey.ProductVersion
-      );
-    });
-  },
   addWhere: (qb, _type, values) => {
     if (!values.length) return;
     const lowestVersion = [...values]
@@ -279,13 +286,19 @@ const createProductVersionFilter = (): FilterHandler => ({
       return;
     }
 
-    const metaAlias = `metaFilter${FilterKey.ProductVersion}`;
-    qb.whereRaw(
-      dbRaw(
-        `("${metaAlias}"."value" IS NULL OR string_to_array(replace("${metaAlias}"."value", '-lts', ''),'.')::int[] <= string_to_array(?,'.')::int[])`,
-        [lowestVersion]
-      )
-    );
+    // Exclude documents whose product_version metadata exists and is strictly greater than the target.
+    // Documents with no product_version row (IS NULL case) pass through automatically.
+    qb.whereNotExists(function () {
+      this.select(dbRaw('1'))
+        .from('Document_Metadata')
+        .whereRaw('"Document_Metadata"."document_id" = "Document"."id"')
+        .andWhere('Document_Metadata.key', '=', FilterKey.ProductVersion)
+        .whereNotNull('Document_Metadata.value')
+        .andWhereRaw(
+          `string_to_array(replace("Document_Metadata"."value", '-lts', ''), '.')::int[] > string_to_array(?, '.')::int[]`,
+          [lowestVersion]
+        );
+    });
   },
 });
 
@@ -299,20 +312,15 @@ const createPlatformIdentifierFilterHandler = (): FilterHandler => ({
 
 const createMetadataFilterHandler = (key: string): FilterHandler => ({
   key,
-  addJoin: (qb, _type) => {
-    const metaAlias = `metaFilter${key}`;
-    qb.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-      this.on(`${metaAlias}.document_id`, '=', 'Document.id').andOnVal(
-        `${metaAlias}.key`,
-        '=',
-        key
-      );
-    });
-  },
   addWhere: (qb, _type, values) => {
     if (!values.length) return;
-    const metaAlias = `metaFilter${key}`;
-    qb.whereIn(`${metaAlias}.value`, values);
+    qb.whereExists(function () {
+      this.select(dbRaw('1'))
+        .from('Document_Metadata')
+        .whereRaw('"Document_Metadata"."document_id" = "Document"."id"')
+        .andWhere('Document_Metadata.key', '=', key)
+        .whereIn('Document_Metadata.value', values);
+    });
   },
 });
 
@@ -386,7 +394,11 @@ const getFilterHandler = (key: string): FilterHandler => {
 export const applyFilter = (
   queryContext: Knex.QueryBuilder,
   type: DatabaseType,
-  filter: Filter
+  filter:
+    | Filter
+    | DeploymentRequestFilter
+    | ServiceInstanceFilter
+    | SubscriptionFilter
 ) => {
   if (!filter.key) return queryContext;
   const f = getFilterHandler(filter.key);
@@ -413,7 +425,7 @@ export const applySearch = async <T extends object>(
   searchTerm: string | null | undefined,
   normalizeSearchTerm: boolean = false
 ) => {
-  const columns = Object.keys(await database(type).columnInfo());
+  const columns = await getCachedColumnInfo(type);
 
   const search: string[] = [];
   if (searchTerm) {
@@ -432,15 +444,15 @@ export const applySearch = async <T extends object>(
     const metaAlias = 'metaSearch';
 
     const shouldSearchOnDocumentMetadata = type === 'Document';
-    if (shouldSearchOnDocumentMetadata) {
-      queryContext.leftJoin({ [metaAlias]: 'Document_Metadata' }, function () {
-        this.on(`${metaAlias}.document_id`, '=', 'Document.id');
-      });
-    }
 
     queryContext.andWhere((qb) => {
       if (shouldSearchOnDocumentMetadata) {
-        qb.orWhereILike(`${metaAlias}.value`, `%${searchTerm}%`);
+        qb.orWhereExists(function () {
+          this.select(dbRaw('1'))
+            .from({ [metaAlias]: 'Document_Metadata' })
+            .whereRaw(`"${metaAlias}"."document_id" = "Document"."id"`)
+            .andWhereILike(`${metaAlias}.value`, `%${searchTerm}%`);
+        });
       }
       qb.orWhereILike(`${type}.${first}`, `%${normalizedSearchTerm}%`);
       others.forEach((i) =>

@@ -15,64 +15,74 @@ import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
 import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../../shareable-resource/opencti/playbook/playbook.model';
 import { ServiceInstanceApp } from './service-instance.app';
-import {
-  getUserJoined,
-  loadIsSubscribed,
-  loadLinks,
-  loadServiceDefinitionByServiceInstance,
-  loadServiceInstances,
-  loadServiceInstanceSubscriptions,
-} from './service-instance.domain';
+import { ServiceInstanceDomain } from './service-instance.domain';
 
 const resolvers: Resolvers = {
   ServiceInstanceId: createRelayIdScalar<ServiceInstanceId>('ServiceInstance'),
   ServiceInstance: {
-    __resolveType(service_instance) {
-      const integrationMapping = {
+    __resolveType(service_instance: {
+      type?: string;
+      integration_type?: string;
+    }) {
+      const integrationMapping: Record<string, string> = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
       };
-      const typeMapping = {
+      const typeMapping: Record<string, string> = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
         [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegration',
         [OPENCTI_PLAYBOOK_DOCUMENT_TYPE]: 'OpenCTIPlaybook',
       };
 
-      if (service_instance.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
-        return (
-          integrationMapping[service_instance.integration_type] ??
-          typeMapping[service_instance.type]
-        );
+      const serviceType = service_instance.type;
+      if (!serviceType) {
+        return 'SeoServiceInstance';
       }
-      return typeMapping[service_instance.type] ?? 'SeoServiceInstance';
+
+      if (serviceType === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
+        const integrationType = service_instance.integration_type;
+
+        if (integrationType) {
+          return (
+            integrationMapping[integrationType] ?? typeMapping[serviceType]
+          );
+        }
+        return typeMapping[serviceType];
+      }
+      return typeMapping[serviceType] ?? 'SeoServiceInstance';
     },
-    links: ({ id }, _) => loadLinks(id),
+    links: ({ id }, _) =>
+      ServiceInstanceDomain.loadLinks(id as ServiceInstanceId),
     service_definition: ({ id }, _) =>
-      loadServiceDefinitionByServiceInstance(id as ServiceInstanceId),
+      ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+        id as ServiceInstanceId
+      ),
     organization_subscribed: ({ id }, _, context) =>
-      loadIsSubscribed(
+      ServiceInstanceDomain.loadIsSubscribed(
         context.user.selected_organization_id,
         id as ServiceInstanceId
       ),
     capabilities: ({ id }, _, context) =>
       loadCapabilities(
-        id,
+        id as ServiceInstanceId,
         context.user.id,
         context.user.selected_organization_id
       ),
     user_joined: ({ id }, _, context) =>
-      getUserJoined(
+      ServiceInstanceDomain.getUserJoined(
         context.user.id,
         context.user.selected_organization_id,
         id as ServiceInstanceId
       ),
     subscriptions: ({ id }, _) =>
-      loadServiceInstanceSubscriptions(id as ServiceInstanceId),
+      ServiceInstanceDomain.loadServiceInstanceSubscriptions(
+        id as ServiceInstanceId
+      ),
   },
   Query: {
     serviceInstances: async (_, opt) => {
-      return loadServiceInstances(opt);
+      return ServiceInstanceDomain.loadServiceInstances(opt);
     },
     serviceInstanceLinksByTags: async (_, { tags }) => {
       return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);

@@ -17,7 +17,6 @@ import { MinIOClient } from '../../thirdparty/minio/client';
 import { DocumentApp } from '../document/document.app';
 import { DocumentUploadsHelper } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
-import * as ServiceInstanceDomain from '../service/instance/service-instance.domain';
 
 const guardMock = vi.hoisted(() => ({
   assertUserHasCapaOnService: vi.fn().mockResolvedValue(undefined),
@@ -34,6 +33,7 @@ vi.mock('../../security/guard', async () => {
   };
 });
 
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { EpicApp } from './epic.app';
 import { EpicDomain } from './epic.domain';
 

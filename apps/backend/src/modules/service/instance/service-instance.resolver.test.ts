@@ -9,7 +9,9 @@ import {
   IntegrationType,
   MutationAddServicePictureArgs,
   MutationUpdatePlatformServiceMetadataArgs,
+  ServiceInstance,
   ServiceInstanceResolvers,
+  ServiceInstanceTag,
 } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../../utils/error/error.code';
@@ -19,7 +21,7 @@ import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
 import { ServiceInstanceApp } from './service-instance.app';
-import * as serviceInstanceDomain from './service-instance.domain';
+import { ServiceInstanceDomain } from './service-instance.domain';
 import serviceInstanceResolver from './service-instance.resolver';
 
 describe('serviceInstance.__resolveType', () => {
@@ -46,15 +48,20 @@ describe('serviceInstance field resolvers', () => {
   it('links should load links by service instance id', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = [] as unknown as Awaited<
-      ReturnType<typeof serviceInstanceDomain.loadLinks>
+      ReturnType<typeof ServiceInstanceDomain.loadLinks>
     >;
-    vi.spyOn(serviceInstanceDomain, 'loadLinks').mockResolvedValue(expected);
+    vi.spyOn(ServiceInstanceDomain, 'loadLinks').mockResolvedValue(expected);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).links({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
+    ).links!(
+      { id } as unknown as ServiceInstance,
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
-    expect(serviceInstanceDomain.loadLinks).toHaveBeenCalledWith(id);
+    expect(ServiceInstanceDomain.loadLinks).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
 
@@ -62,18 +69,18 @@ describe('serviceInstance field resolvers', () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: uuidv4() } as unknown as Awaited<
       ReturnType<
-        typeof serviceInstanceDomain.loadServiceDefinitionByServiceInstance
+        typeof ServiceInstanceDomain.loadServiceDefinitionByServiceInstance
       >
     >;
     vi.spyOn(
-      serviceInstanceDomain,
+      ServiceInstanceDomain,
       'loadServiceDefinitionByServiceInstance'
     ).mockResolvedValue(expected);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).service_definition(
-      { id },
+    ).service_definition!(
+      { id } as unknown as ServiceInstance,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -84,18 +91,18 @@ describe('serviceInstance field resolvers', () => {
 
   it('organization_subscribed should call loadIsSubscribed with org id and instance id', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
-    vi.spyOn(serviceInstanceDomain, 'loadIsSubscribed').mockResolvedValue(true);
+    vi.spyOn(ServiceInstanceDomain, 'loadIsSubscribed').mockResolvedValue(true);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).organization_subscribed(
-      { id },
+    ).organization_subscribed!(
+      { id } as unknown as ServiceInstance,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(serviceInstanceDomain.loadIsSubscribed).toHaveBeenCalledWith(
+    expect(ServiceInstanceDomain.loadIsSubscribed).toHaveBeenCalledWith(
       contextSimpleUserFiligran2.user.selected_organization_id,
       id
     );
@@ -113,8 +120,8 @@ describe('serviceInstance field resolvers', () => {
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).capabilities(
-      { id },
+    ).capabilities!(
+      { id } as unknown as ServiceInstance,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -130,13 +137,18 @@ describe('serviceInstance field resolvers', () => {
 
   it('user_joined should call getUserJoined with user, org, and instance id', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
-    vi.spyOn(serviceInstanceDomain, 'getUserJoined').mockResolvedValue(false);
+    vi.spyOn(ServiceInstanceDomain, 'getUserJoined').mockResolvedValue(false);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).user_joined({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
+    ).user_joined!(
+      { id } as unknown as ServiceInstance,
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
-    expect(serviceInstanceDomain.getUserJoined).toHaveBeenCalledWith(
+    expect(ServiceInstanceDomain.getUserJoined).toHaveBeenCalledWith(
       contextSimpleUserFiligran2.user.id,
       contextSimpleUserFiligran2.user.selected_organization_id,
       id
@@ -147,24 +159,24 @@ describe('serviceInstance field resolvers', () => {
   it('subscriptions should load subscriptions by service instance id', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
     const expected = [] as unknown as Awaited<
-      ReturnType<typeof serviceInstanceDomain.loadServiceInstanceSubscriptions>
+      ReturnType<typeof ServiceInstanceDomain.loadServiceInstanceSubscriptions>
     >;
     vi.spyOn(
-      serviceInstanceDomain,
+      ServiceInstanceDomain,
       'loadServiceInstanceSubscriptions'
     ).mockResolvedValue(expected);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-    ).subscriptions(
-      { id },
+    ).subscriptions!(
+      { id } as unknown as ServiceInstance,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     expect(
-      serviceInstanceDomain.loadServiceInstanceSubscriptions
+      ServiceInstanceDomain.loadServiceInstanceSubscriptions
     ).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
@@ -205,14 +217,14 @@ describe('service instance links by tags GraphQL query', () => {
     const result = await serviceInstanceResolver.Query!
       .serviceInstanceLinksByTags!(
       {},
-      { tags: ['tag1'] },
+      { tags: [ServiceInstanceTag.OpenAev] },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     expect(
       ServiceInstanceApp.loadLinkServiceInstancesByTags
-    ).toHaveBeenCalledWith(['tag1']);
+    ).toHaveBeenCalledWith([ServiceInstanceTag.OpenAev]);
     expect(result).toEqual(expected);
   });
 });

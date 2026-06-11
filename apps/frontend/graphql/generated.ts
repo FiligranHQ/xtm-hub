@@ -922,7 +922,7 @@ export type MutationAddOrganizationArgs = {
 
 export type MutationAddServicePictureArgs = {
   document: InputMaybe<Scalars['Upload']['input']>;
-  isLogo: InputMaybe<Scalars['Boolean']['input']>;
+  isLogo: Scalars['Boolean']['input'];
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 

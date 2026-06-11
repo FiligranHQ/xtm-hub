@@ -1,4 +1,5 @@
 import { UserFragment } from '@/components/admin/user/UserList';
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { useContext, useEffect, useMemo } from 'react';
 
@@ -19,7 +20,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  MultiSelectFormField,
   SheetFooter,
   Tooltip,
   TooltipContent,
@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
   useToast,
 } from '@filigran/ui';
+import { MultiSelectFormField } from '@filigran/ui/clients';
 import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
 import { UserList_fragment$key } from '@generated/UserList_fragment.graphql';
 import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
@@ -36,6 +37,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { readInlineData, useMutation } from 'react-relay';
+import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 
 interface UserServiceFormProps {
@@ -225,12 +227,23 @@ export const UserServiceForm = ({
     );
   };
 
-  const { data } = useUsersList({
+  const { data, refetch } = useUsersList({
     pageSize,
     orderMode,
     orderBy,
     filter: { organization: organizationId },
   });
+  const handleUsersInputChange = useDebounceCallback((search: string) => {
+    refetch({
+      count: pageSize,
+      orderMode,
+      orderBy,
+      searchTerm: search,
+      filters: organizationId
+        ? [{ key: 'organization_id', value: [organizationId] }]
+        : undefined,
+    });
+  }, DEBOUNCE_TIME);
 
   const usersOptions = useMemo(() => {
     return (
@@ -275,10 +288,12 @@ export const UserServiceForm = ({
                   <FormLabel>{t('InviteUserServiceForm.Email')}</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
+                      shouldFilter={false}
                       options={usersOptions}
                       defaultValue={field.value}
                       value={field.value}
                       onValueChange={field.onChange}
+                      onInputChange={handleUsersInputChange}
                       noResultString={t('Utils.NotFound')}
                       placeholder={t('Service.Management.Email')}
                       variant="inverted"

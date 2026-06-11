@@ -120,7 +120,7 @@ describe('competitorApp', () => {
       const org = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
-      const result = await CompetitorApp.isOrganizationBlacklisted(org);
+      const result = await CompetitorApp.isOrganizationBlacklisted(org!);
       expect(result).toBe(false);
     });
 
@@ -132,7 +132,7 @@ describe('competitorApp', () => {
       const org = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
-      const result = await CompetitorApp.isOrganizationBlacklisted(org);
+      const result = await CompetitorApp.isOrganizationBlacklisted(org!);
       expect(result).toBe(true);
     });
 
@@ -144,7 +144,7 @@ describe('competitorApp', () => {
       const org = await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
-      const result = await CompetitorApp.isOrganizationBlacklisted(org);
+      const result = await CompetitorApp.isOrganizationBlacklisted(org!);
       expect(result).toBe(false);
     });
   });

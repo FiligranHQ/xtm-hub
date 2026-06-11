@@ -11,7 +11,7 @@ import UserService, {
 import { ErrorCode, ForbiddenErrorCode } from '../../utils/error/error.code';
 import { checkUserServiceIsInServiceInstance } from '../security-management/capability/auth.helper';
 import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
-import { loadSubscriptionWithOrganizationAndCapabilitiesBy } from '../subscription/subscription.helper';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user-service.domain';
 
 export const UserServiceApp = {
@@ -26,9 +26,11 @@ export const UserServiceApp = {
       throw new Error(ErrorCode.CantSubscribeYourself);
     }
     const [subscription] =
-      await loadSubscriptionWithOrganizationAndCapabilitiesBy({
-        'Subscription.id': subscriptionId,
-      } as SubscriptionMutator);
+      await SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy(
+        {
+          'Subscription.id': subscriptionId,
+        } as SubscriptionMutator
+      );
     if (!subscription) {
       throw new Error(ErrorCode.SubscriptionNotFound);
     }
@@ -48,8 +50,12 @@ export const UserServiceApp = {
     userServiceIds: UserServiceId[],
     serviceInstanceId: ServiceInstanceId
   ) => {
+    const [firstUserServiceId] = userServiceIds;
+    if (!firstUserServiceId) {
+      return [];
+    }
     const userServiceIsInService = await checkUserServiceIsInServiceInstance(
-      userServiceIds[0],
+      firstUserServiceId,
       serviceInstanceId
     );
     if (!userServiceIsInService) {

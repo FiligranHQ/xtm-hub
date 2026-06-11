@@ -26,20 +26,18 @@ import {
   Upload,
 } from '../document/document.uploads.helper';
 import { DocumentDomain } from '../document/domain/document.domain';
-import {
-  loadServiceInstanceBy,
-  loadSubscribedServiceInstancesByIdentifier,
-} from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { EpicDomain } from './epic.domain';
 
 const addImage = async (user: User, uploads: Upload[]) => {
   if (!uploads || uploads.length === 0) {
     return undefined;
   }
-  const [serviceInstance] = await loadSubscribedServiceInstancesByIdentifier(
-    user.id,
-    ServiceDefinitionIdentifier.XtmPlatformRoadmap
-  );
+  const [serviceInstance] =
+    await ServiceInstanceDomain.loadSubscribedServiceInstancesByIdentifier(
+      user.id,
+      ServiceDefinitionIdentifier.XtmPlatformRoadmap
+    );
   if (serviceInstance) {
     const files = await DocumentUploadsHelper.processUploads(
       uploads,
@@ -76,9 +74,9 @@ export const EpicApp = {
     input: CreateEpicInput,
     uploads: Upload[]
   ): Promise<Epic> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
-    const serviceInstance = await loadServiceInstanceBy({
+    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       slug: PLATFORM_ROADMAP_SLUG,
     });
     if (!serviceInstance) {
@@ -103,9 +101,9 @@ export const EpicApp = {
     return EpicDomain.createEpic(epicData);
   },
   updateEpic: async (id: EpicId, input: UpdateEpicInput, uploads: Upload[]) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
-    const serviceInstance = await loadServiceInstanceBy({
+    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       slug: PLATFORM_ROADMAP_SLUG,
     });
     if (!serviceInstance) {
@@ -119,9 +117,10 @@ export const EpicApp = {
 
     const createdDocument = await addImage(user, uploads);
 
-    let oldEpic;
+    let oldEpic: Epic | undefined;
     if (createdDocument?.id) {
-      oldEpic = await EpicDomain.loadEpicsBy({ id });
+      const [loadedOldEpic] = await EpicDomain.loadEpicsBy({ id });
+      oldEpic = loadedOldEpic;
     }
     const epicData: Partial<Epic> = {
       ...stripNulls(restInput),
@@ -150,9 +149,9 @@ export const EpicApp = {
   },
 
   deleteEpic: async (id: EpicId) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
-    const serviceInstance = await loadServiceInstanceBy({
+    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
       slug: PLATFORM_ROADMAP_SLUG,
     });
     if (!serviceInstance) {
@@ -186,6 +185,7 @@ export const EpicApp = {
     await sendMail({
       to: 'product.managers@filigran.io',
       template: 'public_roadmap_monthly_reminder',
+      params: {},
     });
   },
 };

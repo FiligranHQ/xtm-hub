@@ -103,6 +103,8 @@ export enum NotFoundErrorCode {
   NewsFeedItemNotFound = 'NEWS_FEED_ITEM_NOT_FOUND',
   UserNotFound = 'USER_NOT_FOUND',
   CompetitorNotFound = 'COMPETITOR_NOT_FOUND',
+  OrganizationNotFound = 'ORGANIZATION_NOT_FOUND',
+  UseCaseNotFound = 'USE_CASE_NOT_FOUND',
 }
 
 export const ErrorCode = {

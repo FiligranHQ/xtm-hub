@@ -35,7 +35,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
 } from '../shareable-resource/opencti/integration/integration.model';
-import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
   TelemetrySource,
@@ -223,7 +223,7 @@ describe('documentApp', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
       // When
@@ -740,7 +740,7 @@ describe('documentApp', () => {
 
       const documentId = document!.id;
 
-      vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+      vi.spyOn(TelemetryApp, 'countEventsByDocumentId').mockImplementation(
         async (eventType: TelemetryEventType, calledDocumentId: string) => {
           if (
             calledDocumentId === documentId &&
@@ -797,7 +797,7 @@ describe('documentApp', () => {
 
       const documentId = document!.id;
 
-      vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+      vi.spyOn(TelemetryApp, 'countEventsByDocumentId').mockImplementation(
         async (eventType: TelemetryEventType, calledDocumentId: string) => {
           if (
             calledDocumentId === documentId &&
@@ -927,6 +927,7 @@ describe('documentApp', () => {
       const input = {
         ...documentData,
         uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       };
 
       // When
@@ -959,6 +960,7 @@ describe('documentApp', () => {
         ...documentData,
         uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
         slug: 'unique-slug',
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       };
       vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
         {

@@ -1,15 +1,15 @@
 import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
+import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { ReactNode, useMemo } from 'react';
 
 type Variant = 'text' | 'link';
 
 interface ShareableResourceDetailMetadataItemProps {
-  documentData: documentItem_fragment$data | publicDocumentItemFragment$data;
+  documentData: documentItem_fragment$data | PublicDocumentData;
   metadataKey: string;
   translationKey: string;
   translationMetadata?: Record<string, string | number | Date>;

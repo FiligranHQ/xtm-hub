@@ -13,20 +13,14 @@ import { AlreadyExistsError } from '../../utils/error/error.util';
 import { createRelayIdScalar } from '../../utils/scalar.util';
 import { stripNulls } from '../../utils/typescript';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import {
-  getServiceInstance,
-  loadServiceDefinitionByServiceInstance,
-} from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
 import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../shareable-resource/opencti/playbook/playbook.model';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
-import {
-  buildShareEvent,
-  shouldSendEventForService,
-} from '../telemetry/telemetry.helper';
+import { TelemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { DocumentApp } from './document.app';
 import { DocumentHelper } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
@@ -99,28 +93,32 @@ const resolvers: Resolvers = {
             throw new Error(ErrorCode.ServiceInstanceNotFound);
           }
           const serviceDefinition =
-            await loadServiceDefinitionByServiceInstance(
+            await ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
               document.service_instance_id
             );
           if (!serviceDefinition) {
             throw new Error(ErrorCode.ServiceDefinitionNotFound);
           }
 
-          if (shouldSendEventForService(serviceDefinition.identifier)) {
+          if (
+            TelemetryHelper.shouldSendEventForService(
+              serviceDefinition.identifier
+            )
+          ) {
             const selectedOrga = context.user
               ? await OrganizationDomain.loadOrganizationBy({
                   id: context.user.selected_organization_id,
                 })
               : undefined;
 
-            const shareEvent = await buildShareEvent(
+            const shareEvent = await TelemetryHelper.buildShareEvent(
               selectedOrga,
               context.user?.id,
               serviceDefinition.identifier,
               document.id,
               document.name ?? ''
             );
-            await telemetryApp.sendTelemetryEvent(shareEvent);
+            await TelemetryApp.sendTelemetryEvent(shareEvent);
           }
         } catch (error) {
           logApp.error('Unable to send telemetry event', {
@@ -142,7 +140,7 @@ const resolvers: Resolvers = {
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'CustomDashboard',
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_PLAYBOOK_DOCUMENT_TYPE]: 'OpenCTIPlaybook',
-      };
+      } as const;
       const INTEGRATION_MAPPINGS = {
         [IntegrationType.Connector]: 'Connector',
         [IntegrationType.CsvFeed]: 'CsvFeed',
@@ -150,14 +148,19 @@ const resolvers: Resolvers = {
         [IntegrationType.RssFeed]: 'RssFeed',
         [IntegrationType.Stream]: 'Stream',
         [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
-      };
-      if (TYPE_MAPPINGS[document.type]) {
-        return TYPE_MAPPINGS[document.type];
+      } as const;
+      const mappedType =
+        TYPE_MAPPINGS[document.type as keyof typeof TYPE_MAPPINGS];
+      if (mappedType) {
+        return mappedType;
       } else if (document.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         const integrationType =
           await DocumentMetadataDomain.loadIntegrationType(document.id);
         if (integrationType) {
-          const responseType = INTEGRATION_MAPPINGS[integrationType];
+          const responseType =
+            INTEGRATION_MAPPINGS[
+              integrationType as keyof typeof INTEGRATION_MAPPINGS
+            ];
           if (responseType) {
             return responseType;
           }
@@ -179,7 +182,7 @@ const resolvers: Resolvers = {
       DocumentDomain.loadUploaderOrganization(id),
     service_instance: ({ service_instance_id }, _) => {
       if (!service_instance_id) return null;
-      return getServiceInstance(service_instance_id);
+      return ServiceInstanceDomain.getServiceInstance(service_instance_id);
     },
     subscription: async ({ service_instance_id }, _, context) => {
       if (!service_instance_id) return null;

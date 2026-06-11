@@ -28,7 +28,7 @@ import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
-import { deleteServiceInstanceBy } from '../service/instance/service-instance.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import {
@@ -359,7 +359,7 @@ describe('registration domain', () => {
     afterEach(async () => {
       await TestHelper.deploymentRequest.delete({});
       await PlatformConfigurationDomain.deleteConfigurationBy({});
-      await deleteServiceInstanceBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
     });
 
     it('should return only the registered platform linked to the service instance', async () => {
@@ -398,7 +398,7 @@ describe('registration domain', () => {
 
     afterEach(async () => {
       await PlatformConfigurationDomain.deleteConfigurationBy({});
-      await deleteServiceInstanceBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
     });
 
     it('should return an empty array when organizationIds is empty', async () => {
@@ -493,7 +493,9 @@ describe('registration domain', () => {
     afterEach(async () => {
       await PlatformConfigurationDomain.deleteConfigurationBy({});
       if (secondOrgServiceInstanceId) {
-        await deleteServiceInstanceBy({ id: secondOrgServiceInstanceId });
+        await ServiceInstanceDomain.deleteServiceInstanceBy({
+          id: secondOrgServiceInstanceId,
+        });
       }
     });
 
@@ -639,7 +641,7 @@ describe('registration domain', () => {
     afterEach(async () => {
       await TestHelper.deploymentRequest.delete({});
       await PlatformConfigurationDomain.deleteConfigurationBy({});
-      await deleteServiceInstanceBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
     });
     it('should return all registered platform without platformIdentifier in input ', async () => {
       const platforms = await RegistrationDomain.loadRegisteredPlatforms();

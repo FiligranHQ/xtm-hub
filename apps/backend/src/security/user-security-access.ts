@@ -9,7 +9,7 @@ export const meUserSSESecurity = (opt: {
   user: UserLoadUserBy;
   data: { [action in ActionType]: TypedNode };
 }) => {
-  const actions = ['delete', 'edit'];
+  const actions: Array<ActionType> = ['delete', 'edit'];
   for (const action of actions) {
     if (opt.data[action]?.id === opt.user.id) {
       return true;

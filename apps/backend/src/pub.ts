@@ -53,25 +53,33 @@ export const listen = (
       .map((sel) => sel.name.value);
   };
 
-  const filterFn = async (event: PubEvent) => {
+  const filterFn = async (event: PubEvent | undefined) => {
     try {
+      if (!event) return false;
       const [topic] = Object.keys(event);
       if (!topic) return false;
-      const payload = event[topic];
+
+      const payload = (
+        event as unknown as Record<string, PubEvent[keyof PubEvent]>
+      )[topic];
       if (!payload) return false;
 
       const values = Object.values(event);
       const [action] = Object.keys(payload);
+      if (!action) return false;
+
       const requestedFields = getRequestedFields();
 
       if (requestedFields && !requestedFields.includes(action)) {
         return false;
       }
+      const nodeActions = values[0];
+      if (!nodeActions) return false;
 
       const isAccessible = await isNodeAccessible(
         context.user,
         topic,
-        values[0]
+        nodeActions
       );
       const isFiltered = filter ? filter(payload) : true;
       return isAccessible && isFiltered;

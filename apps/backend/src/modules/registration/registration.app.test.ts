@@ -46,6 +46,7 @@ import ServiceInstance, {
   ServiceInstanceId,
 } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 
 import {
   BadRequestErrorCode,
@@ -55,12 +56,8 @@ import {
 } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import * as authHelper from '../security-management/capability/auth.helper';
-import {
-  deleteServiceInstanceBy,
-  loadServiceInstanceBy,
-} from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
-import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
   TelemetrySource,
@@ -444,7 +441,7 @@ describe('registration app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
         const telemetrySpy = vi
-          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
         await RegistrationApp.registerPlatform({
@@ -477,7 +474,7 @@ describe('registration app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
       const telemetrySpy = vi
-        .spyOn(telemetryApp, 'sendTelemetryEvent')
+        .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
       const tenantId = uuidv4();
@@ -1243,7 +1240,7 @@ describe('registration app', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
       await PlatformConfigurationDomain.deleteConfigurationBy({});
-      await deleteServiceInstanceBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
     });
     it('should throw if deployment request is not found', async () => {
       const call = RegistrationApp.autoRegisterPlatform(uuidv4(), {
@@ -1289,9 +1286,10 @@ describe('registration app', () => {
         { platform: platformConfiguration }
       );
 
-      const serviceInstance: ServiceInstance = await loadServiceInstanceBy({
-        id: deploymentRequest.service_instance_id,
-      });
+      const serviceInstance: ServiceInstance =
+        await ServiceInstanceDomain.loadServiceInstanceBy({
+          id: deploymentRequest.service_instance_id,
+        });
       const configuration =
         await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformConfiguration.id
@@ -1360,7 +1358,7 @@ describe('registration app', () => {
         vi.setSystemTime(date);
 
         const telemetrySpy = vi
-          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
         await RegistrationApp.autoRegisterPlatform(
@@ -1390,7 +1388,7 @@ describe('registration app', () => {
         vi.setSystemTime(date);
 
         const telemetrySpy = vi
-          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
         await RegistrationApp.autoRegisterPlatform(
@@ -1450,7 +1448,7 @@ describe('registration app', () => {
           })) as DeploymentRequest;
 
         const telemetrySpy = vi
-          .spyOn(telemetryApp, 'sendTelemetryEvent')
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
           .mockResolvedValue();
 
         const openaevPlatformConfiguration = {
