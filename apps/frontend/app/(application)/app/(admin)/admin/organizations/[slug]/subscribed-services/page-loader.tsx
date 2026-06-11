@@ -4,8 +4,7 @@ import OrganizationSubscribedServicesSlug from '@/components/organization/[slug]
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
-import { useQuery } from '@tanstack/react-query';
-import { gql } from 'graphql-request';
+import { useOrganizationSubscribedServicesBreadcrumbQuery } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
@@ -24,33 +23,13 @@ interface PreloaderProps {
   id: string;
 }
 
-interface OrganizationBreadcrumbQueryData {
-  organization: {
-    id: string;
-    name: string;
-  } | null;
-}
-
-const organizationBreadcrumbQuery = gql`
-  query OrganizationBreadcrumbQuery($id: ID!) {
-    organization(id: $id) {
-      id
-      name
-    }
-  }
-`;
-
 // Component
 const PageLoader = ({ id }: PreloaderProps) => {
   const t = useTranslations();
-  const { data: organizationData } = useQuery({
-    queryKey: ['organization-breadcrumb', id],
-    queryFn: () =>
-      portalGraphqlClient.request<OrganizationBreadcrumbQueryData>(
-        organizationBreadcrumbQuery,
-        { id }
-      ),
-  });
+  const { data: organizationData } =
+    useOrganizationSubscribedServicesBreadcrumbQuery(portalGraphqlClient, {
+      id,
+    });
   const organizationLabel = organizationData?.organization?.name ?? id;
 
   const breadcrumbValue = useMemo(() => {

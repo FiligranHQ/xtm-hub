@@ -207,25 +207,20 @@ const getSubscriptionOrdering = (
   return SubscriptionOrdering.StartDate;
 };
 
-const mapSubscriptionOrderingToColumn = (orderBy: SubscriptionOrdering) => {
-  switch (orderBy) {
-    case SubscriptionOrdering.OrganizationName:
-      return 'Organization.name';
-    case SubscriptionOrdering.StartDate:
-      return 'Subscription.start_date';
-    case SubscriptionOrdering.EndDate:
-      return 'Subscription.end_date';
-    case SubscriptionOrdering.ServiceName:
-      return 'ServiceInstance.name';
-    case SubscriptionOrdering.ServiceDescription:
-      return 'ServiceDefinition.description';
-    case SubscriptionOrdering.ServiceType:
-      return 'ServiceDefinition.identifier';
-    case SubscriptionOrdering.ServiceProvider:
-      return 'ServiceDefinition.name';
-    default:
-      return 'Subscription.start_date';
-  }
+const SUBSCRIPTION_ORDERING_TO_COLUMN: Record<SubscriptionOrdering, string> = {
+  [SubscriptionOrdering.OrganizationName]: 'Organization.name',
+  [SubscriptionOrdering.StartDate]: 'Subscription.start_date',
+  [SubscriptionOrdering.EndDate]: 'Subscription.end_date',
+  [SubscriptionOrdering.ServiceName]: 'ServiceInstance.name',
+  [SubscriptionOrdering.ServiceDescription]: 'ServiceDefinition.description',
+  [SubscriptionOrdering.ServiceType]: 'ServiceDefinition.identifier',
+  [SubscriptionOrdering.ServiceProvider]: 'ServiceDefinition.name',
+};
+
+const mapSubscriptionOrderingToColumn = (
+  orderBy: SubscriptionOrdering
+): string => {
+  return SUBSCRIPTION_ORDERING_TO_COLUMN[orderBy] ?? 'Subscription.start_date';
 };
 
 const assertOrganizationIsNotAlreadySubscribed = async ({

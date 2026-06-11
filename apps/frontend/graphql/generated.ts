@@ -2562,6 +2562,13 @@ export type UsersWithCapabilitiesInOrganizationInput = {
   organizationId: Scalars['OrganizationId']['input'];
 };
 
+export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type OrganizationSubscribedServicesBreadcrumbQuery = { __typename?: 'Query', organization: { __typename?: 'Organization', id: string, name: string } | null };
+
 export type OrganizationSubscribedServiceRowFragment = { __typename?: 'SubscriptionModel', id: string, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string, creation_status: ServiceInstanceCreationStatus | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', id: string, name: string, identifier: ServiceDefinitionIdentifier } | null } };
 
 export type OrganizationSubscribedServicesListQueryVariables = Exact<{
@@ -2635,6 +2642,60 @@ export const UseCaseRowFragmentDoc = `
   color
 }
     `;
+export const OrganizationSubscribedServicesBreadcrumbDocument = `
+    query OrganizationSubscribedServicesBreadcrumb($id: ID!) {
+  organization(id: $id) {
+    id
+    name
+  }
+}
+    `;
+
+export const useOrganizationSubscribedServicesBreadcrumbQuery = <
+      TData = OrganizationSubscribedServicesBreadcrumbQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: OrganizationSubscribedServicesBreadcrumbQueryVariables,
+      options?: Omit<UseQueryOptions<OrganizationSubscribedServicesBreadcrumbQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<OrganizationSubscribedServicesBreadcrumbQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<OrganizationSubscribedServicesBreadcrumbQuery, TError, TData>(
+      {
+    queryKey: ['OrganizationSubscribedServicesBreadcrumb', variables],
+    queryFn: fetcher<OrganizationSubscribedServicesBreadcrumbQuery, OrganizationSubscribedServicesBreadcrumbQueryVariables>(client, OrganizationSubscribedServicesBreadcrumbDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useOrganizationSubscribedServicesBreadcrumbQuery.getKey = (variables: OrganizationSubscribedServicesBreadcrumbQueryVariables) => ['OrganizationSubscribedServicesBreadcrumb', variables];
+useOrganizationSubscribedServicesBreadcrumbQuery.getRootKey = () => ['OrganizationSubscribedServicesBreadcrumb'] as const;
+export const useInfiniteOrganizationSubscribedServicesBreadcrumbQuery = <
+      TData = InfiniteData<OrganizationSubscribedServicesBreadcrumbQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: OrganizationSubscribedServicesBreadcrumbQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<OrganizationSubscribedServicesBreadcrumbQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<OrganizationSubscribedServicesBreadcrumbQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<OrganizationSubscribedServicesBreadcrumbQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['OrganizationSubscribedServicesBreadcrumb.infinite', variables],
+      queryFn: (metaData) => fetcher<OrganizationSubscribedServicesBreadcrumbQuery, OrganizationSubscribedServicesBreadcrumbQueryVariables>(client, OrganizationSubscribedServicesBreadcrumbDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteOrganizationSubscribedServicesBreadcrumbQuery.getKey = (variables: OrganizationSubscribedServicesBreadcrumbQueryVariables) => ['OrganizationSubscribedServicesBreadcrumb.infinite', variables];
+useInfiniteOrganizationSubscribedServicesBreadcrumbQuery.getRootKey = () => ['OrganizationSubscribedServicesBreadcrumb.infinite'] as const;
+useOrganizationSubscribedServicesBreadcrumbQuery.fetcher = (client: GraphQLClient, variables: OrganizationSubscribedServicesBreadcrumbQueryVariables, headers?: RequestInit['headers']) => fetcher<OrganizationSubscribedServicesBreadcrumbQuery, OrganizationSubscribedServicesBreadcrumbQueryVariables>(client, OrganizationSubscribedServicesBreadcrumbDocument, variables, headers);
+
 export const OrganizationSubscribedServicesListDocument = `
     query OrganizationSubscribedServicesList($count: Int!, $after: ID, $orderBy: SubscriptionOrdering!, $orderMode: OrderingMode!, $searchTerm: String, $filters: [SubscriptionFilter!]) {
   subscriptions(
