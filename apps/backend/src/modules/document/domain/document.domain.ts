@@ -27,6 +27,7 @@ import {
   restrictDocumentToUserOrganization,
 } from '../../../security/restriction/document';
 import { MinioFile } from '../../../thirdparty/minio/types';
+import { stripNulls } from '../../../utils/typescript';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,
@@ -43,7 +44,7 @@ export type DocumentData<T extends DocumentModel> = Omit<
 
 export const DocumentDomain = {
   deactivateDocuments: async (documentIds: DocumentId[]) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     await db<Document>('Document')
       .whereIn('id', documentIds)
@@ -53,8 +54,8 @@ export const DocumentDomain = {
   createDocument: async <T extends DocumentModel>(
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T>
-  ): Promise<T> => {
-    const { user } = requestContext.require();
+  ): Promise<DocumentModel> => {
+    const user = requestContext.requireUser();
     const uploader_id = documentData.uploader_id ?? user.id;
     const [document] = await db<DocumentModel>('Document')
       .insert({
@@ -165,7 +166,7 @@ export const DocumentDomain = {
     field: Record<string, unknown>,
     include_metadata?: DocumentMetadataKeyCode[]
   ): Promise<DocumentConnection> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     const loadDocumentQuery = db<Document>('Document')
       .select(['Document.*'])
@@ -343,7 +344,7 @@ export const DocumentDomain = {
     uploader_organization_id: OrganizationId | null;
     uploader_id: UserId;
   }): Promise<DocumentModel | undefined> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const completeDocumentData = {
       ...document.data,
       ...(document.file
@@ -358,7 +359,7 @@ export const DocumentDomain = {
     const [updatedDocument] = await db<DocumentModel>('Document')
       .where('id', '=', parentDocumentId)
       .update({
-        ...omit(completeDocumentData, ['use_cases']),
+        ...stripNulls(omit(completeDocumentData, ['use_cases'])),
         uploader_organization_id,
         uploader_id,
         updated_at: new Date(),
@@ -376,7 +377,7 @@ export const DocumentDomain = {
     },
     metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<DocumentModel> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const insertData = {
       ...omit(documentData, [
         'parent_document_id',

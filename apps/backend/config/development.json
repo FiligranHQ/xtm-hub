@@ -13,8 +13,5 @@
     }
   ],
   "enabled_features": ["*"],
-  "init_service_definitions": [],
-  "init_services": [],
-  "init_service_capabilities": [],
   "base_url_front": "http://localhost:3002"
 }

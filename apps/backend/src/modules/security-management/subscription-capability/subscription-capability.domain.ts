@@ -8,7 +8,7 @@ import SubscriptionCapability, {
 
 export const loadSubscriptionCapabilitiesBy = async (
   field: SubscriptionCapabilityMutator
-) => {
+): Promise<SubscriptionCapability[]> => {
   return db<SubscriptionCapability>('Subscription_Capability').where(field);
 };
 

@@ -138,14 +138,30 @@ app.use(function (req, res, next) {
   });
 
   // Override write to check if stream is destroyed
-  res.write = function (chunk, encoding?) {
+  res.write = function (
+    chunk: unknown,
+    encoding?: BufferEncoding | ((error?: Error | null) => void),
+    callback?: (error?: Error | null) => void
+  ) {
     if (isDestroyed || res.destroyed || res.writableEnded) {
       // Silently ignore writes to destroyed streams
       logApp.debug('Attempted to write to destroyed stream, ignoring');
       return true;
     }
     try {
-      return originalWrite.call(this, chunk, encoding);
+      if (typeof encoding === 'function') {
+        return (originalWrite as (...args: unknown[]) => boolean).call(
+          this,
+          chunk,
+          encoding
+        );
+      }
+      return (originalWrite as (...args: unknown[]) => boolean).call(
+        this,
+        chunk,
+        encoding,
+        callback
+      );
     } catch (error) {
       if (getErrorStringProperty(error, 'code') === 'ERR_STREAM_DESTROYED') {
         logApp.debug('Stream destroyed during write, ignoring');
@@ -155,7 +171,11 @@ app.use(function (req, res, next) {
     }
   };
 
-  res.end = function (chunk, encoding?) {
+  res.end = function (
+    chunk?: unknown,
+    encoding?: BufferEncoding | ((error?: Error | null) => void),
+    callback?: (error?: Error | null) => void
+  ) {
     if (isDestroyed || res.destroyed || res.writableEnded) {
       // Silently ignore end calls on destroyed streams
       logApp.debug('Attempted to end destroyed stream, ignoring');
@@ -170,7 +190,19 @@ app.use(function (req, res, next) {
       return this;
     }
     try {
-      return originalEnd.call(this, chunk, encoding);
+      if (typeof encoding === 'function') {
+        return (originalEnd as (...args: unknown[]) => typeof this).call(
+          this,
+          chunk,
+          encoding
+        );
+      }
+      return (originalEnd as (...args: unknown[]) => typeof this).call(
+        this,
+        chunk,
+        encoding,
+        callback
+      );
     } catch (error) {
       if (getErrorStringProperty(error, 'code') === 'ERR_STREAM_DESTROYED') {
         logApp.debug('Stream destroyed during end, ignoring');
@@ -185,7 +217,9 @@ const httpServer = createServer(app);
 const schema = createSchema();
 app.use(graphqlUploadExpress());
 
-if (!['production', 'staging', 'development'].includes(process.env.NODE_ENV)) {
+if (
+  !['production', 'staging', 'development'].includes(process.env.NODE_ENV ?? '')
+) {
   const printedSchema = printSchema(schema);
   fs.writeFileSync('../frontend/schema.graphql', printedSchema);
 }
@@ -266,7 +300,13 @@ const middlewareExpress = expressMiddleware(server, {
 
     // TODO Add build session from request authorization
 
-    const portalContext: PortalContext = { user, req, res };
+    // user may be undefined for unauthenticated requests;
+    // the @auth directive enforces authentication before any resolver accesses it.
+    const portalContext: PortalContext = {
+      user: user as UserLoadUserBy,
+      req,
+      res,
+    };
 
     return portalContext;
   },

@@ -7,8 +7,8 @@ import { toError } from '../../../../../utils/error/error-guard.util';
 import { omit } from '../../../../../utils/utils';
 import { DocumentApp } from '../../../../document/document.app';
 import { DocumentDomain } from '../../../../document/domain/document.domain';
-import { telemetryApp } from '../../../../telemetry/telemetry.app';
-import { buildCreateEvent } from '../../../../telemetry/telemetry.helper';
+import { TelemetryApp } from '../../../../telemetry/telemetry.app';
+import { TelemetryHelper } from '../../../../telemetry/telemetry.helper';
 import {
   Connector,
   INTEGRATION_CONNECTOR_METADATA_KEYS,
@@ -27,7 +27,9 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
 
   const connectorsMappedBySlug: Map<string, Connector> =
     existingConnectors.reduce((acc, current) => {
-      acc.set(current.slug, current as Connector);
+      if (current.slug) {
+        acc.set(current.slug, current as Connector);
+      }
       return acc;
     }, new Map<string, Connector>());
 
@@ -37,6 +39,10 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
         connector.logo,
         `${connector.name}-logo.png`
       );
+      if (!connector.slug) {
+        logApp.warn(`Skipping connector without slug: ${connector.name}`);
+        continue;
+      }
 
       const existingConnector = connectorsMappedBySlug.get(connector.slug);
       if (existingConnector) {
@@ -68,8 +74,8 @@ export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
       );
       const newDocIsCreated = !doc.updated_at;
       if (newDocIsCreated) {
-        const createEvent = await buildCreateEvent(doc);
-        await telemetryApp.sendTelemetryEvent(createEvent);
+        const createEvent = await TelemetryHelper.buildCreateEvent(doc);
+        await TelemetryApp.sendTelemetryEvent(createEvent);
       }
 
       results.push(doc);

@@ -223,17 +223,17 @@ describe('users admin app', () => {
           picture: null,
         },
       ];
-      const secondOrga = await OrganizationDomain.loadOrganizationBy({
+      const secondOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
+      }))!;
 
       createdUsers = await Promise.all(
         userList.map((user) => createNewUserWithPendingOrga(user, secondOrga))
       );
 
-      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
+      const filigranOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      }))!;
       const filigranUser = await createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',
@@ -446,9 +446,9 @@ describe('users admin app', () => {
     let createdUsers: User[];
     beforeEach(async () => {
       createdUsers = [];
-      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
+      const filigranOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      }))!;
       const filigranUser = await createNewUserWithPendingOrga(
         {
           email: 'testFiligranRemoveBulk@filigran.io',
@@ -468,9 +468,9 @@ describe('users admin app', () => {
     });
     it('should throw if user is not allowed on orga', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
+      const filigranOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      }))!;
       const filigranUser = await createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',

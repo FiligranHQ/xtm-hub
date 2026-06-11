@@ -51,7 +51,7 @@ const buildPictureUrl = (userId: string) => {
 };
 
 export const userProfileApp = {
-  editMeUser: async (meUser, input: EditMeUserInput) => {
+  editMeUser: async (meUser: UserLoadUserBy, input: EditMeUserInput) => {
     const { selected_language, ...rest } = input;
     const sanitized =
       selected_language != null ? { ...rest, selected_language } : rest;
@@ -77,7 +77,7 @@ export const userProfileApp = {
 
     return updateAndDispatchUser(meUser.id);
   },
-  uploadUserPicture: async (meUser, document: Upload) => {
+  uploadUserPicture: async (meUser: UserLoadUserBy, document: Upload) => {
     await DocumentUploadsHelper.waitForUploads(document);
 
     if (meUser.picture_minio) {
@@ -154,7 +154,7 @@ export const userProfileApp = {
         throw new Error();
       }
 
-      const { user } = requestContext.require();
+      const user = requestContext.requireUser();
       if (userTransferRequest.to_user_id !== user.id) {
         throw ForbiddenAccess(ErrorCode.UserIsNotInOrganization);
       }

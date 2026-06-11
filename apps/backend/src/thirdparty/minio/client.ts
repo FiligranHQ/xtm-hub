@@ -59,7 +59,7 @@ export const MinIOClient = {
     jsonFile: Upload,
     serviceInstanceId: ServiceInstanceId
   ): Promise<MinioFile> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const fileName = DocumentHelper.normalizeDocumentName(
       jsonFile.file.filename
     );

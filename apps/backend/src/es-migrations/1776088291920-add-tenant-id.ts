@@ -47,7 +47,7 @@ const TEMPLATE_CONFIG = {
   },
 };
 
-export const up = async function (next) {
+export const up = async function (next: () => void) {
   await esDbClient.getIndices().putIndexTemplate({
     name: 'telemetry-template',
     index_patterns: ['telemetry_v*'],
@@ -77,7 +77,7 @@ export const up = async function (next) {
   next();
 };
 
-export const down = async function (next) {
+export const down = async function (next: () => void) {
   await esDbClient.getIndices().putIndexTemplate({
     name: 'telemetry-template',
     index_patterns: ['telemetry_v*'],

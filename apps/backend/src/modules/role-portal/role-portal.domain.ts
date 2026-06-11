@@ -1,11 +1,12 @@
 import { db, dbRaw } from '../../../knexfile';
 import { requestContext } from '../../context/request.context';
 import RolePortal from '../../model/kanel/public/RolePortal';
+import { UserId } from '../../model/kanel/public/User';
 import { ROLE_ADMIN } from '../../portal.const';
 
 export const RolePortalDomain = {
   isAdmin: () => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     return user.roles_portal.some((role) => role.id === ROLE_ADMIN.id);
   },
 
@@ -23,7 +24,7 @@ export const RolePortalDomain = {
       .first();
   },
 
-  removeAllUserRolePortal: (user_id: string) => {
+  removeAllUserRolePortal: (user_id: UserId) => {
     return db('User_RolePortal').where({ user_id }).del();
   },
 };

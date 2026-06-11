@@ -4,20 +4,17 @@ import {
   DocumentMetadataKeyCode,
   IntegrationType,
   OrganizationCapability,
-  ServiceDefinition,
-  ServiceInstance,
 } from '../__generated__/resolvers-types';
 import portalConfig from '../config';
 import { withTransaction } from '../context/database.context';
 import { requestContext } from '../context/request.context';
+import CapabilityPortal from '../model/kanel/public/CapabilityPortal';
 import Document from '../model/kanel/public/Document';
 import Organization, {
   OrganizationId,
 } from '../model/kanel/public/Organization';
 import RolePortal from '../model/kanel/public/RolePortal';
 import RolePortalCapabilityPortal from '../model/kanel/public/RolePortalCapabilityPortal';
-import ServiceCapability from '../model/kanel/public/ServiceCapability';
-import ServiceLink from '../model/kanel/public/ServiceLink';
 import { UserId, UserInitializer } from '../model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationId,
@@ -48,70 +45,21 @@ const ROLE_MAPPING: { [key: string]: string } = {
   ADMIN_ORGA: ROLE_ADMIN_ORGA.id,
 };
 
-export const ensureServiceDefinitionExists = async (service) => {
-  const serviceDefinitions = await db('ServiceDefinition');
-  if (
-    !serviceDefinitions.find(
-      (serviceDefinition) =>
-        serviceDefinition.id === service.serviceDefinition.id
-    )
-  ) {
-    await db<ServiceDefinition>('ServiceDefinition').insert(
-      service.serviceDefinition
-    );
-  } else {
-    await db<ServiceDefinition>('ServiceDefinition')
-      .where({ id: service.serviceDefinition.id })
-      .update(service.serviceDefinition)
-      .returning('*');
-  }
-};
-export const ensureServiceExists = async (service) => {
-  const serviceInstances = await db('ServiceInstance');
-  const links = await db('Service_Link');
-  if (
-    !serviceInstances.find(
-      (serviceInstance) => serviceInstance.id === service.service.id
-    )
-  ) {
-    await db<ServiceInstance>('ServiceInstance').insert(service.service);
-  } else {
-    await db<ServiceInstance>('ServiceInstance')
-      .where({ id: service.service.id })
-      .update(service.service)
-      .returning('*');
-  }
-  if (!links.find((link) => link.id === service.link.id)) {
-    await db<ServiceLink>('Service_Link').insert(service.link);
-  } else {
-    await db<ServiceLink>('Service_Link')
-      .where({ id: service.link.id })
-      .update(service.link)
-      .returning('*');
-  }
-};
+type InitEntityWithId = { id: string };
 
-export const ensureServiceCapabilityExists = async (serviceCapability) => {
-  const serviceCapas = await db('Service_Capability');
-  if (
-    !serviceCapas.find((serviceCapa) => serviceCapa.id === serviceCapability.id)
-  ) {
-    await db<ServiceCapability>('Service_Capability').insert(serviceCapability);
-  } else {
-    await db<ServiceCapability>('Service_Capability')
-      .where({ id: serviceCapability.id })
-      .update(serviceCapability)
-      .returning('*');
-  }
-};
-export const ensureCapabilityExists = async (capability) => {
+type UserPasswordData = Pick<UserInitializer, 'salt' | 'password'>;
+
+export const ensureCapabilityExists = async (capability: CapabilityPortal) => {
   const capabilityPortal = await db('CapabilityPortal');
-  if (!capabilityPortal.find((c) => c.id === capability.id)) {
-    await db<RolePortalCapabilityPortal>('CapabilityPortal').insert(capability);
+  if (!capabilityPortal.find((c: CapabilityPortal) => c.id === capability.id)) {
+    await db<CapabilityPortal>('CapabilityPortal').insert(capability);
   }
 };
 
-export const ensureUserRoleExist = async (user_id, role_portal_id) => {
+export const ensureUserRoleExist = async (
+  user_id: UserId,
+  role_portal_id: string
+) => {
   const userRole = await db('User_RolePortal')
     .where({ user_id, role_portal_id })
     .first();
@@ -123,7 +71,7 @@ export const ensureUserRoleExist = async (user_id, role_portal_id) => {
   }
 };
 
-export const addRoleToUser = async (user_id, role) => {
+export const addRoleToUser = async (user_id: UserId, role: string) => {
   const rolePortal = await db('RolePortal').where({ name: role }).first();
   if (!rolePortal) {
     logApp.warn(`Role portal '${role}' not found for user`);
@@ -132,14 +80,17 @@ export const addRoleToUser = async (user_id, role) => {
   await ensureUserRoleExist(user_id, rolePortal.id);
 };
 
-export const ensureRoleExists = async (role) => {
+export const ensureRoleExists = async (role: InitEntityWithId) => {
   const rolePortal = await db('RolePortal');
-  if (!rolePortal.find((r) => r.id === role.id)) {
-    await db<RolePortal>('RolePortal').insert(role);
+  if (!rolePortal.find((r: { id: string }) => r.id === role.id)) {
+    await db<RolePortal>('RolePortal').insert(role as unknown as RolePortal);
   }
 };
 
-export const ensureRoleHasCapability = async (role, capability) => {
+export const ensureRoleHasCapability = async (
+  role: InitEntityWithId,
+  capability: InitEntityWithId
+) => {
   const roleCapability = await db<RolePortalCapabilityPortal>(
     'RolePortal_CapabilityPortal'
   )
@@ -148,8 +99,9 @@ export const ensureRoleHasCapability = async (role, capability) => {
 
   if (!roleCapability) {
     await db<RolePortalCapabilityPortal>('RolePortal_CapabilityPortal').insert({
-      capability_portal_id: capability.id,
-      role_portal_id: role.id,
+      capability_portal_id:
+        capability.id as RolePortalCapabilityPortal['capability_portal_id'],
+      role_portal_id: role.id as RolePortalCapabilityPortal['role_portal_id'],
     });
   }
 };
@@ -168,7 +120,10 @@ export const insertPlatformOrganization = async () => {
   }
 };
 
-export const insertUserAdminOrganization = async (user_id, email) => {
+export const insertUserAdminOrganization = async (
+  user_id: UserId,
+  email: string
+) => {
   const adminOrganization = await OrganizationDomain.loadOrganizationBy({
     id: user_id as unknown as OrganizationId,
   });
@@ -182,7 +137,11 @@ export const insertUserAdminOrganization = async (user_id, email) => {
   }
 };
 
-export const insertAdminUser = async (user_id, email, data) => {
+export const insertAdminUser = async (
+  user_id: UserId,
+  email: string,
+  data: UserPasswordData
+) => {
   const userData = {
     id: user_id,
     email,
@@ -192,7 +151,10 @@ export const insertAdminUser = async (user_id, email, data) => {
   await db<UserInitializer>('User').insert(userData);
 };
 
-export const updateUserPassword = async (user_id, data) => {
+export const updateUserPassword = async (
+  user_id: UserId,
+  data: UserPasswordData
+) => {
   await db<UserInitializer>('User')
     .where({ id: user_id as UserId })
     .update(data)
@@ -259,6 +221,9 @@ const ensureUserOrganizationExists = async (
       .returning('id');
 
     const [insertedRecord] = await query;
+    if (!insertedRecord) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     return { id: insertedRecord.id };
   }
   return userOrg;

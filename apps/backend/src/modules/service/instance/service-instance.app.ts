@@ -29,7 +29,7 @@ export const ServiceInstanceApp = {
   loadServiceInstanceAndGrantAccess: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
 
     const service = await ServiceInstanceDomain.loadServiceInstanceBy({
       id: serviceInstanceId,

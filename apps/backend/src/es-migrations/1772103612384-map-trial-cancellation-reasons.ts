@@ -3,7 +3,7 @@
 import { esDbClient } from '../thirdparty/elasticsearch/client.js';
 import { logApp } from '../utils/app-logger.util';
 
-export const up = async function (next) {
+export const up = async function (next: () => void) {
   const mapping = {
     'Intelligence lacks actionable insight for our specific needs': 'value',
     'Incompatible with our existing security stack': 'compatibility',
@@ -39,7 +39,7 @@ export const up = async function (next) {
   next();
 };
 
-export const down = async function (next) {
+export const down = async function (next: () => void) {
   const reverseMapping = {
     value: 'Intelligence lacks actionable insight for our specific needs',
     compatibility: 'Incompatible with our existing security stack',

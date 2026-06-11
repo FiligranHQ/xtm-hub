@@ -89,17 +89,17 @@ describe('userOrganizationPendingDomain', () => {
           picture: null,
         },
       ];
-      const secondOrga = await OrganizationDomain.loadOrganizationBy({
+      const secondOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
+      }))!;
 
       createdUsers = await Promise.all(
         userList.map((user) => createNewUserWithPendingOrga(user, secondOrga))
       );
 
-      const filigranOrga = await OrganizationDomain.loadOrganizationBy({
+      const filigranOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      }))!;
       const filigranUser = await createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',
@@ -301,9 +301,9 @@ describe('userOrganizationPendingDomain', () => {
   describe('removeUserFromOrganizationPending', () => {
     let createdUser: User;
     beforeEach(async () => {
-      const secondOrga = await OrganizationDomain.loadOrganizationBy({
+      const secondOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
+      }))!;
       createdUser = await createNewUserWithPendingOrga(
         {
           email: 'testRemovePending@second-orga.com',

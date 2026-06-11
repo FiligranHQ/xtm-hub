@@ -11,6 +11,7 @@ import {
   LogicalOperator,
   ServiceInstanceFilter,
   ServiceInstanceFilterKey,
+  SubscriptionFilter,
 } from './src/__generated__/resolvers-types';
 import portalConfig from './src/config';
 import { databaseContext } from './src/context/database.context';
@@ -20,7 +21,11 @@ import { logApp } from './src/utils/app-logger.util';
 import { extractId } from './src/utils/utils';
 import { compareVersions, isValidVersion } from './src/utils/versioning';
 
-type Filters = Filter[] | DeploymentRequestFilter[] | ServiceInstanceFilter[];
+type Filters =
+  | Filter[]
+  | DeploymentRequestFilter[]
+  | ServiceInstanceFilter[]
+  | SubscriptionFilter[];
 
 export interface SecuryQueryOpts {
   [key: string]: string | number | boolean | string[] | MethodType | Filters;
@@ -173,7 +178,7 @@ export const dbConnections = <T>(
   nodes: T[],
   offset: string | undefined,
   limit: number | undefined,
-  totalCount
+  totalCount: number
 ) => {
   const currentOffset = offset ? Number(atob(offset)) : 0;
   const edges: { cursor: string; node: T }[] = nodes.map((n, index) => {
@@ -386,7 +391,11 @@ const getFilterHandler = (key: string): FilterHandler => {
 export const applyFilter = (
   queryContext: Knex.QueryBuilder,
   type: DatabaseType,
-  filter: Filter
+  filter:
+    | Filter
+    | DeploymentRequestFilter
+    | ServiceInstanceFilter
+    | SubscriptionFilter
 ) => {
   if (!filter.key) return queryContext;
   const f = getFilterHandler(filter.key);

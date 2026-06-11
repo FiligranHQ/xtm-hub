@@ -2,12 +2,14 @@ import { AsyncLocalStorage } from 'async_hooks';
 import { UserLoadUserBy } from '../model/user';
 import { UnknownErrorCode } from '../utils/error/error.code';
 export interface RequestContext {
-  user: UserLoadUserBy;
+  user?: UserLoadUserBy;
   correlationId?: string;
 }
 
 // Create typed AsyncLocalStorage
-const requestContextStorage = new AsyncLocalStorage<RequestContext>();
+const requestContextStorage = new AsyncLocalStorage<
+  RequestContext | undefined
+>();
 
 export const requestContext = {
   // Get current context
@@ -22,6 +24,15 @@ export const requestContext = {
       throw UnknownErrorCode.NoAsyncContextAvailableError;
     }
     return context;
+  },
+
+  // Get authenticated user or throw if missing
+  requireUser(): UserLoadUserBy {
+    const context = requestContextStorage.getStore();
+    if (!context?.user) {
+      throw UnknownErrorCode.NoAsyncContextAvailableError;
+    }
+    return context.user;
   },
 
   // Update context

@@ -108,7 +108,7 @@ export const UserServiceDomain = {
     const dataCapabilities = capabilitiesId.map((capabilityId) => ({
       id: uuidv4() as UserServiceCapabilityId,
       user_service_id: userService.id,
-      generic_service_capability_id: capabilityId,
+      generic_service_capability_id: capabilityId as GenericServiceCapabilityId,
     }));
     await insertServiceCapability(dataCapabilities);
   },
@@ -132,6 +132,9 @@ export const UserServiceDomain = {
     const subscription = await SubscriptionDomain.loadSubscriptionBy({
       id: subscription_id as SubscriptionId,
     });
+    if (!subscription) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
     const userOrganizations = await UserOrganizationDomain.loadUserOrganization(
       {
         user_id,
@@ -481,7 +484,13 @@ export const UserServiceDomain = {
 
     const userServiceCapability = [
       ...generic_service_capabilities.map(
-        ({ userServcapaId, ...generic_service_capability }) => ({
+        ({
+          userServcapaId,
+          ...generic_service_capability
+        }: {
+          userServcapaId: string;
+          [key: string]: unknown;
+        }) => ({
           id: userServcapaId,
           user_service_id: userServiceId,
           generic_service_capability: {
@@ -491,7 +500,15 @@ export const UserServiceDomain = {
         })
       ),
       ...subscription_capabilities.map(
-        ({ userServcapaId, subscriptionCapaId, ...service_capability }) => ({
+        ({
+          userServcapaId,
+          subscriptionCapaId,
+          ...service_capability
+        }: {
+          userServcapaId: string;
+          subscriptionCapaId: string;
+          [key: string]: unknown;
+        }) => ({
           id: userServcapaId,
           user_service_id: userServiceId,
           subscription_capability: {
@@ -512,7 +529,7 @@ export const UserServiceDomain = {
     opts: QueryOpts,
     subscriptionId: SubscriptionId
   ) => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const userServiceQuery = db<UserService>('User_Service')
       .where('subscription_id', '=', subscriptionId)
       .leftJoin('User as user', 'User_Service.user_id', '=', 'user.id')

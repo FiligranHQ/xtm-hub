@@ -1,4 +1,5 @@
 import express from 'express';
+import { GraphQLFieldResolver } from 'graphql';
 import { v4 as uuidv4 } from 'uuid';
 import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
@@ -13,6 +14,7 @@ import {
   validateExistsPlatformAndToken,
 } from '../../../modules/security-management/token/platform-token.util';
 import { PLATFORM_USER_EMAIL, PLATFORM_USER_UUID } from '../../../portal.const';
+import { ErrorCode } from '../../../utils/error/error.code';
 
 export {
   extractPlatformId,
@@ -57,21 +59,47 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
   throw new Error('Invalid token provided');
 };
 
-export const createPlatformTokenResolver = (originalResolve) => {
-  return async function secureResolver(
-    source,
-    args,
-    portalContext: PortalContext,
-    info
-  ) {
+type ResolverArgumentValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ResolverArgumentValue[]
+  | { [key: string]: ResolverArgumentValue };
+
+type ResolverFn = GraphQLFieldResolver<
+  object | null,
+  PortalContext,
+  Record<string, ResolverArgumentValue>
+>;
+
+export const createPlatformTokenResolver = (
+  originalResolve: ResolverFn
+): ResolverFn => {
+  return async function secureResolver(source, args, portalContext, info) {
     const organization = await loadOrganizationFromPlatformIdAndTokenHeaders(
       portalContext.req
     );
+    if (!organization) {
+      throw ErrorCode.OrganizationNotFound;
+    }
 
-    const platformUser = {
+    const platformUser: UserLoadUserBy = {
       id: PLATFORM_USER_UUID,
       email: PLATFORM_USER_EMAIL,
+      salt: '',
+      password: '',
+      first_name: null,
+      last_name: null,
       selected_organization_id: organization.id,
+      picture: null,
+      disabled: false,
+      last_login: null,
+      country: null,
+      platform_token: null,
+      picture_minio: null,
+      selected_language: 'en',
       organizations: [organization],
       capabilities: [],
       roles_portal: [],
@@ -85,7 +113,7 @@ export const createPlatformTokenResolver = (originalResolve) => {
       selected_org_capabilities: [
         OrganizationCapability.ManagePlatformRegistration,
       ],
-    } as unknown as UserLoadUserBy;
+    };
 
     // If token is valid, override context with system user
     const enhancedContext: PortalContext = {

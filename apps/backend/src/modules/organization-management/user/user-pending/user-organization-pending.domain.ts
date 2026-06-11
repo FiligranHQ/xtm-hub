@@ -55,7 +55,7 @@ export const UserOrganizationPendingDomain = {
   },
 
   loadPendingUsers: (opts: QueryUsersArgs): Promise<UserConnection> => {
-    const { user } = requestContext.require();
+    const user = requestContext.requireUser();
     const loadPendingUserQuery = db<UserGenerated>('User');
     loadPendingUserQuery
       .leftJoin(
@@ -133,7 +133,9 @@ export const UserOrganizationPendingDomain = {
       filters,
       excludedIds
     );
-    const results = await queryBuilder.select('user_id');
+    const results = (await queryBuilder.select('user_id')) as Array<{
+      user_id: UserId;
+    }>;
     return results.map((row) => row.user_id);
   },
   cleanupPendingUsers: async (): Promise<{

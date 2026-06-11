@@ -1,9 +1,19 @@
 import { createWriteStream } from 'fs';
 import { join } from 'path';
+import { Readable } from 'stream';
+
+type UploadLike = Promise<{
+  createReadStream: () => Readable;
+  filename: string;
+  mimetype: string;
+}>;
 
 const storeUpload = async ({
   stream,
   filename,
+}: {
+  stream: Readable;
+  filename: string;
 }): Promise<{ path: string | Buffer }> => {
   const uploadDir = './uploads';
   const path = join(uploadDir, filename);
@@ -15,26 +25,29 @@ const storeUpload = async ({
   );
 };
 
-export const processUploadFile = async (upload) => {
+export const processUploadFile = async (upload: UploadLike) => {
   const { createReadStream, filename, mimetype } = await upload;
   const stream = createReadStream();
   const { path } = await storeUpload({ stream, filename });
   return { filename, mimetype, path };
 };
 
-export const processStreamFile = async (upload) => {
+export const processStreamFile = async (upload: UploadLike) => {
   const { createReadStream } = await upload;
   return createReadStream();
 };
 
-export const streamToBlob = (stream, mimeType) => {
+export const streamToBlob = (
+  stream: Readable,
+  mimeType?: string
+): Promise<Blob> => {
   if (mimeType != null && typeof mimeType !== 'string') {
     throw new Error('Invalid mimetype, expected string.');
   }
   return new Promise((resolve, reject) => {
-    const chunks = [];
+    const chunks: Uint8Array[] = [];
     stream
-      .on('data', (chunk) => chunks.push(chunk))
+      .on('data', (chunk: Uint8Array) => chunks.push(new Uint8Array(chunk)))
       .once('end', () => {
         const blob =
           mimeType != null

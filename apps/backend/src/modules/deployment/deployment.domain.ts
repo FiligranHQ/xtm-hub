@@ -51,8 +51,8 @@ export const DeploymentRequestDomain = {
   loadTrialsForOrganization: async (
     organizationId: OrganizationId,
     identifiers?: PlatformIdentifier[]
-  ) => {
-    return db<DeploymentRequest[]>('DeploymentRequest')
+  ): Promise<DeploymentRequest[]> => {
+    return db<DeploymentRequest>('DeploymentRequest')
       .where('organization_requester_id', '=', organizationId)
       .modify((qb) => {
         if (identifiers?.length) {
@@ -242,13 +242,23 @@ export const DeploymentRequestDomain = {
     id: DeploymentRequestId,
     platformIdentifier: PlatformIdentifier
   ) => {
+    const fullDeploymentRequest =
+      await DeploymentRequestDomain.loadFullDeploymentRequest({ id });
+
+    if (!fullDeploymentRequest) {
+      throw new Error(ErrorCode.DeploymentRequestNotFound);
+    }
+
     const {
       organization_name,
       requester_email,
       platform_id,
       user_requester_id,
       service_instance_id,
-    } = await DeploymentRequestDomain.loadFullDeploymentRequest({ id });
+    } = fullDeploymentRequest;
+    if (!platform_id) {
+      throw new Error(ErrorCode.InvalidPlatformId);
+    }
 
     try {
       await auth0Client.createAudienceAPI(organization_name, platform_id);

@@ -6,6 +6,7 @@ import {
   DocumentSourceType,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
+import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
   default as DocumentModel,
@@ -15,6 +16,7 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { restrictDocumentToUserOrganization } from '../../../security/restriction/document';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { MinioFile } from '../../../thirdparty/minio/types';
+import { ErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../document.app';
 import { Document } from '../document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from '../document.model';
@@ -58,6 +60,7 @@ export const DocumentChildrenDomain = {
     documentId: string,
     include_metadata: DocumentMetadataKeyCode[] = []
   ): Promise<Document[]> => {
+    const context = requestContext.get();
     const query = db<Document>('Document_Children')
       .leftJoin(
         'Document',
@@ -65,7 +68,12 @@ export const DocumentChildrenDomain = {
         'Document_Children.child_document_id'
       )
       .where('Document_Children.parent_document_id', '=', documentId)
-      .tap(restrictDocumentToUserOrganization)
+      .modify((qb) => {
+        // No restriction when unauthenticated: parent query enforces public-only boundary
+        if (context?.user) {
+          restrictDocumentToUserOrganization(qb);
+        }
+      })
       .orderBy('created_at', 'asc')
       .select('Document.*')
       .groupBy('Document.id');
@@ -143,9 +151,14 @@ export const DocumentChildrenDomain = {
     doc: T,
     externalImageUpload: Upload
   ) => {
+    const { service_instance_id } = doc;
+    if (!service_instance_id) {
+      throw new Error(ErrorCode.ServiceInstanceNotFound);
+    }
+
     const [logoFile] = await DocumentUploadsHelper.processUploads(
       externalImageUpload,
-      doc.service_instance_id
+      service_instance_id
     );
 
     const deletedDocuments = await withTransaction(async () => {
@@ -155,7 +168,7 @@ export const DocumentChildrenDomain = {
       if (logoFile) {
         await DocumentChildrenDomain.createImageDocuments(
           doc.id,
-          doc.service_instance_id,
+          service_instance_id,
           [logoFile],
           DocumentImageType.Logo,
           DocumentSourceType.External

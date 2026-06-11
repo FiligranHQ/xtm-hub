@@ -198,6 +198,10 @@ describe('serviceGroupApp', () => {
         group_id: analystGroupId,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
       });
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstanceId1,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
       await TestHelper.deploymentRequest.create({
         service_instance_id: serviceInstanceId1,
         user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,

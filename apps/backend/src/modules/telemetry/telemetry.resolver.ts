@@ -3,7 +3,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
 import { getErrorMessage } from '../../utils/error/error-guard.util';
 import { UnknownErrorCode } from '../../utils/error/error.code';
-import { telemetryApp } from './telemetry.app';
+import { TelemetryApp } from './telemetry.app';
 
 const resolvers: Resolvers = {
   Mutation: {
@@ -17,7 +17,7 @@ const resolvers: Resolvers = {
       try {
         const { input } = args;
         const userId = context.user.id as UserId;
-        await telemetryApp.sendOneClickDeployEvent({ userId, input });
+        await TelemetryApp.sendOneClickDeployEvent({ userId, input });
         return { result: true };
       } catch (error) {
         logApp.error('Error in sendTelemetryEvent resolver', {

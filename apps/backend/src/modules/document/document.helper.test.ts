@@ -27,7 +27,7 @@ import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../shareable-resource/opencti/integration/integration.model';
-import { telemetryApp } from '../telemetry/telemetry.app';
+import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
 import {
@@ -99,7 +99,7 @@ describe('documentHelper', () => {
 
       const documentId = document!.id;
 
-      vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+      vi.spyOn(TelemetryApp, 'countEventsByDocumentId').mockImplementation(
         async (eventType: TelemetryEventType, eventDocumentId: string) => {
           if (
             eventDocumentId === documentId &&
@@ -377,7 +377,7 @@ describe('documentHelper', () => {
 
     it('should return document when it is found', async () => {
       const slug = 'slug';
-      vi.spyOn(telemetryApp, 'countEventsByDocumentId').mockImplementation(
+      vi.spyOn(TelemetryApp, 'countEventsByDocumentId').mockImplementation(
         async (eventType) => {
           if (eventType === TelemetryEventType.DOWNLOAD) return 5;
           return 12;

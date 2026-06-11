@@ -10,6 +10,7 @@ import {
 } from '../../model/kanel/public/Subscription';
 import { SubscriptionCapabilityId } from '../../model/kanel/public/SubscriptionCapability';
 import {
+  ErrorCode,
   NotFoundErrorCode,
   UnknownErrorCode,
 } from '../../utils/error/error.code';
@@ -36,8 +37,15 @@ const resolvers: Resolvers = {
     },
     user_service: ({ id }, _) =>
       SubscriptionDomain.getUserService(id as SubscriptionId),
-    organization: ({ organization_id }, _) =>
-      OrganizationDomain.loadOrganizationBy({ id: organization_id }),
+    organization: async ({ organization_id }, _) => {
+      const orga = await OrganizationDomain.loadOrganizationBy({
+        id: organization_id,
+      });
+      if (!orga) {
+        throw new Error(ErrorCode.OrganizationNotFound);
+      }
+      return orga;
+    },
   },
   SubscriptionCapability: {
     service_capability: ({ id }, _) =>

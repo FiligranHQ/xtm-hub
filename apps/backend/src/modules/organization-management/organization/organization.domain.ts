@@ -24,6 +24,7 @@ export const OrganizationDomain = {
     email: string
   ): Promise<Organization[]> => {
     const extractedDomain = extractDomain(email);
+    if (!extractedDomain) return [];
     return OrganizationDomain.hasDomainOverlap([extractedDomain]);
   },
 
@@ -117,7 +118,7 @@ export const OrganizationDomain = {
 
   loadOrganizationBy: async (
     conditions: OrganizationMutator
-  ): Promise<Organization> => {
+  ): Promise<Organization | undefined> => {
     return db<Organization>('Organization')
       .where(conditions)
       .select('*')
@@ -183,7 +184,9 @@ export const OrganizationDomain = {
         detail?.match(regexErrorName) || message.match(regexErrorName);
       if (match) {
         const tableName = match[1];
-        throw new Error(`${tableName.toUpperCase()}_STILL_IN_ORGANIZATION`);
+        throw new Error(`${tableName?.toUpperCase()}_STILL_IN_ORGANIZATION`, {
+          cause: error,
+        });
       }
       throw error;
     }
