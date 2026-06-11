@@ -1,7 +1,14 @@
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
+import {
+  OrderingMode,
+  ServiceInstanceTag,
+  SubscriptionFilterKey,
+  SubscriptionOrdering,
+} from '../../__generated__/resolvers-types';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
@@ -240,6 +247,169 @@ describe('subscription app', () => {
       expect(loadedSubscription.organization_id).toBe(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
+    });
+  });
+
+  describe(`${subscriptionApp.loadSubscriptions.name}`, () => {
+    it('should sort subscriptions by related service name', async () => {
+      const serviceAId = uuidv4() as ServiceInstanceId;
+      const serviceBId = uuidv4() as ServiceInstanceId;
+
+      await TestHelper.serviceInstance.create({
+        id: serviceAId,
+        name: 'aaa-service',
+      });
+      await TestHelper.serviceInstance.create({
+        id: serviceBId,
+        name: 'bbb-service',
+      });
+
+      await SubscriptionDomain.createSubscription({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: serviceAId,
+        start_date: new Date('2026-01-01'),
+        end_date: null,
+      });
+      await SubscriptionDomain.createSubscription({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: serviceBId,
+        start_date: new Date('2026-01-01'),
+        end_date: null,
+      });
+
+      const ascResult = await subscriptionApp.loadSubscriptions({
+        first: 10,
+        orderBy: SubscriptionOrdering.ServiceName,
+        orderMode: OrderingMode.Asc,
+        filters: [
+          {
+            key: SubscriptionFilterKey.ServiceInstanceId,
+            value: [
+              toGlobalId('ServiceInstance', serviceAId),
+              toGlobalId('ServiceInstance', serviceBId),
+            ],
+          },
+        ],
+      });
+      const descResult = await subscriptionApp.loadSubscriptions({
+        first: 10,
+        orderBy: SubscriptionOrdering.ServiceName,
+        orderMode: OrderingMode.Desc,
+        filters: [
+          {
+            key: SubscriptionFilterKey.ServiceInstanceId,
+            value: [
+              toGlobalId('ServiceInstance', serviceAId),
+              toGlobalId('ServiceInstance', serviceBId),
+            ],
+          },
+        ],
+      });
+
+      expect(
+        ascResult.edges.map(({ node }) => node.service_instance_id)
+      ).toEqual([serviceAId, serviceBId]);
+      expect(
+        descResult.edges.map(({ node }) => node.service_instance_id)
+      ).toEqual([serviceBId, serviceAId]);
+    });
+
+    it('should search subscriptions by related organization name', async () => {
+      const serviceId = uuidv4() as ServiceInstanceId;
+      await TestHelper.serviceInstance.create({
+        id: serviceId,
+        name: 'search-by-org-service',
+      });
+
+      const firstSubscriptionId = uuidv4() as SubscriptionId;
+      const secondSubscriptionId = uuidv4() as SubscriptionId;
+
+      await SubscriptionDomain.createSubscription({
+        id: firstSubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: serviceId,
+        start_date: new Date('2026-02-01'),
+        end_date: null,
+      });
+      await SubscriptionDomain.createSubscription({
+        id: secondSubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: serviceId,
+        start_date: new Date('2026-02-01'),
+        end_date: null,
+      });
+
+      const result = await subscriptionApp.loadSubscriptions({
+        first: 10,
+        orderBy: SubscriptionOrdering.StartDate,
+        orderMode: OrderingMode.Asc,
+        searchTerm: 'second orga',
+        filters: [
+          {
+            key: SubscriptionFilterKey.ServiceInstanceId,
+            value: [toGlobalId('ServiceInstance', serviceId)],
+          },
+        ],
+      });
+
+      expect(Number(result.totalCount)).toBe(1);
+      expect(result.edges).toHaveLength(1);
+      expect(result.edges[0].node.id).toBe(secondSubscriptionId);
+      expect(result.edges[0].node.id).not.toBe(firstSubscriptionId);
+    });
+
+    it('should search subscriptions by service tags', async () => {
+      const openCtiServiceId = uuidv4() as ServiceInstanceId;
+      const othersServiceId = uuidv4() as ServiceInstanceId;
+
+      await TestHelper.serviceInstance.create({
+        id: openCtiServiceId,
+        name: 'service-a',
+        tags: [ServiceInstanceTag.Trial],
+      });
+      await TestHelper.serviceInstance.create({
+        id: othersServiceId,
+        name: 'service-b',
+        tags: [ServiceInstanceTag.Others],
+      });
+
+      const openCtiSubscriptionId = uuidv4() as SubscriptionId;
+      await SubscriptionDomain.createSubscription({
+        id: openCtiSubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: openCtiServiceId,
+        start_date: new Date('2026-03-01'),
+        end_date: null,
+      });
+      await SubscriptionDomain.createSubscription({
+        id: uuidv4() as SubscriptionId,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: othersServiceId,
+        start_date: new Date('2026-03-01'),
+        end_date: null,
+      });
+
+      const result = await subscriptionApp.loadSubscriptions({
+        first: 10,
+        orderBy: SubscriptionOrdering.StartDate,
+        orderMode: OrderingMode.Asc,
+        searchTerm: 'trial',
+        filters: [
+          {
+            key: SubscriptionFilterKey.ServiceInstanceId,
+            value: [
+              toGlobalId('ServiceInstance', openCtiServiceId),
+              toGlobalId('ServiceInstance', othersServiceId),
+            ],
+          },
+        ],
+      });
+
+      expect(Number(result.totalCount)).toBe(1);
+      expect(result.edges).toHaveLength(1);
+      expect(result.edges[0].node.id).toBe(openCtiSubscriptionId);
     });
   });
 
