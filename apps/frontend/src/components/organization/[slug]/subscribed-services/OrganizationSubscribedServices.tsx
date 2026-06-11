@@ -8,6 +8,7 @@ import {
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
+import { formatDate } from '@/utils/date';
 import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import {
   OrderingMode,
@@ -85,7 +86,7 @@ const OrganizationSubscribedServicesSlug = ({
         header: t('Service.SubscribedServicesList.StartDate'),
         cell: ({ row }) => {
           return row.original.start_date
-            ? new Date(row.original.start_date).toLocaleDateString()
+            ? (formatDate(row.original.start_date) ?? '—')
             : '—';
         },
       },
