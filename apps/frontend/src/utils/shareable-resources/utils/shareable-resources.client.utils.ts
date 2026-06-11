@@ -1,12 +1,12 @@
 import { hasProperty } from '@/utils/has-property';
 import { serviceConfigMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
+  PublicDocumentData,
   ServiceInfo,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 
 export function getServiceInfo(
   serviceInstance: { id: string; slug: ServiceSlug },
@@ -33,7 +33,7 @@ export const docHasMetadata = <T, K extends string>(
   documentData[metadataKey] !== undefined;
 
 export const isResourceDownloadable = (
-  document: documentItem_fragment$data | publicDocumentItemFragment$data
+  document: documentItem_fragment$data | PublicDocumentData
 ): boolean => {
   return (
     document.integration_type !== IntegrationTypeEnum.THIRD_PARTY_INTEGRATION

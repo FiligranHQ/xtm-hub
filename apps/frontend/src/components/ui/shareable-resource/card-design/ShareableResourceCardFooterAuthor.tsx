@@ -1,16 +1,16 @@
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { formatPersonNames } from '@/utils/format/name';
+import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Avatar } from '@filigran/ui/clients';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { ReactNode } from 'react';
 
 interface ShareableResourceCardFooterAuthorProps {
-  document: documentItem_fragment$data | publicDocumentItemFragment$data;
+  document: documentItem_fragment$data | PublicDocumentData;
   shareLinkUrl: string;
   shouldDisplayAuthor?: boolean;
   extraContent?: ReactNode;
