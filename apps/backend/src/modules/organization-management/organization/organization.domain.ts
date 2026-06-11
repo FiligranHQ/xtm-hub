@@ -184,7 +184,9 @@ export const OrganizationDomain = {
         detail?.match(regexErrorName) || message.match(regexErrorName);
       if (match) {
         const tableName = match[1];
-        throw new Error(`${tableName?.toUpperCase()}_STILL_IN_ORGANIZATION`);
+        throw new Error(`${tableName?.toUpperCase()}_STILL_IN_ORGANIZATION`, {
+          cause: error,
+        });
       }
       throw error;
     }

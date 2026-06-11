@@ -3,13 +3,17 @@ import { db } from '../../../../knexfile';
 import { ServiceRestriction } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
-import UserServiceCapability from '../../../model/kanel/public/UserServiceCapability';
+import UserServiceCapability, {
+  UserServiceCapabilityInitializer,
+} from '../../../model/kanel/public/UserServiceCapability';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { ServiceCapabilityDomain } from './service-capability.domain';
 
 export const ServiceCapabilityHelper = {
-  insertServiceCapability: async (genericServiceCapabilityData) => {
+  insertServiceCapability: async (
+    genericServiceCapabilityData: UserServiceCapabilityInitializer[]
+  ) => {
     return db<UserServiceCapability>('UserService_Capability')
       .insert(genericServiceCapabilityData)
       .returning('*');

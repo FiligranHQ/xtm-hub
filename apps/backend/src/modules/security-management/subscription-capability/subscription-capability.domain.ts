@@ -9,7 +9,7 @@ import SubscriptionCapability, {
 export const SubscriptionCapabilityDomain = {
   loadSubscriptionCapabilitiesBy: async (
     field: SubscriptionCapabilityMutator
-  ) => {
+  ): Promise<SubscriptionCapability[]> => {
     return db<SubscriptionCapability>('Subscription_Capability').where(field);
   },
 

@@ -1,4 +1,6 @@
 import bodyParser from 'body-parser';
+import { Express, NextFunction, Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { requestContext } from '../../../context/request.context';
 import { UserInfo } from '../../../model/user';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
@@ -12,35 +14,62 @@ import { setCookieError } from '../../../utils/set-cookies.util';
 import { authenticateUser } from './auth-user';
 import { initProviders } from './provider/providers';
 
-export const initAuthPlatform = async (app) => {
+const authProviderRateLimiter = rateLimit({
+  windowMs: 180 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+export const initAuthPlatform = async (app: Express) => {
   logApp.debug('initAuthPlatform');
   const passport = await initProviders();
-  app.get(`/auth/:provider`, (req, res, next) => {
-    try {
-      const { provider } = req.params;
-      const redirect = req.query.redirect;
-      // Referer header is attacker-controlled — not trusted as redirect destination
-      req.session.referer =
-        typeof redirect === 'string'
-          ? resolveSessionReferer(redirect)
-          : undefined;
-      requestContext.set(SYSTEM_USER_CONTEXT);
-      passport.authenticate(provider, {}, (err) => {
-        setCookieError(res, err?.message);
-        next(err);
-      })(req, res, next);
-    } catch (e) {
-      setCookieError(res, getErrorMessage(e));
-      next(e);
+  app.get(
+    `/auth/:provider`,
+    authProviderRateLimiter,
+    (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const providerParam = req.params.provider;
+        const provider = Array.isArray(providerParam)
+          ? providerParam[0]
+          : providerParam;
+        if (!provider) {
+          setCookieError(res, 'Missing authentication provider');
+          res.redirect('/');
+          return;
+        }
+        const redirect = req.query.redirect;
+        // Referer header is attacker-controlled — not trusted as redirect destination
+        req.session.referer =
+          typeof redirect === 'string'
+            ? resolveSessionReferer(redirect)
+            : undefined;
+        requestContext.set(SYSTEM_USER_CONTEXT);
+        passport.authenticate(provider, {}, (err: Error | null) => {
+          setCookieError(res, err?.message);
+          next(err);
+        })(req, res, next);
+      } catch (e) {
+        setCookieError(res, getErrorMessage(e));
+        next(e);
+      }
     }
-  });
+  );
 
   const urlencodedParser = bodyParser.urlencoded({ extended: true });
   app.all(
     `/auth/:provider/callback`,
     urlencodedParser,
-    async (req, res, next) => {
-      const { provider } = req.params;
+    async (req: Request, res: Response, next: NextFunction) => {
+      const providerParam = req.params.provider;
+      const provider = Array.isArray(providerParam)
+        ? providerParam[0]
+        : providerParam;
+      if (!provider) {
+        setCookieError(res, 'Missing authentication provider');
+        res.redirect('/');
+        return;
+      }
       let referer = req.session.referer;
       try {
         requestContext.set(SYSTEM_USER_CONTEXT);

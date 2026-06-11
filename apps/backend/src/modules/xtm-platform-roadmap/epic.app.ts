@@ -117,9 +117,10 @@ export const EpicApp = {
 
     const createdDocument = await addImage(user, uploads);
 
-    let oldEpic;
+    let oldEpic: Epic | undefined;
     if (createdDocument?.id) {
-      oldEpic = await EpicDomain.loadEpicsBy({ id });
+      const [loadedOldEpic] = await EpicDomain.loadEpicsBy({ id });
+      oldEpic = loadedOldEpic;
     }
     const epicData: Partial<Epic> = {
       ...stripNulls(restInput),

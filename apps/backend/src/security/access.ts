@@ -89,7 +89,8 @@ export const isNodeAccessible = async (
   }
   const type = node.__typename;
 
-  const selectedFunction = mapping[topic] || applySSESecurity;
+  const selectedFunction =
+    mapping[topic as AccessibleTopics] || applySSESecurity;
   if (!selectedFunction) {
     throw new Error(`Security behavior must be defined for type ${type}`);
   }

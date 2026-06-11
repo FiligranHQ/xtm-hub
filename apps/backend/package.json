@@ -101,6 +101,7 @@
     "@types/express-session": "1.19.0",
     "@types/graphql-upload": "17.0.0",
     "@types/node": "catalog:",
+    "@types/nodemailer": "8.0.0",
     "@types/passport": "1.0.17",
     "@typescript-eslint/eslint-plugin": "8.60.1",
     "@typescript-eslint/parser": "8.60.1",

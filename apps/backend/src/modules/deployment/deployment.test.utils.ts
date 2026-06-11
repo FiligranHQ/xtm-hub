@@ -45,7 +45,7 @@ export async function insertDeploymentRequest(
     service_instance_id: serviceInstanceId,
   });
 
-  const defaultDeploymentRequestValues = {
+  const defaultDeploymentRequestValues: DeploymentRequestInitializer = {
     activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
     id: uuidv4() as DeploymentRequestId,
     job_title: DeploymentRequestJobTitle.CybersecurityEngineer,

@@ -1,3 +1,4 @@
+import { GraphQLFieldResolver } from 'graphql';
 import { PortalContext } from '../../model/portal-context';
 import { UserDomain } from '../../modules/organization-management/user/user-domain/user.domain';
 import {
@@ -6,25 +7,41 @@ import {
 } from '../../utils/error/error.util';
 import { AuthFn, RoleFn, RoleType, ServiceFn } from './directive.model';
 
+type ResolverArgumentValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ResolverArgumentValue[]
+  | { [key: string]: ResolverArgumentValue };
+
+type ResolverArgs = {
+  service_instance_id?: string;
+  subscription_id?: string;
+  serviceInstanceId?: string;
+} & Record<string, ResolverArgumentValue>;
+
+export type ResolverFn = GraphQLFieldResolver<
+  object | null,
+  PortalContext,
+  ResolverArgs
+>;
+
 /**
  * Creates a field resolver with authentication and authorization checks
  */
 export const createSecureFieldResolver = (
-  originalResolve,
+  originalResolve: ResolverFn,
   context: {
     isAuthenticatedFn: AuthFn;
     hasCapabilityFn: RoleFn;
     hasServiceCapabilityFn: ServiceFn;
-    authDirective?;
-    serviceCapaDirective?;
+    authDirective?: { portalCapa?: string[]; orgaCapa?: string[] };
+    serviceCapaDirective?: { requires?: string[] };
   }
-) => {
-  return async function secureResolver(
-    source,
-    args,
-    portalContext: PortalContext,
-    info
-  ) {
+): ResolverFn => {
+  return async function secureResolver(source, args, portalContext, info) {
     const { user } = portalContext;
     const {
       isAuthenticatedFn,

@@ -1,23 +1,9 @@
 // https://github.com/node-config/node-config
 import config from 'config';
-import ServiceCapability from './model/kanel/public/ServiceCapability';
 import {
   DevUser,
   parseAndValidateDevUsers,
 } from './utils/config-validation.util';
-
-interface Services {
-  name: string;
-  provider: string;
-  type: string;
-  description: string;
-}
-
-interface ServiceDefinitions {
-  name: string;
-  route_name: string;
-  description: string;
-}
 
 interface PortalConfig {
   port: number;
@@ -56,9 +42,6 @@ interface PortalConfig {
     name: string;
     secret: string;
   };
-  services: Services[];
-  serviceCapabilities: ServiceCapability[];
-  service_definitions: ServiceDefinitions[];
   environment: string;
   enabled_features: string[];
   dev_users?: DevUser[];
@@ -104,9 +87,6 @@ const portalConfig: PortalConfig = {
       ),
     },
   },
-  services: config.get('init_services'),
-  serviceCapabilities: config.get('init_service_capabilities'),
-  service_definitions: config.get('init_service_definitions'),
   session_store: {
     type: config.get<'postgresql' | 'memory'>('session_store.type'),
     cleanup_interval_minutes: config.get<number>(

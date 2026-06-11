@@ -2,8 +2,14 @@ import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db, dbRaw } from '../../../../knexfile';
 import { Subscription } from '../../../__generated__/resolvers-types';
+import { GenericServiceCapabilityId } from '../../../model/kanel/public/GenericServiceCapability';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
-import { SubscriptionCapabilityId } from '../../../model/kanel/public/SubscriptionCapability';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import SubscriptionCapability, {
+  SubscriptionCapabilityId,
+} from '../../../model/kanel/public/SubscriptionCapability';
+import { UserId } from '../../../model/kanel/public/User';
 import UserService from '../../../model/kanel/public/UserService';
 import UserServiceCapability, {
   UserServiceCapabilityId,
@@ -26,14 +32,18 @@ export const UserServiceCapabilityHelper = {
         });
 
       if (genericCapability) {
-        const data = userServices.map((us) => {
-          return {
-            id: uuidv4() as UserServiceCapabilityId,
-            user_service_id: us.id,
-            generic_service_capability_id: genericCapability.id,
-            subscription_capability_id: null,
-          };
-        });
+        const data: UserServiceCapabilityInitializer[] = userServices.map(
+          (us) => {
+            return {
+              id: uuidv4() as UserServiceCapabilityId,
+              user_service_id: us.id,
+              generic_service_capability_id:
+                genericCapability.id as GenericServiceCapabilityId,
+              subscription_capability_id:
+                null as SubscriptionCapabilityId | null,
+            };
+          }
+        );
         await UserServiceCapabilityHelper.insertUserServiceCapability(data);
       } else {
         const [firstUserService] = userServices;
@@ -60,23 +70,28 @@ export const UserServiceCapabilityHelper = {
             subscription_id: firstUserService.subscription_id,
           });
         const isCapabilityGrantedForOrganization =
-          subscriptionCapabilities.some((subscriptionCapability) => {
-            return (
-              subscriptionCapability.service_capability_id ===
-              serviceCapability.id
-            );
-          });
+          subscriptionCapabilities.some(
+            (subscriptionCapability: SubscriptionCapability) => {
+              return (
+                subscriptionCapability.service_capability_id ===
+                serviceCapability.id
+              );
+            }
+          );
 
         if (isCapabilityGrantedForOrganization) {
-          const data = userServices.map((us) => {
-            return {
-              id: uuidv4() as UserServiceCapabilityId,
-              user_service_id: us.id,
-              generic_service_capability_id: null,
-              subscription_capability_id:
-                subscriptionCapability.id as SubscriptionCapabilityId,
-            };
-          });
+          const data: UserServiceCapabilityInitializer[] = userServices.map(
+            (us) => {
+              return {
+                id: uuidv4() as UserServiceCapabilityId,
+                user_service_id: us.id,
+                generic_service_capability_id:
+                  null as GenericServiceCapabilityId | null,
+                subscription_capability_id:
+                  subscriptionCapability?.id as SubscriptionCapabilityId,
+              };
+            }
+          );
           await UserServiceCapabilityHelper.insertUserServiceCapability(data);
         } else {
           throw new Error(ErrorCode.GrantCapabilitiesOnOrganizationFirst);
@@ -103,7 +118,11 @@ export const UserServiceCapabilityHelper = {
       .returning('*');
   },
 
-  loadCapabilities: async (serviceInstanceId, userId, orgaId) => {
+  loadCapabilities: async (
+    serviceInstanceId: ServiceInstanceId,
+    userId: UserId,
+    orgaId: OrganizationId
+  ) => {
     const [subscriptionWithCapabilities] = await db<Subscription>(
       'Subscription'
     )
