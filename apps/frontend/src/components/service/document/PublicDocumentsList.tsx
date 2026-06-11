@@ -1,7 +1,7 @@
 import { ServiceListHeader } from '@/components/service/components/header/ServiceListHeader';
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import {
-  publicDocumentItem,
+  publicDocumentListItem,
   PublicDocumentListQuery,
 } from '@/components/service/document/public-document.graphql';
 import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
@@ -10,10 +10,10 @@ import useScrollPosition from '@/hooks/use-scroll-position';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
-import { publicDocumentItemFragment$key } from '@generated/publicDocumentItemFragment.graphql';
 import publicDocumentListGraphql, {
   publicDocumentList$key,
 } from '@generated/publicDocumentList.graphql';
+import { publicDocumentListItemFragment$key } from '@generated/publicDocumentListItemFragment.graphql';
 import {
   publicDocumentsQuery,
   publicDocumentsQuery$variables,
@@ -52,7 +52,10 @@ const PublicDocumentsList = ({
   const documents = useMemo(() => {
     return (data.publicDocuments?.edges ?? [])
       .map(({ node }) =>
-        readInlineData<publicDocumentItemFragment$key>(publicDocumentItem, node)
+        readInlineData<publicDocumentListItemFragment$key>(
+          publicDocumentListItem,
+          node
+        )
       )
       .filter((l) => !!l);
   }, [data.publicDocuments]);

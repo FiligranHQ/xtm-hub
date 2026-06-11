@@ -1,15 +1,15 @@
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardVersion';
+import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { ReactNode } from 'react';
 
 interface ShareableResourceCardFooterVersionProps {
-  document: documentItem_fragment$data | publicDocumentItemFragment$data;
+  document: documentItem_fragment$data | PublicDocumentData;
   publicPath?: boolean;
   shareLinkUrl: string;
   extraContent?: ReactNode;

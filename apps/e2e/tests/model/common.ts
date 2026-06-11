@@ -21,16 +21,17 @@ export async function clickRowAction(
   await button.click({ force: true });
 }
 
+export async function waitForDrawerToOpen(page: Page) {
+  await page.locator('body > [role="dialog"]').waitFor({ state: 'visible' });
+  await page
+    .locator('body > div.fixed.inset-0.z-50')
+    .waitFor({ state: 'visible' });
+}
+
 export async function waitForDrawerToClose(page: Page) {
   await page.locator('body > [role="dialog"]').waitFor({ state: 'hidden' });
   await page
     .locator('body > div.fixed.inset-0.z-50')
-    .waitFor({ state: 'hidden' });
-}
-
-export async function waitForToasterToHide(page: Page) {
-  await page
-    .locator('[role="region"] li[role="status"]')
     .waitFor({ state: 'hidden' });
 }
 
