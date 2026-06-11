@@ -2,32 +2,18 @@ import ServiceListHeaderButtons from '@/components/service/components/header/Ser
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import testRender from '@/utils/test/test-render';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { createMockEnvironment } from 'relay-test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const {
-  mockUseServiceContext,
-  mockUseServiceCapability,
-  mockUseAdminByPass,
-  mockSetIntegrationType,
-} = vi.hoisted(() => ({
+const { mockUseServiceContext, mockSetIntegrationType } = vi.hoisted(() => ({
   mockUseServiceContext: vi.fn(),
-  mockUseServiceCapability: vi.fn(),
-  mockUseAdminByPass: vi.fn(),
   mockSetIntegrationType: vi.fn(),
 }));
 
 vi.mock('@/components/service/components/ServiceContext', () => ({
   useServiceContext: mockUseServiceContext,
-}));
-
-vi.mock('@/hooks/use-service-capability', () => ({
-  default: mockUseServiceCapability,
-}));
-
-vi.mock('@/hooks/use-portal-capability', () => ({
-  useAdminByPass: mockUseAdminByPass,
 }));
 
 const buildServiceContext = (overrides = {}) => ({
@@ -45,29 +31,26 @@ const buildServiceContext = (overrides = {}) => ({
 describe('ServiceListHeaderButtons', () => {
   beforeEach(() => {
     mockUseServiceContext.mockReturnValue(buildServiceContext());
-    mockUseServiceCapability.mockReturnValue(false);
-    mockUseAdminByPass.mockReturnValue(false);
   });
 
   it.each`
-    isBypass | serviceCapabilities                       | organizationCapabilities                                  | shouldRender
-    ${false} | ${[ServiceRestrictionEnum.MANAGE_ACCESS]} | ${[]}                                                     | ${true}
-    ${false} | ${[ServiceRestrictionEnum.MANAGE_ACCESS]} | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]} | ${true}
-    ${false} | ${[]}                                     | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]} | ${true}
-    ${false} | ${[]}                                     | ${[OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION]}       | ${true}
-    ${false} | ${[]}                                     | ${[]}                                                     | ${false}
-    ${true}  | ${[]}                                     | ${[]}                                                     | ${true}
+    portalCapabilities                         | serviceCapabilities                       | organizationCapabilities                                  | shouldRender
+    ${[]}                                      | ${[ServiceRestrictionEnum.MANAGE_ACCESS]} | ${[]}                                                     | ${true}
+    ${[]}                                      | ${[ServiceRestrictionEnum.MANAGE_ACCESS]} | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]} | ${true}
+    ${[]}                                      | ${[]}                                     | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]} | ${true}
+    ${[]}                                      | ${[]}                                     | ${[OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION]}       | ${true}
+    ${[]}                                      | ${[]}                                     | ${[]}                                                     | ${false}
+    ${[{ name: PortalCapabilityEnum.BYPASS }]} | ${[]}                                     | ${[]}                                                     | ${true}
   `(
     'renders manage access button when shouldRender=$shouldRender',
     ({
-      isBypass,
+      portalCapabilities,
       serviceCapabilities,
       organizationCapabilities,
       shouldRender,
     }) => {
       // Given
       const environment = createMockEnvironment();
-      mockUseAdminByPass.mockReturnValue(isBypass);
       mockUseServiceContext.mockReturnValue(
         buildServiceContext({
           serviceInstance: {
@@ -81,6 +64,7 @@ describe('ServiceListHeaderButtons', () => {
       const { queryByRole } = testRender(<ServiceListHeaderButtons />, {
         relayConfig: environment,
         me: {
+          capabilities: portalCapabilities,
           selected_org_capabilities: organizationCapabilities,
         },
       });
@@ -106,13 +90,15 @@ describe('ServiceListHeaderButtons', () => {
   it('does not render update actions when user cannot upload', () => {
     // Given
     const environment = createMockEnvironment();
-    mockUseServiceCapability.mockReturnValue(false);
 
     // When
     const { queryByRole, queryByText, queryByTestId } = testRender(
       <ServiceListHeaderButtons />,
       {
         relayConfig: environment,
+        me: {
+          capabilities: [],
+        },
       }
     );
 
