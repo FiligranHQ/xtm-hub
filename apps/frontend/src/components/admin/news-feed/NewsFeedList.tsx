@@ -12,7 +12,7 @@ import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
 import { MoreVertIcon } from '@filigran/icon';
 import { DataTable, toast } from '@filigran/ui';
-import { Badge, Button } from '@filigran/ui/servers';
+import { Badge } from '@filigran/ui/servers';
 import { newsFeedDeleteMutation } from '@generated/newsFeedDeleteMutation.graphql';
 import {
   newsFeedItem_fragment$data,
@@ -122,12 +122,11 @@ const NewsFeedList = () => {
             return <span className="truncate">{row.original.title}</span>;
           }
           return (
-            <Button
-              className="h-auto truncate p-0"
-              variant="link"
-              asChild>
-              <Link href={`/${urlPath}`}>{row.original.title}</Link>
-            </Button>
+            <Link
+              href={`/${urlPath}`}
+              className="truncate">
+              {row.original.title}
+            </Link>
           );
         },
       },
