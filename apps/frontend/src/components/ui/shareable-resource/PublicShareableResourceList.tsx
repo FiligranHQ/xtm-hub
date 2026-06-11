@@ -2,13 +2,13 @@ import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableR
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
+import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useTranslations } from 'next-intl';
 import { Fragment, useMemo } from 'react';
 
 interface PublicShareableResourceListProps {
-  documents: publicDocumentItemFragment$data[];
+  documents: publicDocumentListItemFragment$data[];
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
 }
@@ -21,22 +21,21 @@ export const PublicShareableResourceList = ({
   const t = useTranslations();
 
   const documentsByIntegrationType = useMemo(() => {
-    return documents.reduce<Record<string, publicDocumentItemFragment$data[]>>(
-      (acc, resource) => {
-        const type =
-          isIntegrationItem(resource) && resource.integration_type
-            ? resource.integration_type
-            : resource.type;
+    return documents.reduce<
+      Record<string, publicDocumentListItemFragment$data[]>
+    >((acc, resource) => {
+      const type =
+        isIntegrationItem(resource) && resource.integration_type
+          ? resource.integration_type
+          : resource.type;
 
-        if (!acc[type]) {
-          acc[type] = [];
-        }
+      if (!acc[type]) {
+        acc[type] = [];
+      }
 
-        acc[type].push(resource);
-        return acc;
-      },
-      {}
-    );
+      acc[type].push(resource);
+      return acc;
+    }, {});
   }, [documents]);
 
   if (documents.length === 0) {

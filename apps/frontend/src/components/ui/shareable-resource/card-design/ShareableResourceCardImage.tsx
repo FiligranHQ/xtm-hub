@@ -1,11 +1,11 @@
 import { findDocumentLogo } from '@/utils/documents';
+import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import Image from 'next/image';
 
 interface ShareableResourceCardImageProps {
-  document: documentItem_fragment$data | publicDocumentItemFragment$data;
+  document: documentItem_fragment$data | PublicDocumentData;
   serviceInstanceId: string;
 }
 export const ShareableResourceCardImage = ({
