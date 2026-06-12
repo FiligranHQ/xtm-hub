@@ -9,6 +9,7 @@ import {
   SubscriptionFilterKey,
   SubscriptionOrdering,
 } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
@@ -251,6 +252,33 @@ describe('subscription app', () => {
   });
 
   describe(`${subscriptionApp.loadSubscriptions.name}`, () => {
+    const serviceInstanceFilters = (ids: ServiceInstanceId[]) => [
+      {
+        key: SubscriptionFilterKey.ServiceInstanceId,
+        value: ids.map((id) => toGlobalId('ServiceInstance', id)),
+      },
+    ];
+
+    const createSubscription = async ({
+      id = uuidv4() as SubscriptionId,
+      organizationId,
+      serviceInstanceId,
+      startDate,
+    }: {
+      id?: SubscriptionId;
+      organizationId: OrganizationId;
+      serviceInstanceId: ServiceInstanceId;
+      startDate: Date;
+    }) => {
+      return SubscriptionDomain.createSubscription({
+        id,
+        organization_id: organizationId,
+        service_instance_id: serviceInstanceId,
+        start_date: startDate,
+        end_date: null,
+      });
+    };
+
     it('should sort subscriptions by related service name', async () => {
       const serviceAId = uuidv4() as ServiceInstanceId;
       const serviceBId = uuidv4() as ServiceInstanceId;
@@ -264,48 +292,28 @@ describe('subscription app', () => {
         name: 'bbb-service',
       });
 
-      await SubscriptionDomain.createSubscription({
-        id: uuidv4() as SubscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        service_instance_id: serviceAId,
-        start_date: new Date('2026-01-01'),
-        end_date: null,
+      await createSubscription({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceInstanceId: serviceAId,
+        startDate: new Date('2026-01-01'),
       });
-      await SubscriptionDomain.createSubscription({
-        id: uuidv4() as SubscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        service_instance_id: serviceBId,
-        start_date: new Date('2026-01-01'),
-        end_date: null,
+      await createSubscription({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceInstanceId: serviceBId,
+        startDate: new Date('2026-01-01'),
       });
 
       const ascResult = await subscriptionApp.loadSubscriptions({
         first: 10,
         orderBy: SubscriptionOrdering.ServiceName,
         orderMode: OrderingMode.Asc,
-        filters: [
-          {
-            key: SubscriptionFilterKey.ServiceInstanceId,
-            value: [
-              toGlobalId('ServiceInstance', serviceAId),
-              toGlobalId('ServiceInstance', serviceBId),
-            ],
-          },
-        ],
+        filters: serviceInstanceFilters([serviceAId, serviceBId]),
       });
       const descResult = await subscriptionApp.loadSubscriptions({
         first: 10,
         orderBy: SubscriptionOrdering.ServiceName,
         orderMode: OrderingMode.Desc,
-        filters: [
-          {
-            key: SubscriptionFilterKey.ServiceInstanceId,
-            value: [
-              toGlobalId('ServiceInstance', serviceAId),
-              toGlobalId('ServiceInstance', serviceBId),
-            ],
-          },
-        ],
+        filters: serviceInstanceFilters([serviceAId, serviceBId]),
       });
 
       expect(
@@ -326,19 +334,17 @@ describe('subscription app', () => {
       const firstSubscriptionId = uuidv4() as SubscriptionId;
       const secondSubscriptionId = uuidv4() as SubscriptionId;
 
-      await SubscriptionDomain.createSubscription({
+      await createSubscription({
         id: firstSubscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        service_instance_id: serviceId,
-        start_date: new Date('2026-02-01'),
-        end_date: null,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceInstanceId: serviceId,
+        startDate: new Date('2026-02-01'),
       });
-      await SubscriptionDomain.createSubscription({
+      await createSubscription({
         id: secondSubscriptionId,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        service_instance_id: serviceId,
-        start_date: new Date('2026-02-01'),
-        end_date: null,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        serviceInstanceId: serviceId,
+        startDate: new Date('2026-02-01'),
       });
 
       const result = await subscriptionApp.loadSubscriptions({
@@ -346,12 +352,7 @@ describe('subscription app', () => {
         orderBy: SubscriptionOrdering.StartDate,
         orderMode: OrderingMode.Asc,
         searchTerm: 'second orga',
-        filters: [
-          {
-            key: SubscriptionFilterKey.ServiceInstanceId,
-            value: [toGlobalId('ServiceInstance', serviceId)],
-          },
-        ],
+        filters: serviceInstanceFilters([serviceId]),
       });
 
       expect(Number(result.totalCount)).toBe(1);
@@ -376,19 +377,16 @@ describe('subscription app', () => {
       });
 
       const openCtiSubscriptionId = uuidv4() as SubscriptionId;
-      await SubscriptionDomain.createSubscription({
+      await createSubscription({
         id: openCtiSubscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        service_instance_id: openCtiServiceId,
-        start_date: new Date('2026-03-01'),
-        end_date: null,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceInstanceId: openCtiServiceId,
+        startDate: new Date('2026-03-01'),
       });
-      await SubscriptionDomain.createSubscription({
-        id: uuidv4() as SubscriptionId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        service_instance_id: othersServiceId,
-        start_date: new Date('2026-03-01'),
-        end_date: null,
+      await createSubscription({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        serviceInstanceId: othersServiceId,
+        startDate: new Date('2026-03-01'),
       });
 
       const result = await subscriptionApp.loadSubscriptions({
@@ -396,15 +394,7 @@ describe('subscription app', () => {
         orderBy: SubscriptionOrdering.StartDate,
         orderMode: OrderingMode.Asc,
         searchTerm: 'trial',
-        filters: [
-          {
-            key: SubscriptionFilterKey.ServiceInstanceId,
-            value: [
-              toGlobalId('ServiceInstance', openCtiServiceId),
-              toGlobalId('ServiceInstance', othersServiceId),
-            ],
-          },
-        ],
+        filters: serviceInstanceFilters([openCtiServiceId, othersServiceId]),
       });
 
       expect(Number(result.totalCount)).toBe(1);

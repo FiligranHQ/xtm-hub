@@ -1,4 +1,8 @@
-import { db, dbRaw } from '../../../knexfile';
+import { db, dbRaw, paginate, QueryOpts } from '../../../knexfile';
+import {
+  SubscriptionConnection,
+  SubscriptionOrdering,
+} from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import ServiceCapability from '../../model/kanel/public/ServiceCapability';
 import Subscription, {
@@ -15,6 +19,39 @@ import { UnknownErrorCode } from '../../utils/error/error.code';
 import { formatRawObject } from '../../utils/query-raw.util';
 
 export const SubscriptionDomain = {
+  loadSubscriptions: async (opts: QueryOpts) => {
+    const { filters, searchTerm, orderBy } = opts;
+    const subscriptionOrderBy = getSubscriptionOrdering(orderBy);
+    const normalizedSearchTerm = searchTerm?.trim();
+    const shouldJoinOrganization =
+      (normalizedSearchTerm !== undefined && normalizedSearchTerm.length > 0) ||
+      subscriptionOrderBy === SubscriptionOrdering.OrganizationName;
+    const shouldJoinServiceInstanceAndDefinition =
+      (normalizedSearchTerm !== undefined && normalizedSearchTerm.length > 0) ||
+      subscriptionOrderBy === SubscriptionOrdering.ServiceName ||
+      subscriptionOrderBy === SubscriptionOrdering.ServiceDescription ||
+      subscriptionOrderBy === SubscriptionOrdering.ServiceProvider ||
+      subscriptionOrderBy === SubscriptionOrdering.ServiceType;
+
+    const queryContext = buildLoadSubscriptionsQuery({
+      normalizedSearchTerm,
+      shouldJoinOrganization,
+      shouldJoinServiceInstanceAndDefinition,
+    });
+
+    return paginate<Subscription, SubscriptionConnection>(
+      'Subscription',
+      {
+        ...opts,
+        orderBy: mapSubscriptionOrderingToColumn(subscriptionOrderBy),
+        filters,
+        searchTerm: undefined,
+      },
+      {},
+      queryContext
+    );
+  },
+
   deleteSubscriptions: async (
     ids: SubscriptionId[]
   ): Promise<Subscription[]> => {
@@ -193,4 +230,89 @@ export const SubscriptionDomain = {
         'Service_Capability.id',
       ]);
   },
+};
+
+const buildLoadSubscriptionsQuery = ({
+  normalizedSearchTerm,
+  shouldJoinOrganization,
+  shouldJoinServiceInstanceAndDefinition,
+}: {
+  normalizedSearchTerm: string | undefined;
+  shouldJoinOrganization: boolean;
+  shouldJoinServiceInstanceAndDefinition: boolean;
+}) => {
+  const queryContext = db<Subscription>('Subscription');
+
+  if (shouldJoinOrganization) {
+    queryContext.leftJoin(
+      'Organization',
+      'Organization.id',
+      'Subscription.organization_id'
+    );
+  }
+
+  if (shouldJoinServiceInstanceAndDefinition) {
+    queryContext
+      .leftJoin(
+        'ServiceInstance',
+        'ServiceInstance.id',
+        'Subscription.service_instance_id'
+      )
+      .leftJoin(
+        'ServiceDefinition',
+        'ServiceDefinition.id',
+        'ServiceInstance.service_definition_id'
+      );
+  }
+
+  if (normalizedSearchTerm) {
+    queryContext.andWhere((qb) => {
+      qb.whereILike('Organization.name', `%${normalizedSearchTerm}%`)
+        .orWhereILike('ServiceInstance.name', `%${normalizedSearchTerm}%`)
+        .orWhereILike(
+          'ServiceDefinition.identifier',
+          `%${normalizedSearchTerm}%`
+        )
+        .orWhereILike(
+          'ServiceInstance.creation_status',
+          `%${normalizedSearchTerm}%`
+        )
+        .orWhereRaw(
+          `EXISTS (
+            SELECT 1
+            FROM unnest("ServiceInstance"."tags"::text[]) AS tag
+            WHERE LOWER(tag) = LOWER(?)
+          )`,
+          [normalizedSearchTerm]
+        );
+    });
+  }
+
+  return queryContext;
+};
+
+const subscriptionOrderings = new Set(Object.values(SubscriptionOrdering));
+const getSubscriptionOrdering = (
+  orderBy: string | null | undefined
+): SubscriptionOrdering => {
+  if (orderBy && subscriptionOrderings.has(orderBy as SubscriptionOrdering)) {
+    return orderBy as SubscriptionOrdering;
+  }
+  return SubscriptionOrdering.StartDate;
+};
+
+const SUBSCRIPTION_ORDERING_TO_COLUMN: Record<SubscriptionOrdering, string> = {
+  [SubscriptionOrdering.OrganizationName]: 'Organization.name',
+  [SubscriptionOrdering.StartDate]: 'Subscription.start_date',
+  [SubscriptionOrdering.EndDate]: 'Subscription.end_date',
+  [SubscriptionOrdering.ServiceName]: 'ServiceInstance.name',
+  [SubscriptionOrdering.ServiceDescription]: 'ServiceDefinition.description',
+  [SubscriptionOrdering.ServiceType]: 'ServiceDefinition.identifier',
+  [SubscriptionOrdering.ServiceProvider]: 'ServiceDefinition.name',
+};
+
+const mapSubscriptionOrderingToColumn = (
+  orderBy: SubscriptionOrdering
+): string => {
+  return SUBSCRIPTION_ORDERING_TO_COLUMN[orderBy] ?? 'Subscription.start_date';
 };
