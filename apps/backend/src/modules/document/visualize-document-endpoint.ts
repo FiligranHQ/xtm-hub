@@ -1,4 +1,5 @@
 import cors from 'cors';
+import { Application, Request, Response } from 'express';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
 import { requestContext } from '../../context/request.context';
@@ -12,11 +13,18 @@ import { extractId } from '../../utils/utils';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { DocumentDomain } from './domain/document.domain';
 
-export const documentVisualizeEndpoint = (app) => {
+export const documentVisualizeEndpoint = (app: Application) => {
   app.get(
     `/document/visualize/:serviceInstanceId/:filename`,
     cors(),
-    async (req, res) => {
+    async (req: Request, res: Response) => {
+      const filename = Array.isArray(req.params.filename)
+        ? req.params.filename[0]
+        : req.params.filename;
+      if (!filename) {
+        res.status(400).json({ message: 'Missing filename parameter' });
+        return;
+      }
       const { user } = req.session;
       if (!user) {
         res.status(401).json({ message: 'You must be logged in' });
@@ -25,11 +33,11 @@ export const documentVisualizeEndpoint = (app) => {
       try {
         requestContext.update({ user });
         const document = await DocumentDomain.loadDocumentBy({
-          id: extractId<DocumentId>(req.params.filename),
+          id: extractId<DocumentId>(filename),
         });
         if (!document) {
           logApp.error(
-            `VISUALIZE Error while retrieving document: document not found. Required documentId: ${fromGlobalId(req.params.filename).id}`
+            `VISUALIZE Error while retrieving document: document not found. Required documentId: ${fromGlobalId(filename).id}`
           );
           res.status(404).json({ message: 'Document not found' });
           throw NotFoundError('DOCUMENT_NOT_FOUND_ERROR');
@@ -44,10 +52,13 @@ export const documentVisualizeEndpoint = (app) => {
           document.minio_name
         )) as Readable;
 
-        res.setHeader('Content-Type', document.mime_type);
+        res.setHeader(
+          'Content-Type',
+          document.mime_type ?? 'application/octet-stream'
+        );
         res.setHeader(
           'Content-Disposition',
-          `inline; filename="${document.file_name}"`
+          `inline; filename="${document.file_name ?? 'document'}"`
         );
 
         stream.pipe(res);
@@ -61,10 +72,23 @@ export const documentVisualizeEndpoint = (app) => {
   app.get(
     '/document/images/:serviceInstanceId/:documentId',
     cors(),
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
-        const serviceInstanceId = extractId<ServiceInstanceId>(
+        const serviceInstanceIdParam = Array.isArray(
           req.params.serviceInstanceId
+        )
+          ? req.params.serviceInstanceId[0]
+          : req.params.serviceInstanceId;
+        const documentIdParam = Array.isArray(req.params.documentId)
+          ? req.params.documentId[0]
+          : req.params.documentId;
+        if (!serviceInstanceIdParam || !documentIdParam) {
+          return res.status(400).json({
+            message: 'Missing serviceInstanceId or documentId parameter',
+          });
+        }
+        const serviceInstanceId = extractId<ServiceInstanceId>(
+          serviceInstanceIdParam
         );
         // Check if the user is authorized to access the document
         const serviceDefinition =
@@ -89,7 +113,7 @@ export const documentVisualizeEndpoint = (app) => {
             .status(404)
             .json({ message: 'Service definition not found' });
         }
-        const documentId = extractId<DocumentId>(req.params.documentId);
+        const documentId = extractId<DocumentId>(documentIdParam);
         const document = await DocumentDomain.loadDocumentBy({
           id: documentId,
         });
@@ -109,10 +133,13 @@ export const documentVisualizeEndpoint = (app) => {
           document.minio_name
         )) as Readable;
 
-        res.setHeader('Content-Type', document.mime_type);
+        res.setHeader(
+          'Content-Type',
+          document.mime_type ?? 'application/octet-stream'
+        );
         res.setHeader(
           'Content-Disposition',
-          `inline; filename="${document.file_name}"`
+          `inline; filename="${document.file_name ?? 'document'}"`
         );
 
         stream.pipe(res);

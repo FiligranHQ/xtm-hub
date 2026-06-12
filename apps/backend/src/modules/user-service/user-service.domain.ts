@@ -40,11 +40,8 @@ import {
   insertUserIntoOrganization,
 } from '../organization-management/user/user.helper';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
-import { insertServiceCapability } from '../security-management/service-capability/service-capability.helper';
-import {
-  insertCapabilities,
-  insertUserServiceCapability,
-} from '../security-management/user-service-capability/user-service-capability.helper';
+import { ServiceCapabilityHelper } from '../security-management/service-capability/service-capability.helper';
+import { UserServiceCapabilityHelper } from '../security-management/user-service-capability/user-service-capability.helper';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 
@@ -108,9 +105,9 @@ export const UserServiceDomain = {
     const dataCapabilities = capabilitiesId.map((capabilityId) => ({
       id: uuidv4() as UserServiceCapabilityId,
       user_service_id: userService.id,
-      generic_service_capability_id: capabilityId,
+      generic_service_capability_id: capabilityId as GenericServiceCapabilityId,
     }));
-    await insertServiceCapability(dataCapabilities);
+    await ServiceCapabilityHelper.insertServiceCapability(dataCapabilities);
   },
 
   createUserServiceAccess: async ({
@@ -157,7 +154,9 @@ export const UserServiceDomain = {
         throw new Error(UnknownErrorCode.AddUserServiceError);
       }
 
-      await insertCapabilities(capabilities, [addedUserService]);
+      await UserServiceCapabilityHelper.insertCapabilities(capabilities, [
+        addedUserService,
+      ]);
       const user_service_capa: UserServiceCapabilityInitializer = {
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: addedUserService.id,
@@ -165,7 +164,9 @@ export const UserServiceDomain = {
           GenericServiceCapabilityIds.AccessId as GenericServiceCapabilityId,
         subscription_capability_id: null,
       };
-      await insertUserServiceCapability([user_service_capa]);
+      await UserServiceCapabilityHelper.insertUserServiceCapability([
+        user_service_capa,
+      ]);
       return addedUserService;
     });
 
@@ -484,7 +485,13 @@ export const UserServiceDomain = {
 
     const userServiceCapability = [
       ...generic_service_capabilities.map(
-        ({ userServcapaId, ...generic_service_capability }) => ({
+        ({
+          userServcapaId,
+          ...generic_service_capability
+        }: {
+          userServcapaId: string;
+          [key: string]: unknown;
+        }) => ({
           id: userServcapaId,
           user_service_id: userServiceId,
           generic_service_capability: {
@@ -494,7 +501,15 @@ export const UserServiceDomain = {
         })
       ),
       ...subscription_capabilities.map(
-        ({ userServcapaId, subscriptionCapaId, ...service_capability }) => ({
+        ({
+          userServcapaId,
+          subscriptionCapaId,
+          ...service_capability
+        }: {
+          userServcapaId: string;
+          subscriptionCapaId: string;
+          [key: string]: unknown;
+        }) => ({
           id: userServcapaId,
           user_service_id: userServiceId,
           subscription_capability: {

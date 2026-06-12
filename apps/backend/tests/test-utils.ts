@@ -78,6 +78,14 @@ export async function createUser({
   last_name = 'Doe',
   professional_organization_id = 'ba091095-418f-4b4f-b150-6c9295e232c4',
   pending = false,
+}: {
+  knex: (table: string) => any;
+  email: string;
+  userId?: string;
+  first_name?: string;
+  last_name?: string;
+  professional_organization_id?: string;
+  pending?: boolean;
 }) {
   // Fixed salt and password (same for all users)
   const salt = 'fabc28ed1339f8b34c10bc3b5a650c01';

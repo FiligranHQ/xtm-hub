@@ -16,7 +16,7 @@ import {
   userSSESecurity,
 } from './user-security-access';
 
-import { isUserAllowed } from '../modules/security-management/capability/auth.helper';
+import { AuthHelper } from '../modules/security-management/capability/auth.helper';
 import { ErrorCode, UnknownErrorCode } from '../utils/error/error.code';
 
 export type SecuryQueryHandlers = {
@@ -33,7 +33,7 @@ export const isUserGranted = (
   return (
     !!user &&
     (!requiredCapability ||
-      isUserAllowed({
+      AuthHelper.isUserAllowed({
         userCapabilities: user.capabilities,
         organizationCapabilities: user.selected_org_capabilities,
         requiredCapability: requiredCapability,
@@ -89,7 +89,8 @@ export const isNodeAccessible = async (
   }
   const type = node.__typename;
 
-  const selectedFunction = mapping[topic] || applySSESecurity;
+  const selectedFunction =
+    mapping[topic as AccessibleTopics] || applySSESecurity;
   if (!selectedFunction) {
     throw new Error(`Security behavior must be defined for type ${type}`);
   }

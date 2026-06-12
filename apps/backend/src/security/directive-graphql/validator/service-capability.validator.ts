@@ -1,8 +1,5 @@
 import { UserLoadUserBy } from '../../../model/user';
-import {
-  getCapabilityUser,
-  userHasBypassCapability,
-} from '../../../modules/security-management/capability/auth.helper';
+import { AuthHelper } from '../../../modules/security-management/capability/auth.helper';
 export const SERVICE_CAPABILITY_DIRECTIVE_NAME = 'service_capa';
 
 export type ServiceCapabilityArgs = {
@@ -44,7 +41,7 @@ export const hasServiceCapability = async (
   capabilitiesRequired: string[]
 ): Promise<boolean> => {
   // Admin bypass
-  if (userHasBypassCapability(user)) {
+  if (AuthHelper.userHasBypassCapability(user)) {
     return true;
   }
 
@@ -55,7 +52,10 @@ export const hasServiceCapability = async (
   const normalizedArgs = normalizeServiceArgs(args);
 
   // Check user capabilities for the service
-  const capabilityUser = await getCapabilityUser(user, normalizedArgs);
+  const capabilityUser = await AuthHelper.getCapabilityUser(
+    user,
+    normalizedArgs
+  );
   const userCapabilities = capabilityUser?.capabilities ?? [];
 
   return userCapabilities.some((capability) =>

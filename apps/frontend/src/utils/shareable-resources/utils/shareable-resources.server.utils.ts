@@ -1,13 +1,14 @@
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
+import type { publicDocumentByServiceSlugItemFragment$data } from '@generated/publicDocumentByServiceSlugItemFragment.graphql';
+import type { publicDocumentBySlugItemFragment$data } from '@generated/publicDocumentBySlugItemFragment.graphql';
 import publicDocumentBySlugQueryGraphql from '@generated/publicDocumentBySlugQuery.graphql';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import publicDocumentsByServiceSlugQueryGraphql from '@generated/publicDocumentsByServiceSlugQuery.graphql';
 
 export async function fetchAllDocuments(
   serviceInstanceSlug: ServiceSlug
-): Promise<publicDocumentItemFragment$data[]> {
+): Promise<publicDocumentByServiceSlugItemFragment$data[]> {
   if (!Object.values(ServiceSlug).includes(serviceInstanceSlug)) {
     throw new Error(`Invalid service slug: ${serviceInstanceSlug}`);
   }
@@ -20,13 +21,13 @@ export async function fetchAllDocuments(
   const safeData = response.data as Record<string, unknown>;
   return safeData[
     'publicDocumentsByServiceSlug'
-  ] as publicDocumentItemFragment$data[];
+  ] as publicDocumentByServiceSlugItemFragment$data[];
 }
 
 export async function fetchSingleDocument(
   serviceInstanceId: string,
   slug: string
-): Promise<publicDocumentItemFragment$data | null> {
+): Promise<publicDocumentBySlugItemFragment$data | null> {
   const response = await serverFetchGraphQL(
     publicDocumentBySlugQueryGraphql,
     { slug, serviceInstanceId },
@@ -35,5 +36,5 @@ export async function fetchSingleDocument(
   const safeData = response.data as Record<string, unknown>;
   return safeData[
     'publicDocumentBySlug'
-  ] as publicDocumentItemFragment$data | null;
+  ] as publicDocumentBySlugItemFragment$data | null;
 }

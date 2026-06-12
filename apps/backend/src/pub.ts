@@ -58,7 +58,10 @@ export const listen = (
       if (!event) return false;
       const [topic] = Object.keys(event);
       if (!topic) return false;
-      const payload = event[topic];
+
+      const payload = (
+        event as unknown as Record<string, PubEvent[keyof PubEvent]>
+      )[topic];
       if (!payload) return false;
 
       const values = Object.values(event);

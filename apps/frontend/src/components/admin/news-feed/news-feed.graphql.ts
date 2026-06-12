@@ -7,6 +7,10 @@ export const newsFeedItemFragment = graphql`
     creation_date
     tags
     is_deleted
+    metadata {
+      key
+      value
+    }
   }
 `;
 

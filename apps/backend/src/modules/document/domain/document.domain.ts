@@ -54,7 +54,7 @@ export const DocumentDomain = {
   createDocument: async <T extends DocumentModel>(
     documentData: DocumentData<T>,
     metadataKeys: DocumentMetadataKeys<T>
-  ): Promise<T> => {
+  ): Promise<DocumentModel> => {
     const user = requestContext.requireUser();
     const uploader_id = documentData.uploader_id ?? user.id;
     const [document] = await db<DocumentModel>('Document')
@@ -302,7 +302,7 @@ export const DocumentDomain = {
         'ServiceInstance.id'
       )
       .whereNotExists(function () {
-        this.select('*')
+        this.select(dbRaw('1'))
           .from('Document_Children')
           .whereRaw(
             '"Document_Children"."child_document_id" = "Document"."id"'

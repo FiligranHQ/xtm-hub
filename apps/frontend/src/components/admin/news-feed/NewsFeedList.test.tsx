@@ -10,6 +10,7 @@ type NewsFeedItem = {
   creation_date: string;
   tags: string[];
   is_deleted: boolean;
+  metadata: { key: string; value: string }[];
 };
 
 const mocks = vi.hoisted(() => ({
@@ -95,6 +96,7 @@ describe('NewsFeedList', () => {
         creation_date: '2025-01-20T08:00:00.000Z',
         tags: ['tag-1', 'tag-2'],
         is_deleted: false,
+        metadata: [{ key: 'url_path', value: 'news/active-news' }],
       },
       {
         id: 'item-2',
@@ -102,6 +104,7 @@ describe('NewsFeedList', () => {
         creation_date: '2025-01-21T08:00:00.000Z',
         tags: ['tag-3'],
         is_deleted: true,
+        metadata: [],
       },
     ];
   });
@@ -116,7 +119,13 @@ describe('NewsFeedList', () => {
     expect(screen.getByText('NewsFeedAdminPage.Tags')).toBeInTheDocument();
     expect(screen.getByText('NewsFeedAdminPage.IsDeleted')).toBeInTheDocument();
 
-    expect(screen.getByText('Active news')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Active news' })).toHaveAttribute(
+      'href',
+      '/news/active-news'
+    );
+    expect(
+      screen.queryByRole('link', { name: 'Deleted news' })
+    ).not.toBeInTheDocument();
     expect(screen.getByText('Deleted news')).toBeInTheDocument();
     expect(
       screen.getByText('formatted:2025-01-20T08:00:00.000Z')
@@ -209,6 +218,7 @@ describe('NewsFeedList', () => {
       creation_date: '2025-01-20T08:00:00.000Z',
       tags: ['tag'],
       is_deleted: false,
+      metadata: [],
     }));
 
     const { user } = testRender(<NewsFeedList />);

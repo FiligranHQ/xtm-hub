@@ -1,7 +1,7 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
 import { AuthFn, RoleFn, ServiceFn } from './directive.model';
-import { createSecureFieldResolver } from './directive.resolver';
+import { createSecureFieldResolver, ResolverFn } from './directive.resolver';
 import { AUTH_DIRECTIVE_NAME } from './validator/auth.validator';
 import {
   createPlatformTokenResolver,
@@ -14,6 +14,9 @@ import {
   SystemTokenDirectiveArgs,
 } from './validator/system-token.validator';
 
+type AuthDirectiveArgs = { portalCapa?: string[]; orgaCapa?: string[] };
+type ServiceCapaDirectiveArgs = { requires?: string[] };
+
 /**
  * Creates a schema transformer for authentication directives
  */
@@ -22,8 +25,11 @@ export const createAuthDirectiveTransformer = (
   hasCapabilityFn: RoleFn,
   hasServiceCapabilityFn: ServiceFn
 ) => {
-  const authTypeDirectiveArgumentMaps: Record<string, unknown> = {};
-  const serviceCapaTypeDirectiveArgumentMaps: Record<string, unknown> = {};
+  const authTypeDirectiveArgumentMaps: Record<string, AuthDirectiveArgs> = {};
+  const serviceCapaTypeDirectiveArgumentMaps: Record<
+    string,
+    ServiceCapaDirectiveArgs
+  > = {};
   const systemTokenTypeDirectiveArgumentMaps: Record<string, unknown> = {};
   const platformTokenTypeDirectiveArgumentMaps: Record<string, unknown> = {};
 
@@ -35,12 +41,12 @@ export const createAuthDirectiveTransformer = (
           schema,
           type,
           AUTH_DIRECTIVE_NAME
-        )?.[0];
+        )?.[0] as AuthDirectiveArgs | undefined;
         const serviceCapaDirective = getDirective(
           schema,
           type,
           SERVICE_CAPABILITY_DIRECTIVE_NAME
-        )?.[0];
+        )?.[0] as ServiceCapaDirectiveArgs | undefined;
         const systemTokenDirective = getDirective(
           schema,
           type,
@@ -75,15 +81,17 @@ export const createAuthDirectiveTransformer = (
       [MapperKind.OBJECT_FIELD]: (fieldConfig, _fieldName, typeName) => {
         // Get directives (field-level or inherited from type)
         const authDirective =
-          getDirective(schema, fieldConfig, AUTH_DIRECTIVE_NAME)?.[0] ??
-          authTypeDirectiveArgumentMaps[typeName];
+          (getDirective(schema, fieldConfig, AUTH_DIRECTIVE_NAME)?.[0] as
+            | AuthDirectiveArgs
+            | undefined) ?? authTypeDirectiveArgumentMaps[typeName];
 
         const serviceCapaDirective =
-          getDirective(
+          (getDirective(
             schema,
             fieldConfig,
             SERVICE_CAPABILITY_DIRECTIVE_NAME
-          )?.[0] ?? serviceCapaTypeDirectiveArgumentMaps[typeName];
+          )?.[0] as ServiceCapaDirectiveArgs | undefined) ??
+          serviceCapaTypeDirectiveArgumentMaps[typeName];
 
         const systemTokenDirective = (getDirective(
           schema,
@@ -111,7 +119,8 @@ export const createAuthDirectiveTransformer = (
         }
 
         // Replace resolver with secure version
-        const { resolve = defaultFieldResolver } = fieldConfig;
+        const resolve = (fieldConfig.resolve ??
+          defaultFieldResolver) as ResolverFn;
         if (systemTokenDirective) {
           fieldConfig.resolve = createSystemTokenResolver(
             resolve,

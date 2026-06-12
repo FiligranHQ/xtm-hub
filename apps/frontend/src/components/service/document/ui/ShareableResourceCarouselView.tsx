@@ -3,9 +3,9 @@ import { Carousel, CarouselItem, DialogContent } from '@filigran/ui/clients';
 import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
+import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { Dialog } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
@@ -14,7 +14,7 @@ import Image from 'next/image';
 interface ShareableResourceCarouselProps {
   images?:
     | documentItem_fragment$data['children_documents']
-    | publicDocumentItemFragment$data['children_documents'];
+    | PublicDocumentData['children_documents'];
   serviceInstance:
     | seoServiceInstanceFragment$data
     | serviceInstance_fragment$data;
