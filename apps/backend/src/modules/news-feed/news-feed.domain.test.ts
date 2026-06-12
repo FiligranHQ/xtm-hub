@@ -42,7 +42,12 @@ describe('newsFeedDomain', () => {
         PlatformIdentifier.Opencti
       );
 
-      expect(result).toContain(NewsFeedItemType.ResourceCustomDashboard);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          NewsFeedItemType.ResourceCustomDashboard,
+          NewsFeedItemType.ResourcePlaybook,
+        ])
+      );
     });
 
     it('should return empty array for a platform with no configured news feed types', () => {
@@ -347,6 +352,37 @@ describe('newsFeedDomain', () => {
 
       // Then
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('loadMetadataByNewsFeedItemId', () => {
+    it('should return the url_path metadata and exclude the document_id metadata', async () => {
+      // Given
+      const { document, newsFeedItem } = await createDocumentWithNewsFeedItem();
+      const expectedGlobalDocumentId = toGlobalId('Document', document.id);
+
+      // When
+      const metadata = await NewsFeedDomain.loadMetadataByNewsFeedItemId(
+        newsFeedItem.id
+      );
+
+      // Then
+      expect(metadata).toHaveLength(1);
+      expect(metadata[0]).toMatchObject({
+        key: NewsFeedItemMetadataKey.UrlPath,
+        value: `redirect/${ServiceDefinitionIdentifier.OpenctiCustomDashboards}?document_id=${expectedGlobalDocumentId}`,
+      });
+      expect(
+        metadata.some((m) => m.key === NewsFeedItemMetadataKey.DocumentId)
+      ).toBe(false);
+    });
+
+    it('should return an empty array when the news feed item has no metadata', async () => {
+      const metadata = await NewsFeedDomain.loadMetadataByNewsFeedItemId(
+        uuidv4() as NewsFeedItemId
+      );
+
+      expect(metadata).toEqual([]);
     });
   });
 
