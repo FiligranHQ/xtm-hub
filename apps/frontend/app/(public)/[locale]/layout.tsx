@@ -52,7 +52,7 @@ const RootLayout = async ({
           <Button
             asChild
             className="whitespace-nowrap">
-            <Link href={`/${locale}/login`}>{t('PublicLayout.SignIn')}</Link>
+            <Link href={`/login`}>{t('PublicLayout.SignIn')}</Link>
           </Button>
         </header>
         <main className="grow overflow-auto">
