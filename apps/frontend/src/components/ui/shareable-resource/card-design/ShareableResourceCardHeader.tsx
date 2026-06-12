@@ -4,11 +4,11 @@ import BadgeOverflowCounter, {
 import { ShareableResourceCardIcon } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardIcon';
 import { ShareableResourceCardImage } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardImage';
 import { cn } from '@/lib/utils';
+import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { publicDocumentItemFragment$data } from '@generated/publicDocumentItemFragment.graphql';
 
 interface ShareableResourceCardHeaderProps {
-  document: documentItem_fragment$data | publicDocumentItemFragment$data;
+  document: documentItem_fragment$data | PublicDocumentData;
   serviceInstanceId: string;
   shouldDisplayBothIcons: boolean;
 }

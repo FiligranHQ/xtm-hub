@@ -1,5 +1,9 @@
 import { Page } from '@playwright/test';
-import { clickRowAction, waitForDrawerToClose } from './common';
+import {
+  clickRowAction,
+  waitForDrawerToClose,
+  waitForDrawerToOpen,
+} from './common';
 import { expect } from '../fixtures/baseFixtures';
 
 export default class ServicePage {
@@ -108,6 +112,7 @@ export default class ServicePage {
       this.page.getByRole('row', { name: userEmail }),
       'Update'
     );
+    await waitForDrawerToOpen(this.page);
     await expect(this.page).toHaveScreenshot();
     await this.page.getByLabel(newCapability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
