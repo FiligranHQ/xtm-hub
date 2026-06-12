@@ -1,5 +1,7 @@
 import {
   MutationDeleteNewsFeedItemArgs,
+  NewsFeedItem,
+  NewsFeedItemMetadataKey,
   QueryNewsFeedItemsArgs,
   Resolvers,
 } from '../../__generated__/resolvers-types';
@@ -16,6 +18,17 @@ import { NewsFeedDomain } from './news-feed.domain';
 
 const newsFeedResolver: Resolvers = {
   NewsFeedItemId: createRelayIdScalar<NewsFeedItemId>('NewsFeedItem'),
+  NewsFeedItem: {
+    metadata: async (parent: NewsFeedItem) => {
+      const metadata = await NewsFeedDomain.loadMetadataByNewsFeedItemId(
+        parent.id as NewsFeedItemId
+      );
+      return metadata.map((m) => ({
+        key: m.key as NewsFeedItemMetadataKey,
+        value: m.value,
+      }));
+    },
+  },
   Query: {
     newsFeedItems: async (_, args: QueryNewsFeedItemsArgs) => {
       try {

@@ -143,6 +143,15 @@ export const NewsFeedDomain = {
     return newsFeedItem;
   },
 
+  loadMetadataByNewsFeedItemId: async (
+    newsFeedItemId: NewsFeedItemId
+  ): Promise<NewsFeedItemMetadata[]> => {
+    return db<NewsFeedItemMetadata[]>('NewsFeedItemMetadata')
+      .where('news_feed_item_id', newsFeedItemId)
+      .whereNot('key', NewsFeedItemMetadataKey.DocumentId)
+      .select('*');
+  },
+
   loadNewsFeedItemByDocumentId: async (
     documentId: string
   ): Promise<NewsFeedItem | undefined> => {

@@ -20,7 +20,21 @@ import { PlatformConfigurationDomain } from '../registration/platform-configurat
 import { RegistrationDomain } from '../registration/registration.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { NewsFeedDomain } from './news-feed.domain';
+import { doesPlatformSupportNewsFeed } from './news-feed.helper';
 import { newsFeedConfigurationMapping } from './news-feed.model';
+
+const getSupportedPlatformIds = (
+  registeredPlatforms: {
+    platform_id: string;
+    platform_version: string | null;
+  }[],
+  platformIdentifier: PlatformIdentifier
+): string[] =>
+  registeredPlatforms
+    .filter((platform) =>
+      doesPlatformSupportNewsFeed(platformIdentifier, platform.platform_version)
+    )
+    .map((platform) => platform.platform_id);
 
 const provisionNewsFeedItemForServiceInstance = async ({
   newsFeedItemId,
@@ -41,8 +55,9 @@ const provisionNewsFeedItemForServiceInstance = async ({
       organizationIds,
       platformIdentifier
     );
-  const platformIds = registeredPlatforms.map(
-    (platform) => platform.platform_id
+  const platformIds = getSupportedPlatformIds(
+    registeredPlatforms,
+    platformIdentifier
   );
   await NewsFeedDomain.provisionNewsFeedItem(newsFeedItemId, platformIds);
 };
@@ -239,8 +254,9 @@ export const NewsFeedApp = {
       await RegistrationDomain.loadAllActiveRegisteredPlatformsByPlatformIdentifier(
         platformIdentifier
       );
-    const platformIds = registeredPlatforms.map(
-      (platform) => platform.platform_id
+    const platformIds = getSupportedPlatformIds(
+      registeredPlatforms,
+      platformIdentifier
     );
 
     await NewsFeedDomain.provisionNewsFeedItem(newsFeedItem.id, platformIds);

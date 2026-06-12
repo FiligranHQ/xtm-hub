@@ -22,6 +22,7 @@ import { newsFeedList_fragment$key } from '@generated/newsFeedList_fragment.grap
 import { newsFeedListQuery } from '@generated/newsFeedListQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import {
   readInlineData,
@@ -113,9 +114,21 @@ const NewsFeedList = () => {
         accessorKey: 'title',
         id: 'title',
         header: t('NewsFeedAdminPage.Title'),
-        cell: ({ row }) => (
-          <span className="truncate">{row.original.title}</span>
-        ),
+        cell: ({ row }) => {
+          const urlPath = row.original.metadata.find(
+            (m) => m.key === 'url_path'
+          )?.value;
+          if (!urlPath) {
+            return <span className="truncate">{row.original.title}</span>;
+          }
+          return (
+            <Link
+              href={`/${urlPath}`}
+              className="truncate">
+              {row.original.title}
+            </Link>
+          );
+        },
       },
       {
         accessorKey: 'creation_date',
