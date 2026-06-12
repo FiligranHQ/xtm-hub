@@ -803,6 +803,7 @@ export const mockNewsFeedItem = (overrides?: Partial<NewsFeedItem>, _relationshi
         creation_date: overrides && overrides.hasOwnProperty('creation_date') ? overrides.creation_date! : '2021-01-09T04:49:06.623Z',
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : '0e38ad81-8af0-47da-b557-0a9c23488b2b',
         is_deleted: overrides && overrides.hasOwnProperty('is_deleted') ? overrides.is_deleted! : true,
+        metadata: overrides && overrides.hasOwnProperty('metadata') ? overrides.metadata! : [relationshipsToOmit.has('NewsFeedItemMetadata') ? {} as NewsFeedItemMetadata : mockNewsFeedItemMetadata({}, relationshipsToOmit)],
         tags: overrides && overrides.hasOwnProperty('tags') ? overrides.tags! : ['depromo'],
         title: overrides && overrides.hasOwnProperty('title') ? overrides.title! : 'ver',
     };

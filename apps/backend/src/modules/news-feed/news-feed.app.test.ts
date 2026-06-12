@@ -10,6 +10,7 @@ import {
 import {
   NewsFeedItemMetadataKey,
   NewsFeedItemType,
+  PlatformContract,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
@@ -17,6 +18,7 @@ import { requestContext } from '../../context/request.context';
 import Document from '../../model/kanel/public/Document';
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import PlatformConfigurationModel from '../../model/kanel/public/PlatformConfiguration';
 import { ProvisionedNewsFeedItemPlatformId } from '../../model/kanel/public/ProvisionedNewsFeedItem';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
@@ -50,7 +52,8 @@ describe('newsFeedApp', () => {
 
   const createOpenCTIPlatformForOrganization = async (
     platformId: string,
-    organizationId: OrganizationId
+    organizationId: OrganizationId,
+    configOverrides: Partial<PlatformConfigurationModel> = {}
   ) => {
     const serviceInstance = await TestHelper.serviceInstance.create({
       service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
@@ -59,12 +62,21 @@ describe('newsFeedApp', () => {
     await TestHelper.platformConfiguration.create({
       service_instance_id: serviceInstance.id,
       platform_id: platformId,
+      platform_version: '7.260529.0',
+      ...configOverrides,
     });
     await TestHelper.subscription.create({
       service_instance_id: serviceInstance.id,
       organization_id: organizationId,
     });
     return serviceInstance;
+  };
+
+  const subscribeToPlaybooks = async () => {
+    await TestHelper.subscription.create({
+      service_instance_id: SERVICES.INSTANCES.OPENCTI_PLAYBOOKS.ID,
+      organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+    });
   };
 
   const cleanupCreatedServiceInstances = async () => {
@@ -248,7 +260,10 @@ describe('newsFeedApp', () => {
       });
 
       expect(result.available_news_feed_types).toEqual(
-        expect.arrayContaining([NewsFeedItemType.ResourceCustomDashboard])
+        expect.arrayContaining([
+          NewsFeedItemType.ResourceCustomDashboard,
+          NewsFeedItemType.ResourcePlaybook,
+        ])
       );
     });
 
@@ -296,6 +311,7 @@ describe('newsFeedApp', () => {
     it.each`
       identifier                                             | expected | description
       ${ServiceDefinitionIdentifier.OpenctiCustomDashboards} | ${true}  | ${'configured service definition'}
+      ${ServiceDefinitionIdentifier.OpenctiPlaybooks}        | ${true}  | ${'playbooks service definition'}
       ${ServiceDefinitionIdentifier.OpenctiIntegrations}     | ${false} | ${'non-configured service definition'}
       ${ServiceDefinitionIdentifier.OpenctiRegistration}     | ${false} | ${'registration identifier'}
       ${ServiceDefinitionIdentifier.Vault}                   | ${false} | ${'vault identifier'}
@@ -329,6 +345,9 @@ describe('newsFeedApp', () => {
       await TestHelper.newsFeed.deleteItem();
       await TestHelper.subscription.delete({
         service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+      });
+      await TestHelper.subscription.delete({
+        service_instance_id: SERVICES.INSTANCES.OPENCTI_PLAYBOOKS.ID,
       });
       await cleanupCreatedServiceInstances();
       await TestHelper.document.delete({});
@@ -658,6 +677,139 @@ describe('newsFeedApp', () => {
           news_feed_item_id: softDeletedItem.id,
         });
         expect(provisioned).toHaveLength(0);
+      });
+    });
+
+    describe('playbook provisioning compatibility', () => {
+      const SUPPORTED_VERSION = '7.260529.0';
+      const UNSUPPORTED_VERSION = '7.260512.0';
+
+      const createPlaybookNewsFeedItem = async () => {
+        await NewsFeedApp.createResourceNewsFeedItem({
+          document,
+          serviceInstanceId: SERVICES.INSTANCES.OPENCTI_PLAYBOOKS.ID,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiPlaybooks,
+        });
+      };
+
+      const loadProvisionedForCreatedItem = async () => {
+        const newsFeedItem = await TestHelper.newsFeed.loadFirstItem();
+        expect(newsFeedItem).toBeDefined();
+        return TestHelper.newsFeed.loadProvisioned({
+          news_feed_item_id: newsFeedItem!.id,
+        });
+      };
+
+      it('should provision to a platform on a supported version', async () => {
+        const platformId = uuidv4();
+        await subscribeToPlaybooks();
+        await createOpenCTIPlatformForOrganization(
+          platformId,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          { platform_version: SUPPORTED_VERSION }
+        );
+
+        await createPlaybookNewsFeedItem();
+
+        const provisioned = await loadProvisionedForCreatedItem();
+        expect(provisioned).toHaveLength(1);
+        expect(provisioned[0]?.platform_id).toBe(platformId);
+      });
+
+      it('should provision to a Community Edition platform on a supported version', async () => {
+        const platformId = uuidv4();
+        await subscribeToPlaybooks();
+        await createOpenCTIPlatformForOrganization(
+          platformId,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          {
+            platform_version: SUPPORTED_VERSION,
+            platform_contract: PlatformContract.Ce,
+          }
+        );
+
+        await createPlaybookNewsFeedItem();
+
+        const provisioned = await loadProvisionedForCreatedItem();
+        expect(provisioned).toHaveLength(1);
+        expect(provisioned[0]?.platform_id).toBe(platformId);
+      });
+
+      it.each`
+        version         | description
+        ${'7.260526.0'} | ${'just below the supported version'}
+        ${'6.8.0'}      | ${'an older major.minor version'}
+        ${'1.0.0'}      | ${'a far older version'}
+      `(
+        'should not provision to a platform with $description ($version)',
+        async ({ version }: { version: string }) => {
+          await subscribeToPlaybooks();
+          await createOpenCTIPlatformForOrganization(
+            uuidv4(),
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            { platform_version: version }
+          );
+
+          await createPlaybookNewsFeedItem();
+
+          const provisioned = await loadProvisionedForCreatedItem();
+          expect(provisioned).toHaveLength(0);
+        }
+      );
+
+      it('should only provision to the supported platforms among several', async () => {
+        const supportedPlatformId = uuidv4();
+        await subscribeToPlaybooks();
+        await createOpenCTIPlatformForOrganization(
+          supportedPlatformId,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          { platform_version: SUPPORTED_VERSION }
+        );
+        await createOpenCTIPlatformForOrganization(
+          uuidv4(),
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          { platform_version: UNSUPPORTED_VERSION }
+        );
+
+        await createPlaybookNewsFeedItem();
+
+        const provisioned = await loadProvisionedForCreatedItem();
+        expect(provisioned).toHaveLength(1);
+        expect(provisioned[0]?.platform_id).toBe(supportedPlatformId);
+      });
+
+      it('should provision a deletion to supported platforms but skip unsupported versions', async () => {
+        const supportedPlatformId = uuidv4();
+        const unsupportedPlatformId = uuidv4();
+        await createOpenCTIPlatformForOrganization(
+          supportedPlatformId,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          { platform_version: SUPPORTED_VERSION }
+        );
+        await createOpenCTIPlatformForOrganization(
+          unsupportedPlatformId,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          { platform_version: UNSUPPORTED_VERSION }
+        );
+
+        const item = await NewsFeedDomain.createResourceNewsFeedItem({
+          document,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiPlaybooks,
+          type: NewsFeedItemType.ResourcePlaybook,
+          platformIdentifier: PlatformIdentifier.Opencti,
+          tags: [],
+        });
+
+        await NewsFeedApp.deleteNewsFeedItem({ newsFeedItemId: item.id });
+
+        const provisioned = await TestHelper.newsFeed.loadProvisioned({
+          news_feed_item_id: item.id,
+        });
+        const provisionedPlatformIds = provisioned.map((p) => p.platform_id);
+        expect(provisionedPlatformIds).toContain(supportedPlatformId);
+        expect(provisionedPlatformIds).not.toContain(unsupportedPlatformId);
       });
     });
 

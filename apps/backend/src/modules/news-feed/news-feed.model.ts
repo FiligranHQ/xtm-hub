@@ -14,4 +14,8 @@ export const newsFeedConfigurationMapping: Partial<
     newsFeedType: NewsFeedItemType.ResourceCustomDashboard,
     platformIdentifier: PlatformIdentifier.Opencti,
   },
+  [ServiceDefinitionIdentifier.OpenctiPlaybooks]: {
+    newsFeedType: NewsFeedItemType.ResourcePlaybook,
+    platformIdentifier: PlatformIdentifier.Opencti,
+  },
 };
