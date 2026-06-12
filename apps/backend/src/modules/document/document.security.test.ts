@@ -11,7 +11,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../model/user';
 import * as access from '../../security/access';
 import { ErrorCode } from '../../utils/error/error.code';
-import * as capabilityHelper from '../security-management/user-service-capability/user-service-capability.helper';
+import { UserServiceCapabilityHelper } from '../security-management/user-service-capability/user-service-capability.helper';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { isUserRestrictedToActiveDocument } from './document.security';
 
@@ -48,7 +48,10 @@ describe('document security', () => {
   describe('isUserRestrictedToActiveDocument', () => {
     beforeEach(() => {
       vi.spyOn(access, 'isUserGranted').mockReturnValue(false);
-      vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([]);
+      vi.spyOn(
+        UserServiceCapabilityHelper,
+        'loadCapabilities'
+      ).mockResolvedValue([]);
       vi.spyOn(
         ServiceInstanceDomain,
         'loadServiceDefinitionByServiceInstance'
@@ -91,9 +94,10 @@ describe('document security', () => {
     });
 
     it('should return false when user has Upload capability and service definition is restricted', async () => {
-      vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue([
-        ServiceRestriction.Upload,
-      ]);
+      vi.spyOn(
+        UserServiceCapabilityHelper,
+        'loadCapabilities'
+      ).mockResolvedValue([ServiceRestriction.Upload]);
       const result = await isUserRestrictedToActiveDocument(
         mockUser,
         mockServiceInstanceId
@@ -102,9 +106,10 @@ describe('document security', () => {
     });
 
     it('should return true when capabilities are undefined', async () => {
-      vi.spyOn(capabilityHelper, 'loadCapabilities').mockResolvedValue(
-        undefined
-      );
+      vi.spyOn(
+        UserServiceCapabilityHelper,
+        'loadCapabilities'
+      ).mockResolvedValue(undefined);
       const result = await isUserRestrictedToActiveDocument(
         mockUser,
         mockServiceInstanceId

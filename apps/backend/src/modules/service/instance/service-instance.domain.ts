@@ -44,7 +44,7 @@ import {
   serviceInstanceNameMappedByPlatformIdentifier,
   serviceInstanceTagMappedByPlatformIdentifier,
 } from '../../registration/registration.mapping';
-import { insertServiceCapability } from '../../security-management/service-capability/service-capability.helper';
+import { ServiceCapabilityHelper } from '../../security-management/service-capability/service-capability.helper';
 import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 
@@ -407,7 +407,9 @@ export const ServiceInstanceDomain = {
             capabilityId as GenericServiceCapabilityId,
         })
       );
-      await insertServiceCapability(dataServiceCapabilities);
+      await ServiceCapabilityHelper.insertServiceCapability(
+        dataServiceCapabilities
+      );
     }
     return insertedUserServices;
   },

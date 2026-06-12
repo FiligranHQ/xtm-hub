@@ -42,7 +42,7 @@ import {
 import { hashPassword } from '../../../utils/hash-password.util';
 import { isEmpty } from '../../../utils/utils';
 import { extractDomain } from '../../../utils/verify-email.util';
-import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
+import { UserOrganizationCapabilityDomain } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { TelemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryHelper } from '../../telemetry/telemetry.helper';
@@ -93,7 +93,7 @@ export const createUserWithPersonalSpace = async (
     throw UnknownError(UnknownErrorCode.AddingUserError);
   }
 
-  await createUserOrganizationCapability({
+  await UserOrganizationCapabilityDomain.createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
     capabilities_name: [OrganizationCapability.AdministrateOrganization],
   });
@@ -146,7 +146,7 @@ async function createOrganisationWithAdminUser(email: string) {
     throw UnknownError(UnknownErrorCode.AddingUserError);
   }
 
-  await createUserOrganizationCapability({
+  await UserOrganizationCapabilityDomain.createUserOrganizationCapability({
     user_organization_id: userOrgRelation.id,
     capabilities_name: [OrganizationCapability.AdministrateOrganization],
   });
@@ -283,7 +283,7 @@ export const insertUserIntoOrganization = async (
     }
     const shouldBeAdminOrga = await isFirstInOrganization(organization.id);
     if (shouldBeAdminOrga) {
-      await createUserOrganizationCapability({
+      await UserOrganizationCapabilityDomain.createUserOrganizationCapability({
         user_organization_id: userOrgRelation.id,
         capabilities_name: [OrganizationCapability.AdministrateOrganization],
       });

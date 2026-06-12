@@ -9,7 +9,7 @@ import {
   PortalCapability,
 } from '../../__generated__/resolvers-types';
 import { UserLoadUserBy } from '../../model/user';
-import * as AuthHelper from '../../modules/security-management/capability/auth.helper';
+import { AuthHelper } from '../../modules/security-management/capability/auth.helper';
 import { CAPABILITY_BYPASS } from '../../portal.const';
 import { authDirectives } from './directive-auth';
 import { RoleType } from './directive.model';

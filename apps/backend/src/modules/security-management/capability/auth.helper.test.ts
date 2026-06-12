@@ -5,10 +5,7 @@ import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { CAPABILITY_BYPASS } from '../../../portal.const';
 
 import { UserServiceId } from '../../../model/kanel/public/UserService';
-import {
-  checkUserServiceIsInServiceInstance,
-  isUserAllowed,
-} from './auth.helper';
+import { AuthHelper } from './auth.helper';
 
 describe('authHelper', () => {
   describe('checkUserServiceIsInServiceInstance', () => {
@@ -24,7 +21,7 @@ describe('authHelper', () => {
         subscription_id: sub.id,
       });
 
-      const result = await checkUserServiceIsInServiceInstance(
+      const result = await AuthHelper.checkUserServiceIsInServiceInstance(
         userService?.id as UserServiceId,
         SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
       );
@@ -42,7 +39,7 @@ describe('authHelper', () => {
         subscription_id: sub.id,
       });
 
-      const result = await checkUserServiceIsInServiceInstance(
+      const result = await AuthHelper.checkUserServiceIsInServiceInstance(
         userService?.id as UserServiceId,
         SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
       );
@@ -62,7 +59,7 @@ describe('authHelper', () => {
         subscription_id: secondSub.id,
       });
 
-      const result = await checkUserServiceIsInServiceInstance(
+      const result = await AuthHelper.checkUserServiceIsInServiceInstance(
         userService?.id as UserServiceId,
         SERVICES.INSTANCES.INTEGRATIONS.ID
       );
@@ -78,7 +75,7 @@ describe('authHelper', () => {
 
   describe('isUserAllowed', () => {
     it('should allow user if he has bypass capability', async () => {
-      const result = isUserAllowed({
+      const result = AuthHelper.isUserAllowed({
         userCapabilities: [CAPABILITY_BYPASS],
         organizationCapabilities: [],
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
@@ -88,7 +85,7 @@ describe('authHelper', () => {
     });
 
     it('should allow user if he has the required capability', async () => {
-      const result = isUserAllowed({
+      const result = AuthHelper.isUserAllowed({
         userCapabilities: [],
         organizationCapabilities: [
           OrganizationCapability.ManagePlatformRegistration,
@@ -100,7 +97,7 @@ describe('authHelper', () => {
     });
 
     it('should allow user if he has the administrate organization capability', async () => {
-      const result = isUserAllowed({
+      const result = AuthHelper.isUserAllowed({
         userCapabilities: [],
         organizationCapabilities: [
           OrganizationCapability.AdministrateOrganization,
@@ -112,7 +109,7 @@ describe('authHelper', () => {
     });
 
     it('should not allow user if he does not have the required capabilities', async () => {
-      const result = isUserAllowed({
+      const result = AuthHelper.isUserAllowed({
         userCapabilities: [],
         organizationCapabilities: [],
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,

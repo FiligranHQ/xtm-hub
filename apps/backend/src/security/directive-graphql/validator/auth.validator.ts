@@ -1,5 +1,5 @@
 import { UserLoadUserBy } from '../../../model/user';
-import { userHasBypassCapability } from '../../../modules/security-management/capability/auth.helper';
+import { AuthHelper } from '../../../modules/security-management/capability/auth.helper';
 import { RoleType } from '../directive.model';
 
 export const AUTH_DIRECTIVE_NAME = 'auth';
@@ -19,7 +19,7 @@ export const hasCapability = (
   capabilitiesRequired: Record<RoleType, string[]>
 ): boolean => {
   // Admin bypass
-  if (userHasBypassCapability(user)) {
+  if (AuthHelper.userHasBypassCapability(user)) {
     return true;
   }
   const portalCapabilitiesRequired = capabilitiesRequired.PORTAL;

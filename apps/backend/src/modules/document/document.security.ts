@@ -6,7 +6,7 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserLoadUserBy } from '../../model/user';
 import { isUserGranted } from '../../security/access';
 import { ErrorCode } from '../../utils/error/error.code';
-import { loadCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
+import { UserServiceCapabilityHelper } from '../security-management/user-service-capability/user-service-capability.helper';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 
 export const isUserRestrictedToActiveDocument = async (
@@ -17,7 +17,7 @@ export const isUserRestrictedToActiveDocument = async (
     return false;
   }
 
-  const capabilities = await loadCapabilities(
+  const capabilities = await UserServiceCapabilityHelper.loadCapabilities(
     serviceInstanceId,
     user.id,
     user.selected_organization_id

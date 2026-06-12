@@ -11,7 +11,7 @@ import Organization from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
 import { ErrorCode } from '../../../utils/error/error.code';
-import { createUserOrganizationCapability } from '../../security-management/user-organization-capability/user-organization-capability.domain';
+import { UserOrganizationCapabilityDomain } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { TelemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetrySource } from '../../telemetry/telemetry.const';
 import { TelemetryEventType } from '../../telemetry/telemetry.types';
@@ -194,10 +194,14 @@ describe('user helpers', async () => {
           );
         expect(anotherUserOrgRelation).toBeTruthy();
 
-        await createUserOrganizationCapability({
-          user_organization_id: anotherUserOrgRelation!.id,
-          capabilities_name: [OrganizationCapability.AdministrateOrganization],
-        });
+        await UserOrganizationCapabilityDomain.createUserOrganizationCapability(
+          {
+            user_organization_id: anotherUserOrgRelation!.id,
+            capabilities_name: [
+              OrganizationCapability.AdministrateOrganization,
+            ],
+          }
+        );
 
         const result = await preventAdministratorRemovalOfOneOrganization(
           user.id,
@@ -247,10 +251,14 @@ describe('user helpers', async () => {
           );
         expect(anotherUserOrgRelation).toBeTruthy();
 
-        await createUserOrganizationCapability({
-          user_organization_id: anotherUserOrgRelation!.id,
-          capabilities_name: [OrganizationCapability.AdministrateOrganization],
-        });
+        await UserOrganizationCapabilityDomain.createUserOrganizationCapability(
+          {
+            user_organization_id: anotherUserOrgRelation!.id,
+            capabilities_name: [
+              OrganizationCapability.AdministrateOrganization,
+            ],
+          }
+        );
 
         const result = await preventAdministratorRemovalOfOneOrganization(
           user.id,
