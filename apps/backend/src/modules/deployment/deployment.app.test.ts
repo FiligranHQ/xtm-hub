@@ -883,6 +883,33 @@ describe('deployment app', () => {
         );
       expect(userObserverGroup).toHaveLength(0);
     });
+
+    it('should set platform registration status to inactive when actual state is removed', async () => {
+      await TestHelper.platformConfiguration.create({
+        service_instance_id: initialDeployment.service_instance_id,
+        status: PlatformConfigurationStatus.Active,
+      });
+
+      await DeploymentApp.updateDeploymentRequest({
+        id: initialDeployment.id as DeploymentRequestId,
+        actual_state: DeploymentRequestPlatformState.Removed,
+      });
+
+      const platformConfiguration = await TestHelper.platformConfiguration.load(
+        {
+          service_instance_id: initialDeployment.service_instance_id,
+        }
+      );
+
+      expect(platformConfiguration?.status).toBe(
+        PlatformConfigurationStatus.Inactive
+      );
+
+      await TestHelper.platformConfiguration.delete({
+        service_instance_id: initialDeployment.service_instance_id,
+      });
+    });
+
     it('should throw if deployment request does not exist', async () => {
       const call = DeploymentApp.updateDeploymentRequest({
         id: uuidv4() as DeploymentRequestId,
