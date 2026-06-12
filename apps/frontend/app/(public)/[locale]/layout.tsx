@@ -45,14 +45,14 @@ const RootLayout = async ({
       <div className="md:flex md:flex-col md:h-screen">
         <PublicTryFiligranProductsBanner />
         <header className="max-md:sticky max-md:top-0 max-md:z-20 flex h-16 w-full shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
-          <Link href="/">
+          <Link href={`/${locale}`}>
             <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
             <span className="sr-only">XTM Hub by Filigran</span>
           </Link>
           <Button
             asChild
             className="whitespace-nowrap">
-            <Link href="/login">{t('PublicLayout.SignIn')}</Link>
+            <Link href={`/${locale}/login`}>{t('PublicLayout.SignIn')}</Link>
           </Button>
         </header>
         <main className="grow overflow-auto">
