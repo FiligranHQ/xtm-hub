@@ -1,5 +1,5 @@
 'use server';
-import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
+import PublicServiceInstanceCard from '@/components/service/PublicServiceInstanceCard';
 import { cn } from '@/lib/utils';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
@@ -128,7 +128,7 @@ export const RegistrationLearnMore = async ({
         <div className="flex flex-col lg:flex-row items-center gap-xl">
           <div className="basis-full flex justify-between gap-l">
             {services.map((service) => (
-              <ServiceInstanceCard
+              <PublicServiceInstanceCard
                 key={service.id}
                 className="basis-full max-w-[50%]"
                 serviceInstance={seoServiceInstanceToInstanceCardData(

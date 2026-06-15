@@ -4,7 +4,7 @@ import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resourc
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Fragment, useMemo } from 'react';
 
 interface PublicShareableResourceListProps {
@@ -19,6 +19,7 @@ export const PublicShareableResourceList = ({
   baseUrl,
 }: PublicShareableResourceListProps) => {
   const t = useTranslations();
+  const locale = useLocale();
 
   const documentsByIntegrationType = useMemo(() => {
     return documents.reduce<
@@ -66,7 +67,7 @@ export const PublicShareableResourceList = ({
                   key={document.id}
                   document={document}
                   serviceInstance={serviceInstance}
-                  detailUrl={`/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+                  detailUrl={`/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
                   shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
                 />
               ))}

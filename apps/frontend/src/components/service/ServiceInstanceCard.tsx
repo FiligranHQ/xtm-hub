@@ -1,5 +1,6 @@
 'use client';
 
+import { ResolvedServiceInstanceLink } from '@/components/service/service-instance-link.util';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import { cn } from '@/lib/utils';
 import { ArrowOutwardIcon, LogoFiligranIcon } from '@filigran/icon';
@@ -40,14 +41,17 @@ interface ServiceInstanceCardProps {
   serviceInstance: ServiceInstanceCardData;
   rightAction?: ReactNode;
   className?: string;
+  link: ResolvedServiceInstanceLink;
 }
 
 const ServiceInstanceCard = ({
   serviceInstance,
   rightAction,
   className,
+  link,
 }: ServiceInstanceCardProps) => {
   const { reset } = useScrollPosition();
+  const { href, target } = link;
   useEffect(() => {
     reset();
   }, [reset]);
@@ -159,12 +163,9 @@ const ServiceInstanceCard = ({
               </h2>
             ) : (
               <Link
-                href={
-                  serviceInstance.isLinkDisabled ? '#' : serviceInstance.url
-                }
-                target={
-                  serviceInstance.url.startsWith('http') ? '_blank' : '_self'
-                }
+                href={href}
+                target={target}
+                rel={target === '_blank' ? 'noopener noreferrer' : undefined}
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
                 aria-disabled={serviceInstance.isLinkDisabled}>
                 <h2>

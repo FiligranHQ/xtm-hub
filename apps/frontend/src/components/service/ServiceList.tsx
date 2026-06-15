@@ -1,7 +1,7 @@
 'use client';
 
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
-import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
+import PrivateServiceInstanceCard from '@/components/service/PrivateServiceInstanceCard';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import {
   freeTrialSkeletonToServiceInstanceCardData,
@@ -80,7 +80,7 @@ const ServiceList = ({
         }>
         {sortedServices.map((service, index) => {
           return (
-            <ServiceInstanceCard
+            <PrivateServiceInstanceCard
               key={`${service.id}-${index}`}
               serviceInstance={service}
             />
