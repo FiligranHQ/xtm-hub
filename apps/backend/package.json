@@ -110,7 +110,7 @@
     "chokidar": "5.0.0",
     "concurrently": "catalog:",
     "cpy-cli": "7.0.0",
-    "esbuild": "0.28.0",
+    "esbuild": "0.28.1",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
     "globals": "catalog:",
