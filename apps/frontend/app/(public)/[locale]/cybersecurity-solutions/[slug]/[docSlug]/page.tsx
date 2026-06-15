@@ -39,8 +39,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
-
+import { MarkdownRenderer } from '@filigran/ui/clients';
 const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
     'Metadata.DocumentFallbackDescriptionIntegration',
@@ -362,8 +361,9 @@ const Page = async ({
           </h3>
           <section className="border rounded border-border-light bg-page-background">
             <h2 className="p-l">{document?.short_description}</h2>
-            <MarkdownRendererWithTheme
+            <MarkdownRenderer
               source={document?.description ?? ''}
+              colorMode="dark"
               className="p-l !bg-page-background markdown-content"
             />
           </section>

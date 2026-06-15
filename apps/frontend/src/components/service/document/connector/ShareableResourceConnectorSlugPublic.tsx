@@ -12,7 +12,7 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
+import { MarkdownRenderer } from '@filigran/ui/clients';
 
 interface ShareableResourceConnectorSlugPublicProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
@@ -90,8 +90,9 @@ const ShareableResourceConnectorSlugPublic = ({
           </h3>
           <section className="border rounded border-border-light bg-page-background overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>
-            <MarkdownRendererWithTheme
+            <MarkdownRenderer
               source={documentData?.description ?? ''}
+              colorMode="dark"
               className="p-l !bg-page-background markdown-content"
             />
           </section>
