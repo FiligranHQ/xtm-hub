@@ -1,5 +1,5 @@
-import { useTranslations } from 'next-intl';
 import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
+import { useTranslations } from 'next-intl';
 
 // Component interface
 interface ShareableResourceDescriptionProps {

@@ -28,6 +28,7 @@ import {
 } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
+import { MarkdownRenderer } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -39,7 +40,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MarkdownRenderer } from '@filigran/ui/clients';
 const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
     'Metadata.DocumentFallbackDescriptionIntegration',

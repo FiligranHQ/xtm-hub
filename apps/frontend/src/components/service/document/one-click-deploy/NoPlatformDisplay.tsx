@@ -1,7 +1,7 @@
+import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 import { Button } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 
 interface NoPlatformDisplayProps {
   setIsOpen: (isOpen: boolean) => void;

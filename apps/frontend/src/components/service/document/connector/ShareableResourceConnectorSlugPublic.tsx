@@ -7,12 +7,12 @@ import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PublicDocumentDetailsData } from '@/utils/shareable-resources/shareable-resources.types';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
+import { MarkdownRenderer } from '@filigran/ui/clients';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { MarkdownRenderer } from '@filigran/ui/clients';
 
 interface ShareableResourceConnectorSlugPublicProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
