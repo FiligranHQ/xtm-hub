@@ -79,7 +79,7 @@
     "babel-plugin-relay": "20.1.1",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "eslint-config-next": "16.2.7",
+    "eslint-config-next": "16.2.9",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-formatjs": "6.4.15",
     "graphql-codegen-typescript-mock-data": "5.1.1",
