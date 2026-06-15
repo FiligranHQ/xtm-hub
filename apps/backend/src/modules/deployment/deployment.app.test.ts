@@ -890,24 +890,25 @@ describe('deployment app', () => {
         status: PlatformConfigurationStatus.Active,
       });
 
-      await DeploymentApp.updateDeploymentRequest({
-        id: initialDeployment.id as DeploymentRequestId,
-        actual_state: DeploymentRequestPlatformState.Removed,
-      });
+      try {
+        await DeploymentApp.updateDeploymentRequest({
+          id: initialDeployment.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Removed,
+        });
 
-      const platformConfiguration = await TestHelper.platformConfiguration.load(
-        {
+        const platformConfiguration =
+          await TestHelper.platformConfiguration.load({
+            service_instance_id: initialDeployment.service_instance_id,
+          });
+
+        expect(platformConfiguration?.status).toBe(
+          PlatformConfigurationStatus.Inactive
+        );
+      } finally {
+        await TestHelper.platformConfiguration.delete({
           service_instance_id: initialDeployment.service_instance_id,
-        }
-      );
-
-      expect(platformConfiguration?.status).toBe(
-        PlatformConfigurationStatus.Inactive
-      );
-
-      await TestHelper.platformConfiguration.delete({
-        service_instance_id: initialDeployment.service_instance_id,
-      });
+        });
+      }
     });
 
     it('should throw if deployment request does not exist', async () => {
