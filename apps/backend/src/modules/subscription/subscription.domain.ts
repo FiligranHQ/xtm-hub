@@ -23,15 +23,20 @@ export const SubscriptionDomain = {
     const { filters, searchTerm, orderBy } = opts;
     const subscriptionOrderBy = getSubscriptionOrdering(orderBy);
     const normalizedSearchTerm = searchTerm?.trim();
+    const orderingsRequiringServiceInstanceJoin = [
+      SubscriptionOrdering.ServiceName,
+      SubscriptionOrdering.ServiceDescription,
+      SubscriptionOrdering.ServiceProvider,
+      SubscriptionOrdering.ServiceType,
+    ];
+    const hasSearchTerm =
+      normalizedSearchTerm !== undefined && normalizedSearchTerm.length > 0;
     const shouldJoinOrganization =
-      (normalizedSearchTerm !== undefined && normalizedSearchTerm.length > 0) ||
+      hasSearchTerm ||
       subscriptionOrderBy === SubscriptionOrdering.OrganizationName;
     const shouldJoinServiceInstanceAndDefinition =
-      (normalizedSearchTerm !== undefined && normalizedSearchTerm.length > 0) ||
-      subscriptionOrderBy === SubscriptionOrdering.ServiceName ||
-      subscriptionOrderBy === SubscriptionOrdering.ServiceDescription ||
-      subscriptionOrderBy === SubscriptionOrdering.ServiceProvider ||
-      subscriptionOrderBy === SubscriptionOrdering.ServiceType;
+      hasSearchTerm ||
+      orderingsRequiringServiceInstanceJoin.includes(subscriptionOrderBy);
 
     const queryContext = buildLoadSubscriptionsQuery({
       normalizedSearchTerm,
