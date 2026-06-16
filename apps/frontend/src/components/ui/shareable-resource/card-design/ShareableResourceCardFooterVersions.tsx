@@ -1,9 +1,7 @@
-import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardVersion';
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { ReactNode } from 'react';
@@ -20,26 +18,9 @@ export const ShareableResourceCardFooterVersion = ({
   shareLinkUrl,
   extraContent,
 }: ShareableResourceCardFooterVersionProps) => {
-  let documentMetadata;
-  if (
-    docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE)
-  ) {
-    documentMetadata = getIntegrationSubTypeMetadata(
-      document.integration_subtype
-    );
-  }
-
   return (
     <>
       <div className="flex gap-l min-w-0 overflow-hidden">
-        {documentMetadata && (
-          <Badge
-            className="min-w-0 max-w-full"
-            variant="outline"
-            color={documentMetadata.color}>
-            <span className="truncate">{documentMetadata.label}</span>
-          </Badge>
-        )}
         {publicPath ||
         (docHasMetadata(
           document,

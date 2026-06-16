@@ -1,4 +1,7 @@
 'use client';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
@@ -70,9 +73,15 @@ const ShareableResourceCard = ({
           }
           serviceInstanceId={serviceInstance.id}
         />
-        <p className="p-m text-muted-foreground text-sm">
-          {document.short_description}
-        </p>
+        <div className="p-m flex flex-col gap-s">
+          <p className="text-muted-foreground text-sm">
+            {document.short_description}
+          </p>
+          <BadgeOverflowCounter
+            badges={document.use_cases as BadgeOverflow[]}
+            className="z-2"
+          />
+        </div>
       </Link>
       <div className="flex items-center justify-between gap-m pl-m pb-m mt-auto">
         {docHasMetadata(
