@@ -1,0 +1,31 @@
+'use client';
+import { CollapseMenuButton } from '@/components/menu/CollapseMenuButton';
+import { MenuLogo } from '@/components/menu/MenuLogo';
+import PublicNavigation from '@/components/menu/PublicNavigation';
+import { cn } from '@/lib/utils';
+import { useCallback } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
+
+const PublicMenu = () => {
+  const [open, setOpen] = useLocalStorage<boolean>('public-menu-open', true);
+  const handleOpenMenu = useCallback(() => setOpen((prev) => !prev), [setOpen]);
+
+  return (
+    <aside
+      className={cn(
+        'max-md:hidden z-20 flex h-full flex-col overflow-x-hidden bg-page-background text-muted-foreground duration-300',
+        open ? 'w-45' : 'w-14'
+      )}>
+      <MenuLogo />
+      <div className="border-r flex flex-col flex-1 justify-between min-h-0">
+        <PublicNavigation open={open} />
+        <CollapseMenuButton
+          open={open}
+          handleOpenMenu={handleOpenMenu}
+        />
+      </div>
+    </aside>
+  );
+};
+
+export default PublicMenu;
