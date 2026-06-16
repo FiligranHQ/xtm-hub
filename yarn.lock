@@ -8643,12 +8643,10 @@ __metadata:
     react: "catalog:"
     react-dom: "catalog:"
     react-hook-form: "npm:7.78.0"
-    react-markdown: "npm:10.1.0"
     react-relay: "npm:20.1.1"
     rehype-sanitize: "npm:6.0.0"
     relay-compiler: "npm:20.1.1"
     relay-test-utils: "npm:20.1.1"
-    remark-gfm: "npm:4.0.1"
     slugify: "npm:1.6.9"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.0"
@@ -17573,7 +17571,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-markdown@npm:10.1.0, react-markdown@npm:~10.1.0":
+"react-markdown@npm:~10.1.0":
   version: 10.1.0
   resolution: "react-markdown@npm:10.1.0"
   dependencies:
@@ -17984,7 +17982,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remark-gfm@npm:4.0.1, remark-gfm@npm:~4.0.0":
+"remark-gfm@npm:~4.0.0":
   version: 4.0.1
   resolution: "remark-gfm@npm:4.0.1"
   dependencies:
