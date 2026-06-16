@@ -18,169 +18,172 @@
 
 /* ===== 1. Root + global hides ===== */
 #tarteaucitronRoot {
-    max-width: 100vw !important;
-    box-sizing: border-box !important;
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
 }
 
 #tarteaucitronRoot,
 #tarteaucitronRoot * {
-    font-family: var(--font-ibm-plex-sans), var(--font-geologica), system-ui, sans-serif;
+  font-family:
+    var(--font-ibm-plex-sans), var(--font-geologica), system-ui, sans-serif;
 }
 
 /* Hide native check/cross icons globally (we use custom switches + button text) */
 #tarteaucitronRoot .tarteaucitronCheck,
 #tarteaucitronRoot .tarteaucitronCross {
-    display: none !important;
+  display: none !important;
 }
 
 /* Hide the redundant "Cookies management panel" title (we use "Privacy policy" h1 instead) */
 #tarteaucitronRoot .tarteaucitronH1,
 #tarteaucitronRoot #dialogTitle {
-    display: none !important;
+  display: none !important;
 }
 
 /* Force hide #tarteaucitronNoServicesTitle even when our flex rule on
    .tarteaucitronLine would otherwise override its inline style="display: none" */
 #tarteaucitronRoot #tarteaucitronNoServicesTitle {
-    display: none !important;
+  display: none !important;
 }
 
 /* ===== 2. Bottom banner ===== */
 #tarteaucitronRoot #tarteaucitronAlertBig {
-    background: #0c1527 !important;
-    color: #f2f2f3 !important;
-    border-top: 1px solid #101b33;
-    display: flex !important;
-    align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem !important;
-    max-width: 100vw !important;
-    box-sizing: border-box !important;
+  background: #0c1527 !important;
+  color: #f2f2f3 !important;
+  border-top: 1px solid #101b33;
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem !important;
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
 }
 
 /* Disclaimer text + "Privacy policy" heading injected via ::before */
 #tarteaucitronRoot #tarteaucitronDisclaimerAlert {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    flex: 1 1 180px;
-    min-width: 0;
-    color: #afb0b6 !important;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  flex: 1 1 180px;
+  min-width: 0;
+  color: #afb0b6 !important;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 #tarteaucitronRoot #tarteaucitronDisclaimerAlert::before {
-    content: 'Privacy policy';
-    display: block !important;
-    font-family: var(--font-geologica), system-ui, sans-serif;
-    font-weight: 700;
-    font-size: 1.125rem;
-    margin-bottom: 0.5rem;
-    color: #f2f2f3;
-    width: 100%;
+  content: 'Privacy policy';
+  display: block !important;
+  font-family: var(--font-geologica), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+  color: #f2f2f3;
+  width: 100%;
 }
 
 /* Hide the native "Privacy policy" link in the banner (we render it via ::before) */
 #tarteaucitronRoot #tarteaucitronPrivacyUrl {
-    display: none !important;
+  display: none !important;
 }
 
 /* Banner buttons base style */
 #tarteaucitronRoot #tarteaucitronAlertBig button {
-    border-radius: 4px !important;
-    padding: 0.5rem 0.875rem !important;
-    font-weight: 500 !important;
-    border: 1px solid #0fbcff  !important;
-    transition: background 0.15s ease, border-color 0.15s ease;
-    cursor: pointer;
-    font-size: 0.8125rem;
-    white-space: nowrap;
+  border-radius: 4px !important;
+  padding: 0.5rem 0.875rem !important;
+  font-weight: 500 !important;
+  border: 1px solid #0fbcff !important;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  white-space: nowrap;
 }
 
 /* "OK, accept all" — cyan filled */
 #tarteaucitronRoot #tarteaucitronPersonalize2 {
-    background: #0aa5e0 !important;
-    color: #0c1527 !important;
-    font-weight: 600 !important;
-    border: 1px solid #0aa5e0 !important;
+  background: #0aa5e0 !important;
+  color: #0c1527 !important;
+  font-weight: 600 !important;
+  border: 1px solid #0aa5e0 !important;
 }
 #tarteaucitronRoot #tarteaucitronPersonalize2:hover {
-    background: #0fbcff !important;
-    border-color: #0fbcff !important;
+  background: #0fbcff !important;
+  border-color: #0fbcff !important;
 }
 
 /* "Deny all" + "Personalize" — outline cyan */
 #tarteaucitronRoot #tarteaucitronAllDenied2,
 #tarteaucitronRoot #tarteaucitronCloseAlert {
-    background: transparent !important;
-    color: #0fbcff !important;
-    border: 1px solid #0fbcff !important;
+  background: transparent !important;
+  color: #0fbcff !important;
+  border: 1px solid #0fbcff !important;
 }
 #tarteaucitronRoot #tarteaucitronAllDenied2:hover,
 #tarteaucitronRoot #tarteaucitronCloseAlert:hover {
-    background: rgba(15, 188, 255, 0.08) !important;
+  background: rgba(15, 188, 255, 0.08) !important;
 }
 
 /* ===== 3. Modal container + close X + scrollable services container ===== */
 #tarteaucitronRoot #tarteaucitron {
-    background: #0c1527 !important;
-    color: #f2f2f3 !important;
-    border-radius: 4px !important;
-    border: 1px solid #101b33 !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
-    font-family: var(--font-ibm-plex-sans), system-ui, sans-serif !important;
-    position: relative !important;
-    overflow: visible !important;
-    padding: 0 !important;
-    max-height: 85vh !important;
+  background: #0c1527 !important;
+  color: #f2f2f3 !important;
+  border-radius: 4px !important;
+  border: 1px solid #101b33 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+  font-family: var(--font-ibm-plex-sans), system-ui, sans-serif !important;
+  position: relative !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  max-height: 85vh !important;
 }
 
 /* Scrollable services container. Overrides tarteaucitron's inline `height: 578px`
    which is computed at modal mount and does not grow when the "Manage services"
    drawer expands. `padding-top: 4rem` leaves space for the close X above. */
 #tarteaucitronRoot #tarteaucitronServices {
-    background: #0c1527 !important;
-    padding: 4rem 1.5rem 1.5rem 1.5rem !important;
-    margin: 0 !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+  background: #0c1527 !important;
+  padding: 4rem 1.5rem 1.5rem 1.5rem !important;
+  margin: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
 /* Close X (top-right of modal, absolutely positioned within #tarteaucitron) */
 #tarteaucitronRoot #tarteaucitronClosePanel {
-    background: transparent !important;
-    color: #afb0b6 !important;
-    border: 0 !important;
-    font-size: 0 !important;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 32px;
-    height: 32px;
-    cursor: pointer !important;
+  background: transparent !important;
+  color: #afb0b6 !important;
+  border: 0 !important;
+  font-size: 0 !important;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  cursor: pointer !important;
 }
 #tarteaucitronRoot #tarteaucitronClosePanel::before {
-    content: '×';
-    font-size: 1.5rem;
-    line-height: 1;
+  content: '×';
+  font-size: 1.5rem;
+  line-height: 1;
 }
 #tarteaucitronRoot #tarteaucitronClosePanel:hover {
-    color: #f2f2f3 !important;
+  color: #f2f2f3 !important;
 }
 
 /* Border container around the categories list */
 #tarteaucitronRoot .tarteaucitronBorder {
-    background: transparent !important;
-    border: 1px solid #101b33 !important;
-    border-radius: 4px !important;
-    padding: 0 !important;
-    margin-top: 1rem !important;
+  background: transparent !important;
+  border: 1px solid #101b33 !important;
+  border-radius: 4px !important;
+  padding: 0 !important;
+  margin-top: 1rem !important;
 }
 
 /* ===== 4. Modal header (intro + Privacy policy h1 + global toggle row) =====
@@ -190,310 +193,316 @@
  */
 #tarteaucitronRoot div.tarteaucitronMainLine,
 #tarteaucitronRoot #tarteaucitronMainLineOffset {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    gap: 1rem 1.5rem !important;
-    align-items: center !important;
-    background: transparent !important;
-    border: 0 !important;
-    padding: 0 0 1.5rem 0 !important;
-    border-bottom: 1px solid #101b33 !important;
-    margin: 0 0 1rem 0 !important;
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  gap: 1rem 1.5rem !important;
+  align-items: center !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 0 1.5rem 0 !important;
+  border-bottom: 1px solid #101b33 !important;
+  margin: 0 0 1rem 0 !important;
 }
 
 #tarteaucitronRoot #tarteaucitronInfo {
-    grid-column: 1 / -1 !important;
-    background: transparent !important;
-    text-align: center !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 0 !important;
+  grid-column: 1 / -1 !important;
+  background: transparent !important;
+  text-align: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
 }
 
 #tarteaucitronRoot #tarteaucitronInfo > p {
-    color: #afb0b6 !important;
-    font-size: 0.875rem !important;
-    line-height: 1.6 !important;
-    text-align: center !important;
-    margin: 0 0 1rem 0 !important;
-    padding: 0 !important;
+  color: #afb0b6 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.6 !important;
+  text-align: center !important;
+  margin: 0 0 1rem 0 !important;
+  padding: 0 !important;
 }
 
 #tarteaucitronRoot #tarteaucitronInfo br {
-    display: none !important;
+  display: none !important;
 }
 
 /* "Privacy policy" styled as h1 title (centered, cyan, large) */
 #tarteaucitronRoot #tarteaucitronPrivacyUrlDialog {
-    background: transparent !important;
-    color: #0fbcff !important;
-    border: 0 !important;
-    font-family: var(--font-geologica), system-ui, sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 1.5rem !important;
-    padding: 0 !important;
-    margin: 1.25rem 0 0 0 !important;
-    display: block !important;
-    text-align: center !important;
-    width: 100%;
-    cursor: pointer !important;
+  background: transparent !important;
+  color: #0fbcff !important;
+  border: 0 !important;
+  font-family: var(--font-geologica), system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+  padding: 0 !important;
+  margin: 1.25rem 0 0 0 !important;
+  display: block !important;
+  text-align: center !important;
+  width: 100%;
+  cursor: pointer !important;
 }
 #tarteaucitronRoot #tarteaucitronPrivacyUrlDialog:hover {
-    color: #38c8ff !important;
-    text-decoration: none !important;
+  color: #38c8ff !important;
+  text-decoration: none !important;
 }
 
 /* "Preference for all services" placement (col 1) */
 #tarteaucitronRoot div.tarteaucitronMainLine > .tarteaucitronName,
 #tarteaucitronRoot #tarteaucitronMainLineOffset > .tarteaucitronName {
-    grid-column: 1 !important;
-    padding: 0 !important;
+  grid-column: 1 !important;
+  padding: 0 !important;
 }
 
 /* Global switch placement (col 2) */
 #tarteaucitronRoot div.tarteaucitronMainLine > .tarteaucitronAsk,
 #tarteaucitronRoot #tarteaucitronMainLineOffset > .tarteaucitronAsk {
-    grid-column: 2 !important;
-    justify-self: end;
+  grid-column: 2 !important;
+  justify-self: end;
 }
 
 /* ===== 5. Category titles (Mandatory, Audience measurement, …) ===== */
 #tarteaucitronRoot .tarteaucitronTitle {
-    background: transparent !important;
-    border-bottom: 1px solid #101b33 !important;
+  background: transparent !important;
+  border-bottom: 1px solid #101b33 !important;
 }
 
 #tarteaucitronRoot .tarteaucitronTitle button,
 #tarteaucitronRoot .catToggleBtn {
-    background: transparent !important;
-    color: #f2f2f3 !important;
-    border: 0 !important;
-    padding: 1rem 1.25rem !important;
-    width: 100% !important;
-    text-align: left !important;
-    font-family: var(--font-geologica), system-ui, sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
+  background: transparent !important;
+  color: #f2f2f3 !important;
+  border: 0 !important;
+  padding: 1rem 1.25rem !important;
+  width: 100% !important;
+  text-align: left !important;
+  font-family: var(--font-geologica), system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
 }
 #tarteaucitronRoot .tarteaucitronTitle button:hover,
 #tarteaucitronRoot .catToggleBtn:hover {
-    background: rgba(15, 188, 255, 0.04) !important;
+  background: rgba(15, 188, 255, 0.04) !important;
 }
 
 #tarteaucitronRoot .tarteaucitronPlus {
-    color: #0fbcff !important;
-    font-weight: 700;
+  color: #0fbcff !important;
+  font-weight: 700;
 }
 
 /* Category description (text below the title) */
 #tarteaucitronRoot .tarteaucitronDetails,
 #tarteaucitronRoot .tarteaucitronInfoBox {
-    background: transparent !important;
-    color: #afb0b6 !important;
-    padding: 0 1.25rem 0.5rem 1.25rem !important;
-    font-size: 0.8125rem !important;
+  background: transparent !important;
+  color: #afb0b6 !important;
+  padding: 0 1.25rem 0.5rem 1.25rem !important;
+  font-size: 0.8125rem !important;
 }
 
 /* ===== 6. Service lines + names + descriptions ===== */
 #tarteaucitronRoot .tarteaucitronLine {
-    background: transparent !important;
-    border-bottom: 1px solid #101b33 !important;
-    padding: 1rem 1.25rem !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 1rem;
+  background: transparent !important;
+  border-bottom: 1px solid #101b33 !important;
+  padding: 1rem 1.25rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem;
 }
 #tarteaucitronRoot .tarteaucitronLine:last-child {
-    border-bottom: 0 !important;
+  border-bottom: 0 !important;
 }
 
 #tarteaucitronRoot .tarteaucitronName {
-    background: transparent !important;
-    color: #f2f2f3 !important;
-    padding: 0 !important;
+  background: transparent !important;
+  color: #f2f2f3 !important;
+  padding: 0 !important;
 }
 
 #tarteaucitronRoot .tarteaucitronName span {
-    color: #afb0b6 !important;
-    font-size: 0.8125rem !important;
+  color: #afb0b6 !important;
+  font-size: 0.8125rem !important;
 }
 
 #tarteaucitronRoot .tarteaucitronH2 {
-    font-family: var(--font-geologica), system-ui, sans-serif !important;
-    font-size: 1rem !important;
-    font-weight: 600 !important;
-    color: #f2f2f3 !important;
-    display: block !important;
+  font-family: var(--font-geologica), system-ui, sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #f2f2f3 !important;
+  display: block !important;
 }
 
 #tarteaucitronRoot .tarteaucitronH3 {
-    font-family: var(--font-ibm-plex-sans), system-ui, sans-serif !important;
-    font-size: 0.9375rem !important;
-    font-weight: 600 !important;
-    color: #f2f2f3 !important;
-    display: block !important;
-    margin-bottom: 0.25rem !important;
+  font-family: var(--font-ibm-plex-sans), system-ui, sans-serif !important;
+  font-size: 0.9375rem !important;
+  font-weight: 600 !important;
+  color: #f2f2f3 !important;
+  display: block !important;
+  margin-bottom: 0.25rem !important;
 }
 
 /* ===== 7. Links / status / "Manage services" toggle ===== */
 #tarteaucitronRoot .tarteaucitronStatusInfo,
 #tarteaucitronRoot .tacCurrentStatus,
 #tarteaucitronRoot .tarteaucitronListCookies {
-    color: #afb0b6 !important;
-    font-size: 0.75rem !important;
+  color: #afb0b6 !important;
+  font-size: 0.75rem !important;
 }
 
 #tarteaucitronRoot .tarteaucitronReadmoreInfo,
 #tarteaucitronRoot .tarteaucitronReadmoreOfficial,
 #tarteaucitronRoot .tarteaucitronListCookies a {
-    color: #0fbcff !important;
-    text-decoration: none !important;
-    font-size: 0.75rem !important;
+  color: #0fbcff !important;
+  text-decoration: none !important;
+  font-size: 0.75rem !important;
 }
 #tarteaucitronRoot .tarteaucitronReadmoreInfo:hover,
 #tarteaucitronRoot .tarteaucitronReadmoreOfficial:hover {
-    text-decoration: underline !important;
+  text-decoration: underline !important;
 }
 
 #tarteaucitronRoot .tarteaucitronReadmoreSeparator {
-    color: #afb0b6 !important;
-    font-size: 0.75rem !important;
+  color: #afb0b6 !important;
+  font-size: 0.75rem !important;
 }
 
 #tarteaucitronRoot .tarteaucitron-toggle-group {
-    background: transparent !important;
-    color: #0fbcff !important;
-    border: 0 !important;
-    padding: 0.25rem 0 !important;
-    font-size: 0.8125rem !important;
-    font-weight: 500 !important;
-    cursor: pointer !important;
-    text-decoration: underline !important;
-    display: block !important;
-    margin-top: 0.5rem !important;
+  background: transparent !important;
+  color: #0fbcff !important;
+  border: 0 !important;
+  padding: 0.25rem 0 !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  text-decoration: underline !important;
+  display: block !important;
+  margin-top: 0.5rem !important;
 }
 
 /* ===== 8. Switches (modal toggles — scoped under .tarteaucitronAsk to avoid
  *               clashing with banner CTAs that share .tarteaucitronAllow/Deny) ===== */
 #tarteaucitronRoot .tarteaucitronAsk {
-    display: inline-block !important;
-    position: relative !important;
-    width: 44px !important;
-    height: 24px !important;
-    background: #13213e !important;
-    border-radius: 12px !important;
-    cursor: pointer !important;
-    transition: background 0.2s ease !important;
-    overflow: hidden !important;
-    flex-shrink: 0;
+  display: inline-block !important;
+  position: relative !important;
+  width: 44px !important;
+  height: 24px !important;
+  background: #13213e !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: background 0.2s ease !important;
+  overflow: hidden !important;
+  flex-shrink: 0;
 }
 
 #tarteaucitronRoot .tarteaucitronAsk > .tarteaucitronAllow,
 #tarteaucitronRoot .tarteaucitronAsk > .tarteaucitronDeny {
-    position: absolute !important;
-    top: 0 !important;
-    width: 50% !important;
-    height: 100% !important;
-    background: transparent !important;
-    color: transparent !important;
-    border: 0 !important;
-    font-size: 0 !important;
-    cursor: pointer !important;
-    padding: 0 !important;
-    margin: 0 !important;
+  position: absolute !important;
+  top: 0 !important;
+  width: 50% !important;
+  height: 100% !important;
+  background: transparent !important;
+  color: transparent !important;
+  border: 0 !important;
+  font-size: 0 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-#tarteaucitronRoot .tarteaucitronAsk > .tarteaucitronDeny { left: 0 !important; }
-#tarteaucitronRoot .tarteaucitronAsk > .tarteaucitronAllow { right: 0 !important; }
+#tarteaucitronRoot .tarteaucitronAsk > .tarteaucitronDeny {
+  left: 0 !important;
+}
+#tarteaucitronRoot .tarteaucitronAsk > .tarteaucitronAllow {
+  right: 0 !important;
+}
 
 /* Switch thumb */
 #tarteaucitronRoot .tarteaucitronAsk::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: #f2f2f3;
-    border-radius: 50%;
-    transition: transform 0.2s ease;
-    pointer-events: none;
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #f2f2f3;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  pointer-events: none;
 }
 
 /* Active state (Allow pressed) */
 #tarteaucitronRoot .tarteaucitronIsAllowed .tarteaucitronAsk,
-#tarteaucitronRoot .tarteaucitronAsk:has(.tarteaucitronAllow[aria-pressed="true"]) {
-    background: #0fbcff !important;
+#tarteaucitronRoot
+  .tarteaucitronAsk:has(.tarteaucitronAllow[aria-pressed='true']) {
+  background: #0fbcff !important;
 }
 #tarteaucitronRoot .tarteaucitronIsAllowed .tarteaucitronAsk::after,
-#tarteaucitronRoot .tarteaucitronAsk:has(.tarteaucitronAllow[aria-pressed="true"])::after {
-    transform: translateX(20px);
+#tarteaucitronRoot
+  .tarteaucitronAsk:has(.tarteaucitronAllow[aria-pressed='true'])::after {
+  transform: translateX(20px);
 }
 
 /* Disabled (mandatory cookies — always on, non-interactive) */
 #tarteaucitronRoot .tarteaucitronAsk:has(button[disabled]) {
-    background: #0fbcff !important;
-    opacity: 0.5;
-    cursor: not-allowed;
+  background: #0fbcff !important;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 #tarteaucitronRoot .tarteaucitronAsk:has(button[disabled])::after {
-    transform: translateX(20px);
+  transform: translateX(20px);
 }
 
 /* ===== 9. Save footer ===== */
 #tarteaucitronRoot #tarteaucitronSave {
-    background: #0c1527 !important;
-    border-top: 1px solid #101b33 !important;
-    padding: 1rem 1.5rem !important;
-    text-align: right;
+  background: #0c1527 !important;
+  border-top: 1px solid #101b33 !important;
+  padding: 1rem 1.5rem !important;
+  text-align: right;
 }
 
 #tarteaucitronRoot #tarteaucitronSaveButton {
-    background: #0aa5e0 !important;
-    color: #ffffff !important;
-    border: 1px solid #0aa5e0 !important;
-    border-radius: 4px !important;
-    padding: 0.5rem 1.5rem !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    cursor: pointer !important;
+  background: #0aa5e0 !important;
+  color: #ffffff !important;
+  border: 1px solid #0aa5e0 !important;
+  border-radius: 4px !important;
+  padding: 0.5rem 1.5rem !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
 }
 #tarteaucitronRoot #tarteaucitronSaveButton:hover {
-    background: #0fbcff !important;
-    border-color: #0fbcff !important;
+  background: #0fbcff !important;
+  border-color: #0fbcff !important;
 }
 
 /* ===== 10. Custom scrollbar (services container) ===== */
 #tarteaucitronRoot #tarteaucitronServices::-webkit-scrollbar {
-    width: 8px;
+  width: 8px;
 }
 #tarteaucitronRoot #tarteaucitronServices::-webkit-scrollbar-track {
-    background: #0c1527;
+  background: #0c1527;
 }
 #tarteaucitronRoot #tarteaucitronServices::-webkit-scrollbar-thumb {
-    background: #13213e;
-    border-radius: 4px;
+  background: #13213e;
+  border-radius: 4px;
 }
 #tarteaucitronRoot #tarteaucitronServices::-webkit-scrollbar-thumb:hover {
-    background: #0fbcff;
+  background: #0fbcff;
 }
 
 /* ===== 11. Responsive (≤ 900px) ===== */
 @media (max-width: 900px) {
-    #tarteaucitronRoot #tarteaucitronAlertBig {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 1rem !important;
-    }
-    #tarteaucitronRoot #tarteaucitronDisclaimerAlert {
-        flex: 1 1 100%;
-        align-items: flex-start !important;
-    }
+  #tarteaucitronRoot #tarteaucitronAlertBig {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+  #tarteaucitronRoot #tarteaucitronDisclaimerAlert {
+    flex: 1 1 100%;
+    align-items: flex-start !important;
+  }
 }
 
 /* Align the master "Preference for all services" toggle with the per-category
@@ -501,10 +510,10 @@
    pre-compensates for a potential scrollbar, but it leaves the master toggle
    visually offset to the right when no scrollbar is present. */
 #tarteaucitronScrollbarAdjust {
-    padding-right: 0 !important;
-    margin-right: 30px !important;
+  padding-right: 0 !important;
+  margin-right: 30px !important;
 }
 
 #tarteaucitronRoot:not(.tarteaucitronBeforeVisible) #tarteaucitronAlertBig {
-    display: none !important;
+  display: none !important;
 }

@@ -42,7 +42,15 @@ export interface TarteaucitronConfig {
 
 export interface TarteaucitronService {
   key: string;
-  type: 'ads' | 'analytic' | 'api' | 'comment' | 'other' | 'social' | 'support' | 'video';
+  type:
+    | 'ads'
+    | 'analytic'
+    | 'api'
+    | 'comment'
+    | 'other'
+    | 'social'
+    | 'support'
+    | 'video';
   name: string;
   needConsent: boolean;
   cookies: string[];
