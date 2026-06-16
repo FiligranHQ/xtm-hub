@@ -54,7 +54,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['**/*.test.ts', '**/*.test.utils.ts'],
+    files: ['**/*.test.ts', '**/*.test.cookie-consent.utils.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
       'vitest/prefer-to-have-length': 'error',

@@ -89,7 +89,7 @@ E2E runs with `workers: 1` (sequential), `retries: 2`, Chromium only. Base URL d
 This is the most important data flow to understand:
 
 1. **Schema definition**: `.graphql` files in `apps/backend/src/modules/**/` and `src/nodes/`
-2. **Backend codegen**: `yarn generate:ts` in backend → runs `graphql-codegen` → produces `src/__generated__/resolvers-types.ts`
+2. **Backend codegen**: `yarn generate:ts` in backend → runs `graphql-codegen` → produces `src/__generated__/resolvers-cookie-consent.types.ts`
 3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to `apps/frontend/schema.graphql`
 4. **Relay compilation**: `yarn relay` in frontend → reads `schema.graphql` → generates TypeScript artifacts in `apps/frontend/__generated__/`
 5. **Enum generation**: `yarn generate:enum` (part of `yarn relay`) → extracts enums from the schema into TypeScript
@@ -403,7 +403,7 @@ Examples:
 3. Add `<name>.resolver.ts` with resolver implementations
 4. Add `<name>.service.ts` with business logic
 5. Register resolver in `src/server/graphql-schema.ts`
-6. Run `yarn generate:ts` to update `src/__generated__/resolvers-types.ts`
+6. Run `yarn generate:ts` to update `src/__generated__/resolvers-cookie-consent.types.ts`
 7. The schema will be written to `apps/frontend/schema.graphql` on next API start (non-production)
 
 ### Adding a New Frontend Page
@@ -461,12 +461,12 @@ it.each`
 
 ### Extracting pure utility functions for testability
 
-Avoid testing complex component internals directly. Prefer extracting logic into a **pure utility function** in a `*.utils.ts` file alongside the component, then unit-test the utility in isolation. The component simply calls the utility.
+Avoid testing complex component internals directly. Prefer extracting logic into a **pure utility function** in a `*.cookie-consent.utils.ts` file alongside the component, then unit-test the utility in isolation. The component simply calls the utility.
 
 ```
 TrialsTab.tsx           ← calls formatCancellationReason()
-trials-tab.utils.ts      ← pure function, no React/Relay deps
-trials-tab.utils.test.ts ← fast, isolated unit tests
+trials-tab.cookie-consent.utils.ts      ← pure function, no React/Relay deps
+trials-tab.cookie-consent.utils.test.ts ← fast, isolated unit tests
 ```
 
 ### Frontend test conventions

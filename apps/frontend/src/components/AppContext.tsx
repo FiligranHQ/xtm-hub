@@ -1,6 +1,6 @@
 'use client';
-import GoogleAnalytics from '@/components/external/GoogleAnalytics';
-import Hubspot from '@/components/external/Hubspot';
+import { ManagedScripts } from '@/components/cookie-consent/ManagedScripts';
+import { CookieConsent } from '@/components/cookie-consent/CookieConsent';
 import { APP_PATH } from '@/utils/path/constant';
 import { geologica, ibmPlexSans } from '@app/font';
 import { Toaster } from '@filigran/ui';
@@ -56,8 +56,8 @@ const AppContext = ({ children }: AppProps) => {
           disableTransitionOnChange>
           {children}
           <Toaster />
-          <Hubspot />
-          <GoogleAnalytics />
+          <ManagedScripts />
+          <CookieConsent />
         </ThemeProvider>
       </body>
     </html>
