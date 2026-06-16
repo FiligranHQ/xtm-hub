@@ -20,8 +20,10 @@ interface RootLayoutProps {
 const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <I18nContext>
-      <AppContext>{children}</AppContext>
-      <CookieConsent />
+      <AppContext>
+        {children}
+        <CookieConsent />
+      </AppContext>
     </I18nContext>
   );
 };

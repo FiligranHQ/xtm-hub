@@ -25,7 +25,7 @@ const buildConfig = (): TarteaucitronConfig => ({
   removeCredit: true,
   moreInfoLink: true,
   useExternalCss: false,
-  readmoreLink: '/cookie-policy',
+  readmoreLink: 'https://filigran.io/privacy-policy/',
   mandatory: true,
   mandatoryCta: true,
 });
@@ -54,6 +54,7 @@ const registerServices = (): void => {
       'hs_login_email',
     ],
     js: function () {
+      if (document.getElementById('hs-script-loader')) return;
       const script = document.createElement('script');
       script.src = `//js-eu1.hs-scripts.com/${HUBSPOT_PORTAL_ID}.js`;
       script.id = 'hs-script-loader';
