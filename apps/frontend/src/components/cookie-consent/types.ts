@@ -6,6 +6,9 @@ declare global {
       services: Record<string, TarteaucitronService>;
       user: Record<string, unknown>;
       lang: TarteaucitronLang;
+      userInterface?: {
+        openPanel: () => void;
+      };
     };
     tarteaucitronCustomText?: TarteaucitronCustomText;
     tarteaucitronForceLanguage?: string;
@@ -63,14 +66,13 @@ export interface TarteaucitronLang {
   ads?: TarteaucitronCategoryLang;
   analytic?: TarteaucitronCategoryLang;
   api?: TarteaucitronCategoryLang;
-  // Autres types tarteaucitron qu'on ne customise pas mais qui existent
   social?: TarteaucitronCategoryLang;
   video?: TarteaucitronCategoryLang;
   comment?: TarteaucitronCategoryLang;
   support?: TarteaucitronCategoryLang;
   other?: TarteaucitronCategoryLang;
   google?: TarteaucitronCategoryLang;
-  [key: string]: unknown;  // ← permet à tarteaucitron d'avoir ses autres clés sans crier
+  [key: string]: unknown;
 }
 
 export type TarteaucitronCustomText = Record<string, unknown>;

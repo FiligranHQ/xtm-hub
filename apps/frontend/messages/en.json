@@ -308,7 +308,8 @@
     "PrivacyPolicy": "Privacy Policy",
     "TermsOfServices": "Terms of Services",
     "Licenses": "Licenses",
-    "Contact": "Contact"
+    "Contact": "Contact",
+    "CookieSettings": "Cookie settings"
   },
   "PublicResourcePage": {
     "Download": "Download",
