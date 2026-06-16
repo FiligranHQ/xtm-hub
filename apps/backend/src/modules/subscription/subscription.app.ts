@@ -1,9 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { paginate, QueryOpts } from '../../../knexfile';
-import {
-  SubscriptionConnection,
-  SubscriptionModel,
-} from '../../__generated__/resolvers-types';
+import { QueryOpts } from '../../../knexfile';
+import { SubscriptionModel } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
@@ -122,13 +119,7 @@ export const subscriptionApp = {
   },
 
   loadSubscriptions: async (opts: QueryOpts) => {
-    const { filters, searchTerm, orderBy } = opts;
-    return paginate<Subscription, SubscriptionConnection>('Subscription', {
-      ...opts,
-      orderBy: `Subscription.${orderBy}`,
-      filters,
-      searchTerm,
-    });
+    return SubscriptionDomain.loadSubscriptions(opts);
   },
 };
 

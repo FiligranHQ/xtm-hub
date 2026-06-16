@@ -1603,7 +1603,7 @@ export const mockSubscriptionFilter = (overrides?: Partial<SubscriptionFilter>, 
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('SubscriptionFilter');
     return {
-        key: overrides && overrides.hasOwnProperty('key') ? overrides.key! : SubscriptionFilterKey.OrganizationName,
+        key: overrides && overrides.hasOwnProperty('key') ? overrides.key! : SubscriptionFilterKey.OrganizationId,
         value: overrides && overrides.hasOwnProperty('value') ? overrides.value! : ['admiratio'],
     };
 };

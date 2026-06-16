@@ -21,71 +21,86 @@ import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { Suspense, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Suspense, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 const OrganizationList = () => {
   const t = useTranslations();
+  const router = useRouter();
+  const pathname = usePathname();
   const [editOrganization, setEditOrganization] = useState<
     organizationItem_fragment$data | undefined
   >(undefined);
   const [deleteOrganization, setDeleteOrganization] = useState<
     organizationItem_fragment$data | undefined
   >(undefined);
-  const columns: ColumnDef<organizationItem_fragment$data>[] = [
-    {
-      accessorKey: 'name',
-      id: 'name',
-      header: t('OrganizationForm.Name'),
-      cell: ({ row }) => {
-        return <>{row.original.name}</>;
+  const columns = useMemo<ColumnDef<organizationItem_fragment$data>[]>(
+    () => [
+      {
+        accessorKey: 'name',
+        id: 'name',
+        header: t('OrganizationForm.Name'),
+        cell: ({ row }) => {
+          return <>{row.original.name}</>;
+        },
       },
-    },
-    {
-      accessorKey: 'domains',
-      id: 'domains',
-      header: t('OrganizationForm.Domains'),
-      enableSorting: false,
-      cell: ({ row }) => {
-        return (
-          <div className="flex space-x-s">
-            {row.original.domains?.map((domain) => (
-              <Badge
-                className="truncate"
-                key={domain}>
-                {domain}
-              </Badge>
-            ))}
+      {
+        accessorKey: 'domains',
+        id: 'domains',
+        header: t('OrganizationForm.Domains'),
+        enableSorting: false,
+        cell: ({ row }) => {
+          return (
+            <div className="flex space-x-s">
+              {row.original.domains?.map((domain) => (
+                <Badge
+                  className="truncate"
+                  key={domain}>
+                  {domain}
+                </Badge>
+              ))}
+            </div>
+          );
+        },
+      },
+      {
+        id: 'actions',
+        size: 100,
+        enableHiding: false,
+        enableSorting: false,
+        enableResizing: false,
+        cell: ({ row }) => (
+          <div className="flex items-center justify-end">
+            <IconActions
+              icon={
+                <>
+                  <MoreVertIcon className="h-4 w-4 text-primary" />
+                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                </>
+              }>
+              <IconActionsItem
+                onClick={() => {
+                  router.push(
+                    `${pathname}/${encodeURIComponent(row.original.id)}/subscribed-services`
+                  );
+                }}>
+                {t('Service.SubscribedServices')}
+              </IconActionsItem>
+              <IconActionsItem
+                onClick={() => setEditOrganization(row.original)}>
+                {t('Utils.Update')}
+              </IconActionsItem>
+              <IconActionsItem
+                onClick={() => setDeleteOrganization(row.original)}>
+                {t('Utils.Delete')}
+              </IconActionsItem>
+            </IconActions>
           </div>
-        );
+        ),
       },
-    },
-    {
-      id: 'actions',
-      size: 100,
-      enableHiding: false,
-      enableSorting: false,
-      enableResizing: false,
-      cell: ({ row }) => (
-        <div className="flex items-center justify-end">
-          <IconActions
-            icon={
-              <>
-                <MoreVertIcon className="h-4 w-4 text-primary" />
-                <span className="sr-only">{t('Utils.OpenMenu')}</span>
-              </>
-            }>
-            <IconActionsItem onClick={() => setEditOrganization(row.original)}>
-              {t('Utils.Update')}
-            </IconActionsItem>
-            <IconActionsItem
-              onClick={() => setDeleteOrganization(row.original)}>
-              {t('Utils.Delete')}
-            </IconActionsItem>
-          </IconActions>
-        </div>
-      ),
-    },
-  ];
+    ],
+    [pathname, router, t]
+  );
   const {
     pageSize,
     setPageSize,
