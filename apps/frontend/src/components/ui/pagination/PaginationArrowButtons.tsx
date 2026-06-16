@@ -18,6 +18,9 @@ export const PaginationArrowButtons = ({
 }: PaginationArrowButtonsProps) => {
   const t = useTranslations();
   const pageCount = Math.ceil(totalCount / pageSize);
+  const rangeStart = totalCount > 0 ? pageIndex * pageSize + 1 : 0;
+  const rangeEnd = Math.min((pageIndex + 1) * pageSize, totalCount);
+  const counterWidth = `${3 * String(totalCount).length + 6}ch`;
 
   const canGoToPreviousPage = (): boolean => {
     return pageIndex > 0;
@@ -54,13 +57,16 @@ export const PaginationArrowButtons = ({
         aria-label={t('GenericActions.Paginate.PreviousPage')}>
         <ArrowPreviousIcon className="size-3" />
       </Button>
-      <div className="px-s leading-none text-text-secondary txt-sub-content">
+      <div
+        className="leading-none text-text-secondary txt-sub-content whitespace-nowrap text-center"
+        style={{ width: counterWidth }}>
         <span className="text-foreground">
-          {totalCount > 0 ? pageIndex * pageSize + 1 : 0}
+          {rangeStart}
           {' - '}
-          {Math.min((pageIndex + 1) * pageSize, totalCount)}
+          {rangeEnd}
         </span>
-        / {totalCount}
+        {' / '}
+        {totalCount}
       </div>
       <Button
         variant="ghost"

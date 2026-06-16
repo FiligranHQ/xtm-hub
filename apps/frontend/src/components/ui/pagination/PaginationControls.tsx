@@ -17,10 +17,6 @@ export const PaginationControls = ({
   pageIndex,
   onSetPageSize,
 }: PaginationControlsProps) => {
-  if (totalCount <= pageSize) {
-    return null;
-  }
-
   return (
     <div className="flex-0 shrink-0 box-border flex h-9 items-center rounded border border-border-light">
       <PaginationArrowButtons
