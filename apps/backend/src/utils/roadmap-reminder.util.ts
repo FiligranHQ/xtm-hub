@@ -1,16 +1,33 @@
+const REMINDER_TIME_ZONE = 'Europe/Paris';
+
 /**
- * Determines whether the monthly public roadmap reminder should be sent today.
+ * Whether the monthly public roadmap reminder is due today: the 25th of the
+ * month, or the preceding Friday when the 25th falls on a weekend (weekends
+ * only, not public holidays).
  *
- * The reminder is due on the 25th of the month, or on the preceding Friday when
- * the 25th falls on a weekend. Only weekends are taken into account here, not
- * public holidays (deliberate simplification for an internal reminder).
- *
- * The cron is scheduled to run every weekday morning; this guard ensures the
- * email is only sent on the correct day.
+ * The date is read in REMINDER_TIME_ZONE so the result does not depend on the
+ * server/container timezone (the cron is scheduled in the same zone).
  */
-export const isRoadmapReminderDay = (now: Date): boolean => {
-  const twentyFifth = new Date(now.getFullYear(), now.getMonth(), 25);
-  const dayOfWeek = twentyFifth.getDay(); // 0 = Sunday, 6 = Saturday
+export const isRoadmapReminderDay = (
+  now: Date,
+  timeZone: string = REMINDER_TIME_ZONE
+): boolean => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(now);
+
+  const partValue = (type: Intl.DateTimeFormatPartTypes): number =>
+    Number(parts.find((part) => part.type === type)?.value);
+
+  const year = partValue('year');
+  const month = partValue('month');
+  const day = partValue('day');
+
+  // A calendar date's weekday is timezone-independent, so compute it in UTC.
+  const dayOfWeek = new Date(Date.UTC(year, month - 1, 25)).getUTCDay(); // 0=Sun, 6=Sat
 
   let reminderDayOfMonth = 25;
   if (dayOfWeek === 6) {
@@ -19,5 +36,5 @@ export const isRoadmapReminderDay = (now: Date): boolean => {
     reminderDayOfMonth = 23; // Sunday -> previous Friday
   }
 
-  return now.getDate() === reminderDayOfMonth;
+  return day === reminderDayOfMonth;
 };
