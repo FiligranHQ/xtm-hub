@@ -232,6 +232,38 @@ describe('RegistrationDetails', () => {
         screen.queryByText(/Register\.Details\.EndDate/i)
       ).not.toBeInTheDocument();
     });
+
+    it('should hide connection status and last check rows for trial when deployment is not ACTIVE', () => {
+      renderDetails({
+        ...trialPlatform,
+        last_connectivity_check: '2025-03-10T12:00:00.000Z',
+        deployment_request: {
+          ...trialPlatform.deployment_request!,
+          hub_status: DeploymentRequestHubStatusEnum.PENDING,
+        },
+      });
+
+      expect(
+        screen.queryByText(/Register\.Details\.ConnectionStatus\.Title/i)
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Register\.Details\.LastConnectionCheck/i)
+      ).not.toBeInTheDocument();
+    });
+
+    it('should show connection status and last check rows for trial when deployment is ACTIVE', () => {
+      renderDetails({
+        ...trialPlatform,
+        last_connectivity_check: '2025-03-10T12:00:00.000Z',
+      });
+
+      expect(
+        screen.getByText(/Register\.Details\.ConnectionStatus\.Title/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Register\.Details\.LastConnectionCheck/i)
+      ).toBeInTheDocument();
+    });
   });
 
   describe('Access row for trial', () => {

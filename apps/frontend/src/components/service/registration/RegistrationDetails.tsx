@@ -92,6 +92,11 @@ export const RegistrationDetails = ({
     1
   );
 
+  const isLastConnectivityCheckDisplayed =
+    !isTrial ||
+    platform?.deployment_request?.hub_status ===
+      DeploymentRequestHubStatusEnum.ACTIVE;
+
   return (
     <section className="flex justify-between p-xl border border-solid border-blue rounded">
       <ul className="text-sm flex flex-col gap-l">
@@ -118,6 +123,7 @@ export const RegistrationDetails = ({
             {isCancellable && (
               <Button
                 variant="link-destructive"
+                className="cursor-pointer m-0 p-0 ml-4 h-full"
                 onClick={() => setOpenCancelSheet(true)}>
                 {t('Utils.Cancel')}
               </Button>
@@ -173,37 +179,41 @@ export const RegistrationDetails = ({
             ? t('Register.Details.Contracts.CE')
             : t('Register.Details.Contracts.EE')}
         </li>
-        <li>
-          <span className="text-gray/60">
-            {t('Register.Details.ConnectionStatus.Title')}:
-          </span>{' '}
-          <span
-            className={
-              isConnectionStatusOk ? 'text-green-500' : 'text-red-500'
-            }>
-            {isConnectionStatusOk ? (
-              t('Register.Details.ConnectionStatus.Connected')
-            ) : (
-              <span>
-                {t('Register.Details.ConnectionStatus.NotConnected')}
-                {'. '}
+        {isLastConnectivityCheckDisplayed && (
+          <>
+            <li>
+              <span className="text-gray/60">
+                {t('Register.Details.ConnectionStatus.Title')}:
+              </span>{' '}
+              <span
+                className={
+                  isConnectionStatusOk ? 'text-green-500' : 'text-red-500'
+                }>
+                {isConnectionStatusOk ? (
+                  t('Register.Details.ConnectionStatus.Connected')
+                ) : (
+                  <span>
+                    {t('Register.Details.ConnectionStatus.NotConnected')}
+                    {'. '}
+                  </span>
+                )}
               </span>
-            )}
-          </span>
-          {!isConnectionStatusOk && (
-            <span>
-              {t('Register.Details.ConnectionStatus.NotConnectedDetails')}
-            </span>
-          )}
-        </li>
-        <li>
-          <span className="text-gray/60">
-            {t('Register.Details.LastConnectionCheck')}:
-          </span>{' '}
-          {platform.last_connectivity_check
-            ? formatDate(platform.last_connectivity_check)
-            : '-'}
-        </li>
+              {!isConnectionStatusOk && (
+                <span>
+                  {t('Register.Details.ConnectionStatus.NotConnectedDetails')}
+                </span>
+              )}
+            </li>
+            <li>
+              <span className="text-gray/60">
+                {t('Register.Details.LastConnectionCheck')}:
+              </span>{' '}
+              {platform.last_connectivity_check
+                ? formatDate(platform.last_connectivity_check)
+                : '-'}
+            </li>
+          </>
+        )}
         {isTrialActive && (
           <li>
             <span>
