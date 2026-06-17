@@ -17,9 +17,10 @@ export const PaginationArrowButtons = ({
   pageSize,
 }: PaginationArrowButtonsProps) => {
   const t = useTranslations();
-  const pageCount = Math.ceil(totalCount / pageSize);
-  const rangeStart = totalCount > 0 ? pageIndex * pageSize + 1 : 0;
-  const rangeEnd = Math.min((pageIndex + 1) * pageSize, totalCount);
+  const safePageSize = pageSize > 0 ? pageSize : 1;
+  const pageCount = Math.ceil(totalCount / safePageSize);
+  const rangeStart = totalCount > 0 ? pageIndex * safePageSize + 1 : 0;
+  const rangeEnd = Math.min((pageIndex + 1) * safePageSize, totalCount);
   const counterWidth = `${3 * String(totalCount).length + 6}ch`;
 
   const canGoToPreviousPage = (): boolean => {
@@ -35,7 +36,7 @@ export const PaginationArrowButtons = ({
       return;
     }
 
-    onPaginationChange({ pageSize, pageIndex: pageIndex - 1 });
+    onPaginationChange({ pageSize: safePageSize, pageIndex: pageIndex - 1 });
   };
 
   const nextPage = (): void => {
@@ -43,7 +44,7 @@ export const PaginationArrowButtons = ({
       return;
     }
 
-    onPaginationChange({ pageSize, pageIndex: pageIndex + 1 });
+    onPaginationChange({ pageSize: safePageSize, pageIndex: pageIndex + 1 });
   };
 
   return (
