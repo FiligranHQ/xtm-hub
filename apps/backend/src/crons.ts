@@ -65,7 +65,9 @@ export const initCronJobs = () => {
   scheduledTasks.push(cron.schedule('0 2 * * *', expireTrials));
   scheduledTasks.push(cron.schedule('0 9 * * 1', sendPendingUserDigest));
   scheduledTasks.push(
-    cron.schedule('0 8 1 * *', sendPublicRoadmapMonthlyReminder)
+    cron.schedule('0 8 * * 1-5', sendPublicRoadmapMonthlyReminder, {
+      timezone: 'Europe/Paris',
+    })
   );
   scheduledTasks.push(cron.schedule('0 3 * * *', cleanExpiredTrialGroups));
   scheduledTasks.push(cron.schedule('0 4 * * *', cleanExpiredNewsFeedItems));

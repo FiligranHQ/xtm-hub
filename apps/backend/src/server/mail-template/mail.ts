@@ -174,5 +174,5 @@ export const templateSubjects: {
     return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Has Been Launched on XTM Hub by ${params.organizationName}`;
   },
   public_roadmap_monthly_reminder: () =>
-    'XTM Hub - Public Roadmap monthly reminder',
+    'Monthly check-in — Update your XTM Hub Roadmap Epics',
 };
