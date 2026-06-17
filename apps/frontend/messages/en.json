@@ -1078,6 +1078,15 @@
     "Name": "Name",
     "NoOwnedService": "You don't have any services yet.",
     "NoService": "There is no service... Yet!",
+    "SubscribedServices": "Subscribed services",
+    "SubscribedServicesList": {
+      "ServiceName": "Service name",
+      "ServiceType": "Service type",
+      "Status": "Status",
+      "StartDate": "Start date",
+      "Tags": "Tags",
+      "NoSubscribedServices": "No subscribed services found for this organization."
+    },
     "Organizations": "Organizations",
     "RegisteredPlatforms": {
       "PlatformDetails": "Platform details",

@@ -9,8 +9,8 @@ import UserService, {
   UserServiceId,
 } from '../../model/kanel/public/UserService';
 import { ErrorCode, ForbiddenErrorCode } from '../../utils/error/error.code';
-import { checkUserServiceIsInServiceInstance } from '../security-management/capability/auth.helper';
-import { insertCapabilities } from '../security-management/user-service-capability/user-service-capability.helper';
+import { AuthHelper } from '../security-management/capability/auth.helper';
+import { UserServiceCapabilityHelper } from '../security-management/user-service-capability/user-service-capability.helper';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user-service.domain';
 
@@ -54,10 +54,11 @@ export const UserServiceApp = {
     if (!firstUserServiceId) {
       return [];
     }
-    const userServiceIsInService = await checkUserServiceIsInServiceInstance(
-      firstUserServiceId,
-      serviceInstanceId
-    );
+    const userServiceIsInService =
+      await AuthHelper.checkUserServiceIsInServiceInstance(
+        firstUserServiceId,
+        serviceInstanceId
+      );
     if (!userServiceIsInService) {
       throw new Error(ForbiddenErrorCode.ServiceNotManageable);
     }
@@ -76,7 +77,9 @@ export const UserServiceApp = {
     }
     await withTransaction(async () => {
       await UserServiceDomain.deleteUserCapabilityById(userService.id);
-      await insertCapabilities(capabilities, [userService]);
+      await UserServiceCapabilityHelper.insertCapabilities(capabilities, [
+        userService,
+      ]);
     });
     return UserServiceDomain.loadUserServiceById(userServiceId);
   },

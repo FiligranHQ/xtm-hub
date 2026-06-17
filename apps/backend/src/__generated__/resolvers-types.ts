@@ -1234,6 +1234,7 @@ export type NewsFeedItem = Node & {
   creation_date: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   is_deleted: Scalars['Boolean']['output'];
+  metadata: Array<NewsFeedItemMetadata>;
   tags: Array<Scalars['String']['output']>;
   title: Scalars['String']['output'];
 };
@@ -1263,7 +1264,8 @@ export enum NewsFeedItemMetadataKey {
 }
 
 export enum NewsFeedItemType {
-  ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD'
+  ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD',
+  ResourcePlaybook = 'RESOURCE_PLAYBOOK'
 }
 
 export type Node = {
@@ -2183,6 +2185,7 @@ export type SubscriptionFilter = {
 };
 
 export enum SubscriptionFilterKey {
+  OrganizationId = 'organization_id',
   OrganizationName = 'organization_name',
   ServiceInstanceId = 'service_instance_id'
 }
@@ -3498,6 +3501,7 @@ export type NewsFeedItemResolvers<ContextType = PortalContext, ParentType extend
   creation_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   is_deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  metadata?: Resolver<Array<ResolversTypes['NewsFeedItemMetadata']>, ParentType, ContextType>;
   tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

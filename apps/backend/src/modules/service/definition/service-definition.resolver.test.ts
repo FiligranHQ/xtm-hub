@@ -6,7 +6,7 @@ import { TestHelper } from '../../../../tests/helper/test.helper';
 import { contextSimpleUserSecondOrga } from '../../../../tests/tests.const';
 import { ServiceDefinition } from '../../../__generated__/resolvers-types';
 import { ServiceDefinitionId } from '../../../model/kanel/public/ServiceDefinition';
-import * as ServiceCapabilityDomain from '../../security-management/service-capability/service-capability.domain';
+import { ServiceCapabilityDomain } from '../../security-management/service-capability/service-capability.domain';
 import serviceDefinitionResolver from './service-definition.resolver';
 
 describe('serviceDefinition resolver fields', () => {

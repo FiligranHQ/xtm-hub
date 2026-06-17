@@ -16,6 +16,15 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './setup-vitest.ts',
     include: ['src/**/*.test.{ts,tsx}', 'app/**/*.test.{ts,tsx}'],
+    server: {
+      deps: {
+        inline: [
+          /@filigran\/ui/,
+          '@uiw/react-md-editor',
+          '@uiw/react-markdown-preview',
+        ],
+      },
+    },
     coverage: {
       provider: 'v8',
       include: ['./src/**', './app/**'],

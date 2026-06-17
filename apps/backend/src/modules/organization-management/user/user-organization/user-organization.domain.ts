@@ -17,10 +17,7 @@ import { securityGuard } from '../../../../security/guard';
 import { sendMail } from '../../../../server/mail-service';
 import { UnknownErrorCode } from '../../../../utils/error/error.code';
 import { isEmpty } from '../../../../utils/utils';
-import {
-  createUserOrganizationCapability,
-  updateUserOrganizationCapability,
-} from '../../../security-management/user-organization-capability/user-organization-capability.domain';
+import { UserOrganizationCapabilityDomain } from '../../../security-management/user-organization-capability/user-organization-capability.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 
 export const UserOrganizationDomain = {
@@ -97,10 +94,12 @@ export const UserOrganizationDomain = {
         if (!newUserOrganization) {
           throw new Error(UnknownErrorCode.UnknownError);
         }
-        await createUserOrganizationCapability({
-          user_organization_id: newUserOrganization.id,
-          capabilities_name: orgCapa.capabilities,
-        });
+        await UserOrganizationCapabilityDomain.createUserOrganizationCapability(
+          {
+            user_organization_id: newUserOrganization.id,
+            capabilities_name: orgCapa.capabilities,
+          }
+        );
       }
     }
     return true;
@@ -131,7 +130,7 @@ export const UserOrganizationDomain = {
     if (!userOrganization) {
       throw new Error(UnknownErrorCode.UnknownError);
     }
-    await updateUserOrganizationCapability({
+    await UserOrganizationCapabilityDomain.updateUserOrganizationCapability({
       user_organization_id: userOrganization.id,
       capabilities_name: orgCapabilities,
     });
@@ -166,7 +165,7 @@ export const UserOrganizationDomain = {
       organization.id
     );
 
-    await updateUserOrganizationCapability({
+    await UserOrganizationCapabilityDomain.updateUserOrganizationCapability({
       user_organization_id: userOrganization.id,
       capabilities_name: orgCapabilities,
     });

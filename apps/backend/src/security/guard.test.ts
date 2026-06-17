@@ -14,7 +14,7 @@ import {
   ServiceRestriction,
 } from '../__generated__/resolvers-types';
 import { requestContext } from '../context/request.context';
-import * as authHelper from '../modules/security-management/capability/auth.helper';
+import { AuthHelper } from '../modules/security-management/capability/auth.helper';
 import { SubscriptionDomain } from '../modules/subscription/subscription.domain';
 import { UserServiceDomain } from '../modules/user-service/user-service.domain';
 import { ErrorCode } from '../utils/error/error.code';
@@ -25,7 +25,7 @@ describe('security Guard', () => {
   let isUserAllowedOnOrganizationSpy: MockInstance;
   beforeEach(() => {
     isUserAllowedOnOrganizationSpy = vi.spyOn(
-      authHelper,
+      AuthHelper,
       'isUserAllowedOnOrganization'
     );
   });

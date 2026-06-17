@@ -16,7 +16,7 @@ import {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { ErrorType } from '../../../utils/error/error.type';
-import * as userServiceCapabilityHelper from '../../security-management/user-service-capability/user-service-capability.helper';
+import { UserServiceCapabilityHelper } from '../../security-management/user-service-capability/user-service-capability.helper';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
@@ -112,9 +112,9 @@ describe('serviceInstance field resolvers', () => {
   it('capabilities should load capabilities for user and instance', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = [] as unknown as Awaited<
-      ReturnType<typeof userServiceCapabilityHelper.loadCapabilities>
+      ReturnType<typeof UserServiceCapabilityHelper.loadCapabilities>
     >;
-    vi.spyOn(userServiceCapabilityHelper, 'loadCapabilities').mockResolvedValue(
+    vi.spyOn(UserServiceCapabilityHelper, 'loadCapabilities').mockResolvedValue(
       expected
     );
 
@@ -127,7 +127,7 @@ describe('serviceInstance field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(userServiceCapabilityHelper.loadCapabilities).toHaveBeenCalledWith(
+    expect(UserServiceCapabilityHelper.loadCapabilities).toHaveBeenCalledWith(
       id,
       contextSimpleUserFiligran2.user.id,
       contextSimpleUserFiligran2.user.selected_organization_id

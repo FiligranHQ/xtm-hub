@@ -4,8 +4,8 @@ import { requestContext } from '../../../context/request.context';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserLoadUserBy } from '../../../model/user';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
-import * as ServiceCapaDomain from './service-capability.domain';
-import { willManageAccessBeConserved } from './service-capability.helper';
+import { ServiceCapabilityDomain } from './service-capability.domain';
+import { ServiceCapabilityHelper } from './service-capability.helper';
 
 describe('willManageAccessBeConserved', () => {
   it.each`
@@ -23,9 +23,10 @@ describe('willManageAccessBeConserved', () => {
   `(
     'should return $shouldThrowError if capabilities, $capabilities and manageAccessCount is $manageAccessCount and userId is $userId',
     async ({ capabilities, getManageAccessLeft, userId, shouldThrowError }) => {
-      vi.spyOn(ServiceCapaDomain, 'getManageAccessLeft').mockResolvedValueOnce(
-        getManageAccessLeft
-      );
+      vi.spyOn(
+        ServiceCapabilityDomain,
+        'getManageAccessLeft'
+      ).mockResolvedValueOnce(getManageAccessLeft);
       vi.spyOn(UserServiceDomain, 'loadUserServiceById').mockResolvedValue({
         id: 'essai',
         user_id: userId,
@@ -35,7 +36,7 @@ describe('willManageAccessBeConserved', () => {
         requestContext.set({
           user: { id: 'theSame' } as UserLoadUserBy,
         });
-        await willManageAccessBeConserved(
+        await ServiceCapabilityHelper.willManageAccessBeConserved(
           'userServiceId' as UserServiceId,
           capabilities
         );

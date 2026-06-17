@@ -652,6 +652,7 @@ scalar NewsFeedItemId
 
 enum NewsFeedItemType {
   RESOURCE_CUSTOM_DASHBOARD
+  RESOURCE_PLAYBOOK
 }
 
 enum NewsFeedItemMetadataKey {
@@ -685,6 +686,7 @@ type NewsFeedItem implements Node {
   creation_date: Date!
   tags: [String!]!
   is_deleted: Boolean!
+  metadata: [NewsFeedItemMetadata!]!
 }
 
 type NewsFeedItemEdge {
@@ -1639,6 +1641,7 @@ type SubscriptionConnection {
 
 enum SubscriptionFilterKey {
   organization_name
+  organization_id
   service_instance_id
 }
 

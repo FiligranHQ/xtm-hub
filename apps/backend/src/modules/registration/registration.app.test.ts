@@ -55,7 +55,7 @@ import {
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import * as authHelper from '../security-management/capability/auth.helper';
+import { AuthHelper } from '../security-management/capability/auth.helper';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
@@ -1024,7 +1024,7 @@ describe('registration app', () => {
 
     beforeEach(() => {
       isUserAllowedOnOrganizationSpy = vi.spyOn(
-        authHelper,
+        AuthHelper,
         'isUserAllowedOnOrganization'
       );
       loadResolvedConfigurationByPlatformSpy = vi.spyOn(
