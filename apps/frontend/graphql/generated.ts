@@ -220,6 +220,7 @@ export type CreateDeploymentRequestInput = {
 export type CreateDocumentInput = {
   active: Scalars['Boolean']['input'];
   description: Scalars['String']['input'];
+  entity_types: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
@@ -284,6 +285,32 @@ export type CustomDashboard = Document & Node & {
   created_at: Scalars['Date']['output'];
   description: Maybe<Scalars['String']['output']>;
   download_number: Maybe<Scalars['Int']['output']>;
+  file_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  product_version: Maybe<Scalars['String']['output']>;
+  service_instance: Maybe<ServiceInstance>;
+  service_instance_id: Maybe<Scalars['ServiceInstanceId']['output']>;
+  share_number: Maybe<Scalars['Int']['output']>;
+  short_description: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  subscription: Maybe<SubscriptionModel>;
+  type: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  updater_id: Maybe<Scalars['String']['output']>;
+  uploader: Maybe<User>;
+  uploader_organization: Maybe<Organization>;
+  use_cases: Maybe<Array<UseCase>>;
+};
+
+export type CustomView = Document & Node & {
+  __typename?: 'CustomView';
+  active: Scalars['Boolean']['output'];
+  children_documents: Maybe<Array<ShareableResource>>;
+  created_at: Scalars['Date']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  download_number: Maybe<Scalars['Int']['output']>;
+  entity_types: Maybe<Array<Scalars['String']['output']>>;
   file_name: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -676,7 +703,8 @@ export enum EpicType {
 }
 
 export enum FeatureFlag {
-  Dummy = 'DUMMY'
+  Dummy = 'DUMMY',
+  OpenctiCustomViews = 'OPENCTI_CUSTOM_VIEWS'
 }
 
 export enum FiligranProduct {
@@ -692,6 +720,7 @@ export type Filter = {
 };
 
 export enum FilterKey {
+  EntityType = 'entity_type',
   FeedUrl = 'feed_url',
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
@@ -1991,6 +2020,7 @@ export enum ServiceDefinitionIdentifier {
   OpenaevRegistration = 'openaev_registration',
   OpenaevScenarios = 'openaev_scenarios',
   OpenctiCustomDashboards = 'opencti_custom_dashboards',
+  OpenctiCustomViews = 'opencti_custom_views',
   OpenctiIntegrations = 'opencti_integrations',
   OpenctiPlaybooks = 'opencti_playbooks',
   OpenctiRegistration = 'opencti_registration',
@@ -2361,6 +2391,7 @@ export type UpdateDeploymentRequestInput = {
 export type UpdateDocumentInput = {
   active: InputMaybe<Scalars['Boolean']['input']>;
   description: InputMaybe<Scalars['String']['input']>;
+  entity_types: InputMaybe<Array<Scalars['String']['input']>>;
   name: InputMaybe<Scalars['String']['input']>;
   short_description: InputMaybe<Scalars['String']['input']>;
   uploader_id: InputMaybe<Scalars['UserId']['input']>;

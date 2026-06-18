@@ -1,4 +1,5 @@
 'use client';
+import { ServiceListFilterEntityType } from '@/components/service/components/header/filter/ServiceListFilterEntityType';
 import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
   ServiceListFilterKey,
@@ -25,6 +26,8 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds,
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
       ServiceListLocalStorageKey.OpenCTICustomDashboards,
+    [ServiceSlug.OPEN_CTI_CUSTOM_VIEWS]:
+      ServiceListLocalStorageKey.OpenCTICustomViews,
     [ServiceSlug.OPEN_AEV_SCENARIOS]:
       ServiceListLocalStorageKey.OpenAEVScenarios,
     [ServiceSlug.OPEN_CTI_PLAYBOOKS]:
@@ -36,6 +39,8 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       ShareableResourceType.OPENCTI_INTEGRATION,
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]:
       ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
+    [ServiceSlug.OPEN_CTI_CUSTOM_VIEWS]:
+      ShareableResourceType.OPENCTI_CUSTOM_VIEW,
     [ServiceSlug.OPEN_AEV_SCENARIOS]: ShareableResourceType.OPENAEV_SCENARIO,
     [ServiceSlug.OPEN_CTI_PLAYBOOKS]: ShareableResourceType.OPENCTI_PLAYBOOK,
   };
@@ -44,11 +49,17 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     removeIntegrationTypes,
     removeDeployable,
     removeVerified,
+    removeEntityTypes,
   } = useServiceListLocalStorage(localStorageKey);
 
   const labelFilter = {
     node: <ServiceListFilterLabel type={typeFeed[slug]} />,
     reset: removeLabels,
+  };
+
+  const entityTypeFilter = {
+    node: <ServiceListFilterEntityType />,
+    reset: removeEntityTypes,
   };
 
   const filtersMap: Record<ServiceSlug, ServiceListFilterMap> = {
@@ -69,6 +80,10 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     },
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
       [ServiceListFilterKey.Label]: labelFilter,
+    },
+    [ServiceSlug.OPEN_CTI_CUSTOM_VIEWS]: {
+      [ServiceListFilterKey.Label]: labelFilter,
+      [ServiceListFilterKey.EntityType]: entityTypeFilter,
     },
     [ServiceSlug.OPEN_AEV_SCENARIOS]: {
       [ServiceListFilterKey.Label]: labelFilter,

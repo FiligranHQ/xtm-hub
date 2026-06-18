@@ -188,6 +188,11 @@ export const documentItem = graphql`
     ... on OpenCTIPlaybook {
       product_version
     }
+
+    ... on CustomView {
+      product_version
+      entity_types
+    }
   }
 `;
 

@@ -260,7 +260,9 @@
       "NextPage": "Page suivante",
       "Manage": "Gérer la pagination",
       "RowsPerPage": "Lignes par page"
-    }
+    },
+    "FilterEntityTypes": "Type d'entité...",
+    "FilterEntityTypesLabel": "Type d'entité"
   },
   "GoToProd": "Allez sur la production",
   "Header": {
@@ -713,6 +715,7 @@
       "openaev_registration": "OpenAEV Registration",
       "openaev_scenarios": "OpenAEV Scenarios",
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
+      "opencti_custom_views": "OpenCTI Custom Views",
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_playbooks": "OpenCTI Playbooks",
       "opencti_registration": "OpenCTI Registration",
@@ -845,7 +848,9 @@
       "UseCasesLabel": "Cas d'utilisation",
       "UseCasesPlaceholder": "Ajouter des cas d'utilisation",
       "VendorUrlLabel": "URL du fournisseur",
-      "VerifiedLabel": "Vérifié"
+      "VerifiedLabel": "Vérifié",
+      "EntityTypesLabel": "Types d'entités",
+      "EntityTypesPlaceholder": "Ajouter des types d'entités"
     },
     "OpenctiIntegrations": {
       "Actions": {
@@ -1036,7 +1041,8 @@
           "integration_type": "Type d'intégration",
           "product_version": "Plateformes enregistrées",
           "manager_supported": "Type de déploiement",
-          "verified": "Statut de vérification"
+          "verified": "Statut de vérification",
+          "entity_type": "Type d'entité"
         }
       }
     },
@@ -1143,7 +1149,8 @@
         "FeedURL": "URL du flux",
         "DatasheetURL": "URL de la fiche technique",
         "BlogpostURL": "URL de l'article de blog",
-        "DemoURL": "URL de la démo"
+        "DemoURL": "URL de la démo",
+        "EntityType": "Type d'entité"
       },
       "Download": "Télécharger",
       "FromVersion": "Depuis la version",
@@ -1351,6 +1358,20 @@
       "UpdateDocument": "Mise à jour du document",
       "Vault": "Partenaire Vault",
       "VaultTitle": "Administration du Vault"
+    },
+    "OpenctiCustomViews": {
+      "Actions": {
+        "Added": "La vue personnalisée {name} a été ajoutée avec succès",
+        "Deleted": "La vue personnalisée {name} a été supprimée avec succès",
+        "Updated": "La vue personnalisée {name} a été modifiée avec succès",
+        "Share": "Partager la vue personnalisée"
+      },
+      "AddService": "Ajouter une nouvelle vue personnalisée",
+      "UpdateService": "Mettre à jour la vue personnalisée {name}",
+      "DeleteService": "Supprimer la vue personnalisée {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer la vue personnalisée {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié"
     }
   },
   "ServiceActions": {

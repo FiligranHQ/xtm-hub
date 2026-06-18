@@ -1,0 +1,25 @@
+type CustomView implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String! @auth
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String @auth
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId @auth
+  service_instance: ServiceInstance @auth
+  subscription: SubscriptionModel @auth
+  children_documents: [ShareableResource!]
+  # Specific fields for OpenCTI custom views
+  product_version: String
+  entity_types: [String!]
+}

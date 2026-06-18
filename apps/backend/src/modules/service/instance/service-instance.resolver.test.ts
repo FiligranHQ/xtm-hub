@@ -19,6 +19,7 @@ import { ErrorType } from '../../../utils/error/error.type';
 import { UserServiceCapabilityHelper } from '../../security-management/user-service-capability/user-service-capability.helper';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
+import { OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-view/custom-view.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
 import { ServiceInstanceApp } from './service-instance.app';
 import { ServiceInstanceDomain } from './service-instance.domain';
@@ -29,6 +30,7 @@ describe('serviceInstance.__resolveType', () => {
     type                                      | integration_type             | expected
     ${OPENAEV_SCENARIO_DOCUMENT_TYPE}         | ${undefined}                 | ${'OpenAEVScenario'}
     ${OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE} | ${undefined}                 | ${'OpenCTICustomDashboard'}
+    ${OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE}      | ${undefined}                 | ${'OpenCTICustomView'}
     ${OPENCTI_INTEGRATION_DOCUMENT_TYPE}      | ${IntegrationType.Connector} | ${'Connector'}
     ${OPENCTI_INTEGRATION_DOCUMENT_TYPE}      | ${IntegrationType.CsvFeed}   | ${'CsvFeed'}
     ${OPENCTI_INTEGRATION_DOCUMENT_TYPE}      | ${undefined}                 | ${'OpenCTIIntegration'}

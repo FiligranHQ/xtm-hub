@@ -260,7 +260,9 @@
       "NextPage": "Go to next page",
       "Manage": "Manage pagination",
       "RowsPerPage": "Rows per page"
-    }
+    },
+    "FilterEntityTypes": "Entity type...",
+    "FilterEntityTypesLabel": "Entity type"
   },
   "GoToProd": "Go to production",
   "Header": {
@@ -713,6 +715,7 @@
       "openaev_registration": "OpenAEV Registration",
       "openaev_scenarios": "OpenAEV Scenarios",
       "opencti_custom_dashboards": "OpenCTI Custom Dashboards",
+      "opencti_custom_views": "OpenCTI Custom Views",
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_playbooks": "OpenCTI Playbooks",
       "opencti_registration": "OpenCTI Registration",
@@ -845,7 +848,9 @@
       "UseCasesLabel": "Use cases",
       "UseCasesPlaceholder": "Add use cases",
       "VendorUrlLabel": "Vendor link (url)",
-      "VerifiedLabel": "Verified"
+      "VerifiedLabel": "Verified",
+      "EntityTypesLabel": "Entity types",
+      "EntityTypesPlaceholder": "Add entity types"
     },
     "OpenctiIntegrations": {
       "Actions": {
@@ -1036,7 +1041,8 @@
           "integration_type": "Integration type",
           "product_version": "Registered platforms",
           "manager_supported": "Deployment type",
-          "verified": "Verification status"
+          "verified": "Verification status",
+          "entity_type": "Entity type"
         }
       }
     },
@@ -1143,7 +1149,8 @@
         "FeedURL": "Feed URL",
         "DatasheetURL": "Datasheet URL",
         "BlogpostURL": "Blogpost URL",
-        "DemoURL": "Demo URL"
+        "DemoURL": "Demo URL",
+        "EntityType": "Entity type"
       },
       "Download": "Download",
       "FromVersion": "From version",
@@ -1351,6 +1358,20 @@
       "UpdateDocument": "Update document",
       "Vault": "Partner Vault",
       "VaultTitle": "Vault Administration"
+    },
+    "OpenctiCustomViews": {
+      "Actions": {
+        "Added": "The custom view {name} has been added successfully",
+        "Deleted": "The custom view {name} has been deleted successfully",
+        "Updated": "The custom view {name} has been modified successfully",
+        "Share": "Share Custom View"
+      },
+      "AddService": "Add new custom view",
+      "UpdateService": "Update the custom view {name}",
+      "DeleteService": "Delete the custom view {name}",
+      "SureDeleteService": "Are you sure you want to delete the custom view {name}?",
+      "NonActive": "Draft",
+      "Active": "Published"
     }
   },
   "ServiceActions": {

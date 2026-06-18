@@ -10,8 +10,10 @@ type SimpleFiltersParams = {
   serviceInstanceSlug:
     | ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS
     | ServiceSlug.OPEN_AEV_SCENARIOS
-    | ServiceSlug.OPEN_CTI_PLAYBOOKS;
+    | ServiceSlug.OPEN_CTI_PLAYBOOKS
+    | ServiceSlug.OPEN_CTI_CUSTOM_VIEWS;
   labels: LogicalMultiSelectSelection;
+  entityTypes?: LogicalMultiSelectSelection;
 };
 
 type IntegrationFiltersParams = {
@@ -29,6 +31,7 @@ export type LogicalFiltersParams =
 
 export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
   const { serviceInstanceSlug, labels } = params;
+  const entityTypes = 'entityTypes' in params ? params.entityTypes : undefined;
   const deployable = 'deployable' in params ? params.deployable : undefined;
   const verified =
     DocumentMetadataKeyCodeEnum.VERIFIED in params
@@ -76,11 +79,22 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
         {
           leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) },
         },
+        ...(entityTypes
+          ? [
+              {
+                leaf: {
+                  key: FilterKeyEnum.ENTITY_TYPE,
+                  value: Object.keys(entityTypes),
+                },
+              },
+            ]
+          : []),
       ],
     };
   }, [
     serviceInstanceSlug,
     labels,
+    entityTypes,
     deployable,
     verified,
     integrationTypes,
