@@ -60,12 +60,7 @@ import {
   DeploymentRequestDomain,
   FullyQualifiedDeploymentRequest,
 } from './deployment.domain';
-import {
-  assertFreeTrialsLimit,
-  computeHubStatus,
-  hasDeploymentTelemetryDataChanged,
-  isPlatformStateTransitionValid,
-} from './deployment.helper';
+import { DeploymentHelper } from './deployment.helper';
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
 export const DeploymentApp = {
@@ -93,7 +88,7 @@ export const DeploymentApp = {
       throw new Error(ErrorCode.CantRequestFreeTrial);
     }
 
-    await assertFreeTrialsLimit(
+    await DeploymentHelper.assertFreeTrialsLimit(
       user.selected_organization_id,
       input.platform_identifier
     );
@@ -773,7 +768,7 @@ const checkStatusAndDataValidity = async (
 ) => {
   if (
     input.actual_state &&
-    !isPlatformStateTransitionValid(
+    !DeploymentHelper.isPlatformStateTransitionValid(
       deploymentRequest.actual_state,
       input.actual_state
     )
@@ -801,7 +796,7 @@ const resolveNextHubStatus = (
   deploymentRequest: DeploymentRequestModel,
   actualState: UpdateDeploymentRequestInput['actual_state']
 ) => {
-  const computedStatus = computeHubStatus(
+  const computedStatus = DeploymentHelper.computeHubStatus(
     deploymentRequest.hub_status,
     actualState
   );
@@ -986,7 +981,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
 ) => {
   if (
     previousDeploymentRequest &&
-    !hasDeploymentTelemetryDataChanged(
+    !DeploymentHelper.hasDeploymentTelemetryDataChanged(
       previousDeploymentRequest,
       deploymentRequest
     )
