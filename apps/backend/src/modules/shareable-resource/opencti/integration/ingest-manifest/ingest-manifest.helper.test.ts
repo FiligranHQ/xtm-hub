@@ -7,7 +7,7 @@ import {
 } from '../../../../../__generated__/resolvers-types';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integration.model';
 import {
-  extractManifestInformation,
+  IngestManifestHelper,
   ManifestExtractionResult,
 } from './ingest-manifest.helper';
 import sampleManifest from './test/sample-manifest.json';
@@ -16,7 +16,8 @@ describe('ingest manifest helper', () => {
   describe('extractManifestInfo', () => {
     describe('with valid manifest data', () => {
       it('should extract manifest information from valid JSON', () => {
-        const result = extractManifestInformation(sampleManifest);
+        const result =
+          IngestManifestHelper.extractManifestInformation(sampleManifest);
         expect(result.validContracts).toHaveLength(2);
         expect(result.errors).toHaveLength(0);
         expect(result.validContracts[0]).toEqual({
@@ -63,7 +64,7 @@ describe('ingest manifest helper', () => {
 
       it('should return correct ManifestInformation type with expected properties', () => {
         const result: ManifestExtractionResult =
-          extractManifestInformation(sampleManifest);
+          IngestManifestHelper.extractManifestInformation(sampleManifest);
         expect(result.validContracts).toBeDefined();
         expect(result.validContracts.length).toBeGreaterThan(0);
         const firstItem = result.validContracts[0];
@@ -126,7 +127,8 @@ describe('ingest manifest helper', () => {
             id: 'test',
           },
         };
-        const result = extractManifestInformation(invalidData);
+        const result =
+          IngestManifestHelper.extractManifestInformation(invalidData);
         expect(result.validContracts).toEqual([]);
         expect(result.errors.length).toBeGreaterThan(0);
         expect(result.errors[0]?.error).toContain('Manifest structure invalid');
@@ -140,25 +142,28 @@ describe('ingest manifest helper', () => {
             },
           ],
         };
-        const result = extractManifestInformation(invalidManifest);
+        const result =
+          IngestManifestHelper.extractManifestInformation(invalidManifest);
         expect(result.validContracts).toEqual([]);
         expect(result.errors.length).toBeGreaterThan(0);
       });
 
       it('should return empty validContracts for null input', () => {
-        const result = extractManifestInformation(null);
+        const result = IngestManifestHelper.extractManifestInformation(null);
         expect(result.validContracts).toEqual([]);
         expect(result.errors.length).toBeGreaterThan(0);
       });
 
       it('should return empty validContracts for undefined input', () => {
-        const result = extractManifestInformation(undefined);
+        const result =
+          IngestManifestHelper.extractManifestInformation(undefined);
         expect(result.validContracts).toEqual([]);
         expect(result.errors.length).toBeGreaterThan(0);
       });
 
       it('should return empty validContracts for non-object input', () => {
-        const result = extractManifestInformation('not an object');
+        const result =
+          IngestManifestHelper.extractManifestInformation('not an object');
         expect(result.validContracts).toEqual([]);
         expect(result.errors.length).toBeGreaterThan(0);
       });
@@ -173,7 +178,9 @@ describe('ingest manifest helper', () => {
           version: '1.0.0',
           contracts: [],
         };
-        const result = extractManifestInformation(emptyContractsManifest);
+        const result = IngestManifestHelper.extractManifestInformation(
+          emptyContractsManifest
+        );
         expect(result.validContracts).toEqual([]);
         expect(result.errors).toEqual([]);
       });
@@ -245,7 +252,8 @@ describe('ingest manifest helper', () => {
           ],
         };
 
-        const result = extractManifestInformation(mixedManifest);
+        const result =
+          IngestManifestHelper.extractManifestInformation(mixedManifest);
 
         // Should have processed 2 valid contracts
         expect(result.validContracts).toHaveLength(2);
@@ -299,7 +307,8 @@ describe('ingest manifest helper', () => {
           ],
         };
 
-        const result = extractManifestInformation(partialManifest);
+        const result =
+          IngestManifestHelper.extractManifestInformation(partialManifest);
 
         // All contracts should be invalid
         expect(result.validContracts).toHaveLength(0);
@@ -363,7 +372,8 @@ describe('ingest manifest helper', () => {
           ],
         };
 
-        const result = extractManifestInformation(sequentialManifest);
+        const result =
+          IngestManifestHelper.extractManifestInformation(sequentialManifest);
 
         // Should process both valid contracts despite invalid one in middle
         expect(result.validContracts).toHaveLength(2);

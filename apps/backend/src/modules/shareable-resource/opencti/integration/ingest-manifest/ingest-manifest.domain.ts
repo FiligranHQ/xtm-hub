@@ -14,7 +14,7 @@ import {
   INTEGRATION_CONNECTOR_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../integration.model';
-import { base64ToUpload } from './ingest-manifest.helper';
+import { IngestManifestHelper } from './ingest-manifest.helper';
 import { ManifestInformation } from './ingest-manifest.model';
 
 export const IngestManifestDomain = {
@@ -36,7 +36,7 @@ export const IngestManifestDomain = {
 
     for (const connector of manifestInfo) {
       try {
-        const uploadLogo = base64ToUpload(
+        const uploadLogo = IngestManifestHelper.base64ToUpload(
           connector.logo,
           `${connector.name}-logo.png`
         );
