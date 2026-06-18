@@ -13,14 +13,13 @@ import { requestContext } from '../../context/request.context';
 import Epic, { EpicId } from '../../model/kanel/public/Epic';
 import User from '../../model/kanel/public/User';
 import { assertUserHasCapaOnService } from '../../security/guard';
-import { buildServiceLink, sendMail } from '../../server/mail-service';
+import { sendMail } from '../../server/mail-service';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import {
   NotFoundErrorCode,
   UnknownErrorCode,
 } from '../../utils/error/error.code';
-import { isRoadmapReminderDay } from '../../utils/roadmap-reminder.util';
 import { stripNulls } from '../../utils/typescript';
 import {
   DocumentUploadsHelper,
@@ -183,27 +182,10 @@ export const EpicApp = {
       );
       return;
     }
-    if (!isRoadmapReminderDay(new Date())) {
-      return;
-    }
-    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
-      slug: PLATFORM_ROADMAP_SLUG,
-    });
-    if (!serviceInstance) {
-      logApp.error(
-        'Public roadmap service instance not found, skipping monthly reminder'
-      );
-      return;
-    }
-    const roadmapLink = buildServiceLink({
-      serviceDefinitionIdentifier:
-        ServiceDefinitionIdentifier.XtmPlatformRoadmap,
-      serviceInstanceId: serviceInstance.id,
-    });
     await sendMail({
       to: 'product.managers@filigran.io',
       template: 'public_roadmap_monthly_reminder',
-      params: { roadmapLink },
+      params: {},
     });
   },
 };
