@@ -10,7 +10,6 @@ import {
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ServiceInstanceDomain } from '../../service/instance/service-instance.domain';
-import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupDomain } from './service-group.domain';
 
 describe('serviceGroupDomain', () => {
@@ -166,10 +165,13 @@ describe('serviceGroupDomain', () => {
         // Given
         const endDate = new Date();
         endDate.setDate(endDate.getDate() - 8);
-        const deploymentRequest = await insertDeploymentRequest({
-          hub_status,
-          end_date: endDate,
-        });
+        const deploymentRequest =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status,
+              end_date: endDate,
+            }
+          );
         trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
         const groupId = uuidv4() as ServiceGroupId;
@@ -197,10 +199,13 @@ describe('serviceGroupDomain', () => {
       // Given
       const endDate = new Date();
       endDate.setDate(endDate.getDate() - 6);
-      const deploymentRequest = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Expired,
-        end_date: endDate,
-      });
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            end_date: endDate,
+          }
+        );
       trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
       await TestHelper.serviceGroup.create({
@@ -224,10 +229,13 @@ describe('serviceGroupDomain', () => {
         // Given
         const endDate = new Date();
         endDate.setDate(endDate.getDate() - 8);
-        const deploymentRequest = await insertDeploymentRequest({
-          hub_status,
-          end_date: endDate,
-        });
+        const deploymentRequest =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status,
+              end_date: endDate,
+            }
+          );
         trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
         await TestHelper.serviceGroup.create({
@@ -248,10 +256,13 @@ describe('serviceGroupDomain', () => {
       const endDate = new Date();
       endDate.setDate(endDate.getDate() - 8);
 
-      const deploymentRequest1 = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Expired,
-        end_date: endDate,
-      });
+      const deploymentRequest1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            end_date: endDate,
+          }
+        );
       trackedServiceInstanceIds.push(deploymentRequest1.service_instance_id);
 
       const groupId1 = uuidv4() as ServiceGroupId;
@@ -261,10 +272,13 @@ describe('serviceGroupDomain', () => {
         service_instance_id: deploymentRequest1.service_instance_id,
       });
 
-      const deploymentRequest2 = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Cancelled,
-        end_date: endDate,
-      });
+      const deploymentRequest2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            end_date: endDate,
+          }
+        );
       trackedServiceInstanceIds.push(deploymentRequest2.service_instance_id);
 
       const groupId2 = uuidv4() as ServiceGroupId;
