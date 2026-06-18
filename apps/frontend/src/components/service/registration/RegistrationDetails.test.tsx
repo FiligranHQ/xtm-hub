@@ -7,7 +7,7 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { useSearchParams } from 'next/navigation';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
@@ -15,7 +15,12 @@ import { describe, expect, it, vi } from 'vitest';
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 vi.mock('@/components/service/components/PlatformUpdateSheet', () => ({
-  PlatformUpdateSheet: () => null,
+  PlatformUpdateSheet: ({ platformUrl }: { platformUrl: string }) => (
+    <div
+      data-testid="platform-update-sheet"
+      data-url={platformUrl}
+    />
+  ),
 }));
 
 vi.mock('@/components/service/trial-instances/TrialCancelSheet', () => ({
@@ -167,7 +172,41 @@ describe('RegistrationDetails', () => {
     });
   });
 
-  describe('Date labels', () => {
+  describe('Details rows', () => {
+    it('should render the platform URL value in the Platform URL row when URL exists', () => {
+      renderDetails(basePlatform);
+
+      const platformUrlLabel = screen.getByText(
+        /Register\.Details\.PlatformURL/i
+      );
+      const platformUrlRow = platformUrlLabel.closest('li');
+
+      expect(platformUrlRow).not.toBeNull();
+      expect(
+        within(platformUrlRow as HTMLElement).getByText(basePlatform.url)
+      ).toBeInTheDocument();
+      expect(
+        within(platformUrlRow as HTMLElement).queryByText('-')
+      ).not.toBeInTheDocument();
+    });
+
+    it('should render "-" in the Platform URL row when URL is empty', () => {
+      renderDetails({
+        ...basePlatform,
+        url: '',
+      });
+
+      const platformUrlLabel = screen.getByText(
+        /Register\.Details\.PlatformURL/i
+      );
+      const platformUrlRow = platformUrlLabel.closest('li');
+
+      expect(platformUrlRow).not.toBeNull();
+      expect(
+        within(platformUrlRow as HTMLElement).getByText('-')
+      ).toBeInTheDocument();
+    });
+
     it('should show "Start date" and "End date" for trial, not "Registered on"', () => {
       renderDetails(trialPlatform);
       expect(
@@ -420,6 +459,19 @@ describe('RegistrationDetails', () => {
       expect(
         screen.queryByRole('button', { name: /Platform.Update/i })
       ).not.toBeInTheDocument();
+    });
+
+    it('should pass platform URL to PlatformUpdateSheet', () => {
+      renderDetails(basePlatform, {
+        selected_org_capabilities: [
+          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+        ],
+      });
+
+      expect(screen.getByTestId('platform-update-sheet')).toHaveAttribute(
+        'data-url',
+        basePlatform.url
+      );
     });
   });
 

@@ -103,6 +103,12 @@ export const RegistrationDetails = ({
             {platform.title}
           </li>
         )}
+        <li>
+          <span className="text-gray/60">
+            {t('Register.Details.PlatformURL')}:
+          </span>{' '}
+          <span>{platform.url ? platform.url : '-'}</span>
+        </li>
         {platform.deployment_request?.hub_status && (
           <li>
             <span className="text-gray/60">
@@ -198,8 +204,8 @@ export const RegistrationDetails = ({
             ? formatDate(platform.last_connectivity_check)
             : '-'}
         </li>
-        <li>
-          {isTrialActive && (
+        {isTrialActive && (
+          <li>
             <span>
               <span className="text-gray/60">
                 {t('Register.Details.Access')}:
@@ -222,8 +228,8 @@ export const RegistrationDetails = ({
                 </span>
               )}
             </span>
-          )}
-        </li>
+          </li>
+        )}
       </ul>
 
       <div className="flex flex-col gap-m">
@@ -267,6 +273,7 @@ export const RegistrationDetails = ({
         <PlatformUpdateSheet
           serviceInstanceId={serviceInstanceId}
           serviceInstanceName={platform.title}
+          platformUrl={platform.url}
           serviceDefinitionIdentifier={platform.identifier}
           open={openPlatformSheet}
           setOpen={setOpenPlatformSheet}
