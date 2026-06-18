@@ -13,6 +13,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 interface BadgeOverflowCounterProps {
   badges: Readonly<BadgeOverflow[]>;
   className?: string;
+  badgeClassName?: string;
 }
 
 export interface BadgeOverflow {
@@ -24,6 +25,7 @@ export interface BadgeOverflow {
 const BadgeOverflowCounter = ({
   badges = [],
   className,
+  badgeClassName,
 }: BadgeOverflowCounterProps) => {
   const [visibleTags, setVisibleTags] = useState<number>(badges?.length ?? 0);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -102,7 +104,7 @@ const BadgeOverflowCounter = ({
       )}>
       {firstBadge && (
         <Badge
-          className="min-w-0 max-w-full"
+          className={cn('min-w-0 max-w-full', badgeClassName)}
           key={firstBadge.id}
           color={firstBadge.color}
           title={firstBadge.name}>
@@ -112,7 +114,10 @@ const BadgeOverflowCounter = ({
 
       {badges.slice(1, visibleTags).map(({ id, name, color }, index) => (
         <Badge
-          className="whitespace-nowrap aria-hidden:invisible aria-hidden:absolute"
+          className={cn(
+            'whitespace-nowrap aria-hidden:invisible aria-hidden:absolute',
+            badgeClassName
+          )}
           aria-hidden={index >= visibleTags}
           key={id}
           color={color}>
@@ -122,7 +127,7 @@ const BadgeOverflowCounter = ({
 
       {badges.slice(visibleTags).map(({ id, name, color }) => (
         <Badge
-          className="whitespace-nowrap invisible absolute"
+          className={cn('whitespace-nowrap invisible absolute', badgeClassName)}
           aria-hidden={true}
           key={id}
           color={color}>
@@ -134,8 +139,12 @@ const BadgeOverflowCounter = ({
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge className="whitespace-nowrap cursor-pointer shrink-0">
-                +{hiddenCount}...
+              <Badge
+                className={cn(
+                  'whitespace-nowrap cursor-pointer shrink-0',
+                  badgeClassName
+                )}>
+                +{hiddenCount}
               </Badge>
             </TooltipTrigger>
             <TooltipContent className="bg-gray-50">
@@ -143,7 +152,8 @@ const BadgeOverflowCounter = ({
                 {badges.slice(visibleTags).map(({ id, name, color }) => (
                   <Badge
                     key={id}
-                    color={color}>
+                    color={color}
+                    className={badgeClassName}>
                     {formatName(name)}
                   </Badge>
                 ))}
