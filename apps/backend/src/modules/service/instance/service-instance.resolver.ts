@@ -12,7 +12,6 @@ import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { UserServiceCapabilityHelper } from '../../security-management/user-service-capability/user-service-capability.helper';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
-import { OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-view/custom-view.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
 import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../../shareable-resource/opencti/playbook/playbook.model';
 import { ServiceInstanceApp } from './service-instance.app';
@@ -32,7 +31,6 @@ const resolvers: Resolvers = {
       const typeMapping: Record<string, string> = {
         [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
-        [OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE]: 'OpenCTICustomView',
         [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegration',
         [OPENCTI_PLAYBOOK_DOCUMENT_TYPE]: 'OpenCTIPlaybook',
       };
