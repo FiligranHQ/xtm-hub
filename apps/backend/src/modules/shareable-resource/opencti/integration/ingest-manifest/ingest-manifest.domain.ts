@@ -17,75 +17,78 @@ import {
 import { base64ToUpload } from './ingest-manifest.helper';
 import { ManifestInformation } from './ingest-manifest.model';
 
-export const upsertConnectors = async (manifestInfo: ManifestInformation[]) => {
-  const results: Array<Connector> = [];
-  const existingConnectors = await DocumentDomain.loadDocumentsByMetadata(
-    DocumentMetadataKeyCode.IntegrationType,
-    IntegrationType.Connector,
-    INTEGRATION_CONNECTOR_METADATA_KEYS as DocumentMetadataKeyCode[]
-  );
+export const IngestManifestDomain = {
+  upsertConnectors: async (manifestInfo: ManifestInformation[]) => {
+    const results: Array<Connector> = [];
+    const existingConnectors = await DocumentDomain.loadDocumentsByMetadata(
+      DocumentMetadataKeyCode.IntegrationType,
+      IntegrationType.Connector,
+      INTEGRATION_CONNECTOR_METADATA_KEYS as DocumentMetadataKeyCode[]
+    );
 
-  const connectorsMappedBySlug: Map<string, Connector> =
-    existingConnectors.reduce((acc, current) => {
-      if (current.slug) {
-        acc.set(current.slug, current as Connector);
-      }
-      return acc;
-    }, new Map<string, Connector>());
+    const connectorsMappedBySlug: Map<string, Connector> =
+      existingConnectors.reduce((acc, current) => {
+        if (current.slug) {
+          acc.set(current.slug, current as Connector);
+        }
+        return acc;
+      }, new Map<string, Connector>());
 
-  for (const connector of manifestInfo) {
-    try {
-      const uploadLogo = base64ToUpload(
-        connector.logo,
-        `${connector.name}-logo.png`
-      );
-      if (!connector.slug) {
-        logApp.warn(`Skipping connector without slug: ${connector.name}`);
-        continue;
-      }
-
-      const existingConnector = connectorsMappedBySlug.get(connector.slug);
-      if (existingConnector) {
-        if (
-          !existingConnector.minimum_deployable_version &&
-          connector.manager_supported
-        ) {
-          connector.minimum_deployable_version = connector.product_version;
+    for (const connector of manifestInfo) {
+      try {
+        const uploadLogo = base64ToUpload(
+          connector.logo,
+          `${connector.name}-logo.png`
+        );
+        if (!connector.slug) {
+          logApp.warn(`Skipping connector without slug: ${connector.name}`);
+          continue;
         }
 
-        if (existingConnector.datasheet_url) {
-          connector.datasheet_url = existingConnector.datasheet_url;
+        const existingConnector = connectorsMappedBySlug.get(connector.slug);
+        if (existingConnector) {
+          if (
+            !existingConnector.minimum_deployable_version &&
+            connector.manager_supported
+          ) {
+            connector.minimum_deployable_version = connector.product_version;
+          }
+
+          if (existingConnector.datasheet_url) {
+            connector.datasheet_url = existingConnector.datasheet_url;
+          }
+
+          if (existingConnector.blogpost_url) {
+            connector.blogpost_url = existingConnector.blogpost_url;
+          }
+
+          if (existingConnector.demo_url) {
+            connector.demo_url = existingConnector.demo_url;
+          }
         }
 
-        if (existingConnector.blogpost_url) {
-          connector.blogpost_url = existingConnector.blogpost_url;
+        const doc =
+          await DocumentApp.upsertDocumentWithExternalImage<Connector>(
+            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+            { ...omit(connector, ['logo']) } as Connector,
+            uploadLogo,
+            INTEGRATION_CONNECTOR_METADATA_KEYS
+          );
+        const newDocIsCreated = !doc.updated_at;
+        if (newDocIsCreated) {
+          const createEvent = await TelemetryHelper.buildCreateEvent(doc);
+          await TelemetryApp.sendTelemetryEvent(createEvent);
         }
 
-        if (existingConnector.demo_url) {
-          connector.demo_url = existingConnector.demo_url;
-        }
+        results.push(doc);
+      } catch (error) {
+        logApp.error(`Failed to upsert connector ${connector.name}:`, {
+          error: toError(error),
+        });
+        throw error;
       }
-
-      const doc = await DocumentApp.upsertDocumentWithExternalImage<Connector>(
-        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-        { ...omit(connector, ['logo']) } as Connector,
-        uploadLogo,
-        INTEGRATION_CONNECTOR_METADATA_KEYS
-      );
-      const newDocIsCreated = !doc.updated_at;
-      if (newDocIsCreated) {
-        const createEvent = await TelemetryHelper.buildCreateEvent(doc);
-        await TelemetryApp.sendTelemetryEvent(createEvent);
-      }
-
-      results.push(doc);
-    } catch (error) {
-      logApp.error(`Failed to upsert connector ${connector.name}:`, {
-        error: toError(error),
-      });
-      throw error;
     }
-  }
 
-  return results;
+    return results;
+  },
 };

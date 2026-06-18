@@ -2,7 +2,7 @@ import { PortalCapability } from '../../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../../context/request.context';
 import { securityGuard } from '../../../../../security/guard';
 import { BadRequestError } from '../../../../../utils/error/error.util';
-import { upsertConnectors } from './ingest-manifest.domain';
+import { IngestManifestDomain } from './ingest-manifest.domain';
 import {
   extractManifestInformation,
   fetchManifest,
@@ -24,7 +24,7 @@ export const IngestManifestApp = {
     const result = extractManifestInformation(manifest);
 
     if (result.validContracts.length > 0) {
-      void upsertConnectors(result.validContracts);
+      void IngestManifestDomain.upsertConnectors(result.validContracts);
     }
 
     // If there are errors, throw a GraphQL error with details
