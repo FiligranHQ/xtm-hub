@@ -123,7 +123,7 @@ export const RegistrationDetails = ({
             {isCancellable && (
               <Button
                 variant="link-destructive"
-                className="cursor-pointer m-0 p-0 ml-4 h-full"
+                className="m-0 p-0 ml-4 h-full"
                 onClick={() => setOpenCancelSheet(true)}>
                 {t('Utils.Cancel')}
               </Button>
