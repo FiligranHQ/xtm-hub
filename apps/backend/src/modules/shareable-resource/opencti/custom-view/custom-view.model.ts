@@ -15,6 +15,7 @@ export const CUSTOM_VIEW_METADATA: CustomViewMetadataKeys = [
   { key: DocumentMetadataKeyCode.ProductVersion },
 ];
 
-export const CUSTOM_VIEW_METADATA_KEYS = CUSTOM_VIEW_METADATA.map(
-  ({ key }) => key
-) as DocumentMetadataKeyCode[];
+export const CUSTOM_VIEW_METADATA_KEYS: DocumentMetadataKeyCode[] = [
+  ...(CUSTOM_VIEW_METADATA.map(({ key }) => key) as DocumentMetadataKeyCode[]),
+  DocumentMetadataKeyCode.EntityTypes,
+];

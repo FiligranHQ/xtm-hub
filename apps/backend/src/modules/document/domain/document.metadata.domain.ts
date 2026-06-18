@@ -28,7 +28,6 @@ export type DocumentMetadataKeys<T extends DocumentModel> = Array<
       | 'source_type'
       | 'parent_document_id'
       | 'minio_name'
-      | 'entity_types'
     >,
     keyof DocumentResolverType
   >

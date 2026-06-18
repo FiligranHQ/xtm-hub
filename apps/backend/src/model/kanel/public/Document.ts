@@ -43,8 +43,6 @@ export default interface Document {
   type: string;
 
   source_type: string | null;
-
-  entity_types: string[] | null;
 }
 
 /** Represents the initializer for the table public.Document */
@@ -88,9 +86,6 @@ export interface DocumentInitializer {
 
   /** Default value: 'internal'::character varying */
   source_type?: string | null;
-
-  /** Default value: '{}'::text[] */
-  entity_types?: string[] | null;
 }
 
 /** Represents the mutator for the table public.Document */
@@ -130,6 +125,4 @@ export interface DocumentMutator {
   type?: string;
 
   source_type?: string | null;
-
-  entity_types?: string[] | null;
 }

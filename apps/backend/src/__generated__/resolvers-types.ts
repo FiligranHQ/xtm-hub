@@ -597,6 +597,7 @@ export enum DocumentMetadataKeyCode {
   ContainerImage = 'container_image',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
+  EntityTypes = 'entity_types',
   FeedUrl = 'feed_url',
   GithubUrl = 'github_url',
   ImageType = 'image_type',

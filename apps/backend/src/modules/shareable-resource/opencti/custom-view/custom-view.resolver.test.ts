@@ -45,11 +45,11 @@ describe('customView field resolvers', () => {
   });
 
   describe('customView.entity_types', () => {
-    it('should return entity types from the document column', async () => {
+    it('should parse entity types from the JSON metadata value', async () => {
       const expected = ['Attack-Pattern', 'Campaign'];
 
       const result = await customViewResolver.CustomView!.entity_types!(
-        { entity_types: expected } as unknown as CustomView,
+        { entity_types: JSON.stringify(expected) } as unknown as CustomView,
         {},
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
@@ -58,9 +58,20 @@ describe('customView field resolvers', () => {
       expect(result).toEqual(expected);
     });
 
-    it('should default to an empty array when the column is null', async () => {
+    it('should default to an empty array when the metadata is null', async () => {
       const result = await customViewResolver.CustomView!.entity_types!(
         { entity_types: null } as unknown as CustomView,
+        {},
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      expect(result).toEqual([]);
+    });
+
+    it('should default to an empty array when the metadata value is malformed', async () => {
+      const result = await customViewResolver.CustomView!.entity_types!(
+        { entity_types: 'not-json' } as unknown as CustomView,
         {},
         contextSimpleUserFiligran2,
         GRAPHQL_RESOLVE_INFO
