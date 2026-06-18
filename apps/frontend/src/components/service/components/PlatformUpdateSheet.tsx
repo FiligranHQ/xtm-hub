@@ -33,6 +33,7 @@ const platformUpdateSchema = z.object({
 interface PlatformUpdateSheetProps {
   serviceInstanceId: string;
   serviceInstanceName: string;
+  platformUrl: string;
   serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -41,6 +42,7 @@ interface PlatformUpdateSheetProps {
 export const PlatformUpdateSheet = ({
   serviceInstanceId,
   serviceInstanceName,
+  platformUrl,
   serviceDefinitionIdentifier,
   open,
   setOpen,
@@ -131,6 +133,16 @@ export const PlatformUpdateSheet = ({
               </FormItem>
             )}
           />
+
+          <FormItem>
+            <FormLabel>{t('Register.Details.PlatformURL')}</FormLabel>
+            <FormControl>
+              <Input
+                value={platformUrl}
+                disabled
+              />
+            </FormControl>
+          </FormItem>
 
           <FormField
             control={form.control}

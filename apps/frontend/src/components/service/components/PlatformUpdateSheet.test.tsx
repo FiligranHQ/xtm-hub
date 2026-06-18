@@ -1,0 +1,102 @@
+import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
+import testRender from '@/utils/test/test-render';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { screen } from '@testing-library/react';
+import React from 'react';
+import { createMockEnvironment } from 'relay-test-utils';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const testState = vi.hoisted(() => ({
+  commitMutation: vi.fn(),
+  lastVariables: null as Record<string, unknown> | null,
+}));
+
+vi.mock('@/components/ui/SheetWithPreventingDialog', () => ({
+  SheetWithPreventingDialog: ({
+    children,
+    title,
+  }: {
+    children: React.ReactNode;
+    title: string;
+  }) => (
+    <div>
+      <h2>{title}</h2>
+      {children}
+    </div>
+  ),
+}));
+
+vi.mock('react-relay', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useMutation: () => [testState.commitMutation, false],
+}));
+
+describe('PlatformUpdateSheet', () => {
+  const defaultProps = {
+    serviceInstanceId: 'service-instance-id',
+    serviceInstanceName: 'OpenCTI Platform',
+    platformUrl: 'https://platform.example.com',
+    serviceDefinitionIdentifier:
+      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+    open: true,
+    setOpen: vi.fn(),
+  };
+
+  beforeEach(() => {
+    testState.lastVariables = null;
+    testState.commitMutation.mockReset();
+    testState.commitMutation.mockImplementation(
+      (opts: {
+        variables: Record<string, unknown>;
+        onCompleted?: () => void;
+      }) => {
+        testState.lastVariables = opts.variables;
+        opts.onCompleted?.();
+      }
+    );
+  });
+
+  it('displays URL input with the provided URL', () => {
+    testRender(<PlatformUpdateSheet {...defaultProps} />, {
+      relayConfig: createMockEnvironment(),
+    });
+
+    expect(
+      screen.getByDisplayValue('https://platform.example.com')
+    ).toBeInTheDocument();
+  });
+
+  it('renders URL input as non-editable', () => {
+    testRender(<PlatformUpdateSheet {...defaultProps} />, {
+      relayConfig: createMockEnvironment(),
+    });
+
+    expect(screen.getByDisplayValue(defaultProps.platformUrl)).toBeDisabled();
+  });
+
+  it('submits only serviceInstanceId and name in mutation input', async () => {
+    const setOpen = vi.fn();
+    const { user } = testRender(
+      <PlatformUpdateSheet
+        {...defaultProps}
+        setOpen={setOpen}
+      />,
+      {
+        relayConfig: createMockEnvironment(),
+      }
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Utils.Update' }));
+
+    expect(testState.lastVariables).toEqual({
+      input: {
+        serviceInstanceId: defaultProps.serviceInstanceId,
+        name: defaultProps.serviceInstanceName,
+      },
+      document: null,
+    });
+    expect(
+      (testState.lastVariables as { input: Record<string, unknown> }).input
+    ).not.toHaveProperty('url');
+  });
+});
