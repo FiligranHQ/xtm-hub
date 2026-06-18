@@ -8623,7 +8623,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:6.0.2"
     "@vitest/coverage-v8": "catalog:"
     autoprefixer: "npm:10.5.0"
-    babel-plugin-relay: "npm:20.1.1"
+    babel-plugin-relay: "npm:21.0.0"
     class-variance-authority: "npm:0.7.1"
     clsx: "npm:2.1.1"
     concurrently: "catalog:"
@@ -9285,14 +9285,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-relay@npm:20.1.1":
-  version: 20.1.1
-  resolution: "babel-plugin-relay@npm:20.1.1"
+"babel-plugin-relay@npm:21.0.0":
+  version: 21.0.0
+  resolution: "babel-plugin-relay@npm:21.0.0"
   dependencies:
     babel-plugin-macros: "npm:^2.0.0"
     cosmiconfig: "npm:^5.0.5"
     graphql: "npm:15.3.0"
-  checksum: 10/365798837d0c142294e7e527f6058ebf8a8de8043d9188cdf33380a3dcea3ea15f8f8d132025b445bea505b274bb8a2a357abe843513af4483c43e5e23e5f606
+  checksum: 10/dc6131481ff47ea72d20825f4586c9e0a5b17c8bfaff5cfc010dc9ba8a6574c01f1443de72bf12998e4f60f2828fa922c1b4de4988766b0fe32dfb5bb67249ba
   languageName: node
   linkType: hard
 
