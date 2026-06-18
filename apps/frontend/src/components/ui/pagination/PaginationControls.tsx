@@ -17,9 +17,10 @@ export const PaginationControls = ({
   pageIndex,
   onSetPageSize,
 }: PaginationControlsProps) => {
-  if (totalCount <= pageSize) {
-    return null;
-  }
+  const handleSetPageSize = (nextPageSize: number) => {
+    onPaginationChange({ pageIndex: 0, pageSize: nextPageSize });
+    onSetPageSize(nextPageSize);
+  };
 
   return (
     <div className="flex-0 shrink-0 box-border flex h-9 items-center rounded border border-border-light">
@@ -31,7 +32,7 @@ export const PaginationControls = ({
       />
       <PaginationManageDropdown
         pageSize={pageSize}
-        onSetPageSize={onSetPageSize}
+        onSetPageSize={handleSetPageSize}
       />
     </div>
   );
