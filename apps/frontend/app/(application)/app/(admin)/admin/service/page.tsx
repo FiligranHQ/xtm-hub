@@ -7,9 +7,6 @@ import {
   servicesListFragment,
 } from '@/components/service/service.graphql';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { serviceQuery } from '@generated/serviceQuery.graphql';
@@ -29,17 +26,6 @@ const breadcrumbValue = [
 const Page = () => {
   const t = useTranslations();
 
-  // TODO: feature flag OPENCTI_CUSTOM_VIEWS - remove with the feature
-  const isCustomViewsEnabled = useIsFeatureEnabled(
-    FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS
-  );
-  const serviceDefinitionIdentifiers =
-    ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS.filter(
-      (value) =>
-        isCustomViewsEnabled ||
-        value !== ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_VIEWS
-    );
-
   const queryData = useLazyLoadQuery<serviceQuery>(ServiceListQuery, {
     count: 50,
     orderBy: 'name',
@@ -48,7 +34,7 @@ const Page = () => {
     filters: [
       {
         key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
-        value: serviceDefinitionIdentifiers,
+        value: ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS,
       },
     ],
   });

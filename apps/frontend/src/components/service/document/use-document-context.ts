@@ -40,8 +40,6 @@ import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
-// Custom Views add an `entity_types` field that, like `use_cases`, belongs to
-// the document input (not to the metadata bag).
 type DocumentFormValues = ServiceFormValues & {
   entity_types?: string[] | null;
 };
