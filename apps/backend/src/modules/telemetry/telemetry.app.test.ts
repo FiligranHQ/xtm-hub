@@ -95,6 +95,67 @@ describe('telemetryApp', () => {
     await TestHelper.document.delete({});
   });
 
+  describe('getMostDeployedResourceIds', () => {
+    it('should return resource ids ordered by deploy count desc', async () => {
+      vi.spyOn(esDbClient, 'search').mockResolvedValue({
+        hits: { hits: [], total: { value: 0, relation: 'eq' } },
+        aggregations: {
+          resource_counts: {
+            buckets: [
+              { key: 'resource-1', doc_count: 10 },
+              { key: 'resource-2', doc_count: 7 },
+              { key: 'resource-3', doc_count: 3 },
+            ],
+          },
+        },
+      } as never);
+
+      const result = await TelemetryApp.getMostDeployedResourceIds(3);
+
+      expect(result).toEqual(['resource-1', 'resource-2', 'resource-3']);
+      expect(esDbClient.search).toHaveBeenCalledWith(
+        expect.objectContaining({
+          index: 'telemetry',
+          size: 0,
+          query: { term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY } },
+          aggs: {
+            resource_counts: {
+              terms: {
+                field: 'resource_id',
+                size: 3,
+                order: { _count: 'desc' },
+              },
+            },
+          },
+        })
+      );
+    });
+
+    it('should return an empty array when there are no aggregations', async () => {
+      vi.spyOn(esDbClient, 'search').mockResolvedValue({
+        hits: { hits: [], total: { value: 0, relation: 'eq' } },
+        aggregations: undefined,
+      } as never);
+
+      const result = await TelemetryApp.getMostDeployedResourceIds(5);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should return an empty array when buckets are empty', async () => {
+      vi.spyOn(esDbClient, 'search').mockResolvedValue({
+        hits: { hits: [], total: { value: 0, relation: 'eq' } },
+        aggregations: {
+          resource_counts: { buckets: [] },
+        },
+      } as never);
+
+      const result = await TelemetryApp.getMostDeployedResourceIds(5);
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('sendOneClickDeployEvent', () => {
     it('should send a OneClickDeployEvent with version and with tenant_id', async () => {
       vi.useFakeTimers();

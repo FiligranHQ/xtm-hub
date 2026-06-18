@@ -99,6 +99,22 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
+  loadDocumentsWithMetadataByIds: async <T extends Document>(
+    ids: string[],
+    include_metadata: DocumentMetadataKeyCode[] = []
+  ): Promise<T[]> => {
+    if (ids.length === 0) return [];
+
+    const docQuery = db<T>('Document')
+      .whereIn('Document.id', ids)
+      .select('Document.*')
+      .groupBy(['Document.id']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
+
+    return docQuery;
+  },
+
   loadDocumentsByMetadata: async (
     key: string,
     value: string,

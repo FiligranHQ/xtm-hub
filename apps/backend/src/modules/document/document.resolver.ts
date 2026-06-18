@@ -235,6 +235,13 @@ const resolvers: Resolvers = {
       }
     },
     document: async (_, { documentId }) => DocumentApp.loadDocument(documentId),
+    mostDeployedDocuments: async (_, { limit }) => {
+      try {
+        return DocumentApp.loadMostDeployedDocuments(limit);
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
   },
 };
 

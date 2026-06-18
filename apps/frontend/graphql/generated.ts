@@ -1572,6 +1572,7 @@ export type Query = {
   epics: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me: Maybe<User>;
+  mostDeployedDocuments: Array<Document>;
   newsFeedItems: NewsFeedItemConnection;
   node: Maybe<Node>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
@@ -1676,6 +1677,11 @@ export type QueryEpicsArgs = {
 
 export type QueryIsPlatformRegisteredArgs = {
   input: IsPlatformRegisteredInput;
+};
+
+
+export type QueryMostDeployedDocumentsArgs = {
+  limit: Scalars['Int']['input'];
 };
 
 
