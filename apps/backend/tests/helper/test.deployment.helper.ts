@@ -132,7 +132,7 @@ export const TestDeploymentHelper = {
         expect(deploymentRequest!.target_state).toBe(target_state);
       }
 
-      if (ordering) {
+      if (ordering !== undefined) {
         expect(deploymentRequest!.ordering).toBe(ordering);
       }
     },

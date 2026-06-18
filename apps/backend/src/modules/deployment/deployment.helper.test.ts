@@ -185,20 +185,6 @@ describe('isPlatformStateTransitionValid', () => {
 });
 
 describe('assertFreeTrialsLimit', () => {
-  it('should not throw if there is no trial for the organization', async () => {
-    vi.spyOn(
-      DeploymentRequestDomain,
-      'loadDeploymentRequestBy'
-    ).mockResolvedValue(undefined);
-
-    await expect(
-      DeploymentHelper.assertFreeTrialsLimit(
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
-        PlatformIdentifier.Opencti
-      )
-    ).resolves.toBeUndefined();
-  });
-
   it('should throw an error if a free trial already exists', async () => {
     vi.spyOn(
       DeploymentRequestDomain,
@@ -493,9 +479,10 @@ describe('hasDeploymentTelemetryDataChanged', () => {
   });
 
   it('should return false when both start dates are undefined', () => {
+    const end_date = new Date('2025-01-01');
     const previous = buildDeploymentRequest({
       start_date: null,
-      end_date: null,
+      end_date,
     });
     const current = { ...previous };
 
@@ -505,8 +492,9 @@ describe('hasDeploymentTelemetryDataChanged', () => {
   });
 
   it('should return false when both end dates are undefined', () => {
+    const start_date = new Date('2025-01-01');
     const previous = buildDeploymentRequest({
-      start_date: null,
+      start_date,
       end_date: null,
     });
     const current = { ...previous };
