@@ -21,6 +21,9 @@ const resolvers: Resolvers = {
     epics: async (_parent, opts, _context) => {
       return EpicApp.loadEpics(opts);
     },
+    countEpicsPerTimeline: async () => {
+      return EpicApp.countEpicsPerTimeline();
+    },
   },
   Mutation: {
     createEpic: async (_, { input, document }) => {

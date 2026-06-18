@@ -1,7 +1,9 @@
 import { db, paginate } from '../../../knexfile';
 import {
   EpicConnection,
+  EpicCountPerTimeline,
   QueryEpicsArgs,
+  Timeline,
 } from '../../__generated__/resolvers-types';
 import Epic, { EpicId, EpicMutator } from '../../model/kanel/public/Epic';
 import { UnknownErrorCode } from '../../utils/error/error.code';
@@ -33,5 +35,16 @@ export const EpicDomain = {
   },
   deleteEpicBy: async (field: EpicMutator) => {
     await db<Epic>('Epic').where(field).delete();
+  },
+  countEpicsPerTimeline: async (): Promise<EpicCountPerTimeline[]> => {
+    const rows = await db<Epic>('Epic')
+      .whereNot({ timeline: Timeline.Finished })
+      .groupBy('timeline')
+      .select('timeline')
+      .count({ count: '*' });
+    return rows.map((row: { timeline: string; count: string | number }) => ({
+      timeline: row.timeline as Timeline,
+      count: Number(row.count),
+    }));
   },
 };

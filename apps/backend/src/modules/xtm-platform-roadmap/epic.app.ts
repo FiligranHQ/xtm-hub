@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   CreateEpicInput,
   EpicConnection,
+  EpicCountPerTimeline,
   EpicType,
   QueryEpicsArgs,
   ServiceDefinitionIdentifier,
@@ -70,6 +71,9 @@ const PLATFORM_ROADMAP_SLUG = 'xtm-platform-roadmap';
 export const EpicApp = {
   loadEpics: async (opts: Partial<QueryEpicsArgs>): Promise<EpicConnection> => {
     return EpicDomain.loadEpics(opts);
+  },
+  countEpicsPerTimeline: async (): Promise<EpicCountPerTimeline[]> => {
+    return EpicDomain.countEpicsPerTimeline();
   },
   createEpic: async (
     input: CreateEpicInput,

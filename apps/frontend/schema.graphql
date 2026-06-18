@@ -135,6 +135,7 @@ type Query {
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: SubscriptionId!): UserServiceConnection
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
+  countEpicsPerTimeline: [EpicCountPerTimeline!]!
   node(id: ID!): Node
 }
 
@@ -1863,6 +1864,11 @@ input UpdateEpicInput {
   timeline: Timeline
   is_integration: Boolean
   illustration_document: Upload
+}
+
+type EpicCountPerTimeline {
+  timeline: Timeline!
+  count: Int!
 }
 
 type EpicEdge {

@@ -688,6 +688,12 @@ export type EpicConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type EpicCountPerTimeline = {
+  __typename?: 'EpicCountPerTimeline';
+  count: Scalars['Int']['output'];
+  timeline: Timeline;
+};
+
 export type EpicEdge = {
   __typename?: 'EpicEdge';
   cursor: Scalars['String']['output'];
@@ -1556,6 +1562,7 @@ export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
+  countEpicsPerTimeline: Array<EpicCountPerTimeline>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
