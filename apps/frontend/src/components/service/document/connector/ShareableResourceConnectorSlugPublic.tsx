@@ -7,13 +7,12 @@ import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PublicDocumentDetailsData } from '@/utils/shareable-resources/shareable-resources.types';
 import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
+import { MarkdownRenderer } from '@filigran/ui/clients';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { MarkdownAsync } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
 interface ShareableResourceConnectorSlugPublicProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
@@ -91,11 +90,11 @@ const ShareableResourceConnectorSlugPublic = ({
           </h3>
           <section className="border rounded border-border-light bg-page-background overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>
-            <div className="p-l !bg-page-background markdown-content">
-              <MarkdownAsync remarkPlugins={[remarkGfm]}>
-                {documentData?.description ?? ''}
-              </MarkdownAsync>
-            </div>
+            <MarkdownRenderer
+              source={documentData?.description ?? ''}
+              colorMode="dark"
+              className="p-l !bg-page-background markdown-content"
+            />
           </section>
         </div>
         <ShareableResourceConnectorDetails

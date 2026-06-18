@@ -1078,6 +1078,15 @@
     "Name": "氏名",
     "NoOwnedService": "まだサービスをご利用になっていません。",
     "NoService": "サービスはありません...まだ",
+    "SubscribedServices": "契約済みサービス",
+    "SubscribedServicesList": {
+      "ServiceName": "サービス名",
+      "ServiceType": "サービスタイプ",
+      "Status": "ステータス",
+      "StartDate": "開始日",
+      "Tags": "タグ",
+      "NoSubscribedServices": "この組織に契約済みサービスはありません。"
+    },
     "Organizations": "組織",
     "RegisteredPlatforms": {
       "PlatformDetails": "プラットフォームの詳細",

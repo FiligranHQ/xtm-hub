@@ -1,4 +1,4 @@
-import ServiceInstanceCard from '@/components/service/ServiceInstanceCard';
+import PublicServiceInstanceCard from '@/components/service/PublicServiceInstanceCard';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -27,7 +27,7 @@ const Page = async () => {
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-l'
         }>
         {services.map((service) => (
-          <ServiceInstanceCard
+          <PublicServiceInstanceCard
             key={service.id}
             serviceInstance={seoServiceInstanceToInstanceCardData(service, t)}
           />

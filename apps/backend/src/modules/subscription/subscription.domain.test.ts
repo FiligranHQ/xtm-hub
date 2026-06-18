@@ -5,7 +5,7 @@ import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import { ServiceCapabilityId } from '../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
-import { addCapabilitiesToSubscription } from '../security-management/subscription-capability/subscription-capability.domain';
+import { SubscriptionCapabilityDomain } from '../security-management/subscription-capability/subscription-capability.domain';
 import { SubscriptionDomain } from './subscription.domain';
 
 describe('subscription domain', () => {
@@ -180,7 +180,7 @@ describe('subscription domain', () => {
         start_date: new Date(),
         end_date: null,
       });
-      await addCapabilitiesToSubscription(id, [
+      await SubscriptionCapabilityDomain.addCapabilitiesToSubscription(id, [
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID,
         SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.DELETE.ID,
       ]);
@@ -226,10 +226,11 @@ describe('subscription domain', () => {
         start_date: new Date(),
         end_date: null,
       });
-      const [subscriptionCapability] = await addCapabilitiesToSubscription(
-        subscriptionId,
-        [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID]
-      );
+      const [subscriptionCapability] =
+        await SubscriptionCapabilityDomain.addCapabilitiesToSubscription(
+          subscriptionId,
+          [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID]
+        );
 
       const result = await SubscriptionDomain.getServiceCapability(
         subscriptionCapability!.id

@@ -1,0 +1,6 @@
+query OrganizationSubscribedServicesBreadcrumb($id: ID!) {
+  organization(id: $id) {
+    id
+    name
+  }
+}

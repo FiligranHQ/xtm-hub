@@ -43,7 +43,7 @@ import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { UserOrganizationDomain } from '../organization-management/user/user-organization/user-organization.domain';
-import { isUserAllowedOnOrganization } from '../security-management/capability/auth.helper';
+import { AuthHelper } from '../security-management/capability/auth.helper';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
@@ -405,13 +405,11 @@ export const RegistrationApp = {
     }
 
     const user = requestContext.requireUser();
-    const { isAllowed, isInOrganization } = await isUserAllowedOnOrganization(
-      user,
-      {
+    const { isAllowed, isInOrganization } =
+      await AuthHelper.isUserAllowedOnOrganization(user, {
         organizationId: subscription.organization_id,
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
-      }
-    );
+      });
 
     return {
       isAllowed,

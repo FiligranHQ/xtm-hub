@@ -10,6 +10,7 @@ import {
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   OrderingMode,
+  PlatformConfigurationStatus,
   PlatformDeploymentRequest,
   PlatformDeploymentRequestConnection,
   PlatformIdentifier,
@@ -819,6 +820,20 @@ const resolveNextHubStatus = (
   return computedStatus;
 };
 
+const syncPlatformRegistrationStatus = async (
+  deploymentRequest: DeploymentRequestModel,
+  actualState: UpdateDeploymentRequestInput['actual_state']
+) => {
+  if (actualState !== DeploymentRequestPlatformState.Removed) {
+    return;
+  }
+
+  await PlatformConfigurationDomain.updateConfiguration(
+    deploymentRequest.service_instance_id,
+    { status: PlatformConfigurationStatus.Inactive }
+  );
+};
+
 const applyDeploymentRequestUpdateInQuotaTransaction = async ({
   deploymentRequest,
   deploymentRequestId,
@@ -860,6 +875,10 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
       await DeploymentRequestDomain.updateDeploymentRequestById(
         deploymentRequestId,
         updateData
+      );
+      await syncPlatformRegistrationStatus(
+        deploymentRequest,
+        input.actual_state
       );
 
       if (newStatus === DeploymentRequestHubStatus.Active) {
