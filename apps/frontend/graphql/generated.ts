@@ -2608,6 +2608,13 @@ export type UsersWithCapabilitiesInOrganizationInput = {
   organizationId: Scalars['OrganizationId']['input'];
 };
 
+export type MostDeployedDocumentsQueryQueryVariables = Exact<{
+  limit: Scalars['Int']['input'];
+}>;
+
+
+export type MostDeployedDocumentsQueryQuery = { __typename?: 'Query', mostDeployedDocuments: Array<{ __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomDashboard', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomView', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'DefaultDocument', id: string, name: string | null, short_description: string | null, type: string, active: boolean, slug: string | null, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'IntegrationHack', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenAEVScenario', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenCTIPlaybook', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'RssFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'Stream', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'TaxiiFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'ThirdPartyIntegration', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null }> };
+
 export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -2663,6 +2670,11 @@ export type UseCasesListQueryVariables = Exact<{
 
 export type UseCasesListQuery = { __typename?: 'Query', useCases: { __typename?: 'UseCaseConnection', totalCount: number, edges: Array<{ __typename?: 'UseCaseEdge', node: { __typename?: 'UseCase', id: string, name: string, color: string } }> } | null };
 
+export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type EpicCountPerTimelineQueryQuery = { __typename?: 'Query', countEpicsPerTimeline: Array<{ __typename?: 'EpicCountPerTimeline', timeline: Timeline, count: number }> };
+
 
 export const OrganizationSubscribedServiceRowFragmentDoc = `
     fragment OrganizationSubscribedServiceRow on SubscriptionModel {
@@ -2688,6 +2700,77 @@ export const UseCaseRowFragmentDoc = `
   color
 }
     `;
+export const MostDeployedDocumentsQueryDocument = `
+    query MostDeployedDocumentsQuery($limit: Int!) {
+  mostDeployedDocuments(limit: $limit) {
+    id
+    name
+    short_description
+    type
+    active
+    slug
+    service_instance_id
+    children_documents {
+      id
+      image_type
+    }
+    use_cases {
+      id
+      name
+    }
+    ... on Connector {
+      verified
+      manager_supported
+    }
+  }
+}
+    `;
+
+export const useMostDeployedDocumentsQueryQuery = <
+      TData = MostDeployedDocumentsQueryQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: MostDeployedDocumentsQueryQueryVariables,
+      options?: Omit<UseQueryOptions<MostDeployedDocumentsQueryQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<MostDeployedDocumentsQueryQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<MostDeployedDocumentsQueryQuery, TError, TData>(
+      {
+    queryKey: ['MostDeployedDocumentsQuery', variables],
+    queryFn: fetcher<MostDeployedDocumentsQueryQuery, MostDeployedDocumentsQueryQueryVariables>(client, MostDeployedDocumentsQueryDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useMostDeployedDocumentsQueryQuery.getKey = (variables: MostDeployedDocumentsQueryQueryVariables) => ['MostDeployedDocumentsQuery', variables];
+useMostDeployedDocumentsQueryQuery.getRootKey = () => ['MostDeployedDocumentsQuery'] as const;
+export const useInfiniteMostDeployedDocumentsQueryQuery = <
+      TData = InfiniteData<MostDeployedDocumentsQueryQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: MostDeployedDocumentsQueryQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<MostDeployedDocumentsQueryQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<MostDeployedDocumentsQueryQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<MostDeployedDocumentsQueryQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['MostDeployedDocumentsQuery.infinite', variables],
+      queryFn: (metaData) => fetcher<MostDeployedDocumentsQueryQuery, MostDeployedDocumentsQueryQueryVariables>(client, MostDeployedDocumentsQueryDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteMostDeployedDocumentsQueryQuery.getKey = (variables: MostDeployedDocumentsQueryQueryVariables) => ['MostDeployedDocumentsQuery.infinite', variables];
+useInfiniteMostDeployedDocumentsQueryQuery.getRootKey = () => ['MostDeployedDocumentsQuery.infinite'] as const;
+useMostDeployedDocumentsQueryQuery.fetcher = (client: GraphQLClient, variables: MostDeployedDocumentsQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<MostDeployedDocumentsQueryQuery, MostDeployedDocumentsQueryQueryVariables>(client, MostDeployedDocumentsQueryDocument, variables, headers);
+
 export const OrganizationSubscribedServicesBreadcrumbDocument = `
     query OrganizationSubscribedServicesBreadcrumb($id: ID!) {
   organization(id: $id) {
@@ -2964,3 +3047,58 @@ export const useInfiniteUseCasesListQuery = <
 useInfiniteUseCasesListQuery.getKey = (variables: UseCasesListQueryVariables) => ['UseCasesList.infinite', variables];
 useInfiniteUseCasesListQuery.getRootKey = () => ['UseCasesList.infinite'] as const;
 useUseCasesListQuery.fetcher = (client: GraphQLClient, variables: UseCasesListQueryVariables, headers?: RequestInit['headers']) => fetcher<UseCasesListQuery, UseCasesListQueryVariables>(client, UseCasesListDocument, variables, headers);
+
+export const EpicCountPerTimelineQueryDocument = `
+    query EpicCountPerTimelineQuery {
+  countEpicsPerTimeline {
+    timeline
+    count
+  }
+}
+    `;
+
+export const useEpicCountPerTimelineQueryQuery = <
+      TData = EpicCountPerTimelineQueryQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: EpicCountPerTimelineQueryQueryVariables,
+      options?: Omit<UseQueryOptions<EpicCountPerTimelineQueryQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<EpicCountPerTimelineQueryQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<EpicCountPerTimelineQueryQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['EpicCountPerTimelineQuery'] : ['EpicCountPerTimelineQuery', variables],
+    queryFn: fetcher<EpicCountPerTimelineQueryQuery, EpicCountPerTimelineQueryQueryVariables>(client, EpicCountPerTimelineQueryDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useEpicCountPerTimelineQueryQuery.getKey = (variables?: EpicCountPerTimelineQueryQueryVariables) => variables === undefined ? ['EpicCountPerTimelineQuery'] : ['EpicCountPerTimelineQuery', variables];
+
+export const useInfiniteEpicCountPerTimelineQueryQuery = <
+      TData = InfiniteData<EpicCountPerTimelineQueryQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: EpicCountPerTimelineQueryQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<EpicCountPerTimelineQueryQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<EpicCountPerTimelineQueryQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<EpicCountPerTimelineQueryQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['EpicCountPerTimelineQuery.infinite'] : ['EpicCountPerTimelineQuery.infinite', variables],
+      queryFn: (metaData) => fetcher<EpicCountPerTimelineQueryQuery, EpicCountPerTimelineQueryQueryVariables>(client, EpicCountPerTimelineQueryDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteEpicCountPerTimelineQueryQuery.getKey = (variables?: EpicCountPerTimelineQueryQueryVariables) => variables === undefined ? ['EpicCountPerTimelineQuery.infinite'] : ['EpicCountPerTimelineQuery.infinite', variables];
+
+
+useEpicCountPerTimelineQueryQuery.fetcher = (client: GraphQLClient, variables?: EpicCountPerTimelineQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<EpicCountPerTimelineQueryQuery, EpicCountPerTimelineQueryQueryVariables>(client, EpicCountPerTimelineQueryDocument, variables, headers);

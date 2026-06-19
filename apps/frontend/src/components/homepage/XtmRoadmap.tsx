@@ -1,30 +1,49 @@
 import type { PublicLocale } from '@/i18n/config';
+import { portalGraphqlClientCached } from '@/lib/graphql-client';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { Button } from '@filigran/ui/servers';
+import {
+  Timeline,
+  useEpicCountPerTimelineQueryQuery,
+} from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const COLOR_CLASSES = {
-  orange: { bg: 'bg-orange', text: 'text-orange' },
-  primary: { bg: 'bg-primary', text: 'text-primary' },
-  green: { bg: 'bg-green', text: 'text-green' },
-} as const;
-
-type RoadmapColor = keyof typeof COLOR_CLASSES;
-
-const ROADMAP_STATS: {
-  count: number;
-  labelKey: 'Now' | 'Next' | 'UnderConsideration';
-  color: RoadmapColor;
-}[] = [
-  { count: 6, labelKey: 'Now', color: 'orange' },
-  { count: 8, labelKey: 'Next', color: 'primary' },
-  { count: 13, labelKey: 'UnderConsideration', color: 'green' },
+const TIMELINE_CONFIG = [
+  {
+    timeline: Timeline.Now,
+    labelKey: 'Now' as const,
+    bg: 'bg-orange',
+    text: 'text-orange',
+  },
+  {
+    timeline: Timeline.Next,
+    labelKey: 'Next' as const,
+    bg: 'bg-primary',
+    text: 'text-primary',
+  },
+  {
+    timeline: Timeline.UnderConsideration,
+    labelKey: 'UnderConsideration' as const,
+    bg: 'bg-green',
+    text: 'text-green',
+  },
 ];
 
 const XtmRoadmap = async ({ locale }: { locale: PublicLocale }) => {
   const t = await getTranslations('PublicHomePage.XtmRoadmap');
+
+  const data = await useEpicCountPerTimelineQueryQuery.fetcher(
+    portalGraphqlClientCached
+  )();
+
+  const epicCounts = data.countEpicsPerTimeline;
+
+  const roadmapStats = TIMELINE_CONFIG.map(({ timeline, ...config }) => ({
+    count: epicCounts.find((e) => e.timeline === timeline)?.count ?? 0,
+    ...config,
+  }));
 
   return (
     <section className="grid grid-cols-[1fr_1fr_auto] gap-l items-center bg-card border border-primary/30 rounded-lg px-xl py-4">
@@ -56,31 +75,26 @@ const XtmRoadmap = async ({ locale }: { locale: PublicLocale }) => {
       </div>
 
       <div className="flex gap-l justify-end">
-        {ROADMAP_STATS.map(({ count, labelKey, color }) => {
-          const classes = COLOR_CLASSES[color];
-          return (
-            <div
-              key={labelKey}
-              className="flex flex-col gap-xs">
-              <div className="flex items-center gap-s pr-8">
-                <div className="relative w-6 h-6 flex items-center justify-center shrink-0">
-                  <div
-                    className={`absolute inset-0 ${classes.bg} opacity-20 rounded-full`}
-                  />
-                  <span className={`relative z-10 text-sm ${classes.text}`}>
-                    {count}
-                  </span>
-                </div>
-                <span className={`text-m whitespace-nowrap ${classes.text}`}>
-                  {t(labelKey)}
-                </span>
+        {roadmapStats.map(({ count, labelKey, bg, text }) => (
+          <div
+            key={labelKey}
+            className="flex flex-col gap-xs">
+            <div className="flex items-center gap-s pr-8">
+              <div className="relative w-6 h-6 flex items-center justify-center shrink-0">
+                <div
+                  className={`absolute inset-0 ${bg} opacity-20 rounded-full`}
+                />
+                <span className={`relative z-10 text-sm ${text}`}>{count}</span>
               </div>
-              <div
-                className={`h-0.5 mt-xs w-full ${classes.bg} opacity-70 rounded-full`}
-              />
+              <span className={`text-m whitespace-nowrap ${text}`}>
+                {t(labelKey)}
+              </span>
             </div>
-          );
-        })}
+            <div
+              className={`h-0.5 mt-xs w-full ${bg} opacity-70 rounded-full`}
+            />
+          </div>
+        ))}
       </div>
     </section>
   );

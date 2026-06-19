@@ -20,12 +20,60 @@ export enum ShareableResourceType {
   OPENCTI_PLAYBOOK = 'opencti_playbook',
 }
 
-export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING = {
-  openaev_scenario: 'Scenario OpenAEV',
-  opencti_integration: 'Feed OpenCTI',
-  opencti_custom_dashboard: 'Custom Dashboard OpenCTI',
-  opencti_custom_view: 'Custom View OpenCTI',
-  opencti_playbook: 'Playbook OpenCTI',
+export type ServiceInfo = { link: string; description: string };
+export enum ServiceSlug {
+  OPEN_CTI_INTEGRATIONS = 'opencti-integrations',
+  OPEN_CTI_CUSTOM_DASHBOARDS = 'opencti-custom-dashboards',
+  OPEN_CTI_CUSTOM_VIEWS = 'opencti-custom-views',
+  OPEN_AEV_SCENARIOS = 'openaev-scenarios',
+  OPEN_CTI_PLAYBOOKS = 'opencti-playbooks',
+}
+
+export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING: Record<
+  ShareableResourceType,
+  string
+> = {
+  [ShareableResourceType.OPENAEV_SCENARIO]: 'Scenario OpenAEV',
+  [ShareableResourceType.OPENCTI_INTEGRATION]: 'Feed OpenCTI',
+  [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: 'Custom Dashboard OpenCTI',
+  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: 'Custom View OpenCTI',
+  [ShareableResourceType.OPENCTI_PLAYBOOK]: 'Playbook OpenCTI',
+};
+
+export const SHAREABLE_RESOURCE_PRODUCT_MAPPING: Record<
+  ShareableResourceType,
+  string
+> = {
+  [ShareableResourceType.OPENAEV_SCENARIO]: 'OpenAEV',
+  [ShareableResourceType.OPENCTI_INTEGRATION]: 'OpenCTI',
+  [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: 'OpenCTI',
+  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: 'OpenCTI',
+  [ShareableResourceType.OPENCTI_PLAYBOOK]: 'OpenCTI',
+};
+
+export const SHAREABLE_RESOURCE_LIBRARY_MAPPING: Record<
+  ShareableResourceType,
+  string
+> = {
+  [ShareableResourceType.OPENAEV_SCENARIO]: 'Scenarios',
+  [ShareableResourceType.OPENCTI_INTEGRATION]: 'Integrations',
+  [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: 'Custom Dashboards',
+  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: 'Custom View',
+  [ShareableResourceType.OPENCTI_PLAYBOOK]: 'Playbooks',
+};
+
+export const SHAREABLE_RESOURCE_SERVICE_SLUG_MAPPING: Record<
+  ShareableResourceType,
+  ServiceSlug
+> = {
+  [ShareableResourceType.OPENCTI_INTEGRATION]:
+    ServiceSlug.OPEN_CTI_INTEGRATIONS,
+  [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]:
+    ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS,
+  [ShareableResourceType.OPENAEV_SCENARIO]: ServiceSlug.OPEN_AEV_SCENARIOS,
+  [ShareableResourceType.OPENCTI_PLAYBOOK]: ServiceSlug.OPEN_CTI_PLAYBOOKS,
+  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]:
+    ServiceSlug.OPEN_CTI_CUSTOM_VIEWS,
 };
 
 export const isIntegrationItem = (
@@ -39,12 +87,3 @@ export const isConnectorResource = (
 ): boolean => {
   return resource.__typename === 'Connector';
 };
-
-export type ServiceInfo = { link: string; description: string };
-export enum ServiceSlug {
-  OPEN_CTI_INTEGRATIONS = 'opencti-integrations',
-  OPEN_CTI_CUSTOM_DASHBOARDS = 'opencti-custom-dashboards',
-  OPEN_CTI_CUSTOM_VIEWS = 'opencti-custom-views',
-  OPEN_AEV_SCENARIOS = 'openaev-scenarios',
-  OPEN_CTI_PLAYBOOKS = 'opencti-playbooks',
-}

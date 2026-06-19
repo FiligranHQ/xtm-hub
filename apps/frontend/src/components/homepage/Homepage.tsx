@@ -10,7 +10,7 @@ const Homepage = ({ locale }: HomepageProps) => {
     <div className="flex flex-col gap-2xl">
       <XtmPlatform />
       <XtmRoadmap locale={locale} />
-      <MostDeployedResources />
+      <MostDeployedResources locale={locale} />
     </div>
   );
 };
