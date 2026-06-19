@@ -27,23 +27,23 @@ export const DocumentDataLoader = {
   batchLoadUploaders: async (
     ids: readonly string[]
   ): Promise<(User | null)[]> => {
-    const rows = await db<User>('User')
+    type Row = User & { _document_id: string };
+    const rows = await db<Row>('User')
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
       .whereIn('Document.id', ids)
       .select('User.*', 'Document.id as _document_id');
 
-    const map = new Map<string, User>();
-    for (const row of rows) {
-      const docId = (row as User & { _document_id: string })._document_id;
-      map.set(docId, row);
-    }
+    const map = new Map<string, User>(
+      rows.map((row: Row) => [row._document_id, row])
+    );
     return ids.map((id) => map.get(id) ?? null);
   },
 
   batchLoadUploaderOrganizations: async (
     ids: readonly string[]
   ): Promise<(Organization | null)[]> => {
-    const rows = await db<Organization>('Organization')
+    type Row = Organization & { _document_id: string };
+    const rows = await db<Row>('Organization')
       .leftJoin(
         'Document',
         'Document.uploader_organization_id',
@@ -52,20 +52,18 @@ export const DocumentDataLoader = {
       .whereIn('Document.id', ids)
       .select('Organization.*', 'Document.id as _document_id');
 
-    const map = new Map<string, Organization>();
-    for (const row of rows) {
-      const docId = (row as Organization & { _document_id: string })
-        ._document_id;
-      map.set(docId, row);
-    }
+    const map = new Map<string, Organization>(
+      rows.map((row: Row) => [row._document_id, row])
+    );
     return ids.map((id) => map.get(id) ?? null);
   },
 
   batchLoadChildrenDocuments: async (
     ids: readonly string[]
   ): Promise<Document[][]> => {
+    type Row = Document & { _parent_id: string };
     const context = requestContext.get();
-    const query = db<Document>('Document_Children')
+    const query = db<Row>('Document_Children')
       .leftJoin(
         'Document',
         'Document.id',
@@ -89,14 +87,13 @@ export const DocumentDataLoader = {
       DOCUMENT_IMAGE_METADATA_KEYS
     );
 
-    const rows: (Document & { _parent_id: string })[] = await query;
+    const rows: Row[] = await query;
 
     const map = new Map<string, Document[]>();
     for (const row of rows) {
-      const parentId = row._parent_id;
-      const existing = map.get(parentId) ?? [];
+      const existing = map.get(row._parent_id) ?? [];
       existing.push(row);
-      map.set(parentId, existing);
+      map.set(row._parent_id, existing);
     }
     return ids.map((id) => map.get(id) ?? []);
   },
@@ -104,7 +101,8 @@ export const DocumentDataLoader = {
   batchLoadImagesByDocumentId: async (
     ids: readonly string[]
   ): Promise<Document[][]> => {
-    const query = db<Document>('Document')
+    type Row = Document & { _parent_id: string };
+    const query = db<Row>('Document')
       .select(
         'Document.*',
         'Document_Children.parent_document_id as _parent_id'
@@ -124,18 +122,17 @@ export const DocumentDataLoader = {
       DOCUMENT_IMAGE_METADATA_KEYS
     );
 
-    const rows: (Document & { _parent_id: string })[] = await query;
+    const rows: Row[] = await query;
 
     const map = new Map<string, Document[]>();
     for (const row of rows) {
-      const parentId = row._parent_id;
       const image = {
         ...row,
         id: toGlobalId('Document', row.id) as typeof row.id,
       };
-      const existing = map.get(parentId) ?? [];
+      const existing = map.get(row._parent_id) ?? [];
       existing.push(image);
-      map.set(parentId, existing);
+      map.set(row._parent_id, existing);
     }
     return ids.map((id) => map.get(id) ?? []);
   },
@@ -143,19 +140,17 @@ export const DocumentDataLoader = {
   batchLoadUseCasesByDocumentId: async (
     ids: readonly string[]
   ): Promise<UseCase[][]> => {
-    const rows: (UseCase & { _document_id: string })[] = await db<UseCase>(
-      'UseCase'
-    )
+    type Row = UseCase & { _document_id: string };
+    const rows: Row[] = await db<Row>('UseCase')
       .leftJoin('Object_UseCase as ouc', 'ouc.use_case_id', 'UseCase.id')
       .whereIn('ouc.object_id', ids)
       .select('UseCase.*', 'ouc.object_id as _document_id');
 
     const map = new Map<string, UseCase[]>();
     for (const row of rows) {
-      const docId = row._document_id;
-      const existing = map.get(docId) ?? [];
+      const existing = map.get(row._document_id) ?? [];
       existing.push(row);
-      map.set(docId, existing);
+      map.set(row._document_id, existing);
     }
     return ids.map((id) => map.get(id) ?? []);
   },
@@ -163,17 +158,15 @@ export const DocumentDataLoader = {
   batchLoadIntegrationTypes: async (
     ids: readonly string[]
   ): Promise<(IntegrationType | null)[]> => {
-    const rows: { document_id: string; value: string }[] = await db(
-      'Document_Metadata'
-    )
+    type Row = { document_id: string; value: string };
+    const rows: Row[] = await db<Row>('Document_Metadata')
       .select('document_id', 'value')
       .whereIn('document_id', ids)
       .where('key', DocumentMetadataKeyCode.IntegrationType);
 
-    const map = new Map<string, IntegrationType>();
-    for (const row of rows) {
-      map.set(row.document_id, row.value as IntegrationType);
-    }
+    const map = new Map<string, IntegrationType>(
+      rows.map((row: Row) => [row.document_id, row.value as IntegrationType])
+    );
     return ids.map((id) => map.get(id) ?? null);
   },
 
