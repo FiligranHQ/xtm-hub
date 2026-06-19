@@ -91,7 +91,7 @@
     "prettier-plugin-organize-imports": "catalog:",
     "prettier-plugin-tailwindcss": "0.8.0",
     "rehype-sanitize": "6.0.0",
-    "relay-compiler": "20.1.1",
+    "relay-compiler": "21.0.0",
     "relay-test-utils": "20.1.1",
     "typescript": "catalog:",
     "vite": "catalog:",
