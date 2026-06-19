@@ -19,13 +19,17 @@ export const ServiceFormUploaderIdField = ({
 }: ServiceFormUploaderIdFieldProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
+
+  const initialAuthor = document?.uploader?.email ?? me?.email ?? '';
+
   return (
     <FormItem>
       <FormLabel>{t('Service.Form.Author')}</FormLabel>
       <FormControl>
         <SelectUsersFormField
-          defaultValue={document?.uploader?.email ?? me!.email}
           value={field.value}
+          defaultValue={initialAuthor}
+          defaultLabel={initialAuthor}
           onValueChange={field.onChange}
           disabled={disabled}
         />
