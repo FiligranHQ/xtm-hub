@@ -13,6 +13,7 @@ enum FilterKey {
   manager_supported
   feed_url
   verified
+  entity_type
 }
 
 enum LogicalOperator {

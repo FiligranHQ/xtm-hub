@@ -85,6 +85,10 @@ const ServiceIdentifierToEventService = new Map<
     ServiceDefinitionIdentifier.OpenctiPlaybooks,
     TelemetryEventService.OPENCTI_PLAYBOOKS_LIBRARY,
   ],
+  [
+    ServiceDefinitionIdentifier.OpenctiCustomViews,
+    TelemetryEventService.OPENCTI_CUSTOM_VIEWS_LIBRARY,
+  ],
 ]);
 
 const TelemetryTargetProductMappedByPlatformIdentifier = new Map<

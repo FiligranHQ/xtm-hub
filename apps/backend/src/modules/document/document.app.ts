@@ -100,6 +100,13 @@ export const DocumentApp = {
         metadata,
       });
 
+    if (input.entity_types != null) {
+      documentMetadata.push({
+        key: DocumentMetadataKeyCode.EntityTypes,
+        value: JSON.stringify(input.entity_types),
+      });
+    }
+
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
       documentMetadata
@@ -285,6 +292,18 @@ export const DocumentApp = {
       }
     }
 
+    // entity_types is multi-valued: serialize it as a JSON metadata entry so it is
+    // persisted in Document_Metadata (and stripped from the Document column update below).
+    if (input.entity_types != null) {
+      documentMetadata = [
+        ...documentMetadata,
+        {
+          key: DocumentMetadataKeyCode.EntityTypes,
+          value: JSON.stringify(input.entity_types),
+        },
+      ];
+    }
+
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
       documentMetadata
@@ -302,10 +321,12 @@ export const DocumentApp = {
         ? sourceDocumentFile
         : undefined;
 
+      // entity_types is persisted as metadata (see above), not as a Document column.
+      const { entity_types: _entityTypes, ...documentColumnData } = input;
       const doc = await DocumentDomain.updateDocument({
         parentDocumentId,
         document: {
-          data: input,
+          data: documentColumnData,
           file,
           type: documentType,
         },

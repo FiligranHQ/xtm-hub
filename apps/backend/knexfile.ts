@@ -245,6 +245,18 @@ const createLabelFilter = (): FilterHandler => ({
   },
 });
 
+const createEntityTypeFilter = (): FilterHandler => ({
+  key: FilterKey.EntityType,
+  addWhere: (qb, type, values) => {
+    if (!values.length) return;
+    const placeholders = values.map(() => '?').join(',');
+    qb.whereRaw(
+      `"${type}"."entity_types"::text[] && array[${placeholders}]`,
+      values
+    );
+  },
+});
+
 const createTagsFilter = (): FilterHandler => ({
   key: ServiceInstanceFilterKey.Tags,
   addWhere: (qb, _type, values) => {
@@ -364,6 +376,7 @@ export const applyFilterJoins = (
 
 const filterHandlers: Record<string, FilterHandler> = {
   [FilterKey.Label]: createLabelFilter(),
+  [FilterKey.EntityType]: createEntityTypeFilter(),
   [ServiceInstanceFilterKey.Tags]: createTagsFilter(),
   [ServiceInstanceFilterKey.ServiceDefinitionIdentifier]:
     createServiceDefinitionIdentifierFilter(),

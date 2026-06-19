@@ -260,7 +260,9 @@
       "NextPage": "次のページへ",
       "Manage": "ページネーションの管理",
       "RowsPerPage": "ページあたりの行数"
-    }
+    },
+    "FilterEntityTypes": "エンティティタイプ...",
+    "FilterEntityTypesLabel": "エンティティタイプ"
   },
   "GoToProd": "プロダクションへ",
   "Header": {
@@ -713,6 +715,7 @@
       "openaev_registration": "OpenAEV登録",
       "openaev_scenarios": "OpenAEVシナリオ",
       "opencti_custom_dashboards": "OpenCTI カスタムダッシュボード",
+      "opencti_custom_views": "OpenCTI カスタムビュー",
       "opencti_integrations": "OpenCTI 統合",
       "opencti_playbooks": "OpenCTIプレイブック",
       "opencti_registration": "OpenCTI 登録",
@@ -845,7 +848,9 @@
       "UseCasesLabel": "使用例",
       "UseCasesPlaceholder": "ユースケースを追加",
       "VendorUrlLabel": "ベンダーリンク (url)",
-      "VerifiedLabel": "検証済み"
+      "VerifiedLabel": "検証済み",
+      "EntityTypesLabel": "エンティティタイプ",
+      "EntityTypesPlaceholder": "エンティティタイプを追加"
     },
     "OpenctiIntegrations": {
       "Actions": {
@@ -1036,7 +1041,8 @@
           "integration_type": "統合タイプ",
           "product_version": "登録プラットフォーム",
           "manager_supported": "配備タイプ",
-          "verified": "検証状況"
+          "verified": "検証状況",
+          "entity_type": "エンティティタイプ"
         }
       }
     },
@@ -1143,7 +1149,8 @@
         "FeedURL": "フィードURL",
         "DatasheetURL": "データシートURL",
         "BlogpostURL": "ブログ記事URL",
-        "DemoURL": "デモURL"
+        "DemoURL": "デモURL",
+        "EntityType": "エンティティタイプ"
       },
       "Download": "ダウンロード",
       "FromVersion": "バージョンから",
@@ -1351,6 +1358,20 @@
       "UpdateDocument": "ドキュメントの更新",
       "Vault": "パートナー保管庫",
       "VaultTitle": "保管庫管理"
+    },
+    "OpenctiCustomViews": {
+      "Actions": {
+        "Added": "カスタムビュー {name} は正常に追加されました。",
+        "Deleted": "カスタムビュー {name} は正常に削除された",
+        "Updated": "カスタムビュー {name} は正常に変更された",
+        "Share": "カスタムビューを共有する"
+      },
+      "AddService": "新しいカスタムビューを追加する",
+      "UpdateService": "カスタムビューを更新する {name}",
+      "DeleteService": "カスタムビューを削除する {name}",
+      "SureDeleteService": "本当にカスタムビュー {name} を削除しますか？",
+      "NonActive": "草案",
+      "Active": "公開"
     }
   },
   "ServiceActions": {
