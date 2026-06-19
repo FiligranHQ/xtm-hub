@@ -9,8 +9,10 @@ import {
   getLocaleTag,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { isFeatureEnabled } from '@/utils/settings.service';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -124,6 +126,14 @@ const Page = async ({
   const { baseUrl, serviceInstance, documents } = await getPageData(
     awaitedParams.slug
   );
+
+  // TODO: feature flag OPENCTI_CUSTOM_VIEWS - remove with the feature
+  if (
+    serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_VIEWS &&
+    !(await isFeatureEnabled(FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS))
+  ) {
+    notFound();
+  }
 
   const localizedServiceUrl = `${baseUrl}/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
 

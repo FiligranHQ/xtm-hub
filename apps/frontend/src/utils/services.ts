@@ -31,6 +31,7 @@ export const platformIdentifierMappedByShareableResourceType: Record<
 > = {
   [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]:
     PlatformIdentifierEnum.OPENCTI,
+  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: PlatformIdentifierEnum.OPENCTI,
   [ShareableResourceType.OPENCTI_INTEGRATION]: PlatformIdentifierEnum.OPENCTI,
   [ShareableResourceType.OPENAEV_SCENARIO]: PlatformIdentifierEnum.OPENAEV,
   [ShareableResourceType.OPENCTI_PLAYBOOK]: PlatformIdentifierEnum.OPENCTI,

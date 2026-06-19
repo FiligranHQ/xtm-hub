@@ -9,6 +9,7 @@ export enum TelemetryEventService {
   OPENAEV_SCENARIOS_LIBRARY = 'openaev-scenarios-library',
   INTEGRATIONS_LIBRARY = 'integrations-library',
   OPENCTI_PLAYBOOKS_LIBRARY = 'opencti-playbooks-library',
+  OPENCTI_CUSTOM_VIEWS_LIBRARY = 'opencti-custom-views-library',
 }
 
 export enum TelemetryEventServiceType {

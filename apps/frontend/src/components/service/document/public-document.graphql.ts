@@ -42,6 +42,10 @@ export const publicDocumentListItem = graphql`
       verified
       manager_supported
     }
+
+    ... on CustomView {
+      entity_types
+    }
   }
 `;
 
@@ -129,6 +133,11 @@ export const publicDocumentByServiceSlugItem = graphql`
 
     ... on OpenAEVScenario {
       product_version
+    }
+
+    ... on CustomView {
+      product_version
+      entity_types
     }
   }
 `;
@@ -218,6 +227,11 @@ export const publicDocumentBySlugItem = graphql`
 
     ... on OpenAEVScenario {
       product_version
+    }
+
+    ... on CustomView {
+      product_version
+      entity_types
     }
   }
 `;

@@ -195,6 +195,13 @@ export async function seed(knex) {
         public: true,
         identifier: 'opencti_playbooks',
       },
+      {
+        id: '17bda799-12c9-4039-b4d9-a8834494e234',
+        name: 'custom views',
+        description: 'custom views description',
+        public: true,
+        identifier: 'opencti_custom_views',
+      },
     ])
     .onConflict('id')
     .ignore();
@@ -261,6 +268,17 @@ export async function seed(knex) {
         tags: '{others}',
         service_definition_id: '3c8e4f4b-9c2a-4e3d-8b5f-7d9a0c1b2e3f',
         ordering: 16,
+      },
+      {
+        id: '9785fa07-309f-47ab-bcc0-c0c3447f7e29',
+        name: 'custom views',
+        description: 'short description for custom views',
+        creation_status: 'READY',
+        public: false,
+        tags: '{others}',
+        service_definition_id: '17bda799-12c9-4039-b4d9-a8834494e234',
+        ordering: 17,
+        slug: 'opencti-custom-views',
       },
     ])
     .onConflict('id')

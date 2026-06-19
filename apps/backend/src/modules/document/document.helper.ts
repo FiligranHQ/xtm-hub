@@ -29,6 +29,11 @@ import {
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import {
+  CUSTOM_VIEW_METADATA,
+  CUSTOM_VIEW_METADATA_KEYS,
+  OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+} from '../shareable-resource/opencti/custom-view/custom-view.model';
+import {
   INTEGRATION_CONNECTOR_METADATA,
   INTEGRATION_CSV_FEED_METADATA,
   INTEGRATION_METADATA_KEYS,
@@ -67,6 +72,7 @@ export const ALL_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
   new Set([
     ...INTEGRATION_METADATA_KEYS,
     ...CUSTOM_DASHBOARD_METADATA_KEYS,
+    ...CUSTOM_VIEW_METADATA_KEYS,
     ...OPENAEV_SCENARIO_METADATA_KEYS,
     ...OPENCTI_PLAYBOOK_METADATA_KEYS,
     ...DOCUMENT_IMAGE_METADATA_KEYS,
@@ -76,6 +82,7 @@ export const ALL_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
 export type ManageableServiceDefinitionIdentifier =
   | ServiceDefinitionIdentifier.OpenctiIntegrations
   | ServiceDefinitionIdentifier.OpenctiCustomDashboards
+  | ServiceDefinitionIdentifier.OpenctiCustomViews
   | ServiceDefinitionIdentifier.OpenaevScenarios
   | ServiceDefinitionIdentifier.OpenctiPlaybooks
   | ServiceDefinitionIdentifier.Vault;
@@ -85,6 +92,7 @@ export const VAULT_DOCUMENT_TYPE = 'vault';
 export type DOCUMENT_TYPE =
   | typeof OPENCTI_INTEGRATION_DOCUMENT_TYPE
   | typeof OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE
+  | typeof OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE
   | typeof OPENAEV_SCENARIO_DOCUMENT_TYPE
   | typeof OPENCTI_PLAYBOOK_DOCUMENT_TYPE
   | typeof VAULT_DOCUMENT_TYPE;
@@ -97,6 +105,8 @@ const DocumentTypeMappedByServiceDefinition: Record<
     OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
     OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
+  [ServiceDefinitionIdentifier.OpenctiCustomViews]:
+    OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
   [ServiceDefinitionIdentifier.OpenaevScenarios]:
     OPENAEV_SCENARIO_DOCUMENT_TYPE,
   [ServiceDefinitionIdentifier.OpenctiPlaybooks]:
@@ -110,6 +120,7 @@ const DocumentMetadataMappedByServiceIdentifier: Record<
 > = {
   [ServiceDefinitionIdentifier.OpenctiCustomDashboards]: () =>
     CUSTOM_DASHBOARD_METADATA,
+  [ServiceDefinitionIdentifier.OpenctiCustomViews]: () => CUSTOM_VIEW_METADATA,
   [ServiceDefinitionIdentifier.OpenctiIntegrations]: (metadata) => {
     const integrationTypeMetadata = metadata.find(
       (data) => data.key === DocumentMetadataKeyCode.IntegrationType
@@ -208,6 +219,8 @@ export const DocumentHelper = {
         INTEGRATION_METADATA_KEYS,
       [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
         CUSTOM_DASHBOARD_METADATA_KEYS,
+      [ServiceDefinitionIdentifier.OpenctiCustomViews]:
+        CUSTOM_VIEW_METADATA_KEYS,
       [ServiceDefinitionIdentifier.OpenaevScenarios]:
         OPENAEV_SCENARIO_METADATA_KEYS,
       [ServiceDefinitionIdentifier.OpenctiPlaybooks]:
