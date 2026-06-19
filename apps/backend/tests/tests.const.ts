@@ -18,6 +18,7 @@ import { ServiceDefinitionId } from '../src/model/kanel/public/ServiceDefinition
 import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
 import { UserId } from '../src/model/kanel/public/User';
 import { PortalContext } from '../src/model/portal-context';
+import type { DocumentDataLoaders } from '../src/modules/document/document.dataloader';
 import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
@@ -363,6 +364,14 @@ export const contextSimpleUserFiligran2: PortalContext = {
     capabilities: [],
     roles_portal: [],
   },
+  dataLoaders: {
+    uploaderLoader: { load: () => Promise.resolve(null) },
+    uploaderOrganizationLoader: { load: () => Promise.resolve(null) },
+    childrenDocumentsLoader: { load: () => Promise.resolve([]) },
+    imagesByDocumentIdLoader: { load: () => Promise.resolve([]) },
+    useCasesByDocumentIdLoader: { load: () => Promise.resolve([]) },
+    integrationTypeLoader: { load: () => Promise.resolve(null) },
+  } as unknown as DocumentDataLoaders,
 } as unknown as PortalContext;
 
 export const requestContextSimpleUserFiligran2 = {

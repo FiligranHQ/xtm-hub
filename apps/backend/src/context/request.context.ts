@@ -1,9 +1,11 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { UserLoadUserBy } from '../model/user';
+import type { DocumentDataLoaders } from '../modules/document/document.dataloader';
 import { UnknownErrorCode } from '../utils/error/error.code';
 export interface RequestContext {
   user?: UserLoadUserBy;
   correlationId?: string;
+  dataLoaders?: DocumentDataLoaders;
 }
 
 // Create typed AsyncLocalStorage
