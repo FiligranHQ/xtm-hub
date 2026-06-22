@@ -19,7 +19,7 @@ COPY ./apps/e2e/tests ./apps/e2e/tests
 # Copy migrations and seeds (these are copied by the CI pipeline before the Docker build)
 COPY ./apps/e2e/migrations ./apps/e2e/migrations
 COPY ./apps/e2e/seeds ./apps/e2e/seeds
-COPY ./apps/e2e/test-utils.ts ./apps/e2e/test-cookie-consent.utils.ts
+COPY ./apps/e2e/test-utils.ts ./apps/e2e/test-utils.ts
 
 WORKDIR /app/apps/e2e
 
