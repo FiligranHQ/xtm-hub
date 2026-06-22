@@ -3,6 +3,10 @@ import { ShareableResourceDetailsLink } from '@/components/service/document/Shar
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
 import { ShareableResourceDetailMetadataItem } from '@/components/service/document/ui/ShareableResourceDetailMetadataItem';
+import {
+  getEntityTypes,
+  ShareableResourceEntityTypes,
+} from '@/components/service/document/ui/ShareableResourceEntityTypes';
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
@@ -88,6 +92,12 @@ const ShareableResourceDetails = ({
           <span>{formatPersonNames(documentData.uploader)}</span>
         </div>
       </ShareableResourceDetailItem>
+      {getEntityTypes(documentData).length > 0 && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.EntityType')}>
+          <ShareableResourceEntityTypes document={documentData} />
+        </ShareableResourceDetailItem>
+      )}
       {isIntegration && (
         <>
           <ShareableResourceDetailItem

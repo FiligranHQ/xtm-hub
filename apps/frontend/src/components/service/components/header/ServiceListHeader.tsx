@@ -12,6 +12,7 @@ import React from 'react';
 
 export enum ServiceListFilterKey {
   Label = 'label',
+  EntityType = 'entity_type',
   IntegrationType = 'integration_type',
   ProductVersion = 'product_version',
   ManagerSupported = 'manager_supported',

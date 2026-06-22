@@ -3,6 +3,10 @@ import {
   CustomDashboardFormValues,
 } from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
 import {
+  CustomViewForm,
+  CustomViewFormValues,
+} from '@/components/service/custom-views/[serviceInstanceId]/CustomViewForm';
+import {
   ConnectorForm,
   ConnectorFormValues,
 } from '@/components/service/integrations/forms/ConnectorForm';
@@ -33,6 +37,7 @@ export type ServiceFormValues =
   | StreamFormValues
   | OpenAEVScenarioFormValues
   | CustomDashboardFormValues
+  | CustomViewFormValues
   | ThirdPartyIntegrationFormValues
   | ConnectorFormValues;
 export type ServiceForm =
@@ -41,5 +46,6 @@ export type ServiceForm =
   | typeof StreamForm
   | typeof OpenaevScenarioForm
   | typeof CustomDashboardForm
+  | typeof CustomViewForm
   | typeof ThirdPartyIntegrationForm
   | typeof ConnectorForm;

@@ -1,3 +1,4 @@
+import { ShareableResourceEntityTypes } from '@/components/service/document/ui/ShareableResourceEntityTypes';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
@@ -45,6 +46,10 @@ export const ShareableResourceCardHeader = ({
             className="z-[2]"
           />
         </div>
+        <ShareableResourceEntityTypes
+          document={document}
+          className="mt-s z-[2]"
+        />
       </div>
     </div>
   );

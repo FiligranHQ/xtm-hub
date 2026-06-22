@@ -34,6 +34,7 @@ export const PublicDocumentListPageLoader = ({
     pageSize,
     search,
     labels,
+    entityTypes,
     integrationTypes,
     deployable,
     verified,
@@ -55,8 +56,11 @@ export const PublicDocumentListPageLoader = ({
       : {
           serviceInstanceSlug: serviceInstanceSlug as
             | ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS
-            | ServiceSlug.OPEN_AEV_SCENARIOS,
+            | ServiceSlug.OPEN_AEV_SCENARIOS
+            | ServiceSlug.OPEN_CTI_PLAYBOOKS
+            | ServiceSlug.OPEN_CTI_CUSTOM_VIEWS,
           labels,
+          entityTypes,
         };
 
   const logicalFilters = useLogicalFiltersFromStorage(params);
@@ -82,6 +86,7 @@ export const PublicDocumentListPageLoader = ({
     serviceInstance,
     search,
     labels,
+    entityTypes,
     integrationTypes,
     deployable,
     verified,

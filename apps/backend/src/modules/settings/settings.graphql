@@ -1,5 +1,6 @@
 enum FeatureFlag {
   DUMMY
+  OPENCTI_CUSTOM_VIEWS
 }
 
 type PlatformProvider {

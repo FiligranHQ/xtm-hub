@@ -5,6 +5,7 @@ import {
   ServiceFormValues,
 } from '@/components/service/components/subscribable-services.types';
 import { CustomDashboardForm } from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardForm';
+import { CustomViewForm } from '@/components/service/custom-views/[serviceInstanceId]/CustomViewForm';
 import {
   DocumentCreateMutation,
   DocumentDeleteMutation,
@@ -39,7 +40,11 @@ import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
-const documentBaseKeys: Array<keyof ServiceFormValues> = [
+type DocumentFormValues = ServiceFormValues & {
+  entity_types?: string[] | null;
+};
+
+const documentBaseKeys: Array<keyof DocumentFormValues> = [
   'name',
   'slug',
   'uploader_id',
@@ -47,10 +52,11 @@ const documentBaseKeys: Array<keyof ServiceFormValues> = [
   'short_description',
   'description',
   'use_cases',
+  'entity_types',
   'active',
 ];
 
-const documentFileKeys: Array<keyof ServiceFormValues> = [
+const documentFileKeys: Array<keyof DocumentFormValues> = [
   'document',
   'logo',
   'images',
@@ -83,12 +89,15 @@ export function useDocumentContext({
   ) => {
     const input = omit(
       {
-        ...pick(values, documentBaseKeys),
+        ...pick(values as DocumentFormValues, documentBaseKeys),
         uploader_id: values?.uploader_id ?? '',
       },
       ['uploader_organization_id']
     );
-    const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
+    const metadata = omit(values as DocumentFormValues, [
+      ...documentBaseKeys,
+      ...documentFileKeys,
+    ]);
     const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);
     const logo = Array.from(values?.logo ?? []).slice(0, 1);
     const images = Array.from(values?.images ?? []);
@@ -168,13 +177,16 @@ export function useDocumentContext({
   ) => {
     const input = omit(
       {
-        ...pick(values, documentBaseKeys),
+        ...pick(values as DocumentFormValues, documentBaseKeys),
         uploader_id: values?.uploader_id ?? '',
       },
       ['slug']
     );
 
-    const metadata = omit(values, [...documentBaseKeys, ...documentFileKeys]);
+    const metadata = omit(values as DocumentFormValues, [
+      ...documentBaseKeys,
+      ...documentFileKeys,
+    ]);
     const sourceDocument = Array.from(values?.document ?? []).slice(0, 1);
     const images = Array.from(values?.images ?? []);
     const [existingImageIds, newImages] = splitExistingAndNewImages(images);
@@ -219,6 +231,7 @@ export function useDocumentContext({
       [ShareableResourceType.OPENCTI_PLAYBOOK]: () => OpenctiPlaybookForm,
       [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
         CustomDashboardForm,
+      [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: () => CustomViewForm,
       [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
         const integrationMapping: Partial<
           Record<IntegrationTypeEnum, ServiceForm>
@@ -245,6 +258,8 @@ export function useDocumentContext({
       [ShareableResourceType.OPENCTI_PLAYBOOK]: () => 'Service.OpenCTIPlaybook',
       [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
         'Service.OpenctiCustomDashboards',
+      [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: () =>
+        'Service.OpenctiCustomViews',
       [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
         const integrationMapping: Partial<Record<IntegrationTypeEnum, string>> =
           {

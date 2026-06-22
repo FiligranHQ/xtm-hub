@@ -28,6 +28,7 @@ enum DocumentMetadataKeyCode {
   playbook_supported
   image_type
   minimum_deployable_version
+  entity_types
 }
 
 type ShareableResource {
@@ -113,6 +114,7 @@ input CreateDocumentInput {
   description: String!
   active: Boolean!
   use_cases: [UseCaseId!]
+  entity_types: [String!]
   uploader_id: UserId!
 }
 
@@ -122,6 +124,7 @@ input UpdateDocumentInput {
   description: String
   active: Boolean
   use_cases: [UseCaseId!]
+  entity_types: [String!]
   uploader_organization_id: OrganizationId
   uploader_id: UserId
 }
