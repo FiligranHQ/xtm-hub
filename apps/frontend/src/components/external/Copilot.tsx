@@ -1,6 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildContext, CopilotUser, getUserKey } from './copilot.utils';
 
 const COPILOT_WIDGET_URL =
@@ -28,10 +28,7 @@ const Copilot = ({ user }: CopilotProps) => {
     [user, pathname]
   );
 
-  const ownerIdRef = useRef<symbol>();
-  if (!ownerIdRef.current) {
-    ownerIdRef.current = Symbol('copilot');
-  }
+  const [ownerId] = useState<symbol>(() => Symbol('copilot'));
 
   const cleanup = useCallback(() => {
     document
@@ -45,10 +42,10 @@ const Copilot = ({ user }: CopilotProps) => {
   }, []);
 
 const initialize = useCallback(() => {
-  if (widgetOwner !== null && widgetOwner !== ownerIdRef.current) {
+  if (widgetOwner !== null && widgetOwner !== ownerId) {
     return;
   }
-  widgetOwner = ownerIdRef.current ?? null;
+  widgetOwner = ownerId;
 
   cleanup();
 
@@ -98,7 +95,7 @@ const initialize = useCallback(() => {
 
 useEffect(() => {
   return () => {
-    if (widgetOwner === ownerIdRef.current) {
+    if (widgetOwner === ownerId) {
       cleanup();
       widgetOwner = null;
     }
