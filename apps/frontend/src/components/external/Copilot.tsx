@@ -58,7 +58,7 @@ const Copilot = ({ user }: CopilotProps) => {
 
     document.head.appendChild(script);
     scriptRef.current = script;
-  }, [cleanup, buildContextFn]);
+  }, [cleanup, buildContextFn, ownerId]);
 
   const updateContext = useCallback(() => {
     const scriptEl =
@@ -100,7 +100,7 @@ const Copilot = ({ user }: CopilotProps) => {
         widgetOwner = null;
       }
     };
-  }, [cleanup]);
+  }, [cleanup, ownerId]);
 
   return null;
 };
