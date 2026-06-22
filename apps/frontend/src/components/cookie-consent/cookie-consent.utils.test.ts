@@ -131,9 +131,12 @@ describe('matchCookiePattern', () => {
 });
 
 describe('parseStoredConsent', () => {
+  it('returns null for null input', () => {
+    expect(parseStoredConsent(null)).toBeNull();
+  });
+
   it.each`
     raw                                                | description
-    ${null}                                            | ${'null input'}
     ${''}                                              | ${'empty string'}
     ${'not-json'}                                      | ${'invalid JSON'}
     ${'{}'}                                            | ${'no fields'}

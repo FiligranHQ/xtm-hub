@@ -1,5 +1,5 @@
 import AppContext from '@/components/AppContext';
-import { CookieConsentProvider } from '@/components/cookie-consent/cookie-consent-provider';
+import { CookieConsentProvider } from '@/components/cookie-consent/CookieConsentProvider';
 import { readServerConsent } from '@/components/cookie-consent/cookie-consent.server';
 import I18nContext from '@/i18n/i18n-context';
 import { getMetadataBase } from '@/utils/metadata';

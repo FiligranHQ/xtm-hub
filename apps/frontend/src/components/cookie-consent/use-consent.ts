@@ -1,4 +1,4 @@
-import { CookieConsentContext } from '@/components/cookie-consent/cookie-consent-provider';
+import { CookieConsentContext } from '@/components/cookie-consent/CookieConsentProvider';
 import { useContext } from 'react';
 
 export const useConsent = () => {

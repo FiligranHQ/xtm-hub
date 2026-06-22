@@ -6,7 +6,6 @@ import {
   type ConsentCategory,
   type ServiceConsent,
 } from '@/components/cookie-consent/cookie-consent.types';
-import { useConsent } from '@/components/cookie-consent/use-consent';
 import {
   acceptAllConsent,
   getAllServices,
@@ -14,6 +13,7 @@ import {
   isCategoryAllowed,
   setCategoryConsent,
 } from '@/components/cookie-consent/cookie-consent.utils';
+import { useConsent } from '@/components/cookie-consent/use-consent';
 import {
   Button,
   Dialog,
@@ -25,7 +25,7 @@ import {
   Switch,
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const VISIBLE_CATEGORIES = CONSENT_CATEGORIES.filter(
   (category) => CONSENT_REGISTRY[category].services.length > 0
@@ -36,12 +36,14 @@ export const CookieConsentPreferences = () => {
   const { consent, isPreferencesOpen, closePreferences, save } = useConsent();
   const [draft, setDraft] = useState<ServiceConsent>(consent);
   const [openDrawers, setOpenDrawers] = useState<Record<string, boolean>>({});
+  const [wasOpen, setWasOpen] = useState(isPreferencesOpen);
 
-  useEffect(() => {
+  if (isPreferencesOpen !== wasOpen) {
+    setWasOpen(isPreferencesOpen);
     if (isPreferencesOpen) {
       setDraft(consent);
     }
-  }, [isPreferencesOpen, consent]);
+  }
 
   const allServices = getAllServices();
   const allGranted =
@@ -70,8 +72,7 @@ export const CookieConsentPreferences = () => {
         if (!open) {
           closePreferences();
         }
-      }}
-    >
+      }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('Title')}</DialogTitle>
@@ -93,7 +94,9 @@ export const CookieConsentPreferences = () => {
           {VISIBLE_CATEGORIES.map((category) => {
             const { required, services } = CONSENT_REGISTRY[category];
             return (
-              <div key={category} className="flex flex-col gap-3">
+              <div
+                key={category}
+                className="flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-medium text-foreground">
@@ -106,8 +109,7 @@ export const CookieConsentPreferences = () => {
                       <button
                         type="button"
                         onClick={() => toggleDrawer(category)}
-                        className="self-start text-sm text-primary underline-offset-4 hover:underline"
-                      >
+                        className="self-start text-sm text-primary underline-offset-4 hover:underline">
                         {t('ManageServices', { count: services.length })}
                       </button>
                     ) : null}
@@ -125,8 +127,7 @@ export const CookieConsentPreferences = () => {
                     {services.map((service) => (
                       <div
                         key={service.id}
-                        className="flex items-start justify-between gap-4"
-                      >
+                        className="flex items-start justify-between gap-4">
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-foreground">
                             {service.name}
@@ -137,8 +138,7 @@ export const CookieConsentPreferences = () => {
                                 href={service.readMoreUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-sm text-primary underline-offset-4 hover:underline"
-                              >
+                                className="text-sm text-primary underline-offset-4 hover:underline">
                                 {t('ReadMore')}
                               </a>
                             ) : null}
@@ -147,8 +147,7 @@ export const CookieConsentPreferences = () => {
                                 href={service.officialWebsiteUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-sm text-primary underline-offset-4 hover:underline"
-                              >
+                                className="text-sm text-primary underline-offset-4 hover:underline">
                                 {t('ViewOfficialWebsite')}
                               </a>
                             ) : null}
@@ -170,7 +169,9 @@ export const CookieConsentPreferences = () => {
         </div>
 
         <DialogFooter>
-          <Button className="text-white" onClick={() => save(draft)}>
+          <Button
+            className="text-white"
+            onClick={() => save(draft)}>
             {t('Save')}
           </Button>
         </DialogFooter>
