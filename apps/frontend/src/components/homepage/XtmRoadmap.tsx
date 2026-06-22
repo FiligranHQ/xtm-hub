@@ -46,10 +46,10 @@ const XtmRoadmap = async ({ locale }: { locale: PublicLocale }) => {
   }));
 
   return (
-    <section className="grid grid-cols-[1fr_1fr_auto] gap-l items-center bg-card border border-primary/30 rounded-lg px-xl py-4">
+    <section className="grid grid-cols-[1fr_1fr] min-[1330px]:grid-cols-[3fr_2fr_auto] gap-l items-center bg-card border border-primary/30 rounded-lg px-xl py-4">
       <div className="flex flex-col gap-l">
         <h2 className="text-2xl leading-tight">{t('Title')}</h2>
-        <p className="text-muted-foreground text-sm xl:text-xs">
+        <p className="text-muted-foreground text-sm min-[1330px]:text-xs">
           {t('Description')}
         </p>
         <div>
@@ -65,11 +65,12 @@ const XtmRoadmap = async ({ locale }: { locale: PublicLocale }) => {
         </div>
       </div>
 
-      <div className="relative h-24 mx-auto w-full rounded-lg overflow-hidden">
+      <div className="hidden min-[1330px]:block relative h-24 mx-auto w-full rounded-lg overflow-hidden">
         <Image
           src="/xtm_roadmap_space.png"
           alt={t('ImageAlt')}
           fill
+          sizes="(max-width: 768px) 100vw, 33vw"
           className="object-contain"
         />
       </div>
