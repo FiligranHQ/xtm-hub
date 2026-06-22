@@ -1,6 +1,6 @@
 'use client';
-import { ManagedScripts } from '@/components/cookie-consent/ManagedScripts';
 import { CookieConsent } from '@/components/cookie-consent/CookieConsent';
+import { ManagedScripts } from '@/components/cookie-consent/ManagedScripts';
 import { APP_PATH } from '@/utils/path/constant';
 import { geologica, ibmPlexSans } from '@app/font';
 import { Toaster } from '@filigran/ui';

@@ -41,24 +41,24 @@ const Copilot = ({ user }: CopilotProps) => {
     scriptRef.current = null;
   }, []);
 
-const initialize = useCallback(() => {
-  if (widgetOwner !== null && widgetOwner !== ownerId) {
-    return;
-  }
-  widgetOwner = ownerId;
+  const initialize = useCallback(() => {
+    if (widgetOwner !== null && widgetOwner !== ownerId) {
+      return;
+    }
+    widgetOwner = ownerId;
 
-  cleanup();
+    cleanup();
 
-  const script = document.createElement('script');
-  script.id = COPILOT_SCRIPT_ID;
-  script.src = COPILOT_WIDGET_URL;
-  script.setAttribute('data-token', COPILOT_TOKEN);
-  script.setAttribute('data-context', buildContextFn());
-  script.async = true;
+    const script = document.createElement('script');
+    script.id = COPILOT_SCRIPT_ID;
+    script.src = COPILOT_WIDGET_URL;
+    script.setAttribute('data-token', COPILOT_TOKEN);
+    script.setAttribute('data-context', buildContextFn());
+    script.async = true;
 
-  document.head.appendChild(script);
-  scriptRef.current = script;
-}, [cleanup, buildContextFn]);
+    document.head.appendChild(script);
+    scriptRef.current = script;
+  }, [cleanup, buildContextFn]);
 
   const updateContext = useCallback(() => {
     const scriptEl =
@@ -93,14 +93,14 @@ const initialize = useCallback(() => {
     }
   }, [pathname, updateContext]);
 
-useEffect(() => {
-  return () => {
-    if (widgetOwner === ownerId) {
-      cleanup();
-      widgetOwner = null;
-    }
-  };
-}, [cleanup]);
+  useEffect(() => {
+    return () => {
+      if (widgetOwner === ownerId) {
+        cleanup();
+        widgetOwner = null;
+      }
+    };
+  }, [cleanup]);
 
   return null;
 };

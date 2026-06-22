@@ -33,7 +33,15 @@ export const CONSENT_REGISTRY: ConsentRegistry = {
       {
         id: 'google-analytics',
         name: 'Google Analytics (GA4)',
-        cookies: ['_ga', '_ga_*', '_gid', '_gat', '_gat_*', '_gcl_au', '_gac_*'],
+        cookies: [
+          '_ga',
+          '_ga_*',
+          '_gid',
+          '_gat',
+          '_gat_*',
+          '_gcl_au',
+          '_gac_*',
+        ],
         readMoreUrl: 'https://filigran.io/privacy-policy/',
         officialWebsiteUrl: 'https://support.google.com/analytics',
       },

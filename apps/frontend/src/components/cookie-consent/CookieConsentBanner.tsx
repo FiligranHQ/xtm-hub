@@ -56,14 +56,12 @@ export const CookieConsentBanner = () => {
     <div
       role="region"
       aria-labelledby="cookie-consent-banner-title"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background p-4 shadow-lg sm:p-6"
-    >
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background p-4 shadow-lg sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 flex-col gap-1 text-left">
           <h2
             id="cookie-consent-banner-title"
-            className="text-base font-semibold text-foreground"
-          >
+            className="text-base font-semibold text-foreground">
             {t('Title')}
           </h2>
           <p className="text-sm text-muted-foreground">{t('BannerText')}</p>
@@ -73,15 +71,13 @@ export const CookieConsentBanner = () => {
           <Button
             variant="outline"
             className="text-primary"
-            onClick={rejectAll}
-          >
+            onClick={rejectAll}>
             {t('RejectAll')}
           </Button>
           <Button
             variant="outline"
             className="text-primary"
-            onClick={openPreferences}
-          >
+            onClick={openPreferences}>
             {t('CookieSettings')}
           </Button>
         </div>

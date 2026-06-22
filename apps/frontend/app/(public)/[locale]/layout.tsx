@@ -1,3 +1,4 @@
+import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
 import Copilot from '@/components/external/Copilot';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
@@ -12,7 +13,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import * as React from 'react';
-import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
 
 export function generateStaticParams() {
   return publicLocales.map((locale) => ({ locale }));
