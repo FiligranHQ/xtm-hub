@@ -56,31 +56,52 @@ export const DocumentChildrenDomain = {
     return children.map(({ child_document_id }) => child_document_id);
   },
 
-  loadChildrenDocuments: async (
-    documentId: string,
-    include_metadata: DocumentMetadataKeyCode[] = []
-  ): Promise<Document[]> => {
+  buildChildrenDocumentsQuery: <T extends object = Document>(
+    parentIds: string[],
+    options: {
+      isDataLoader?: boolean;
+      includeMetadata?: DocumentMetadataKeyCode[];
+    } = {}
+  ) => {
+    const { isDataLoader = false, includeMetadata = [] } = options;
     const context = requestContext.get();
-    const query = db<Document>('Document_Children')
+    const query = db<T>('Document_Children')
       .leftJoin(
         'Document',
         'Document.id',
         'Document_Children.child_document_id'
       )
-      .where('Document_Children.parent_document_id', '=', documentId)
+      .whereIn('Document_Children.parent_document_id', parentIds)
       .modify((qb) => {
-        // No restriction when unauthenticated: parent query enforces public-only boundary
         if (context?.user) {
           restrictDocumentToUserOrganization(qb);
         }
       })
       .orderBy('created_at', 'asc')
-      .select('Document.*')
       .groupBy('Document.id');
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
+    if (isDataLoader) {
+      query
+        .select(
+          'Document.*',
+          'Document_Children.parent_document_id as _parent_id'
+        )
+        .groupBy('Document_Children.parent_document_id');
+    } else {
+      query.select('Document.*');
+    }
 
+    DocumentMetadataDomain.addIncludeMetadataQuery(query, includeMetadata);
     return query;
+  },
+
+  loadChildrenDocuments: async (
+    documentId: string,
+    include_metadata: DocumentMetadataKeyCode[] = []
+  ): Promise<Document[]> => {
+    return DocumentChildrenDomain.buildChildrenDocumentsQuery([documentId], {
+      includeMetadata: include_metadata,
+    });
   },
 
   deleteChildrenByParent: async (parentDocumentId: DocumentId) => {
@@ -121,25 +142,44 @@ export const DocumentChildrenDomain = {
     );
   },
 
-  loadImagesByDocumentId: async (documentId: string) => {
-    const query = db<Document>('Document')
-      .select(['Document.*'])
+  buildImagesByDocumentIdQuery: <T extends object = Document>(
+    parentIds: string[],
+    options: { isDataLoader?: boolean } = {}
+  ) => {
+    const { isDataLoader = false } = options;
+    const query = db<T>('Document')
       .join(
         'Document_Children',
         'Document.id',
         '=',
         'Document_Children.child_document_id'
       )
-      .where('Document_Children.parent_document_id', '=', documentId)
+      .whereIn('Document_Children.parent_document_id', parentIds)
       .where('Document.mime_type', 'like', 'image/%')
       .groupBy('Document.id');
+
+    if (isDataLoader) {
+      query
+        .select(
+          'Document.*',
+          'Document_Children.parent_document_id as _parent_id'
+        )
+        .groupBy('Document_Children.parent_document_id');
+    } else {
+      query.select('Document.*');
+    }
 
     DocumentMetadataDomain.addIncludeMetadataQuery(
       query,
       DOCUMENT_IMAGE_METADATA_KEYS
     );
+    return query;
+  },
 
-    const images = await query;
+  loadImagesByDocumentId: async (documentId: string) => {
+    const images = await DocumentChildrenDomain.buildImagesByDocumentIdQuery([
+      documentId,
+    ]);
 
     for (const image of images) {
       image.id = toGlobalId('Document', image.id);

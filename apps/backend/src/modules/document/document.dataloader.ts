@@ -1,17 +1,16 @@
 import DataLoader from 'dataloader';
 import { toGlobalId } from 'graphql-relay/node/node.js';
-import { db } from '../../../knexfile';
 import {
-  DocumentMetadataKeyCode,
   IntegrationType,
   Organization,
 } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
 import UseCase from '../../model/kanel/public/UseCase';
 import User from '../../model/kanel/public/User';
-import { restrictDocumentToUserOrganization } from '../../security/restriction/document';
-import { Document } from './document.helper';
+import { useCaseDomain } from '../use-case/use-case.domain';
+import { Document, WithDocumentId, WithParentId } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
+import { DocumentChildrenDomain } from './domain/document.children.domain';
+import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 export interface DocumentDataLoaders {
@@ -27,14 +26,11 @@ export const DocumentDataLoader = {
   batchLoadUploaders: async (
     ids: readonly string[]
   ): Promise<(User | null)[]> => {
-    type Row = User & { _document_id: string };
-    const rows = await db<Row>('User')
-      .leftJoin('Document', 'Document.uploader_id', 'User.id')
-      .whereIn('Document.id', ids)
-      .select('User.*', 'Document.id as _document_id');
+    const rows: WithDocumentId<User>[] =
+      await DocumentDomain.buildUploaderQuery([...ids]);
 
     const map = new Map<string, User>(
-      rows.map((row: Row) => [row._document_id, row])
+      rows.map((row) => [row._document_id, row])
     );
     return ids.map((id) => map.get(id) ?? null);
   },
@@ -42,18 +38,11 @@ export const DocumentDataLoader = {
   batchLoadUploaderOrganizations: async (
     ids: readonly string[]
   ): Promise<(Organization | null)[]> => {
-    type Row = Organization & { _document_id: string };
-    const rows = await db<Row>('Organization')
-      .leftJoin(
-        'Document',
-        'Document.uploader_organization_id',
-        'Organization.id'
-      )
-      .whereIn('Document.id', ids)
-      .select('Organization.*', 'Document.id as _document_id');
+    const rows: WithDocumentId<Organization>[] =
+      await DocumentDomain.buildUploaderOrganizationQuery([...ids]);
 
     const map = new Map<string, Organization>(
-      rows.map((row: Row) => [row._document_id, row])
+      rows.map((row) => [row._document_id, row])
     );
     return ids.map((id) => map.get(id) ?? null);
   },
@@ -61,33 +50,13 @@ export const DocumentDataLoader = {
   batchLoadChildrenDocuments: async (
     ids: readonly string[]
   ): Promise<Document[][]> => {
-    type Row = Document & { _parent_id: string };
-    const context = requestContext.get();
-    const query = db<Row>('Document_Children')
-      .leftJoin(
-        'Document',
-        'Document.id',
-        'Document_Children.child_document_id'
-      )
-      .whereIn('Document_Children.parent_document_id', ids)
-      .modify((qb) => {
-        if (context?.user) {
-          restrictDocumentToUserOrganization(qb);
-        }
-      })
-      .orderBy('created_at', 'asc')
-      .select(
-        'Document.*',
-        'Document_Children.parent_document_id as _parent_id'
-      )
-      .groupBy('Document.id', 'Document_Children.parent_document_id');
-
-    DocumentMetadataDomain.addIncludeMetadataQuery(
-      query,
-      DOCUMENT_IMAGE_METADATA_KEYS
-    );
-
-    const rows: Row[] = await query;
+    const rows: WithParentId<Document>[] =
+      await DocumentChildrenDomain.buildChildrenDocumentsQuery<
+        WithParentId<Document>
+      >([...ids], {
+        isDataLoader: true,
+        includeMetadata: DOCUMENT_IMAGE_METADATA_KEYS,
+      });
 
     const map = new Map<string, Document[]>();
     for (const row of rows) {
@@ -101,28 +70,12 @@ export const DocumentDataLoader = {
   batchLoadImagesByDocumentId: async (
     ids: readonly string[]
   ): Promise<Document[][]> => {
-    type Row = Document & { _parent_id: string };
-    const query = db<Row>('Document')
-      .select(
-        'Document.*',
-        'Document_Children.parent_document_id as _parent_id'
-      )
-      .join(
-        'Document_Children',
-        'Document.id',
-        '=',
-        'Document_Children.child_document_id'
-      )
-      .whereIn('Document_Children.parent_document_id', ids)
-      .where('Document.mime_type', 'like', 'image/%')
-      .groupBy('Document.id', 'Document_Children.parent_document_id');
-
-    DocumentMetadataDomain.addIncludeMetadataQuery(
-      query,
-      DOCUMENT_IMAGE_METADATA_KEYS
-    );
-
-    const rows: Row[] = await query;
+    const rows: WithParentId<Document>[] =
+      await DocumentChildrenDomain.buildImagesByDocumentIdQuery<
+        WithParentId<Document>
+      >([...ids], {
+        isDataLoader: true,
+      });
 
     const map = new Map<string, Document[]>();
     for (const row of rows) {
@@ -140,11 +93,8 @@ export const DocumentDataLoader = {
   batchLoadUseCasesByDocumentId: async (
     ids: readonly string[]
   ): Promise<UseCase[][]> => {
-    type Row = UseCase & { _document_id: string };
-    const rows: Row[] = await db<Row>('UseCase')
-      .leftJoin('Object_UseCase as ouc', 'ouc.use_case_id', 'UseCase.id')
-      .whereIn('ouc.object_id', ids)
-      .select('UseCase.*', 'ouc.object_id as _document_id');
+    const rows: WithDocumentId<UseCase>[] =
+      await useCaseDomain.buildUseCasesByDocumentIdQuery([...ids]);
 
     const map = new Map<string, UseCase[]>();
     for (const row of rows) {
@@ -158,14 +108,13 @@ export const DocumentDataLoader = {
   batchLoadIntegrationTypes: async (
     ids: readonly string[]
   ): Promise<(IntegrationType | null)[]> => {
-    type Row = { document_id: string; value: string };
-    const rows: Row[] = await db<Row>('Document_Metadata')
-      .select('document_id', 'value')
-      .whereIn('document_id', ids)
-      .where('key', DocumentMetadataKeyCode.IntegrationType);
+    type Row = { document_id: string; value: IntegrationType };
+    const rows: Row[] = await DocumentMetadataDomain.buildIntegrationTypeQuery([
+      ...ids,
+    ]);
 
     const map = new Map<string, IntegrationType>(
-      rows.map((row: Row) => [row.document_id, row.value as IntegrationType])
+      rows.map((row) => [row.document_id, row.value])
     );
     return ids.map((id) => map.get(id) ?? null);
   },

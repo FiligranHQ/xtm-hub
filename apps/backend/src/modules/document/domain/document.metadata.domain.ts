@@ -100,18 +100,22 @@ export const DocumentMetadataDomain = {
     return metadata?.value ?? null;
   },
 
+  buildIntegrationTypeQuery: (documentIds: string[]) => {
+    return db<{ document_id: string; value: IntegrationType }>(
+      'Document_Metadata'
+    )
+      .select('document_id', 'value')
+      .whereIn('document_id', documentIds)
+      .where('key', DocumentMetadataKeyCode.IntegrationType);
+  },
+
   loadIntegrationType: async (
     document_id: string
   ): Promise<IntegrationType | null> => {
-    const doc = await db('Document_Metadata')
-      .select('value')
-      .where({
-        key: DocumentMetadataKeyCode.IntegrationType,
-        document_id,
-      })
-      .first();
-
-    return doc?.value ?? null;
+    const rows = await DocumentMetadataDomain.buildIntegrationTypeQuery([
+      document_id,
+    ]);
+    return rows[0]?.value ?? null;
   },
 
   deleteMetadata: async ({
