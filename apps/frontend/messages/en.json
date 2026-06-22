@@ -332,6 +332,7 @@
     "NotFound": "404 | This page could not be found"
   },
   "PublicLayout": {
+    "Documentation": "XTM Hub documentation",
     "SignIn": "Sign In",
     "AllRightsReserved": "All rights reserved",
     "FiligranWebsite": "Filigran website",

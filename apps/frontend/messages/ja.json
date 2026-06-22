@@ -307,12 +307,32 @@
     "OpenManagement": "管理ページへ"
   },
   "PublicHomePage": {
-    "Title": "リソースと専門知識の発見"
+    "Title": "リソースと専門知識の発見",
+    "XtmPlatform": {
+      "Label": "XTM Hubへようこそ",
+      "Title": "XTM Platformの機能拡張とスケールアップ",
+      "Description": "OpenCTIまたはOpenAEVプラットフォームを登録すると、ワンクリックで事前構築済みのコンテンツを展開したり、製品ニュースフィードで最新情報を入手したり、無料トライアルを開始したり、XTM Platformをさらに活用したりすることができます。",
+      "Cta": "製品を連携する",
+      "ImageAlt": "XTM Platformの図解"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "最も多く導入されているリソース"
+    },
+    "XtmRoadmap": {
+      "Title": "XTM Platformのロードマップ",
+      "Description": "現在開発中の機能、今後の予定、そしてXTM Platformの将来像をご覧ください。完全な透明性を確保し、予期せぬ事態は発生しません。",
+      "SeeMore": "詳細を見る",
+      "ImageAlt": "XTM Platformロードマップの宇宙イラスト",
+      "Now": "現在",
+      "Next": "次",
+      "UnderConsideration": "検討中"
+    }
   },
   "PublicPathError": {
     "NotFound": "404 | このページは見つかりませんでした"
   },
   "PublicLayout": {
+    "Documentation": "XTM Hubのドキュメント",
     "SignIn": "サインイン",
     "AllRightsReserved": "無断複写・転載を禁じます",
     "FiligranWebsite": "Filigranウェブサイト",

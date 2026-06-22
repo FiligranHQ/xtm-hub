@@ -307,12 +307,32 @@
     "OpenManagement": "Aller vers la page de management"
   },
   "PublicHomePage": {
-    "Title": "Découvrez nos ressources et notre expertise"
+    "Title": "Découvrez nos ressources et notre expertise",
+    "XtmPlatform": {
+      "Label": "Bienvenue sur XTM Hub",
+      "Title": "Développez et faites évoluer votre plateforme XTM",
+      "Description": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
+      "Cta": "Connectez votre produit",
+      "ImageAlt": "Illustration de la plateforme XTM"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "Ressources les plus déployées"
+    },
+    "XtmRoadmap": {
+      "Title": "Feuille de route de la plateforme XTM",
+      "Description": "Découvrez ce que nous développons, les prochaines étapes et l’orientation future de la plateforme XTM. Transparence totale. Pas de surprises.",
+      "SeeMore": "En savoir plus",
+      "ImageAlt": "Illustration de la feuille de route de la plateforme XTM",
+      "Now": "Actuellement",
+      "Next": "Prochainement",
+      "UnderConsideration": "À l’étude"
+    }
   },
   "PublicPathError": {
     "NotFound": "404 | Cette page est introuvable"
   },
   "PublicLayout": {
+    "Documentation": "Documentation du Hub XTM",
     "SignIn": "Connexion",
     "AllRightsReserved": "Tous droits réservés",
     "FiligranWebsite": "Site Filigran",
