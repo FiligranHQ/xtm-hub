@@ -7,6 +7,7 @@ const COPILOT_WIDGET_URL =
   'https://copilot.filigran.ai/api/v1/public/widget.js';
 const COPILOT_TOKEN = 'jNJu1JTbbPwNqk1tqEOw-WjsKU4dEcgn';
 const COPILOT_SCRIPT_ID = 'filigran-copilot-widget';
+let widgetOwner: symbol | null = null;
 
 interface CopilotProps {
   user?: CopilotUser | null | undefined;
@@ -27,35 +28,40 @@ const Copilot = ({ user }: CopilotProps) => {
     [user, pathname]
   );
 
-  const cleanup = useCallback(() => {
-    if (scriptRef.current) {
-      try {
-        scriptRef.current.remove();
-      } catch (_e) {}
-      scriptRef.current = null;
-    }
+  const ownerIdRef = useRef<symbol>();
+  if (!ownerIdRef.current) {
+    ownerIdRef.current = Symbol('copilot');
+  }
 
-    const existing = document.getElementById(COPILOT_SCRIPT_ID);
-    if (existing) {
-      try {
-        existing.remove();
-      } catch (_e) {}
-    }
+  const cleanup = useCallback(() => {
+    document
+      .querySelectorAll<HTMLElement>(`#${COPILOT_SCRIPT_ID}`)
+      .forEach((el) => {
+        try {
+          el.remove();
+        } catch (_e) {}
+      });
+    scriptRef.current = null;
   }, []);
 
-  const initialize = useCallback(() => {
-    cleanup();
+const initialize = useCallback(() => {
+  if (widgetOwner !== null && widgetOwner !== ownerIdRef.current) {
+    return;
+  }
+  widgetOwner = ownerIdRef.current ?? null;
 
-    const script = document.createElement('script');
-    script.id = COPILOT_SCRIPT_ID;
-    script.src = COPILOT_WIDGET_URL;
-    script.setAttribute('data-token', COPILOT_TOKEN);
-    script.setAttribute('data-context', buildContextFn());
-    script.async = true;
+  cleanup();
 
-    document.head.appendChild(script);
-    scriptRef.current = script;
-  }, [cleanup, buildContextFn]);
+  const script = document.createElement('script');
+  script.id = COPILOT_SCRIPT_ID;
+  script.src = COPILOT_WIDGET_URL;
+  script.setAttribute('data-token', COPILOT_TOKEN);
+  script.setAttribute('data-context', buildContextFn());
+  script.async = true;
+
+  document.head.appendChild(script);
+  scriptRef.current = script;
+}, [cleanup, buildContextFn]);
 
   const updateContext = useCallback(() => {
     const scriptEl =
@@ -90,12 +96,14 @@ const Copilot = ({ user }: CopilotProps) => {
     }
   }, [pathname, updateContext]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
+useEffect(() => {
+  return () => {
+    if (widgetOwner === ownerIdRef.current) {
       cleanup();
-    };
-  }, [cleanup]);
+      widgetOwner = null;
+    }
+  };
+}, [cleanup]);
 
   return null;
 };
