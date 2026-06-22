@@ -28,9 +28,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 const VISIBLE_CATEGORIES = CONSENT_CATEGORIES.filter(
-  (category) =>
-    CONSENT_REGISTRY[category].required ||
-    CONSENT_REGISTRY[category].services.length > 0
+  (category) => CONSENT_REGISTRY[category].services.length > 0
 );
 
 export const CookieConsentPreferences = () => {
@@ -77,7 +75,7 @@ export const CookieConsentPreferences = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('Title')}</DialogTitle>
-          <DialogDescription>{t('BannerText')}</DialogDescription>
+          <DialogDescription>{t('PreferencesIntro')}</DialogDescription>
         </DialogHeader>
 
         <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
@@ -172,7 +170,9 @@ export const CookieConsentPreferences = () => {
         </div>
 
         <DialogFooter>
-          <Button onClick={() => save(draft)}>{t('Save')}</Button>
+          <Button className="text-white" onClick={() => save(draft)}>
+            {t('Save')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

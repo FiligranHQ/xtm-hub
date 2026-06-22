@@ -31,6 +31,7 @@
     "RejectAll": "Tout refuser",
     "CookieSettings": "Paramètres des cookies",
     "Save": "Enregistrer mes choix",
+    "PreferencesIntro": "En autorisant ces services tiers, vous acceptez leurs cookies ainsi que l'utilisation des technologies de suivi nécessaires à leur bon fonctionnement.",
     "CookieSettingsLink": "Paramètres des cookies",
     "PreferenceForAllServices": "Préférence pour tous les services",
     "ManageServices": "Gérer les services ({count})",

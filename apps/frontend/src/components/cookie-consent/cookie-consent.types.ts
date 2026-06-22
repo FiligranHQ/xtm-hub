@@ -1,8 +1,8 @@
 export const CONSENT_CATEGORIES = [
   'necessary',
   'functional',
-  'analytics',
   'marketing',
+  'analytics',
 ] as const;
 
 export type ConsentCategory = (typeof CONSENT_CATEGORIES)[number];

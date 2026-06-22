@@ -15,16 +15,6 @@ export const CONSENT_REGISTRY: ConsentRegistry = {
     required: false,
     services: [],
   },
-  analytics: {
-    required: false,
-    services: [
-      {
-        id: 'google-analytics',
-        name: 'Google Analytics (GA4)',
-        cookies: ['_ga', '_ga_*', '_gid'],
-      },
-    ],
-  },
   marketing: {
     required: false,
     services: [
@@ -32,6 +22,20 @@ export const CONSENT_REGISTRY: ConsentRegistry = {
         id: 'hubspot',
         name: 'HubSpot',
         cookies: ['__hstc', '__hssc', '__hssrc', 'hubspotutk'],
+        readMoreUrl: 'https://filigran.io/privacy-policy/',
+        officialWebsiteUrl: 'https://filigran.io/privacy-policy/',
+      },
+    ],
+  },
+  analytics: {
+    required: false,
+    services: [
+      {
+        id: 'google-analytics',
+        name: 'Google Analytics (GA4)',
+        cookies: ['_ga', '_ga_*', '_gid'],
+        readMoreUrl: 'https://filigran.io/privacy-policy/',
+        officialWebsiteUrl: 'https://support.google.com/analytics',
       },
     ],
   },
