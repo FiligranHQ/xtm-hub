@@ -12,6 +12,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import * as React from 'react';
+import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
 
 export function generateStaticParams() {
   return publicLocales.map((locale) => ({ locale }));
@@ -85,6 +86,9 @@ const RootLayout = async ({
                   href="https://filigran.io/privacy-policy/">
                   {t('PublicLayout.PrivacyPolicy')}
                 </Link>
+              </li>
+              <li>
+                <CookieSettingsLink />
               </li>
               <li>
                 <Link

@@ -106,7 +106,7 @@ describe('getRevokedServices', () => {
 describe('getCookiePatternsToPurge', () => {
   it.each`
     revoked                 | expected
-    ${['google-analytics']} | ${['_ga', '_ga_*', '_gid']}
+    ${['google-analytics']} | ${['_ga', '_ga_*', '_gid', '_gat', '_gat_*', '_gcl_au', '_gac_*']}
     ${['hubspot']}          | ${['__hstc', '__hssc', '__hssrc', 'hubspotutk']}
     ${[]}                   | ${[]}
   `('collects cookies for $revoked', ({ revoked, expected }) => {

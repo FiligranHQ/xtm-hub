@@ -7,7 +7,8 @@ import { useEffect } from 'react';
 
 const COPILOT_HOST_SELECTOR = 'div#filigran-copilot-widget';
 const COPILOT_STYLE_ID = 'xtmhub-copilot-offset';
-const COPILOT_OFFSET = '180px';
+const COPILOT_OFFSET = '130px';
+const COPILOT_POLL_MS = 300;
 
 export const CookieConsentBanner = () => {
   const t = useTranslations('CookieConsent');
@@ -18,55 +19,32 @@ export const CookieConsentBanner = () => {
       return;
     }
 
-    const injectedStyles: HTMLStyleElement[] = [];
-    let bodyObserver: MutationObserver | undefined;
-
-    const injectInto = (host: HTMLElement): boolean => {
-      const root = host.shadowRoot;
-      if (!root) {
-        return false;
-      }
-      if (root.getElementById(COPILOT_STYLE_ID)) {
-        return true;
-      }
-      const style = document.createElement('style');
-      style.id = COPILOT_STYLE_ID;
-      // `!important` outranks the widget's own rule AND its entrance animation
-      // in the CSS cascade, so the button reliably sits above the banner.
-      style.textContent = `.fc-btn { bottom: ${COPILOT_OFFSET} !important; }`;
-      root.appendChild(style);
-      injectedStyles.push(style);
-      return true;
-    };
-
-    const start = (): boolean => {
+    const ensureOffset = () => {
       const hosts = document.querySelectorAll<HTMLElement>(
         COPILOT_HOST_SELECTOR
       );
-      if (hosts.length === 0) {
-        return false;
-      }
-      let injected = false;
       hosts.forEach((host) => {
-        if (injectInto(host)) {
-          injected = true;
+        const root = host.shadowRoot;
+        if (!root || root.getElementById(COPILOT_STYLE_ID)) {
+          return;
         }
+        const style = document.createElement('style');
+        style.id = COPILOT_STYLE_ID;
+        style.textContent = `.fc-btn { bottom: ${COPILOT_OFFSET} !important; }`;
+        root.appendChild(style);
       });
-      return injected;
     };
 
-    if (!start()) {
-      bodyObserver = new MutationObserver(() => {
-        if (start()) {
-          bodyObserver?.disconnect();
-        }
-      });
-      bodyObserver.observe(document.body, { childList: true, subtree: true });
-    }
+    ensureOffset();
+    const interval = window.setInterval(ensureOffset, COPILOT_POLL_MS);
 
     return () => {
-      bodyObserver?.disconnect();
-      injectedStyles.forEach((style) => style.remove());
+      window.clearInterval(interval);
+      document
+        .querySelectorAll<HTMLElement>(COPILOT_HOST_SELECTOR)
+        .forEach((host) => {
+          host.shadowRoot?.getElementById(COPILOT_STYLE_ID)?.remove();
+        });
     };
   }, [showBanner]);
 
