@@ -123,6 +123,13 @@ export const UserDomain = {
     return db<User>('User').where(field).first();
   },
 
+  loadUserPictureMinio: async (userId: string): Promise<string | null> => {
+    const [user] = await db<User>('User')
+      .where('id', userId)
+      .select('picture_minio');
+    return user?.picture_minio ?? null;
+  },
+
   loadUserBy: async (
     field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
   ): Promise<UserLoadUserBy | undefined> => {

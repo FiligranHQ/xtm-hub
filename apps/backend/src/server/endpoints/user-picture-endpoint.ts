@@ -2,8 +2,7 @@ import cors from 'cors';
 import { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { Readable } from 'stream';
-import { db } from '../../../knexfile';
-import User from '../../model/kanel/public/User';
+import { UserDomain } from '../../modules/organization-management/user/user-domain/user.domain';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 
@@ -23,16 +22,16 @@ export const getUserPicture = async (
   res: Response
 ): Promise<void> => {
   try {
-    const [user] = await db<User>('User')
-      .where('id', req.params.userId)
-      .select('picture_minio');
+    const pictureMinio = await UserDomain.loadUserPictureMinio(
+      req.params.userId as string
+    );
 
-    if (!user?.picture_minio) {
+    if (!pictureMinio) {
       res.status(404).json({ message: 'No picture found' });
       return;
     }
 
-    const body = await MinIOClient.downloadFile(user.picture_minio);
+    const body = await MinIOClient.downloadFile(pictureMinio);
 
     if (!body) {
       res.status(404).json({ message: 'Picture not found' });

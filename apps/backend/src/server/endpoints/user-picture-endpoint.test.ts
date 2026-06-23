@@ -1,30 +1,27 @@
 import type { Request, Response } from 'express';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { dbMock, downloadFileMock } = vi.hoisted(() => ({
-  dbMock: vi.fn(),
+const { loadUserPictureMinioMock, downloadFileMock } = vi.hoisted(() => ({
+  loadUserPictureMinioMock: vi.fn(),
   downloadFileMock: vi.fn(),
 }));
 
-vi.mock('../../../knexfile', () => ({ db: dbMock }));
+vi.mock(
+  '../../modules/organization-management/user/user-domain/user.domain',
+  () => ({
+    UserDomain: { loadUserPictureMinio: loadUserPictureMinioMock },
+  })
+);
 vi.mock('../../thirdparty/minio/client', () => ({
   MinIOClient: { downloadFile: downloadFileMock },
 }));
 vi.mock('../../utils/app-logger.util', () => ({
-  logApp: { error: vi.fn() },
+  logApp: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
 }));
 
 import { getUserPicture } from './user-picture-endpoint';
 
 const CACHE_CONTROL = 'public, max-age=2592000, immutable';
-
-const mockDbResult = (rows: { picture_minio: string | null }[]) => {
-  const builder = {
-    where: vi.fn(() => builder),
-    select: vi.fn(() => Promise.resolve(rows)),
-  };
-  dbMock.mockReturnValue(builder);
-};
 
 const buildResponse = () => ({
   headersSent: false,
@@ -44,7 +41,7 @@ describe('getUserPicture', () => {
   });
 
   it('sets an immutable Cache-Control header on a successful response', async () => {
-    mockDbResult([{ picture_minio: 'picture/abc' }]);
+    loadUserPictureMinioMock.mockResolvedValue('picture/abc');
     downloadFileMock.mockResolvedValue({ on: vi.fn(), pipe: vi.fn() });
 
     const res = buildResponse();
@@ -54,7 +51,7 @@ describe('getUserPicture', () => {
   });
 
   it('returns 404 and no cache header when the user has no picture', async () => {
-    mockDbResult([]);
+    loadUserPictureMinioMock.mockResolvedValue(null);
 
     const res = buildResponse();
     await getUserPicture(buildRequest('user-1'), res as unknown as Response);
@@ -64,7 +61,7 @@ describe('getUserPicture', () => {
   });
 
   it('returns 404 and no cache header when the MinIO download fails', async () => {
-    mockDbResult([{ picture_minio: 'picture/abc' }]);
+    loadUserPictureMinioMock.mockResolvedValue('picture/abc');
     downloadFileMock.mockResolvedValue(null);
 
     const res = buildResponse();
@@ -75,7 +72,7 @@ describe('getUserPicture', () => {
   });
 
   it('removes the cache header before a 404 when the stream errors early', async () => {
-    mockDbResult([{ picture_minio: 'picture/abc' }]);
+    loadUserPictureMinioMock.mockResolvedValue('picture/abc');
     let onError: (error: Error) => void = () => undefined;
     downloadFileMock.mockResolvedValue({
       on: vi.fn((event: string, cb: (error: Error) => void) => {
