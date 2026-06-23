@@ -55,7 +55,7 @@ export const useCaseDomain = {
     );
   },
 
-  buildUseCasesByDocumentIdQuery: (documentIds: string[]) => {
+  buildUseCasesByDocumentIdQuery: (documentIds: readonly string[]) => {
     return db<WithDocumentId<UseCase>>('UseCase')
       .leftJoin('Object_UseCase as ouc', 'ouc.use_case_id', 'UseCase.id')
       .whereIn('ouc.object_id', documentIds)

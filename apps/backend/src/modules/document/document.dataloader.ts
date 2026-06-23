@@ -27,7 +27,7 @@ export const DocumentDataLoader = {
     ids: readonly string[]
   ): Promise<(User | null)[]> => {
     const rows: WithDocumentId<User>[] =
-      await DocumentDomain.buildUploaderQuery([...ids]);
+      await DocumentDomain.buildUploaderQuery(ids);
 
     const map = new Map<string, User>(
       rows.map((row) => [row._document_id, row])
@@ -39,7 +39,7 @@ export const DocumentDataLoader = {
     ids: readonly string[]
   ): Promise<(Organization | null)[]> => {
     const rows: WithDocumentId<Organization>[] =
-      await DocumentDomain.buildUploaderOrganizationQuery([...ids]);
+      await DocumentDomain.buildUploaderOrganizationQuery(ids);
 
     const map = new Map<string, Organization>(
       rows.map((row) => [row._document_id, row])
@@ -53,7 +53,7 @@ export const DocumentDataLoader = {
     const rows: WithParentId<Document>[] =
       await DocumentChildrenDomain.buildChildrenDocumentsQuery<
         WithParentId<Document>
-      >([...ids], {
+      >(ids, {
         isDataLoader: true,
         includeMetadata: DOCUMENT_IMAGE_METADATA_KEYS,
       });
@@ -73,7 +73,7 @@ export const DocumentDataLoader = {
     const rows: WithParentId<Document>[] =
       await DocumentChildrenDomain.buildImagesByDocumentIdQuery<
         WithParentId<Document>
-      >([...ids], {
+      >(ids, {
         isDataLoader: true,
       });
 
@@ -94,7 +94,7 @@ export const DocumentDataLoader = {
     ids: readonly string[]
   ): Promise<UseCase[][]> => {
     const rows: WithDocumentId<UseCase>[] =
-      await useCaseDomain.buildUseCasesByDocumentIdQuery([...ids]);
+      await useCaseDomain.buildUseCasesByDocumentIdQuery(ids);
 
     const map = new Map<string, UseCase[]>();
     for (const row of rows) {
@@ -109,9 +109,8 @@ export const DocumentDataLoader = {
     ids: readonly string[]
   ): Promise<(IntegrationType | null)[]> => {
     type Row = { document_id: string; value: IntegrationType };
-    const rows: Row[] = await DocumentMetadataDomain.buildIntegrationTypeQuery([
-      ...ids,
-    ]);
+    const rows: Row[] =
+      await DocumentMetadataDomain.buildIntegrationTypeQuery(ids);
 
     const map = new Map<string, IntegrationType>(
       rows.map((row) => [row.document_id, row.value])

@@ -57,7 +57,7 @@ export const DocumentChildrenDomain = {
   },
 
   buildChildrenDocumentsQuery: <T extends object = Document>(
-    parentIds: string[],
+    parentIds: readonly string[],
     options: {
       isDataLoader?: boolean;
       includeMetadata?: DocumentMetadataKeyCode[];
@@ -143,7 +143,7 @@ export const DocumentChildrenDomain = {
   },
 
   buildImagesByDocumentIdQuery: <T extends object = Document>(
-    parentIds: string[],
+    parentIds: readonly string[],
     options: { isDataLoader?: boolean } = {}
   ) => {
     const { isDataLoader = false } = options;

@@ -100,7 +100,7 @@ export const DocumentMetadataDomain = {
     return metadata?.value ?? null;
   },
 
-  buildIntegrationTypeQuery: (documentIds: string[]) => {
+  buildIntegrationTypeQuery: (documentIds: readonly string[]) => {
     return db<{ document_id: string; value: IntegrationType }>(
       'Document_Metadata'
     )

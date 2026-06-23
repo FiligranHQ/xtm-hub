@@ -120,19 +120,21 @@ export const DocumentDomain = {
     return docQuery;
   },
 
-  buildUploaderQuery: (documentIds: string[]) => {
+  buildUploaderQuery: (documentIds: readonly string[]) => {
     return db<WithDocumentId<User>>('User')
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
       .whereIn('Document.id', documentIds)
       .select('User.*', 'Document.id as _document_id');
   },
 
-  loadUploader: async (documentId: string): Promise<User | undefined> => {
+  loadUploader: async (
+    documentId: string
+  ): Promise<WithDocumentId<User> | undefined> => {
     const rows = await DocumentDomain.buildUploaderQuery([documentId]);
     return rows[0];
   },
 
-  buildUploaderOrganizationQuery: (documentIds: string[]) => {
+  buildUploaderOrganizationQuery: (documentIds: readonly string[]) => {
     return db<WithDocumentId<Organization>>('Organization')
       .leftJoin(
         'Document',
@@ -145,7 +147,7 @@ export const DocumentDomain = {
 
   loadUploaderOrganization: async (
     documentId: string
-  ): Promise<Organization | undefined> => {
+  ): Promise<WithDocumentId<Organization> | undefined> => {
     const rows = await DocumentDomain.buildUploaderOrganizationQuery([
       documentId,
     ]);
