@@ -2885,9 +2885,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@filigran/ui@npm:1.1.8"
+"@filigran/ui@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@filigran/ui@npm:1.2.0"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -2923,7 +2923,7 @@ __metadata:
     tailwind-merge: "npm:3.5.0"
     tailwindcss-animate: "npm:1.0.7"
   peerDependencies:
-    "@filigran/icon": ^0.22.6
+    "@filigran/icon": ^0.23.0
     "@hookform/resolvers": ^5.0.0
     "@types/react": ^16.8 || ^17.0 || ^18.0 || ^19.0
     "@uiw/react-md-editor": ^4.1.0
@@ -2931,7 +2931,7 @@ __metadata:
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10/8d5131d8b23015e0e0ebec91732d4a748e5bc02e5a2ab33dbc00688bedf3c21323bcaaafa4cc034781543a0647a9d54b01c0d4f17e1733fc4fbb3a90e7471412
+  checksum: 10/583a53eae53f550934b6c190d7da961b6ce4203a3d60a7b160e2a01ed58775fd840f2510547bb3f6ea0d3e9d018970e3240318c1d45081db3fcc3b662c42edfa
   languageName: node
   linkType: hard
 
@@ -8598,7 +8598,7 @@ __metadata:
   resolution: "@xtm-hub/frontend@workspace:apps/frontend"
   dependencies:
     "@filigran/icon": "npm:0.22.6"
-    "@filigran/ui": "npm:1.1.8"
+    "@filigran/ui": "npm:1.2.0"
     "@graphql-codegen/cli": "catalog:"
     "@graphql-codegen/typescript": "catalog:"
     "@graphql-codegen/typescript-operations": "npm:4.6.1"
