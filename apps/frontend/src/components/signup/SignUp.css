@@ -1,0 +1,939 @@
+/* All styles are scoped under #hubspot-form to avoid leaking into the rest of the app */
+
+#hubspot-form {
+  --light: white;
+  --dark: black;
+  --primary: #0fbcff;
+  --secondary: #3fc9ff;
+  --color-text: #ffffff;
+  --background-primary: #00020c;
+  --background-secondary: black;
+  --background-light: white;
+  --container-width: min(90vw, 1250px);
+  --container-large-width: min(95vw, 1500px);
+  --border-color: rgba(255, 255, 255, 0.2);
+  --border-weight: 1px;
+  --border: var(--border-weight) solid var(--border-color);
+  --col: calc(var(--container-width) / 12);
+  --gutter: calc((100% - var(--container-width)) / 2);
+  --spacing-4-xs: 2px;
+  --spacing-2-xs: 6px;
+  --spacing-xs: 8px;
+  --spacing-s: 12px;
+  --spacing-m: 16px;
+  --spacing-l: 20px;
+  --spacing-xl: 32px;
+  --spacing-2-xl: 48px;
+  --spacing-3-xl: 96px;
+  --spacing-4-xl: 96px;
+  --spacing-jumbotron: 70px;
+  --spacing-section: var(--spacing-4-xl);
+  --spacing-section-large: 200px;
+  --spacing-large: 2rem;
+  --spacing-medium: 1.5rem;
+  --spacing-small: 1rem;
+  --spacing-section-mobile: 48px;
+  --typo-title: 'Geologica', 'M PLUS 1', sans-serif;
+  --typo-text: 'IBM Plex Sans', 'M PLUS 1', sans-serif;
+  --gradient-1: linear-gradient(100deg, #54cbff 54.3%, #24507b 97.77%);
+  --gradient-2: linear-gradient(93deg, #5ad7ff 15.29%, #33daff 106.33%);
+  --gradient-3: linear-gradient(100deg, #0fbcff 0%, #00f1bd 100%);
+  --gradient-4: linear-gradient(100deg, #9c2db6 0%, #310569 100%);
+  --col-12: 100%;
+  --col-11: calc(100% / 12 * 11);
+  --col-10: calc(100% / 12 * 10);
+  --col-9: 75%;
+  --col-8: calc(100% / 12 * 8);
+  --col-7: calc(100% / 12 * 7);
+  --col-6: 50%;
+  --col-5: calc(100% / 12 * 5);
+  --col-4: calc(100% / 12 * 4);
+  --col-3: 25%;
+  --col-2: calc(100% / 12 * 2);
+  --col-1: calc(100% / 12 * 1);
+  font-size: 0.625rem;
+  line-height: 1rem;
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+}
+
+#hubspot-form .calendar {
+  margin: -48px;
+  margin-top: -55px;
+}
+
+#hubspot-form .container {
+  display: flex;
+  justify-content: space-between;
+}
+
+#hubspot-form .container.form-left {
+  flex-direction: row-reverse;
+}
+
+@media screen and (max-width: 768px) {
+  #hubspot-form .container.form-left {
+    flex-direction: column;
+  }
+
+  #hubspot-form .container {
+    flex-direction: column;
+    gap: var(--spacing-l);
+  }
+}
+
+#hubspot-form .container .form {
+  width: var(--col-6);
+}
+
+@media screen and (max-width: 768px) {
+  #hubspot-form .container .form {
+    width: 100%;
+  }
+}
+
+#hubspot-form .container .form .card {
+  background:
+    radial-gradient(
+      49.47% 28.35% at 100% 100%,
+      rgba(84, 203, 255, 0.17) 0%,
+      rgba(84, 203, 255, 0) 100%
+    ),
+    rgba(10, 12, 28, 0.9);
+  overflow: hidden;
+  z-index: 10;
+  position: relative;
+}
+
+#hubspot-form .container .form .card p {
+  font-size: 16px;
+}
+
+#hubspot-form .container .form .card .hs-richtext p {
+  font-size: 14px;
+}
+
+#hubspot-form .container .form .card h3 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 400;
+}
+
+#hubspot-form .container .form .card .form {
+  margin-top: 30px;
+}
+
+#hubspot-form .container .content {
+  width: var(--col-5);
+}
+
+@media screen and (max-width: 768px) {
+  #hubspot-form .container .content {
+    width: 100%;
+  }
+}
+
+#hubspot-form .container .content .text {
+  margin-bottom: var(--spacing-m);
+}
+
+#hubspot-form .container .content h2 {
+  margin-top: 0px;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+#hubspot-form .form_2 {
+  display: none;
+}
+
+#hubspot-form .interessing {
+  color: white;
+  margin-bottom: 12px;
+  font-weight: 500;
+  margin-top: 30px;
+}
+
+#hubspot-form .form-switch {
+  border-radius: 2px;
+  border: 1px solid var(--primary);
+  display: flex;
+  width: fit-content;
+}
+
+#hubspot-form .form-switch-item {
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: var(--font-title);
+  font-weight: 500;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+#hubspot-form .form-switch-item img {
+  width: 20px;
+  height: 20px;
+}
+
+#hubspot-form .form-switch-item.active {
+  background: var(--primary);
+  color: white;
+}
+
+#hubspot-form .form-content {
+  margin-top: 30px;
+}
+
+#hubspot-form .form-content .hs-richtext p,
+#hubspot-form .form-content .hs-richtext a {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+#hubspot-form .form-content p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+}
+
+#hubspot-form .form-content fieldset {
+  max-width: 100%;
+}
+
+#hubspot-form .form-content .field {
+  --background-field: #091026;
+}
+
+#hubspot-form fieldset.form-columns-2 {
+  display: flex;
+  gap: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  #hubspot-form fieldset.form-columns-2 {
+    flex-direction: column;
+    gap: 0px;
+  }
+}
+
+#hubspot-form fieldset.form-columns-2 .field {
+  width: 100%;
+}
+
+#hubspot-form .actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#hubspot-form .card {
+  margin-bottom: 20px !important;
+}
+
+#hubspot-form .card:last-child {
+  margin-bottom: 0px !important;
+}
+
+/* ── HubSpot form field styles ────────────────────────────────────────── */
+
+#hubspot-form form {
+  width: 100%;
+}
+
+#hubspot-form form p {
+  margin: 0;
+}
+
+#hubspot-form form input:not([type='submit']):not([type='checkbox']) {
+  width: 100%;
+  padding: 10px 10px 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #8f8f8f;
+  background-color: #fff;
+  font-family: var(--typo-text);
+}
+
+#hubspot-form form input[type='file'] {
+  border: none;
+  padding: 0;
+}
+
+#hubspot-form form input::-webkit-file-upload-button {
+  background-color: transparent;
+  padding: 10px 10px 10px 14px;
+  border: 1px solid #8f8f8f;
+  border-radius: 6px;
+}
+
+#hubspot-form form select {
+  width: 100%;
+  padding: 10px 10px 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #8f8f8f;
+  background-color: #fff;
+  font-family: var(--typo-text);
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+#hubspot-form form select option {
+  color: var(--dark);
+}
+
+#hubspot-form form textarea {
+  width: 100%;
+  padding: 10px 10px 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #8f8f8f;
+  background-color: #fff;
+  font-family: var(--typo-text);
+}
+
+#hubspot-form form .form-columns-2 {
+  display: flex;
+  gap: 20px;
+  align-items: start;
+}
+
+@media screen and (max-width: 1150px) {
+  #hubspot-form form .form-columns-2 {
+    flex-direction: column;
+    gap: 0px !important;
+  }
+}
+
+#hubspot-form form .hs-submit {
+  margin-top: 20px;
+}
+
+#hubspot-form form .field:has(.hs-error-msgs) {
+  margin-bottom: 40px !important;
+}
+
+#hubspot-form form .hs-richtext,
+#hubspot-form form .hs-richtext p {
+  font-weight: 400;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+#hubspot-form form .hs-richtext a,
+#hubspot-form form .hs-richtext p a {
+  font-weight: 500;
+}
+
+#hubspot-form form .field.hs-fieldtype-checkbox,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox) {
+  border: 0px solid transparent;
+  border-radius: 0;
+}
+
+#hubspot-form form .field.hs-fieldtype-checkbox > label,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  > label {
+  background-color: inherit;
+  left: -5px;
+}
+
+#hubspot-form form .field.hs-fieldtype-checkbox ul.no-list,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.no-list {
+  padding-left: 15px;
+}
+
+#hubspot-form form .field.hs-fieldtype-checkbox ul.inputs-list,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.inputs-list {
+  position: relative;
+  left: inherit;
+  bottom: inherit;
+  width: 100%;
+  padding-top: 20px;
+  list-style: none;
+}
+
+#hubspot-form form .field.hs-fieldtype-checkbox ul.inputs-list li,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.inputs-list
+  li {
+  color: #fff;
+  width: 100%;
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+#hubspot-form form .field.hs-fieldtype-checkbox ul.inputs-list label,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.inputs-list
+  label {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox
+  ul.inputs-list
+  label
+  input.hs-input,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.inputs-list
+  label
+  input.hs-input {
+  width: 20px !important;
+  height: 20px;
+  margin-right: 10px;
+  appearance: none;
+  position: relative;
+  margin-left: 0;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox
+  ul.inputs-list
+  label
+  input.hs-input
+  + span,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.inputs-list
+  label
+  input.hs-input
+  + span {
+  color: #a3a3a3;
+  font-size: 16px;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox
+  ul.inputs-list
+  label
+  input.hs-input:checked
+  + span,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.inputs-list
+  label
+  input.hs-input:checked
+  + span {
+  color: var(--primary);
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox
+  ul.inputs-list
+  label
+  input.hs-input:before,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.inputs-list
+  label
+  input.hs-input:before {
+  content: '';
+  display: block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #a3a3a3;
+  border-radius: 2px;
+  position: absolute;
+  top: calc(50% - 7.5px);
+  cursor: pointer;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox
+  ul.inputs-list
+  label
+  input.hs-input:checked:before,
+#hubspot-form
+  form
+  .field.hs-fieldtype-checkbox:not(.hs-fieldtype-booleancheckbox)
+  ul.inputs-list
+  label
+  input.hs-input:checked:before {
+  background-color: #fff;
+  background-image: url('data:image/svg+xml,%3Csvg%20width%3D%2215%22%20height%3D%2215%22%20viewBox%3D%220%200%2015%2015%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20clip-path%3D%22url(%23clip0_2367_5302)%22%3E%3Cpath%20d%3D%22M13.3333%200H1.66667C0.75%200%200%200.75%200%201.66667V13.3333C0%2014.25%200.75%2015%201.66667%2015H13.3333C14.25%2015%2015%2014.25%2015%2013.3333V1.66667C15%200.75%2014.25%200%2013.3333%200ZM6.425%2011.075C6.1%2011.4%205.575%2011.4%205.25%2011.075L2.25833%208.08333C1.93333%207.75833%201.93333%207.23333%202.25833%206.90833C2.58333%206.58333%203.10833%206.58333%203.43333%206.90833L5.83333%209.30833L11.5667%203.575C11.8917%203.25%2012.4167%203.25%2012.7417%203.575C13.0667%203.9%2013.0667%204.425%2012.7417%204.75L6.425%2011.075Z%22%20fill%3D%22%230FBCFF%22%2F%3E%3C%2Fg%3E%3Cdefs%3E%3CclipPath%20id%3D%22clip0_2367_5302%22%3E%3Crect%20width%3D%2215%22%20height%3D%2215%22%20fill%3D%22white%22%2F%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3C%2Fsvg%3E');
+  background-position: center;
+  background-size: 100% 100%;
+  border: 0px solid transparent;
+  width: 15px;
+  height: 15px;
+}
+
+#hubspot-form form .field.hs-fieldtype-booleancheckbox {
+  margin-top: 8px;
+  margin-bottom: 2px;
+}
+
+#hubspot-form form .field.hs-fieldtype-booleancheckbox ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-booleancheckbox
+  ul
+  li.hs-form-booleancheckbox {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-booleancheckbox
+  ul
+  li.hs-form-booleancheckbox
+  label {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-booleancheckbox
+  ul
+  li.hs-form-booleancheckbox
+  label
+  input {
+  width: 15px;
+  height: 15px;
+  border: 1px solid #a3a3a3;
+  background-color: #090b1b;
+  cursor: pointer;
+  position: relative;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-booleancheckbox
+  ul
+  li.hs-form-booleancheckbox
+  label
+  input:checked:before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 2.5px;
+  left: 2.5px;
+  z-index: 2;
+  color: #fff;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhLS0gTGljZW5zZTogQ0MwLiBNYWRlIGJ5IFNWRyBSZXBvOiBodHRwczovL3d3dy5zdmdyZXBvLmNvbS9zdmcvMTU3NzcwL2NoZWNrZWQgLS0+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgNjAuNDk5IDYwLjQ5OSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNjAuNDk5IDYwLjQ5OTsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8Zz4KCTxwYXRoIGQ9Ik01OC45NjgsMTIuNzM0Yy0yLjE5My0yLjQyMy01LjkzNi0yLjYwOC04LjM1OS0wLjQxNUwyNC40ODEsMzUuOTc1TDkuOTkxLDIyLjIxOGMtMi4zNzEtMi4yNS02LjExNy0yLjE1Mi04LjM2NiwwLjIxOAoJCWMtMi4yNDksMi4zNy0yLjE1Miw2LjExNSwwLjIxOCw4LjM2NWwxOC4yMDgsMTcuMjgzYzEuMTQ1LDEuMDg4LDIuNjA5LDEuNjI3LDQuMDcyLDEuNjI3YzAuODIyLDAsMS42NDMtMC4xNzYsMi40MDYtMC41MTYKCQljMC44ODUtMC4yMzIsMS43MjktMC42NzQsMi40NTUtMS4zMzJsMjkuNTY4LTI2Ljc3MUM2MC45NzYsMTguODk5LDYxLjE2MSwxNS4xNTcsNTguOTY4LDEyLjczNHoiLz4KPC9nPgo8L3N2Zz4K);
+  filter: invert(1);
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-booleancheckbox
+  ul
+  li.hs-form-booleancheckbox
+  label
+  input:checked:after {
+  content: '';
+  padding: 1px;
+  font-size: 10px;
+  color: #090b1b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-booleancheckbox
+  ul
+  li.hs-form-booleancheckbox
+  label
+  input:after {
+  content: '';
+  display: block;
+  width: 15px;
+  height: 15px;
+  background-color: #090b1b;
+  border: 1px solid #a3a3a3;
+  border-radius: 2px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-booleancheckbox
+  ul
+  li.hs-form-booleancheckbox
+  label
+  input:checked
+  + span {
+  color: var(--primary);
+}
+
+#hubspot-form
+  form
+  .field.hs-fieldtype-booleancheckbox
+  ul
+  li.hs-form-booleancheckbox
+  label
+  span {
+  margin-left: 0;
+  color: #fff;
+  font-weight: 300;
+  font-size: 12px;
+  transition: all 0.3s ease-in-out;
+}
+
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) {
+  --background-field: rgba(10, 12, 28, 1);
+  margin-bottom: 14px;
+  position: relative;
+  border: 1.5px solid var(--primary);
+  border-radius: 2px;
+}
+
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) .hs-error-msg {
+  color: #f75b50;
+  letter-spacing: 0px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) ul {
+  margin-top: 0;
+  margin-bottom: 0;
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  padding-left: 0;
+}
+
+@media screen and (max-width: 1200px) {
+  #hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) ul {
+    bottom: inherit;
+  }
+}
+
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) ul li {
+  font-size: 10px;
+  color: red;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) ul li:before {
+  width: 0px;
+  margin: 0;
+}
+
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) > .label,
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) > label {
+  position: absolute;
+  top: -7px;
+  left: 8px;
+  padding: 0 4px;
+  font-family: var(--typo-text);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 500;
+  background-color: var(--background-field);
+  pointer-events: none;
+}
+
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) .input {
+  width: 100%;
+  height: 100%;
+}
+
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox)
+  .input
+  input:not([type='checkbox']),
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) .input select {
+  font-size: 11px;
+}
+
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox)
+  .input
+  input:not([type='checkbox'])::placeholder,
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox)
+  .input
+  select::placeholder {
+  color: #a3a3a3;
+}
+
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox)
+  .input
+  input:not([type='checkbox']),
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) .input textarea {
+  width: 100% !important;
+  padding: 6px 12px;
+  background-color: transparent;
+  font-family: var(--typo-text);
+  border: 0px solid transparent;
+  color: #fff;
+  outline: none;
+  border-radius: 0;
+}
+
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) .input select {
+  width: 100% !important;
+  padding: 6px 12px;
+  border-radius: 0;
+  background-color: transparent;
+  font-family: var(--typo-text);
+  border: 0px solid transparent;
+  color: #fff;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position-x: 98%;
+  background-position-y: 50%;
+}
+
+#hubspot-form form .section {
+  margin-bottom: 20px;
+}
+
+#hubspot-form form .wpcf7-list-item {
+  margin: 0;
+}
+
+#hubspot-form form .wpcf7-list-item input {
+  padding: 0;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+#hubspot-form form.wpcf7-form {
+  --background-field: var(--background-primary);
+}
+
+#hubspot-form form.wpcf7-form .form-control:not(:has(.form-submit)) {
+  margin-bottom: 30px;
+  margin-top: 30px;
+  border: 2px solid var(--primary);
+  border-radius: 2px;
+  position: relative;
+  width: fit-content;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-label {
+  position: absolute;
+  top: -12px;
+  left: 10px;
+  padding: 0 5px;
+  z-index: 6;
+  font-weight: 500;
+  background-color: var(--background-field);
+  pointer-events: none;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-label
+  p {
+  color: var(--primary);
+  font-size: 16px;
+  line-height: 16px;
+  line-height: 120%;
+  font-weight: 500;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input {
+  width: 100%;
+  height: 100%;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input
+  input,
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input
+  select {
+  font-size: 14px;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input
+  input::placeholder,
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input
+  select::placeholder {
+  color: #a3a3a3;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input
+  input:-internal-autofill-selected {
+  background-color: var(--background-primary) !important;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input
+  input,
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input
+  textarea {
+  width: 100% !important;
+  padding: 8px 16px;
+  background-color: transparent;
+  font-family: var(--typo-text);
+  border: 0px solid transparent;
+  color: #fff;
+  outline: none;
+  border-radius: 0;
+  z-index: 5;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:not(:has(.form-submit))
+  .form-input
+  select {
+  width: 100% !important;
+  padding: 8px 16px;
+  border-radius: 0;
+  background-color: transparent;
+  font-family: var(--typo-text);
+  border: 0px solid transparent;
+  color: #fff;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position-x: 98%;
+  background-position-y: 50%;
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:has(.form-submit)
+  .form-submit
+  p
+  input {
+  width: auto;
+  margin: 0;
+  border-radius: 999px;
+  color: var(--light);
+  box-shadow: 0 0 13.2px -2px var(--primary);
+  transition: all 0.3s ease-in-out;
+  border: 1px solid var(--primary);
+}
+
+#hubspot-form
+  form.wpcf7-form
+  .form-control:has(.form-submit)
+  .form-submit
+  p
+  input:hover {
+  box-shadow: 0 0 14px -1px #0fbcff;
+}
+
+#hubspot-form input[type='button'].hs-button,
+#hubspot-form input[type='submit'].hs-button {
+  background-color: #0fbcff;
+  color: #001a4d;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  cursor: pointer;
+  width: auto;
+}
+
+#hubspot-form input[type='button'].hs-button:hover,
+#hubspot-form input[type='submit'].hs-button:hover {
+  background-color: #3fc9ff;
+}
+
+/* Override form text colors to match description style */
+#hubspot-form form label,
+#hubspot-form form .hs-form-field > label,
+#hubspot-form form .form-content p,
+#hubspot-form form .field.hs-fieldtype-booleancheckbox ul li label span,
+#hubspot-form form .field.hs-fieldtype-checkbox ul.inputs-list li {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Align "You can withdraw..." text with checkbox label text */
+#hubspot-form form .hs-richtext:last-of-type,
+#hubspot-form form .hs-richtext:last-of-type p,
+#hubspot-form form .field.hs-fieldtype-booleancheckbox + .hs-richtext,
+#hubspot-form form .field.hs-fieldtype-booleancheckbox + .hs-richtext p,
+#hubspot-form form .field.hs-fieldtype-booleancheckbox ~ .hs-richtext,
+#hubspot-form form .field.hs-fieldtype-booleancheckbox ~ .hs-richtext p {
+  padding-left: 24px;
+  margin-top: 2px;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Privacy Policy link in blue */
+#hubspot-form form .hs-richtext a,
+#hubspot-form form .hs-richtext p a {
+  color: var(--primary);
+  font-weight: 500;
+}
