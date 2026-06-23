@@ -1,4 +1,5 @@
 import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
+import { ServiceFormEntityTypesField } from '@/components/service/form/EntityTypesField';
 import { ServiceFormIntegrationSubtypeField } from '@/components/service/form/IntegrationSubtypeField';
 import { ServiceFormLogoField } from '@/components/service/form/LogoField';
 import {
@@ -25,6 +26,7 @@ type DocumentType =
   | 'Stream'
   | 'Third Party Integration'
   | 'Custom Dashboard'
+  | 'Custom View'
   | 'Scenario'
   | 'Playbook'
   | 'Connector';
@@ -34,6 +36,7 @@ const integrationTypeMappedByDocumentType: Record<
   IntegrationTypeEnum | null
 > = {
   'Custom Dashboard': null,
+  'Custom View': null,
   Scenario: null,
   Playbook: null,
   'CSV Feed': IntegrationTypeEnum.CSV_FEED,
@@ -51,6 +54,7 @@ type AvailableFields =
   | 'uploader_id'
   | 'uploader_organization_id'
   | 'use_cases'
+  | 'entity_types'
   | 'integration_subtype'
   | 'images'
   | 'integration_type'
@@ -152,6 +156,18 @@ export const useServiceFormFields = ({
           <ServiceFormUseCasesField
             field={field}
             disabled={disabledFields.includes('use_cases')}
+          />
+        ),
+      },
+      entity_types: {
+        fieldType: ({
+          field,
+        }: {
+          field: ControllerRenderProps<FieldValues, string>;
+        }) => (
+          <ServiceFormEntityTypesField
+            field={field}
+            disabled={disabledFields.includes('entity_types')}
           />
         ),
       },

@@ -33,6 +33,7 @@ export const isUserRestrictedToActiveDocument = async (
     !capabilities?.includes(ServiceRestriction.Upload) &&
     [
       ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+      ServiceDefinitionIdentifier.OpenctiCustomViews,
       ServiceDefinitionIdentifier.OpenctiIntegrations,
     ].includes(serviceDef.identifier)
   );

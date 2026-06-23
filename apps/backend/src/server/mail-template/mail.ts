@@ -89,6 +89,7 @@ export const ServiceIdentifierToMailTemplate = new Map<
     ServiceDefinitionIdentifier.OpenctiCustomDashboards,
     'opencti_custom_dashboards',
   ],
+  [ServiceDefinitionIdentifier.OpenctiCustomViews, 'opencti_custom_views'],
   [ServiceDefinitionIdentifier.OpenctiIntegrations, 'opencti_integrations'],
   [ServiceDefinitionIdentifier.OpenctiPlaybooks, 'opencti_playbooks'],
   [ServiceDefinitionIdentifier.Vault, 'vault'],
@@ -98,6 +99,7 @@ export type MailTemplates = {
   welcome: WelcomeMailModel;
   vault: GenericServiceMailModel;
   opencti_custom_dashboards: GenericServiceMailModel;
+  opencti_custom_views: GenericServiceMailModel;
   opencti_integrations: GenericServiceMailModel;
   opencti_playbooks: GenericServiceMailModel;
   openaev_scenarios: GenericServiceMailModel;
@@ -114,8 +116,7 @@ export type MailTemplates = {
   free_trial_user_added: FreeTrialUserAddedModel;
   organization_pending_user_digest: OrganizationPendingUserDigestModel;
   admin_saas_instance_requested: AdminSaasInstanceRequestedModel;
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  public_roadmap_monthly_reminder: {};
+  public_roadmap_monthly_reminder: { roadmapLink: string };
 };
 
 export const templateSubjects: {
@@ -125,6 +126,8 @@ export const templateSubjects: {
   vault: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   opencti_custom_dashboards: (params: GenericServiceMailModel) =>
+    `XTM Hub - You've been invited to the ${params.serviceName}`,
+  opencti_custom_views: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
   opencti_integrations: (params: GenericServiceMailModel) =>
     `XTM Hub - You've been invited to the ${params.serviceName}`,
@@ -174,5 +177,5 @@ export const templateSubjects: {
     return `New ${params.platformIdentifier} SaaS ${params.deploymentType} Has Been Launched on XTM Hub by ${params.organizationName}`;
   },
   public_roadmap_monthly_reminder: () =>
-    'XTM Hub - Public Roadmap monthly reminder',
+    'Monthly check-in — Update your XTM Hub Roadmap Epics',
 };

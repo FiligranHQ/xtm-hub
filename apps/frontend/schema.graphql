@@ -23,6 +23,7 @@ enum FilterKey {
   manager_supported
   feed_url
   verified
+  entity_type
 }
 
 enum LogicalOperator {
@@ -536,6 +537,7 @@ enum DocumentMetadataKeyCode {
   playbook_supported
   image_type
   minimum_deployable_version
+  entity_types
 }
 
 type ShareableResource {
@@ -621,6 +623,7 @@ input CreateDocumentInput {
   description: String!
   active: Boolean!
   use_cases: [UseCaseId!]
+  entity_types: [String!]
   uploader_id: UserId!
 }
 
@@ -630,6 +633,7 @@ input UpdateDocumentInput {
   description: String
   active: Boolean
   use_cases: [UseCaseId!]
+  entity_types: [String!]
   uploader_organization_id: OrganizationId
   uploader_id: UserId
 }
@@ -1094,6 +1098,7 @@ enum ServiceDefinitionIdentifier {
   vault
   link
   opencti_custom_dashboards
+  opencti_custom_views
   opencti_integrations
   opencti_playbooks
   openaev_scenarios
@@ -1222,6 +1227,7 @@ type ServiceInstanceSubscription {
 
 enum FeatureFlag {
   DUMMY
+  OPENCTI_CUSTOM_VIEWS
 }
 
 type PlatformProvider {
@@ -1283,6 +1289,31 @@ type CustomDashboard implements Document & Node {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   product_version: String
+}
+
+type CustomView implements Document & Node {
+  id: ID!
+  type: String!
+  uploader: User
+  uploader_organization: Organization
+  name: String!
+  short_description: String
+  description: String
+  file_name: String!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  updater_id: String
+  download_number: Int
+  share_number: Int
+  slug: String!
+  use_cases: [UseCase!]
+  service_instance_id: ServiceInstanceId
+  service_instance: ServiceInstance
+  subscription: SubscriptionModel
+  children_documents: [ShareableResource!]
+  product_version: String
+  entity_types: [String!]
 }
 
 enum IntegrationType {

@@ -11,6 +11,7 @@ import { useLocalStorage } from 'usehooks-ts';
 
 export enum ServiceListLocalStorageKey {
   OpenCTICustomDashboards = 'OpenCTICustomDashboards',
+  OpenCTICustomViews = 'OpenCTICustomViews',
   OpenCTIIntegrationFeeds = 'OpenCTIIntegrationFeeds',
   OpenAEVScenarios = 'OpenAEVScenarios',
   OpenCTIPlaybooks = 'OpenCTIPlaybooks',
@@ -99,6 +100,15 @@ export const useServiceListLocalStorage = (
       }
     );
 
+  const [entityTypes, setEntityTypes, removeEntityTypes] =
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `entityType${pagePrefix}${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
+
   const [deployable, setDeployable, removeDeployable] =
     useLocalStorage<LogicalMultiSelectSelection>(
       `deployable${pagePrefix}${serviceName}List`,
@@ -147,6 +157,7 @@ export const useServiceListLocalStorage = (
     removeSelectedFilters();
     removeIntegrationTypes();
     removeProductVersions();
+    removeEntityTypes();
     removeDeployable();
     removeVerified();
     removeOrderBy();
@@ -159,6 +170,7 @@ export const useServiceListLocalStorage = (
     removeSelectedFilters,
     removeIntegrationTypes,
     removeProductVersions,
+    removeEntityTypes,
     removeDeployable,
     removeVerified,
     removeOrderBy,
@@ -186,6 +198,9 @@ export const useServiceListLocalStorage = (
     productVersions,
     setProductVersions,
     removeProductVersions,
+    entityTypes,
+    setEntityTypes,
+    removeEntityTypes,
     deployable,
     setDeployable,
     removeDeployable,

@@ -1,0 +1,22 @@
+import { DocumentMetadataKeyCode } from '../../../../__generated__/resolvers-types';
+import Document from '../../../../model/kanel/public/Document';
+import { MetadataArray } from '../../../../utils/metadata';
+
+export const OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE = 'opencti_custom_view';
+
+export type CustomView = Document & {
+  product_version: string;
+  entity_types: string;
+};
+export type CustomViewMetadataKeys = MetadataArray<
+  keyof Omit<CustomView, keyof Document>
+>;
+
+export const CUSTOM_VIEW_METADATA: CustomViewMetadataKeys = [
+  { key: DocumentMetadataKeyCode.ProductVersion },
+  { key: DocumentMetadataKeyCode.EntityTypes },
+];
+
+export const CUSTOM_VIEW_METADATA_KEYS = CUSTOM_VIEW_METADATA.map(
+  ({ key }) => key
+) as DocumentMetadataKeyCode[];

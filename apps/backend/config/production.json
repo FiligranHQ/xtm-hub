@@ -8,7 +8,8 @@
     }
   ],
   "enabled_emails": {
-    "pending_user_digest": true
+    "pending_user_digest": true,
+    "public_roadmap_monthly_reminder": true
   },
   "base_url_front": "https://hub.filigran.io"
 }

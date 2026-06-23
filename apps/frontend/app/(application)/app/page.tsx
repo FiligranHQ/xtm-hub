@@ -14,6 +14,9 @@ import {
   ServiceListQuery,
   servicesListFragment,
 } from '@/components/service/service.graphql';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import RegisterRegisteredPlatformsQueryGraphql, {
   registerRegisteredPlatformsQuery,
@@ -45,9 +48,18 @@ const Page = () => {
     serviceQuery,
     servicesList_services$key
   >(servicesListFragment, queryDataServiceInstances);
-  const serviceData = data?.serviceInstances?.edges.map(
-    (service) => service?.node as serviceList_fragment$data
+  // TODO: feature flag OPENCTI_CUSTOM_VIEWS - remove with the feature
+  const isCustomViewsEnabled = useIsFeatureEnabled(
+    FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS
   );
+  const serviceData = data?.serviceInstances?.edges
+    .map((service) => service?.node as serviceList_fragment$data)
+    .filter(
+      (service) =>
+        isCustomViewsEnabled ||
+        service?.service_definition?.identifier !==
+          ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_VIEWS
+    );
 
   // Registered Platforms
   const [queryRefRegisteredPlatforms, loadQueryRegisteredPlatforms] =

@@ -16,6 +16,11 @@ export const serviceConfigMap: Record<ServiceSlug, ServiceConfig> = {
     description:
       '. Discover more dashboards like this in our OpenCTI Custom Dashboards Library, available for download on the XTM Hub.',
   },
+  [ServiceSlug.OPEN_CTI_CUSTOM_VIEWS]: {
+    redirectPath: 'opencti_custom_views',
+    description:
+      '. Discover more custom views like this in our OpenCTI Custom Views Library, available for download on the XTM Hub.',
+  },
   [ServiceSlug.OPEN_AEV_SCENARIOS]: {
     redirectPath: 'openaev_scenarios',
     description:
@@ -31,6 +36,7 @@ export const serviceConfigMap: Record<ServiceSlug, ServiceConfig> = {
 export const localeMap: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]: 'OpenctiIntegrations',
   [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: 'OpenctiCustomDashboards',
+  [ServiceSlug.OPEN_CTI_CUSTOM_VIEWS]: 'OpenctiCustomViews',
   [ServiceSlug.OPEN_AEV_SCENARIOS]: 'OpenAEVScenario',
   [ServiceSlug.OPEN_CTI_PLAYBOOKS]: 'OpenCTIPlaybook',
 };
