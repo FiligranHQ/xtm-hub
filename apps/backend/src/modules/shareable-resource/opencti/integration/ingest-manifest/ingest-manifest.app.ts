@@ -2,10 +2,9 @@ import { PortalCapability } from '../../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../../context/request.context';
 import { securityGuard } from '../../../../../security/guard';
 import { BadRequestError } from '../../../../../utils/error/error.util';
-import { upsertConnectors } from './ingest-manifest.domain';
+import { IngestManifestDomain } from './ingest-manifest.domain';
 import {
-  extractManifestInformation,
-  fetchManifest,
+  IngestManifestHelper,
   ManifestExtractionResult,
 } from './ingest-manifest.helper';
 
@@ -20,11 +19,13 @@ export const IngestManifestApp = {
       PortalCapability.ManageConnectorsIngestions,
     ]);
 
-    const manifest = await fetchManifest(getOpenCTIConnectorsManifest(tag));
-    const result = extractManifestInformation(manifest);
+    const manifest = await IngestManifestHelper.fetchManifest(
+      getOpenCTIConnectorsManifest(tag)
+    );
+    const result = IngestManifestHelper.extractManifestInformation(manifest);
 
     if (result.validContracts.length > 0) {
-      void upsertConnectors(result.validContracts);
+      void IngestManifestDomain.upsertConnectors(result.validContracts);
     }
 
     // If there are errors, throw a GraphQL error with details
