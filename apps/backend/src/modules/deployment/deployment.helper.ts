@@ -113,94 +113,103 @@ const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
   },
 ];
 
-export const isHubStatusTransitionValid = (
-  from: DeploymentRequestHubStatus,
-  to: DeploymentRequestHubStatus
-): boolean => {
-  return (
-    from === to ||
-    VALID_HUB_STATUS_TRANSITIONS.some((t) => t.from === from && t.to === to)
-  );
-};
+export const DeploymentHelper = {
+  isHubStatusTransitionValid: (
+    from: DeploymentRequestHubStatus,
+    to: DeploymentRequestHubStatus
+  ): boolean => {
+    return (
+      from === to ||
+      VALID_HUB_STATUS_TRANSITIONS.some((t) => t.from === from && t.to === to)
+    );
+  },
 
-export const isPlatformStateTransitionValid = (
-  from: DeploymentRequestPlatformState | null,
-  to: DeploymentRequestPlatformState | null
-): boolean => {
-  return (
-    from === to ||
-    VALID_PLATFORM_STATE_TRANSITIONS.some((t) => t.from === from && t.to === to)
-  );
-};
+  isPlatformStateTransitionValid: (
+    from: DeploymentRequestPlatformState | null,
+    to: DeploymentRequestPlatformState | null
+  ): boolean => {
+    return (
+      from === to ||
+      VALID_PLATFORM_STATE_TRANSITIONS.some(
+        (t) => t.from === from && t.to === to
+      )
+    );
+  },
 
-export const assertFreeTrialsLimit = async (
-  organizationId: OrganizationId,
-  platformIdentifier: PlatformIdentifier
-) => {
-  const freeTrialsRequests =
-    await DeploymentRequestDomain.loadDeploymentRequestBy({
-      organization_requester_id: organizationId,
-      type: DeploymentRequestDeploymentType.Trial,
-      counts_in_orga_quota: true,
-      platform_identifier: platformIdentifier,
-    });
-  if (freeTrialsRequests) {
-    throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
-  }
-};
+  assertFreeTrialsLimit: async (
+    organizationId: OrganizationId,
+    platformIdentifier: PlatformIdentifier
+  ) => {
+    const freeTrialsRequests =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        organization_requester_id: organizationId,
+        type: DeploymentRequestDeploymentType.Trial,
+        counts_in_orga_quota: true,
+        platform_identifier: platformIdentifier,
+      });
+    if (freeTrialsRequests) {
+      throw new Error(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
+    }
+  },
 
-export const hasDeploymentTelemetryDataChanged = (
-  previous: DeploymentRequestModel,
-  current: DeploymentRequestModel
-): boolean => {
-  return (
-    previous.hub_status !== current.hub_status ||
-    previous.platform_id !== current.platform_id ||
-    previous.cancellation_reason !== current.cancellation_reason ||
-    previous.start_date?.getTime() !== current.start_date?.getTime() ||
-    previous.end_date?.getTime() !== current.end_date?.getTime()
-  );
-};
+  hasDeploymentTelemetryDataChanged: (
+    previous: DeploymentRequestModel,
+    current: DeploymentRequestModel
+  ): boolean => {
+    return (
+      previous.hub_status !== current.hub_status ||
+      previous.platform_id !== current.platform_id ||
+      previous.cancellation_reason !== current.cancellation_reason ||
+      previous.start_date?.getTime() !== current.start_date?.getTime() ||
+      previous.end_date?.getTime() !== current.end_date?.getTime()
+    );
+  },
 
-export const computeHubStatus = (
-  currentHubStatus: DeploymentRequestHubStatus,
-  actualState: DeploymentRequestPlatformState | null | undefined
-) => {
-  if (!actualState) {
-    return currentHubStatus;
-  }
+  computeHubStatus: (
+    currentHubStatus: DeploymentRequestHubStatus,
+    actualState: DeploymentRequestPlatformState | null | undefined
+  ) => {
+    if (!actualState) {
+      return currentHubStatus;
+    }
 
-  if (
-    currentHubStatus === DeploymentRequestHubStatus.Queued ||
-    actualState === DeploymentRequestPlatformState.Unprovisioned
-  ) {
-    return null;
-  }
+    if (
+      currentHubStatus === DeploymentRequestHubStatus.Queued ||
+      actualState === DeploymentRequestPlatformState.Unprovisioned
+    ) {
+      return null;
+    }
 
-  let newHubStatus = currentHubStatus;
+    let newHubStatus = currentHubStatus;
 
-  switch (actualState) {
-    case DeploymentRequestPlatformState.Active:
-      newHubStatus = DeploymentRequestHubStatus.Active;
-      break;
-    case DeploymentRequestPlatformState.Provisioning:
-      newHubStatus = DeploymentRequestHubStatus.Provisioning;
-      break;
-    case DeploymentRequestPlatformState.Removing:
-    case DeploymentRequestPlatformState.Removed:
-      if (
-        currentHubStatus !== DeploymentRequestHubStatus.Expired &&
-        currentHubStatus !== DeploymentRequestHubStatus.Cancelled
-      ) {
-        return null;
-      }
-      newHubStatus = currentHubStatus;
-      break;
-  }
+    switch (actualState) {
+      case DeploymentRequestPlatformState.Active:
+        newHubStatus = DeploymentRequestHubStatus.Active;
+        break;
+      case DeploymentRequestPlatformState.Provisioning:
+        newHubStatus = DeploymentRequestHubStatus.Provisioning;
+        break;
+      case DeploymentRequestPlatformState.Removing:
+      case DeploymentRequestPlatformState.Removed:
+        if (
+          currentHubStatus !== DeploymentRequestHubStatus.Expired &&
+          currentHubStatus !== DeploymentRequestHubStatus.Cancelled
+        ) {
+          return null;
+        }
+        newHubStatus = currentHubStatus;
+        break;
+    }
 
-  if (!isHubStatusTransitionValid(currentHubStatus, newHubStatus)) {
-    return null;
-  }
+    if (
+      !DeploymentHelper.isHubStatusTransitionValid(
+        currentHubStatus,
+        newHubStatus
+      )
+    ) {
+      return null;
+    }
 
-  return newHubStatus;
+    return newHubStatus;
+  },
 };

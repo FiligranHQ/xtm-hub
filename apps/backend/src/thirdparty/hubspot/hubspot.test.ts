@@ -16,9 +16,9 @@ import {
   requestContextAdminSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
+import { DeploymentRequestDeploymentType } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { UserLoadUserBy } from '../../model/user';
-import { insertDeploymentRequest } from '../../modules/deployment/deployment.test.utils';
 import { logApp } from '../../utils/app-logger.util';
 import * as utils from '../../utils/utils';
 import { HUBSPOT_TYPE_TO_QUEUE } from '../pgboss/hubspot.jobs';
@@ -77,10 +77,13 @@ describe('hubspot', () => {
 
     it('should log an error when deployment request is not a trial request', async () => {
       const platformId = uuidv4();
-      const deploymentRequest = await insertDeploymentRequest({
-        platform_id: platformId,
-        type: 'unknown',
-      });
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_id: platformId,
+            type: 'unknown' as DeploymentRequestDeploymentType,
+          }
+        );
       await hubspotReachOutSalesHook({ platformId });
       expect(logSpy).toHaveBeenCalledWith(
         'Failed to send Hubspot reachOutSales hook',
@@ -94,9 +97,12 @@ describe('hubspot', () => {
 
     it('should log error when request is retrieved from platform id and user is not authorized', async () => {
       const platformId = uuidv4();
-      const deploymentRequest = await insertDeploymentRequest({
-        platform_id: platformId,
-      });
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_id: platformId,
+          }
+        );
       requestContext.set(requestContextAdminSecondOrga);
 
       await hubspotReachOutSalesHook({ platformId });
@@ -143,9 +149,11 @@ describe('hubspot', () => {
 
     it('should send message when request is retrieved from platform id and user is authorized', async () => {
       const platformId = uuidv4();
-      await insertDeploymentRequest({
-        platform_id: platformId,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_id: platformId,
+        }
+      );
 
       await hubspotReachOutSalesHook({ platformId });
 
@@ -166,7 +174,10 @@ describe('hubspot', () => {
     });
 
     it('should send message when request is retrieved from platform token', async () => {
-      const deploymentRequest = await insertDeploymentRequest({});
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
 
       await hubspotReachOutSalesHook({
         platformToken: deploymentRequest.platform_token!,
@@ -206,7 +217,9 @@ describe('hubspot', () => {
     });
 
     it('should send full message when request is found from user id and platform identifier', async () => {
-      await insertDeploymentRequest({});
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {}
+      );
       await hubspotReachOutSalesHook({});
       expect(fetchSpy).toHaveBeenCalledWith(
         expect.any(String),
