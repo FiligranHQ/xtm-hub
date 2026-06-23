@@ -10,7 +10,7 @@ import {
   LogicalOperator,
   OrderingMode,
 } from '../../../__generated__/resolvers-types';
-import { upsertConnectors } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
+import { IngestManifestDomain } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
 import { ManifestInformation } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.model';
 import sampleExtractedManifest from '../../shareable-resource/opencti/integration/ingest-manifest/test/sample-extracted-manifest.json';
 import {
@@ -85,7 +85,7 @@ describe('document domain', () => {
     });
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
-      await upsertConnectors([
+      await IngestManifestDomain.upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
 
@@ -120,7 +120,7 @@ describe('document domain', () => {
     });
 
     it('should filter an integration feed with a metadata type', async () => {
-      const [connector] = await upsertConnectors([
+      const [connector] = await IngestManifestDomain.upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
 
@@ -215,7 +215,7 @@ describe('document domain', () => {
 
     describe('multiple filters', () => {
       it('should handle type and version', async () => {
-        const connectors = await upsertConnectors(
+        const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
 
@@ -259,7 +259,7 @@ describe('document domain', () => {
       });
 
       it('should handle type and subtype', async () => {
-        const connectors = await upsertConnectors(
+        const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
 
@@ -329,7 +329,7 @@ describe('document domain', () => {
     describe('product version filtering', () => {
       it('should filter an integration feed with a product version', async () => {
         // Create data
-        const connectors = await upsertConnectors(
+        const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
 
@@ -367,7 +367,7 @@ describe('document domain', () => {
 
       it('should handle multiple product version filters', async () => {
         // Create data
-        const connectors = await upsertConnectors(
+        const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
 

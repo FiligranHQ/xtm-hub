@@ -17,10 +17,6 @@ import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest'
 import { UserId } from '../../model/kanel/public/User';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { DeploymentRequestDomain } from './deployment.domain';
-import {
-  assertDeploymentRequestProperties,
-  insertDeploymentRequest,
-} from './deployment.test.utils';
 
 describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
@@ -35,10 +31,14 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should return filtered deployment requests', async () => {
-      await insertDeploymentRequest({});
-      await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {}
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          hub_status: DeploymentRequestHubStatus.Active,
+        }
+      );
 
       const deploymentRequests =
         await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
@@ -61,11 +61,16 @@ describe('deploymentRequestDomain', () => {
       );
     });
     it('should filter deployment requests when searchTerm is specified ', async () => {
-      const deployment = await insertDeploymentRequest({});
-      await insertDeploymentRequest({
-        user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE
-          .ID as UserId,
-      });
+      const deployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE
+            .ID as UserId,
+        }
+      );
 
       const deploymentRequests =
         await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
@@ -80,13 +85,18 @@ describe('deploymentRequestDomain', () => {
       expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment?.id);
     });
     it('should not return deployment request with wrong hub_status even if searchTerm matches', async () => {
-      const activeDeployment = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-      });
+      const activeDeployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
 
-      await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Expired,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          hub_status: DeploymentRequestHubStatus.Expired,
+        }
+      );
 
       const result =
         await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
@@ -108,13 +118,18 @@ describe('deploymentRequestDomain', () => {
       expect(result.edges[0]?.node?.id).toBe(activeDeployment.id);
     });
     it('should not return deployment request with wrong platform_identifier even if searchTerm matches', async () => {
-      const openctiDeployment = await insertDeploymentRequest({
-        platform_identifier: PlatformIdentifier.Opencti,
-      });
+      const openctiDeployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        );
 
-      await insertDeploymentRequest({
-        platform_identifier: PlatformIdentifier.Openaev,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_identifier: PlatformIdentifier.Openaev,
+        }
+      );
 
       const result =
         await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
@@ -136,8 +151,14 @@ describe('deploymentRequestDomain', () => {
       expect(result.edges[0]?.node?.id).toBe(openctiDeployment.id);
     });
     it('should return ordered deployment requests', async () => {
-      const deployment1 = await insertDeploymentRequest({ ordering: 1 });
-      const deployment2 = await insertDeploymentRequest({ ordering: 2 });
+      const deployment1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { ordering: 1 }
+        );
+      const deployment2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { ordering: 2 }
+        );
 
       const deploymentRequests =
         await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
@@ -165,12 +186,15 @@ describe('deploymentRequestDomain', () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
-      const deployment = await insertDeploymentRequest({
-        platform_identifier: platformIdentifier,
-        hub_status: DeploymentRequestHubStatus.Active,
-        type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      const deployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: platformIdentifier,
+            hub_status: DeploymentRequestHubStatus.Active,
+            type: DeploymentRequestDeploymentType.Trial,
+            organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          }
+        );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
@@ -188,12 +212,15 @@ describe('deploymentRequestDomain', () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
-      const deployment = await insertDeploymentRequest({
-        platform_identifier: platformIdentifier,
-        hub_status: DeploymentRequestHubStatus.Expired,
-        type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      const deployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: platformIdentifier,
+            hub_status: DeploymentRequestHubStatus.Expired,
+            type: DeploymentRequestDeploymentType.Trial,
+            organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          }
+        );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
@@ -210,12 +237,15 @@ describe('deploymentRequestDomain', () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
-      const deployment = await insertDeploymentRequest({
-        platform_identifier: platformIdentifier,
-        hub_status: DeploymentRequestHubStatus.Pending,
-        type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      const deployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: platformIdentifier,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            type: DeploymentRequestDeploymentType.Trial,
+            organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          }
+        );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
@@ -234,12 +264,14 @@ describe('deploymentRequestDomain', () => {
       const userNotInOrganization =
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
 
-      await insertDeploymentRequest({
-        platform_identifier: platformIdentifier,
-        hub_status: DeploymentRequestHubStatus.Active,
-        type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_identifier: platformIdentifier,
+          hub_status: DeploymentRequestHubStatus.Active,
+          type: DeploymentRequestDeploymentType.Trial,
+          organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        }
+      );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
@@ -254,12 +286,14 @@ describe('deploymentRequestDomain', () => {
       const platformIdentifier = PlatformIdentifier.Opencti;
       const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID as UserId;
 
-      await insertDeploymentRequest({
-        platform_identifier: PlatformIdentifier.Openaev,
-        hub_status: DeploymentRequestHubStatus.Active,
-        type: DeploymentRequestDeploymentType.Trial,
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_identifier: PlatformIdentifier.Openaev,
+          hub_status: DeploymentRequestHubStatus.Active,
+          type: DeploymentRequestDeploymentType.Trial,
+          organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        }
+      );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformIdentifierAndUserId(
@@ -281,11 +315,14 @@ describe('deploymentRequestDomain', () => {
     it('should return deployment request when Active trial deployment exists with matching token', async () => {
       const platformToken = uuidv4();
 
-      const deployment = await insertDeploymentRequest({
-        platform_token: platformToken,
-        hub_status: DeploymentRequestHubStatus.Active,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const deployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_token: platformToken,
+            hub_status: DeploymentRequestHubStatus.Active,
+            type: DeploymentRequestDeploymentType.Trial,
+          }
+        );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
@@ -301,11 +338,14 @@ describe('deploymentRequestDomain', () => {
     it('should return deployment request when Expired trial deployment exists with matching token', async () => {
       const platformToken = uuidv4();
 
-      const deployment = await insertDeploymentRequest({
-        platform_token: platformToken,
-        hub_status: DeploymentRequestHubStatus.Expired,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const deployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_token: platformToken,
+            hub_status: DeploymentRequestHubStatus.Expired,
+            type: DeploymentRequestDeploymentType.Trial,
+          }
+        );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
@@ -320,11 +360,14 @@ describe('deploymentRequestDomain', () => {
     it('should return deployment request when hub_status is Pending', async () => {
       const platformToken = uuidv4();
 
-      const deployment = await insertDeploymentRequest({
-        platform_token: platformToken,
-        hub_status: DeploymentRequestHubStatus.Pending,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      const deployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_token: platformToken,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            type: DeploymentRequestDeploymentType.Trial,
+          }
+        );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
@@ -340,11 +383,13 @@ describe('deploymentRequestDomain', () => {
       const platformToken = uuidv4();
       const nonExistentToken = 'non-existent-token';
 
-      await insertDeploymentRequest({
-        platform_token: platformToken,
-        hub_status: DeploymentRequestHubStatus.Active,
-        type: DeploymentRequestDeploymentType.Trial,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_token: platformToken,
+          hub_status: DeploymentRequestHubStatus.Active,
+          type: DeploymentRequestDeploymentType.Trial,
+        }
+      );
 
       const result =
         await DeploymentRequestDomain.loadTrialDeploymentRequestByPlatformToken(
@@ -358,11 +403,13 @@ describe('deploymentRequestDomain', () => {
   describe('loadFullDeploymentRequest', () => {
     it('should return a full deployment request when platform id is defined in deployment request', async () => {
       const platformId = uuidv4();
-      await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-        type: DeploymentRequestDeploymentType.Trial,
-        platform_id: platformId,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          hub_status: DeploymentRequestHubStatus.Active,
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_id: platformId,
+        }
+      );
 
       const result = await DeploymentRequestDomain.loadFullDeploymentRequest({
         platform_id: platformId,
@@ -399,12 +446,17 @@ describe('deploymentRequestDomain', () => {
 
   describe('reorderDeploymentRequestUp', () => {
     it('should do nothing when deployment request is the top one', async () => {
-      const topDeploymentRequest = await insertDeploymentRequest({
-        ordering: 1,
-      });
-      await insertDeploymentRequest({
-        ordering: 2,
-      });
+      const topDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 1,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          ordering: 2,
+        }
+      );
 
       await DeploymentRequestDomain.reorderDeploymentRequestUp(
         topDeploymentRequest!
@@ -419,18 +471,26 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should swap deployment request with the previous one', async () => {
-      await insertDeploymentRequest({
-        ordering: 2,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      const previousDeploymentRequest = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      const selectedDeploymentRequest = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          ordering: 2,
+          hub_status: DeploymentRequestHubStatus.Queued,
+        }
+      );
+      const previousDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      const selectedDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
 
       await DeploymentRequestDomain.reorderDeploymentRequestUp(
         selectedDeploymentRequest!
@@ -451,14 +511,20 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should only reorder queued deployment requests', async () => {
-      const previousDeploymentRequest = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Active,
-      });
-      const selectedDeploymentRequest = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      const previousDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
+      const selectedDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
 
       await DeploymentRequestDomain.reorderDeploymentRequestUp(
         selectedDeploymentRequest!
@@ -480,15 +546,21 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should only reorder deployment requests from the same platform', async () => {
-      const previousDeploymentRequest = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        platform_identifier: PlatformIdentifier.Openaev,
-      });
-      const selectedDeploymentRequest = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      const previousDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        );
+      const selectedDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
 
       await DeploymentRequestDomain.reorderDeploymentRequestUp(
         selectedDeploymentRequest!
@@ -512,14 +584,19 @@ describe('deploymentRequestDomain', () => {
 
   describe('reorderDeploymentRequestToTop', async () => {
     it('should do nothing when deployment request is the top one', async () => {
-      const topDeploymentRequest = await insertDeploymentRequest({
-        ordering: 1,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      await insertDeploymentRequest({
-        ordering: 2,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      const topDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 1,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          ordering: 2,
+          hub_status: DeploymentRequestHubStatus.Queued,
+        }
+      );
 
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
         topDeploymentRequest!
@@ -534,22 +611,32 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should reorder deployment request to top', async () => {
-      const topDeploymentRequest = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      await insertDeploymentRequest({
-        ordering: 5,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      const selectedDeploymentRequest = await insertDeploymentRequest({
-        ordering: 6,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      const topDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          ordering: 4,
+          hub_status: DeploymentRequestHubStatus.Queued,
+        }
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          ordering: 5,
+          hub_status: DeploymentRequestHubStatus.Queued,
+        }
+      );
+      const selectedDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 6,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
 
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
         selectedDeploymentRequest!
@@ -572,20 +659,31 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should only reorder queued deployment requests', async () => {
-      const topDeploymentRequest = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      const secondDeploymentRequest = await insertDeploymentRequest({
-        ordering: 4,
-      });
-      await insertDeploymentRequest({
-        ordering: 5,
-      });
-      const selectedDeploymentRequest = await insertDeploymentRequest({
-        ordering: 6,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      const topDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      const secondDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          ordering: 5,
+        }
+      );
+      const selectedDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 6,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
 
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
         selectedDeploymentRequest!
@@ -618,24 +716,35 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should only reorder deployment requests from same platform identifier', async () => {
-      const topDeploymentRequest = await insertDeploymentRequest({
-        ordering: 3,
-        platform_identifier: PlatformIdentifier.Openaev,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      const secondDeploymentRequest = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      await insertDeploymentRequest({
-        ordering: 5,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-      const selectedDeploymentRequest = await insertDeploymentRequest({
-        ordering: 6,
-        platform_identifier: PlatformIdentifier.Openaev,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      const topDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            platform_identifier: PlatformIdentifier.Openaev,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      const secondDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          ordering: 5,
+          hub_status: DeploymentRequestHubStatus.Queued,
+        }
+      );
+      const selectedDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 6,
+            platform_identifier: PlatformIdentifier.Openaev,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
 
       await DeploymentRequestDomain.reorderDeploymentRequestToTop(
         selectedDeploymentRequest!
@@ -675,44 +784,59 @@ describe('deploymentRequestDomain', () => {
     let deploymentRequestId3: DeploymentRequestId;
     let deploymentRequestId4: DeploymentRequestId;
     beforeEach(async () => {
-      const deploymentRequest1 = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
+      const deploymentRequest1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+          }
+        );
       deploymentRequestId1 = deploymentRequest1!.id;
       platformIdentifier = deploymentRequest1!.platform_identifier;
       region = deploymentRequest1!.region;
 
-      const deploymentRequest2 = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-      });
+      const deploymentRequest2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+          }
+        );
       deploymentRequestId2 = deploymentRequest2!.id;
 
-      const deploymentRequest3 = await insertDeploymentRequest({
-        ordering: 5,
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-      });
+      const deploymentRequest3 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 5,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+          }
+        );
       deploymentRequestId3 = deploymentRequest3!.id;
 
-      const deploymentRequest4 = await insertDeploymentRequest({
-        ordering: 6,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
+      const deploymentRequest4 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 6,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+          }
+        );
       deploymentRequestId4 = deploymentRequest4!.id;
     });
 
     it('should update the last request in platform and region', async () => {
-      const openAEVDeploymentRequest = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-        platform_identifier: PlatformIdentifier.Openaev,
-      });
+      const openAEVDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        );
 
       const updatedRequest =
         await DeploymentRequestDomain.setLastPendingRequestAsQueued(
@@ -723,30 +847,45 @@ describe('deploymentRequestDomain', () => {
       expect(updatedRequest).toBeDefined();
       expect(updatedRequest!.id).toBe(deploymentRequestId3);
 
-      await assertDeploymentRequestProperties(deploymentRequestId1, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId1,
+        {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          target_state: DeploymentRequestPlatformState.Unprovisioned,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId2, {
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId2,
+        {
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId3, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Removed,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId3,
+        {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          target_state: DeploymentRequestPlatformState.Removed,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId4, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId4,
+        {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          target_state: DeploymentRequestPlatformState.Unprovisioned,
+        }
+      );
 
-      await assertDeploymentRequestProperties(openAEVDeploymentRequest!.id, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        ordering: openAEVDeploymentRequest!.ordering,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        openAEVDeploymentRequest!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          ordering: openAEVDeploymentRequest!.ordering,
+        }
+      );
     });
 
     it('should set pending requests in the right order with queued requests', async () => {
@@ -755,21 +894,33 @@ describe('deploymentRequestDomain', () => {
         region
       );
 
-      await assertDeploymentRequestProperties(deploymentRequestId1, {
-        ordering: 4,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId1,
+        {
+          ordering: 4,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId2, {
-        ordering: 4,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId2,
+        {
+          ordering: 4,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId3, {
-        ordering: 1,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId3,
+        {
+          ordering: 1,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId4, {
-        ordering: 7,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId4,
+        {
+          ordering: 7,
+        }
+      );
     });
 
     it('should do nothing when there is no pending requests', async () => {
@@ -785,46 +936,70 @@ describe('deploymentRequestDomain', () => {
 
       expect(updatedRequest).toBeUndefined();
 
-      await assertDeploymentRequestProperties(deploymentRequestId1, {
-        ordering: 3,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId1,
+        {
+          ordering: 3,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId2, {
-        ordering: 4,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId2,
+        {
+          ordering: 4,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId3, {
-        ordering: 5,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId3,
+        {
+          ordering: 5,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequestId4, {
-        ordering: 6,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequestId4,
+        {
+          ordering: 6,
+        }
+      );
     });
   });
 
   describe('setFirstQueuedRequestAsPending', () => {
     it('should move the first request to pending, ordered by ordering', async () => {
-      const deploymentRequest1 = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
-      const deploymentRequest2 = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-      });
-      const deploymentRequest3 = await insertDeploymentRequest({
-        ordering: 5,
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-      });
-      const deploymentRequest4 = await insertDeploymentRequest({
-        ordering: 6,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
+      const deploymentRequest1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+          }
+        );
+      const deploymentRequest2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+          }
+        );
+      const deploymentRequest3 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 5,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+          }
+        );
+      const deploymentRequest4 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 6,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+          }
+        );
 
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
@@ -841,44 +1016,62 @@ describe('deploymentRequestDomain', () => {
         DeploymentRequestHubStatus.Active
       );
 
-      await assertDeploymentRequestProperties(deploymentRequest1!.id, {
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        ordering: 6,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequest1!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+          ordering: 6,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequest2!.id, {
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        ordering: 4,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequest2!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+          ordering: 4,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequest3!.id, {
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        ordering: 5,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequest3!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+          ordering: 5,
+        }
+      );
 
-      await assertDeploymentRequestProperties(deploymentRequest4!.id, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-        ordering: 6,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequest4!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          target_state: DeploymentRequestPlatformState.Unprovisioned,
+          ordering: 6,
+        }
+      );
     });
 
     it('should not move requests from another region', async () => {
-      const deploymentRequest1 = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-        platform_identifier: PlatformIdentifier.Opencti,
-      });
-      const deploymentRequest2 = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-        platform_identifier: PlatformIdentifier.Openaev,
-      });
+      const deploymentRequest1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        );
+      const deploymentRequest2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        );
 
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
@@ -886,27 +1079,39 @@ describe('deploymentRequestDomain', () => {
           deploymentRequest1!.region
         );
       expect(updatedDeploymentRequest).toBeDefined();
-      await assertDeploymentRequestProperties(deploymentRequest1!.id, {
-        hub_status: DeploymentRequestHubStatus.Pending,
-      });
-      await assertDeploymentRequestProperties(deploymentRequest2!.id, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequest1!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Pending,
+        }
+      );
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequest2!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Queued,
+        }
+      );
     });
 
     it('should not move request from another platform', async () => {
-      const deploymentRequest1 = await insertDeploymentRequest({
-        ordering: 3,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-        region: DeploymentRequestPlatformRegion.UsEast,
-      });
-      const deploymentRequest2 = await insertDeploymentRequest({
-        ordering: 4,
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-        region: DeploymentRequestPlatformRegion.EuWest,
-      });
+      const deploymentRequest1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 3,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+            region: DeploymentRequestPlatformRegion.UsEast,
+          }
+        );
+      const deploymentRequest2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 4,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+            region: DeploymentRequestPlatformRegion.EuWest,
+          }
+        );
 
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
@@ -914,12 +1119,18 @@ describe('deploymentRequestDomain', () => {
           DeploymentRequestPlatformRegion.UsEast
         );
       expect(updatedDeploymentRequest).toBeDefined();
-      await assertDeploymentRequestProperties(deploymentRequest1!.id, {
-        hub_status: DeploymentRequestHubStatus.Pending,
-      });
-      await assertDeploymentRequestProperties(deploymentRequest2!.id, {
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequest1!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Pending,
+        }
+      );
+      await TestHelper.deploymentRequest.assertProperties(
+        deploymentRequest2!.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Queued,
+        }
+      );
     });
   });
 });

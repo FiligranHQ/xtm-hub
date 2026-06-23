@@ -79,10 +79,6 @@ import { ServiceInstanceDomain } from '../service/instance/service-instance.doma
 import { CompetitorDomain } from './competitor/competitor.domain';
 import { DeploymentApp } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
-import {
-  assertDeploymentRequestProperties,
-  insertDeploymentRequest,
-} from './deployment.test.utils';
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
 describe('deployment app', () => {
@@ -508,7 +504,10 @@ describe('deployment app', () => {
     });
 
     it('should return created deployment requests', async () => {
-      const deploymentRequest = await insertDeploymentRequest({});
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
 
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
@@ -532,7 +531,10 @@ describe('deployment app', () => {
     });
 
     it('should return platform_url when PlatformConfiguration exists', async () => {
-      const deploymentRequest = await insertDeploymentRequest({});
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
 
       await TestHelper.platformConfiguration.create({
         service_instance_id: deploymentRequest!.service_instance_id,
@@ -558,16 +560,20 @@ describe('deployment app', () => {
     });
 
     it('should return out-of-sync deployment requests by default', async () => {
-      await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: undefined,
-      });
-      await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Active,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+          actual_state: undefined,
+        }
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          hub_status: DeploymentRequestHubStatus.Active,
+          target_state: DeploymentRequestPlatformState.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
+        }
+      );
 
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
@@ -581,15 +587,19 @@ describe('deployment app', () => {
     });
 
     it('should return out-of-sync deployments even with other filters', async () => {
-      await insertDeploymentRequest({
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: undefined,
-      });
-      await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Active,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          target_state: DeploymentRequestPlatformState.Active,
+          actual_state: undefined,
+        }
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          hub_status: DeploymentRequestHubStatus.Active,
+          target_state: DeploymentRequestPlatformState.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
+        }
+      );
 
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
@@ -610,46 +620,64 @@ describe('deployment app', () => {
 
     it('should filter multiple out-of-sync scenarios correctly', async () => {
       // Out-of-sync: NULL target vs NULL actual (both NULL = synced, should NOT appear)
-      const synced1 = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Queued,
-        target_state: undefined,
-        actual_state: undefined,
-      });
+      const synced1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: undefined,
+            actual_state: undefined,
+          }
+        );
 
       // Out-of-sync: active target vs NULL actual
-      const outOfSync1 = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: undefined,
-      });
+      const outOfSync1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: undefined,
+          }
+        );
 
       // Out-of-sync: active target vs provisioning actual
-      const outOfSync2 = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Provisioning,
-      });
+      const outOfSync2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+          }
+        );
 
       // Synced: active target vs active actual
-      const synced2 = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Active,
-      });
+      const synced2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+          }
+        );
 
       // Out-of-sync: NULL target vs provisioning actual
-      const outOfSync3 = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Failed,
-        target_state: undefined,
-        actual_state: DeploymentRequestPlatformState.Provisioning,
-      });
+      const outOfSync3 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Failed,
+            target_state: undefined,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+          }
+        );
 
       // Synced: inactive target vs inactive actual
-      const synced3 = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Expired,
-        target_state: DeploymentRequestPlatformState.Unprovisioned,
-        actual_state: DeploymentRequestPlatformState.Unprovisioned,
-      });
+      const synced3 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+            actual_state: DeploymentRequestPlatformState.Unprovisioned,
+          }
+        );
 
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
@@ -669,17 +697,23 @@ describe('deployment app', () => {
     });
 
     it('should return filtered deployment requests only', async () => {
-      await insertDeploymentRequest({});
-      await insertDeploymentRequest({
-        region: DeploymentRequestPlatformRegion.EuWest,
-        hub_status: DeploymentRequestHubStatus.Active,
-        actual_state: DeploymentRequestPlatformState.Active,
-      });
-      await insertDeploymentRequest({
-        platform_identifier: PlatformIdentifier.Openaev,
-        hub_status: DeploymentRequestHubStatus.Active,
-        actual_state: DeploymentRequestPlatformState.Active,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {}
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          region: DeploymentRequestPlatformRegion.EuWest,
+          hub_status: DeploymentRequestHubStatus.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
+        }
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_identifier: PlatformIdentifier.Openaev,
+          hub_status: DeploymentRequestHubStatus.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
+        }
+      );
 
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
@@ -708,11 +742,14 @@ describe('deployment app', () => {
     beforeEach(async () => {
       requestContext.set(requestContextSystemUserManageDeployment);
 
-      initialDeployment = (await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Provisioning,
-      })) as DeploymentRequest;
+      initialDeployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+          }
+        )) as DeploymentRequest;
     });
 
     it('should update a deployment request', async () => {
@@ -829,12 +866,15 @@ describe('deployment app', () => {
     });
 
     it('with Active status for OpenAEV, it should create OpenAEV ServiceGroups (Admin, Manager, Observer) with admin user', async () => {
-      const openaevDeployment = (await insertDeploymentRequest({
-        platform_identifier: PlatformIdentifier.Openaev,
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Provisioning,
-      })) as DeploymentRequest;
+      const openaevDeployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: PlatformIdentifier.Openaev,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+          }
+        )) as DeploymentRequest;
 
       const deployment = await DeploymentApp.updateDeploymentRequest({
         id: openaevDeployment.id as DeploymentRequestId,
@@ -1150,9 +1190,11 @@ describe('deployment app', () => {
       await TestHelper.competitor.delete({});
     });
     it('should return trial as available if the created one does not count in quota', async () => {
-      await insertDeploymentRequest({
-        counts_in_orga_quota: false,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          counts_in_orga_quota: false,
+        }
+      );
 
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
@@ -1167,7 +1209,10 @@ describe('deployment app', () => {
     });
 
     it('should not return identifier as available when DeploymentRequest exist', async () => {
-      const deploymentRequest = await insertDeploymentRequest({});
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
 
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
@@ -1186,7 +1231,9 @@ describe('deployment app', () => {
       });
     });
     it('should return data corresponding to the right organization', async () => {
-      await insertDeploymentRequest({});
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {}
+      );
 
       requestContext.set(requestContextAdminSecondOrga);
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
@@ -1202,7 +1249,9 @@ describe('deployment app', () => {
     });
     it('should return not availablity and no deployed for personal space', async () => {
       requestContext.set(requestContextAdminSecondOrga);
-      await insertDeploymentRequest({});
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {}
+      );
 
       const contextUserWithPersonalOrga: PortalContext = {
         ...contextSimpleUserSecondOrga,
@@ -1231,7 +1280,9 @@ describe('deployment app', () => {
       });
     });
     it('should throw if user does not belong in the organization', async () => {
-      await insertDeploymentRequest({});
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {}
+      );
 
       requestContext.set(requestContextAdminSecondOrga);
       const call = DeploymentApp.loadTrialDeployments({
@@ -1359,10 +1410,13 @@ describe('deployment app', () => {
         counts_in_orga_quota,
         target_state,
       }) => {
-        const initialDeployment = (await insertDeploymentRequest({
-          hub_status,
-          actual_state,
-        })) as DeploymentRequest;
+        const initialDeployment =
+          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status,
+              actual_state,
+            }
+          )) as DeploymentRequest;
         const cancellationReason = isAdmin ? undefined : 'my reason';
         const deployment = await DeploymentApp.cancelDeploymentRequest(
           initialDeployment.id,
@@ -1416,9 +1470,10 @@ describe('deployment app', () => {
     });
 
     it('should throw if user is not in organization and not isAdmin', async () => {
-      const deployment = (await insertDeploymentRequest(
-        {}
-      )) as DeploymentRequest;
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        )) as DeploymentRequest;
 
       requestContext.set(requestContextAdminSecondOrga);
       const call = DeploymentApp.cancelDeploymentRequest(deployment.id, false);
@@ -1428,9 +1483,10 @@ describe('deployment app', () => {
     });
 
     it('should not throw if user is not in organization and isAdmin', async () => {
-      const deployment = (await insertDeploymentRequest(
-        {}
-      )) as DeploymentRequest;
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        )) as DeploymentRequest;
 
       requestContext.set(requestContextAdminSecondOrga);
       const response = await DeploymentApp.cancelDeploymentRequest(
@@ -1440,9 +1496,10 @@ describe('deployment app', () => {
       expect(response).toBeTruthy();
     });
     it('should send a telemetry event', async () => {
-      const deployment = (await insertDeploymentRequest(
-        {}
-      )) as DeploymentRequest;
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        )) as DeploymentRequest;
 
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
@@ -1473,10 +1530,13 @@ describe('deployment app', () => {
     });
 
     it('should send a mail to the trial requester', async () => {
-      const deployment = (await insertDeploymentRequest({
-        user_requester_id:
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-      })) as DeploymentRequest;
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            user_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+          }
+        )) as DeploymentRequest;
 
       await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
 
@@ -1502,12 +1562,14 @@ describe('deployment app', () => {
       hubStatus: DeploymentRequestHubStatus,
       ordering: number = 1
     ): Promise<DeploymentRequest> => {
-      return (await insertDeploymentRequest({
-        platform_identifier: platformIdentifier,
-        region,
-        hub_status: hubStatus,
-        ordering,
-      }))!;
+      return (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_identifier: platformIdentifier,
+          region,
+          hub_status: hubStatus,
+          ordering,
+        }
+      ))!;
     };
 
     const initQuota = async ({
@@ -1574,18 +1636,18 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 4, availability: 0 });
 
-        await assertDeploymentRequestProperties(activeRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(pendingRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId, {
           hub_status: DeploymentRequestHubStatus.Pending,
           ordering: 2,
         });
-        await assertDeploymentRequestProperties(queuedRequestId1, {
+        await TestHelper.deploymentRequest.assertProperties(queuedRequestId1, {
           hub_status: DeploymentRequestHubStatus.Pending,
           ordering: 4,
         });
-        await assertDeploymentRequestProperties(queuedRequestId2, {
+        await TestHelper.deploymentRequest.assertProperties(queuedRequestId2, {
           hub_status: DeploymentRequestHubStatus.Pending,
           ordering: 3,
         });
@@ -1611,13 +1673,13 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 2, availability: 0 });
 
-        await assertDeploymentRequestProperties(activeRequestId1, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId1, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(activeRequestId2, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId2, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(queuedRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(queuedRequestId, {
           hub_status: DeploymentRequestHubStatus.Queued,
         });
       });
@@ -1645,16 +1707,16 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 2, availability: -1 });
 
-        await assertDeploymentRequestProperties(activeRequestId1, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId1, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(activeRequestId2, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId2, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(activeRequestId3, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId3, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(queuedRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(queuedRequestId, {
           hub_status: DeploymentRequestHubStatus.Queued,
         });
       });
@@ -1729,7 +1791,7 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 0, availability: 0 });
 
-        await assertDeploymentRequestProperties(pendingRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId, {
           hub_status: DeploymentRequestHubStatus.Queued,
         });
       });
@@ -1751,10 +1813,10 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 1, availability: 0 });
 
-        await assertDeploymentRequestProperties(pendingRequestId1, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId1, {
           hub_status: DeploymentRequestHubStatus.Queued,
         });
-        await assertDeploymentRequestProperties(pendingRequestId2, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId2, {
           hub_status: DeploymentRequestHubStatus.Pending,
         });
       });
@@ -1786,19 +1848,19 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 0, availability: 0 });
 
-        await assertDeploymentRequestProperties(pendingRequestId1, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId1, {
           hub_status: DeploymentRequestHubStatus.Queued,
           ordering: 2,
         });
-        await assertDeploymentRequestProperties(pendingRequestId2, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId2, {
           hub_status: DeploymentRequestHubStatus.Queued,
           ordering: 1,
         });
-        await assertDeploymentRequestProperties(queuedRequestId1, {
+        await TestHelper.deploymentRequest.assertProperties(queuedRequestId1, {
           hub_status: DeploymentRequestHubStatus.Queued,
           ordering: 4,
         });
-        await assertDeploymentRequestProperties(queuedRequestId2, {
+        await TestHelper.deploymentRequest.assertProperties(queuedRequestId2, {
           hub_status: DeploymentRequestHubStatus.Queued,
           ordering: 7,
         });
@@ -1827,16 +1889,16 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 1, availability: -1 });
 
-        await assertDeploymentRequestProperties(activeRequestId1, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId1, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(activeRequestId2, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId2, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(pendingRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId, {
           hub_status: DeploymentRequestHubStatus.Queued,
         });
-        await assertDeploymentRequestProperties(queuedRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(queuedRequestId, {
           hub_status: DeploymentRequestHubStatus.Queued,
         });
       });
@@ -1857,10 +1919,10 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 2, availability: 0 });
 
-        await assertDeploymentRequestProperties(activeRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(pendingRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId, {
           hub_status: DeploymentRequestHubStatus.Pending,
         });
       });
@@ -1880,10 +1942,10 @@ describe('deployment app', () => {
 
         await assertQuota({ capacity: 3, availability: 1 });
 
-        await assertDeploymentRequestProperties(activeRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(activeRequestId, {
           hub_status: DeploymentRequestHubStatus.Active,
         });
-        await assertDeploymentRequestProperties(pendingRequestId, {
+        await TestHelper.deploymentRequest.assertProperties(pendingRequestId, {
           hub_status: DeploymentRequestHubStatus.Pending,
         });
       });
@@ -1958,18 +2020,24 @@ describe('deployment app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
 
-      const expiredTrial = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Active,
-        end_date: new Date(Date.UTC(2025, 1, 1)),
-      });
-      const nonExpiredTrial = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Active,
-        end_date: new Date(Date.UTC(2025, 1, 5)),
-      });
+      const expiredTrial =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+            end_date: new Date(Date.UTC(2025, 1, 1)),
+          }
+        );
+      const nonExpiredTrial =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+            end_date: new Date(Date.UTC(2025, 1, 5)),
+          }
+        );
 
       await DeploymentApp.expireTrials();
 
@@ -2009,11 +2077,14 @@ describe('deployment app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
         const expiredDate = new Date(Date.UTC(2025, 1, 1));
-        const trial = await insertDeploymentRequest({
-          hub_status: hub_status,
-          target_state: target_state,
-          end_date: expiredDate,
-        });
+        const trial =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: hub_status,
+              target_state: target_state,
+              end_date: expiredDate,
+            }
+          );
 
         await DeploymentApp.expireTrials();
 
@@ -2034,13 +2105,15 @@ describe('deployment app', () => {
       vi.setSystemTime(date);
       const expiredDate = new Date(Date.UTC(2025, 1, 1));
 
-      await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-        target_state: DeploymentRequestPlatformState.Active,
-        end_date: expiredDate,
-        user_requester_id:
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-      });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          hub_status: DeploymentRequestHubStatus.Active,
+          target_state: DeploymentRequestPlatformState.Active,
+          end_date: expiredDate,
+          user_requester_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+        }
+      );
 
       await DeploymentApp.expireTrials();
 
@@ -2061,15 +2134,19 @@ describe('deployment app', () => {
       const start_date = new Date(2024, 12, 1);
       const end_date = new Date(2025, 1, 1);
 
-      const trial = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-        target_state: DeploymentRequestPlatformState.Active,
-        start_date,
-        end_date,
-        user_requester_id:
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
+      const trial =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            target_state: DeploymentRequestPlatformState.Active,
+            start_date,
+            end_date,
+            user_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+            organization_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          }
+        );
 
       await DeploymentApp.expireTrials();
 
@@ -2109,9 +2186,12 @@ describe('deployment app', () => {
       `(
         'should not free place when request hub status is $hub_status',
         async ({ hub_status }) => {
-          const deploymentRequest = await insertDeploymentRequest({
-            hub_status,
-          });
+          const deploymentRequest =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                hub_status,
+              }
+            );
 
           await DeploymentApp.releaseDeploymentRequestPlace(
             deploymentRequest!.hub_status,
@@ -2125,9 +2205,12 @@ describe('deployment app', () => {
     });
 
     it('should set one queued request as pending and not free place', async () => {
-      const deploymentRequestToRelease = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-      });
+      const deploymentRequestToRelease =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
       const queuedDeploymentRequest = {
         ...deploymentRequestToRelease!,
         hub_status: DeploymentRequestHubStatus.Pending,
@@ -2155,9 +2238,12 @@ describe('deployment app', () => {
         'setFirstQueuedRequestAsPending'
       ).mockResolvedValue(undefined);
 
-      const deploymentRequest = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Active,
-      });
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         deploymentRequest!.hub_status,
@@ -2178,9 +2264,12 @@ describe('deployment app', () => {
           'setFirstQueuedRequestAsPending'
         ).mockResolvedValue(undefined);
 
-        const deploymentRequest = await insertDeploymentRequest({
-          hub_status: DeploymentRequestHubStatus.Active,
-        });
+        const deploymentRequest =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+            }
+          );
 
         await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
@@ -2196,13 +2285,16 @@ describe('deployment app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
 
-        const queuedDeploymentRequest = await insertDeploymentRequest({
-          hub_status: DeploymentRequestHubStatus.Queued,
-          activity_sector:
-            DeploymentRequestActivitySector.ComputerNetworkSecurity,
-          region: DeploymentRequestPlatformRegion.UsEast,
-          platform_id: uuidv4(),
-        });
+        const queuedDeploymentRequest =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: DeploymentRequestHubStatus.Queued,
+              activity_sector:
+                DeploymentRequestActivitySector.ComputerNetworkSecurity,
+              region: DeploymentRequestPlatformRegion.UsEast,
+              platform_id: uuidv4(),
+            }
+          );
 
         vi.spyOn(
           DeploymentRequestDomain,
@@ -2211,9 +2303,12 @@ describe('deployment app', () => {
           ...queuedDeploymentRequest!,
           hub_status: DeploymentRequestHubStatus!.Pending,
         });
-        const deploymentRequest = await insertDeploymentRequest({
-          hub_status: DeploymentRequestHubStatus.Active,
-        });
+        const deploymentRequest =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+            }
+          );
 
         await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,

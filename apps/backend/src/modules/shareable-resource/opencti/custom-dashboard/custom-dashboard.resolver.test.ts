@@ -15,11 +15,8 @@ import ServiceInstance, {
 } from '../../../../model/kanel/public/ServiceInstance';
 import UseCase from '../../../../model/kanel/public/UseCase';
 import User from '../../../../model/kanel/public/User';
-import { DocumentChildrenDomain } from '../../../document/domain/document.children.domain';
-import { DocumentDomain } from '../../../document/domain/document.domain';
 import { ServiceInstanceDomain } from '../../../service/instance/service-instance.domain';
 import { subscriptionApp } from '../../../subscription/subscription.app';
-import { useCaseDomain } from '../../../use-case/use-case.domain';
 import customDashboardResolver from './custom-dashboard.resolver';
 
 describe('customDashboard field resolvers', () => {
@@ -28,9 +25,10 @@ describe('customDashboard field resolvers', () => {
       // Given
       const documentId = uuidv4();
       const expected = [{ id: uuidv4(), name: 'Use Case A' }];
-      vi.spyOn(useCaseDomain, 'loadUseCasesByDocumentId').mockResolvedValue(
-        expected as unknown as UseCase[]
-      );
+      vi.spyOn(
+        contextSimpleUserFiligran2.dataLoaders.useCasesByDocumentIdLoader,
+        'load'
+      ).mockResolvedValue(expected as unknown as UseCase[]);
 
       // When
       const result = await customDashboardResolver.CustomDashboard!.use_cases!(
@@ -41,9 +39,9 @@ describe('customDashboard field resolvers', () => {
       );
 
       // Then
-      expect(useCaseDomain.loadUseCasesByDocumentId).toHaveBeenCalledWith(
-        documentId
-      );
+      expect(
+        contextSimpleUserFiligran2.dataLoaders.useCasesByDocumentIdLoader.load
+      ).toHaveBeenCalledWith(documentId);
       expect(result).toEqual(expected);
     });
   });
@@ -54,11 +52,13 @@ describe('customDashboard field resolvers', () => {
       const documentId = uuidv4();
       const expected = [{ id: uuidv4() }];
       vi.spyOn(
-        DocumentChildrenDomain,
-        'loadImagesByDocumentId'
+        contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader,
+        'load'
       ).mockResolvedValue(
         expected as unknown as Awaited<
-          ReturnType<typeof DocumentChildrenDomain.loadImagesByDocumentId>
+          ReturnType<
+            typeof contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader.load
+          >
         >
       );
 
@@ -73,7 +73,7 @@ describe('customDashboard field resolvers', () => {
 
       // Then
       expect(
-        DocumentChildrenDomain.loadImagesByDocumentId
+        contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader.load
       ).toHaveBeenCalledWith(documentId);
       expect(result).toEqual(expected);
     });
@@ -84,9 +84,10 @@ describe('customDashboard field resolvers', () => {
       // Given
       const documentId = uuidv4();
       const expected = { id: uuidv4(), email: 'user@test.com' };
-      vi.spyOn(DocumentDomain, 'loadUploader').mockResolvedValue(
-        expected as unknown as User | undefined
-      );
+      vi.spyOn(
+        contextSimpleUserFiligran2.dataLoaders.uploaderLoader,
+        'load'
+      ).mockResolvedValue(expected as unknown as User | null);
 
       // When
       const result = await customDashboardResolver.CustomDashboard!.uploader!(
@@ -97,7 +98,9 @@ describe('customDashboard field resolvers', () => {
       );
 
       // Then
-      expect(DocumentDomain.loadUploader).toHaveBeenCalledWith(documentId);
+      expect(
+        contextSimpleUserFiligran2.dataLoaders.uploaderLoader.load
+      ).toHaveBeenCalledWith(documentId);
       expect(result).toEqual(expected);
     });
   });
@@ -107,9 +110,10 @@ describe('customDashboard field resolvers', () => {
       // Given
       const documentId = uuidv4();
       const expected = { id: uuidv4(), name: 'Org A' };
-      vi.spyOn(DocumentDomain, 'loadUploaderOrganization').mockResolvedValue(
-        expected as unknown as Organization | undefined
-      );
+      vi.spyOn(
+        contextSimpleUserFiligran2.dataLoaders.uploaderOrganizationLoader,
+        'load'
+      ).mockResolvedValue(expected as unknown as Organization | null);
 
       // When
       const result = await customDashboardResolver.CustomDashboard!
@@ -121,9 +125,9 @@ describe('customDashboard field resolvers', () => {
       );
 
       // Then
-      expect(DocumentDomain.loadUploaderOrganization).toHaveBeenCalledWith(
-        documentId
-      );
+      expect(
+        contextSimpleUserFiligran2.dataLoaders.uploaderOrganizationLoader.load
+      ).toHaveBeenCalledWith(documentId);
       expect(result).toEqual(expected);
     });
   });

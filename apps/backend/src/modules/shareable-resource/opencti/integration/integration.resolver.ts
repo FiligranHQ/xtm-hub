@@ -1,13 +1,11 @@
 import {
   IntegrationType,
   Resolvers,
+  ShareableResource,
 } from '../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../utils/app-logger.util';
-import { DocumentChildrenDomain } from '../../../document/domain/document.children.domain';
-import { DocumentDomain } from '../../../document/domain/document.domain';
 import { ServiceInstanceDomain } from '../../../service/instance/service-instance.domain';
 import { subscriptionApp } from '../../../subscription/subscription.app';
-import { useCaseDomain } from '../../../use-case/use-case.domain';
 
 const resolvers: Resolvers = {
   Integration: {
@@ -31,12 +29,16 @@ const resolvers: Resolvers = {
 
       return resolvedType;
     },
-    use_cases: ({ id }) => useCaseDomain.loadUseCasesByDocumentId(id),
-    children_documents: ({ id }) =>
-      DocumentChildrenDomain.loadImagesByDocumentId(id),
-    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
-    uploader_organization: ({ id }, _) =>
-      DocumentDomain.loadUploaderOrganization(id),
+    use_cases: ({ id }, _, context) =>
+      context.dataLoaders.useCasesByDocumentIdLoader.load(id),
+    children_documents: async ({ id }, _, context) =>
+      (await context.dataLoaders.imagesByDocumentIdLoader.load(
+        id
+      )) as unknown as ShareableResource[],
+    uploader: ({ id }, _, context) =>
+      context.dataLoaders.uploaderLoader.load(id),
+    uploader_organization: ({ id }, _, context) =>
+      context.dataLoaders.uploaderOrganizationLoader.load(id),
     service_instance: ({ service_instance_id }, _) => {
       if (!service_instance_id) return null;
       return ServiceInstanceDomain.getServiceInstance(service_instance_id);
