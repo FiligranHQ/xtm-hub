@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - "main"
-      - "development"
     paths:
       - "apps/**/package.json"
       - "package.json"
@@ -14,7 +13,6 @@ on:
   pull_request:
     branches:
       - "main"
-      - "development"
       - "issue/*"
     paths:
       - "apps/**/package.json"
