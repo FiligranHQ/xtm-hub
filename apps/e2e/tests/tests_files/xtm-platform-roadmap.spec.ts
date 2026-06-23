@@ -11,6 +11,37 @@ test.describe('XTM Platform Roadmap', () => {
     loginPage = new LoginPage(page);
     xtmPlatformRoadmapPage = new XTMPlatformRoadmapPage(page);
   });
+
+  async function seedNextEpics() {
+    await addEpic({
+      title: 'TitleDraft1',
+      short_description: 'Short description for a draft',
+      description: 'This is a draft epic',
+      product: 'opencti',
+      active: false,
+      timeline: 'next',
+      uploader_id: ADMIN_USER.ID,
+    });
+    await addEpic({
+      title: 'Title2',
+      short_description: 'Short description',
+      description: 'This is an epic',
+      product: 'opencti',
+      active: true,
+      timeline: 'next',
+      uploader_id: ADMIN_USER.ID,
+    });
+    await addEpic({
+      title: 'Title3',
+      short_description: 'Short description for another epic',
+      description: 'This is a second epic',
+      product: 'openaev',
+      active: true,
+      timeline: 'next',
+      uploader_id: ADMIN_USER.ID,
+    });
+  }
+
   test('Should allow Filigran user to perform a CRUD of an epic', async ({
     page,
   }) => {
@@ -87,6 +118,43 @@ test.describe('XTM Platform Roadmap', () => {
     await testXTMPlatformRoadmapForUser(page, 'user15@test.fr');
   });
 
+  test('Should display added epics timeline counts on the homepage roadmap section', async ({
+    page,
+  }) => {
+    await seedNextEpics();
+
+    await page.goto('/en');
+
+    const roadmapSection = page.locator('section').filter({
+      has: page.getByRole('heading', {
+        level: 2,
+        name: 'XTM Platform Roadmap',
+      }),
+    });
+
+    await test.step('roadmap section is visible on the homepage', async () => {
+      await expect(roadmapSection).toBeVisible();
+    });
+
+    await test.step('Next timeline label is visible', async () => {
+      await expect(
+        roadmapSection.getByText('Next', { exact: true })
+      ).toBeVisible();
+    });
+
+    await test.step('Next count reflects all 3 seeded epics regardless of active status', async () => {
+      // countEpicsPerTimeline counts all non-finished epics, active or not
+      await expect(
+        roadmapSection.getByText('3', { exact: true })
+      ).toBeVisible();
+    });
+
+    await test.step('"See more" navigates to the roadmap page', async () => {
+      await page.getByRole('link', { name: 'See more' }).click();
+      await page.waitForURL(/xtm-platform-roadmap/);
+    });
+  });
+
   async function testXTMPlatformRoadmapForUser(page, userEmail?: string) {
     if (userEmail) {
       await loginPage.navigateToAndLogin(userEmail);
@@ -94,33 +162,7 @@ test.describe('XTM Platform Roadmap', () => {
       await loginPage.navigateToPublicPages();
     }
 
-    await addEpic({
-      title: 'TitleDraft1',
-      short_description: 'Short description for a draft',
-      description: 'This is a draft epic',
-      product: 'opencti',
-      active: false,
-      timeline: 'next',
-      uploader_id: ADMIN_USER.ID,
-    });
-    await addEpic({
-      title: 'Title2',
-      short_description: 'Short description',
-      description: 'This is an epic',
-      product: 'opencti',
-      active: true,
-      timeline: 'next',
-      uploader_id: ADMIN_USER.ID,
-    });
-    await addEpic({
-      title: 'Title3',
-      short_description: 'Short description for another epic',
-      description: 'This is a second epic',
-      product: 'openaev',
-      active: true,
-      timeline: 'next',
-      uploader_id: ADMIN_USER.ID,
-    });
+    await seedNextEpics();
 
     await page.goto('/cybersecurity-solutions/xtm-platform-roadmap');
 
