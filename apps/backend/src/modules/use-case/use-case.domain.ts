@@ -9,6 +9,7 @@ import UseCase, {
   UseCaseMutator,
 } from '../../model/kanel/public/UseCase';
 import { UnknownErrorCode } from '../../utils/error/error.code';
+import { WithDocumentId } from '../document/document.helper';
 
 export const useCaseDomain = {
   insertUseCase: async (input: UseCaseInitializer): Promise<UseCase> => {
@@ -52,6 +53,13 @@ export const useCaseDomain = {
       undefined,
       useCaseQuery
     );
+  },
+
+  buildUseCasesByDocumentIdQuery: (documentIds: readonly string[]) => {
+    return db<WithDocumentId<UseCase>>('UseCase')
+      .leftJoin('Object_UseCase as ouc', 'ouc.use_case_id', 'UseCase.id')
+      .whereIn('ouc.object_id', documentIds)
+      .select('UseCase.*', 'ouc.object_id as _document_id');
   },
 
   loadUseCasesByDocumentId: (documentId: string): Promise<UseCase[]> => {

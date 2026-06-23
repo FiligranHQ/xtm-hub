@@ -8551,6 +8551,7 @@ __metadata:
     config: "npm:4.4.1"
     cors: "npm:2.8.6"
     cpy-cli: "npm:7.0.0"
+    dataloader: "npm:2.2.3"
     esbuild: "npm:0.28.1"
     eslint: "catalog:"
     eslint-config-prettier: "catalog:"
@@ -10572,7 +10573,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:^2.2.3":
+"dataloader@npm:2.2.3, dataloader@npm:^2.2.3":
   version: 2.2.3
   resolution: "dataloader@npm:2.2.3"
   checksum: 10/83fe6259abe00ae64c5f48252ef59d8e5fcabda9fd4d26685f14a76eeca596bf6f9500d9f22a0094c50c3ea782a0977728f9367e232dfa0fdb5c9d646de279b2

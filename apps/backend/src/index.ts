@@ -24,6 +24,7 @@ import { initCronJobs, stopCronJobs } from './crons';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
 import { documentDownloadEndpoint } from './modules/document/document-download-endpoint';
+import { DocumentDataLoader } from './modules/document/document.dataloader';
 import { documentVisualizeEndpoint } from './modules/document/visualize-document-endpoint';
 import { initAuthPlatform } from './modules/security-management/authentication/auth-platform';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
@@ -226,7 +227,10 @@ if (
 
 app.use(function (req, res, next) {
   requestContext.run(
-    { user: req.session.user, correlationId: uuidv4() },
+    {
+      user: req.session.user,
+      correlationId: uuidv4(),
+    },
     () => {
       next();
     }
@@ -306,6 +310,7 @@ const middlewareExpress = expressMiddleware(server, {
       user: user as UserLoadUserBy,
       req,
       res,
+      dataLoaders: DocumentDataLoader.create(),
     };
 
     return portalContext;
