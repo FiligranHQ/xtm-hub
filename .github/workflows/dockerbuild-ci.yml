@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - "main"
-      - "development"
     paths:
       - "apps/**"
       - ".github/workflows/dockerbuild-ci.yml"
@@ -16,7 +15,6 @@ on:
   pull_request:
     branches:
       - "main"
-      - "development"
       - "issue/*"
 
 permissions:
@@ -168,7 +166,6 @@ jobs:
           cache-from: |
             type=local,src=/tmp/.buildx-cache
             type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           cache-to: |
             type=local,dest=/tmp/.buildx-cache-new,mode=max
@@ -462,9 +459,7 @@ jobs:
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
           elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            echo "VERSION=staging-${GITHUB_SHA::8}" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
-            echo "VERSION=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VERSION=rolling-${GITHUB_SHA::8}" >> $GITHUB_ENV
           else
             echo "VERSION=local-${GITHUB_SHA::8}" >> $GITHUB_ENV
           fi
@@ -483,7 +478,6 @@ jobs:
           cache-from: |
             type=local,src=/tmp/.buildx-cache
             type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:latest
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
@@ -573,7 +567,7 @@ jobs:
           exit 1
 
       - name: Deploy on Development
-        if: github.ref == 'refs/heads/development'
+        if: github.ref == 'refs/heads/main'
         run: |
           max_attempts=5
           for i in $(seq 1 $max_attempts); do
@@ -595,7 +589,7 @@ jobs:
           exit 1
 
       - name: Deploy on Prerelease
-        if: github.ref == 'refs/heads/development'
+        if: github.ref == 'refs/heads/main'
         run: |
           max_attempts=5
           for i in $(seq 1 $max_attempts); do

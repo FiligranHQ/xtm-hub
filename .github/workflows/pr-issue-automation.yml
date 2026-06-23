@@ -3,7 +3,6 @@ on:
   pull_request:
     types: [opened, edited, ready_for_review, converted_to_draft, closed]
     branches:
-      - development
       - main
   pull_request_review:
     types: [submitted]
