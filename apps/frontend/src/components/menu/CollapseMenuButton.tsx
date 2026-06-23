@@ -18,7 +18,7 @@ export const CollapseMenuButton = ({
       <Button
         variant="ghost"
         aria-label={t('App.CollapseSidebar')}
-        className="h-9 px-m w-full justify-start rounded-none"
+        className="h-9 px-m w-full justify-start rounded-none text-foreground"
         onClick={handleOpenMenu}>
         <span className="flex w-8 shrink-0 justify-center">
           <KeyboardArrowLeftIcon

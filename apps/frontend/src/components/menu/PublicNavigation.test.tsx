@@ -5,6 +5,18 @@ import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 import PublicNavigation from './PublicNavigation';
 
+const expandSection = async (
+  user: ReturnType<typeof userEvent.setup>,
+  name: string
+) => {
+  const trigger = screen.getByRole('button', { name });
+  await user.click(trigger);
+  await waitFor(() => {
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+  return trigger;
+};
+
 describe('PublicNavigation — open={true}', () => {
   it('renders all section labels in the accordion', () => {
     testRender(<PublicNavigation open={true} />);
@@ -40,12 +52,7 @@ describe('PublicNavigation — open={true}', () => {
     const user = userEvent.setup();
     testRender(<PublicNavigation open={true} />);
 
-    const openctiTrigger = screen.getByRole('button', { name: 'OpenCTI' });
-    await user.click(openctiTrigger);
-
-    await waitFor(() => {
-      expect(openctiTrigger).toHaveAttribute('aria-expanded', 'true');
-    });
+    await expandSection(user, 'OpenCTI');
 
     expect(screen.getByText('PublicMenu.StartFreeTrial')).toBeInTheDocument();
     expect(screen.getByText('PublicMenu.CustomDashboards')).toBeInTheDocument();
@@ -58,12 +65,7 @@ describe('PublicNavigation — open={true}', () => {
     const user = userEvent.setup();
     testRender(<PublicNavigation open={true} />);
 
-    const openaevTrigger = screen.getByRole('button', { name: 'OpenAEV' });
-    await user.click(openaevTrigger);
-
-    await waitFor(() => {
-      expect(openaevTrigger).toHaveAttribute('aria-expanded', 'true');
-    });
+    await expandSection(user, 'OpenAEV');
 
     expect(screen.getByText('PublicMenu.StartFreeTrial')).toBeInTheDocument();
     expect(screen.getByText('PublicMenu.Scenarios')).toBeInTheDocument();
@@ -73,12 +75,7 @@ describe('PublicNavigation — open={true}', () => {
     const user = userEvent.setup();
     testRender(<PublicNavigation open={true} />);
 
-    const xtmOneTrigger = screen.getByRole('button', { name: 'XTM One' });
-    await user.click(xtmOneTrigger);
-
-    await waitFor(() => {
-      expect(xtmOneTrigger).toHaveAttribute('aria-expanded', 'true');
-    });
+    await expandSection(user, 'XTM One');
 
     expect(screen.getByText('PublicMenu.AICatalog')).toBeInTheDocument();
     expect(screen.getByText('PublicMenu.ComingSoon')).toBeInTheDocument();
@@ -88,12 +85,7 @@ describe('PublicNavigation — open={true}', () => {
     const user = userEvent.setup();
     testRender(<PublicNavigation open={true} />);
 
-    const openctiTrigger = screen.getByRole('button', { name: 'OpenCTI' });
-    await user.click(openctiTrigger);
-
-    await waitFor(() => {
-      expect(openctiTrigger).toHaveAttribute('aria-expanded', 'true');
-    });
+    await expandSection(user, 'OpenCTI');
 
     const liveDemoLinks = screen.getAllByRole('link', {
       name: /PublicMenu\.LiveDemo/,
@@ -133,12 +125,7 @@ describe('PublicNavigation — open={true}', () => {
     const user = userEvent.setup();
     testRender(<PublicNavigation open={true} />);
 
-    const openctiTrigger = screen.getByRole('button', { name: 'OpenCTI' });
-    await user.click(openctiTrigger);
-
-    await waitFor(() => {
-      expect(openctiTrigger).toHaveAttribute('aria-expanded', 'true');
-    });
+    await expandSection(user, 'OpenCTI');
 
     const dashboardsLink = screen.getByRole('link', {
       name: 'PublicMenu.CustomDashboards',
@@ -153,12 +140,7 @@ describe('PublicNavigation — open={true}', () => {
     const user = userEvent.setup();
     testRender(<PublicNavigation open={true} />);
 
-    const xtmOneTrigger = screen.getByRole('button', { name: 'XTM One' });
-    await user.click(xtmOneTrigger);
-
-    await waitFor(() => {
-      expect(xtmOneTrigger).toHaveAttribute('aria-expanded', 'true');
-    });
+    await expandSection(user, 'XTM One');
 
     const aiCatalogText = screen.getByText('PublicMenu.AICatalog');
     // Rendered as a <span>, not a link

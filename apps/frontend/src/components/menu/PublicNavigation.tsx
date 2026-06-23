@@ -30,6 +30,7 @@ import {
 
 const ACTIVE_CLASSES =
   'bg-primary/10 shadow-[inset_2px_0px] shadow-primary text-primary';
+const HOVER_CLASSES = 'hover:shadow-[inset_2px_0px] hover:shadow-white';
 const GRADIENT_STYLE =
   'linear-gradient(to right, hsl(var(--blue-default)), hsl(var(--turquoise-300)))';
 
@@ -59,7 +60,6 @@ const PublicLinkMenu = ({
   external,
 }: PublicLinkMenuProps) => {
   const currentPath = usePathname();
-  const Icon = icon;
   return (
     <Link
       href={href}
@@ -69,13 +69,11 @@ const PublicLinkMenu = ({
         buttonVariants({
           variant: 'ghost',
           className:
-            'h-8 w-full justify-start rounded-none normal-case pl-5 pr-s text-xs font-light',
+            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-s text-xs font-light',
         }),
-        currentPath === href && ACTIVE_CLASSES
+        currentPath === href ? ACTIVE_CLASSES : HOVER_CLASSES
       )}>
-      <span className="flex w-4 shrink-0 justify-center">
-        <Icon className="h-4 w-4" />
-      </span>
+      <MenuItemIcon icon={icon} />
       <span className={cn('truncate', open ? 'ml-2' : 'sr-only')}>{text}</span>
     </Link>
   );
@@ -99,13 +97,13 @@ const PublicSubLink = ({
     buttonVariants({
       variant: 'ghost',
       className: cn(
-        'flex items-center justify-between w-full h-7 rounded-none normal-case txt-sub-content text-xs font-light',
+        'flex items-center justify-between w-full h-9 rounded-none normal-case txt-sub-content text-xs font-light',
         highlight && !isActive && 'bg-clip-text text-transparent',
         !href && 'cursor-default pointer-events-none',
         className
       ),
     }),
-    isActive && ACTIVE_CLASSES
+    isActive ? ACTIVE_CLASSES : !!href && HOVER_CLASSES
   );
   const sharedStyle =
     highlight && !isActive ? { backgroundImage: GRADIENT_STYLE } : undefined;
@@ -153,7 +151,7 @@ const OpenedSection = ({ section }: { section: SectionConfig }) => {
     <AccordionItem
       className="border-none"
       value={section.key}>
-      <AccordionTrigger className="h-8 pl-5 py-xs hover:bg-hover hover:no-underline font-normal">
+      <AccordionTrigger className="h-9 pl-5 py-xs cursor-pointer hover:bg-hover hover:no-underline font-normal hover:shadow-[inset_2px_0px] hover:shadow-white">
         <MenuItemIcon icon={Icon} />
         <span className="flex-1 px-s text-left text-foreground text-sm font-light truncate">
           {section.label}
@@ -198,9 +196,10 @@ const ClosedSection = ({ section }: { section: SectionConfig }) => {
         <Button
           variant="ghost"
           className={cn(
-            'h-8 w-full justify-start rounded-none pl-5',
-            currentPath.startsWith(section.pathPrefix) &&
-              'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
+            'h-9 w-full justify-start rounded-none pl-5 cursor-pointer',
+            currentPath.startsWith(section.pathPrefix)
+              ? 'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
+              : HOVER_CLASSES
           )}
           aria-label={section.label}>
           <MenuItemIcon icon={Icon} />
@@ -244,8 +243,8 @@ const LinkedSection = ({
       href={section.href ?? section.pathPrefix}
       className={cn(
         buttonVariants({ variant: 'ghost' }),
-        'h-8 w-full justify-start rounded-none normal-case pl-5 font-normal',
-        isActive && ACTIVE_CLASSES
+        'h-9 w-full justify-start rounded-none normal-case pl-5 font-normal',
+        isActive ? ACTIVE_CLASSES : HOVER_CLASSES
       )}
       aria-label={section.label}>
       <MenuItemIcon icon={Icon} />
