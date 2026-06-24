@@ -5,7 +5,6 @@ import FiligranLogoDark from '@public/filigran_logo_dark.svg';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect } from 'react';
-import './SignUp.css';
 
 const HUBSPOT_PORTAL_ID = '26791207';
 const HUBSPOT_FORM_ID = '25cf9561-13c0-4eda-bde2-be099e38438b';
@@ -16,7 +15,7 @@ const SignUp = () => {
 
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = '/hsforms/forms/embed/v2.js';
+    script.src = 'https://js-eu1.hsforms.net/forms/embed/v2.js';
     script.async = true;
 
     script.onload = () => {
@@ -54,7 +53,7 @@ const SignUp = () => {
       <div className="bg-page-background dark:bg-background flex h-full w-2/5 flex-col px-6 py-6 overflow-hidden">
         {/* Header */}
         <div className="shrink-0 flex justify-center">
-          <FiligranLogoDark className="h-[33px] w-[132px]" />
+          <FiligranLogoDark className="h-8.25 w-33" />
         </div>
         {/* Body */}
         <div className="mx-auto flex flex-1 min-h-0 w-full max-w-125 flex-col justify-center overflow-hidden">

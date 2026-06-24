@@ -107,7 +107,6 @@ const nextConfig = {
       'https://js-eu1.hs-analytics.net',
       'https://js-eu1.hs-banner.com',
       'https://js-eu1.hsforms.net',
-      'https://forms-eu1.hsforms.com/',
     ];
     const apolloCdnHosts = [
       'https://embeddable-sandbox.cdn.apollographql.com',
@@ -262,10 +261,6 @@ const nextConfig = {
       {
         source: '/hs/:path*',
         destination: 'https://js-eu1.hs-analytics.net/:path*',
-      },
-      {
-        source: '/hsforms/:path*',
-        destination: 'https://js-eu1.hsforms.net/:path*',
       },
     ];
   },

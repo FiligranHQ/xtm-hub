@@ -1,3 +1,4 @@
+import '@/components/signup/SignUp.css';
 import '@filigran/ui/theme.css';
 import '@styles/globals.css';
 

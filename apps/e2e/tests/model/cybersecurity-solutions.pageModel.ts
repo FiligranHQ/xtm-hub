@@ -1,11 +1,15 @@
 import { Page } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
+import { expect } from 'playwright/test';
 
 export class CybersecuritySolutionsPage {
   constructor(private page: Page) {}
 
   async clickOnSignIn() {
     await this.page.getByRole('link', { name: /login/i }).click();
+  }
+
+  async clickOnSignUp() {
+    await this.page.getByRole('link', { name: /sign up/i }).click();
   }
 
   async navigateTo() {
