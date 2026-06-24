@@ -1,12 +1,11 @@
 import {
+  CONSENT_CATEGORIES,
   CONSENT_MAX_AGE_DAYS,
   CONSENT_REGISTRY,
   CONSENT_VERSION,
 } from '@/components/cookie-consent/cookie-consent.consts';
 import {
-  CONSENT_CATEGORIES,
   type ConsentCategory,
-  type ConsentRegistry,
   type ServiceConsent,
   type ServiceDefinition,
   type StoredConsent,
@@ -14,50 +13,47 @@ import {
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
-export const getAllServices = (
-  registry: ConsentRegistry = CONSENT_REGISTRY
-): ServiceDefinition[] =>
-  CONSENT_CATEGORIES.flatMap((category) => registry[category].services);
-
-export const getDefaultConsent = (
-  registry: ConsentRegistry = CONSENT_REGISTRY
-): ServiceConsent =>
-  getAllServices(registry).reduce(
-    (acc, service) => ({ ...acc, [service.id]: false }),
-    {} as ServiceConsent
-  );
-
-export const acceptAllConsent = (
-  registry: ConsentRegistry = CONSENT_REGISTRY
-): ServiceConsent =>
-  getAllServices(registry).reduce(
-    (acc, service) => ({ ...acc, [service.id]: true }),
-    {} as ServiceConsent
-  );
-
-export const normalizeConsent = (
-  input: Partial<ServiceConsent>,
-  registry: ConsentRegistry = CONSENT_REGISTRY
-): ServiceConsent =>
-  getAllServices(registry).reduce(
-    (acc, service) => ({ ...acc, [service.id]: input[service.id] === true }),
-    {} as ServiceConsent
-  );
+export const getAllServices = (): ServiceDefinition[] =>
+  CONSENT_CATEGORIES.flatMap((category) => CONSENT_REGISTRY[category].services);
 
 export const isServiceAllowed = (
   consent: ServiceConsent,
   serviceId: string
 ): boolean => consent[serviceId] === true;
 
+export const getRevokedServices = (
+  previous: ServiceConsent,
+  next: ServiceConsent
+): string[] => Object.keys(previous).filter((id) => previous[id] && !next[id]);
+
+export const getDefaultConsent = (): ServiceConsent =>
+  getAllServices().reduce(
+    (acc, service) => ({ ...acc, [service.id]: false }),
+    {} as ServiceConsent
+  );
+
+export const acceptAllConsent = (): ServiceConsent =>
+  getAllServices().reduce(
+    (acc, service) => ({ ...acc, [service.id]: true }),
+    {} as ServiceConsent
+  );
+
+export const normalizeConsent = (
+  input: Partial<ServiceConsent>
+): ServiceConsent =>
+  getAllServices().reduce(
+    (acc, service) => ({ ...acc, [service.id]: input[service.id] === true }),
+    {} as ServiceConsent
+  );
+
 export const isCategoryAllowed = (
   consent: ServiceConsent,
-  category: ConsentCategory,
-  registry: ConsentRegistry = CONSENT_REGISTRY
+  category: ConsentCategory
 ): boolean => {
-  if (registry[category].required) {
+  if (CONSENT_REGISTRY[category].required) {
     return true;
   }
-  const { services } = registry[category];
+  const { services } = CONSENT_REGISTRY[category];
   return (
     services.length > 0 &&
     services.every((service) => consent[service.id] === true)
@@ -67,18 +63,12 @@ export const isCategoryAllowed = (
 export const setCategoryConsent = (
   consent: ServiceConsent,
   category: ConsentCategory,
-  value: boolean,
-  registry: ConsentRegistry = CONSENT_REGISTRY
+  value: boolean
 ): ServiceConsent =>
-  registry[category].services.reduce(
+  CONSENT_REGISTRY[category].services.reduce(
     (acc, service) => ({ ...acc, [service.id]: value }),
     { ...consent }
   );
-
-export const getRevokedServices = (
-  previous: ServiceConsent,
-  next: ServiceConsent
-): string[] => Object.keys(previous).filter((id) => previous[id] && !next[id]);
 
 export const matchCookiePattern = (
   cookieName: string,
@@ -89,10 +79,9 @@ export const matchCookiePattern = (
     : cookieName === pattern;
 
 export const getCookiePatternsToPurge = (
-  revokedServiceIds: string[],
-  registry: ConsentRegistry = CONSENT_REGISTRY
+  revokedServiceIds: string[]
 ): string[] =>
-  getAllServices(registry)
+  getAllServices()
     .filter((service) => revokedServiceIds.includes(service.id))
     .flatMap((service) => service.cookies);
 

@@ -1,11 +1,8 @@
-export const CONSENT_CATEGORIES = [
-  'necessary',
-  'functional',
-  'marketing',
-  'analytics',
-] as const;
-
-export type ConsentCategory = (typeof CONSENT_CATEGORIES)[number];
+export type ConsentCategory =
+  | 'necessary'
+  | 'functional'
+  | 'marketing'
+  | 'analytics';
 
 export interface ServiceDefinition {
   id: string;

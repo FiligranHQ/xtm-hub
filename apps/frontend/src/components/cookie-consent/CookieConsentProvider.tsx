@@ -56,7 +56,7 @@ export const CookieConsentProvider = ({
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
 
   const consent = useMemo(
-    () => (stored ? normalizeConsent(stored.services) : getDefaultConsent()),
+    () => (stored ? stored.services : getDefaultConsent()),
     [stored]
   );
 

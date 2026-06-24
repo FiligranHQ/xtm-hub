@@ -1,4 +1,14 @@
-import { type ConsentRegistry } from '@/components/cookie-consent/cookie-consent.types';
+import {
+  type ConsentCategory,
+  type ConsentRegistry,
+} from '@/components/cookie-consent/cookie-consent.types';
+
+export const CONSENT_CATEGORIES: readonly ConsentCategory[] = [
+  'necessary',
+  'functional',
+  'marketing',
+  'analytics',
+];
 
 export const CONSENT_COOKIE_NAME = 'xtmhub_consent';
 

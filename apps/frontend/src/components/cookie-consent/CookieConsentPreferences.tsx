@@ -1,8 +1,10 @@
 'use client';
 
-import { CONSENT_REGISTRY } from '@/components/cookie-consent/cookie-consent.consts';
 import {
   CONSENT_CATEGORIES,
+  CONSENT_REGISTRY,
+} from '@/components/cookie-consent/cookie-consent.consts';
+import {
   type ConsentCategory,
   type ServiceConsent,
 } from '@/components/cookie-consent/cookie-consent.types';
