@@ -544,28 +544,6 @@ jobs:
             echo "Response: $response_body"
           fi
 
-      - name: Deploy on Staging
-        if: github.ref == 'refs/heads/main'
-        run: |
-          max_attempts=5
-          for i in $(seq 1 $max_attempts); do
-            if awx --conf.host https://awx.filigran.io \
-              --conf.token ${{ secrets.AWX_TOKEN }} \
-              -f human job_templates launch 'Deploy XTM Hub' \
-              --inventory eu-west-staging \
-              --extra_vars '{"env":"Staging"}'; then
-              echo "✅ Deployment successful"
-              exit 0
-            fi
-            if [ $i -lt $max_attempts ]; then
-              delay=$((2 ** i))
-              echo "⚠️ Attempt $i/$max_attempts failed, retrying in ${delay}s..."
-              sleep $delay
-            fi
-          done
-          echo "❌ All $max_attempts attempts failed"
-          exit 1
-
       - name: Deploy on Development
         if: github.ref == 'refs/heads/main'
         run: |
