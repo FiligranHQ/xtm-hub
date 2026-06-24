@@ -28,6 +28,9 @@ export type DocumentMetadataKeys<T extends DocumentModel> = Array<
       | 'source_type'
       | 'parent_document_id'
       | 'minio_name'
+      | 'tags'
+      | 'is_decommissioned'
+      | 'version'
     >,
     keyof DocumentResolverType
   >
