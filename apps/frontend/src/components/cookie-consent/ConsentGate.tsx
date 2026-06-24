@@ -1,6 +1,6 @@
 'use client';
 
-import { useConsent } from '@/components/cookie-consent/use-consent';
+import { useConsent } from '@/components/cookie-consent/CookieConsentProvider';
 import { type ReactNode } from 'react';
 
 interface ConsentGateProps {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useConsent } from '@/components/cookie-consent/use-consent';
+import { useConsent } from '@/components/cookie-consent/CookieConsentProvider';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 

@@ -15,7 +15,7 @@ import {
   isCategoryAllowed,
   setCategoryConsent,
 } from '@/components/cookie-consent/cookie-consent.utils';
-import { useConsent } from '@/components/cookie-consent/use-consent';
+import { useConsent } from '@/components/cookie-consent/CookieConsentProvider';
 import {
   Button,
   Dialog,

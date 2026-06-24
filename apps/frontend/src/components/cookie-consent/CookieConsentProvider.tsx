@@ -22,6 +22,7 @@ import {
 import {
   createContext,
   useCallback,
+  useContext,
   useMemo,
   useState,
   type ReactNode,
@@ -94,4 +95,12 @@ export const CookieConsentProvider = ({
       {children}
     </CookieConsentContext.Provider>
   );
+};
+
+export const useConsent = () => {
+  const context = useContext(CookieConsentContext);
+  if (!context) {
+    throw new Error('useConsent must be used within a CookieConsentProvider');
+  }
+  return context;
 };
