@@ -82,7 +82,7 @@
     "jwt-decode": "4.0.0",
     "knex": "catalog:",
     "migrate": "^2.1.0",
-    "node-cron": "4.2.1",
+    "node-cron": "4.4.1",
     "nodemailer": "9.0.1",
     "openid-client": "6.8.4",
     "passport": "0.7.0",
