@@ -1,6 +1,5 @@
 'use client';
 
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { cn } from '@/lib/utils';
 import { OpenInNewIcon } from '@filigran/icon';
 import {
@@ -15,18 +14,15 @@ import {
   PopoverTrigger,
   Separator,
 } from '@filigran/ui';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
-import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ElementType, useEffect } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 import {
-  buildBottomLinks,
-  buildSections,
+  usePublicNavigation,
   type SectionConfig,
   type SectionLink,
-} from './public-navigation.config';
+} from './use-public-navigation';
 
 const ACTIVE_CLASSES =
   'bg-primary/10 shadow-[inset_2px_0px] shadow-primary text-primary';
@@ -258,19 +254,14 @@ const LinkedSection = ({
 };
 
 const PublicNavigation = ({ open }: PublicNavigationProps) => {
-  const t = useTranslations();
-  const locale = useLocale();
-  const isCustomViewsEnabled = useIsFeatureEnabled(
-    FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS
-  );
-  const sections = buildSections(t, locale, isCustomViewsEnabled);
-  const bottomLinks = buildBottomLinks(t, locale);
+  const { sections, bottomLinks } = usePublicNavigation();
 
   return (
     <nav className="flex-1 min-h-0 pt-s overflow-y-auto">
       {open ? (
         <Accordion
-          type="multiple"
+          type="single"
+          collapsible
           className="w-full">
           {sections.map((section) =>
             section.href ? (
