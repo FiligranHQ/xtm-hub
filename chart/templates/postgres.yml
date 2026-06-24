@@ -15,7 +15,15 @@ spec:
   imagePullPolicy: "IfNotPresent"
   primaryUpdateMethod: switchover
   primaryUpdateStrategy: unsupervised
+  {{- if .Values.postgres.spec.bootstrap }}
   bootstrap:
-    initdb:
-      database: xtmhub
-      owner: {{ .Values.postgres.username }}
+    {{- .Values.postgres.spec.bootstrap | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.postgres.spec.externalClusters }}
+  externalClusters:
+    {{- .Values.postgres.spec.externalClusters | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .Values.postgres.spec.plugins }}
+  plugins:
+    {{- .Values.postgres.spec.plugins | toYaml | nindent 4 }}
+  {{- end }}
