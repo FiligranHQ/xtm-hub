@@ -6,7 +6,9 @@ import { buildContext, CopilotUser, getUserKey } from './copilot.utils';
 const COPILOT_WIDGET_URL =
   'https://copilot.filigran.ai/api/v1/public/widget.js';
 const COPILOT_TOKEN = 'jNJu1JTbbPwNqk1tqEOw-WjsKU4dEcgn';
-const COPILOT_SCRIPT_ID = 'filigran-copilot-widget';
+
+export const COPILOT_SCRIPT_ID = 'filigran-copilot-widget';
+
 let widgetOwner: symbol | null = null;
 
 interface CopilotProps {

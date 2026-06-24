@@ -1,6 +1,6 @@
 'use client';
 
-import { CONSENT_REGISTRY } from '@/components/cookie-consent/cookie-consent.registry';
+import { CONSENT_REGISTRY } from '@/components/cookie-consent/cookie-consent.consts';
 import {
   CONSENT_CATEGORIES,
   type ConsentCategory,
@@ -106,12 +106,12 @@ export const CookieConsentPreferences = () => {
                       {t(`Categories.${category}.Description`)}
                     </span>
                     {services.length > 0 ? (
-                      <button
-                        type="button"
+                      <Button
+                        variant="link"
                         onClick={() => toggleDrawer(category)}
-                        className="self-start text-sm text-primary underline-offset-4 hover:underline">
+                        className="h-auto justify-start p-0 text-sm">
                         {t('ManageServices', { count: services.length })}
-                      </button>
+                      </Button>
                     ) : null}
                   </div>
                   <Switch

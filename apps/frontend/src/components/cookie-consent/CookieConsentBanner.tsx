@@ -1,11 +1,12 @@
 'use client';
 
 import { useConsent } from '@/components/cookie-consent/use-consent';
+import { COPILOT_SCRIPT_ID } from '@/components/external/Copilot';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 
-const COPILOT_HOST_SELECTOR = 'div#filigran-copilot-widget';
+const COPILOT_HOST_SELECTOR = `div#${COPILOT_SCRIPT_ID}`;
 const COPILOT_STYLE_ID = 'xtmhub-copilot-offset';
 const COPILOT_OFFSET = '130px';
 const COPILOT_POLL_MS = 300;

@@ -1,7 +1,7 @@
 import {
   CONSENT_MAX_AGE_DAYS,
   CONSENT_VERSION,
-} from '@/components/cookie-consent/cookie-consent.registry';
+} from '@/components/cookie-consent/cookie-consent.consts';
 import { type ServiceConsent } from '@/components/cookie-consent/cookie-consent.types';
 import {
   acceptAllConsent,

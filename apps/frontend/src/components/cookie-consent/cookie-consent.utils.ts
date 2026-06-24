@@ -2,7 +2,7 @@ import {
   CONSENT_MAX_AGE_DAYS,
   CONSENT_REGISTRY,
   CONSENT_VERSION,
-} from '@/components/cookie-consent/cookie-consent.registry';
+} from '@/components/cookie-consent/cookie-consent.consts';
 import {
   CONSENT_CATEGORIES,
   type ConsentCategory,

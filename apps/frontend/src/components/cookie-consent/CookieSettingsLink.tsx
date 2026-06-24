@@ -1,6 +1,7 @@
 'use client';
 
 import { useConsent } from '@/components/cookie-consent/use-consent';
+import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
 export const CookieSettingsLink = () => {
@@ -8,11 +9,11 @@ export const CookieSettingsLink = () => {
   const { openPreferences } = useConsent();
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="link"
       onClick={openPreferences}
-      className="cursor-pointer border-0 bg-transparent p-0 text-inherit">
+      className="h-auto p-0 text-xs font-normal text-muted-foreground no-underline hover:no-underline cursor-pointer">
       {t('CookieSettingsLink')}
-    </button>
+    </Button>
   );
 };
