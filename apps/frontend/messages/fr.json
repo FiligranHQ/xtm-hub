@@ -25,7 +25,7 @@
     "Placeholder": "Choisir un pays"
   },
   "CookieConsent": {
-    "Title": "Politique de confidentialité",
+    "Title": "Paramètres des cookies",
     "BannerText": "Nous utilisons des cookies pour faire fonctionner le XTM Hub, comprendre son utilisation et améliorer votre expérience. Les cookies strictement nécessaires sont toujours actifs. Avec votre consentement, nous utilisons également des cookies optionnels à des fins de fonctionnalité, de performance et d'analyse, et de marketing. Vous pouvez tout accepter, tout refuser, ou choisir quels cookies optionnels autoriser. Vous pouvez modifier vos préférences à tout moment via « Paramètres des cookies ». Consultez notre Politique relative aux cookies pour en savoir plus.",
     "AcceptAll": "Tout accepter",
     "RejectAll": "Tout refuser",
@@ -33,7 +33,7 @@
     "Save": "Enregistrer mes choix",
     "PreferencesIntro": "En autorisant ces services tiers, vous acceptez leurs cookies ainsi que l'utilisation des technologies de suivi nécessaires à leur bon fonctionnement.",
     "CookieSettingsLink": "Paramètres des cookies",
-    "PreferenceForAllServices": "Préférence pour tous les services",
+    "PreferenceForAllServices": "Accepter/Refuser tous les services",
     "ManageServices": "Gérer les services ({count})",
     "ReadMore": "En savoir plus",
     "ViewOfficialWebsite": "Voir le site officiel",

@@ -25,15 +25,15 @@
     "Placeholder": "Choose a country"
   },
   "CookieConsent": {
-    "Title": "Privacy policy",
-    "BannerText": "We use cookies to make the XTM Hub work, understand how it's used and improve your experience. Strictly necessary cookies are always on. With your consent, we also use optional cookies for functionality, performance and analytics, and marketing. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy for more information.",
+    "Title": "Cookie settings",
+    "BannerText": "We use cookies to make the XTM Hub work, understand how it's used, and improve your experience. Strictly necessary cookies are always on. With your consent, we also use optional cookies for functionality, performance and analytics, and marketing. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy for more information.",
     "AcceptAll": "Accept all",
     "RejectAll": "Reject all",
     "CookieSettings": "Cookie settings",
     "Save": "Save",
     "PreferencesIntro": "By allowing these third party services, you accept their cookies and the use of tracking technologies necessary for their proper functioning.",
     "CookieSettingsLink": "Cookie settings",
-    "PreferenceForAllServices": "Preference for all services",
+    "PreferenceForAllServices": "Accept/Reject all services",
     "ManageServices": "Manage services ({count})",
     "ReadMore": "Read more",
     "ViewOfficialWebsite": "View the official website",
@@ -52,7 +52,7 @@
       },
       "marketing": {
         "Title": "Marketing",
-        "Description": "These cookies help us measure the effectiveness of marketing campaigns, and where applicable, personalise content or advertising based on your interactions with the XTM Hub."
+        "Description": "These cookies help us measure the effectiveness of marketing campaigns and, where applicable, personalize content or advertising based on your interactions with the XTM Hub."
       }
     }
   },
