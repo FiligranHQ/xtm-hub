@@ -2,6 +2,7 @@
 
 import FiligranLogo from '@public/filigran_logo.svg';
 import FiligranLogoDark from '@public/filigran_logo_dark.svg';
+import SchemeXtmHub from '@public/scheme_xtm_hub_account_creation.svg';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect } from 'react';
@@ -50,14 +51,14 @@ const SignUp = () => {
 
   return (
     <div className="flex h-screen w-screen">
-      <div className="bg-page-background dark:bg-background flex h-full w-2/5 flex-col px-6 py-6 overflow-hidden">
+      <div className="bg-page-background flex h-full w-2/5 flex-col px-6 py-6 overflow-hidden">
         {/* Header */}
         <div className="shrink-0 flex justify-center">
           <FiligranLogoDark className="h-8.25 w-33" />
         </div>
         {/* Body */}
         <div className="mx-auto flex flex-1 min-h-0 w-full max-w-125 flex-col justify-center overflow-hidden">
-          <h1 className="text-2xl leading-8 font-medium text-foreground">
+          <h1 className="text-3xl leading-9 font-medium text-foreground">
             {t('Title1')}
             <br />
             {t('Title2')}
@@ -89,7 +90,19 @@ const SignUp = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white/50 dark:bg-black/60 w-3/5" />
+      <div className="bg-background w-3/5 flex flex-col items-center justify-center p-32 overflow-hidden gap-8">
+        <div className="shrink-0 flex flex-col gap-1">
+          <p className="text-sm leading-6 font-bold text-primary">
+            {t('WelcomeTitle')}
+          </p>
+          <h2 className="text-3xl leading-9 font-medium text-foreground">
+            {t('WelcomeSubtitle')}
+          </h2>
+        </div>
+        <div className="flex-1 min-h-0 w-full flex items-start justify-center">
+          <SchemeXtmHub className="w-full h-full" />
+        </div>
+      </div>
     </div>
   );
 };

@@ -401,7 +401,9 @@
     "Description": "Inscrivez-vous avec un seul compte Filigran pour accéder à nos démonstrations OpenCTI et OpenAEV, aux formations de Filigran Academy et aux ressources gratuites sur XTM Hub. Restez informé avec notre newsletter bimensuelle, nos invitations exclusives et nos mises à jour promotionnelles.",
     "AlreadyHaveAccount": "Vous avez déjà un compte ?",
     "LogIn": "Se connecter",
-    "MadeBy": "Fait par"
+    "MadeBy": "Fait par",
+    "WelcomeTitle": "Bienvenue sur XTM Hub",
+    "WelcomeSubtitle": "Étendez et dimensionnez votre plateforme XTM"
   },
   "MenuActions": {
     "Continue": "Continuer",
