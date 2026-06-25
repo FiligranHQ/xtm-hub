@@ -14,10 +14,15 @@ import ServiceListHeaderButtons from '@/components/service/components/header/Ser
 import ServiceCard from '@/components/service/components/ServiceCard';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
+import {
+  getHeroSectionLibraryTranslations,
+  HeroSectionLibrary,
+} from '@/components/service/document/ui/HeroSectionLibrary';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { localizedCardName } from '@/utils/services';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
@@ -79,10 +84,15 @@ const ServiceList = ({
     acc[type].push(resource);
     return acc;
   }, {});
+  const localizedName = localizedCardName(serviceInstance, t);
+  const heroSectionTranslations = getHeroSectionLibraryTranslations(t);
 
   return (
     <div className="flex flex-col gap-xl">
-      <h1>{serviceInstance.name}</h1>
+      <HeroSectionLibrary
+        name={localizedName}
+        translations={heroSectionTranslations}
+      />
       <ServiceListHeader
         search={search}
         onSearchChange={onSearchChange}

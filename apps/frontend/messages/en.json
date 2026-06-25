@@ -784,6 +784,10 @@
         "Description": "Explore and follow the Filigran XTM Platform roadmap."
       }
     },
+    "LibraryHero": {
+      "Eyebrow": "Filigran's resources",
+      "DefaultDescription": "Register your OpenCTI or OpenAEV platform to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM platform experience."
+    },
     "ComingSoon": "Coming soon",
     "Connectors": {
       "DataImport": "Data Import",

@@ -204,7 +204,7 @@ const computeIllustrationDocumentUrl = (
   return null;
 };
 
-const localizedCardName = (
+export const localizedCardName = (
   instance: { slug?: string | null; name: string },
   t: ReturnType<typeof useTranslations>
 ) => {
