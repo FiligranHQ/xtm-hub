@@ -23,6 +23,20 @@ const test = testBase.extend({
 
       await beforeEach();
 
+      await page.context().addCookies([
+        {
+          name: 'xtmhub_consent',
+          value: encodeURIComponent(
+            JSON.stringify({
+              version: 1,
+              timestamp: new Date().toISOString(),
+              services: { 'google-analytics': false, hubspot: false },
+            })
+          ),
+          url: process.env.E2E_BASE_URL ?? 'http://localhost:3002',
+        },
+      ]);
+
       await use('autoTestFixture');
 
       // console.log('autoTestFixture teardown...');

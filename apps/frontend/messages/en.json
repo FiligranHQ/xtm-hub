@@ -3,6 +3,7 @@
   "App": {
     "Collapse": "Collapse",
     "CollapseSidebar": "Collapse sidebar",
+    "MadeBy": "Made by",
     "Title": "XTM Hub"
   },
   "Badge": {
@@ -23,6 +24,38 @@
   },
   "CountryComboBox": {
     "Placeholder": "Choose a country"
+  },
+  "CookieConsent": {
+    "Title": "Cookie settings",
+    "BannerText": "We use cookies to make the XTM Hub work, understand how it's used, and improve your experience. Strictly necessary cookies are always on. With your consent, we also use optional cookies for functionality, performance and analytics, and marketing. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy for more information.",
+    "AcceptAll": "Accept all",
+    "RejectAll": "Reject all",
+    "CookieSettings": "Cookie settings",
+    "Save": "Save",
+    "PreferencesIntro": "By allowing these third party services, you accept their cookies and the use of tracking technologies necessary for their proper functioning.",
+    "CookieSettingsLink": "Cookie settings",
+    "PreferenceForAllServices": "Accept/Reject all services",
+    "ManageServices": "Manage services ({count})",
+    "ReadMore": "Read more",
+    "ViewOfficialWebsite": "View the official website",
+    "Categories": {
+      "necessary": {
+        "Title": "Strictly necessary",
+        "Description": "These cookies are needed for the XTM Hub to function properly. They support core features, such as authentication, security and remembering your cookie preferences."
+      },
+      "functional": {
+        "Title": "Functional",
+        "Description": "These cookies remember your preferences such as language or interface preferences and enable embedded features."
+      },
+      "analytics": {
+        "Title": "Performance and analytics",
+        "Description": "These cookies help us measure how the XTM Hub performs and how it's used, and identify errors so we can improve it."
+      },
+      "marketing": {
+        "Title": "Marketing",
+        "Description": "These cookies help us measure the effectiveness of marketing campaigns and, where applicable, personalize content or advertising based on your interactions with the XTM Hub."
+      }
+    }
   },
   "Datatable": {
     "Asc": "Asc",
@@ -339,6 +372,24 @@
     "Disable": "Disable",
     "Remove": "Remove",
     "Update": "Update"
+  },
+  "PublicMenu": {
+    "XTMPlatform": "XTM Platform",
+    "StartFreeTrial": "Start Free Trial",
+    "CustomDashboards": "Custom Dashboards",
+    "CustomViews": "Custom Views",
+    "Integrations": "Integrations",
+    "Playbooks": "Playbooks",
+    "LiveDemo": "Live Demo",
+    "Documentation": "Documentation",
+    "Scenarios": "Scenarios",
+    "XTMRoadmap": "XTM Platform Roadmap",
+    "FiligranAcademy": "Filigran Academy",
+    "Blog": "Blog",
+    "Slack": "Slack",
+    "About": "About",
+    "AICatalog": "AI Catalog",
+    "ComingSoon": "Coming soon"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",
