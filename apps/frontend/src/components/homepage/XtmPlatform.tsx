@@ -24,8 +24,8 @@ const XtmPlatform = async () => {
         <Image
           src="/xtm_platform.png"
           alt={t('ImageAlt')}
-          width={0}
-          height={0}
+          width={1370}
+          height={680}
           sizes="(max-width: 768px) 100vw, 50vw"
           style={{
             width: 'auto',

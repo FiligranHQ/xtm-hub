@@ -552,9 +552,11 @@ describe('document domain', () => {
       }
     );
 
+    const METADATA_ABSENT = 'METADATA_ABSENT' as const;
+
     it.each`
       description                | includeMetadata                             | expectedValue
-      ${'no metadata requested'} | ${[]}                                       | ${undefined}
+      ${'no metadata requested'} | ${[]}                                       | ${METADATA_ABSENT}
       ${'metadata requested'}    | ${[DocumentMetadataKeyCode.ProductVersion]} | ${TEST_VALUE}
     `(
       'should handle metadata correctly when $description',
@@ -563,16 +565,21 @@ describe('document domain', () => {
         expectedValue,
       }: {
         includeMetadata: DocumentMetadataKeyCode[];
-        expectedValue: string | undefined;
+        expectedValue: string;
       }) => {
         const result = await DocumentDomain.loadDocumentsWithMetadataByIds(
           [doc1.id],
           includeMetadata
         );
         expect(result).toHaveLength(1);
-        expect(
-          (result[0] as unknown as Record<string, unknown>)[TEST_KEY]
-        ).toBe(expectedValue);
+        const actual = (
+          result[0] as unknown as Partial<
+            Record<DocumentMetadataKeyCode, string>
+          >
+        )[TEST_KEY];
+        expect(actual).toBe(
+          expectedValue === METADATA_ABSENT ? undefined : expectedValue
+        );
       }
     );
   });
@@ -835,9 +842,11 @@ describe('document domain', () => {
         [TEST_KEY]
       );
       expect(docs).toHaveLength(1);
-      expect((docs[0] as unknown as { [TEST_KEY]: string })[TEST_KEY]).toBe(
-        TEST_VALUE
-      );
+      expect(
+        (
+          docs[0] as unknown as Partial<Record<DocumentMetadataKeyCode, string>>
+        )[TEST_KEY]
+      ).toBe(TEST_VALUE);
     });
   });
 

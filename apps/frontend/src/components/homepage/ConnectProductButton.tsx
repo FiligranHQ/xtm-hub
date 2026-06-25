@@ -31,13 +31,14 @@ const ConnectProductButton = () => {
       </Button>
       {open && (
         <div className="absolute top-0 left-0 border border-primary rounded-lg p-s flex flex-col gap-s w-53 bg-background z-10">
-          <div className="flex items-center justify-between px-s pb-s">
+          <div className="flex items-center justify-between pl-s pr-xs pb-s">
             <span className="text-sm text-white">{t('Cta')}</span>
-            <button
+            <Button
               onClick={() => setOpen(false)}
-              className="text-white hover:opacity-70 transition-opacity">
+              variant="ghost"
+              className="h-5 w-5 p-0 shrink-0">
               <CloseIcon className="size-3" />
-            </button>
+            </Button>
           </div>
           {PRODUCTS.map((product) => (
             <Button

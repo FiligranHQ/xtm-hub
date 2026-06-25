@@ -142,10 +142,9 @@ test.describe('XTM Platform Roadmap', () => {
       ).toBeVisible();
     });
 
-    await test.step('Next count reflects all 3 seeded epics regardless of active status', async () => {
-      // countEpicsPerTimeline counts all non-finished epics, active or not
+    await test.step('Next count reflects only the 2 active seeded epics', async () => {
       await expect(
-        roadmapSection.getByText('3', { exact: true })
+        roadmapSection.getByText('2', { exact: true })
       ).toBeVisible();
     });
 
