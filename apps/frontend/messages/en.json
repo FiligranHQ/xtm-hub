@@ -3,6 +3,7 @@
   "App": {
     "Collapse": "Collapse",
     "CollapseSidebar": "Collapse sidebar",
+    "MadeBy": "Made by",
     "Title": "XTM Hub"
   },
   "Badge": {
@@ -371,6 +372,24 @@
     "Disable": "Disable",
     "Remove": "Remove",
     "Update": "Update"
+  },
+  "PublicMenu": {
+    "XTMPlatform": "XTM Platform",
+    "StartFreeTrial": "Start Free Trial",
+    "CustomDashboards": "Custom Dashboards",
+    "CustomViews": "Custom Views",
+    "Integrations": "Integrations",
+    "Playbooks": "Playbooks",
+    "LiveDemo": "Live Demo",
+    "Documentation": "Documentation",
+    "Scenarios": "Scenarios",
+    "XTMRoadmap": "XTM Platform Roadmap",
+    "FiligranAcademy": "Filigran Academy",
+    "Blog": "Blog",
+    "Slack": "Slack",
+    "About": "About",
+    "AICatalog": "AI Catalog",
+    "ComingSoon": "Coming soon"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",

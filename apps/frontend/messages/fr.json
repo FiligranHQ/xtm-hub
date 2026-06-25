@@ -3,6 +3,7 @@
   "App": {
     "Collapse": "Réduire",
     "CollapseSidebar": "Réduire la sidebar",
+    "MadeBy": "Réalisé par",
     "Title": "XTM Hub"
   },
   "Badge": {
@@ -371,6 +372,24 @@
     "Disable": "Désactiver",
     "Remove": "Retirer",
     "Update": "Modifier"
+  },
+  "PublicMenu": {
+    "XTMPlatform": "Plateforme XTM",
+    "StartFreeTrial": "Commencer l'essai gratuit",
+    "CustomDashboards": "Tableaux de bord personnalisés",
+    "CustomViews": "Vues personnalisées",
+    "Integrations": "Intégrations",
+    "Playbooks": "Guides pratiques",
+    "LiveDemo": "Démonstration en direct",
+    "Documentation": "Documentation",
+    "Scenarios": "Scénarios",
+    "XTMRoadmap": "Feuille de route de la plateforme XTM",
+    "FiligranAcademy": "Filigran Academy",
+    "Blog": "Blog",
+    "Slack": "Slack",
+    "About": "À propos",
+    "AICatalog": "Catalogue IA",
+    "ComingSoon": "À venir"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",

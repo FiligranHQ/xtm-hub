@@ -3,6 +3,7 @@
   "App": {
     "Collapse": "折りたたむ",
     "CollapseSidebar": "サイドバーを折りたたむ",
+    "MadeBy": "制作：",
     "Title": "XTMハブ"
   },
   "Badge": {
@@ -371,6 +372,24 @@
     "Disable": "無効にする",
     "Remove": "削除する",
     "Update": "更新する"
+  },
+  "PublicMenu": {
+    "XTMPlatform": "XTM Platform",
+    "StartFreeTrial": "無料トライアルを開始",
+    "CustomDashboards": "カスタムダッシュボード",
+    "CustomViews": "カスタムビュー",
+    "Integrations": "連携機能",
+    "Playbooks": "プレイブック",
+    "LiveDemo": "ライブデモ",
+    "Documentation": "ドキュメント",
+    "Scenarios": "ユースケース",
+    "XTMRoadmap": "XTM Platform ロードマップ",
+    "FiligranAcademy": "Filigran Academy",
+    "Blog": "ブログ",
+    "Slack": "Slack",
+    "About": "会社概要",
+    "AICatalog": "AIカタログ",
+    "ComingSoon": "近日公開"
   },
   "MenuLinks": {
     "Backoffice": "バックオフィス",
