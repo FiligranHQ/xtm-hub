@@ -3076,7 +3076,7 @@ export const useEpicCountPerTimelineQueryQuery = <
     )};
 
 useEpicCountPerTimelineQueryQuery.getKey = (variables?: EpicCountPerTimelineQueryQueryVariables) => variables === undefined ? ['EpicCountPerTimelineQuery'] : ['EpicCountPerTimelineQuery', variables];
-
+useEpicCountPerTimelineQueryQuery.getRootKey = () => ['EpicCountPerTimelineQuery'] as const;
 export const useInfiniteEpicCountPerTimelineQueryQuery = <
       TData = InfiniteData<EpicCountPerTimelineQueryQuery>,
       TError = unknown
@@ -3099,6 +3099,5 @@ export const useInfiniteEpicCountPerTimelineQueryQuery = <
     )};
 
 useInfiniteEpicCountPerTimelineQueryQuery.getKey = (variables?: EpicCountPerTimelineQueryQueryVariables) => variables === undefined ? ['EpicCountPerTimelineQuery.infinite'] : ['EpicCountPerTimelineQuery.infinite', variables];
-
-
+useInfiniteEpicCountPerTimelineQueryQuery.getRootKey = () => ['EpicCountPerTimelineQuery.infinite'] as const;
 useEpicCountPerTimelineQueryQuery.fetcher = (client: GraphQLClient, variables?: EpicCountPerTimelineQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<EpicCountPerTimelineQueryQuery, EpicCountPerTimelineQueryQueryVariables>(client, EpicCountPerTimelineQueryDocument, variables, headers);

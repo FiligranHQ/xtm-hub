@@ -525,16 +525,25 @@ describe('document domain', () => {
     });
 
     it.each`
-      description                            | getIds                                                                        | expectedLength | getExpectedIds
-      ${'empty array (early return)'}        | ${() => []}                                                                   | ${0}           | ${() => []}
-      ${'single matching id'}                | ${() => [doc1.id]}                                                            | ${1}           | ${() => [doc1.id]}
-      ${'multiple matching ids'}             | ${() => [doc1.id, doc2.id, doc3.id]}                                          | ${3}           | ${() => [doc1.id, doc2.id, doc3.id]}
-      ${'no matching id'}                    | ${() => ['00000000-0000-0000-0000-000000000000']}                             | ${0}           | ${() => []}
-      ${'mix of valid and unknown ids'}      | ${() => [doc1.id, '00000000-0000-0000-0000-000000000000']}                    | ${1}           | ${() => [doc1.id]}
+      description                       | getIds                                                     | expectedLength | getExpectedIds
+      ${'empty array (early return)'}   | ${() => []}                                                | ${0}           | ${() => []}
+      ${'single matching id'}           | ${() => [doc1.id]}                                         | ${1}           | ${() => [doc1.id]}
+      ${'multiple matching ids'}        | ${() => [doc1.id, doc2.id, doc3.id]}                       | ${3}           | ${() => [doc1.id, doc2.id, doc3.id]}
+      ${'no matching id'}               | ${() => ['00000000-0000-0000-0000-000000000000']}          | ${0}           | ${() => []}
+      ${'mix of valid and unknown ids'} | ${() => [doc1.id, '00000000-0000-0000-0000-000000000000']} | ${1}           | ${() => [doc1.id]}
     `(
       'should return $expectedLength document(s) for $description',
-      async ({ getIds, expectedLength, getExpectedIds }: { getIds: () => string[]; expectedLength: number; getExpectedIds: () => string[] }) => {
-        const result = await DocumentDomain.loadDocumentsWithMetadataByIds(getIds());
+      async ({
+        getIds,
+        expectedLength,
+        getExpectedIds,
+      }: {
+        getIds: () => string[];
+        expectedLength: number;
+        getExpectedIds: () => string[];
+      }) => {
+        const result =
+          await DocumentDomain.loadDocumentsWithMetadataByIds(getIds());
         expect(result).toHaveLength(expectedLength);
         const resultIds = result.map((d) => d.id as string);
         for (const expectedId of getExpectedIds()) {
@@ -544,12 +553,18 @@ describe('document domain', () => {
     );
 
     it.each`
-      description                      | includeMetadata                          | expectedValue
-      ${'no metadata requested'}       | ${[]}                                    | ${undefined}
-      ${'metadata requested'}          | ${[DocumentMetadataKeyCode.ProductVersion]} | ${TEST_VALUE}
+      description                | includeMetadata                             | expectedValue
+      ${'no metadata requested'} | ${[]}                                       | ${undefined}
+      ${'metadata requested'}    | ${[DocumentMetadataKeyCode.ProductVersion]} | ${TEST_VALUE}
     `(
       'should handle metadata correctly when $description',
-      async ({ includeMetadata, expectedValue }: { includeMetadata: DocumentMetadataKeyCode[]; expectedValue: string | undefined }) => {
+      async ({
+        includeMetadata,
+        expectedValue,
+      }: {
+        includeMetadata: DocumentMetadataKeyCode[];
+        expectedValue: string | undefined;
+      }) => {
         const result = await DocumentDomain.loadDocumentsWithMetadataByIds(
           [doc1.id],
           includeMetadata

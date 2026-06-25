@@ -22,7 +22,11 @@ describe('ResourceStatusIcons', () => {
 
     it('renders nothing when all props are explicitly false', () => {
       const { container } = testRender(
-        <ResourceStatusIcons active={false} verified={false} deployable={false} />
+        <ResourceStatusIcons
+          active={false}
+          verified={false}
+          deployable={false}
+        />
       );
       expect(container.firstChild).toBeNull();
     });
@@ -75,9 +79,15 @@ describe('ResourceStatusIcons', () => {
       'renders $expectedIconCount icon(s) for active=$active verified=$verified deployable=$deployable',
       ({ active, verified, deployable, expectedIconCount }) => {
         const { container } = testRender(
-          <ResourceStatusIcons active={active} verified={verified} deployable={deployable} />
+          <ResourceStatusIcons
+            active={active}
+            verified={verified}
+            deployable={deployable}
+          />
         );
-        expect(container.querySelectorAll('svg')).toHaveLength(expectedIconCount);
+        expect(container.querySelectorAll('svg')).toHaveLength(
+          expectedIconCount
+        );
       }
     );
   });
@@ -85,7 +95,10 @@ describe('ResourceStatusIcons', () => {
   describe('with a custom iconClassName', () => {
     it('applies the custom class to the rendered icon', () => {
       const { container } = testRender(
-        <ResourceStatusIcons active iconClassName="custom-icon-class" />
+        <ResourceStatusIcons
+          active
+          iconClassName="custom-icon-class"
+        />
       );
       const icon = container.querySelector('svg');
       expect(icon).toHaveClass('custom-icon-class');
@@ -93,14 +106,13 @@ describe('ResourceStatusIcons', () => {
 
     it('does not apply the default class when a custom one is provided', () => {
       const { container } = testRender(
-        <ResourceStatusIcons active iconClassName="custom-icon-class" />
+        <ResourceStatusIcons
+          active
+          iconClassName="custom-icon-class"
+        />
       );
       const icon = container.querySelector('svg');
       expect(icon).not.toHaveClass('text-green-500');
     });
   });
 });
-
-
-
-
