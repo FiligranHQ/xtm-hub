@@ -62,18 +62,30 @@ const RootLayout = async ({
                 <LogoXTMDark className="text-primary mr-2 h-8 w-auto" />
                 <span className="sr-only">XTM Hub by Filigran</span>
               </Link>
-              <div className="ml-auto flex items-center gap-s">
+              {isHomePageV2Enabled ? (
+                <div className="flex items-center gap-s ml-auto">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="whitespace-nowrap border-primary text-primary bg-primary/10">
+                    <Link href={`/login`}>{t('PublicLayout.Login')}</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    className="whitespace-nowrap">
+                    <Link href={`/sign-up`}>{t('PublicLayout.SignUp')}</Link>
+                  </Button>
+                  <div className="md:hidden flex items-center">
+                    <PublicMobileMenuButton />
+                  </div>
+                </div>
+              ) : (
                 <Button
                   asChild
                   className="whitespace-nowrap">
                   <Link href={`/login`}>{t('PublicLayout.SignIn')}</Link>
                 </Button>
-                {isHomePageV2Enabled && (
-                  <div className="md:hidden flex items-center">
-                    <PublicMobileMenuButton />
-                  </div>
-                )}
-              </div>
+              )}
             </header>
             <main className="grow overflow-auto">
               <div className="container pt-l">{children}</div>

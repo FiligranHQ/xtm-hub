@@ -6,13 +6,15 @@ import SignUp from '@/components/signup/SignUp';
 import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
+import { isFeatureEnabled } from '@/utils/settings.service';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return {
@@ -25,6 +27,14 @@ export const generateMetadata = async (): Promise<Metadata> => {
 export const dynamic = 'force-dynamic';
 
 const Page = async () => {
+  const isHomePageV2Enabled = await isFeatureEnabled(
+    FeatureFlagEnum.HOME_PAGE_V2
+  );
+
+  if (!isHomePageV2Enabled) {
+    notFound();
+  }
+
   try {
     // @ts-expect-error
     const { data: meData }: { data: meLoaderQuery$data } =
