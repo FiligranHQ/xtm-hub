@@ -14,6 +14,10 @@ import ServiceListHeaderButtons from '@/components/service/components/header/Ser
 import ServiceCard from '@/components/service/components/ServiceCard';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
+import {
+  getHeroSectionLibraryProps,
+  HeroSectionLibrary,
+} from '@/components/service/document/ui/HeroSectionLibrary';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import useServiceCapability from '@/hooks/use-service-capability';
@@ -79,10 +83,11 @@ const ServiceList = ({
     acc[type].push(resource);
     return acc;
   }, {});
+  const heroSectionProps = getHeroSectionLibraryProps(serviceInstance, t);
 
   return (
     <div className="flex flex-col gap-xl">
-      <h1>{serviceInstance.name}</h1>
+      <HeroSectionLibrary {...heroSectionProps} />
       <ServiceListHeader
         search={search}
         onSearchChange={onSearchChange}
