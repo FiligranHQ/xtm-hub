@@ -835,6 +835,10 @@
         "Description": "Filigran XTM Platform のロードマップを確認し、フォローしましょう。"
       }
     },
+    "LibraryHero": {
+      "Eyebrow": "Filigran のリソース",
+      "DefaultDescription": "OpenCTI または OpenAEV プラットフォームを登録すると、ワンクリックで事前構築済みコンテンツをデプロイでき、製品ニュースを常に把握し、無料トライアルを開始して、XTM プラットフォーム体験をさらに最大化できます。"
+    },
     "ComingSoon": "近日公開予定",
     "Connectors": {
       "DataImport": "データインポート",
