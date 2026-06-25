@@ -34,9 +34,7 @@ export const EpicFilter = ({
 }: EpicFilterProps) => {
   const t = useTranslations();
 
-  const products = Object.values(FiligranProductEnum).filter(
-    (product) => product !== FiligranProductEnum.XTMONE
-  );
+  const products = Object.values(FiligranProductEnum);
 
   const totalCount = products.reduce(
     (sum, product) => sum + (countsByProduct[product] ?? 0),
