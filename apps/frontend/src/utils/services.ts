@@ -212,7 +212,7 @@ export const localizedCardName = (
   return instance.slug && t.has(key) ? t(key) : instance.name;
 };
 
-const localizedCardDescription = (
+export const localizedCardDescription = (
   instance: { slug?: string | null; description?: string | null },
   t: ReturnType<typeof useTranslations>
 ) => {

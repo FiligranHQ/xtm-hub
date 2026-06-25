@@ -1,5 +1,5 @@
 import {
-  getHeroSectionLibraryTranslations,
+  getHeroSectionLibraryProps,
   HeroSectionLibrary,
 } from '@/components/service/document/ui/HeroSectionLibrary';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
@@ -13,7 +13,6 @@ import {
   getLocaleTag,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { localizedCardName } from '@/utils/services';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
@@ -219,10 +218,7 @@ const Page = async ({
   ];
 
   const t = await getTranslations();
-  const heroSectionProps = {
-    name: localizedCardName(serviceInstance, t),
-    translations: getHeroSectionLibraryTranslations(t),
-  };
+  const heroSectionProps = getHeroSectionLibraryProps(serviceInstance, t);
 
   return (
     <>
