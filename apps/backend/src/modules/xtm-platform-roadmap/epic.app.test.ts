@@ -395,6 +395,30 @@ describe('epicApp', () => {
         count: 1,
       });
     });
+
+    it('should not count inactive epics', async () => {
+      // Given
+      await EpicApp.createEpic(
+        { ...basicInput, title: 'Active Now Epic', timeline: Timeline.Now },
+        []
+      );
+      await EpicApp.createEpic(
+        {
+          ...basicInput,
+          title: 'Inactive Now Epic',
+          timeline: Timeline.Now,
+          active: false,
+        },
+        []
+      );
+
+      // When
+      const result = await EpicApp.countEpicsPerTimeline();
+
+      // Then
+      const nowEntry = result.find((r) => r.timeline === Timeline.Now);
+      expect(nowEntry).toMatchObject({ timeline: Timeline.Now, count: 1 });
+    });
   });
 
   describe('loadEpics', () => {

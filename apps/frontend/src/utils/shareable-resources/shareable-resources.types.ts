@@ -34,7 +34,7 @@ export const SHAREABLE_RESOURCE_TYPE_NAME_MAPPING: Record<
   string
 > = {
   [ShareableResourceType.OPENAEV_SCENARIO]: 'Scenario OpenAEV',
-  [ShareableResourceType.OPENCTI_INTEGRATION]: 'Feed OpenCTI',
+  [ShareableResourceType.OPENCTI_INTEGRATION]: 'Integration OpenCTI',
   [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: 'Custom Dashboard OpenCTI',
   [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: 'Custom View OpenCTI',
   [ShareableResourceType.OPENCTI_PLAYBOOK]: 'Playbook OpenCTI',
@@ -58,7 +58,7 @@ export const SHAREABLE_RESOURCE_LIBRARY_MAPPING: Record<
   [ShareableResourceType.OPENAEV_SCENARIO]: 'Scenarios',
   [ShareableResourceType.OPENCTI_INTEGRATION]: 'Integrations',
   [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: 'Custom Dashboards',
-  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: 'Custom View',
+  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: 'Custom Views',
   [ShareableResourceType.OPENCTI_PLAYBOOK]: 'Playbooks',
 };
 

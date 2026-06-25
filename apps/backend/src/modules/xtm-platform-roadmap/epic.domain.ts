@@ -39,12 +39,13 @@ export const EpicDomain = {
   countEpicsPerTimeline: async (): Promise<EpicCountPerTimeline[]> => {
     const rows = await db<Epic>('Epic')
       .whereNot({ timeline: Timeline.Finished })
+      .where({ active: true })
       .groupBy('timeline')
       .select('timeline')
-      .count({ count: '*' });
-    return rows.map((row: { timeline: string; count: string | number }) => ({
+      .count<{ timeline: string; count: string }[]>({ count: '*' });
+    return rows.map((row) => ({
       timeline: row.timeline as Timeline,
-      count: Number(row.count),
+      count: Number(row.count ?? 0),
     }));
   },
 };
