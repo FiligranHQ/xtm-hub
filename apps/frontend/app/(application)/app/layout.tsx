@@ -16,7 +16,7 @@ import { TryFiligranProductsBanner } from '@/components/service/trial-instances/
 import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
-import { buildLoginRedirect } from '@/utils/redirect';
+import { buildLoginRedirect, buildSignupRedirect } from '@/utils/redirect';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
@@ -55,12 +55,18 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       {}
     );
 
+  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
+
   const me = meData.me as unknown as meContext_fragment$data;
   if (!me) {
-    redirect(buildLoginRedirect(pathname));
+    redirect(
+      isHomePageV2Enabled
+        ? buildSignupRedirect(pathname)
+        : buildLoginRedirect(pathname)
+    );
   }
 
-  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
+
 
   return (
     <RelayProvider>

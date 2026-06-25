@@ -20,9 +20,10 @@ test.describe('Public redirections', () => {
   test('should redirect user between public pages and login page', async ({
     page,
   }) => {
-    await test.step('should redirect user to login page if unlogged', async () => {
+    await test.step('should redirect user to sign up page if unlogged', async () => {
       await homePage.navigateTo();
-      await loginPage.assertCurrentPage();
+      await page.waitForURL('**/sign-up**');
+      await expect(page.locator('#hubspot-form')).toBeAttached();
     });
 
     await test.step('should navigate user to login page from a public page', async () => {
@@ -64,7 +65,8 @@ test.describe('Public redirections', () => {
     });
 
     await test.step('should redirect to specified page after sign in', async () => {
-      await page.goto('/app/manage/user');
+      const redirectParam = encodeURIComponent(btoa('/app/manage/user'));
+      await page.goto(`/login?redirect=${redirectParam}`);
       await loginPage.login();
       await userPage.assertCurrentPage();
     });
