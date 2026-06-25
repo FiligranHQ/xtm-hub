@@ -1,3 +1,4 @@
+import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
 import Copilot from '@/components/external/Copilot';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
@@ -85,6 +86,9 @@ const RootLayout = async ({
                   href="https://filigran.io/privacy-policy/">
                   {t('PublicLayout.PrivacyPolicy')}
                 </Link>
+              </li>
+              <li>
+                <CookieSettingsLink />
               </li>
               <li>
                 <Link
