@@ -1,12 +1,15 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildContext, CopilotUser, getUserKey } from './copilot.utils';
 
 const COPILOT_WIDGET_URL =
   'https://copilot.filigran.ai/api/v1/public/widget.js';
 const COPILOT_TOKEN = 'jNJu1JTbbPwNqk1tqEOw-WjsKU4dEcgn';
-const COPILOT_SCRIPT_ID = 'filigran-copilot-widget';
+
+export const COPILOT_SCRIPT_ID = 'filigran-copilot-widget';
+
+let widgetOwner: symbol | null = null;
 
 interface CopilotProps {
   user?: CopilotUser | null | undefined;
@@ -27,23 +30,25 @@ const Copilot = ({ user }: CopilotProps) => {
     [user, pathname]
   );
 
-  const cleanup = useCallback(() => {
-    if (scriptRef.current) {
-      try {
-        scriptRef.current.remove();
-      } catch (_e) {}
-      scriptRef.current = null;
-    }
+  const [ownerId] = useState<symbol>(() => Symbol('copilot'));
 
-    const existing = document.getElementById(COPILOT_SCRIPT_ID);
-    if (existing) {
-      try {
-        existing.remove();
-      } catch (_e) {}
-    }
+  const cleanup = useCallback(() => {
+    document
+      .querySelectorAll<HTMLElement>(`#${COPILOT_SCRIPT_ID}`)
+      .forEach((el) => {
+        try {
+          el.remove();
+        } catch (_e) {}
+      });
+    scriptRef.current = null;
   }, []);
 
   const initialize = useCallback(() => {
+    if (widgetOwner !== null && widgetOwner !== ownerId) {
+      return;
+    }
+    widgetOwner = ownerId;
+
     cleanup();
 
     const script = document.createElement('script');
@@ -55,7 +60,7 @@ const Copilot = ({ user }: CopilotProps) => {
 
     document.head.appendChild(script);
     scriptRef.current = script;
-  }, [cleanup, buildContextFn]);
+  }, [cleanup, buildContextFn, ownerId]);
 
   const updateContext = useCallback(() => {
     const scriptEl =
@@ -90,12 +95,14 @@ const Copilot = ({ user }: CopilotProps) => {
     }
   }, [pathname, updateContext]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      cleanup();
+      if (widgetOwner === ownerId) {
+        cleanup();
+        widgetOwner = null;
+      }
     };
-  }, [cleanup]);
+  }, [cleanup, ownerId]);
 
   return null;
 };

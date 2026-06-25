@@ -1228,6 +1228,7 @@ type ServiceInstanceSubscription {
 enum FeatureFlag {
   DUMMY
   OPENCTI_CUSTOM_VIEWS
+  HOME_PAGE_V2
 }
 
 type PlatformProvider {

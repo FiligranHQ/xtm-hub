@@ -2878,16 +2878,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/icon@npm:0.22.6":
-  version: 0.22.6
-  resolution: "@filigran/icon@npm:0.22.6"
-  checksum: 10/d6f17dc06fe4d8d20695aa48b5285913c87872e9849a781c48878da0b649e3fc5a788ba931270713f2920ecfd22c1f62aac7440864a10ab03d2e4f2c5c8cf0d0
+"@filigran/icon@npm:0.24.0":
+  version: 0.24.0
+  resolution: "@filigran/icon@npm:0.24.0"
+  checksum: 10/db06627dd0516c507c31fac87b5899104790d2248b90928768bf0308c4547088f5408ae14ee2c2253fa9ca3533912676cda379ef0cf8e55357700c9c432ed8cf
   languageName: node
   linkType: hard
 
-"@filigran/ui@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@filigran/ui@npm:1.1.8"
+"@filigran/ui@npm:1.3.0":
+  version: 1.3.0
+  resolution: "@filigran/ui@npm:1.3.0"
   dependencies:
     "@dnd-kit/core": "npm:6.3.1"
     "@dnd-kit/modifiers": "npm:9.0.0"
@@ -2923,7 +2923,7 @@ __metadata:
     tailwind-merge: "npm:3.5.0"
     tailwindcss-animate: "npm:1.0.7"
   peerDependencies:
-    "@filigran/icon": ^0.22.6
+    "@filigran/icon": ^0.24.0
     "@hookform/resolvers": ^5.0.0
     "@types/react": ^16.8 || ^17.0 || ^18.0 || ^19.0
     "@uiw/react-md-editor": ^4.1.0
@@ -2931,7 +2931,7 @@ __metadata:
     react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
     react-hook-form: ^7.68.0
     zod: ^4.1.13
-  checksum: 10/8d5131d8b23015e0e0ebec91732d4a748e5bc02e5a2ab33dbc00688bedf3c21323bcaaafa4cc034781543a0647a9d54b01c0d4f17e1733fc4fbb3a90e7471412
+  checksum: 10/dbbd2e0f734c11a407e9c55247275c3f04f4eac000f77f79997329e09bcae89c4946a6706091edfa05381f058a91d71d742722c349d42a6e6e450a36ddff66d1
   languageName: node
   linkType: hard
 
@@ -8598,8 +8598,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/frontend@workspace:apps/frontend"
   dependencies:
-    "@filigran/icon": "npm:0.22.6"
-    "@filigran/ui": "npm:1.1.8"
+    "@filigran/icon": "npm:0.24.0"
+    "@filigran/ui": "npm:1.3.0"
     "@graphql-codegen/cli": "catalog:"
     "@graphql-codegen/typescript": "catalog:"
     "@graphql-codegen/typescript-operations": "npm:4.6.1"
