@@ -45,7 +45,7 @@
     "postcss": "8.5.15",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-hook-form": "7.79.0",
+    "react-hook-form": "7.80.0",
     "react-relay": "20.1.1",
     "slugify": "1.6.9",
     "tailwind-merge": "3.6.0",
