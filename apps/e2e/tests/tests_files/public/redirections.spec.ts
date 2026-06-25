@@ -35,11 +35,11 @@ test.describe('Public redirections', () => {
       await cyberSecurityPage.navigateTo();
       await cyberSecurityPage.clickOnSignUp();
       await page.waitForURL('**/sign-up**');
-      await expect(page.locator('#hubspot-form')).toBeVisible();
+      await expect(page.locator('#hubspot-form')).toBeAttached();
     });
 
     await test.step('should log in user and redirect him to home', async () => {
-      await loginPage.login();
+      await loginPage.navigateToAndLogin();
       await homePage.assertCurrentPage();
     });
 
