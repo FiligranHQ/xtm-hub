@@ -202,4 +202,5 @@ type Query {
     serviceInstanceId: ServiceInstanceId!
   ): Document @auth
   mostDeployedDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
+  newestDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
 }

@@ -605,3 +605,43 @@ describe('mostDeployedDocuments GraphQL query', () => {
     expect(result).toEqual(expected);
   });
 });
+
+describe('newestDocuments GraphQL query', () => {
+  it('should delegate to DocumentApp.loadNewestDocuments and return result', async () => {
+    const expected = [{ id: uuidv4() }, { id: uuidv4() }] as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadNewestDocuments>
+    >;
+    vi.spyOn(DocumentApp, 'loadNewestDocuments').mockResolvedValue(expected);
+
+    const result = await documentResolver.Query!.newestDocuments!(
+      {},
+      { limit: 5 },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    expect(DocumentApp.loadNewestDocuments).toHaveBeenCalledWith(5, undefined);
+    expect(result).toEqual(expected);
+  });
+
+  it('should pass platformIdentifiers to DocumentApp.loadNewestDocuments', async () => {
+    const expected = [{ id: uuidv4() }] as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadNewestDocuments>
+    >;
+    vi.spyOn(DocumentApp, 'loadNewestDocuments').mockResolvedValue(expected);
+
+    const result = await documentResolver.Query!.newestDocuments!(
+      {},
+      { limit: 5, platformIdentifiers: [PlatformIdentifier.Opencti] },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    expect(DocumentApp.loadNewestDocuments).toHaveBeenCalledWith(
+      5,
+      [PlatformIdentifier.Opencti]
+    );
+    expect(result).toEqual(expected);
+  });
+});
+

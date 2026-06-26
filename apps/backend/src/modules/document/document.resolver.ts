@@ -248,6 +248,16 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
+    newestDocuments: async (_, { limit, platformIdentifiers }) => {
+      try {
+        return await DocumentApp.loadNewestDocuments(
+          limit,
+          platformIdentifiers ?? undefined
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
   },
 };
 

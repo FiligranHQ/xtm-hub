@@ -34,6 +34,7 @@ import {
   DOCUMENT_TYPE,
   DocumentHelper,
   ManageableServiceDefinitionIdentifier,
+  ServiceDefinitionIdentifiersByPlatformIdentifier,
 } from './document.helper';
 import { DocumentUploadsHelper, Upload } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
@@ -628,6 +629,31 @@ export const DocumentApp = {
       const doc = documentById.get(id);
       return doc ? [doc] : [];
     });
+  },
+
+  loadNewestDocuments: async (
+    limit: number,
+    platformIdentifiers?: PlatformIdentifier[]
+  ) => {
+    const NEWEST_DOCUMENTS_MAX_LIMIT = 20;
+
+    // Default to all shareable service definitions so that non-shareable
+    // types (e.g. vault) are never exposed when no platform filter is provided.
+    const allShareableIdentifiers = [
+      ...ServiceDefinitionIdentifiersByPlatformIdentifier.values(),
+    ].flat();
+
+    const serviceDefinitionIdentifiers = platformIdentifiers?.length
+      ? platformIdentifiers.flatMap(
+          (p) => ServiceDefinitionIdentifiersByPlatformIdentifier.get(p) ?? []
+        )
+      : allShareableIdentifiers;
+
+    return DocumentDomain.loadNewestDocuments(
+      Math.min(limit, NEWEST_DOCUMENTS_MAX_LIMIT),
+      ALL_METADATA_KEYS,
+      serviceDefinitionIdentifiers
+    );
   },
 
   loadDocument: async (documentId: DocumentId) => {

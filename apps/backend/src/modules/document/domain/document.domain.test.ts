@@ -17,6 +17,7 @@ import {
   IntegrationType,
   LogicalOperator,
   OrderingMode,
+  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { IngestManifestDomain } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
 import { ManifestInformation } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.model';
@@ -28,6 +29,7 @@ import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../shareable-resource/opencti/integration/integration.model';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
@@ -902,6 +904,105 @@ describe('document domain', () => {
       // Then
       expect(resultFound).toMatchObject({ id: doc.id });
       expect(resultNotFound).toBeUndefined();
+    });
+  });
+
+  describe('loadNewestDocuments', () => {
+    beforeEach(async () => {
+      await TestHelper.documentChildren.delete({});
+      await TestHelper.documentMetadata.delete({});
+      await TestHelper.document.delete({});
+    });
+
+    it('should return active documents sorted by creation date newest first', async () => {
+      // Given
+      const olderDoc = await TestHelper.document.create({
+        name: 'Older document',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'older-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+        created_at: new Date('2024-01-01T10:00:00Z'),
+      });
+      const newerDoc = await TestHelper.document.create({
+        name: 'Newer document',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'newer-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+        created_at: new Date('2025-01-01T10:00:00Z'),
+      });
+
+      // When
+      const result = await DocumentDomain.loadNewestDocuments(10);
+
+      // Then
+      expect(result[0]?.id).toBe(newerDoc.id);
+      expect(result[1]?.id).toBe(olderDoc.id);
+    });
+
+    it('should exclude inactive documents', async () => {
+      // Given
+      const activeDoc = await TestHelper.document.create({
+        name: 'Active document',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'active-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+      });
+      await TestHelper.document.create({
+        name: 'Inactive document',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'inactive-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: false,
+      });
+
+      // When
+      const result = await DocumentDomain.loadNewestDocuments(10);
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]?.id).toBe(activeDoc.id);
+    });
+
+    it('should filter documents by serviceDefinitionIdentifiers', async () => {
+      // Given
+      const integrationDoc = await TestHelper.document.create({
+        name: 'Integration document',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'integration-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+      });
+      await TestHelper.document.create({
+        name: 'Scenario document',
+        type: OPENAEV_SCENARIO_DOCUMENT_TYPE,
+        slug: 'scenario-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        active: true,
+      });
+
+      // When
+      const result = await DocumentDomain.loadNewestDocuments(10, [], [
+        ServiceDefinitionIdentifier.OpenctiIntegrations,
+      ]);
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]?.id).toBe(integrationDoc.id);
     });
   });
 
