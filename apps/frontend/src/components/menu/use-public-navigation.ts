@@ -1,4 +1,8 @@
 import {
+  BottomLink,
+  SectionConfig,
+} from '@/components/menu/use-navigation-type';
+import {
   HomeIcon,
   LogoXtmOneIcon,
   OpenAevIconIcon,
@@ -9,32 +13,6 @@ import {
   SlackIcon,
 } from '@filigran/icon';
 import { useLocale, useTranslations } from 'next-intl';
-import { ElementType } from 'react';
-
-export interface SectionLink {
-  href?: string;
-  label: string;
-  external?: boolean;
-  highlight?: boolean;
-  badge?: string;
-}
-
-export interface SectionConfig {
-  key: string;
-  label: string;
-  icon: ElementType;
-  pathPrefix: string;
-  links: SectionLink[];
-  href?: string;
-}
-
-export interface BottomLink {
-  key: string;
-  href: string;
-  icon: ElementType;
-  label: string;
-  external?: boolean;
-}
 
 export interface PublicNavigationConfig {
   sections: SectionConfig[];

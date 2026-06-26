@@ -1,14 +1,16 @@
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
 import { cn } from '@/lib/utils';
-import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
 interface MenuLogoProps {
   withDarkBackground?: boolean;
+  href: string;
 }
 
-export const MenuLogo = ({ withDarkBackground = true }: MenuLogoProps) => {
-  const locale = useLocale();
+export const MenuLogo = ({
+  withDarkBackground = true,
+  href,
+}: MenuLogoProps) => {
   return (
     <div
       className={cn(
@@ -16,7 +18,7 @@ export const MenuLogo = ({ withDarkBackground = true }: MenuLogoProps) => {
         withDarkBackground && 'dark:bg-background'
       )}>
       <Link
-        href={`/${locale}`}
+        href={href}
         aria-label="XTM Hub by Filigran"
         className="flex items-center">
         <DisplayLogo className="w-40" />

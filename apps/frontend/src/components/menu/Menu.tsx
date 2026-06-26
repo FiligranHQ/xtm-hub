@@ -3,6 +3,7 @@ import { NavigationApp } from '@/components/Navigation';
 import { CollapseMenuButton } from '@/components/menu/CollapseMenuButton';
 import { MenuLogo } from '@/components/menu/MenuLogo';
 import { cn } from '@/lib/utils';
+import { APP_PATH } from '@/utils/path/constant';
 import { buttonVariants } from '@filigran/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -50,7 +51,7 @@ const Menu = () => {
         'mobile:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-background duration-300 ease-in-out',
         open ? 'w-48' : 'w-14'
       )}>
-      <MenuLogo />
+      <MenuLogo href={`/${APP_PATH}`} />
       <div className="border-r border-elevation-border-strong flex-1 flex-col flex justify-between">
         <NavigationApp open={open} />
         <CollapseMenuButton
