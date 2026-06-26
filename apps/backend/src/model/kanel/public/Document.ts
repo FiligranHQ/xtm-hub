@@ -43,6 +43,12 @@ export default interface Document {
   type: string;
 
   source_type: string | null;
+
+  is_decommissioned: boolean;
+
+  version: string | null;
+
+  tags: string[];
 }
 
 /** Represents the initializer for the table public.Document */
@@ -86,6 +92,14 @@ export interface DocumentInitializer {
 
   /** Default value: 'internal'::character varying */
   source_type?: string | null;
+
+  /** Default value: false */
+  is_decommissioned?: boolean;
+
+  version?: string | null;
+
+  /** Default value: '{}'::text[] */
+  tags?: string[];
 }
 
 /** Represents the mutator for the table public.Document */
@@ -125,4 +139,10 @@ export interface DocumentMutator {
   type?: string;
 
   source_type?: string | null;
+
+  is_decommissioned?: boolean;
+
+  version?: string | null;
+
+  tags?: string[];
 }
