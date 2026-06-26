@@ -2,12 +2,14 @@
 
 import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/AppPortalContext';
+import PrivateNavigation from '@/components/menu/PrivateNavigation';
 import { NavigationApp } from '@/components/Navigation';
 import { NotificationButton } from '@/components/notification/NotificationButton';
 import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
@@ -21,6 +23,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@filigran/ui/clients';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -42,6 +45,8 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
   const router = useRouter();
   const t = useTranslations();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
+  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlagEnum.HOME_PAGE_V2);
+
   // Legitimate effect: close the menu on route change.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setOpen(false), [currentPath]);
@@ -130,7 +135,11 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
               </SheetClose>
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
-              <NavigationApp open={true} />
+              {isHomePageV2Enabled ? (
+                <PrivateNavigation open={true} />
+              ) : (
+                <NavigationApp open={true} />
+              )}
               <div className="pb-xl flex flex-col text-center">
                 <Link href={`/${APP_PATH}/profile`}>
                   <div className="w-full p-2 hover:bg-hover rounded">

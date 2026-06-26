@@ -413,6 +413,24 @@
     "AICatalog": "AIカタログ",
     "ComingSoon": "近日公開"
   },
+  "PrivateMenu": {
+    "XTMPlatform": "XTMプラットフォーム",
+    "StartFreeTrial": "無料トライアルを開始",
+    "CustomDashboards": "カスタムダッシュボード",
+    "CustomViews": "カスタムビュー",
+    "Integrations": "連携機能",
+    "Playbooks": "プレイブック",
+    "LiveDemo": "ライブデモ",
+    "Documentation": "ドキュメント",
+    "Scenarios": "ユースケース",
+    "XTMRoadmap": "XTMプラットフォームのロードマップ",
+    "FiligranAcademy": "Filigran Academy",
+    "Blog": "ブログ",
+    "Slack": "Slack",
+    "About": "会社概要",
+    "AICatalog": "AIカタログ",
+    "ComingSoon": "近日公開予定"
+  },
   "MenuLinks": {
     "Backoffice": "バックオフィス",
     "Connectors": "OpenCTI コネクタ",

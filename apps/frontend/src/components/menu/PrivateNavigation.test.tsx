@@ -1,0 +1,397 @@
+import PrivateNavigation from '@/components/menu/PrivateNavigation';
+import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
+import { APP_PATH } from '@/utils/path/constant';
+import testRender, { testRenderHook } from '@/utils/test/test-render';
+import {
+  PlatformIdentifier,
+  PrivateNavigationServiceInstancesQuery,
+  PrivateNavigationTrialEligibilityQuery,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { usePathname } from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const graphqlMocks = vi.hoisted(() => ({
+  usePrivateNavigationServiceInstancesQuery: Object.assign(vi.fn(), {
+    getKey: vi.fn((_variables: unknown) => [
+      'PrivateNavigationServiceInstances',
+    ]),
+    getRootKey: vi.fn(() => ['PrivateNavigationServiceInstances']),
+  }),
+  usePrivateNavigationTrialEligibilityQuery: Object.assign(vi.fn(), {
+    getKey: vi.fn((_variables: unknown) => [
+      'PrivateNavigationTrialEligibility',
+    ]),
+    getRootKey: vi.fn(() => ['PrivateNavigationTrialEligibility']),
+  }),
+}));
+
+vi.mock('@graphql/generated', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@graphql/generated')>();
+
+  return {
+    ...actual,
+    usePrivateNavigationServiceInstancesQuery:
+      graphqlMocks.usePrivateNavigationServiceInstancesQuery,
+    usePrivateNavigationTrialEligibilityQuery:
+      graphqlMocks.usePrivateNavigationTrialEligibilityQuery,
+  };
+});
+
+const privateNavigationQueryResponse: PrivateNavigationServiceInstancesQuery = {
+  serviceInstances: {
+    __typename: 'ServiceConnection',
+    edges: [
+      {
+        __typename: 'ServiceInstanceEdge',
+        node: {
+          __typename: 'ServiceInstance',
+          id: 'service-instance-custom-dashboards',
+          service_definition: {
+            __typename: 'ServiceDefinition',
+            identifier: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+          },
+          links: [],
+        },
+      },
+      {
+        __typename: 'ServiceInstanceEdge',
+        node: {
+          __typename: 'ServiceInstance',
+          id: 'service-instance-integrations',
+          service_definition: {
+            __typename: 'ServiceDefinition',
+            identifier: ServiceDefinitionIdentifier.OpenctiIntegrations,
+          },
+          links: [],
+        },
+      },
+      {
+        __typename: 'ServiceInstanceEdge',
+        node: {
+          __typename: 'ServiceInstance',
+          id: 'service-instance-openaev-scenarios',
+          service_definition: {
+            __typename: 'ServiceDefinition',
+            identifier: ServiceDefinitionIdentifier.OpenaevScenarios,
+          },
+          links: [],
+        },
+      },
+    ],
+  },
+};
+
+const privateNavigationTrialEligibilityResponse: PrivateNavigationTrialEligibilityQuery =
+  {
+    trialDeployments: {
+      __typename: 'TrialsDeployments',
+      availableTrials: [PlatformIdentifier.Opencti, PlatformIdentifier.Openaev],
+      isBlacklisted: false,
+    },
+  };
+
+const TEST_SELECTED_ORGANIZATION_ID = 'org-test-456';
+
+const expandSection = async (
+  user: ReturnType<typeof userEvent.setup>,
+  name: string
+) => {
+  const trigger = screen.getByRole('button', { name });
+  await user.click(trigger);
+  await waitFor(() => {
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+  return trigger;
+};
+
+describe('PrivateNavigation component — open={true}', () => {
+  beforeEach(() => {
+    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
+      data: privateNavigationQueryResponse,
+    });
+    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      data: privateNavigationTrialEligibilityResponse,
+      isLoading: false,
+      isPending: false,
+    });
+  });
+
+  it('renders section labels and bottom links in accordion mode', () => {
+    testRender(<PrivateNavigation open={true} />);
+
+    expect(screen.getByText('XTMPlatform')).toBeInTheDocument();
+    expect(screen.getByText('OpenCTI')).toBeInTheDocument();
+    expect(screen.getByText('OpenAEV')).toBeInTheDocument();
+    expect(screen.getByText('XTM One')).toBeInTheDocument();
+
+    expect(screen.getByText('FiligranAcademy')).toBeInTheDocument();
+    expect(screen.getByText('Blog')).toBeInTheDocument();
+    expect(screen.getByText('Slack')).toBeInTheDocument();
+  });
+
+  it('renders XTM Platform as a link, not as an accordion trigger', () => {
+    testRender(<PrivateNavigation open={true} />);
+
+    const xtmPlatformLink = screen.getByRole('link', { name: 'XTMPlatform' });
+    expect(xtmPlatformLink).toBeInTheDocument();
+    expect(xtmPlatformLink).not.toHaveAttribute('aria-expanded');
+  });
+
+  it('expands OpenCTI accordion and renders expected sub-links', async () => {
+    const user = userEvent.setup();
+    testRender(<PrivateNavigation open={true} />);
+
+    await expandSection(user, 'OpenCTI');
+
+    expect(screen.getByText('StartFreeTrial')).toBeInTheDocument();
+    expect(screen.getByText('CustomDashboards')).toBeInTheDocument();
+    expect(screen.getByText('Integrations')).toBeInTheDocument();
+    expect(screen.getByText('Playbooks')).toBeInTheDocument();
+    expect(screen.getByText('LiveDemo')).toBeInTheDocument();
+    expect(screen.getByText('Documentation')).toBeInTheDocument();
+  });
+
+  it('renders external OpenCTI links with target and rel attributes', async () => {
+    const user = userEvent.setup();
+    testRender(<PrivateNavigation open={true} />);
+
+    await expandSection(user, 'OpenCTI');
+
+    const liveDemoLink = screen.getByRole('link', { name: 'LiveDemo' });
+    expect(liveDemoLink).toHaveAttribute('target', '_blank');
+    expect(liveDemoLink).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('applies active style when current pathname matches XTM Platform link', () => {
+    vi.mocked(usePathname).mockReturnValue(`/${APP_PATH}`);
+    testRender(<PrivateNavigation open={true} />);
+
+    const xtmPlatformLink = screen.getByRole('link', { name: 'XTMPlatform' });
+    expect(xtmPlatformLink.className).toContain('bg-primary/10');
+  });
+});
+
+describe('PrivateNavigation component — open={false}', () => {
+  beforeEach(() => {
+    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
+      data: privateNavigationQueryResponse,
+    });
+    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      data: privateNavigationTrialEligibilityResponse,
+      isLoading: false,
+      isPending: false,
+    });
+  });
+
+  it('renders section buttons and keeps XTM Platform as link', () => {
+    testRender(<PrivateNavigation open={false} />);
+
+    expect(screen.getByRole('button', { name: 'OpenCTI' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'OpenAEV' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'XTM One' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'XTMPlatform' })
+    ).toBeInTheDocument();
+  });
+
+  it('renders bottom link labels as sr-only in closed mode', () => {
+    testRender(<PrivateNavigation open={false} />);
+
+    const academyLabel = screen.getByText('FiligranAcademy');
+    expect(academyLabel.className).toContain('sr-only');
+  });
+
+  it('shows and hides OpenCTI popover links on hover/unhover', async () => {
+    const user = userEvent.setup();
+    testRender(<PrivateNavigation open={false} />);
+
+    const openctiButton = screen.getByRole('button', { name: 'OpenCTI' });
+    await user.hover(openctiButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('StartFreeTrial')).toBeInTheDocument();
+    });
+
+    await user.unhover(openctiButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText('StartFreeTrial')).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe('PrivateNavigation hook behavior', () => {
+  beforeEach(() => {
+    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
+      data: privateNavigationQueryResponse,
+    });
+    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      data: privateNavigationTrialEligibilityResponse,
+      isLoading: false,
+      isPending: false,
+    });
+  });
+
+  it('should not render admin panel without capabilities', async () => {
+    const { container } = testRender(<PrivateNavigation open={true} />);
+
+    expect(container).toBeTruthy();
+    expect(screen.queryByText('MenuLinks.Settings')).not.toBeInTheDocument();
+  });
+
+  it('builds private service links using fetched service instance ids', () => {
+    const { result } = testRenderHook(() => usePrivateNavigation(), {
+      me: { selected_organization_id: TEST_SELECTED_ORGANIZATION_ID },
+    });
+
+    const openctiSection = result.current.sections.find(
+      (section) => section.key === 'opencti'
+    );
+    const openaevSection = result.current.sections.find(
+      (section) => section.key === 'openaev'
+    );
+
+    const customDashboardsLink = openctiSection?.links.find((link) =>
+      link.href?.includes('opencti_custom_dashboards')
+    );
+    const integrationsLink = openctiSection?.links.find((link) =>
+      link.href?.includes('opencti_integrations')
+    );
+    const scenariosLink = openaevSection?.links.find((link) =>
+      link.href?.includes('openaev_scenarios')
+    );
+
+    expect(customDashboardsLink?.href).toBe(
+      '/app/service/opencti_custom_dashboards/service-instance-custom-dashboards'
+    );
+    expect(integrationsLink?.href).toBe(
+      '/app/service/opencti_integrations/service-instance-integrations'
+    );
+    expect(scenariosLink?.href).toBe(
+      '/app/service/openaev_scenarios/service-instance-openaev-scenarios'
+    );
+  });
+
+  it('shows disabled Start Free Trial placeholders while trial eligibility is loading', () => {
+    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isPending: true,
+    });
+
+    const { result } = testRenderHook(() => usePrivateNavigation(), {
+      me: { selected_organization_id: TEST_SELECTED_ORGANIZATION_ID },
+    });
+
+    const openctiSection = result.current.sections.find(
+      (section) => section.key === 'opencti'
+    );
+    const openaevSection = result.current.sections.find(
+      (section) => section.key === 'openaev'
+    );
+
+    const openctiStartTrialLink = openctiSection?.links.find(
+      (link) => link.label === 'StartFreeTrial'
+    );
+    const openaevStartTrialLink = openaevSection?.links.find(
+      (link) => link.label === 'StartFreeTrial'
+    );
+
+    expect(openctiStartTrialLink?.href).toBeUndefined();
+    expect(openaevStartTrialLink?.href).toBeUndefined();
+    expect(
+      openctiSection?.links.some((link) => link.label === 'Integrations')
+    ).toBe(true);
+    expect(
+      openaevSection?.links.some((link) => link.label === 'Scenarios')
+    ).toBe(true);
+  });
+
+  it('hides Start Free Trial links when organization is blacklisted', () => {
+    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      data: {
+        trialDeployments: {
+          __typename: 'TrialsDeployments',
+          availableTrials: [
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+          isBlacklisted: true,
+        },
+      },
+      isLoading: false,
+      isPending: false,
+    });
+
+    const { result } = testRenderHook(() => usePrivateNavigation(), {
+      me: { selected_organization_id: TEST_SELECTED_ORGANIZATION_ID },
+    });
+
+    const openctiSection = result.current.sections.find(
+      (section) => section.key === 'opencti'
+    );
+    const openaevSection = result.current.sections.find(
+      (section) => section.key === 'openaev'
+    );
+
+    expect(
+      openctiSection?.links.some((link) => link.label === 'StartFreeTrial')
+    ).toBe(false);
+    expect(
+      openaevSection?.links.some((link) => link.label === 'StartFreeTrial')
+    ).toBe(false);
+    expect(
+      openctiSection?.links.some((link) => link.label === 'Integrations')
+    ).toBe(true);
+    expect(
+      openaevSection?.links.some((link) => link.label === 'Scenarios')
+    ).toBe(true);
+  });
+
+  it('shows Start Free Trial links only for available trials', () => {
+    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      data: {
+        trialDeployments: {
+          __typename: 'TrialsDeployments',
+          availableTrials: [
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+          isBlacklisted: false,
+        },
+      },
+      isLoading: false,
+      isPending: false,
+    });
+
+    const { result } = testRenderHook(() => usePrivateNavigation(), {
+      me: { selected_organization_id: TEST_SELECTED_ORGANIZATION_ID },
+    });
+
+    const openctiSection = result.current.sections.find(
+      (section) => section.key === 'opencti'
+    );
+    const openaevSection = result.current.sections.find(
+      (section) => section.key === 'openaev'
+    );
+
+    const hasOpenctiStartTrialLink = openctiSection?.links.some(
+      (link) => link.href === '/app/service/opencti-free-trial'
+    );
+    const hasOpenaevStartTrialLink = openaevSection?.links.some(
+      (link) => link.href === '/app/service/openaev-free-trial'
+    );
+
+    expect(hasOpenctiStartTrialLink).toBe(true);
+    expect(hasOpenaevStartTrialLink).toBe(true);
+    expect(
+      openctiSection?.links.some((link) => link.label === 'Integrations')
+    ).toBe(true);
+    expect(
+      openaevSection?.links.some((link) => link.label === 'Scenarios')
+    ).toBe(true);
+  });
+});

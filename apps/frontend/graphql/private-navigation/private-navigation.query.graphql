@@ -1,0 +1,19 @@
+query PrivateNavigationServiceInstances(
+  $count: Int!
+  $orderBy: ServiceInstanceOrdering!
+  $orderMode: OrderingMode!
+) {
+  serviceInstances(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+    edges {
+      node {
+        id
+        service_definition {
+          identifier
+        }
+        links {
+          url
+        }
+      }
+    }
+  }
+}
