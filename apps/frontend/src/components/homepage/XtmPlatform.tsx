@@ -6,7 +6,7 @@ const XtmPlatform = async () => {
   const t = await getTranslations('PublicHomePage.XtmPlatform');
 
   return (
-    <section className="grid grid-cols-2 gap-l items-center">
+    <section className="grid grid-cols-1 md:grid-cols-2 gap-l items-center">
       <div className="flex flex-col gap-l">
         <span className="text-primary txt-small font-semibold tracking-wide">
           {t('Label')}

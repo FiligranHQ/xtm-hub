@@ -46,8 +46,8 @@ const XtmRoadmap = async ({ locale }: { locale: PublicLocale }) => {
   }));
 
   return (
-    <section className="grid grid-cols-[1fr_1fr] min-[1330px]:grid-cols-[3fr_2fr_auto] gap-l items-center bg-card border border-primary/30 rounded-lg px-xl py-4">
-      <div className="flex flex-col gap-l">
+    <section className="flex flex-col lg:flex-row gap-l items-center bg-card border border-primary/30 rounded-lg px-xl py-4">
+      <div className="flex flex-col gap-l flex-3">
         <h2 className="text-xl leading-tight">{t('Title')}</h2>
         <p className="text-muted-foreground text-sm min-[1330px]:text-xs">
           {t('Description')}
@@ -65,29 +65,33 @@ const XtmRoadmap = async ({ locale }: { locale: PublicLocale }) => {
         </div>
       </div>
 
-      <div className="hidden min-[1330px]:block relative h-24 mx-auto w-full rounded-lg overflow-hidden">
+      <div className="hidden min-[1330px]:block relative h-24 flex-2 rounded-lg overflow-hidden">
         <Image
           src="/xtm_roadmap_space.png"
           alt={t('ImageAlt')}
           fill
-          sizes="(max-width: 768px) 100vw, 33vw"
+          sizes="33vw"
           className="object-contain"
         />
       </div>
 
-      <div className="flex gap-l justify-end">
+      <div className="flex gap-l max-md:gap-m justify-center lg:justify-end">
         {roadmapStats.map(({ count, labelKey, bg, text }) => (
           <div
             key={labelKey}
             className="flex flex-col gap-xs">
-            <div className="flex items-center gap-s pr-8">
-              <div className="relative w-6 h-6 flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-s max-md:gap-xs pr-8 max-md:pr-5">
+              <div className="relative w-6 h-6 max-md:w-5 max-md:h-5 flex items-center justify-center shrink-0">
                 <div
                   className={`absolute inset-0 ${bg} opacity-20 rounded-full`}
                 />
-                <span className={`relative z-10 text-sm ${text}`}>{count}</span>
+                <span
+                  className={`relative z-10 text-sm max-md:text-xs ${text}`}>
+                  {count}
+                </span>
               </div>
-              <span className={`text-m whitespace-nowrap ${text}`}>
+              <span
+                className={`text-m max-md:text-sm whitespace-nowrap ${text}`}>
                 {t(labelKey)}
               </span>
             </div>

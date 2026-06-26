@@ -1,6 +1,7 @@
 import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
 import Copilot from '@/components/external/Copilot';
 import PublicMenu from '@/components/menu/PublicMenu';
+import { PublicMobileMenuButton } from '@/components/menu/PublicMobileMenuButton';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 import { publicLocales, type PublicLocale } from '@/i18n/config';
@@ -58,14 +59,21 @@ const RootLayout = async ({
               <Link
                 href={`/${locale}`}
                 className={isHomePageV2Enabled ? 'md:hidden' : undefined}>
-                <LogoXTMDark className="text-primary mr-2 w-[10rem] h-auto py-l" />
+                <LogoXTMDark className="text-primary mr-2 h-8 w-auto" />
                 <span className="sr-only">XTM Hub by Filigran</span>
               </Link>
-              <Button
-                asChild
-                className="ml-auto whitespace-nowrap">
-                <Link href={`/login`}>{t('PublicLayout.SignIn')}</Link>
-              </Button>
+              <div className="ml-auto flex items-center gap-s">
+                <Button
+                  asChild
+                  className="whitespace-nowrap">
+                  <Link href={`/login`}>{t('PublicLayout.SignIn')}</Link>
+                </Button>
+                {isHomePageV2Enabled && (
+                  <div className="md:hidden">
+                    <PublicMobileMenuButton />
+                  </div>
+                )}
+              </div>
             </header>
             <main className="grow overflow-auto">
               <div className="container pt-l">{children}</div>
