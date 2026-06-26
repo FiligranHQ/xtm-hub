@@ -943,7 +943,6 @@
         "csv_feed": "Flux CSV",
         "connector": "Connecteurs",
         "rss_feed": "Flux RSS",
-        "json_feed": "Flux JSON (bientôt disponible)",
         "taxii_feed": "Flux TAXII",
         "stream": "Flux OpenCTI",
         "third_party_integration": "Intégrations tierces (bientôt disponible)"

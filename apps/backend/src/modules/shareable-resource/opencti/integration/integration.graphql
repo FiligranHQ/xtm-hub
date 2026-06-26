@@ -2,7 +2,6 @@ enum IntegrationType {
   csv_feed
   connector
   rss_feed
-  json_feed
   taxii_feed
   stream
   third_party_integration
