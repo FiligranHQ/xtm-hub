@@ -55,7 +55,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
     <header
       id="app-header"
       className={cn(
-        'sticky top-0 z-[20] flex h-16 w-full shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between',
+        'sticky top-0 z-[20] flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong bg-page-background dark:bg-background px-4 justify-between',
         displayLogo ? '' : 'sm:justify-end'
       )}>
       <DisplayLogo

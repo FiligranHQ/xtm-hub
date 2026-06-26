@@ -54,7 +54,7 @@ const RootLayout = async ({
         <div className="flex grow min-h-0">
           {isHomePageV2Enabled && <PublicMenu />}
           <div className="flex flex-col flex-1 min-h-0 min-w-0">
-            <header className="max-md:sticky max-md:top-0 max-md:z-20 flex h-16 w-full shrink-0 items-center border-b bg-page-background dark:bg-background px-4 justify-between">
+            <header className="max-md:sticky max-md:top-0 max-md:z-20 flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong bg-page-background dark:bg-background px-4 justify-between">
               <Link
                 href={`/${locale}`}
                 className={isHomePageV2Enabled ? 'md:hidden' : undefined}>

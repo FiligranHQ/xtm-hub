@@ -51,7 +51,7 @@ const Menu = () => {
         open ? 'w-48' : 'w-14'
       )}>
       <MenuLogo />
-      <div className="border-r flex-1 flex-col flex justify-between">
+      <div className="border-r border-elevation-border-strong flex-1 flex-col flex justify-between">
         <NavigationApp open={open} />
         <CollapseMenuButton
           open={open}
