@@ -8788,7 +8788,7 @@ __metadata:
     react: "catalog:"
     react-dom: "catalog:"
     react-hook-form: "npm:7.80.0"
-    react-relay: "npm:20.1.1"
+    react-relay: "npm:21.0.1"
     rehype-sanitize: "npm:6.0.0"
     relay-compiler: "npm:21.0.1"
     relay-test-utils: "npm:20.1.1"
@@ -17868,18 +17868,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-relay@npm:20.1.1":
-  version: 20.1.1
-  resolution: "react-relay@npm:20.1.1"
+"react-relay@npm:21.0.1":
+  version: 21.0.1
+  resolution: "react-relay@npm:21.0.1"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
     nullthrows: "npm:^1.1.1"
-    relay-runtime: "npm:20.1.1"
+    relay-runtime: "npm:21.0.1"
   peerDependencies:
     react: ^16.9.0 || ^17 || ^18 || ^19
-  checksum: 10/d619ef8b31190dc3c2ecf8650d8bebc1de069212a3598074d87467ed1bac06fb24227906b0e3641ab7028e19a6d0d7205e6955b65b684b4b8195bafcd9d724b8
+  checksum: 10/b77c6547ed26846caa12ba5000fbf790726fc63a79b8a89dec023de33e933185fe642e965a9d49f545183f20e5097494797967d28a2bb1f5514ffa56e4ebea9c
   languageName: node
   linkType: hard
 
@@ -18242,6 +18242,17 @@ __metadata:
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
   checksum: 10/ee2d043397d2fb6e5e2cc48930145707a86f80f9c8470153ceae08609806353178f02767f3f0709058d753e0c7bedd3b7d8c149bd2bd7edab64deb2d1bcffbfb
+  languageName: node
+  linkType: hard
+
+"relay-runtime@npm:21.0.1":
+  version: 21.0.1
+  resolution: "relay-runtime@npm:21.0.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.0"
+    fbjs: "npm:^3.0.2"
+    invariant: "npm:^2.2.4"
+  checksum: 10/7be02c3f568e702a050647f3dd4666bb6a07030fad00524a60b0d47de1e78376c071bc0060ee7210616f0f43044c8b45291d0e2b48664a2d4344d27ef492cb1f
   languageName: node
   linkType: hard
 

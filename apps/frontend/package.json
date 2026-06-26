@@ -46,7 +46,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.80.0",
-    "react-relay": "20.1.1",
+    "react-relay": "21.0.1",
     "slugify": "1.6.9",
     "tailwind-merge": "3.6.0",
     "tailwindcss": "4.3.1",
