@@ -7,7 +7,7 @@ type HomepageProps = { locale: PublicLocale };
 
 const Homepage = ({ locale }: HomepageProps) => {
   return (
-    <div className="flex flex-col gap-2xl">
+    <div className="flex flex-col gap-12">
       <XtmPlatform />
       <XtmRoadmap locale={locale} />
       <MostDeployedResources locale={locale} />

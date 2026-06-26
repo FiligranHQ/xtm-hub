@@ -16,7 +16,7 @@ import {
 } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 
-const MOST_DEPLOYED_LIMIT = 4;
+const MOST_DEPLOYED_LIMIT = 8;
 
 type MostDeployedDocument =
   MostDeployedDocumentsQueryQuery['mostDeployedDocuments'][number];
@@ -45,7 +45,7 @@ const MostDeployedResources = async ({ locale }: { locale: PublicLocale }) => {
   }
 
   return (
-    <section className="flex flex-col gap-l mt-xl">
+    <section className="flex flex-col gap-l">
       <h2 className="text-xl leading-tight">{t('Title')}</h2>
       <ul className="grid grid-cols-3 xl:grid-cols-4 gap-l">
         {resources.map((resource, index) => {

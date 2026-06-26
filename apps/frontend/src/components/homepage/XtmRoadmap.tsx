@@ -48,7 +48,7 @@ const XtmRoadmap = async ({ locale }: { locale: PublicLocale }) => {
   return (
     <section className="grid grid-cols-[1fr_1fr] min-[1330px]:grid-cols-[3fr_2fr_auto] gap-l items-center bg-card border border-primary/30 rounded-lg px-xl py-4">
       <div className="flex flex-col gap-l">
-        <h2 className="text-2xl leading-tight">{t('Title')}</h2>
+        <h2 className="text-xl leading-tight">{t('Title')}</h2>
         <p className="text-muted-foreground text-sm min-[1330px]:text-xs">
           {t('Description')}
         </p>
