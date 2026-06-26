@@ -1,0 +1,9 @@
+query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
+  registeredPlatforms(input: $input) {
+    id
+    identifier
+  }
+}
+
+
+

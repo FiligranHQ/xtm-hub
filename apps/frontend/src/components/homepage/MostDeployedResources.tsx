@@ -9,9 +9,11 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   DocumentImageType,
   MostDeployedDocumentsQueryQuery,
+  PlatformIdentifier,
   useMostDeployedDocumentsQueryQuery,
 } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
@@ -22,6 +24,7 @@ type MostDeployedDocument =
   MostDeployedDocumentsQueryQuery['mostDeployedDocuments'][number];
 
 const findLogoUrl = (resource: MostDeployedDocument): string | undefined => {
+
   const logo = resource.children_documents?.find(
     (doc) => doc.image_type === DocumentImageType.Logo
   );
@@ -30,12 +33,23 @@ const findLogoUrl = (resource: MostDeployedDocument): string | undefined => {
     : undefined;
 };
 
-const MostDeployedResources = async ({ locale }: { locale: PublicLocale }) => {
+type MostDeployedResourcesProps = {
+  locale: PublicLocale;
+  platformIdentifiers?: PlatformIdentifierEnum[];
+};
+
+const MostDeployedResources = async ({
+  locale,
+  platformIdentifiers,
+}: MostDeployedResourcesProps) => {
   const t = await getTranslations('PublicHomePage.XtmMostDeployedResources');
 
   const data = await useMostDeployedDocumentsQueryQuery.fetcher(
     portalGraphqlClientCached,
-    { limit: MOST_DEPLOYED_LIMIT }
+    {
+      limit: MOST_DEPLOYED_LIMIT,
+      platformIdentifiers: (platformIdentifiers ?? []) as unknown as PlatformIdentifier[],
+    }
   )();
 
   const resources = data.mostDeployedDocuments;

@@ -2620,6 +2620,7 @@ export type UsersWithCapabilitiesInOrganizationInput = {
 
 export type MostDeployedDocumentsQueryQueryVariables = Exact<{
   limit: Scalars['Int']['input'];
+  platformIdentifiers: InputMaybe<Array<PlatformIdentifier> | PlatformIdentifier>;
 }>;
 
 
@@ -2650,6 +2651,13 @@ export type RegisteredPlatformsListQueryVariables = Exact<{ [key: string]: never
 
 
 export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', title: string, url: string, identifier: ServiceDefinitionIdentifier, subscription: { __typename?: 'SubscriptionModel', service_instance: { __typename?: 'ServiceInstance', id: string } } | null }> };
+
+export type RegisteredPlatformsQueryVariables = Exact<{
+  input: RegisteredPlatformsInput;
+}>;
+
+
+export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier }> };
 
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
@@ -2732,8 +2740,8 @@ export const UseCaseRowFragmentDoc = `
 }
     `;
 export const MostDeployedDocumentsQueryDocument = `
-    query MostDeployedDocumentsQuery($limit: Int!) {
-  mostDeployedDocuments(limit: $limit) {
+    query MostDeployedDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
+  mostDeployedDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {
     id
     name
     short_description
@@ -2986,6 +2994,60 @@ export const useInfiniteRegisteredPlatformsListQuery = <
 useInfiniteRegisteredPlatformsListQuery.getKey = (variables?: RegisteredPlatformsListQueryVariables) => variables === undefined ? ['RegisteredPlatformsList.infinite'] : ['RegisteredPlatformsList.infinite', variables];
 useInfiniteRegisteredPlatformsListQuery.getRootKey = () => ['RegisteredPlatformsList.infinite'] as const;
 useRegisteredPlatformsListQuery.fetcher = (client: GraphQLClient, variables?: RegisteredPlatformsListQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, variables, headers);
+
+export const RegisteredPlatformsDocument = `
+    query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
+  registeredPlatforms(input: $input) {
+    id
+    identifier
+  }
+}
+    `;
+
+export const useRegisteredPlatformsQuery = <
+      TData = RegisteredPlatformsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredPlatformsQueryVariables,
+      options?: Omit<UseQueryOptions<RegisteredPlatformsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredPlatformsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<RegisteredPlatformsQuery, TError, TData>(
+      {
+    queryKey: ['RegisteredPlatforms', variables],
+    queryFn: fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useRegisteredPlatformsQuery.getKey = (variables: RegisteredPlatformsQueryVariables) => ['RegisteredPlatforms', variables];
+useRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms'] as const;
+export const useInfiniteRegisteredPlatformsQuery = <
+      TData = InfiniteData<RegisteredPlatformsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredPlatformsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<RegisteredPlatformsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredPlatformsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<RegisteredPlatformsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['RegisteredPlatforms.infinite', variables],
+      queryFn: (metaData) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteRegisteredPlatformsQuery.getKey = (variables: RegisteredPlatformsQueryVariables) => ['RegisteredPlatforms.infinite', variables];
+useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.infinite'] as const;
+useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
 
 export const ServiceInstancesListDocument = `
     query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!) {

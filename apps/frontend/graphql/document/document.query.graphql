@@ -1,5 +1,5 @@
-query MostDeployedDocumentsQuery($limit: Int!) {
-  mostDeployedDocuments(limit: $limit) {
+query MostDeployedDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
+  mostDeployedDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {
     id
     name
     short_description
