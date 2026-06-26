@@ -75,28 +75,28 @@ const XtmRoadmap = async ({ locale }: { locale: PublicLocale }) => {
         />
       </div>
 
-      <div className="flex gap-l max-md:gap-m justify-center lg:justify-end">
+      <div className="flex gap-l max-md:gap-m max-sm:gap-xs justify-center lg:justify-end">
         {roadmapStats.map(({ count, labelKey, bg, text }) => (
           <div
             key={labelKey}
-            className="flex flex-col gap-xs">
-            <div className="flex items-center gap-s max-md:gap-xs pr-8 max-md:pr-5">
-              <div className="relative w-6 h-6 max-md:w-5 max-md:h-5 flex items-center justify-center shrink-0">
+            className="flex flex-col gap-xs max-sm:gap-[2px]">
+            <div className="flex items-center gap-s max-md:gap-xs max-sm:gap-[4px] pr-8 max-md:pr-5 max-sm:pr-1">
+              <div className="relative w-6 h-6 max-md:w-5 max-md:h-5 max-sm:w-4 max-sm:h-4 flex items-center justify-center shrink-0">
                 <div
                   className={`absolute inset-0 ${bg} opacity-20 rounded-full`}
                 />
                 <span
-                  className={`relative z-10 text-sm max-md:text-xs ${text}`}>
+                  className={`relative z-10 text-sm max-md:text-xs max-sm:text-[10px] ${text}`}>
                   {count}
                 </span>
               </div>
               <span
-                className={`text-m max-md:text-sm whitespace-nowrap ${text}`}>
+                className={`text-m max-md:text-sm max-sm:text-xs whitespace-nowrap ${text}`}>
                 {t(labelKey)}
               </span>
             </div>
             <div
-              className={`h-0.5 mt-xs w-full ${bg} opacity-70 rounded-full`}
+              className={`h-0.5 mt-xs max-sm:mt-px w-full ${bg} opacity-70 rounded-full`}
             />
           </div>
         ))}

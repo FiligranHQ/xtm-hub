@@ -300,6 +300,7 @@
   "GoToProd": "プロダクションへ",
   "Header": {
     "BrandName": "Filigran",
+    "CloseMenu": "メニューを閉じる",
     "OpenMenu": "メニューを開く"
   },
   "HomePage": {

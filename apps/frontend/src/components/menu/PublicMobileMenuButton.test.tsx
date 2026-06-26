@@ -6,6 +6,10 @@ import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 import { PublicMobileMenuButton } from './PublicMobileMenuButton';
 
+vi.mock('@public/logo.svg', () => ({
+  default: () => <svg data-testid="logo" />,
+}));
+
 vi.mock('@/components/menu/PublicNavigation', () => ({
   default: () => (
     <div data-testid="public-navigation">

@@ -48,7 +48,7 @@ const MostDeployedResources = async ({ locale }: { locale: PublicLocale }) => {
     <section className="flex flex-col gap-l">
       <h2 className="text-xl leading-tight">{t('Title')}</h2>
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-l">
-        {resources.map((resource, index) => {
+        {resources.map((resource) => {
           const resourceType = resource.type as ShareableResourceType;
           const serviceSlug =
             SHAREABLE_RESOURCE_SERVICE_SLUG_MAPPING[resourceType];
@@ -73,11 +73,7 @@ const MostDeployedResources = async ({ locale }: { locale: PublicLocale }) => {
             resource.type !== ShareableResourceType.OPENCTI_INTEGRATION;
 
           return (
-            <li
-              key={resource.id}
-              className={
-                index === 3 ? 'block sm:block lg:hidden xl:block' : ''
-              }>
+            <li key={resource.id}>
               <HomepageResourceCard
                 key={resource.id}
                 name={resource.name ?? ''}

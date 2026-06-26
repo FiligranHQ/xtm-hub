@@ -69,7 +69,7 @@ const RootLayout = async ({
                   <Link href={`/login`}>{t('PublicLayout.SignIn')}</Link>
                 </Button>
                 {isHomePageV2Enabled && (
-                  <div className="md:hidden">
+                  <div className="md:hidden flex items-center">
                     <PublicMobileMenuButton />
                   </div>
                 )}
@@ -78,7 +78,7 @@ const RootLayout = async ({
             <main className="grow overflow-auto">
               <div className="container pt-l">{children}</div>
             </main>
-            <footer className="container text-muted-foreground">
+            <footer className="container text-muted-foreground max-md:mt-xxl">
               <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-l text-center">
                 <span className="text-xs">
                   <Link

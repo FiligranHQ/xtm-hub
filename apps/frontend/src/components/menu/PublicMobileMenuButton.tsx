@@ -1,14 +1,16 @@
 'use client';
 
 import PublicNavigation from '@/components/menu/PublicNavigation';
-import { MenuIcon } from '@filigran/icon';
+import { CloseIcon, MenuIcon } from '@filigran/icon';
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from '@filigran/ui/clients';
+import Logo from '@public/logo.svg';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -34,11 +36,24 @@ export const PublicMobileMenuButton = () => {
         />
       </SheetTrigger>
       <SheetContent side="left">
-        <SheetHeader>
-          <SheetTitle>{t('Header.BrandName')}</SheetTitle>
+        <SheetHeader className="flex flex-row justify-between pl-l">
+          <div className="flex items-center gap-s">
+            <Logo
+              className="h-8 w-8"
+              aria-hidden={true}
+            />
+            <SheetTitle>{t('Header.BrandName')}</SheetTitle>
+          </div>
+          <SheetClose>
+            <CloseIcon
+              aria-hidden={true}
+              focusable={false}
+              className="h-4 w-4 mr-xl"
+            />
+            <span className="sr-only">{t('Header.CloseMenu')}</span>
+          </SheetClose>
         </SheetHeader>
         <div
-          className="h-full overflow-y-auto"
           onClick={(e) => {
             if ((e.target as HTMLElement).closest('a')) {
               setOpen(false);

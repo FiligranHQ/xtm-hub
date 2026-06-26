@@ -300,6 +300,7 @@
   "GoToProd": "Go to production",
   "Header": {
     "BrandName": "Filigran",
+    "CloseMenu": "Close Menu",
     "OpenMenu": "Open Menu"
   },
   "HomePage": {
