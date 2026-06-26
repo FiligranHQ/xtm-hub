@@ -830,7 +830,6 @@ export enum IntegrationSubType {
 export enum IntegrationType {
   Connector = 'connector',
   CsvFeed = 'csv_feed',
-  JsonFeed = 'json_feed',
   RssFeed = 'rss_feed',
   Stream = 'stream',
   TaxiiFeed = 'taxii_feed',

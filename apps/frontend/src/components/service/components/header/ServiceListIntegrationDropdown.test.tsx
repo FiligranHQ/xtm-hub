@@ -89,40 +89,4 @@ describe('Button with dropdown to add any kind of integration in the lib', () =>
       expect(onIntegrationTypeSelect).toHaveBeenCalledWith(expectedEnum);
     }
   );
-
-  it('the "JSON Feeds (coming soon)" item is disabled and does not call onIntegrationTypeSelect when clicked', async () => {
-    // Given
-    const environment = createMockEnvironment();
-    const onIntegrationTypeSelect = vi.fn();
-
-    const { user } = testRender(
-      <ServiceListIntegrationDropdown
-        onIntegrationTypeSelect={onIntegrationTypeSelect}
-      />,
-      { relayConfig: environment }
-    );
-
-    // When
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Service.OpenctiIntegrations.AddService',
-      })
-    );
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Service.OpenctiIntegrations.Type.json_feed')
-      ).toBeInTheDocument();
-    });
-
-    const disabledItem = screen.getByText(
-      'Service.OpenctiIntegrations.Type.json_feed'
-    );
-
-    // Then
-    expect(disabledItem.closest('[aria-disabled="true"]')).toBeInTheDocument();
-
-    await user.click(disabledItem);
-    expect(onIntegrationTypeSelect).not.toHaveBeenCalled();
-  });
 });
