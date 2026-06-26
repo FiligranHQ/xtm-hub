@@ -17,7 +17,7 @@ export class CybersecuritySolutionsPage {
     await expect(
       this.page.getByRole('heading', {
         level: 1,
-        name: 'Discover resources and expertise',
+        name: 'Extend and scale your XTM Platform',
       })
     ).toBeVisible();
   }

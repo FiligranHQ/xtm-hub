@@ -313,6 +313,114 @@ describe('epicApp', () => {
     });
   });
 
+  describe('countEpicsPerTimeline', () => {
+    it('should return an empty list when no epics exist', async () => {
+      // When
+      const result = await EpicApp.countEpicsPerTimeline();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return counts grouped by timeline, excluding finished', async () => {
+      // Given
+      await EpicApp.createEpic(
+        { ...basicInput, title: 'Now Epic 1', timeline: Timeline.Now },
+        []
+      );
+      await EpicApp.createEpic(
+        { ...basicInput, title: 'Now Epic 2', timeline: Timeline.Now },
+        []
+      );
+      await EpicApp.createEpic(
+        { ...basicInput, title: 'Next Epic', timeline: Timeline.Next },
+        []
+      );
+      await EpicApp.createEpic(
+        { ...basicInput, title: 'Finished Epic', timeline: Timeline.Finished },
+        []
+      );
+
+      // When
+      const result = await EpicApp.countEpicsPerTimeline();
+
+      // Then
+      expect(result).not.toContainEqual(
+        expect.objectContaining({ timeline: Timeline.Finished })
+      );
+
+      const nowEntry = result.find((r) => r.timeline === Timeline.Now);
+      const nextEntry = result.find((r) => r.timeline === Timeline.Next);
+
+      expect(nowEntry).toMatchObject({ timeline: Timeline.Now, count: 2 });
+      expect(nextEntry).toMatchObject({ timeline: Timeline.Next, count: 1 });
+    });
+
+    it('should not include finished epics even when they exist', async () => {
+      // Given
+      await EpicApp.createEpic(
+        { ...basicInput, title: 'Finished 1', timeline: Timeline.Finished },
+        []
+      );
+      await EpicApp.createEpic(
+        { ...basicInput, title: 'Finished 2', timeline: Timeline.Finished },
+        []
+      );
+
+      // When
+      const result = await EpicApp.countEpicsPerTimeline();
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return correct counts when only under_consideration epics exist', async () => {
+      // Given
+      await EpicApp.createEpic(
+        {
+          ...basicInput,
+          title: 'UC Epic',
+          timeline: Timeline.UnderConsideration,
+        },
+        []
+      );
+
+      // When
+      const result = await EpicApp.countEpicsPerTimeline();
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        timeline: Timeline.UnderConsideration,
+        count: 1,
+      });
+    });
+
+    it('should not count inactive epics', async () => {
+      // Given
+      await EpicApp.createEpic(
+        { ...basicInput, title: 'Active Now Epic', timeline: Timeline.Now },
+        []
+      );
+      await EpicApp.createEpic(
+        {
+          ...basicInput,
+          title: 'Inactive Now Epic',
+          timeline: Timeline.Now,
+          active: false,
+        },
+        []
+      );
+
+      // When
+      const result = await EpicApp.countEpicsPerTimeline();
+
+      // Then
+      const nowEntry = result.find((r) => r.timeline === Timeline.Now);
+      expect(nowEntry).toMatchObject({ timeline: Timeline.Now, count: 1 });
+    });
+  });
+
   describe('loadEpics', () => {
     it('should return epics with pagination information using first and orderBy parameters', async () => {
       // Given

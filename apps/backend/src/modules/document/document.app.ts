@@ -607,6 +607,22 @@ export const DocumentApp = {
     );
   },
 
+  loadMostDeployedDocuments: async (limit: number) => {
+    const resourceIds = await TelemetryApp.getMostDeployedResourceIds(limit);
+    if (resourceIds.length === 0) return [];
+
+    const documents = await DocumentDomain.loadDocumentsWithMetadataByIds(
+      resourceIds,
+      ALL_METADATA_KEYS
+    );
+
+    const documentById = new Map(documents.map((d) => [d.id as string, d]));
+    return resourceIds.flatMap((id) => {
+      const doc = documentById.get(id);
+      return doc ? [doc] : [];
+    });
+  },
+
   loadDocument: async (documentId: DocumentId) => {
     return DocumentHelper.loadDocumentWithCountersById(
       documentId,

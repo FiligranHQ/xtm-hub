@@ -561,3 +561,24 @@ describe('document GraphQL query', () => {
     expect(result).toEqual(expected);
   });
 });
+
+describe('mostDeployedDocuments GraphQL query', () => {
+  it('should delegate to DocumentApp.loadMostDeployedDocuments and return result', async () => {
+    const expected = [{ id: uuidv4() }, { id: uuidv4() }] as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadMostDeployedDocuments>
+    >;
+    vi.spyOn(DocumentApp, 'loadMostDeployedDocuments').mockResolvedValue(
+      expected
+    );
+
+    const result = await documentResolver.Query!.mostDeployedDocuments!(
+      {},
+      { limit: 2 },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(2);
+    expect(result).toEqual(expected);
+  });
+});

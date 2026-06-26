@@ -307,12 +307,32 @@
     "OpenManagement": "Go to management page"
   },
   "PublicHomePage": {
-    "Title": "Discover resources and expertise"
+    "Title": "Discover resources and expertise",
+    "XtmPlatform": {
+      "Label": "Welcome to XTM Hub",
+      "Title": "Extend and scale your XTM Platform",
+      "Description": "Register your OpenCTI or OpenAEV platform to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM platform experience.",
+      "Cta": "Connect your product",
+      "ImageAlt": "XTM Platform illustration"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "Most deployed resources"
+    },
+    "XtmRoadmap": {
+      "Title": "XTM Platform Roadmap",
+      "Description": "Explore what we're building, what's coming next, and where the XTM Platform is headed. Full transparency. No surprises.",
+      "SeeMore": "See more",
+      "ImageAlt": "XTM Platform Roadmap space illustration",
+      "Now": "Now",
+      "Next": "Next",
+      "UnderConsideration": "Under Consideration"
+    }
   },
   "PublicPathError": {
     "NotFound": "404 | This page could not be found"
   },
   "PublicLayout": {
+    "Documentation": "XTM Hub documentation",
     "SignIn": "Sign In",
     "AllRightsReserved": "All rights reserved",
     "FiligranWebsite": "Filigran website",

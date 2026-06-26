@@ -680,6 +680,12 @@ export type EpicConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type EpicCountPerTimeline = {
+  __typename?: 'EpicCountPerTimeline';
+  count: Scalars['Int']['output'];
+  timeline: Timeline;
+};
+
 export type EpicEdge = {
   __typename?: 'EpicEdge';
   cursor: Scalars['String']['output'];
@@ -1548,6 +1554,7 @@ export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
+  countEpicsPerTimeline: Array<EpicCountPerTimeline>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
@@ -1557,6 +1564,7 @@ export type Query = {
   epics?: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me?: Maybe<User>;
+  mostDeployedDocuments: Array<Document>;
   newsFeedItems: NewsFeedItemConnection;
   node?: Maybe<Node>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
@@ -1661,6 +1669,11 @@ export type QueryEpicsArgs = {
 
 export type QueryIsPlatformRegisteredArgs = {
   input: IsPlatformRegisteredInput;
+};
+
+
+export type QueryMostDeployedDocumentsArgs = {
+  limit: Scalars['Int']['input'];
 };
 
 
@@ -2724,6 +2737,7 @@ export type ResolversTypes = ResolversObject<{
   EditionType: EditionType;
   Epic: ResolverTypeWrapper<Omit<Epic, 'document'> & { document?: Maybe<ResolversTypes['Document']> }>;
   EpicConnection: ResolverTypeWrapper<Omit<EpicConnection, 'edges'> & { edges: Array<ResolversTypes['EpicEdge']> }>;
+  EpicCountPerTimeline: ResolverTypeWrapper<EpicCountPerTimeline>;
   EpicEdge: ResolverTypeWrapper<Omit<EpicEdge, 'node'> & { node: ResolversTypes['Epic'] }>;
   EpicOrdering: EpicOrdering;
   EpicType: EpicType;
@@ -2929,6 +2943,7 @@ export type ResolversParentTypes = ResolversObject<{
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   Epic: Omit<Epic, 'document'> & { document?: Maybe<ResolversParentTypes['Document']> };
   EpicConnection: Omit<EpicConnection, 'edges'> & { edges: Array<ResolversParentTypes['EpicEdge']> };
+  EpicCountPerTimeline: EpicCountPerTimeline;
   EpicEdge: Omit<EpicEdge, 'node'> & { node: ResolversParentTypes['Epic'] };
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
@@ -3393,6 +3408,12 @@ export type EpicConnectionResolvers<ContextType = PortalContext, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type EpicCountPerTimelineResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EpicCountPerTimeline'] = ResolversParentTypes['EpicCountPerTimeline']> = ResolversObject<{
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  timeline?: Resolver<ResolversTypes['Timeline'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type EpicEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['EpicEdge'] = ResolversParentTypes['EpicEdge']> = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Epic'], ParentType, ContextType>;
@@ -3757,6 +3778,7 @@ export type ProvisionedNewsFeedItemResolvers<ContextType = PortalContext, Parent
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  countEpicsPerTimeline?: Resolver<Array<ResolversTypes['EpicCountPerTimeline']>, ParentType, ContextType>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, RequireFields<QueryDeploymentRequestsAvailableArgs, 'platformIdentifier'>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -3766,6 +3788,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  mostDeployedDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryMostDeployedDocumentsArgs, 'limit'>>;
   newsFeedItems?: Resolver<ResolversTypes['NewsFeedItemConnection'], ParentType, ContextType, RequireFields<QueryNewsFeedItemsArgs, 'first'>>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;
@@ -4319,6 +4342,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   DocumentId?: GraphQLScalarType;
   Epic?: EpicResolvers<ContextType>;
   EpicConnection?: EpicConnectionResolvers<ContextType>;
+  EpicCountPerTimeline?: EpicCountPerTimelineResolvers<ContextType>;
   EpicEdge?: EpicEdgeResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
