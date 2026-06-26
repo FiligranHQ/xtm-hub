@@ -4,27 +4,27 @@ import { portalGraphqlClientCached } from '@/lib/graphql-client';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   PlatformIdentifier,
-  useMostDeployedDocumentsQueryQuery,
+  useNewestDocumentsQueryQuery,
 } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 
-const MOST_DEPLOYED_LIMIT = 8;
+const NEWEST_LIMIT = 8;
 
-type MostDeployedResourcesProps = {
+type NewestResourcesProps = {
   locale: PublicLocale;
   platformIdentifiers?: PlatformIdentifierEnum[];
 };
 
-const MostDeployedResources = async ({
+const NewestResources = async ({
   locale,
   platformIdentifiers,
-}: MostDeployedResourcesProps) => {
-  const t = await getTranslations('HomePage.XtmMostDeployedResources');
+}: NewestResourcesProps) => {
+  const t = await getTranslations('HomePage.XtmNewestResources');
 
-  const data = await useMostDeployedDocumentsQueryQuery.fetcher(
+  const data = await useNewestDocumentsQueryQuery.fetcher(
     portalGraphqlClientCached,
     {
-      limit: MOST_DEPLOYED_LIMIT,
+      limit: NEWEST_LIMIT,
       platformIdentifiers: (platformIdentifiers ?? []) as unknown as PlatformIdentifier[],
     }
   )();
@@ -33,9 +33,10 @@ const MostDeployedResources = async ({
     <HomepageResourceList
       title={t('Title')}
       locale={locale}
-      documents={data.mostDeployedDocuments}
+      documents={data.newestDocuments}
     />
   );
 };
 
-export default MostDeployedResources;
+export default NewestResources;
+

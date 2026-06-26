@@ -1,4 +1,5 @@
 import MostDeployedResources from '@/components/homepage/MostDeployedResources';
+import NewestResources from '@/components/homepage/NewestResources';
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { defaultLocale, publicLocales } from '@/i18n/config';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
@@ -47,7 +48,11 @@ export const PrivateHomepage = async () => {
   );
 
   return (
-    <div className="p-xl">
+    <div className="p-xl flex flex-col gap-xl">
+      <NewestResources
+        locale={locale}
+        platformIdentifiers={platformIdentifiers}
+      />
       <MostDeployedResources
         locale={locale}
         platformIdentifiers={platformIdentifiers}

@@ -1,0 +1,97 @@
+import HomepageResourceCard from '@/components/homepage/HomepageResourceCard';
+import type { PublicLocale } from '@/i18n/config';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import {
+  SHAREABLE_RESOURCE_LIBRARY_MAPPING,
+  SHAREABLE_RESOURCE_PRODUCT_MAPPING,
+  SHAREABLE_RESOURCE_SERVICE_SLUG_MAPPING,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
+import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import {
+  DocumentImageType,
+  HomepageDocumentFragment,
+} from '@graphql/generated';
+
+type HomepageResourceListProps = {
+  title: string;
+  locale: PublicLocale;
+  documents: HomepageDocumentFragment[];
+};
+
+const findLogoUrl = (
+  resource: HomepageDocumentFragment
+): string | undefined => {
+  const logo = resource.children_documents?.find(
+    (doc) => doc.image_type === DocumentImageType.Logo
+  );
+  return logo && resource.service_instance_id
+    ? `/document/images/${String(resource.service_instance_id)}/${logo.id}`
+    : undefined;
+};
+
+const HomepageResourceList = ({
+  title,
+  locale,
+  documents,
+}: HomepageResourceListProps) => {
+  if (documents.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="flex flex-col gap-l">
+      <h2 className="text-xl leading-tight">{title}</h2>
+      <ul className="grid grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] gap-l">
+        {documents.map((resource) => {
+          const resourceType = resource.type as ShareableResourceType;
+          const serviceSlug =
+            SHAREABLE_RESOURCE_SERVICE_SLUG_MAPPING[resourceType];
+          if (!serviceSlug || !resource.slug) return null;
+
+          const url = `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceSlug}/${resource.slug}`;
+          const footerTags = [
+            SHAREABLE_RESOURCE_PRODUCT_MAPPING[resourceType],
+            SHAREABLE_RESOURCE_LIBRARY_MAPPING[resourceType],
+          ];
+
+          const logoUrl = findLogoUrl(resource);
+
+          const verified =
+            docHasMetadata(resource, 'verified') && Boolean(resource.verified);
+          const deployable =
+            docHasMetadata(resource, 'manager_supported') &&
+            Boolean(resource.manager_supported);
+
+          const active =
+            resource.active &&
+            resource.type !== ShareableResourceType.OPENCTI_INTEGRATION;
+
+          return (
+            <li key={resource.id}>
+              <HomepageResourceCard
+                key={resource.id}
+                name={resource.name ?? ''}
+                shortDescription={resource.short_description}
+                url={url}
+                logoUrl={logoUrl}
+                active={active}
+                verified={verified}
+                deployable={deployable}
+                useCases={
+                  resource.use_cases?.map((uc) => ({
+                    id: uc.id,
+                    name: uc.name,
+                  })) ?? []
+                }
+                footerTags={footerTags}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+};
+
+export default HomepageResourceList;

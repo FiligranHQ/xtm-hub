@@ -306,7 +306,13 @@
   "HomePage": {
     "Homepage": "Page d'accueil",
     "Manage": "Gérer",
-    "OpenManagement": "Aller vers la page de management"
+    "OpenManagement": "Aller vers la page de management",
+    "XtmNewestResources": {
+      "Title": "Nouvelles ressources"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "Ressources les plus utilisées"
+    }
   },
   "PublicHomePage": {
     "Title": "Découvrez nos ressources et notre expertise",
@@ -316,9 +322,6 @@
       "Description": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
       "Cta": "Connectez votre produit",
       "ImageAlt": "Illustration de la plateforme XTM"
-    },
-    "XtmMostDeployedResources": {
-      "Title": "Ressources les plus déployées"
     },
     "XtmRoadmap": {
       "Title": "Feuille de route de la plateforme XTM",
