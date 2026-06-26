@@ -11,6 +11,7 @@ import {
   MutationCreateDocumentArgs,
   MutationUpdateDocumentArgs,
   Organization,
+  PlatformIdentifier,
   QueryDocumentsArgs,
   QueryPublicDocumentsArgs,
   SubscriptionModel,
@@ -578,7 +579,29 @@ describe('mostDeployedDocuments GraphQL query', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(2);
+    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(2, undefined);
+    expect(result).toEqual(expected);
+  });
+
+  it('should pass platformIdentifiers to DocumentApp.loadMostDeployedDocuments', async () => {
+    const expected = [{ id: uuidv4() }] as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadMostDeployedDocuments>
+    >;
+    vi.spyOn(DocumentApp, 'loadMostDeployedDocuments').mockResolvedValue(
+      expected
+    );
+
+    const result = await documentResolver.Query!.mostDeployedDocuments!(
+      {},
+      { limit: 5, platformIdentifiers: [PlatformIdentifier.Opencti] },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(
+      5,
+      [PlatformIdentifier.Opencti]
+    );
     expect(result).toEqual(expected);
   });
 });

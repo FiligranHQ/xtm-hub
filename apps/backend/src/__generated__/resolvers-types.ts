@@ -1676,6 +1676,7 @@ export type QueryIsPlatformRegisteredArgs = {
 
 export type QueryMostDeployedDocumentsArgs = {
   limit: Scalars['Int']['input'];
+  platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
 };
 
 

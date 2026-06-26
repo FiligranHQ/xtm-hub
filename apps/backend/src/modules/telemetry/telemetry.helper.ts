@@ -91,7 +91,7 @@ const ServiceIdentifierToEventService = new Map<
   ],
 ]);
 
-const TelemetryTargetProductMappedByPlatformIdentifier = new Map<
+export const TelemetryTargetProductMappedByPlatformIdentifier = new Map<
   PlatformIdentifier,
   TelemetryTargetProduct
 >([

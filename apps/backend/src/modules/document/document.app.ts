@@ -4,6 +4,7 @@ import {
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
+  PlatformIdentifier,
   QueryDocumentsArgs,
   QueryPublicDocumentsArgs,
 } from '../../__generated__/resolvers-types';
@@ -607,8 +608,14 @@ export const DocumentApp = {
     );
   },
 
-  loadMostDeployedDocuments: async (limit: number) => {
-    const resourceIds = await TelemetryApp.getMostDeployedResourceIds(limit);
+  loadMostDeployedDocuments: async (
+    limit: number,
+    platformIdentifiers?: PlatformIdentifier[]
+  ) => {
+    const resourceIds = await TelemetryApp.getMostDeployedResourceIds(
+      limit,
+      platformIdentifiers
+    );
     if (resourceIds.length === 0) return [];
 
     const documents = await DocumentDomain.loadDocumentsWithMetadataByIds(
