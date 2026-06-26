@@ -1,32 +1,11 @@
 import MostDeployedResources from '@/components/homepage/MostDeployedResources';
 import NewestResources from '@/components/homepage/NewestResources';
-import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { resolveHomepagePlatformIdentifiers } from '@/components/homepage/Homepage.utils';
 import { defaultLocale, publicLocales } from '@/i18n/config';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import {
-  ServiceDefinitionIdentifier,
-  useRegisteredPlatformsQuery,
-} from '@graphql/generated';
+import { useRegisteredPlatformsQuery } from '@graphql/generated';
 import { getLocale } from 'next-intl/server';
 
-const resolveHomepagePlatformIdentifiers = (
-  registeredIdentifiers: ServiceDefinitionIdentifier[]
-): PlatformIdentifierEnum[] | undefined => {
-  const platformSet = new Set<PlatformIdentifierEnum>();
-  for (const identifier of registeredIdentifiers) {
-    // Both enums are generated from the same GraphQL schema and share identical string values
-    const platform =
-      ServiceDefinitionIdentifierToPlatformIdentifier[
-        identifier as unknown as ServiceDefinitionIdentifierEnum
-      ];
-    if (platform) {
-      platformSet.add(platform);
-    }
-  }
-  return platformSet.size === 1 ? [...platformSet] : undefined;
-};
 
 export const PrivateHomepage = async () => {
   const userLocale = await getLocale();

@@ -1,4 +1,5 @@
 import HomepageResourceCard from '@/components/homepage/HomepageResourceCard';
+import { findLogoUrl } from '@/components/homepage/Homepage.utils';
 import type { PublicLocale } from '@/i18n/config';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
@@ -9,10 +10,7 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import {
-  DocumentImageType,
-  HomepageDocumentFragment,
-} from '@graphql/generated';
+import { HomepageDocumentFragment } from '@graphql/generated';
 
 type HomepageResourceListProps = {
   title: string;
@@ -21,16 +19,6 @@ type HomepageResourceListProps = {
   isAuthenticated?: boolean;
 };
 
-const findLogoUrl = (
-  resource: HomepageDocumentFragment
-): string | undefined => {
-  const logo = resource.children_documents?.find(
-    (doc) => doc.image_type === DocumentImageType.Logo
-  );
-  return logo && resource.service_instance_id
-    ? `/document/images/${String(resource.service_instance_id)}/${logo.id}`
-    : undefined;
-};
 
 const HomepageResourceList = ({
   title,
