@@ -55,9 +55,6 @@ export const ServiceListIntegrationDropdown = ({
           onClick={() => onIntegrationTypeSelect(IntegrationTypeEnum.RSS_FEED)}>
           {t(`Service.OpenctiIntegrations.Type.rss_feed`)}
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          {t(`Service.OpenctiIntegrations.Type.json_feed`)}
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

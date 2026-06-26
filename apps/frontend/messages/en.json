@@ -965,7 +965,6 @@
         "csv_feed": "CSV Feeds",
         "connector": "Connectors",
         "rss_feed": "RSS Feeds",
-        "json_feed": "JSON Feeds (coming soon)",
         "taxii_feed": "TAXII Feeds",
         "stream": "OpenCTI Streams",
         "third_party_integration": "Third party integrations"

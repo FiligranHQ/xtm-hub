@@ -965,7 +965,6 @@
         "csv_feed": "CSVフィード",
         "connector": "コネクター",
         "rss_feed": "RSSフィード",
-        "json_feed": "JSONフィード（近日公開）",
         "taxii_feed": "TAXIIフィード",
         "stream": "OpenCTI ストリーム",
         "third_party_integration": "サードパーティとの統合"
