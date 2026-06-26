@@ -71,8 +71,8 @@ const RootLayout = async ({
               <div className="container pt-l">{children}</div>
             </main>
             <footer className="container text-muted-foreground">
-              <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-8 gap-l text-center">
-                <span className="txt-default">
+              <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-l text-center">
+                <span className="text-xs">
                   <Link
                     href="https://filigran.io"
                     target="_blank"
@@ -88,6 +88,14 @@ const RootLayout = async ({
                       rel="noopener noreferrer"
                       href="https://filigran.io/">
                       {t('PublicLayout.FiligranWebsite')}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://docs.hub.filigran.io/latest/">
+                      {t('PublicLayout.Documentation')}
                     </Link>
                   </li>
                   <li>
@@ -117,14 +125,16 @@ const RootLayout = async ({
                       {t('PublicLayout.Licenses')}
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://filigran.io/contact/">
-                      {t('PublicLayout.Contact')}
-                    </Link>
-                  </li>
+                  {!isHomePageV2Enabled && (
+                    <li>
+                      <Link
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://filigran.io/contact/">
+                        {t('PublicLayout.Contact')}
+                      </Link>
+                    </li>
+                  )}
                 </ul>
               </div>
             </footer>

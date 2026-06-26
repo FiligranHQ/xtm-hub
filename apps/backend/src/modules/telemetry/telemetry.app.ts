@@ -56,6 +56,31 @@ export const TelemetryApp = {
     }
   },
 
+  async getMostDeployedResourceIds(limit: number): Promise<string[]> {
+    const result = await esDbClient.search({
+      index: TELEMETRY_INDEX,
+      size: 0,
+      query: {
+        term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY },
+      },
+      aggs: {
+        resource_counts: {
+          terms: {
+            field: 'resource_id',
+            size: limit,
+            order: { _count: 'desc' },
+          },
+        },
+      },
+    });
+
+    const agg = result.aggregations?.resource_counts as
+      | { buckets: Array<{ key: string; doc_count: number }> }
+      | undefined;
+
+    return agg?.buckets.map((bucket) => bucket.key) ?? [];
+  },
+
   async countEventsByDocumentId(
     eventType: TelemetryEventType,
     documentId: string

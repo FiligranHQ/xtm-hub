@@ -1,0 +1,23 @@
+query MostDeployedDocumentsQuery($limit: Int!) {
+  mostDeployedDocuments(limit: $limit) {
+    id
+    name
+    short_description
+    type
+    active
+    slug
+    service_instance_id
+    children_documents {
+      id
+      image_type
+    }
+    use_cases {
+      id
+      name
+    }
+    ... on Connector {
+      verified
+      manager_supported
+    }
+  }
+}

@@ -1001,3 +1001,68 @@ describe('documentApp', () => {
     });
   });
 });
+
+describe('loadMostDeployedDocuments', () => {
+  it('should return documents sorted to match ES deploy-count order', async () => {
+    const id1 = uuidv4();
+    const id2 = uuidv4();
+    const id3 = uuidv4();
+
+    vi.spyOn(TelemetryApp, 'getMostDeployedResourceIds').mockResolvedValue([
+      id1,
+      id2,
+      id3,
+    ]);
+    vi.spyOn(
+      DocumentDomain,
+      'loadDocumentsWithMetadataByIds'
+    ).mockResolvedValue([{ id: id3 }, { id: id1 }, { id: id2 }] as never);
+
+    const result = await DocumentApp.loadMostDeployedDocuments(3);
+
+    expect(result.map((d) => d.id)).toEqual([id1, id2, id3]);
+  });
+
+  it('should return an empty array and skip DB call when ES has no results', async () => {
+    vi.spyOn(TelemetryApp, 'getMostDeployedResourceIds').mockResolvedValue([]);
+    const domainSpy = vi.spyOn(
+      DocumentDomain,
+      'loadDocumentsWithMetadataByIds'
+    );
+
+    const result = await DocumentApp.loadMostDeployedDocuments(10);
+
+    expect(result).toEqual([]);
+    expect(domainSpy).not.toHaveBeenCalled();
+  });
+
+  it('should forward limit to getMostDeployedResourceIds', async () => {
+    const esSpy = vi
+      .spyOn(TelemetryApp, 'getMostDeployedResourceIds')
+      .mockResolvedValue([]);
+
+    await DocumentApp.loadMostDeployedDocuments(7);
+
+    expect(esSpy).toHaveBeenCalledWith(7);
+  });
+
+  it('should handle documents missing from the DB gracefully', async () => {
+    const id1 = uuidv4();
+    const id2 = uuidv4();
+    const id3 = uuidv4();
+
+    vi.spyOn(TelemetryApp, 'getMostDeployedResourceIds').mockResolvedValue([
+      id1,
+      id2,
+      id3,
+    ]);
+    vi.spyOn(
+      DocumentDomain,
+      'loadDocumentsWithMetadataByIds'
+    ).mockResolvedValue([{ id: id1 }, { id: id3 }] as never);
+
+    const result = await DocumentApp.loadMostDeployedDocuments(3);
+
+    expect(result.map((d) => d.id)).toEqual([id1, id3]);
+  });
+});
