@@ -45,7 +45,7 @@ const HomepageResourceCard = ({
   const titlePaddingRight = computeTitlePaddingRight(iconCount);
 
   return (
-    <div className="overflow-hidden flex flex-col relative rounded bg-page-background hover:bg-hover">
+    <div className="overflow-hidden flex flex-col relative rounded bg-page-background hover:bg-hover max-w-75">
       <div className="absolute top-m right-m flex gap-xs z-10">
         <ResourceStatusIcons
           active={active}
