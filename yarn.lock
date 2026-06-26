@@ -14776,9 +14776,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"koa@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "koa@npm:3.2.0"
+"koa@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "koa@npm:3.2.1"
   dependencies:
     accepts: "npm:^1.3.8"
     content-disposition: "npm:~1.0.1"
@@ -14798,7 +14798,7 @@ __metadata:
     statuses: "npm:^2.0.1"
     type-is: "npm:^2.0.1"
     vary: "npm:^1.1.2"
-  checksum: 10/f8f256c342543a00fb42114a5c28822c96e343a663013b339dd546368069d3eee8d825d80cee51998aa26ba167f93caee70213c57d694061ccafd06d35c8ebaa
+  checksum: 10/bdfc1db4b2a32c765ed648d08233ff068b110739488c967c43d5b2b4185be04196cb7059a8c0705e7dc64981c47e942177be507992ea04bd15736740cdd85ae5
   languageName: node
   linkType: hard
 
@@ -16132,9 +16132,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocart-coverage-reports@npm:^2.12.11":
-  version: 2.12.11
-  resolution: "monocart-coverage-reports@npm:2.12.11"
+"monocart-coverage-reports@npm:^2.12.12":
+  version: 2.12.12
+  resolution: "monocart-coverage-reports@npm:2.12.12"
   dependencies:
     acorn: "npm:^8.16.0"
     acorn-loose: "npm:^8.5.2"
@@ -16150,7 +16150,7 @@ __metadata:
     monocart-locator: "npm:^1.0.3"
   bin:
     mcr: lib/cli.js
-  checksum: 10/337a85c3fb7d1e56bb689a37ce2e1e02fa97637383d68532e22b41a2c7f4bd2b08d5ad8f79d9cc598dde6072529872afa34ffb33798c427f9e53e1721b830ed9
+  checksum: 10/1320d946ed9163cef97c6ae57ea200e4cc3a7b4bbaa8db4fa551aa2c4c404d6fc1016c92b83c694c9bba2ad364f1eaf691b14b7d0d9d04f6092ee34fd5144137
   languageName: node
   linkType: hard
 
@@ -16161,21 +16161,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocart-reporter@npm:2.11.2":
-  version: 2.11.2
-  resolution: "monocart-reporter@npm:2.11.2"
+"monocart-reporter@npm:2.11.3":
+  version: 2.11.3
+  resolution: "monocart-reporter@npm:2.11.3"
   dependencies:
     console-grid: "npm:^2.2.4"
     eight-colors: "npm:^1.3.3"
-    koa: "npm:^3.2.0"
+    koa: "npm:^3.2.1"
     koa-static-resolver: "npm:^1.0.6"
     lz-utils: "npm:^2.1.1"
-    monocart-coverage-reports: "npm:^2.12.11"
+    monocart-coverage-reports: "npm:^2.12.12"
     monocart-locator: "npm:^1.0.3"
     nodemailer: "npm:^8.0.7"
   bin:
     monocart: lib/cli.js
-  checksum: 10/fc6d49c407ba1c84a2b4576b920f52b2927221e6654836166d965801dfcc8285a956289e36a24f49c258ac614232e14fddfc9ff0cbbc10da4287a2f344be262d
+  checksum: 10/efc13fe7a6c9b7417589c1d777b58e544882de150c2ec68ba26469c94c0b1b74b480f5f0eff6dc1afcab4e311af59d8ec697f52f6136ad3192649005908bd190
   languageName: node
   linkType: hard
 
