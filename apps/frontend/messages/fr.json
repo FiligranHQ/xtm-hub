@@ -855,6 +855,10 @@
         "Description": "Explorez et suivez la roadmap de la Filigran XTM Platform."
       }
     },
+    "LibraryHero": {
+      "Eyebrow": "Les ressources de Filigran",
+      "DefaultDescription": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu préconstruit en un clic, rester à jour avec les actualités produit, démarrer des essais gratuits et tirer simplement le meilleur de votre expérience sur la plateforme XTM."
+    },
     "ComingSoon": "Bientôt disponible",
     "Connectors": {
       "DataImport": "Importation de données",

@@ -91,7 +91,7 @@ const ServiceInstanceCard = ({
             'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
             serviceInstance.card_background ?? 'bg-blue-900'
           )}>
-          <LogoFiligranIcon className="absolute  opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
+          <LogoFiligranIcon className="absolute opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-s flex items-center h-12 w-full">
             {serviceInstance.logoBackgroundImageUrl && (
               <div

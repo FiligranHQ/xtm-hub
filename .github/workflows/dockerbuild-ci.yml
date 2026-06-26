@@ -452,6 +452,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             ${{ contains(github.ref, 'refs/tags/') && 'latest' }}
+            ${{ github.ref == 'refs/heads/main' && 'type=raw,value=development' || '' }}
 
       - name: Determine version
         id: version
