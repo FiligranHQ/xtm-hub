@@ -8791,7 +8791,7 @@ __metadata:
     react-relay: "npm:20.1.1"
     rehype-sanitize: "npm:6.0.0"
     relay-compiler: "npm:21.0.1"
-    relay-test-utils: "npm:20.1.1"
+    relay-test-utils: "npm:21.0.1"
     slugify: "npm:1.6.9"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.1"
@@ -18245,15 +18245,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"relay-test-utils@npm:20.1.1":
-  version: 20.1.1
-  resolution: "relay-test-utils@npm:20.1.1"
+"relay-runtime@npm:21.0.1":
+  version: 21.0.1
+  resolution: "relay-runtime@npm:21.0.1"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
-    relay-runtime: "npm:20.1.1"
-  checksum: 10/5da0d904496f90ec842c925bfe23ccf94e04aa0fdac376484a9ad11e2c523b7129052d5ad6d46549bce5bf04bbf31984933df243db7b7cbf398c20ad1518ff15
+  checksum: 10/7be02c3f568e702a050647f3dd4666bb6a07030fad00524a60b0d47de1e78376c071bc0060ee7210616f0f43044c8b45291d0e2b48664a2d4344d27ef492cb1f
+  languageName: node
+  linkType: hard
+
+"relay-test-utils@npm:21.0.1":
+  version: 21.0.1
+  resolution: "relay-test-utils@npm:21.0.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.0"
+    fbjs: "npm:^3.0.2"
+    invariant: "npm:^2.2.4"
+    relay-runtime: "npm:21.0.1"
+  checksum: 10/464c6161f8dea795f1d2a9e3707f2735883ed4af3fe760bec318278e56578b5e9d71dd2a3d264b8021ea34757a77735d846d9fa4d91aa96c45bcdc3542ff65b7
   languageName: node
   linkType: hard
 
