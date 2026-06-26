@@ -26,6 +26,7 @@ export const PublicMobileMenuButton = () => {
       open={open}
       onOpenChange={setOpen}>
       <SheetTrigger>
+        <span className="sr-only">{t('Header.OpenMenu')}</span>
         <MenuIcon
           aria-hidden={true}
           focusable={false}

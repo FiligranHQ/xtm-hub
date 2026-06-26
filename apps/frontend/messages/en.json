@@ -299,7 +299,8 @@
   },
   "GoToProd": "Go to production",
   "Header": {
-    "BrandName": "Filigran"
+    "BrandName": "Filigran",
+    "OpenMenu": "Open Menu"
   },
   "HomePage": {
     "Homepage": "Homepage",

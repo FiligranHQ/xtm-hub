@@ -299,7 +299,8 @@
   },
   "GoToProd": "プロダクションへ",
   "Header": {
-    "BrandName": "Filigran"
+    "BrandName": "Filigran",
+    "OpenMenu": "メニューを開く"
   },
   "HomePage": {
     "Homepage": "ホームページ",
