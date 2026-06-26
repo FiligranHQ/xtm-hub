@@ -547,7 +547,8 @@
   "OrganizationSwitcher": {
     "PersonalSpace": "パーソナルスペース",
     "SelectOrganization": "所属団体選択",
-    "SelectedOrganization": "選択した組織"
+    "SelectedOrganization": "選択した組織",
+    "Workspace": "ワークスペース："
   },
   "TrialsDashboard": {
     "Columns": {

@@ -547,7 +547,8 @@
   "OrganizationSwitcher": {
     "PersonalSpace": "Espace personnel",
     "SelectOrganization": "Choisir une organisation",
-    "SelectedOrganization": "Organisation choisie"
+    "SelectedOrganization": "Organisation choisie",
+    "Workspace": "Espace de travail :"
   },
   "TrialsDashboard": {
     "Columns": {
@@ -1284,7 +1285,7 @@
         "openaev": {
           "WhatCanYouDo": {
             "Title": "Que pouvez-vous faire avec votre essai OpenAEV ?",
-            "FirstParagraph": "Bénéficiez de 30 jours pour explorer toutes les fonctionnalités d'OpenAEV afin de simuler des attaques, d'évaluer vos défenses et d'améliorer votre posture de sécurité. Cela inclut toutes les fonctionnalités de l'édition Enterprise basée sur SaaS d'OpenAEV, y compris l'utilisation de vos agents EDR existants, la génération automatisée de scénarios et les conseils de remédiation alimentés par l'IA.",
+            "FirstParagraph": "Bénéficiez de 30 jours pour explorer toutes les fonctionnalités d'OpenAEV afin de simuler des attaques, d'évaluer vos défenses et d'améliorer votre posture de sécurité. Cela inclut toutes les fonctionnalités d'OpenAEV Enterprise Edition, y compris l'utilisation de vos agents EDR existants, la génération automatisée de scénarios et les conseils de remédiation alimentés par l'IA.",
             "SecondParagraph": "Que vous souhaitiez simuler des séquences d'attaques, effectuer des exercices réalistes sur table, valider votre posture de sécurité ou rendre compte de votre cyber-résilience à vos dirigeants, vous pouvez tester toutes les fonctionnalités d'OpenAEV en fonction de vos besoins spécifiques.",
             "Link": "Découvrez toutes les fonctionnalités d'OpenAEV Enterprise Edition"
           },

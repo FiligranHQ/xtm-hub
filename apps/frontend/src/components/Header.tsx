@@ -2,6 +2,7 @@
 
 import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/AppPortalContext';
+import HeaderOrganizationSwitcher from '@/components/menu/HeaderOrganizationSwitcher';
 import PrivateNavigation from '@/components/menu/PrivateNavigation';
 import { NavigationApp } from '@/components/Navigation';
 import { NotificationButton } from '@/components/notification/NotificationButton';
@@ -63,14 +64,19 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
       id="app-header"
       className={cn(
         'sticky top-0 z-[20] flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong bg-page-background dark:bg-background px-4 justify-between',
-        displayLogo ? '' : 'sm:justify-end'
+        !displayLogo && !isHomePageV2Enabled && 'sm:justify-end'
       )}>
-      <DisplayLogo
-        className={cn(
-          'text-primary mr-2 h-full py-l',
-          displayLogo ? '' : 'sm:hidden'
-        )}
-      />
+      <div className="mobile:hidden flex items-center gap-s">
+        <DisplayLogo
+          className={cn(
+            'text-primary mr-2 h-full py-l',
+            displayLogo ? '' : 'hidden'
+          )}
+        />
+        {isHomePageV2Enabled && <HeaderOrganizationSwitcher />}
+      </div>
+
+      <DisplayLogo className="text-primary mr-2 h-full py-l sm:hidden" />
 
       <div className="mobile:hidden flex items-center gap-s">
         <DisplayTrialList />
@@ -135,6 +141,11 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
               </SheetClose>
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
+              {isHomePageV2Enabled && (
+                <div className="pt-m">
+                  <HeaderOrganizationSwitcher />
+                </div>
+              )}
               {isHomePageV2Enabled ? (
                 <PrivateNavigation open={true} />
               ) : (
