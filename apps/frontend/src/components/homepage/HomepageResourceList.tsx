@@ -4,6 +4,7 @@ import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   SHAREABLE_RESOURCE_LIBRARY_MAPPING,
   SHAREABLE_RESOURCE_PRODUCT_MAPPING,
+  SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING,
   SHAREABLE_RESOURCE_SERVICE_SLUG_MAPPING,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
@@ -17,6 +18,7 @@ type HomepageResourceListProps = {
   title: string;
   locale: PublicLocale;
   documents: HomepageDocumentFragment[];
+  isAuthenticated?: boolean;
 };
 
 const findLogoUrl = (
@@ -34,6 +36,7 @@ const HomepageResourceList = ({
   title,
   locale,
   documents,
+  isAuthenticated = false,
 }: HomepageResourceListProps) => {
   if (documents.length === 0) {
     return null;
@@ -49,7 +52,10 @@ const HomepageResourceList = ({
             SHAREABLE_RESOURCE_SERVICE_SLUG_MAPPING[resourceType];
           if (!serviceSlug || !resource.slug) return null;
 
-          const url = `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceSlug}/${resource.slug}`;
+          const url =
+            isAuthenticated && resource.service_instance_id
+              ? `/app/service/${SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING[resourceType]}/${resource.service_instance_id}/${resource.id}`
+              : `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceSlug}/${resource.slug}`;
           const footerTags = [
             SHAREABLE_RESOURCE_PRODUCT_MAPPING[resourceType],
             SHAREABLE_RESOURCE_LIBRARY_MAPPING[resourceType],

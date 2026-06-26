@@ -13,11 +13,13 @@ const MOST_DEPLOYED_LIMIT = 8;
 type MostDeployedResourcesProps = {
   locale: PublicLocale;
   platformIdentifiers?: PlatformIdentifierEnum[];
+  isAuthenticated?: boolean;
 };
 
 const MostDeployedResources = async ({
   locale,
   platformIdentifiers,
+  isAuthenticated = false,
 }: MostDeployedResourcesProps) => {
   const t = await getTranslations('HomePage.XtmMostDeployedResources');
 
@@ -34,6 +36,7 @@ const MostDeployedResources = async ({
       title={t('Title')}
       locale={locale}
       documents={data.mostDeployedDocuments}
+      isAuthenticated={isAuthenticated}
     />
   );
 };

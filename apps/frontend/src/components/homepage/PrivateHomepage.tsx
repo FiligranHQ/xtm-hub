@@ -52,10 +52,12 @@ export const PrivateHomepage = async () => {
       <NewestResources
         locale={locale}
         platformIdentifiers={platformIdentifiers}
+        isAuthenticated={true}
       />
       <MostDeployedResources
         locale={locale}
         platformIdentifiers={platformIdentifiers}
+        isAuthenticated={true}
       />
     </div>
   );

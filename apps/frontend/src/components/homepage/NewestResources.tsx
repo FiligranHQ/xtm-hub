@@ -13,11 +13,13 @@ const NEWEST_LIMIT = 8;
 type NewestResourcesProps = {
   locale: PublicLocale;
   platformIdentifiers?: PlatformIdentifierEnum[];
+  isAuthenticated?: boolean;
 };
 
 const NewestResources = async ({
   locale,
   platformIdentifiers,
+  isAuthenticated = false,
 }: NewestResourcesProps) => {
   const t = await getTranslations('HomePage.XtmNewestResources');
 
@@ -34,6 +36,7 @@ const NewestResources = async ({
       title={t('Title')}
       locale={locale}
       documents={data.newestDocuments}
+      isAuthenticated={isAuthenticated}
     />
   );
 };
