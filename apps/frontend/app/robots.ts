@@ -25,6 +25,9 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
             '/favicon.ico',
             '/apple-icon.png',
             '/favicon-*.png',
+            '/_next/static/',
+            '/_next/image',
+            '/_next/data/',
             ...localizedRootAllowRules,
             ...publicLocales.flatMap((locale) => [
               `/${locale}/cybersecurity-solutions`,
