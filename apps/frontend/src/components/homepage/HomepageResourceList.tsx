@@ -1,5 +1,5 @@
-import HomepageResourceCard from '@/components/homepage/HomepageResourceCard';
 import { findLogoUrl } from '@/components/homepage/Homepage.utils';
+import HomepageResourceCard from '@/components/homepage/HomepageResourceCard';
 import type { PublicLocale } from '@/i18n/config';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
@@ -18,7 +18,6 @@ type HomepageResourceListProps = {
   documents: HomepageDocumentFragment[];
   isAuthenticated?: boolean;
 };
-
 
 const HomepageResourceList = ({
   title,

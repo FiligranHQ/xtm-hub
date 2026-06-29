@@ -4,6 +4,3 @@ query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
     identifier
   }
 }
-
-
-

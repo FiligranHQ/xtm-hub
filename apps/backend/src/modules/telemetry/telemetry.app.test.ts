@@ -156,10 +156,10 @@ describe('telemetryApp', () => {
     });
 
     it.each`
-      platformIdentifiers                                                       | expectedTargetProducts                                       | description
-      ${[PlatformIdentifier.Opencti]}                                          | ${[TelemetryTargetProduct.OPEN_CTI]}                        | ${'single opencti filter'}
-      ${[PlatformIdentifier.Openaev]}                                          | ${[TelemetryTargetProduct.OPEN_AEV]}                        | ${'single openaev filter'}
-      ${[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]}              | ${[TelemetryTargetProduct.OPEN_CTI, TelemetryTargetProduct.OPEN_AEV]} | ${'both platform identifiers'}
+      platformIdentifiers                                         | expectedTargetProducts                                                | description
+      ${[PlatformIdentifier.Opencti]}                             | ${[TelemetryTargetProduct.OPEN_CTI]}                                  | ${'single opencti filter'}
+      ${[PlatformIdentifier.Openaev]}                             | ${[TelemetryTargetProduct.OPEN_AEV]}                                  | ${'single openaev filter'}
+      ${[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]} | ${[TelemetryTargetProduct.OPEN_CTI, TelemetryTargetProduct.OPEN_AEV]} | ${'both platform identifiers'}
     `(
       'should filter by target_product when platformIdentifiers is provided ($description)',
       async ({

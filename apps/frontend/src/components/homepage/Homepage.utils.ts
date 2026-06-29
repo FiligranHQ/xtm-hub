@@ -34,4 +34,3 @@ export const findLogoUrl = (
     ? `/document/images/${String(resource.service_instance_id)}/${logo.id}`
     : undefined;
 };
-

@@ -95,10 +95,7 @@ export const ServiceDefinitionIdentifiersByPlatformIdentifier = new Map<
       ServiceDefinitionIdentifier.OpenctiPlaybooks,
     ],
   ],
-  [
-    PlatformIdentifier.Openaev,
-    [ServiceDefinitionIdentifier.OpenaevScenarios],
-  ],
+  [PlatformIdentifier.Openaev, [ServiceDefinitionIdentifier.OpenaevScenarios]],
 ]);
 
 export type ManageableServiceDefinitionIdentifier =

@@ -1127,7 +1127,7 @@ describe('loadMostDeployedDocuments', () => {
 
     await DocumentApp.loadMostDeployedDocuments(7);
 
-    expect(esSpy).toHaveBeenCalledWith(7);
+    expect(esSpy).toHaveBeenCalledWith(7, undefined);
   });
 
   it('should handle documents missing from the DB gracefully', async () => {

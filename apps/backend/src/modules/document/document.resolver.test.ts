@@ -579,7 +579,10 @@ describe('mostDeployedDocuments GraphQL query', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(2, undefined);
+    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(
+      2,
+      undefined
+    );
     expect(result).toEqual(expected);
   });
 
@@ -598,10 +601,9 @@ describe('mostDeployedDocuments GraphQL query', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(
-      5,
-      [PlatformIdentifier.Opencti]
-    );
+    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(5, [
+      PlatformIdentifier.Opencti,
+    ]);
     expect(result).toEqual(expected);
   });
 });
@@ -637,11 +639,9 @@ describe('newestDocuments GraphQL query', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(DocumentApp.loadNewestDocuments).toHaveBeenCalledWith(
-      5,
-      [PlatformIdentifier.Opencti]
-    );
+    expect(DocumentApp.loadNewestDocuments).toHaveBeenCalledWith(5, [
+      PlatformIdentifier.Opencti,
+    ]);
     expect(result).toEqual(expected);
   });
 });
-

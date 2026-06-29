@@ -464,7 +464,10 @@ export const DocumentDomain = {
       })
       .modify((qb) => {
         if (serviceDefinitionIdentifiers?.length) {
-          qb.whereIn('ServiceDefinition.identifier', serviceDefinitionIdentifiers);
+          qb.whereIn(
+            'ServiceDefinition.identifier',
+            serviceDefinitionIdentifiers
+          );
         }
       })
       .orderBy('Document.created_at', 'desc')

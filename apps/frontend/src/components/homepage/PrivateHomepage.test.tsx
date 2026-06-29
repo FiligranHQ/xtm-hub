@@ -7,9 +7,9 @@ const { mockFetcher, mockNewestResources, mockMostDeployedResources } =
   vi.hoisted(() => ({
     mockFetcher: vi.fn(),
     mockNewestResources: vi.fn(() => <div data-testid="newest-resources" />),
-    mockMostDeployedResources: vi.fn(
-      () => <div data-testid="most-deployed-resources" />
-    ),
+    mockMostDeployedResources: vi.fn(() => (
+      <div data-testid="most-deployed-resources" />
+    )),
   }));
 
 vi.mock('@graphql/generated', async (importOriginal) => {
@@ -50,7 +50,10 @@ describe('PrivateHomepage', () => {
     mockFetcher.mockReturnValue(() =>
       Promise.resolve({
         registeredPlatforms: [
-          { id: '1', identifier: ServiceDefinitionIdentifier.OpenctiRegistration },
+          {
+            id: '1',
+            identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+          },
         ],
       })
     );
@@ -59,11 +62,15 @@ describe('PrivateHomepage', () => {
     render(element);
 
     expect(mockNewestResources).toHaveBeenCalledWith(
-      expect.objectContaining({ platformIdentifiers: [PlatformIdentifierEnum.OPENCTI] }),
+      expect.objectContaining({
+        platformIdentifiers: [PlatformIdentifierEnum.OPENCTI],
+      }),
       undefined
     );
     expect(mockMostDeployedResources).toHaveBeenCalledWith(
-      expect.objectContaining({ platformIdentifiers: [PlatformIdentifierEnum.OPENCTI] }),
+      expect.objectContaining({
+        platformIdentifiers: [PlatformIdentifierEnum.OPENCTI],
+      }),
       undefined
     );
   });
@@ -72,8 +79,14 @@ describe('PrivateHomepage', () => {
     mockFetcher.mockReturnValue(() =>
       Promise.resolve({
         registeredPlatforms: [
-          { id: '1', identifier: ServiceDefinitionIdentifier.OpenctiRegistration },
-          { id: '2', identifier: ServiceDefinitionIdentifier.OpenaevRegistration },
+          {
+            id: '1',
+            identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+          },
+          {
+            id: '2',
+            identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+          },
         ],
       })
     );
@@ -111,6 +124,3 @@ describe('PrivateHomepage', () => {
     );
   });
 });
-
-
-

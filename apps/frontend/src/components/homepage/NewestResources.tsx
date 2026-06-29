@@ -27,7 +27,8 @@ const NewestResources = async ({
     portalGraphqlClientCached,
     {
       limit: NEWEST_LIMIT,
-      platformIdentifiers: (platformIdentifiers ?? []) as unknown as PlatformIdentifier[],
+      platformIdentifiers: (platformIdentifiers ??
+        []) as unknown as PlatformIdentifier[],
     }
   )();
 
@@ -42,4 +43,3 @@ const NewestResources = async ({
 };
 
 export default NewestResources;
-

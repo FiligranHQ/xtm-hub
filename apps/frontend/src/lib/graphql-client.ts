@@ -1,5 +1,5 @@
-import { buildCookieHeader } from '@/relay/environment/fetch-fn.utils';
 import { isDevelopment } from '@/lib/utils';
+import { buildCookieHeader } from '@/relay/environment/fetch-fn.utils';
 import { ClientError, GraphQLClient } from 'graphql-request';
 
 const SENSITIVE_FIELD_KEYS = new Set([
@@ -183,4 +183,3 @@ export const getAuthenticatedGraphqlClient = async () => {
   const cookieStore = await cookies();
   return createPortalGraphqlClient(buildCookieHeader(cookieStore.getAll()));
 };
-

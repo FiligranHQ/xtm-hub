@@ -19,6 +19,7 @@ import {
   OrderingMode,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
+import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 import { IngestManifestDomain } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
 import { ManifestInformation } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.model';
 import sampleExtractedManifest from '../../shareable-resource/opencti/integration/ingest-manifest/test/sample-extracted-manifest.json';
@@ -29,7 +30,6 @@ import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../shareable-resource/opencti/integration/integration.model';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
@@ -996,9 +996,11 @@ describe('document domain', () => {
       });
 
       // When
-      const result = await DocumentDomain.loadNewestDocuments(10, [], [
-        ServiceDefinitionIdentifier.OpenctiIntegrations,
-      ]);
+      const result = await DocumentDomain.loadNewestDocuments(
+        10,
+        [],
+        [ServiceDefinitionIdentifier.OpenctiIntegrations]
+      );
 
       // Then
       expect(result).toHaveLength(1);

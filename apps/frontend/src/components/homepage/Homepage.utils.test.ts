@@ -1,7 +1,13 @@
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { DocumentImageType, ServiceDefinitionIdentifier } from '@graphql/generated';
+import {
+  DocumentImageType,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
-import { findLogoUrl, resolveHomepagePlatformIdentifiers } from './Homepage.utils';
+import {
+  findLogoUrl,
+  resolveHomepagePlatformIdentifiers,
+} from './Homepage.utils';
 
 describe('resolveHomepagePlatformIdentifiers', () => {
   it.each([
@@ -21,14 +27,22 @@ describe('resolveHomepagePlatformIdentifiers', () => {
       description: 'returns [OPENAEV] for a single OPENAEV identifier',
     },
     {
-      identifiers: [ServiceDefinitionIdentifier.OpenctiRegistration, ServiceDefinitionIdentifier.OpenctiRegistration],
+      identifiers: [
+        ServiceDefinitionIdentifier.OpenctiRegistration,
+        ServiceDefinitionIdentifier.OpenctiRegistration,
+      ],
       expected: [PlatformIdentifierEnum.OPENCTI],
-      description: 'returns [OPENCTI] when duplicate identifiers resolve to the same platform',
+      description:
+        'returns [OPENCTI] when duplicate identifiers resolve to the same platform',
     },
     {
-      identifiers: [ServiceDefinitionIdentifier.OpenctiRegistration, ServiceDefinitionIdentifier.OpenaevRegistration],
+      identifiers: [
+        ServiceDefinitionIdentifier.OpenctiRegistration,
+        ServiceDefinitionIdentifier.OpenaevRegistration,
+      ],
       expected: undefined,
-      description: 'returns undefined when identifiers span two different platforms',
+      description:
+        'returns undefined when identifiers span two different platforms',
     },
     {
       identifiers: [ServiceDefinitionIdentifier.Vault],
@@ -49,7 +63,9 @@ describe('findLogoUrl', () => {
       description: 'returns undefined when children_documents is null',
     },
     {
-      children_documents: [{ id: 'd1', image_type: DocumentImageType.Screenshot }],
+      children_documents: [
+        { id: 'd1', image_type: DocumentImageType.Screenshot },
+      ],
       service_instance_id: 'inst-1',
       expected: undefined,
       description: 'returns undefined when no child has Logo image type',
@@ -58,13 +74,15 @@ describe('findLogoUrl', () => {
       children_documents: [{ id: 'd1', image_type: DocumentImageType.Logo }],
       service_instance_id: null,
       expected: undefined,
-      description: 'returns undefined when logo is present but service_instance_id is null',
+      description:
+        'returns undefined when logo is present but service_instance_id is null',
     },
     {
       children_documents: [{ id: 'd1', image_type: DocumentImageType.Logo }],
       service_instance_id: 'inst-1',
       expected: '/document/images/inst-1/d1',
-      description: 'returns the image URL when logo and service_instance_id are both present',
+      description:
+        'returns the image URL when logo and service_instance_id are both present',
     },
   ])(
     '$description',
@@ -73,7 +91,9 @@ describe('findLogoUrl', () => {
       service_instance_id,
       expected,
     }: {
-      children_documents: { id: string; image_type: DocumentImageType }[] | null;
+      children_documents:
+        | { id: string; image_type: DocumentImageType }[]
+        | null;
       service_instance_id: string | null;
       expected: string | undefined;
     }) => {
@@ -88,9 +108,9 @@ describe('findLogoUrl', () => {
         children_documents,
         use_cases: null,
       };
-      expect(
-        findLogoUrl(resource as Parameters<typeof findLogoUrl>[0])
-      ).toBe(expected);
+      expect(findLogoUrl(resource as Parameters<typeof findLogoUrl>[0])).toBe(
+        expected
+      );
     }
   );
 });

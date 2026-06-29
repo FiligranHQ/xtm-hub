@@ -8,6 +8,3 @@ export const registrationKeys = {
   registeredPlatforms: (variables: RegisteredPlatformsQueryVariables) =>
     useRegisteredPlatformsQuery.getKey(variables),
 };
-
-
-

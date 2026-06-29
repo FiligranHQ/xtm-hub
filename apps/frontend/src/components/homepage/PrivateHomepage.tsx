@@ -1,11 +1,10 @@
+import { resolveHomepagePlatformIdentifiers } from '@/components/homepage/Homepage.utils';
 import MostDeployedResources from '@/components/homepage/MostDeployedResources';
 import NewestResources from '@/components/homepage/NewestResources';
-import { resolveHomepagePlatformIdentifiers } from '@/components/homepage/Homepage.utils';
 import { defaultLocale, publicLocales } from '@/i18n/config';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import { useRegisteredPlatformsQuery } from '@graphql/generated';
 import { getLocale } from 'next-intl/server';
-
 
 export const PrivateHomepage = async () => {
   const userLocale = await getLocale();

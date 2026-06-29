@@ -27,7 +27,8 @@ const MostDeployedResources = async ({
     portalGraphqlClientCached,
     {
       limit: MOST_DEPLOYED_LIMIT,
-      platformIdentifiers: (platformIdentifiers ?? []) as unknown as PlatformIdentifier[],
+      platformIdentifiers: (platformIdentifiers ??
+        []) as unknown as PlatformIdentifier[],
     }
   )();
 

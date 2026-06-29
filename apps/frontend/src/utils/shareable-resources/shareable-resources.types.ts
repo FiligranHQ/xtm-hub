@@ -1,8 +1,8 @@
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import type { publicDocumentByServiceSlugItemFragment$data } from '@generated/publicDocumentByServiceSlugItemFragment.graphql';
 import type { publicDocumentBySlugItemFragment$data } from '@generated/publicDocumentBySlugItemFragment.graphql';
 import type { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 
 export type PublicDocumentData =
   | publicDocumentListItemFragment$data
