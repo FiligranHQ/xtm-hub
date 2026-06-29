@@ -20,7 +20,7 @@ export const MenuLogo = ({
       className={cn(
         'flex z-10 shrink-0 sticky top-0 h-16 bg-page-background items-center px-m',
         withDarkBackground && !isHomePageV2Enabled
-          ? 'dark-bg-background'
+          ? 'dark:bg-background'
           : 'dark:bg-page-background'
       )}>
       <Link

@@ -52,13 +52,17 @@ export const PublicSubLink = ({
 
   const content = (
     <>
-      <span className="flex items-center gap-xs">
+      <span className="flex min-w-0 flex-1 items-center gap-xs">
         {external && <OpenInNewIcon className="h-3 w-3 shrink-0" />}
-        {label}
+        <span
+          className="truncate"
+          title={label}>
+          {label}
+        </span>
       </span>
       {badge && (
         <span
-          className="text-[10px] font-medium bg-clip-text text-transparent translate-y-[2px]"
+          className="shrink-0 text-[10px] font-medium bg-clip-text text-transparent translate-y-[2px]"
           style={{ backgroundImage: NAVIGATION_GRADIENT_STYLE }}>
           {badge}
         </span>
@@ -76,7 +80,10 @@ export const PublicSubLink = ({
         <Tooltip>
           <TooltipTrigger asChild>{node}</TooltipTrigger>
           <TooltipContent>
-            <span>{tooltip}</span>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium">{label}</span>
+              <span className="text-xs text-muted-foreground">{tooltip}</span>
+            </div>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -147,7 +154,10 @@ export const NavigationLinkMenu = ({
           : NAVIGATION_HOVER_CLASSES
       )}>
       <MenuItemIcon icon={icon} />
-      <span className={cn('truncate', open ? 'ml-2' : 'sr-only')}>{text}</span>
+      <span
+        className={cn('min-w-0 truncate', open ? 'ml-2 flex-1' : 'sr-only')}>
+        {text}
+      </span>
     </Link>
   );
 };
