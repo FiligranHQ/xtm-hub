@@ -12,7 +12,7 @@ export const MenuLogo = ({ withDarkBackground = true }: MenuLogoProps) => {
   return (
     <div
       className={cn(
-        'flex z-10 shrink-0 sticky top-0 h-16 border-border-light border-b bg-page-background items-center px-m',
+        'flex z-10 shrink-0 sticky top-0 h-16 bg-page-background items-center px-m',
         withDarkBackground && 'dark:bg-background'
       )}>
       <Link
