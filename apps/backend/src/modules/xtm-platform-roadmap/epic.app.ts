@@ -205,7 +205,7 @@ export const EpicApp = {
       serviceInstanceId: serviceInstance.id,
     });
     await sendMail({
-      to: 'product.managers@filigran.io',
+      to: 'product-managers@filigran.io',
       template: 'public_roadmap_monthly_reminder',
       params: { roadmapLink },
     });

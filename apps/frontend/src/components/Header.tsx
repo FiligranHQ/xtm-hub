@@ -11,10 +11,11 @@ import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
-import { MenuIcon } from '@filigran/icon';
+import { CloseIcon, MenuIcon } from '@filigran/icon';
 import { Avatar } from '@filigran/ui';
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -24,6 +25,7 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
+import Logo from '@public/logo.svg';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -110,8 +112,22 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
             />
           </SheetTrigger>
           <SheetContent side="left">
-            <SheetHeader>
-              <SheetTitle>{t('Header.BrandName')}</SheetTitle>
+            <SheetHeader className="flex flex-row justify-between pl-l">
+              <div className="flex items-center gap-s">
+                <Logo
+                  className="h-8 w-8"
+                  aria-hidden={true}
+                />
+                <SheetTitle>{t('Header.BrandName')}</SheetTitle>
+              </div>
+              <SheetClose>
+                <CloseIcon
+                  aria-hidden={true}
+                  focusable={false}
+                  className="h-4 w-4 mr-xl"
+                />
+                <span className="sr-only">{t('Header.CloseMenu')}</span>
+              </SheetClose>
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
               <NavigationApp open={true} />
