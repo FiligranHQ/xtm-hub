@@ -711,8 +711,7 @@ export enum EpicType {
 
 export enum FeatureFlag {
   Dummy = 'DUMMY',
-  HomePageV2 = 'HOME_PAGE_V2',
-  OpenctiCustomViews = 'OPENCTI_CUSTOM_VIEWS'
+  HomePageV2 = 'HOME_PAGE_V2'
 }
 
 export enum FiligranProduct {

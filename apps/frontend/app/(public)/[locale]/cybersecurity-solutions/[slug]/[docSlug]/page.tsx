@@ -17,7 +17,6 @@ import {
   getLocaleTag,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { isFeatureEnabled } from '@/utils/settings.service';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
   isConnectorResource,
@@ -31,7 +30,6 @@ import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable
 import { LogoFiligranIcon } from '@filigran/icon';
 import { MarkdownRenderer } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -196,14 +194,6 @@ const Page = async ({
   }
 
   const { baseUrl, serviceInstance, document } = pageData;
-
-  // TODO: feature flag OPENCTI_CUSTOM_VIEWS - remove with the feature
-  if (
-    serviceInstance.slug === ServiceSlug.OPEN_CTI_CUSTOM_VIEWS &&
-    !(await isFeatureEnabled(FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS))
-  ) {
-    notFound();
-  }
 
   const serviceInformation = getServiceInfo(
     {
