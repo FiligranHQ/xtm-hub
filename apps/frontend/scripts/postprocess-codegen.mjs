@@ -27,10 +27,13 @@ const withoutPreviousRootKeys = withHeaderFix.replace(
 // Example:
 // useUseCasesListQuery.getKey = (variables) => ['UseCasesList', variables];
 // useUseCasesListQuery.getRootKey = () => ['UseCasesList'] as const;
+// Also handles the no-variable ternary form codegen emits when Variables = never:
+// useEpicCountPerTimelineQueryQuery.getKey = (variables?) => variables === undefined ? ['EpicCountPerTimelineQuery'] : ['EpicCountPerTimelineQuery', variables];
+// useEpicCountPerTimelineQueryQuery.getRootKey = () => ['EpicCountPerTimelineQuery'] as const;
 const normalizedWithRootKeys = withoutPreviousRootKeys.replace(
-  /^(\w+)\.getKey\s*=\s*(\(.*?\)\s*=>\s*\[([^\],]+)[^\]]*\]);\s*$/gm,
+  /^(\w+)(\.getKey\s*=\s*[^']*'([\w.]+)'[^;]*);\s*$/gm,
   (_match, hookName, getKeyExpr, rootKeyExpr) =>
-    `${hookName}.getKey = ${getKeyExpr};\n${hookName}.getRootKey = () => [${rootKeyExpr.trim()}] as const;`
+    `${hookName}${getKeyExpr};\n${hookName}.getRootKey = () => ['${rootKeyExpr}'] as const;`
 );
 
 fs.writeFileSync(generatedPath, normalizedWithRootKeys);

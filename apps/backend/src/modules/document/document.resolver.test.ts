@@ -32,9 +32,7 @@ import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { DocumentApp } from './document.app';
 import { DocumentHelper } from './document.helper';
 import documentResolver from './document.resolver';
-import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
-import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 describe('create document GraphQL mutation', () => {
   it('should delegate to DocumentApp.createDocument and return result', async () => {
@@ -269,7 +267,7 @@ describe('document.__resolveType', () => {
       const doc = { id: uuidv4(), type } as unknown as DocumentModel;
       const result = await (
         documentResolver.Document as unknown as DocumentResolvers
-      ).__resolveType(doc);
+      ).__resolveType(doc, contextSimpleUserFiligran2);
       expect(result).toBe(expected);
     }
   );
@@ -289,13 +287,14 @@ describe('document.__resolveType', () => {
         id: uuidv4(),
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       } as unknown as DocumentModel;
-      vi.spyOn(DocumentMetadataDomain, 'loadIntegrationType').mockResolvedValue(
-        integrationType
-      );
+      vi.spyOn(
+        contextSimpleUserFiligran2.dataLoaders.integrationTypeLoader,
+        'load'
+      ).mockResolvedValue(integrationType);
 
       const result = await (
         documentResolver.Document as unknown as DocumentResolvers
-      ).__resolveType(doc);
+      ).__resolveType(doc, contextSimpleUserFiligran2);
 
       expect(result).toBe(expected);
     }
@@ -308,7 +307,7 @@ describe('document.__resolveType', () => {
     } as unknown as DocumentModel;
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
-    ).__resolveType(doc);
+    ).__resolveType(doc, contextSimpleUserFiligran2);
     expect(result).toBe('DefaultDocument');
   });
 });
@@ -316,11 +315,16 @@ describe('document.__resolveType', () => {
 describe('document field resolvers', () => {
   it('children_documents should load children by document id', async () => {
     const id = uuidv4() as DocumentId;
-    const expected = [{ id: uuidv4() }] as unknown as Awaited<
-      ReturnType<typeof DocumentChildrenDomain.loadChildrenDocuments>
-    >;
-    vi.spyOn(DocumentChildrenDomain, 'loadChildrenDocuments').mockResolvedValue(
-      expected
+    const expected = [{ id: uuidv4() }];
+    vi.spyOn(
+      contextSimpleUserFiligran2.dataLoaders.childrenDocumentsLoader,
+      'load'
+    ).mockResolvedValue(
+      expected as unknown as Awaited<
+        ReturnType<
+          typeof contextSimpleUserFiligran2.dataLoaders.childrenDocumentsLoader.load
+        >
+      >
     );
 
     const result = await (
@@ -332,32 +336,37 @@ describe('document field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(DocumentChildrenDomain.loadChildrenDocuments).toHaveBeenCalledWith(
-      id,
-      expect.any(Array)
-    );
+    expect(
+      contextSimpleUserFiligran2.dataLoaders.childrenDocumentsLoader.load
+    ).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
 
   it('uploader should load uploader by document id', async () => {
     const id = uuidv4() as DocumentId;
-    const expected = { id: uuidv4() } as unknown as User | undefined;
-    vi.spyOn(DocumentDomain, 'loadUploader').mockResolvedValue(expected);
+    const expected = { id: uuidv4() } as unknown as User | null;
+    vi.spyOn(
+      contextSimpleUserFiligran2.dataLoaders.uploaderLoader,
+      'load'
+    ).mockResolvedValue(expected);
 
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).uploader!({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
 
-    expect(DocumentDomain.loadUploader).toHaveBeenCalledWith(id);
+    expect(
+      contextSimpleUserFiligran2.dataLoaders.uploaderLoader.load
+    ).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
 
   it('uploader_organization should load uploader organization by document id', async () => {
     const id = uuidv4() as DocumentId;
-    const expected = { id: uuidv4() } as unknown as Organization | undefined;
-    vi.spyOn(DocumentDomain, 'loadUploaderOrganization').mockResolvedValue(
-      expected
-    );
+    const expected = { id: uuidv4() } as unknown as Organization | null;
+    vi.spyOn(
+      contextSimpleUserFiligran2.dataLoaders.uploaderOrganizationLoader,
+      'load'
+    ).mockResolvedValue(expected);
 
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
@@ -368,7 +377,9 @@ describe('document field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(DocumentDomain.loadUploaderOrganization).toHaveBeenCalledWith(id);
+    expect(
+      contextSimpleUserFiligran2.dataLoaders.uploaderOrganizationLoader.load
+    ).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
 
@@ -547,6 +558,27 @@ describe('document GraphQL query', () => {
     );
 
     expect(DocumentApp.loadDocument).toHaveBeenCalledWith(docId);
+    expect(result).toEqual(expected);
+  });
+});
+
+describe('mostDeployedDocuments GraphQL query', () => {
+  it('should delegate to DocumentApp.loadMostDeployedDocuments and return result', async () => {
+    const expected = [{ id: uuidv4() }, { id: uuidv4() }] as unknown as Awaited<
+      ReturnType<typeof DocumentApp.loadMostDeployedDocuments>
+    >;
+    vi.spyOn(DocumentApp, 'loadMostDeployedDocuments').mockResolvedValue(
+      expected
+    );
+
+    const result = await documentResolver.Query!.mostDeployedDocuments!(
+      {},
+      { limit: 2 },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    expect(DocumentApp.loadMostDeployedDocuments).toHaveBeenCalledWith(2);
     expect(result).toEqual(expected);
   });
 });

@@ -17,7 +17,7 @@ import User, { UserId } from '../../../model/kanel/public/User';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { omit } from '../../../utils/utils';
-import { Document } from '../document.helper';
+import { Document, WithDocumentId } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
@@ -99,6 +99,22 @@ export const DocumentDomain = {
     return docQuery.first();
   },
 
+  loadDocumentsWithMetadataByIds: async <T extends Document>(
+    ids: string[],
+    include_metadata: DocumentMetadataKeyCode[] = []
+  ): Promise<T[]> => {
+    if (ids.length === 0) return [];
+
+    const docQuery = db<T>('Document')
+      .whereIn('Document.id', ids)
+      .select('Document.*')
+      .groupBy(['Document.id']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
+
+    return docQuery;
+  },
+
   loadDocumentsByMetadata: async (
     key: string,
     value: string,
@@ -120,26 +136,38 @@ export const DocumentDomain = {
     return docQuery;
   },
 
-  loadUploader: async (documentId: string): Promise<User | undefined> => {
-    return db<User>('User')
+  buildUploaderQuery: (documentIds: readonly string[]) => {
+    return db<WithDocumentId<User>>('User')
       .leftJoin('Document', 'Document.uploader_id', 'User.id')
-      .where('Document.id', '=', documentId)
-      .select('User.*')
-      .first();
+      .whereIn('Document.id', documentIds)
+      .select('User.*', 'Document.id as _document_id');
   },
 
-  loadUploaderOrganization: async (
+  loadUploader: async (
     documentId: string
-  ): Promise<Organization | undefined> => {
-    return db<Organization>('Organization')
+  ): Promise<WithDocumentId<User> | undefined> => {
+    const rows = await DocumentDomain.buildUploaderQuery([documentId]);
+    return rows[0];
+  },
+
+  buildUploaderOrganizationQuery: (documentIds: readonly string[]) => {
+    return db<WithDocumentId<Organization>>('Organization')
       .leftJoin(
         'Document',
         'Document.uploader_organization_id',
         'Organization.id'
       )
-      .where('Document.id', '=', documentId)
-      .select('Organization.*')
-      .first();
+      .whereIn('Document.id', documentIds)
+      .select('Organization.*', 'Document.id as _document_id');
+  },
+
+  loadUploaderOrganization: async (
+    documentId: string
+  ): Promise<WithDocumentId<Organization> | undefined> => {
+    const rows = await DocumentDomain.buildUploaderOrganizationQuery([
+      documentId,
+    ]);
+    return rows[0];
   },
 
   loadParentDocumentsByServiceInstance: async (

@@ -24,10 +24,7 @@ import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { DocumentApp } from './document.app';
 import { DocumentHelper } from './document.helper';
-import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
-import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
-import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 const resolvers: Resolvers = {
   DocumentId: createRelayIdScalar<DocumentId>('Document'),
@@ -136,7 +133,7 @@ const resolvers: Resolvers = {
     },
   },
   Document: {
-    async __resolveType(document) {
+    async __resolveType(document, context) {
       const TYPE_MAPPINGS = {
         [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'CustomDashboard',
         [OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE]: 'CustomView',
@@ -157,7 +154,7 @@ const resolvers: Resolvers = {
         return mappedType;
       } else if (document.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         const integrationType =
-          await DocumentMetadataDomain.loadIntegrationType(document.id);
+          await context.dataLoaders.integrationTypeLoader.load(document.id);
         if (integrationType) {
           const responseType =
             INTEGRATION_MAPPINGS[
@@ -174,14 +171,14 @@ const resolvers: Resolvers = {
       return 'DefaultDocument';
     },
 
-    children_documents: async ({ id }, _) =>
-      (await DocumentChildrenDomain.loadChildrenDocuments(
-        id,
-        DOCUMENT_IMAGE_METADATA_KEYS
+    children_documents: async ({ id }, _, context) =>
+      (await context.dataLoaders.childrenDocumentsLoader.load(
+        id
       )) as ShareableResource[],
-    uploader: ({ id }, _) => DocumentDomain.loadUploader(id),
-    uploader_organization: ({ id }, _) =>
-      DocumentDomain.loadUploaderOrganization(id),
+    uploader: ({ id }, _, context) =>
+      context.dataLoaders.uploaderLoader.load(id),
+    uploader_organization: ({ id }, _, context) =>
+      context.dataLoaders.uploaderOrganizationLoader.load(id),
     service_instance: ({ service_instance_id }, _) => {
       if (!service_instance_id) return null;
       return ServiceInstanceDomain.getServiceInstance(service_instance_id);
@@ -199,7 +196,7 @@ const resolvers: Resolvers = {
   Query: {
     documentExists: async (_, input) => {
       try {
-        return DocumentHelper.checkDocumentExists(
+        return await DocumentHelper.checkDocumentExists(
           input.documentName ?? '',
           input.service_instance_id
         );
@@ -209,14 +206,14 @@ const resolvers: Resolvers = {
     },
     publicDocuments: async (_, input) => {
       try {
-        return DocumentApp.loadPublicDocuments(input);
+        return await DocumentApp.loadPublicDocuments(input);
       } catch (error) {
         throw mapToGraphQLError(error);
       }
     },
     publicDocumentsByServiceSlug: async (_, { serviceInstanceSlug }) => {
       try {
-        return DocumentApp.loadPublicDocumentsByServiceSlug(
+        return await DocumentApp.loadPublicDocumentsByServiceSlug(
           serviceInstanceSlug
         );
       } catch (error) {
@@ -225,19 +222,29 @@ const resolvers: Resolvers = {
     },
     publicDocumentBySlug: async (_, { serviceInstanceId, slug }) => {
       try {
-        return DocumentApp.loadPublicDocumentBySlug(serviceInstanceId, slug);
+        return await DocumentApp.loadPublicDocumentBySlug(
+          serviceInstanceId,
+          slug
+        );
       } catch (error) {
         throw mapToGraphQLError(error);
       }
     },
     documents: async (_, input) => {
       try {
-        return DocumentApp.loadDocuments(input);
+        return await DocumentApp.loadDocuments(input);
       } catch (error) {
         throw mapToGraphQLError(error);
       }
     },
     document: async (_, { documentId }) => DocumentApp.loadDocument(documentId),
+    mostDeployedDocuments: async (_, { limit }) => {
+      try {
+        return await DocumentApp.loadMostDeployedDocuments(limit);
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
   },
 };
 

@@ -1,11 +1,15 @@
+import { publicLocales } from '@/i18n/config';
 import { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const headersList = await headers();
   const domain = headersList.get('host') || '';
+  const localizedRootAllowRules = publicLocales.flatMap((locale) => [
+    `/${locale}$`,
+    `/${locale}/$`,
+  ]);
 
-  // Check if production domain
   const isProductionDomain =
     domain === 'hub.filigran.io' || domain === 'www.hub.filigran.io';
 
@@ -16,16 +20,21 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
           userAgent: '*',
           disallow: '/',
           allow: [
-            '/$',
-            '/sitemap.xml$',
-            '/login$',
-            '/cybersecurity-solutions',
-            '/cybersecurity-solutions/',
-            '/cybersecurity-solutions/*',
-            '/document/images/*',
+            '/sitemap.xml',
+            '/login',
             '/favicon.ico',
             '/apple-icon.png',
             '/favicon-*.png',
+            '/_next/static/',
+            '/_next/image',
+            '/_next/data/',
+            ...localizedRootAllowRules,
+            ...publicLocales.flatMap((locale) => [
+              `/${locale}/cybersecurity-solutions`,
+              `/${locale}/cybersecurity-solutions/`,
+              `/${locale}/cybersecurity-solutions/*`,
+            ]),
+            '/document/images/*',
           ],
         },
       ],

@@ -1,4 +1,7 @@
 'use client';
+import BadgeOverflowCounter, {
+  BadgeOverflow,
+} from '@/components/ui/BadgeOverflowCounter';
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
@@ -50,6 +53,11 @@ const ShareableResourceCard = ({
   const handleClick = () => {
     save();
   };
+  const isConnector =
+    docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_TYPE) &&
+    !!document.integration_type &&
+    FOOTER_VERSIONS_INTEGRATION_TYPES.includes(document.integration_type);
+
   return (
     <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover h-[348px]">
       <Link
@@ -58,31 +66,28 @@ const ShareableResourceCard = ({
         href={detailUrl}>
         <ShareableResourceCardHeader
           document={document}
-          shouldDisplayBothIcons={
-            docHasMetadata(
-              document,
-              DocumentMetadataKeyCodeEnum.INTEGRATION_TYPE
-            ) &&
-            !!document.integration_type &&
-            FOOTER_VERSIONS_INTEGRATION_TYPES.includes(
-              document.integration_type
-            )
-          }
+          shouldDisplayBothIcons={isConnector}
+          isConnector={isConnector}
           serviceInstanceId={serviceInstance.id}
         />
-        <p className="p-m text-muted-foreground text-sm">
-          {document.short_description}
-        </p>
+        {isConnector ? (
+          <div className="p-m flex flex-col gap-s flex-1 min-h-0">
+            <p className="text-muted-foreground text-sm overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
+              {document.short_description}
+            </p>
+            <BadgeOverflowCounter
+              badges={document.use_cases as BadgeOverflow[]}
+              className="z-2 shrink-0"
+            />
+          </div>
+        ) : (
+          <p className="p-m text-muted-foreground text-sm overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
+            {document.short_description}
+          </p>
+        )}
       </Link>
       <div className="flex items-center justify-between gap-m pl-m pb-m mt-auto">
-        {docHasMetadata(
-          document,
-          DocumentMetadataKeyCodeEnum.INTEGRATION_TYPE
-        ) &&
-        document.integration_type &&
-        FOOTER_VERSIONS_INTEGRATION_TYPES.includes(
-          document.integration_type
-        ) ? (
+        {isConnector ? (
           <ShareableResourceCardFooterVersion
             document={document}
             publicPath={publicPath}

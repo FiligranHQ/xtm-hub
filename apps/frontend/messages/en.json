@@ -3,6 +3,7 @@
   "App": {
     "Collapse": "Collapse",
     "CollapseSidebar": "Collapse sidebar",
+    "MadeBy": "Made by",
     "Title": "XTM Hub"
   },
   "Badge": {
@@ -23,6 +24,38 @@
   },
   "CountryComboBox": {
     "Placeholder": "Choose a country"
+  },
+  "CookieConsent": {
+    "Title": "Cookie settings",
+    "BannerText": "We use cookies to make the XTM Hub work, understand how it's used, and improve your experience. Strictly necessary cookies are always on. With your consent, we also use optional cookies for functionality, performance and analytics, and marketing. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy for more information.",
+    "AcceptAll": "Accept all",
+    "RejectAll": "Reject all",
+    "CookieSettings": "Cookie settings",
+    "Save": "Save",
+    "PreferencesIntro": "By allowing these third party services, you accept their cookies and the use of tracking technologies necessary for their proper functioning.",
+    "CookieSettingsLink": "Cookie settings",
+    "PreferenceForAllServices": "Accept/Reject all services",
+    "ManageServices": "Manage services ({count})",
+    "ReadMore": "Read more",
+    "ViewOfficialWebsite": "View the official website",
+    "Categories": {
+      "necessary": {
+        "Title": "Strictly necessary",
+        "Description": "These cookies are needed for the XTM Hub to function properly. They support core features, such as authentication, security and remembering your cookie preferences."
+      },
+      "functional": {
+        "Title": "Functional",
+        "Description": "These cookies remember your preferences such as language or interface preferences and enable embedded features."
+      },
+      "analytics": {
+        "Title": "Performance and analytics",
+        "Description": "These cookies help us measure how the XTM Hub performs and how it's used, and identify errors so we can improve it."
+      },
+      "marketing": {
+        "Title": "Marketing",
+        "Description": "These cookies help us measure the effectiveness of marketing campaigns and, where applicable, personalize content or advertising based on your interactions with the XTM Hub."
+      }
+    }
   },
   "Datatable": {
     "Asc": "Asc",
@@ -266,7 +299,9 @@
   },
   "GoToProd": "Go to production",
   "Header": {
-    "BrandName": "Filigran"
+    "BrandName": "Filigran",
+    "CloseMenu": "Close Menu",
+    "OpenMenu": "Open Menu"
   },
   "HomePage": {
     "Homepage": "Homepage",
@@ -274,12 +309,32 @@
     "OpenManagement": "Go to management page"
   },
   "PublicHomePage": {
-    "Title": "Discover resources and expertise"
+    "Title": "Discover resources and expertise",
+    "XtmPlatform": {
+      "Label": "Welcome to XTM Hub",
+      "Title": "Extend and scale your XTM Platform",
+      "Description": "Register your OpenCTI or OpenAEV platform to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM platform experience.",
+      "Cta": "Connect your product",
+      "ImageAlt": "XTM Platform illustration"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "Most deployed resources"
+    },
+    "XtmRoadmap": {
+      "Title": "XTM Platform Roadmap",
+      "Description": "Explore what we're building, what's coming next, and where the XTM Platform is headed. Full transparency. No surprises.",
+      "SeeMore": "See more",
+      "ImageAlt": "XTM Platform Roadmap space illustration",
+      "Now": "Now",
+      "Next": "Next",
+      "UnderConsideration": "Under Consideration"
+    }
   },
   "PublicPathError": {
     "NotFound": "404 | This page could not be found"
   },
   "PublicLayout": {
+    "Documentation": "XTM Hub documentation",
     "SignIn": "Sign In",
     "AllRightsReserved": "All rights reserved",
     "FiligranWebsite": "Filigran website",
@@ -339,6 +394,24 @@
     "Disable": "Disable",
     "Remove": "Remove",
     "Update": "Update"
+  },
+  "PublicMenu": {
+    "XTMPlatform": "XTM Platform",
+    "StartFreeTrial": "Start Free Trial",
+    "CustomDashboards": "Custom Dashboards",
+    "CustomViews": "Custom Views",
+    "Integrations": "Integrations",
+    "Playbooks": "Playbooks",
+    "LiveDemo": "Live Demo",
+    "Documentation": "Documentation",
+    "Scenarios": "Scenarios",
+    "XTMRoadmap": "XTM Platform Roadmap",
+    "FiligranAcademy": "Filigran Academy",
+    "Blog": "Blog",
+    "Slack": "Slack",
+    "About": "About",
+    "AICatalog": "AI Catalog",
+    "ComingSoon": "Coming soon"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",
@@ -784,6 +857,10 @@
         "Description": "Explore and follow the Filigran XTM Platform roadmap."
       }
     },
+    "LibraryHero": {
+      "Eyebrow": "Filigran's resources",
+      "DefaultDescription": "Register your OpenCTI or OpenAEV platform to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM platform experience."
+    },
     "ComingSoon": "Coming soon",
     "Connectors": {
       "DataImport": "Data Import",
@@ -888,7 +965,6 @@
         "csv_feed": "CSV Feeds",
         "connector": "Connectors",
         "rss_feed": "RSS Feeds",
-        "json_feed": "JSON Feeds (coming soon)",
         "taxii_feed": "TAXII Feeds",
         "stream": "OpenCTI Streams",
         "third_party_integration": "Third party integrations"

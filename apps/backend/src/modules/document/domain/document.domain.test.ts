@@ -10,7 +10,7 @@ import {
   LogicalOperator,
   OrderingMode,
 } from '../../../__generated__/resolvers-types';
-import { upsertConnectors } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
+import { IngestManifestDomain } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
 import { ManifestInformation } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.model';
 import sampleExtractedManifest from '../../shareable-resource/opencti/integration/ingest-manifest/test/sample-extracted-manifest.json';
 import {
@@ -85,7 +85,7 @@ describe('document domain', () => {
     });
 
     it('should return CSV Feeds along with connectors when fetching integration feeds', async () => {
-      await upsertConnectors([
+      await IngestManifestDomain.upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
 
@@ -120,7 +120,7 @@ describe('document domain', () => {
     });
 
     it('should filter an integration feed with a metadata type', async () => {
-      const [connector] = await upsertConnectors([
+      const [connector] = await IngestManifestDomain.upsertConnectors([
         sampleExtractedManifest[0],
       ] as ManifestInformation[]);
 
@@ -215,7 +215,7 @@ describe('document domain', () => {
 
     describe('multiple filters', () => {
       it('should handle type and version', async () => {
-        const connectors = await upsertConnectors(
+        const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
 
@@ -259,7 +259,7 @@ describe('document domain', () => {
       });
 
       it('should handle type and subtype', async () => {
-        const connectors = await upsertConnectors(
+        const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
 
@@ -329,7 +329,7 @@ describe('document domain', () => {
     describe('product version filtering', () => {
       it('should filter an integration feed with a product version', async () => {
         // Create data
-        const connectors = await upsertConnectors(
+        const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
 
@@ -367,7 +367,7 @@ describe('document domain', () => {
 
       it('should handle multiple product version filters', async () => {
         // Create data
-        const connectors = await upsertConnectors(
+        const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
 
@@ -482,6 +482,106 @@ describe('document domain', () => {
       );
       expect(loaded).toBeUndefined();
     });
+  });
+
+  describe('loadDocumentsWithMetadataByIds', () => {
+    let doc1: Document;
+    let doc2: Document;
+    let doc3: Document;
+    const TEST_KEY = DocumentMetadataKeyCode.ProductVersion;
+    const TEST_VALUE = '2.0.0';
+
+    beforeEach(async () => {
+      await TestHelper.documentMetadata.delete({});
+      await TestHelper.document.delete({});
+
+      doc1 = await TestHelper.document.create({
+        name: 'Doc One',
+        slug: 'doc-one',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        active: true,
+      });
+      doc2 = await TestHelper.document.create({
+        name: 'Doc Two',
+        slug: 'doc-two',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        active: true,
+      });
+      doc3 = await TestHelper.document.create({
+        name: 'Doc Three',
+        slug: 'doc-three',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        active: true,
+      });
+
+      await TestHelper.documentMetadata.create({
+        document_id: doc1.id,
+        key: TEST_KEY,
+        value: TEST_VALUE,
+      });
+    });
+
+    it.each`
+      description                       | getIds                                                     | expectedLength | getExpectedIds
+      ${'empty array (early return)'}   | ${() => []}                                                | ${0}           | ${() => []}
+      ${'single matching id'}           | ${() => [doc1.id]}                                         | ${1}           | ${() => [doc1.id]}
+      ${'multiple matching ids'}        | ${() => [doc1.id, doc2.id, doc3.id]}                       | ${3}           | ${() => [doc1.id, doc2.id, doc3.id]}
+      ${'no matching id'}               | ${() => ['00000000-0000-0000-0000-000000000000']}          | ${0}           | ${() => []}
+      ${'mix of valid and unknown ids'} | ${() => [doc1.id, '00000000-0000-0000-0000-000000000000']} | ${1}           | ${() => [doc1.id]}
+    `(
+      'should return $expectedLength document(s) for $description',
+      async ({
+        getIds,
+        expectedLength,
+        getExpectedIds,
+      }: {
+        getIds: () => string[];
+        expectedLength: number;
+        getExpectedIds: () => string[];
+      }) => {
+        const result =
+          await DocumentDomain.loadDocumentsWithMetadataByIds(getIds());
+        expect(result).toHaveLength(expectedLength);
+        const resultIds = result.map((d) => d.id as string);
+        for (const expectedId of getExpectedIds()) {
+          expect(resultIds).toContain(expectedId);
+        }
+      }
+    );
+
+    const METADATA_ABSENT = 'METADATA_ABSENT' as const;
+
+    it.each`
+      description                | includeMetadata                             | expectedValue
+      ${'no metadata requested'} | ${[]}                                       | ${METADATA_ABSENT}
+      ${'metadata requested'}    | ${[DocumentMetadataKeyCode.ProductVersion]} | ${TEST_VALUE}
+    `(
+      'should handle metadata correctly when $description',
+      async ({
+        includeMetadata,
+        expectedValue,
+      }: {
+        includeMetadata: DocumentMetadataKeyCode[];
+        expectedValue: string;
+      }) => {
+        const result = await DocumentDomain.loadDocumentsWithMetadataByIds(
+          [doc1.id],
+          includeMetadata
+        );
+        expect(result).toHaveLength(1);
+        const actual = (
+          result[0] as unknown as Partial<
+            Record<DocumentMetadataKeyCode, string>
+          >
+        )[TEST_KEY];
+        expect(actual).toBe(
+          expectedValue === METADATA_ABSENT ? undefined : expectedValue
+        );
+      }
+    );
   });
 
   describe('loadUploader', () => {
@@ -742,9 +842,11 @@ describe('document domain', () => {
         [TEST_KEY]
       );
       expect(docs).toHaveLength(1);
-      expect((docs[0] as unknown as { [TEST_KEY]: string })[TEST_KEY]).toBe(
-        TEST_VALUE
-      );
+      expect(
+        (
+          docs[0] as unknown as Partial<Record<DocumentMetadataKeyCode, string>>
+        )[TEST_KEY]
+      ).toBe(TEST_VALUE);
     });
   });
 

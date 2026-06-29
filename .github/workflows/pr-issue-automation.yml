@@ -3,7 +3,6 @@ on:
   pull_request:
     types: [opened, edited, ready_for_review, converted_to_draft, closed]
     branches:
-      - development
       - main
   pull_request_review:
     types: [submitted]
@@ -365,9 +364,9 @@ jobs:
             // Determine the status based on PR state
             if (context.eventName === 'pull_request') {
               if (pr.draft) {
-                status = 'dev in progress';
+                status = 'Development';
               } else if (pr.state === 'open') {
-                status = 'In review';
+                status = 'Code review';
               }
             }
 
@@ -626,7 +625,7 @@ jobs:
               'archived'
             ];
 
-            const newStatus = 'Ready to be deployed';
+            const newStatus = 'Ready to Deploy';
             console.log(`PR merged! Updating ${issueNumbers.length} issue(s) to status: "${newStatus}" and setting Effective end date`);
 
             try {
@@ -849,7 +848,7 @@ jobs:
               'done',
               'cancelled',
               'archived',
-              'ready for merging'
+              'ready to merge'
             ];
 
             // Get PR data using the PR number from extract_issues step
@@ -922,7 +921,7 @@ jobs:
             let newStatus = '';
 
             if (hasSkipFeatureEnvLabel) {
-              newStatus = 'Ready for merging';
+              newStatus = 'Ready to Merge';
             } else {
               // Feature env deployment is required - wait for testing before merging
               return;

@@ -300,20 +300,6 @@ describe('documentHelper', () => {
       ).toThrowError(ErrorCode.IntegrationTypeNotRecognized);
     });
 
-    it('should throw error when integration type is not manageable', () => {
-      expect(() =>
-        DocumentHelper.assertMetadataIsNotMissing(
-          ServiceDefinitionIdentifier.OpenctiIntegrations,
-          [
-            {
-              key: DocumentMetadataKeyCode.IntegrationType,
-              value: IntegrationType.JsonFeed,
-            },
-          ]
-        )
-      ).toThrowError(ErrorCode.IntegrationTypeNotManageable);
-    });
-
     it('should throw error when a metadata key is missing', () => {
       expect(() =>
         DocumentHelper.assertMetadataIsNotMissing(

@@ -33,7 +33,6 @@ import { formatName } from '../../../utils/format';
 
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import { ServiceInstanceDomain } from '../../service/instance/service-instance.domain';
-import { insertDeploymentRequest } from '../deployment.test.utils';
 import { ServiceGroupApp } from './service-group.app';
 
 describe('serviceGroupApp', () => {
@@ -422,11 +421,14 @@ describe('serviceGroupApp', () => {
       endDate.setDate(endDate.getDate() - 8);
       const platformId = uuidv4();
 
-      const deploymentRequest = await insertDeploymentRequest({
-        hub_status,
-        end_date: endDate,
-        platform_id: platformId,
-      });
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status,
+            end_date: endDate,
+            platform_id: platformId,
+          }
+        );
       trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
       const groupId = uuidv4() as ServiceGroupId;
@@ -462,11 +464,14 @@ describe('serviceGroupApp', () => {
       endDate.setDate(endDate.getDate() - 8);
       const platformId = uuidv4();
 
-      const deploymentRequest = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Expired,
-        end_date: endDate,
-        platform_id: platformId,
-      });
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            end_date: endDate,
+            platform_id: platformId,
+          }
+        );
       trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
       const groupId = uuidv4() as ServiceGroupId;
@@ -507,11 +512,14 @@ describe('serviceGroupApp', () => {
       endDate.setDate(endDate.getDate() - 8);
       const platformId = uuidv4();
 
-      const deploymentRequest = await insertDeploymentRequest({
-        hub_status: DeploymentRequestHubStatus.Expired,
-        end_date: endDate,
-        platform_id: platformId,
-      });
+      const deploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            end_date: endDate,
+            platform_id: platformId,
+          }
+        );
       trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
 
       const groupId = uuidv4() as ServiceGroupId;

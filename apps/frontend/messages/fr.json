@@ -3,6 +3,7 @@
   "App": {
     "Collapse": "Réduire",
     "CollapseSidebar": "Réduire la sidebar",
+    "MadeBy": "Réalisé par",
     "Title": "XTM Hub"
   },
   "Badge": {
@@ -23,6 +24,38 @@
   },
   "CountryComboBox": {
     "Placeholder": "Choisir un pays"
+  },
+  "CookieConsent": {
+    "Title": "Paramètres des cookies",
+    "BannerText": "Nous utilisons des cookies pour faire fonctionner le XTM Hub, comprendre son utilisation et améliorer votre expérience. Les cookies strictement nécessaires sont toujours actifs. Avec votre consentement, nous utilisons également des cookies optionnels à des fins de fonctionnalité, de performance et d'analyse, et de marketing. Vous pouvez tout accepter, tout refuser, ou choisir quels cookies optionnels autoriser. Vous pouvez modifier vos préférences à tout moment via « Paramètres des cookies ». Consultez notre Politique relative aux cookies pour en savoir plus.",
+    "AcceptAll": "Tout accepter",
+    "RejectAll": "Tout refuser",
+    "CookieSettings": "Paramètres des cookies",
+    "Save": "Enregistrer mes choix",
+    "PreferencesIntro": "En autorisant ces services tiers, vous acceptez leurs cookies ainsi que l'utilisation des technologies de suivi nécessaires à leur bon fonctionnement.",
+    "CookieSettingsLink": "Paramètres des cookies",
+    "PreferenceForAllServices": "Accepter/Refuser tous les services",
+    "ManageServices": "Gérer les services ({count})",
+    "ReadMore": "En savoir plus",
+    "ViewOfficialWebsite": "Voir le site officiel",
+    "Categories": {
+      "necessary": {
+        "Title": "Strictement nécessaires",
+        "Description": "Ces cookies sont indispensables au bon fonctionnement du XTM Hub. Ils prennent en charge les fonctionnalités essentielles telles que l'authentification, la sécurité et la mémorisation de vos préférences de cookies."
+      },
+      "functional": {
+        "Title": "Fonctionnels",
+        "Description": "Ces cookies mémorisent vos préférences, comme la langue ou les préférences d'interface, et activent les fonctionnalités intégrées."
+      },
+      "analytics": {
+        "Title": "Performance et analyse",
+        "Description": "Ces cookies nous aident à mesurer les performances et l'utilisation du XTM Hub, et à identifier les erreurs afin de l'améliorer."
+      },
+      "marketing": {
+        "Title": "Marketing",
+        "Description": "Ces cookies nous aident à mesurer l'efficacité des campagnes marketing et, le cas échéant, à personnaliser le contenu ou la publicité en fonction de vos interactions avec le XTM Hub."
+      }
+    }
   },
   "Datatable": {
     "Asc": "Asc",
@@ -266,7 +299,9 @@
   },
   "GoToProd": "Allez sur la production",
   "Header": {
-    "BrandName": "Filigran"
+    "BrandName": "Filigran",
+    "CloseMenu": "Fermer le menu",
+    "OpenMenu": "Ouvrir le menu"
   },
   "HomePage": {
     "Homepage": "Page d'accueil",
@@ -274,12 +309,32 @@
     "OpenManagement": "Aller vers la page de management"
   },
   "PublicHomePage": {
-    "Title": "Découvrez nos ressources et notre expertise"
+    "Title": "Découvrez nos ressources et notre expertise",
+    "XtmPlatform": {
+      "Label": "Bienvenue sur XTM Hub",
+      "Title": "Développez et faites évoluer votre plateforme XTM",
+      "Description": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
+      "Cta": "Connectez votre produit",
+      "ImageAlt": "Illustration de la plateforme XTM"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "Ressources les plus déployées"
+    },
+    "XtmRoadmap": {
+      "Title": "Feuille de route de la plateforme XTM",
+      "Description": "Découvrez ce que nous développons, les prochaines étapes et l’orientation future de la plateforme XTM. Transparence totale. Pas de surprises.",
+      "SeeMore": "En savoir plus",
+      "ImageAlt": "Illustration de la feuille de route de la plateforme XTM",
+      "Now": "Actuellement",
+      "Next": "Prochainement",
+      "UnderConsideration": "À l’étude"
+    }
   },
   "PublicPathError": {
     "NotFound": "404 | Cette page est introuvable"
   },
   "PublicLayout": {
+    "Documentation": "Documentation du Hub XTM",
     "SignIn": "Connexion",
     "AllRightsReserved": "Tous droits réservés",
     "FiligranWebsite": "Site Filigran",
@@ -339,6 +394,24 @@
     "Disable": "Désactiver",
     "Remove": "Retirer",
     "Update": "Modifier"
+  },
+  "PublicMenu": {
+    "XTMPlatform": "Plateforme XTM",
+    "StartFreeTrial": "Commencer l'essai gratuit",
+    "CustomDashboards": "Tableaux de bord personnalisés",
+    "CustomViews": "Vues personnalisées",
+    "Integrations": "Intégrations",
+    "Playbooks": "Guides pratiques",
+    "LiveDemo": "Démonstration en direct",
+    "Documentation": "Documentation",
+    "Scenarios": "Scénarios",
+    "XTMRoadmap": "Feuille de route de la plateforme XTM",
+    "FiligranAcademy": "Filigran Academy",
+    "Blog": "Blog",
+    "Slack": "Slack",
+    "About": "À propos",
+    "AICatalog": "Catalogue IA",
+    "ComingSoon": "À venir"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",
@@ -784,6 +857,10 @@
         "Description": "Explorez et suivez la roadmap de la Filigran XTM Platform."
       }
     },
+    "LibraryHero": {
+      "Eyebrow": "Les ressources de Filigran",
+      "DefaultDescription": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu préconstruit en un clic, rester à jour avec les actualités produit, démarrer des essais gratuits et tirer simplement le meilleur de votre expérience sur la plateforme XTM."
+    },
     "ComingSoon": "Bientôt disponible",
     "Connectors": {
       "DataImport": "Importation de données",
@@ -888,7 +965,6 @@
         "csv_feed": "Flux CSV",
         "connector": "Connecteurs",
         "rss_feed": "Flux RSS",
-        "json_feed": "Flux JSON (bientôt disponible)",
         "taxii_feed": "Flux TAXII",
         "stream": "Flux OpenCTI",
         "third_party_integration": "Intégrations tierces (bientôt disponible)"

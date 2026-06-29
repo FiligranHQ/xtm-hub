@@ -21,6 +21,8 @@ export const TEST_3_IMAGE_FILE = {
   name: 'test3.png',
 };
 export const SERVICE_NAME = 'OpenCTI Custom Dashboards Library';
+const PRODUCT_NAME = 'OpenCTI';
+const SERVICE_LINK_NAME = 'Custom Dashboards';
 
 export default class DashboardPage {
   constructor(private page: Page) {}
@@ -75,7 +77,10 @@ export default class DashboardPage {
   }
 
   async navigateToPublicCustomDashboard() {
-    await this.page.getByRole('link', { name: SERVICE_NAME }).click();
+    const productButton = this.page.getByRole('button', { name: PRODUCT_NAME });
+    await productButton.click();
+    await productButton.and(this.page.locator('[data-state="open"]')).waitFor();
+    await this.page.getByRole('link', { name: SERVICE_LINK_NAME }).click();
   }
 
   async navigateToPublicDashboardDetail(shortDescription: string) {

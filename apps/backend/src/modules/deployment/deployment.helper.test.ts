@@ -2,11 +2,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it, vi } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
-  DeploymentRequestActivitySector,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
+  DeploymentRequestSource,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import DeploymentRequestModel, {
@@ -17,13 +17,7 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { AlreadyExistsErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployment.domain';
-import {
-  assertFreeTrialsLimit,
-  computeHubStatus,
-  hasDeploymentTelemetryDataChanged,
-  isHubStatusTransitionValid,
-  isPlatformStateTransitionValid,
-} from './deployment.helper';
+import { DeploymentHelper } from './deployment.helper';
 
 const buildDeploymentRequest = (
   overrides: Partial<DeploymentRequestModel> = {}
@@ -39,7 +33,7 @@ const buildDeploymentRequest = (
   platform_identifier: PlatformIdentifier.Opencti,
   region: DeploymentRequestPlatformRegion.EuWest,
   activity_sector: null,
-  platform_token: null,
+  platform_token: uuidv4(),
   platform_id: 'platform-123',
   failure_reason: null,
   job_title: null,
@@ -52,6 +46,7 @@ const buildDeploymentRequest = (
   cancellation_user_id: null,
   cancellation_date: null,
   cancellation_reason: null,
+  source: DeploymentRequestSource.Xtmhub,
   ...overrides,
 });
 
@@ -83,7 +78,7 @@ describe('isHubStatusTransitionValid', () => {
   it.each(validTransitions)(
     'should allow valid hub status transition: %s to %s',
     (from, to) => {
-      expect(isHubStatusTransitionValid(from, to)).toBe(true);
+      expect(DeploymentHelper.isHubStatusTransitionValid(from, to)).toBe(true);
     }
   );
 
@@ -98,14 +93,16 @@ describe('isHubStatusTransitionValid', () => {
   it.each(invalidTransitions)(
     'should reject invalid hub status transition: %s to %s',
     (from, to) => {
-      expect(isHubStatusTransitionValid(from, to)).toBe(false);
+      expect(DeploymentHelper.isHubStatusTransitionValid(from, to)).toBe(false);
     }
   );
 
   it('should allow same hub status transitions', () => {
     const allStatuses = Object.values(DeploymentRequestHubStatus);
     allStatuses.forEach((status) => {
-      expect(isHubStatusTransitionValid(status, status)).toBe(true);
+      expect(DeploymentHelper.isHubStatusTransitionValid(status, status)).toBe(
+        true
+      );
     });
   });
 });
@@ -149,7 +146,9 @@ describe('isPlatformStateTransitionValid', () => {
   it.each(validTransitions)(
     'should allow valid platform state transition: %s to %s',
     (from, to) => {
-      expect(isPlatformStateTransitionValid(from, to)).toBe(true);
+      expect(DeploymentHelper.isPlatformStateTransitionValid(from, to)).toBe(
+        true
+      );
     }
   );
 
@@ -169,52 +168,58 @@ describe('isPlatformStateTransitionValid', () => {
   it.each(invalidTransitions)(
     'should reject invalid platform state transition: %s to %s',
     (from, to) => {
-      expect(isPlatformStateTransitionValid(from, to)).toBe(false);
+      expect(DeploymentHelper.isPlatformStateTransitionValid(from, to)).toBe(
+        false
+      );
     }
   );
 
   it('should allow same platform state transitions', () => {
     const allStates = Object.values(DeploymentRequestPlatformState);
     allStates.forEach((state) => {
-      expect(isPlatformStateTransitionValid(state, state)).toBe(true);
+      expect(
+        DeploymentHelper.isPlatformStateTransitionValid(state, state)
+      ).toBe(true);
     });
   });
 });
 
 describe('assertFreeTrialsLimit', () => {
-  it('should not throw if there is no trial for the organization', async () => {
+  it('should throw an error if a free trial already exists', async () => {
     vi.spyOn(
       DeploymentRequestDomain,
       'loadDeploymentRequestBy'
-    ).mockResolvedValue(null);
-
+    ).mockResolvedValue(
+      buildDeploymentRequest({
+        id: uuidv4() as DeploymentRequestId,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region: DeploymentRequestPlatformRegion.EuWest,
+        type: DeploymentRequestDeploymentType.Trial,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+        actual_state: DeploymentRequestPlatformState.Active,
+      })
+    );
     await expect(
-      assertFreeTrialsLimit(
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
-        PlatformIdentifier.Opencti
-      )
-    ).resolves.not.toThrow();
-  });
-
-  it('should throw if there is more than one trial for an organization', async () => {
-    vi.spyOn(
-      DeploymentRequestDomain,
-      'loadDeploymentRequestBy'
-    ).mockResolvedValue({
-      id: uuidv4(),
-      platform_identifier: PlatformIdentifier.Opencti,
-      region: DeploymentRequestPlatformRegion.EuWest,
-      type: DeploymentRequestDeploymentType.Trial,
-      hub_status: DeploymentRequestHubStatus.Pending,
-      target_state: DeploymentRequestPlatformState.Active,
-      actual_state: DeploymentRequestPlatformState.Active,
-    });
-    await expect(
-      assertFreeTrialsLimit(
+      DeploymentHelper.assertFreeTrialsLimit(
         TEST_ORGANIZATIONS.FILIGRAN.ID,
         PlatformIdentifier.Opencti
       )
     ).rejects.toThrow(AlreadyExistsErrorCode.FreeTrialAlreadyExists);
+  });
+
+  it('should not throw if no trial exists', async () => {
+    vi.spyOn(
+      DeploymentRequestDomain,
+      'loadDeploymentRequestBy'
+    ).mockResolvedValue(undefined);
+
+    await expect(
+      DeploymentHelper.assertFreeTrialsLimit(
+        TEST_ORGANIZATIONS.FILIGRAN.ID,
+        PlatformIdentifier.Opencti
+      )
+    ).resolves.toBeUndefined();
   });
 });
 
@@ -228,7 +233,10 @@ describe('computeHubStatus', () => {
     ])(
       'should return %s when actualState is %s',
       (currentStatus, actualState) => {
-        const result = computeHubStatus(currentStatus, actualState);
+        const result = DeploymentHelper.computeHubStatus(
+          currentStatus,
+          actualState
+        );
         expect(result).toBe(currentStatus);
       }
     );
@@ -236,7 +244,7 @@ describe('computeHubStatus', () => {
 
   describe('validation errors', () => {
     it('should throw error when current status is Queued', () => {
-      const result = computeHubStatus(
+      const result = DeploymentHelper.computeHubStatus(
         DeploymentRequestHubStatus.Queued,
         DeploymentRequestPlatformState.Provisioning
       );
@@ -252,7 +260,7 @@ describe('computeHubStatus', () => {
     ])(
       'should throw error when platform state is Unprovisioned from %s',
       (currentStatus) => {
-        const result = computeHubStatus(
+        const result = DeploymentHelper.computeHubStatus(
           currentStatus,
           DeploymentRequestPlatformState.Unprovisioned
         );
@@ -308,7 +316,10 @@ describe('computeHubStatus', () => {
     ])(
       'should throw error for invalid transition from %s with platform state %s',
       (currentStatus, platformState) => {
-        const result = computeHubStatus(currentStatus, platformState);
+        const result = DeploymentHelper.computeHubStatus(
+          currentStatus,
+          platformState
+        );
         expect(result).toBeNull();
       }
     );
@@ -364,7 +375,10 @@ describe('computeHubStatus', () => {
     ])(
       'should transition from %s with platform state %s to %s',
       (currentStatus, platformState, expectedStatus) => {
-        const result = computeHubStatus(currentStatus, platformState);
+        const result = DeploymentHelper.computeHubStatus(
+          currentStatus,
+          platformState
+        );
         expect(result).toBe(expectedStatus);
       }
     );
@@ -372,14 +386,16 @@ describe('computeHubStatus', () => {
 });
 
 describe('hasDeploymentTelemetryDataChanged', () => {
-  it('should return false when all telemetry fields are identical', () => {
+  it('should return false when all tracked fields are identical', () => {
     const base = buildDeploymentRequest();
     const copy = { ...base };
 
-    expect(hasDeploymentTelemetryDataChanged(base, copy)).toBe(false);
+    expect(DeploymentHelper.hasDeploymentTelemetryDataChanged(base, copy)).toBe(
+      false
+    );
   });
 
-  it('should return true when hub_status changed', () => {
+  it('should return true when hub status changes', () => {
     const previous = buildDeploymentRequest({
       hub_status: DeploymentRequestHubStatus.Pending,
     });
@@ -388,120 +404,137 @@ describe('hasDeploymentTelemetryDataChanged', () => {
       hub_status: DeploymentRequestHubStatus.Active,
     });
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
   });
 
-  it('should return true when platform_id changed', () => {
+  it('should return true when platform id changes', () => {
     const previous = buildDeploymentRequest({ platform_id: 'old-id' });
     const current = { ...previous, platform_id: 'new-id' };
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
   });
 
-  it('should return true when platform_id goes from null to a value', () => {
-    const previous = buildDeploymentRequest({ platform_id: null });
-    const current = { ...previous, platform_id: 'new-id' };
-
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
-  });
-
-  it('should return true when cancellation_reason changed', () => {
+  it('should return true when cancellation reason changes', () => {
     const previous = buildDeploymentRequest({ cancellation_reason: null });
     const current = { ...previous, cancellation_reason: 'user_request' };
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
   });
 
-  it('should return true when start_date changed', () => {
+  it('should return true when start date changes', () => {
     const previous = buildDeploymentRequest({
       start_date: new Date('2025-01-01'),
     });
     const current = { ...previous, start_date: new Date('2025-01-15') };
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
   });
 
-  it('should return true when end_date changed', () => {
+  it('should return true when end date changes', () => {
     const previous = buildDeploymentRequest({
       end_date: new Date('2025-02-01'),
     });
     const current = { ...previous, end_date: new Date('2025-03-01') };
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
   });
 
-  it('should return true when start_date goes from null to a value', () => {
+  it('should return true when previous start date is undefined and current is defined', () => {
     const previous = buildDeploymentRequest({ start_date: null });
     const current = { ...previous, start_date: new Date('2025-01-01') };
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
   });
 
-  it('should return true when end_date goes from a value to null', () => {
+  it('should return true when previous end date is undefined and current is defined', () => {
+    const previous = buildDeploymentRequest({ end_date: null });
+    const current = { ...previous, end_date: new Date('2025-01-01') };
+
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
+  });
+
+  it('should return true when previous start date is defined and current is undefined', () => {
     const previous = buildDeploymentRequest({
-      end_date: new Date('2025-02-01'),
+      start_date: new Date('2025-01-01'),
     });
-    const current = { ...previous, end_date: null };
+    const current = { ...previous, start_date: null };
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
   });
 
-  it('should return false when both start_date and end_date are null', () => {
+  it('should return false when both start dates are undefined', () => {
+    const end_date = new Date('2025-01-01');
     const previous = buildDeploymentRequest({
       start_date: null,
+      end_date,
+    });
+    const current = { ...previous };
+
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(false);
+  });
+
+  it('should return false when both end dates are undefined', () => {
+    const start_date = new Date('2025-01-01');
+    const previous = buildDeploymentRequest({
+      start_date,
       end_date: null,
     });
     const current = { ...previous };
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(false);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(false);
   });
 
-  it('should return false when non-telemetry fields changed', () => {
+  it('should return true when date object references differ but timestamps match a changed field', () => {
     const previous = buildDeploymentRequest({
-      failure_reason: null,
-      ordering: 0,
-      actual_state: DeploymentRequestPlatformState.Provisioning,
-      activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
-    });
-    const current = {
-      ...previous,
-      failure_reason: 'some failure',
-      ordering: 5,
-      actual_state: DeploymentRequestPlatformState.Active,
-      activity_sector: DeploymentRequestActivitySector.FinancialServices,
-    };
-
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(false);
-  });
-
-  it('should return true when multiple telemetry fields changed at once', () => {
-    const previous = buildDeploymentRequest({
-      hub_status: DeploymentRequestHubStatus.Pending,
-      platform_id: null,
-      start_date: null,
-    });
-    const current = {
-      ...previous,
-      hub_status: DeploymentRequestHubStatus.Active,
-      platform_id: 'new-platform',
       start_date: new Date('2025-01-01'),
-    };
-
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(true);
-  });
-
-  it('should return false when dates have same timestamp', () => {
-    const timestamp = new Date('2025-06-15T10:30:00.000Z');
-    const previous = buildDeploymentRequest({
-      start_date: new Date(timestamp.getTime()),
-      end_date: new Date(timestamp.getTime()),
+      end_date: new Date('2025-02-01'),
+      platform_id: 'platform-before',
     });
     const current = {
       ...previous,
-      start_date: new Date(timestamp.getTime()),
-      end_date: new Date(timestamp.getTime()),
+      start_date: new Date('2025-01-01'),
+      end_date: new Date('2025-02-01'),
+      platform_id: 'platform-after',
     };
 
-    expect(hasDeploymentTelemetryDataChanged(previous, current)).toBe(false);
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(true);
+  });
+
+  it('should return false when date object references differ but timestamps and tracked fields are equal', () => {
+    const previous = buildDeploymentRequest({
+      start_date: new Date('2025-01-01'),
+      end_date: new Date('2025-02-01'),
+    });
+    const current = {
+      ...previous,
+      start_date: new Date('2025-01-01'),
+      end_date: new Date('2025-02-01'),
+    };
+
+    expect(
+      DeploymentHelper.hasDeploymentTelemetryDataChanged(previous, current)
+    ).toBe(false);
   });
 });

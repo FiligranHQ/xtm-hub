@@ -1,20 +1,46 @@
+import Homepage from '@/components/homepage/Homepage';
 import PublicServiceInstanceCard from '@/components/service/PublicServiceInstanceCard';
+import type { PublicLocale } from '@/i18n/config';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
+import { isFeatureEnabled } from '@/utils/settings.service';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
+import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
 } from '@generated/seoServiceInstancesQuery.graphql';
 import { getTranslations } from 'next-intl/server';
 
-const Page = async () => {
+const Page = async ({
+  params,
+}: {
+  params: Promise<{ locale: PublicLocale }>;
+}) => {
+  const { locale } = await params;
+  const showHomepageV2 = await isFeatureEnabled(FeatureFlagEnum.HOME_PAGE_V2);
+
+  if (showHomepageV2) {
+    return <Homepage locale={locale} />;
+  }
+
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
     SeoServiceInstancesQuery,
     {},
     { cache: undefined, next: { revalidate: 3600 } }
   );
-  const services = response.data
-    .seoServiceInstances as unknown as seoServiceInstanceFragment$data[];
+  const isCustomViewsEnabled = await isFeatureEnabled(
+    FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS
+  );
+  const services = (
+    response.data
+      .seoServiceInstances as unknown as seoServiceInstanceFragment$data[]
+  ).filter(
+    (service) =>
+      isCustomViewsEnabled ||
+      service?.service_definition?.identifier !==
+        ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_VIEWS
+  );
 
   const t = await getTranslations();
   return (

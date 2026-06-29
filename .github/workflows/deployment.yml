@@ -21,6 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          ref: main
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -29,47 +30,15 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Checkout and pull development branch
-        run: |
-          git checkout development
-          git pull origin development
-
-      - name: Checkout and pull main branch
-        run: |
-          git checkout main
-          git pull origin main
-
-      - name: Merge development into main
-        run: |
-          git merge development -m "chore(release): prepare release"
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24.16.0"
-          cache: "yarn"
-          cache-dependency-path: |
-            yarn.lock
-
-      - name: Verify directories exist
-        run: |
-          if [ ! -d "./apps/backend" ] || [ ! -d "./apps/frontend" ]; then
-            echo "Error: apps/backend or apps/frontend directory does not exist"
-            exit 1
-          fi
-
-      - name: Install dependencies
-        working-directory: .
-        run: |
-          yarn install
-
       - name: Compute new version (MAJOR.YYMMDD.SEQ)
         run: |
-          CURRENT_VERSION=$(node -p "require('./apps/backend/package.json').version")
-          CURRENT_MAJOR=$(echo "$CURRENT_VERSION" | cut -d. -f1)
+          # Determine current major from the latest tag
+          LATEST_TAG=$(git tag -l "v*" --sort=-v:refname | head -1)
+          if [ -z "$LATEST_TAG" ]; then
+            CURRENT_MAJOR=1
+          else
+            CURRENT_MAJOR=$(echo "$LATEST_TAG" | sed 's/^v//' | cut -d. -f1)
+          fi
 
           if [ "${{ github.event.inputs.bump_major }}" == "true" ]; then
             MAJOR=$((CURRENT_MAJOR + 1))
@@ -91,23 +60,9 @@ jobs:
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "✅ Computed version: $NEW_VERSION"
 
-      - name: Set version in backend
-        working-directory: ./apps/backend
-        run: yarn version "${{ env.NEW_VERSION }}"
-
-      - name: Set version in frontend
-        working-directory: ./apps/frontend
-        run: yarn version "${{ env.NEW_VERSION }}"
-
-      - name: Commit and tag changes
+      - name: Create and push tag
         run: |
-          git add package.json yarn.lock apps/backend/package.json apps/frontend/package.json
-          git commit -m "chore(release): bump version to ${{ env.NEW_VERSION }}"
           git tag "v${{ env.NEW_VERSION }}"
-
-      - name: Push changes and tag
-        run: |
-          git push origin main
           git push origin "v${{ env.NEW_VERSION }}"
 
       - name: Trigger Docker Build Workflow
@@ -150,7 +105,6 @@ jobs:
           echo "- **New Version:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Major Bumped:** ${{ github.event.inputs.bump_major }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Format:** MAJOR.YYMMDD.SEQ" >> $GITHUB_STEP_SUMMARY
-          echo "- **Components Updated:** apps/backend, apps/frontend" >> $GITHUB_STEP_SUMMARY
           echo "- **Tag Created:** v${{ env.NEW_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Deployment Workflow:** Triggered automatically" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

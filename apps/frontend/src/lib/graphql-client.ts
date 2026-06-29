@@ -127,7 +127,15 @@ const normalizeGraphqlError = (error: unknown): never => {
   throw error;
 };
 
-export const createPortalGraphqlClient = (cookie?: string) => {
+type GraphQLClientCacheOptions = {
+  cache?: RequestCache;
+  next?: { revalidate?: number | false; tags?: string[] };
+};
+
+export const createPortalGraphqlClient = (
+  cookie?: string,
+  fetchOptions?: GraphQLClientCacheOptions
+) => {
   return new GraphQLClient(defaultGraphqlApiEndpoint, {
     credentials: 'include',
     headers: {
@@ -135,6 +143,7 @@ export const createPortalGraphqlClient = (cookie?: string) => {
       'Content-Type': 'application/json',
       ...(cookie ? { cookie } : {}),
     },
+    ...fetchOptions,
     requestMiddleware: (request) => {
       const apiUri = resolveGraphqlApiEndpoint();
       if (isDevelopment()) {
@@ -160,3 +169,6 @@ export const createPortalGraphqlClient = (cookie?: string) => {
 };
 
 export const portalGraphqlClient = createPortalGraphqlClient();
+export const portalGraphqlClientCached = createPortalGraphqlClient(undefined, {
+  next: { revalidate: 3600 },
+});

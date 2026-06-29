@@ -1,0 +1,6 @@
+query EpicCountPerTimelineQuery {
+  countEpicsPerTimeline {
+    timeline
+    count
+  }
+}

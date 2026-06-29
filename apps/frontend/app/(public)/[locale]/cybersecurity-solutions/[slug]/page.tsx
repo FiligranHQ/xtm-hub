@@ -1,3 +1,7 @@
+import {
+  getHeroSectionLibraryProps,
+  HeroSectionLibrary,
+} from '@/components/service/document/ui/HeroSectionLibrary';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
@@ -213,6 +217,9 @@ const Page = async ({
     },
   ];
 
+  const t = await getTranslations();
+  const heroSectionProps = getHeroSectionLibraryProps(serviceInstance, t);
+
   return (
     <>
       <script
@@ -223,9 +230,7 @@ const Page = async ({
       />
       <BreadcrumbNav value={breadcrumbValue} />
 
-      <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
-        {serviceInstance.name}
-      </h1>
+      <HeroSectionLibrary {...heroSectionProps} />
 
       <RelayProvider>
         <PublicDocumentListPageLoader

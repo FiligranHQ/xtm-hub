@@ -3,6 +3,7 @@
   "App": {
     "Collapse": "折りたたむ",
     "CollapseSidebar": "サイドバーを折りたたむ",
+    "MadeBy": "制作：",
     "Title": "XTMハブ"
   },
   "Badge": {
@@ -23,6 +24,38 @@
   },
   "CountryComboBox": {
     "Placeholder": "国を選択"
+  },
+  "CookieConsent": {
+    "Title": "クッキー設定",
+    "BannerText": "当社は、XTM Hubの機能を動作させ、その利用状況を把握し、ユーザー体験を向上させるためにクッキーを使用しています。必須のクッキーは常に有効になっています。また、ユーザーの同意を得た上で、機能、パフォーマンス、分析、およびマーケティングを目的としたオプションのクッキーも使用しています。 すべてのクッキーを受け入れる、すべてを拒否する、または許可するオプションのクッキーを選択することができます。「クッキー設定」から、いつでも設定を変更できます。詳細については、当社のクッキーポリシーをご覧ください。",
+    "AcceptAll": "すべて受け入れる",
+    "RejectAll": "すべて拒否する",
+    "CookieSettings": "クッキー設定",
+    "Save": "保存",
+    "PreferencesIntro": "これらのサードパーティ製サービスを許可することで、そのクッキーおよびサービスの正常な動作に必要な追跡技術の使用に同意したことになります。",
+    "CookieSettingsLink": "クッキー設定",
+    "PreferenceForAllServices": "すべてのサービスを許可／拒否",
+    "ManageServices": "サービスの管理 ({count})",
+    "ReadMore": "詳細",
+    "ViewOfficialWebsite": "公式サイトを見る",
+    "Categories": {
+      "necessary": {
+        "Title": "必須",
+        "Description": "これらのクッキーは、XTM Hubが正常に機能するために必要です。認証、セキュリティ、クッキー設定の記憶など、中核となる機能をサポートします。"
+      },
+      "functional": {
+        "Title": "機能性",
+        "Description": "これらのクッキーは、言語やインターフェースの設定などの設定を記憶し、組み込み機能を利用可能にします。"
+      },
+      "analytics": {
+        "Title": "パフォーマンスおよび分析",
+        "Description": "これらのクッキーは、XTM Hubのパフォーマンスや利用状況を測定し、エラーを特定して改善に役立てるために使用されます。"
+      },
+      "marketing": {
+        "Title": "マーケティング",
+        "Description": "これらのクッキーは、マーケティングキャンペーンの効果を測定し、該当する場合は、XTM Hub とのやり取りに基づいてコンテンツや広告をパーソナライズするのに役立ちます。"
+      }
+    }
   },
   "Datatable": {
     "Asc": "として",
@@ -266,7 +299,9 @@
   },
   "GoToProd": "プロダクションへ",
   "Header": {
-    "BrandName": "Filigran"
+    "BrandName": "Filigran",
+    "CloseMenu": "メニューを閉じる",
+    "OpenMenu": "メニューを開く"
   },
   "HomePage": {
     "Homepage": "ホームページ",
@@ -274,12 +309,32 @@
     "OpenManagement": "管理ページへ"
   },
   "PublicHomePage": {
-    "Title": "リソースと専門知識の発見"
+    "Title": "リソースと専門知識の発見",
+    "XtmPlatform": {
+      "Label": "XTM Hubへようこそ",
+      "Title": "XTM Platformの機能拡張とスケールアップ",
+      "Description": "OpenCTIまたはOpenAEVプラットフォームを登録すると、ワンクリックで事前構築済みのコンテンツを展開したり、製品ニュースフィードで最新情報を入手したり、無料トライアルを開始したり、XTM Platformをさらに活用したりすることができます。",
+      "Cta": "製品を連携する",
+      "ImageAlt": "XTM Platformの図解"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "最も多く導入されているリソース"
+    },
+    "XtmRoadmap": {
+      "Title": "XTM Platformのロードマップ",
+      "Description": "現在開発中の機能、今後の予定、そしてXTM Platformの将来像をご覧ください。完全な透明性を確保し、予期せぬ事態は発生しません。",
+      "SeeMore": "詳細を見る",
+      "ImageAlt": "XTM Platformロードマップの宇宙イラスト",
+      "Now": "現在",
+      "Next": "次",
+      "UnderConsideration": "検討中"
+    }
   },
   "PublicPathError": {
     "NotFound": "404 | このページは見つかりませんでした"
   },
   "PublicLayout": {
+    "Documentation": "XTM Hubのドキュメント",
     "SignIn": "サインイン",
     "AllRightsReserved": "無断複写・転載を禁じます",
     "FiligranWebsite": "Filigranウェブサイト",
@@ -339,6 +394,24 @@
     "Disable": "無効にする",
     "Remove": "削除する",
     "Update": "更新する"
+  },
+  "PublicMenu": {
+    "XTMPlatform": "XTM Platform",
+    "StartFreeTrial": "無料トライアルを開始",
+    "CustomDashboards": "カスタムダッシュボード",
+    "CustomViews": "カスタムビュー",
+    "Integrations": "連携機能",
+    "Playbooks": "プレイブック",
+    "LiveDemo": "ライブデモ",
+    "Documentation": "ドキュメント",
+    "Scenarios": "ユースケース",
+    "XTMRoadmap": "XTM Platform ロードマップ",
+    "FiligranAcademy": "Filigran Academy",
+    "Blog": "ブログ",
+    "Slack": "Slack",
+    "About": "会社概要",
+    "AICatalog": "AIカタログ",
+    "ComingSoon": "近日公開"
   },
   "MenuLinks": {
     "Backoffice": "バックオフィス",
@@ -784,6 +857,10 @@
         "Description": "Filigran XTM Platform のロードマップを確認し、フォローしましょう。"
       }
     },
+    "LibraryHero": {
+      "Eyebrow": "Filigran のリソース",
+      "DefaultDescription": "OpenCTI または OpenAEV プラットフォームを登録すると、ワンクリックで事前構築済みコンテンツをデプロイでき、製品ニュースを常に把握し、無料トライアルを開始して、XTM プラットフォーム体験をさらに最大化できます。"
+    },
     "ComingSoon": "近日公開予定",
     "Connectors": {
       "DataImport": "データインポート",
@@ -888,7 +965,6 @@
         "csv_feed": "CSVフィード",
         "connector": "コネクター",
         "rss_feed": "RSSフィード",
-        "json_feed": "JSONフィード（近日公開）",
         "taxii_feed": "TAXIIフィード",
         "stream": "OpenCTI ストリーム",
         "third_party_integration": "サードパーティとの統合"

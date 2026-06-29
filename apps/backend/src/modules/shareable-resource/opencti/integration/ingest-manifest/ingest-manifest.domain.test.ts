@@ -12,7 +12,7 @@ import {
   Connector,
   INTEGRATION_SERVICE_INSTANCE_ID,
 } from '../integration.model';
-import { upsertConnectors } from './ingest-manifest.domain';
+import { IngestManifestDomain } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
 import sampleExtractedManifest from './test/sample-extracted-manifest.json';
 
@@ -27,7 +27,7 @@ describe('upsertConnectors', () => {
       requestContext.set({
         user: SYSTEM_USER_CONTEXT.user,
       });
-      result = await upsertConnectors(
+      result = await IngestManifestDomain.upsertConnectors(
         sampleExtractedManifest as ManifestInformation[]
       );
     });
@@ -167,7 +167,7 @@ describe('upsertConnectors', () => {
       requestContext.set({
         user: SYSTEM_USER_CONTEXT.user,
       });
-      firstResult = await upsertConnectors(
+      firstResult = await IngestManifestDomain.upsertConnectors(
         sampleExtractedManifest as ManifestInformation[]
       );
 
@@ -181,7 +181,7 @@ describe('upsertConnectors', () => {
       })) as ManifestInformation[];
 
       // Second call - update
-      secondResult = await upsertConnectors(
+      secondResult = await IngestManifestDomain.upsertConnectors(
         updatedManifest as ManifestInformation[]
       );
     });
@@ -259,7 +259,7 @@ describe('upsertConnectors', () => {
 
   describe('edge cases', () => {
     it('should handle empty manifest array', async () => {
-      const result = await upsertConnectors([]);
+      const result = await IngestManifestDomain.upsertConnectors([]);
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
@@ -279,8 +279,8 @@ describe('upsertConnectors', () => {
         manager_supported: false,
         minimum_deployable_version: undefined,
       };
-      await upsertConnectors([manifest]);
-      const [result] = await upsertConnectors([
+      await IngestManifestDomain.upsertConnectors([manifest]);
+      const [result] = await IngestManifestDomain.upsertConnectors([
         { ...manifest, product_version: '3.0.1-false' },
       ]);
       expect(result).toBeDefined();
@@ -296,8 +296,8 @@ describe('upsertConnectors', () => {
         manager_supported: true,
         minimum_deployable_version: undefined,
       };
-      await upsertConnectors([manifest]);
-      const [result] = await upsertConnectors([
+      await IngestManifestDomain.upsertConnectors([manifest]);
+      const [result] = await IngestManifestDomain.upsertConnectors([
         { ...manifest, product_version: '3.0.1-true' },
       ]);
       expect(result).toBeDefined();
@@ -313,8 +313,8 @@ describe('upsertConnectors', () => {
         manager_supported: true,
         minimum_deployable_version: '2.2.2',
       };
-      await upsertConnectors([manifest]);
-      const [result] = await upsertConnectors([
+      await IngestManifestDomain.upsertConnectors([manifest]);
+      const [result] = await IngestManifestDomain.upsertConnectors([
         {
           ...manifest,
           product_version: '3.0.1-already',
@@ -342,7 +342,7 @@ describe('upsertConnectors', () => {
         demo_url: initialDemoUrl,
         blogpost_url: initialBlogpostUrl,
       };
-      await upsertConnectors([manifest]);
+      await IngestManifestDomain.upsertConnectors([manifest]);
 
       // Second call with datasheet_url and demo_url changed in manifest
       const updatedManifest: ManifestInformation = {
@@ -352,7 +352,9 @@ describe('upsertConnectors', () => {
         demo_url: 'https://malicious-override.com/demo',
         blogpost_url: 'https://malicious-override.com/blogpost',
       };
-      const [secondResult] = await upsertConnectors([updatedManifest]);
+      const [secondResult] = await IngestManifestDomain.upsertConnectors([
+        updatedManifest,
+      ]);
 
       expect(secondResult).toBeDefined();
       expect(secondResult!.datasheet_url).toBe(initialDatasheetUrl);

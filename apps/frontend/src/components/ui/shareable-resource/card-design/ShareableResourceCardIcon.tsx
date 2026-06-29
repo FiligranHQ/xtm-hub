@@ -1,69 +1,37 @@
+import { ResourceStatusIcons } from '@/components/ui/ResourceStatusIcons';
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { CampaignIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@filigran/ui/clients';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { useTranslations } from 'next-intl';
 
 interface ShareableResourceCardIconProps {
   document: documentItem_fragment$data | PublicDocumentData;
   shouldDisplayBothIcons: boolean;
 }
+
 export const ShareableResourceCardIcon = ({
   document,
   shouldDisplayBothIcons,
 }: ShareableResourceCardIconProps) => {
-  const t = useTranslations();
+  const deployable =
+    document.active &&
+    shouldDisplayBothIcons &&
+    docHasMetadata(document, DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED) &&
+    !!document.manager_supported;
+
+  const verified =
+    document.active &&
+    shouldDisplayBothIcons &&
+    docHasMetadata(document, DocumentMetadataKeyCodeEnum.VERIFIED) &&
+    !!document.verified;
 
   return (
-    <>
-      {document.active && shouldDisplayBothIcons && (
-        <TooltipProvider>
-          {docHasMetadata(
-            document,
-            DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
-          ) &&
-            document.manager_supported && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <MotionPlayIcon className="absolute top-l right-[2.75rem] h-6 w-6 shrink-0 text-green-500" />
-                </TooltipTrigger>
-                <TooltipContent className="bg-gray-50">
-                  {t('Utils.AutomaticDeploy')}
-                </TooltipContent>
-              </Tooltip>
-            )}
-          {docHasMetadata(document, DocumentMetadataKeyCodeEnum.VERIFIED) &&
-            document.verified && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <VerifiedIcon className="absolute top-l right-l h-6 w-6 shrink-0 text-green-500" />
-                </TooltipTrigger>
-                <TooltipContent className="bg-gray-50">
-                  {t('Utils.Verified')}
-                </TooltipContent>
-              </Tooltip>
-            )}
-        </TooltipProvider>
-      )}
-      {document.active && !shouldDisplayBothIcons && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <CampaignIcon className="absolute top-m right-m h-6 w-6 shrink-0 text-green-500" />
-            </TooltipTrigger>
-            <TooltipContent className="bg-gray-50">
-              {t('Badge.Published')}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-    </>
+    <div className="absolute top-m right-m flex gap-xs z-10">
+      <ResourceStatusIcons
+        deployable={deployable}
+        verified={verified}
+        active={!shouldDisplayBothIcons ? document.active : undefined}
+      />
+    </div>
   );
 };

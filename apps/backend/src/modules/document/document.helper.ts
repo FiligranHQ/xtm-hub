@@ -63,6 +63,8 @@ export const BOOLEAN_METADATA = [
 ];
 
 export type Document = WithUseCases<DocumentModel>;
+export type WithDocumentId<T> = T & { _document_id: string };
+export type WithParentId<T> = T & { _parent_id: string };
 export type FullDocumentMutator = Partial<DocumentModel> & {
   use_cases?: UseCaseId[];
   parent_document_id?: DocumentId;

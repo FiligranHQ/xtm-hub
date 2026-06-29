@@ -107,6 +107,7 @@ type Query {
   publicDocumentBySlug(serviceInstanceId: ServiceInstanceId!, slug: String!): Document
   documents(first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId!, parentsOnly: Boolean): DocumentConnection!
   document(documentId: DocumentId!, serviceInstanceId: ServiceInstanceId!): Document
+  mostDeployedDocuments(limit: Int!): [Document!]!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -135,6 +136,7 @@ type Query {
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: SubscriptionId!): UserServiceConnection
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
+  countEpicsPerTimeline: [EpicCountPerTimeline!]!
   node(id: ID!): Node
 }
 
@@ -1228,6 +1230,7 @@ type ServiceInstanceSubscription {
 enum FeatureFlag {
   DUMMY
   OPENCTI_CUSTOM_VIEWS
+  HOME_PAGE_V2
 }
 
 type PlatformProvider {
@@ -1320,7 +1323,6 @@ enum IntegrationType {
   csv_feed
   connector
   rss_feed
-  json_feed
   taxii_feed
   stream
   third_party_integration
@@ -1862,6 +1864,11 @@ input UpdateEpicInput {
   timeline: Timeline
   is_integration: Boolean
   illustration_document: Upload
+}
+
+type EpicCountPerTimeline {
+  timeline: Timeline!
+  count: Int!
 }
 
 type EpicEdge {

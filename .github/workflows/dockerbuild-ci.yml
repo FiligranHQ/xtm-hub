@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - "main"
-      - "development"
     paths:
       - "apps/**"
       - ".github/workflows/dockerbuild-ci.yml"
@@ -16,7 +15,6 @@ on:
   pull_request:
     branches:
       - "main"
-      - "development"
       - "issue/*"
 
 permissions:
@@ -168,7 +166,6 @@ jobs:
           cache-from: |
             type=local,src=/tmp/.buildx-cache
             type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:cache-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           cache-to: |
             type=local,dest=/tmp/.buildx-cache-new,mode=max
@@ -455,6 +452,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             ${{ contains(github.ref, 'refs/tags/') && 'latest' }}
+            ${{ github.ref == 'refs/heads/main' && 'type=raw,value=development' || '' }}
 
       - name: Determine version
         id: version
@@ -462,9 +460,7 @@ jobs:
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
           elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            echo "VERSION=staging-${GITHUB_SHA::8}" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF_NAME}" == "development" ]]; then
-            echo "VERSION=dev-${GITHUB_SHA::8}" >> $GITHUB_ENV
+            echo "VERSION=rolling-${GITHUB_SHA::8}" >> $GITHUB_ENV
           else
             echo "VERSION=local-${GITHUB_SHA::8}" >> $GITHUB_ENV
           fi
@@ -483,7 +479,6 @@ jobs:
           cache-from: |
             type=local,src=/tmp/.buildx-cache
             type=registry,ref=filigran/${{ matrix.image }}:main
-            type=registry,ref=filigran/${{ matrix.image }}:development
             type=registry,ref=filigran/${{ matrix.image }}:latest
             type=registry,ref=filigran/${{ matrix.image }}:${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
@@ -550,30 +545,8 @@ jobs:
             echo "Response: $response_body"
           fi
 
-      - name: Deploy on Staging
-        if: github.ref == 'refs/heads/main'
-        run: |
-          max_attempts=5
-          for i in $(seq 1 $max_attempts); do
-            if awx --conf.host https://awx.filigran.io \
-              --conf.token ${{ secrets.AWX_TOKEN }} \
-              -f human job_templates launch 'Deploy XTM Hub' \
-              --inventory eu-west-staging \
-              --extra_vars '{"env":"Staging"}'; then
-              echo "✅ Deployment successful"
-              exit 0
-            fi
-            if [ $i -lt $max_attempts ]; then
-              delay=$((2 ** i))
-              echo "⚠️ Attempt $i/$max_attempts failed, retrying in ${delay}s..."
-              sleep $delay
-            fi
-          done
-          echo "❌ All $max_attempts attempts failed"
-          exit 1
-
       - name: Deploy on Development
-        if: github.ref == 'refs/heads/development'
+        if: github.ref == 'refs/heads/main'
         run: |
           max_attempts=5
           for i in $(seq 1 $max_attempts); do
@@ -595,7 +568,7 @@ jobs:
           exit 1
 
       - name: Deploy on Prerelease
-        if: github.ref == 'refs/heads/development'
+        if: github.ref == 'refs/heads/main'
         run: |
           max_attempts=5
           for i in $(seq 1 $max_attempts); do
