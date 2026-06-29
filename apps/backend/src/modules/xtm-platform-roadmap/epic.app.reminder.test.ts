@@ -42,7 +42,7 @@ describe('epicApp.sendPublicRoadmapMonthlyReminder', () => {
     const [payload] = mailServiceMock.sendMail.mock.calls[0] as [
       { to: string; template: string; params: { roadmapLink: string } },
     ];
-    expect(payload.to).toBe('product.managers@filigran.io');
+    expect(payload.to).toBe('product-managers@filigran.io');
     expect(payload.template).toBe('public_roadmap_monthly_reminder');
     // buildServiceLink ran for real against the seeded roadmap instance.
     expect(payload.params.roadmapLink).toMatch(
