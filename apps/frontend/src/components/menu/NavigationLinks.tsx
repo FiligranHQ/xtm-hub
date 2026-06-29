@@ -28,10 +28,8 @@ export const PublicSubLink = ({
   badge,
   tooltip,
   className,
-  isSubLevel = false,
 }: (SectionLink | SectionSubLink) & {
   className?: string;
-  isSubLevel?: boolean;
 }) => {
   const currentPath = usePathname();
   const isActive = !!href && currentPath === href;
@@ -39,8 +37,7 @@ export const PublicSubLink = ({
     buttonVariants({
       variant: 'ghost',
       className: cn(
-        'flex items-center justify-between w-full h-9 rounded-none normal-case txt-sub-content text-xs font-light',
-        isSubLevel ? 'pl-12' : 'pl-6',
+        'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case txt-sub-content text-xs font-light',
         highlight && !isActive && 'bg-clip-text text-transparent',
         !href && 'cursor-default pointer-events-none',
         className

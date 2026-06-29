@@ -21,11 +21,11 @@ const PrivateMenu = () => {
   return (
     <aside
       className={cn(
-        'mobile:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-background duration-300 ease-in-out',
+        'mobile:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-page-background duration-300 ease-in-out',
         open ? 'w-48' : 'w-14'
       )}>
       <MenuLogo href={`/${APP_PATH}`} />
-      <div className="border-r flex-1 flex-col flex justify-between">
+      <div className="flex flex-1 min-h-0 flex-col justify-between">
         <PrivateNavigation open={open} />
         <MenuFooter
           open={open}

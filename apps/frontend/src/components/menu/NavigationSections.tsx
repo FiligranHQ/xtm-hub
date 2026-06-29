@@ -71,10 +71,7 @@ const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
 
                     return (
                       <li key={subKey}>
-                        <PublicSubLink
-                          {...subLink}
-                          isSubLevel
-                        />
+                        <PublicSubLink {...subLink} />
                       </li>
                     );
                   })}
