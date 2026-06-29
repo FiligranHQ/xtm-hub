@@ -2648,7 +2648,7 @@ export type PrivateNavigationServiceInstancesQueryVariables = Exact<{
 }>;
 
 
-export type PrivateNavigationServiceInstancesQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null, links: Array<{ __typename?: 'ServiceLink', url: string | null } | null> | null } | null }> } };
+export type PrivateNavigationServiceInstancesQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, name: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null, links: Array<{ __typename?: 'ServiceLink', url: string | null } | null> | null } | null }> } };
 
 export type UseCaseAddMutationVariables = Exact<{
   input: AddUseCaseInput;
@@ -2970,6 +2970,7 @@ export const PrivateNavigationServiceInstancesDocument = `
     edges {
       node {
         id
+        name
         service_definition {
           identifier
         }

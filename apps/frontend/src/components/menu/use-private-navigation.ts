@@ -1,5 +1,8 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { getPrivateNavigationServiceHrefs } from '@/components/menu/private-navigation.utils';
+import {
+  getPrivateNavigationRegistrationsByServiceIdentifier,
+  getPrivateNavigationServiceHrefs,
+} from '@/components/menu/private-navigation.utils';
 import {
   BottomLink,
   SectionConfig,
@@ -96,6 +99,23 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
     [serviceInstancesQueryData]
   );
 
+  const openctiRegisteredPlatforms = useMemo(
+    () =>
+      getPrivateNavigationRegistrationsByServiceIdentifier(
+        serviceInstancesQueryData,
+        ServiceDefinitionIdentifier.OpenctiRegistration
+      ),
+    [serviceInstancesQueryData]
+  );
+  const openaevRegisteredPlatforms = useMemo(
+    () =>
+      getPrivateNavigationRegistrationsByServiceIdentifier(
+        serviceInstancesQueryData,
+        ServiceDefinitionIdentifier.OpenaevRegistration
+      ),
+    [serviceInstancesQueryData]
+  );
+
   const trialDeployments = trialEligibilityData?.trialDeployments;
 
   const getStartFreeTrialLinks = (
@@ -158,6 +178,36 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
     ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
 
+  const openctiMyProductLinks: SectionLink[] =
+    openctiRegisteredPlatforms.length > 0
+      ? [
+          {
+            label: t('MyProduct'),
+            badge: `${openctiRegisteredPlatforms.length}`,
+            subLinks: openctiRegisteredPlatforms.map((platform) => ({
+              label: platform.name,
+              href: `/${APP_PATH}/service/opencti_registration/${platform.id}`,
+              tooltip: platform.url,
+            })),
+          },
+        ]
+      : [];
+
+  const openaevMyProductLinks: SectionLink[] =
+    openaevRegisteredPlatforms.length > 0
+      ? [
+          {
+            label: t('MyProduct'),
+            badge: `${openaevRegisteredPlatforms.length}`,
+            subLinks: openaevRegisteredPlatforms.map((platform) => ({
+              label: platform.name,
+              href: `/${APP_PATH}/service/openaev_registration/${platform.id}`,
+              tooltip: platform.url,
+            })),
+          },
+        ]
+      : [];
+
   const sections: SectionConfig[] = [
     {
       key: 'xtm-platform',
@@ -177,6 +227,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
           PlatformIdentifier.Opencti,
           `/${APP_PATH}/service/opencti-free-trial`
         ),
+        ...openctiMyProductLinks,
         {
           href: openctiCustomDashboardsHref,
           label: t('CustomDashboards'),
@@ -219,6 +270,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
           PlatformIdentifier.Openaev,
           `/${APP_PATH}/service/openaev-free-trial`
         ),
+        ...openaevMyProductLinks,
         {
           href: openaevScenariosHref,
           label: t('Scenarios'),

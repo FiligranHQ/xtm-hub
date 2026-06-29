@@ -415,6 +415,7 @@
   },
   "PrivateMenu": {
     "XTMPlatform": "XTMプラットフォーム",
+    "MyProduct": "私の製品",
     "StartFreeTrial": "無料トライアルを開始",
     "CustomDashboards": "カスタムダッシュボード",
     "CustomViews": "カスタムビュー",
@@ -1080,7 +1081,7 @@
         "Share": "カスタムダッシュボードの共有",
         "Updated": "カスタムダッシュボード {name} は正常に変更されました。"
       },
-      "Active": "公開",
+      "Active": "公開日",
       "AddService": "新しいダッシュボードを追加",
       "DeleteService": "カスタムダッシュボードを削除 {name}",
       "NonActive": "下書き",

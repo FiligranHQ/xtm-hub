@@ -7,6 +7,7 @@ query PrivateNavigationServiceInstances(
     edges {
       node {
         id
+        name
         service_definition {
           identifier
         }

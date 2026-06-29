@@ -4,7 +4,10 @@ import {
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
-import { getPrivateNavigationServiceHrefs } from './private-navigation.utils';
+import {
+  getPrivateNavigationRegistrationsByServiceIdentifier,
+  getPrivateNavigationServiceHrefs,
+} from './private-navigation.utils';
 
 type ServiceInstanceEdge =
   PrivateNavigationServiceInstancesQuery['serviceInstances']['edges'][number];
@@ -23,16 +26,19 @@ const buildQuery = (
 const createEdge = ({
   id,
   identifier,
+  name = 'Service name',
   links = [],
 }: {
   id: string;
   identifier: ServiceDefinitionIdentifier;
+  name?: string;
   links?: ServiceInstanceLinks;
 }): ServiceInstanceEdge => ({
   __typename: 'ServiceInstanceEdge',
   node: {
     __typename: 'ServiceInstance',
     id,
+    name,
     service_definition: {
       __typename: 'ServiceDefinition',
       identifier,
@@ -170,4 +176,65 @@ describe('getPrivateNavigationServiceHrefs', () => {
       );
     }
   );
+});
+
+describe('getPrivateNavigationRegistrationsByServiceIdentifier', () => {
+  it('returns only registrations for the requested service definition with platform name and url', () => {
+    const queryData = buildQuery([
+      createEdge({
+        id: 'opencti-registration-1',
+        name: 'OpenCTI Prod',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        links: [
+          {
+            __typename: 'ServiceLink',
+            url: 'https://opencti.example.com',
+          },
+        ],
+      }),
+      createEdge({
+        id: 'opencti-registration-2',
+        name: 'OpenCTI Empty URL',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        links: [
+          {
+            __typename: 'ServiceLink',
+            url: null,
+          },
+        ],
+      }),
+      createEdge({
+        id: 'openaev-registration-1',
+        name: 'OpenAEV Prod',
+        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+      }),
+    ]);
+
+    expect(
+      getPrivateNavigationRegistrationsByServiceIdentifier(
+        queryData,
+        ServiceDefinitionIdentifier.OpenctiRegistration
+      )
+    ).toEqual([
+      {
+        id: 'opencti-registration-1',
+        name: 'OpenCTI Prod',
+        url: 'https://opencti.example.com',
+      },
+      {
+        id: 'opencti-registration-2',
+        name: 'OpenCTI Empty URL',
+        url: undefined,
+      },
+    ]);
+  });
+
+  it('returns an empty array when query data is undefined', () => {
+    expect(
+      getPrivateNavigationRegistrationsByServiceIdentifier(
+        undefined,
+        ServiceDefinitionIdentifier.OpenaevRegistration
+      )
+    ).toEqual([]);
+  });
 });

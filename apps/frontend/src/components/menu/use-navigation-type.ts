@@ -1,11 +1,18 @@
 import { ElementType } from 'react';
 
-export interface SectionLink {
+interface BaseSectionLink {
   href?: string;
   label: string;
   external?: boolean;
   highlight?: boolean;
   badge?: string;
+  tooltip?: string;
+}
+
+export type SectionSubLink = BaseSectionLink;
+
+export interface SectionLink extends BaseSectionLink {
+  subLinks?: SectionSubLink[];
 }
 
 export interface BottomLink {

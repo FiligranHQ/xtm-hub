@@ -4,6 +4,16 @@ import {
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 
+export interface PrivateNavigationRegistrationLink {
+  id: string;
+  name: string;
+  url?: string;
+}
+
+const getFirstNonEmptyServiceUrl = (
+  links: { url: string | null }[] | null | undefined
+): string | undefined => links?.find((link) => !!link?.url)?.url ?? undefined;
+
 export const getPrivateNavigationServiceHrefs = (
   queryData: PrivateNavigationServiceInstancesQuery | undefined
 ) => {
@@ -24,7 +34,7 @@ export const getPrivateNavigationServiceHrefs = (
 
     const externalServiceLink =
       serviceIdentifier === ServiceDefinitionIdentifier.Link
-        ? serviceInstance.links?.find((link) => !!link?.url)?.url
+        ? getFirstNonEmptyServiceUrl(serviceInstance.links)
         : undefined;
 
     const href =
@@ -36,3 +46,26 @@ export const getPrivateNavigationServiceHrefs = (
 
   return serviceHrefs;
 };
+
+export const getPrivateNavigationRegistrationsByServiceIdentifier = (
+  queryData: PrivateNavigationServiceInstancesQuery | undefined,
+  serviceIdentifier: ServiceDefinitionIdentifier
+): PrivateNavigationRegistrationLink[] =>
+  (queryData?.serviceInstances.edges ?? []).flatMap((edge) => {
+    const serviceInstance = edge.node;
+
+    if (
+      !serviceInstance ||
+      serviceInstance.service_definition?.identifier !== serviceIdentifier
+    ) {
+      return [];
+    }
+
+    return [
+      {
+        id: serviceInstance.id,
+        name: serviceInstance.name,
+        url: getFirstNonEmptyServiceUrl(serviceInstance.links),
+      },
+    ];
+  });

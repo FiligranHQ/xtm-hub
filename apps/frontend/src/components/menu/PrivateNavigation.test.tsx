@@ -8,7 +8,7 @@ import {
   PrivateNavigationTrialEligibilityQuery,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { usePathname } from 'next/navigation';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -48,7 +48,44 @@ const privateNavigationQueryResponse: PrivateNavigationServiceInstancesQuery = {
         __typename: 'ServiceInstanceEdge',
         node: {
           __typename: 'ServiceInstance',
+          id: 'service-instance-opencti-registration',
+          name: 'OpenCTI Prod',
+          service_definition: {
+            __typename: 'ServiceDefinition',
+            identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+          },
+          links: [
+            {
+              __typename: 'ServiceLink',
+              url: 'https://opencti.example.com',
+            },
+          ],
+        },
+      },
+      {
+        __typename: 'ServiceInstanceEdge',
+        node: {
+          __typename: 'ServiceInstance',
+          id: 'service-instance-openaev-registration',
+          name: 'OpenAEV Prod',
+          service_definition: {
+            __typename: 'ServiceDefinition',
+            identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+          },
+          links: [
+            {
+              __typename: 'ServiceLink',
+              url: 'https://openaev.example.com',
+            },
+          ],
+        },
+      },
+      {
+        __typename: 'ServiceInstanceEdge',
+        node: {
+          __typename: 'ServiceInstance',
           id: 'service-instance-custom-dashboards',
+          name: 'Custom dashboards',
           service_definition: {
             __typename: 'ServiceDefinition',
             identifier: ServiceDefinitionIdentifier.OpenctiCustomDashboards,
@@ -61,6 +98,7 @@ const privateNavigationQueryResponse: PrivateNavigationServiceInstancesQuery = {
         node: {
           __typename: 'ServiceInstance',
           id: 'service-instance-integrations',
+          name: 'Integrations',
           service_definition: {
             __typename: 'ServiceDefinition',
             identifier: ServiceDefinitionIdentifier.OpenctiIntegrations,
@@ -73,6 +111,7 @@ const privateNavigationQueryResponse: PrivateNavigationServiceInstancesQuery = {
         node: {
           __typename: 'ServiceInstance',
           id: 'service-instance-openaev-scenarios',
+          name: 'Scenarios',
           service_definition: {
             __typename: 'ServiceDefinition',
             identifier: ServiceDefinitionIdentifier.OpenaevScenarios,
@@ -171,6 +210,26 @@ describe('PrivateNavigation component — open={true}', () => {
 
     const xtmPlatformLink = screen.getByRole('link', { name: 'XTMPlatform' });
     expect(xtmPlatformLink.className).toContain('bg-primary/10');
+  });
+
+  it('renders nested MyProduct dropdown links for OpenCTI with tooltip url', async () => {
+    const user = userEvent.setup();
+    testRender(<PrivateNavigation open={true} />);
+
+    await expandSection(user, 'OpenCTI');
+
+    const myProductTrigger = screen.getByRole('button', { name: 'MyProduct' });
+    expect(within(myProductTrigger).getByText('1')).toBeInTheDocument();
+
+    await user.click(myProductTrigger);
+
+    const platformLink = await screen.findByRole('link', {
+      name: 'OpenCTI Prod',
+    });
+    await user.hover(platformLink);
+    expect(
+      (await screen.findAllByText('https://opencti.example.com')).length
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -273,6 +332,26 @@ describe('PrivateNavigation hook behavior', () => {
     expect(scenariosLink?.href).toBe(
       '/app/service/openaev_scenarios/service-instance-openaev-scenarios'
     );
+  });
+
+  it('builds MyProduct nested entries with subLinks', () => {
+    const { result } = testRenderHook(() => usePrivateNavigation(), {
+      me: { selected_organization_id: TEST_SELECTED_ORGANIZATION_ID },
+    });
+
+    const openctiSection = result.current.sections.find(
+      (section) => section.key === 'opencti'
+    );
+
+    const myProductLink = openctiSection?.links.find(
+      (link) => link.label === 'MyProduct'
+    );
+
+    expect(myProductLink?.subLinks?.[0]).toEqual({
+      label: 'OpenCTI Prod',
+      href: '/app/service/opencti_registration/service-instance-opencti-registration',
+      tooltip: 'https://opencti.example.com',
+    });
   });
 
   it('shows disabled Start Free Trial placeholders while trial eligibility is loading', () => {
@@ -393,5 +472,22 @@ describe('PrivateNavigation hook behavior', () => {
     expect(
       openaevSection?.links.some((link) => link.label === 'Scenarios')
     ).toBe(true);
+  });
+
+  it('shows MyProduct numeric badges are rendered in both opened navigation and closed popover flows', async () => {
+    const user = userEvent.setup();
+    testRender(<PrivateNavigation open={false} />);
+
+    const openctiButton = screen.getByRole('button', { name: 'OpenCTI' });
+    await user.hover(openctiButton);
+
+    const myProductTrigger = await screen.findByRole('button', {
+      name: 'MyProduct',
+    });
+    expect(within(myProductTrigger).getByText('1')).toBeInTheDocument();
+
+    await user.click(myProductTrigger);
+
+    expect(await screen.findByText('OpenCTI Prod')).toBeInTheDocument();
   });
 });

@@ -3,9 +3,13 @@ import {
   NAVIGATION_HOVER_CLASSES,
 } from '@/components/menu/navigation-styles';
 import { MenuItemIcon, PublicSubLink } from '@/components/menu/NavigationLinks';
-import type { SectionConfig } from '@/components/menu/use-public-navigation';
+import type {
+  SectionConfig,
+  SectionLink,
+} from '@/components/menu/use-navigation-type';
 import { cn } from '@/lib/utils';
 import {
+  Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
@@ -19,6 +23,70 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
+
+const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
+  <ul className="space-y-xs">
+    {links.map((link) => {
+      const nestedLinks = link.subLinks ?? [];
+      const hasNestedLinks = nestedLinks.length > 0;
+      const key = `${link.label}-${link.href ?? `group-${nestedLinks.length}`}`;
+
+      if (!hasNestedLinks) {
+        return (
+          <li key={key}>
+            <PublicSubLink {...link} />
+          </li>
+        );
+      }
+
+      return (
+        <li key={key}>
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full">
+            <AccordionItem
+              className="border-none pl-0"
+              value={`${key}-accordion`}>
+              <AccordionTrigger
+                className={cn(
+                  'h-9 py-xs pl-6 text-xs font-light cursor-pointer hover:bg-hover hover:no-underline',
+                  NAVIGATION_HOVER_CLASSES
+                )}>
+                <span className="flex flex-1 items-center justify-between gap-xs truncate pr-xs">
+                  <span className="truncate">{link.label}</span>
+                  {link.badge && (
+                    <span
+                      aria-hidden={true}
+                      className="inline-flex min-w-4 items-center justify-center rounded-full border border-border/70 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-none text-muted-foreground">
+                      {link.badge}
+                    </span>
+                  )}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="pb-0 pt-0">
+                <ul className="p-0">
+                  {nestedLinks.map((subLink) => {
+                    const subKey = `${subLink.label}-${subLink.href ?? 'sub-link'}`;
+
+                    return (
+                      <li key={subKey}>
+                        <PublicSubLink
+                          {...subLink}
+                          isSubLevel
+                        />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </li>
+      );
+    })}
+  </ul>
+);
 
 export const LinkedSection = ({
   section,
@@ -89,13 +157,9 @@ export const ClosedSection = ({ section }: { section: SectionConfig }) => {
           asChild
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}>
-          <ul className="flex flex-col gap-xs w-50 p-s">
-            {section.links.map((link) => (
-              <li key={link.label}>
-                <PublicSubLink {...link} />
-              </li>
-            ))}
-          </ul>
+          <div className="w-50 p-s">
+            <SectionLinksList links={section.links} />
+          </div>
         </PopoverContent>
       )}
     </Popover>
@@ -116,16 +180,7 @@ export const OpenedSection = ({ section }: { section: SectionConfig }) => {
       </AccordionTrigger>
       {section.links.length > 0 && (
         <AccordionContent>
-          <ul className="space-y-xs">
-            {section.links.map((link) => (
-              <li key={link.label}>
-                <PublicSubLink
-                  className="pl-xl ml-xs"
-                  {...link}
-                />
-              </li>
-            ))}
-          </ul>
+          <SectionLinksList links={section.links} />
         </AccordionContent>
       )}
     </AccordionItem>

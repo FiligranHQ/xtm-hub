@@ -1,5 +1,8 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { getPrivateNavigationServiceHrefs } from '@/components/menu/private-navigation.utils';
+import {
+  getPrivateNavigationRegistrationsByServiceIdentifier,
+  getPrivateNavigationServiceHrefs,
+} from '@/components/menu/private-navigation.utils';
 import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
@@ -50,6 +53,7 @@ vi.mock('@/hooks/use-is-feature-enabled', () => ({
 
 vi.mock('@/components/menu/private-navigation.utils', () => ({
   getPrivateNavigationServiceHrefs: vi.fn(),
+  getPrivateNavigationRegistrationsByServiceIdentifier: vi.fn(),
 }));
 
 vi.mock('@/lib/graphql-client', () => ({
@@ -94,6 +98,9 @@ describe('usePrivateNavigation', () => {
 
     vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
     vi.mocked(getPrivateNavigationServiceHrefs).mockReturnValue(new Map());
+    vi.mocked(
+      getPrivateNavigationRegistrationsByServiceIdentifier
+    ).mockReturnValue([]);
 
     graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
       data: undefined,
@@ -404,4 +411,93 @@ describe('usePrivateNavigation', () => {
       });
     }
   );
+
+  it('includes MyProduct nested links after StartFreeTrial in OpenCTI and OpenAEV sections when registrations exist', () => {
+    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      data: {
+        trialDeployments: {
+          isBlacklisted: false,
+          availableTrials: [
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+        },
+      },
+      isLoading: false,
+      isPending: false,
+    });
+
+    vi.mocked(getPrivateNavigationRegistrationsByServiceIdentifier)
+      .mockReturnValueOnce([
+        {
+          id: 'opencti-registration-id',
+          name: 'OpenCTI Prod',
+          url: 'https://opencti.example.com',
+        },
+      ])
+      .mockReturnValueOnce([
+        {
+          id: 'openaev-registration-id',
+          name: 'OpenAEV Prod',
+          url: 'https://openaev.example.com',
+        },
+      ]);
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    const openctiSection = getSection(result.current.sections, 'opencti');
+    const openaevSection = getSection(result.current.sections, 'openaev');
+
+    expect(openctiSection?.links[0]).toEqual({
+      href: `/${APP_PATH}/service/opencti-free-trial`,
+      label: 'StartFreeTrial',
+      highlight: true,
+    });
+    expect(openctiSection?.links[1]).toEqual({
+      label: 'MyProduct',
+      badge: '1',
+      subLinks: [
+        {
+          label: 'OpenCTI Prod',
+          href: '/app/service/opencti_registration/opencti-registration-id',
+          tooltip: 'https://opencti.example.com',
+        },
+      ],
+    });
+
+    expect(openaevSection?.links[0]).toEqual({
+      href: `/${APP_PATH}/service/openaev-free-trial`,
+      label: 'StartFreeTrial',
+      highlight: true,
+    });
+    expect(openaevSection?.links[1]).toEqual({
+      label: 'MyProduct',
+      badge: '1',
+      subLinks: [
+        {
+          label: 'OpenAEV Prod',
+          href: '/app/service/openaev_registration/openaev-registration-id',
+          tooltip: 'https://openaev.example.com',
+        },
+      ],
+    });
+  });
+
+  it('hides MyProduct links when no registration exists for a section', () => {
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    const openctiSection = getSection(result.current.sections, 'opencti');
+    const openaevSection = getSection(result.current.sections, 'openaev');
+
+    expect(
+      openctiSection?.links.some((link) => link.label === 'MyProduct')
+    ).toBe(false);
+    expect(
+      openaevSection?.links.some((link) => link.label === 'MyProduct')
+    ).toBe(false);
+  });
 });
