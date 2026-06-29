@@ -1,6 +1,6 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
-  getPrivateNavigationRegistrationsByServiceIdentifier,
+  getPrivateNavigationRegisteredPlatformsByIdentifier,
   getPrivateNavigationServiceHrefs,
 } from '@/components/menu/private-navigation.utils';
 import {
@@ -101,17 +101,17 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
 
   const openctiRegisteredPlatforms = useMemo(
     () =>
-      getPrivateNavigationRegistrationsByServiceIdentifier(
+      getPrivateNavigationRegisteredPlatformsByIdentifier(
         serviceInstancesQueryData,
-        ServiceDefinitionIdentifier.OpenctiRegistration
+        PlatformIdentifier.Opencti
       ),
     [serviceInstancesQueryData]
   );
   const openaevRegisteredPlatforms = useMemo(
     () =>
-      getPrivateNavigationRegistrationsByServiceIdentifier(
+      getPrivateNavigationRegisteredPlatformsByIdentifier(
         serviceInstancesQueryData,
-        ServiceDefinitionIdentifier.OpenaevRegistration
+        PlatformIdentifier.Openaev
       ),
     [serviceInstancesQueryData]
   );
@@ -178,15 +178,18 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
     ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
 
+  const getMyProductLabel = (linkedPlatformsCount: number): string =>
+    linkedPlatformsCount === 1 ? t('MyProduct') : t('MyProducts');
+
   const openctiMyProductLinks: SectionLink[] =
     openctiRegisteredPlatforms.length > 0
       ? [
           {
-            label: t('MyProduct'),
+            label: getMyProductLabel(openctiRegisteredPlatforms.length),
             badge: `${openctiRegisteredPlatforms.length}`,
             subLinks: openctiRegisteredPlatforms.map((platform) => ({
-              label: platform.name,
-              href: `/${APP_PATH}/service/opencti_registration/${platform.id}`,
+              label: platform.title,
+              href: `/${APP_PATH}/service/opencti_registration/${platform.serviceInstanceId}`,
               tooltip: platform.url,
             })),
           },
@@ -197,11 +200,11 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
     openaevRegisteredPlatforms.length > 0
       ? [
           {
-            label: t('MyProduct'),
+            label: getMyProductLabel(openaevRegisteredPlatforms.length),
             badge: `${openaevRegisteredPlatforms.length}`,
             subLinks: openaevRegisteredPlatforms.map((platform) => ({
-              label: platform.name,
-              href: `/${APP_PATH}/service/openaev_registration/${platform.id}`,
+              label: platform.title,
+              href: `/${APP_PATH}/service/openaev_registration/${platform.serviceInstanceId}`,
               tooltip: platform.url,
             })),
           },

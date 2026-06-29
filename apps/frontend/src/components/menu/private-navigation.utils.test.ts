@@ -1,26 +1,34 @@
 import { APP_PATH } from '@/utils/path/constant';
 import {
+  PlatformIdentifier,
   PrivateNavigationServiceInstancesQuery,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 import {
-  getPrivateNavigationRegistrationsByServiceIdentifier,
+  getPrivateNavigationRegisteredPlatformsByIdentifier,
   getPrivateNavigationServiceHrefs,
 } from './private-navigation.utils';
 
 type ServiceInstanceEdge =
   PrivateNavigationServiceInstancesQuery['serviceInstances']['edges'][number];
 type ServiceInstanceLinks = NonNullable<ServiceInstanceEdge['node']>['links'];
+type RegisteredPlatform =
+  PrivateNavigationServiceInstancesQuery['registeredPlatforms'][number];
 
-const buildQuery = (
-  edges: PrivateNavigationServiceInstancesQuery['serviceInstances']['edges']
-): PrivateNavigationServiceInstancesQuery => ({
+const buildQuery = ({
+  serviceInstancesEdges,
+  registeredPlatforms = [],
+}: {
+  serviceInstancesEdges: PrivateNavigationServiceInstancesQuery['serviceInstances']['edges'];
+  registeredPlatforms?: PrivateNavigationServiceInstancesQuery['registeredPlatforms'];
+}): PrivateNavigationServiceInstancesQuery => ({
   __typename: 'Query',
   serviceInstances: {
     __typename: 'ServiceConnection',
-    edges,
+    edges: serviceInstancesEdges,
   },
+  registeredPlatforms,
 });
 
 const createEdge = ({
@@ -47,26 +55,54 @@ const createEdge = ({
   },
 });
 
+const createRegisteredPlatform = ({
+  title,
+  identifier,
+  url = null,
+  serviceInstanceId,
+}: {
+  title: string;
+  identifier: ServiceDefinitionIdentifier;
+  url?: string | null;
+  serviceInstanceId?: string;
+}): RegisteredPlatform => ({
+  __typename: 'RegisteredPlatform',
+  title,
+  identifier,
+  url,
+  subscription: serviceInstanceId
+    ? {
+        __typename: 'SubscriptionModel',
+        service_instance: {
+          __typename: 'ServiceInstance',
+          id: serviceInstanceId,
+        },
+      }
+    : null,
+});
+
 describe('getPrivateNavigationServiceHrefs', () => {
   it.each`
     description                  | queryData
     ${'query data is undefined'} | ${undefined}
-    ${'query data has no edges'} | ${buildQuery([])}
+    ${'query data has no edges'} | ${buildQuery({ serviceInstancesEdges: [] })}
   `('returns an empty map when $description', ({ queryData }) => {
     expect(getPrivateNavigationServiceHrefs(queryData)).toEqual(new Map());
   });
 
   it('skips null nodes', () => {
-    const queryData = buildQuery([
-      {
-        __typename: 'ServiceInstanceEdge',
-        node: null,
-      },
-      createEdge({
-        id: 'opencti-integrations-id',
-        identifier: ServiceDefinitionIdentifier.OpenctiIntegrations,
-      }),
-    ]);
+    const queryData = buildQuery({
+      serviceInstancesEdges: [
+        {
+          __typename: 'ServiceInstanceEdge',
+          node: null,
+        },
+        createEdge({
+          id: 'opencti-integrations-id',
+          identifier: ServiceDefinitionIdentifier.OpenctiIntegrations,
+        }),
+      ],
+    });
 
     const serviceHrefs = getPrivateNavigationServiceHrefs(queryData);
 
@@ -79,16 +115,18 @@ describe('getPrivateNavigationServiceHrefs', () => {
   });
 
   it('deduplicates by service definition identifier and keeps the first instance', () => {
-    const queryData = buildQuery([
-      createEdge({
-        id: 'first-id',
-        identifier: ServiceDefinitionIdentifier.OpenaevScenarios,
-      }),
-      createEdge({
-        id: 'second-id',
-        identifier: ServiceDefinitionIdentifier.OpenaevScenarios,
-      }),
-    ]);
+    const queryData = buildQuery({
+      serviceInstancesEdges: [
+        createEdge({
+          id: 'first-id',
+          identifier: ServiceDefinitionIdentifier.OpenaevScenarios,
+        }),
+        createEdge({
+          id: 'second-id',
+          identifier: ServiceDefinitionIdentifier.OpenaevScenarios,
+        }),
+      ],
+    });
 
     const serviceHrefs = getPrivateNavigationServiceHrefs(queryData);
 
@@ -105,12 +143,14 @@ describe('getPrivateNavigationServiceHrefs', () => {
   `(
     'for non-Link service ($identifier), builds internal path',
     ({ identifier, id }) => {
-      const queryData = buildQuery([
-        createEdge({
-          id,
-          identifier,
-        }),
-      ]);
+      const queryData = buildQuery({
+        serviceInstancesEdges: [
+          createEdge({
+            id,
+            identifier,
+          }),
+        ],
+      });
 
       const serviceHrefs = getPrivateNavigationServiceHrefs(queryData);
 
@@ -121,30 +161,32 @@ describe('getPrivateNavigationServiceHrefs', () => {
   );
 
   it('for Link identifier, uses first non-empty external URL when present', () => {
-    const queryData = buildQuery([
-      createEdge({
-        id: 'link-service-id',
-        identifier: ServiceDefinitionIdentifier.Link,
-        links: [
-          {
-            __typename: 'ServiceLink',
-            url: '',
-          },
-          {
-            __typename: 'ServiceLink',
-            url: null,
-          },
-          {
-            __typename: 'ServiceLink',
-            url: 'https://first.example.com',
-          },
-          {
-            __typename: 'ServiceLink',
-            url: 'https://second.example.com',
-          },
-        ],
-      }),
-    ]);
+    const queryData = buildQuery({
+      serviceInstancesEdges: [
+        createEdge({
+          id: 'link-service-id',
+          identifier: ServiceDefinitionIdentifier.Link,
+          links: [
+            {
+              __typename: 'ServiceLink',
+              url: '',
+            },
+            {
+              __typename: 'ServiceLink',
+              url: null,
+            },
+            {
+              __typename: 'ServiceLink',
+              url: 'https://first.example.com',
+            },
+            {
+              __typename: 'ServiceLink',
+              url: 'https://second.example.com',
+            },
+          ],
+        }),
+      ],
+    });
 
     const serviceHrefs = getPrivateNavigationServiceHrefs(queryData);
 
@@ -161,13 +203,15 @@ describe('getPrivateNavigationServiceHrefs', () => {
     'for Link identifier, falls back to internal path when $description',
     ({ links }) => {
       const id = 'link-service-id';
-      const queryData = buildQuery([
-        createEdge({
-          id,
-          identifier: ServiceDefinitionIdentifier.Link,
-          links,
-        }),
-      ]);
+      const queryData = buildQuery({
+        serviceInstancesEdges: [
+          createEdge({
+            id,
+            identifier: ServiceDefinitionIdentifier.Link,
+            links,
+          }),
+        ],
+      });
 
       const serviceHrefs = getPrivateNavigationServiceHrefs(queryData);
 
@@ -178,52 +222,48 @@ describe('getPrivateNavigationServiceHrefs', () => {
   );
 });
 
-describe('getPrivateNavigationRegistrationsByServiceIdentifier', () => {
-  it('returns only registrations for the requested service definition with platform name and url', () => {
-    const queryData = buildQuery([
-      createEdge({
-        id: 'opencti-registration-1',
-        name: 'OpenCTI Prod',
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-        links: [
-          {
-            __typename: 'ServiceLink',
-            url: 'https://opencti.example.com',
-          },
-        ],
-      }),
-      createEdge({
-        id: 'opencti-registration-2',
-        name: 'OpenCTI Empty URL',
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-        links: [
-          {
-            __typename: 'ServiceLink',
-            url: null,
-          },
-        ],
-      }),
-      createEdge({
-        id: 'openaev-registration-1',
-        name: 'OpenAEV Prod',
-        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
-      }),
-    ]);
+describe('getPrivateNavigationRegisteredPlatformsByIdentifier', () => {
+  it('returns only platforms for the requested identifier with title, url, and service instance id', () => {
+    const queryData = buildQuery({
+      serviceInstancesEdges: [],
+      registeredPlatforms: [
+        createRegisteredPlatform({
+          title: 'OpenCTI Prod',
+          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+          url: 'https://opencti.example.com',
+          serviceInstanceId: 'service-instance-opencti-prod',
+        }),
+        createRegisteredPlatform({
+          title: 'OpenCTI Empty URL',
+          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+          serviceInstanceId: 'service-instance-opencti-empty-url',
+        }),
+        createRegisteredPlatform({
+          title: 'OpenCTI Missing Service Instance',
+          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        }),
+        createRegisteredPlatform({
+          title: 'OpenAEV Prod',
+          identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+          serviceInstanceId: 'service-instance-openaev-prod',
+        }),
+      ],
+    });
 
     expect(
-      getPrivateNavigationRegistrationsByServiceIdentifier(
+      getPrivateNavigationRegisteredPlatformsByIdentifier(
         queryData,
-        ServiceDefinitionIdentifier.OpenctiRegistration
+        PlatformIdentifier.Opencti
       )
     ).toEqual([
       {
-        id: 'opencti-registration-1',
-        name: 'OpenCTI Prod',
+        serviceInstanceId: 'service-instance-opencti-prod',
+        title: 'OpenCTI Prod',
         url: 'https://opencti.example.com',
       },
       {
-        id: 'opencti-registration-2',
-        name: 'OpenCTI Empty URL',
+        serviceInstanceId: 'service-instance-opencti-empty-url',
+        title: 'OpenCTI Empty URL',
         url: undefined,
       },
     ]);
@@ -231,9 +271,9 @@ describe('getPrivateNavigationRegistrationsByServiceIdentifier', () => {
 
   it('returns an empty array when query data is undefined', () => {
     expect(
-      getPrivateNavigationRegistrationsByServiceIdentifier(
+      getPrivateNavigationRegisteredPlatformsByIdentifier(
         undefined,
-        ServiceDefinitionIdentifier.OpenaevRegistration
+        PlatformIdentifier.Openaev
       )
     ).toEqual([]);
   });

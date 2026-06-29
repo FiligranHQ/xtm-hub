@@ -1,12 +1,13 @@
 import { APP_PATH } from '@/utils/path/constant';
 import {
+  PlatformIdentifier,
   PrivateNavigationServiceInstancesQuery,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 
-export interface PrivateNavigationRegistrationLink {
-  id: string;
-  name: string;
+export interface PrivateNavigationRegisteredPlatformLink {
+  serviceInstanceId: string;
+  title: string;
   url?: string;
 }
 
@@ -47,25 +48,47 @@ export const getPrivateNavigationServiceHrefs = (
   return serviceHrefs;
 };
 
-export const getPrivateNavigationRegistrationsByServiceIdentifier = (
-  queryData: PrivateNavigationServiceInstancesQuery | undefined,
-  serviceIdentifier: ServiceDefinitionIdentifier
-): PrivateNavigationRegistrationLink[] =>
-  (queryData?.serviceInstances.edges ?? []).flatMap((edge) => {
-    const serviceInstance = edge.node;
+const getRegisteredPlatformServiceIdentifier = (
+  platformIdentifier: PlatformIdentifier
+): ServiceDefinitionIdentifier | undefined => {
+  switch (platformIdentifier) {
+    case PlatformIdentifier.Opencti:
+      return ServiceDefinitionIdentifier.OpenctiRegistration;
+    case PlatformIdentifier.Openaev:
+      return ServiceDefinitionIdentifier.OpenaevRegistration;
+    default:
+      return undefined;
+  }
+};
 
-    if (
-      !serviceInstance ||
-      serviceInstance.service_definition?.identifier !== serviceIdentifier
-    ) {
+export const getPrivateNavigationRegisteredPlatformsByIdentifier = (
+  queryData: PrivateNavigationServiceInstancesQuery | undefined,
+  platformIdentifier: PlatformIdentifier
+): PrivateNavigationRegisteredPlatformLink[] => {
+  const registeredPlatformIdentifier =
+    getRegisteredPlatformServiceIdentifier(platformIdentifier);
+
+  if (!registeredPlatformIdentifier) {
+    return [];
+  }
+
+  return (queryData?.registeredPlatforms ?? []).flatMap((platform) => {
+    if (!platform || platform.identifier !== registeredPlatformIdentifier) {
+      return [];
+    }
+
+    const serviceInstanceId = platform.subscription?.service_instance?.id;
+
+    if (!serviceInstanceId) {
       return [];
     }
 
     return [
       {
-        id: serviceInstance.id,
-        name: serviceInstance.name,
-        url: getFirstNonEmptyServiceUrl(serviceInstance.links),
+        serviceInstanceId,
+        title: platform.title,
+        url: platform.url ?? undefined,
       },
     ];
   });
+};

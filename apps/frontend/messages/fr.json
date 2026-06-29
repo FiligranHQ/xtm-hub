@@ -416,6 +416,7 @@
   "PrivateMenu": {
     "XTMPlatform": "Plateforme XTM",
     "MyProduct": "Mon produit",
+    "MyProducts": "Mes produits",
     "StartFreeTrial": "Commencer l'essai gratuit",
     "CustomDashboards": "Tableaux de bord personnalisés",
     "CustomViews": "Vues personnalisées",
@@ -1544,7 +1545,7 @@
       "Error": {
         "Capability": {
           "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
-          "Description": "Si vous voulez procéder à la désinscription de votre plateforme OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui a les permissions appropriées pour procéder.",
+          "Description": "Si vous voulez procéder à la désinscription de votre plateforme OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
           "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub."
         },
         "NotInOrganization": {

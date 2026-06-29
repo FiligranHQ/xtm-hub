@@ -17,4 +17,14 @@ query PrivateNavigationServiceInstances(
       }
     }
   }
+  registeredPlatforms(input: {}) {
+    title
+    url
+    identifier
+    subscription {
+      service_instance {
+        id
+      }
+    }
+  }
 }

@@ -2648,7 +2648,7 @@ export type PrivateNavigationServiceInstancesQueryVariables = Exact<{
 }>;
 
 
-export type PrivateNavigationServiceInstancesQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, name: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null, links: Array<{ __typename?: 'ServiceLink', url: string | null } | null> | null } | null }> } };
+export type PrivateNavigationServiceInstancesQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, name: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null, links: Array<{ __typename?: 'ServiceLink', url: string | null } | null> | null } | null }> }, registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', title: string, url: string, identifier: ServiceDefinitionIdentifier, subscription: { __typename?: 'SubscriptionModel', service_instance: { __typename?: 'ServiceInstance', id: string } } | null }> };
 
 export type UseCaseAddMutationVariables = Exact<{
   input: AddUseCaseInput;
@@ -2977,6 +2977,16 @@ export const PrivateNavigationServiceInstancesDocument = `
         links {
           url
         }
+      }
+    }
+  }
+  registeredPlatforms(input: {}) {
+    title
+    url
+    identifier
+    subscription {
+      service_instance {
+        id
       }
     }
   }

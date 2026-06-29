@@ -48,42 +48,6 @@ const privateNavigationQueryResponse: PrivateNavigationServiceInstancesQuery = {
         __typename: 'ServiceInstanceEdge',
         node: {
           __typename: 'ServiceInstance',
-          id: 'service-instance-opencti-registration',
-          name: 'OpenCTI Prod',
-          service_definition: {
-            __typename: 'ServiceDefinition',
-            identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-          },
-          links: [
-            {
-              __typename: 'ServiceLink',
-              url: 'https://opencti.example.com',
-            },
-          ],
-        },
-      },
-      {
-        __typename: 'ServiceInstanceEdge',
-        node: {
-          __typename: 'ServiceInstance',
-          id: 'service-instance-openaev-registration',
-          name: 'OpenAEV Prod',
-          service_definition: {
-            __typename: 'ServiceDefinition',
-            identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
-          },
-          links: [
-            {
-              __typename: 'ServiceLink',
-              url: 'https://openaev.example.com',
-            },
-          ],
-        },
-      },
-      {
-        __typename: 'ServiceInstanceEdge',
-        node: {
-          __typename: 'ServiceInstance',
           id: 'service-instance-custom-dashboards',
           name: 'Custom dashboards',
           service_definition: {
@@ -121,6 +85,34 @@ const privateNavigationQueryResponse: PrivateNavigationServiceInstancesQuery = {
       },
     ],
   },
+  registeredPlatforms: [
+    {
+      __typename: 'RegisteredPlatform',
+      title: 'OpenCTI Alpha Platform',
+      url: 'https://opencti.example.com',
+      identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+      subscription: {
+        __typename: 'SubscriptionModel',
+        service_instance: {
+          __typename: 'ServiceInstance',
+          id: 'service-instance-opencti-alpha',
+        },
+      },
+    },
+    {
+      __typename: 'RegisteredPlatform',
+      title: 'OpenAEV Alpha Platform',
+      url: 'https://openaev.example.com',
+      identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+      subscription: {
+        __typename: 'SubscriptionModel',
+        service_instance: {
+          __typename: 'ServiceInstance',
+          id: 'service-instance-openaev-alpha',
+        },
+      },
+    },
+  ],
 };
 
 const privateNavigationTrialEligibilityResponse: PrivateNavigationTrialEligibilityQuery =
@@ -218,14 +210,21 @@ describe('PrivateNavigation component — open={true}', () => {
 
     await expandSection(user, 'OpenCTI');
 
-    const myProductTrigger = screen.getByRole('button', { name: 'MyProduct' });
+    const myProductTrigger = screen.getByRole('button', {
+      name: 'MyProduct',
+    });
     expect(within(myProductTrigger).getByText('1')).toBeInTheDocument();
 
     await user.click(myProductTrigger);
 
     const platformLink = await screen.findByRole('link', {
-      name: 'OpenCTI Prod',
+      name: 'OpenCTI Alpha Platform',
     });
+    expect(platformLink).toHaveAttribute(
+      'href',
+      '/app/service/opencti_registration/service-instance-opencti-alpha'
+    );
+
     await user.hover(platformLink);
     expect(
       (await screen.findAllByText('https://opencti.example.com')).length
@@ -348,8 +347,8 @@ describe('PrivateNavigation hook behavior', () => {
     );
 
     expect(myProductLink?.subLinks?.[0]).toEqual({
-      label: 'OpenCTI Prod',
-      href: '/app/service/opencti_registration/service-instance-opencti-registration',
+      label: 'OpenCTI Alpha Platform',
+      href: '/app/service/opencti_registration/service-instance-opencti-alpha',
       tooltip: 'https://opencti.example.com',
     });
   });
@@ -488,6 +487,43 @@ describe('PrivateNavigation hook behavior', () => {
 
     await user.click(myProductTrigger);
 
-    expect(await screen.findByText('OpenCTI Prod')).toBeInTheDocument();
+    expect(
+      await screen.findByText('OpenCTI Alpha Platform')
+    ).toBeInTheDocument();
+  });
+
+  it('renders plural MyProduct label when a section has more than one linked platform', async () => {
+    const user = userEvent.setup();
+
+    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
+      data: {
+        ...privateNavigationQueryResponse,
+        registeredPlatforms: [
+          ...privateNavigationQueryResponse.registeredPlatforms,
+          {
+            __typename: 'RegisteredPlatform',
+            title: 'OpenCTI Beta Platform',
+            url: 'https://opencti-beta.example.com',
+            identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+            subscription: {
+              __typename: 'SubscriptionModel',
+              service_instance: {
+                __typename: 'ServiceInstance',
+                id: 'service-instance-opencti-beta',
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    testRender(<PrivateNavigation open={true} />);
+
+    await expandSection(user, 'OpenCTI');
+
+    const myProductsTrigger = await screen.findByRole('button', {
+      name: 'MyProducts',
+    });
+    expect(within(myProductsTrigger).getByText('2')).toBeInTheDocument();
   });
 });

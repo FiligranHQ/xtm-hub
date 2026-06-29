@@ -1,6 +1,6 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
-  getPrivateNavigationRegistrationsByServiceIdentifier,
+  getPrivateNavigationRegisteredPlatformsByIdentifier,
   getPrivateNavigationServiceHrefs,
 } from '@/components/menu/private-navigation.utils';
 import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
@@ -53,7 +53,7 @@ vi.mock('@/hooks/use-is-feature-enabled', () => ({
 
 vi.mock('@/components/menu/private-navigation.utils', () => ({
   getPrivateNavigationServiceHrefs: vi.fn(),
-  getPrivateNavigationRegistrationsByServiceIdentifier: vi.fn(),
+  getPrivateNavigationRegisteredPlatformsByIdentifier: vi.fn(),
 }));
 
 vi.mock('@/lib/graphql-client', () => ({
@@ -99,7 +99,7 @@ describe('usePrivateNavigation', () => {
     vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
     vi.mocked(getPrivateNavigationServiceHrefs).mockReturnValue(new Map());
     vi.mocked(
-      getPrivateNavigationRegistrationsByServiceIdentifier
+      getPrivateNavigationRegisteredPlatformsByIdentifier
     ).mockReturnValue([]);
 
     graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
@@ -427,18 +427,18 @@ describe('usePrivateNavigation', () => {
       isPending: false,
     });
 
-    vi.mocked(getPrivateNavigationRegistrationsByServiceIdentifier)
+    vi.mocked(getPrivateNavigationRegisteredPlatformsByIdentifier)
       .mockReturnValueOnce([
         {
-          id: 'opencti-registration-id',
-          name: 'OpenCTI Prod',
+          serviceInstanceId: 'opencti-service-instance-id',
+          title: 'OpenCTI Production Platform',
           url: 'https://opencti.example.com',
         },
       ])
       .mockReturnValueOnce([
         {
-          id: 'openaev-registration-id',
-          name: 'OpenAEV Prod',
+          serviceInstanceId: 'openaev-service-instance-id',
+          title: 'OpenAEV Production Platform',
           url: 'https://openaev.example.com',
         },
       ]);
@@ -460,8 +460,8 @@ describe('usePrivateNavigation', () => {
       badge: '1',
       subLinks: [
         {
-          label: 'OpenCTI Prod',
-          href: '/app/service/opencti_registration/opencti-registration-id',
+          label: 'OpenCTI Production Platform',
+          href: '/app/service/opencti_registration/opencti-service-instance-id',
           tooltip: 'https://opencti.example.com',
         },
       ],
@@ -477,11 +477,50 @@ describe('usePrivateNavigation', () => {
       badge: '1',
       subLinks: [
         {
-          label: 'OpenAEV Prod',
-          href: '/app/service/openaev_registration/openaev-registration-id',
+          label: 'OpenAEV Production Platform',
+          href: '/app/service/openaev_registration/openaev-service-instance-id',
           tooltip: 'https://openaev.example.com',
         },
       ],
+    });
+  });
+
+  it('uses plural MyProduct label when more than one platform is linked', () => {
+    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      data: {
+        trialDeployments: {
+          isBlacklisted: false,
+          availableTrials: [PlatformIdentifier.Opencti],
+        },
+      },
+      isLoading: false,
+      isPending: false,
+    });
+
+    vi.mocked(getPrivateNavigationRegisteredPlatformsByIdentifier)
+      .mockReturnValueOnce([
+        {
+          serviceInstanceId: 'opencti-service-instance-id-1',
+          title: 'OpenCTI Production Platform 1',
+          url: 'https://opencti-1.example.com',
+        },
+        {
+          serviceInstanceId: 'opencti-service-instance-id-2',
+          title: 'OpenCTI Production Platform 2',
+          url: 'https://opencti-2.example.com',
+        },
+      ])
+      .mockReturnValueOnce([]);
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    const openctiSection = getSection(result.current.sections, 'opencti');
+
+    expect(openctiSection?.links[1]).toMatchObject({
+      label: 'MyProducts',
+      badge: '2',
     });
   });
 
@@ -497,7 +536,13 @@ describe('usePrivateNavigation', () => {
       openctiSection?.links.some((link) => link.label === 'MyProduct')
     ).toBe(false);
     expect(
+      openctiSection?.links.some((link) => link.label === 'MyProducts')
+    ).toBe(false);
+    expect(
       openaevSection?.links.some((link) => link.label === 'MyProduct')
+    ).toBe(false);
+    expect(
+      openaevSection?.links.some((link) => link.label === 'MyProducts')
     ).toBe(false);
   });
 });
