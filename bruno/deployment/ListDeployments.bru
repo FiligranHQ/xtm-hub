@@ -1,0 +1,66 @@
+meta {
+  name: ListDeployments
+  type: graphql
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+headers {
+  x-xtm-hub-token: {{xtm-hub-token}}
+}
+
+body:graphql {
+  query DeploymentRequests(
+    $first: Int!
+    $filters: [DeploymentRequestFilter!]
+    $after: ID
+  ) {
+    deploymentRequests(first: $first, filters: $filters, after: $after) {
+      edges {
+        node {
+          id
+          job_title
+          platform_identifier
+          region
+          start_date
+          hub_status
+          type
+          use_case
+          end_date
+          activity_sector
+          organization_name
+          organization_domains
+          failure_reason
+          platform_token
+          platform_id
+          requester_email
+        }
+        cursor
+      }
+    }
+  }
+  
+}
+
+body:graphql:vars {
+  {
+    "first":10,
+    "filters": [
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Ensure xtm-hub-token is defined in environment
+  
+}

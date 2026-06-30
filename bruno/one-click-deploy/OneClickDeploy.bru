@@ -1,0 +1,50 @@
+meta {
+  name: One Click Deploy
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: none
+}
+
+headers {
+  Cookie: {{cookie}}
+}
+
+body:graphql {
+  mutation OneClickDeploy($input: OneClickDeployInput!) {
+    sendTelemetryEvent {
+      oneClickDeploy(input: $input) {
+        message
+        result
+      }
+    }
+  }
+  
+}
+
+body:graphql:vars {
+  {
+    "input": {
+      "platform_identifier": "",
+      "platform_service_instance_id": "",
+      "resource_id": "",
+      "resource_title": "",
+      "service_instance_id": ""
+    }
+  }
+}
+
+docs {
+  Ensure cookie is set
+  
+  Fill variables:
+  platform_identifier: opencti/openaev/...
+  platform_service_instance_id: service_instance_id of the platform (encoded)
+  resource_id: id of the document to deploy (not encoded)
+  resource_title: title of the resource
+  service_instance_id: documents service_instance_id (encoded)
+}
