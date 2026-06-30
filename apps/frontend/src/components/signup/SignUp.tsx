@@ -44,38 +44,51 @@ const SignUp = () => {
 
     document.body.appendChild(script);
 
+    // Toggle 'has-value' class on fields when inputs have content
+    const container = document.getElementById('hubspot-form');
+    const handleInput = (e: Event) => {
+      const target = e.target as HTMLInputElement | HTMLSelectElement;
+      const field = target.closest('.field');
+      if (field) {
+        field.classList.toggle('has-value', target.value.length > 0);
+      }
+    };
+    container?.addEventListener('input', handleInput);
+    container?.addEventListener('change', handleInput);
+
     return () => {
       script.remove();
+      container?.removeEventListener('input', handleInput);
+      container?.removeEventListener('change', handleInput);
     };
   }, []);
 
   return (
-    <div className="flex h-screen w-screen">
-      <div className="bg-page-background flex h-full w-2/5 flex-col px-6 py-6 overflow-hidden">
+    <div className="flex flex-col md:flex-row md:h-screen w-screen overflow-y-auto md:overflow-hidden">
+      <div className="bg-page-background flex md:h-full md:w-2/5 flex-col pl-6 pr-0 py-6 md:overflow-hidden order-1">
         {/* Header */}
-        <div className="shrink-0 flex justify-center">
+        <div className="shrink-0 flex justify-center pr-6">
           <FiligranLogoDark className="h-8.25 w-33" />
         </div>
         {/* Body */}
-        <div className="mx-auto flex flex-1 min-h-0 w-full max-w-125 flex-col justify-center overflow-hidden">
-          <h1 className="text-3xl leading-9 font-medium text-foreground">
-            {t('Title1')}
-            <br />
-            {t('Title2')}
-          </h1>
-          <p className="mt-2 text-sm leading-6 font-bold text-foreground">
-            {t('Subtitle')}
-          </p>
-          <p className="mt-2 text-xs leading-5 font-normal text-muted-foreground">
-            {t('Description')}
-          </p>
-          <div
-            id="hubspot-form"
-            className="mt-l w-full"
-          />
+        <div className="signup-scroll-area md:flex-1 md:min-h-0 md:overflow-y-auto pr-6">
+          <div className="mx-auto w-full max-w-125 flex flex-col justify-start min-h-full py-6">
+            <h1 className="shrink-0 mt-auto text-3xl leading-9 font-medium text-foreground">
+              {t('Title1')}
+              <br />
+              {t('Title2')}
+            </h1>
+            <p className="shrink-0 mt-2 text-sm leading-6 font-bold text-foreground">
+              {t('Subtitle')}
+            </p>
+            <div
+              id="hubspot-form"
+              className="mt-l mb-auto w-full shrink-0"
+            />
+          </div>
         </div>
         {/* Footer */}
-        <div className="shrink-0 flex flex-col items-center gap-1.5 text-xs">
+        <div className="shrink-0 flex flex-col items-center gap-1.5 text-xs pr-6">
           <p className="text-muted-foreground flex items-center gap-2">
             {t('AlreadyHaveAccount')}
             <Link
@@ -90,7 +103,9 @@ const SignUp = () => {
           </div>
         </div>
       </div>
-      <div className="bg-background w-3/5 flex flex-col items-center justify-center p-32 overflow-hidden gap-8">
+      <div
+        className="md:w-3/5 flex flex-col items-center justify-center p-8 md:p-32 gap-8 order-2 md:overflow-hidden"
+        style={{ backgroundColor: 'var(--color-ds-bg-1)' }}>
         <div className="shrink-0 flex flex-col gap-1">
           <p className="text-sm leading-6 font-bold text-primary">
             {t('WelcomeTitle')}
@@ -99,8 +114,8 @@ const SignUp = () => {
             {t('WelcomeSubtitle')}
           </h2>
         </div>
-        <div className="flex-1 min-h-0 w-full flex items-start justify-center">
-          <SchemeXtmHub className="w-full h-full" />
+        <div className="w-full flex items-start justify-center md:flex-1 md:min-h-0">
+          <SchemeXtmHub className="w-full h-auto md:h-full" />
         </div>
       </div>
     </div>

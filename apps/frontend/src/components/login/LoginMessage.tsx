@@ -5,13 +5,12 @@ const LoginMessage = () => {
   const t = useTranslations();
   return (
     <div className="bg-page-background border border-border-light rounded w-full p-xl text-sm text-center">
-      {t('LoginPage.ToLoginPlease')}{' '}
+      {t('LoginPage.DontHaveAccount')}{' '}
       <Link
         className="text-primary"
-        href="https://filigran.io/filigran-account-creation/?form_origin=xtmhub">
-        {t('LoginPage.CreateYourAccount')}
-      </Link>{' '}
-      {t('LoginPage.OnFiligranWebsite')}
+        href="/sign-up">
+        {t('LoginPage.SignUp')}
+      </Link>
     </div>
   );
 };

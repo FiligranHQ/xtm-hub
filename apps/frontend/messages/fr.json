@@ -383,22 +383,19 @@
     "ja": "日本語"
   },
   "LoginPage": {
-    "CreateYourAccount": "créer votre compte",
+    "DontHaveAccount": "Vous n'avez pas de compte Filigran ?",
     "Email": "Email",
     "Login": "Connexion",
     "Logout": "Déconnexion",
-    "OnFiligranWebsite": "sur le site Filigran",
     "Password": "Mot de passe",
     "SignIn": "S'inscrire",
     "SignUp": "Créer un compte",
-    "Title": "Page de connexion XTM Hub",
-    "ToLoginPlease": "Pour vous connecter, veuillez"
+    "Title": "Page de connexion XTM Hub"
   },
   "SignUpPage": {
     "Title1": "Votre passerelle vers",
     "Title2": "le monde Filigran XTM",
-    "Subtitle": "Démos en direct, Filigran Academy et XTM Hub.",
-    "Description": "Inscrivez-vous avec un seul compte Filigran pour accéder à nos démonstrations OpenCTI et OpenAEV, aux formations de Filigran Academy et aux ressources gratuites sur XTM Hub. Restez informé avec notre newsletter bimensuelle, nos invitations exclusives et nos mises à jour promotionnelles.",
+    "Subtitle": "XTM Hub, Filigran Academy et démo en direct.",
     "AlreadyHaveAccount": "Vous avez déjà un compte ?",
     "LogIn": "Se connecter",
     "MadeBy": "Fait par",

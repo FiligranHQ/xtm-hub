@@ -383,22 +383,19 @@
     "ja": "日本語"
   },
   "LoginPage": {
-    "CreateYourAccount": "アカウント作成",
+    "DontHaveAccount": "Filigranアカウントをお持ちでないですか？",
     "Email": "Eメール",
     "Login": "ログイン",
     "Logout": "ログアウト",
-    "OnFiligranWebsite": "フィリグラン ウェブサイト",
     "Password": "パスワード",
     "SignIn": "サインイン",
     "SignUp": "サインアップ",
-    "Title": "XTM Hub ログインページ",
-    "ToLoginPlease": "ログインするには"
+    "Title": "XTM Hub ログインページ"
   },
   "SignUpPage": {
     "Title1": "あなたのゲートウェイ",
     "Title2": "Filigran XTM ワールドへ",
-    "Subtitle": "ライブデモ、Filigran Academy、XTM Hub。",
-    "Description": "単一のFiligranアカウントに登録して、OpenCTIとOpenAEVのライブデモ、Filigran Academyのトレーニング、XTM Hubの無料リソースにアクセスしましょう。隔月ニュースレター、限定イベント招待、その他のプロモーション情報をお届けします。",
+    "Subtitle": "XTM Hub、Filigran Academy、ライブデモ。",
     "AlreadyHaveAccount": "すでにアカウントをお持ちですか？",
     "LogIn": "ログイン",
     "MadeBy": "制作",

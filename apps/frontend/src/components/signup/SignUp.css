@@ -1,5 +1,34 @@
 /* All styles are scoped under #hubspot-form to avoid leaking into the rest of the app */
 
+/* Auto-hiding scrollbar for the form panel */
+.signup-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s;
+}
+
+.signup-scroll-area:hover {
+  scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent;
+}
+
+.signup-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.signup-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.signup-scroll-area::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.signup-scroll-area:hover::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.4);
+}
+
 #hubspot-form {
   --light: white;
   --dark: black;
@@ -617,7 +646,7 @@
   --background-field: rgba(10, 12, 28, 1);
   margin-bottom: 14px;
   position: relative;
-  border: 1.5px solid var(--primary);
+  border: none;
   border-radius: 2px;
 }
 
@@ -658,20 +687,51 @@
 #hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) > .label,
 #hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) > label {
   position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  padding: 0;
+  font-family: var(--typo-text);
+  color: white;
+  font-size: 14px;
+  font-weight: 400;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+/* Float label to upper-left corner when input is focused or has a value */
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox):focus-within
+  > .label,
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox):focus-within
+  > label,
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox):has(input:not(:placeholder-shown))
+  > .label,
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox):has(input:not(:placeholder-shown))
+  > label,
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox).has-value > .label,
+#hubspot-form form .field:not(.hs-fieldtype-booleancheckbox).has-value > label {
   top: -7px;
   left: 8px;
   padding: 0 4px;
-  font-family: var(--typo-text);
-  color: var(--primary);
+  transform: none;
   font-size: 10px;
-  font-weight: 500;
-  background-color: var(--background-field);
-  pointer-events: none;
+  color: hsl(var(--muted-foreground));
+  background-color: var(--color-grayblue-700);
 }
 
 #hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) .input {
   width: 100%;
   height: 100%;
+  background-color: var(--color-grayblue-700);
+  border-radius: 6px;
 }
 
 #hubspot-form
@@ -693,7 +753,7 @@
   .field:not(.hs-fieldtype-booleancheckbox)
   .input
   select::placeholder {
-  color: #a3a3a3;
+  color: hsl(var(--muted-foreground));
 }
 
 #hubspot-form
@@ -703,22 +763,47 @@
   input:not([type='checkbox']),
 #hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) .input textarea {
   width: 100% !important;
-  padding: 6px 12px;
+  padding: 10px 12px;
   background-color: transparent;
   font-family: var(--typo-text);
-  border: 0px solid transparent;
+  border: none;
   color: #fff;
   outline: none;
-  border-radius: 0;
+  border-radius: 6px;
+}
+
+/* Hide "Please select" default option text in dropdowns */
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox)
+  .input
+  select
+  option[value=''],
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox)
+  .input
+  select
+  option:disabled {
+  display: none;
+}
+
+/* Make select text invisible when showing default value */
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox):not(.has-value)
+  .input
+  select {
+  color: transparent;
 }
 
 #hubspot-form form .field:not(.hs-fieldtype-booleancheckbox) .input select {
   width: 100% !important;
-  padding: 6px 12px;
-  border-radius: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
   background-color: transparent;
   font-family: var(--typo-text);
-  border: 0px solid transparent;
+  border: none;
   color: #fff;
   outline: none;
   -webkit-appearance: none;
@@ -727,6 +812,16 @@
   background-repeat: no-repeat;
   background-position-x: 98%;
   background-position-y: 50%;
+}
+
+/* Dropdown option list styling */
+#hubspot-form
+  form
+  .field:not(.hs-fieldtype-booleancheckbox)
+  .input
+  select
+  option {
+  background-color: var(--color-grayblue-700);
 }
 
 #hubspot-form form .section {
@@ -897,10 +992,10 @@
   color: #001a4d;
   border: none;
   border-radius: 5px;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   font-weight: 500;
-  font-size: 0.75rem;
-  line-height: 1rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
   cursor: pointer;
   width: auto;
 }
@@ -919,14 +1014,14 @@
   color: hsl(var(--muted-foreground));
 }
 
-/* Align "You can withdraw..." text with checkbox label text */
+/* Align "You can withdraw..." text left */
 #hubspot-form form .hs-richtext:last-of-type,
 #hubspot-form form .hs-richtext:last-of-type p,
 #hubspot-form form .field.hs-fieldtype-booleancheckbox + .hs-richtext,
 #hubspot-form form .field.hs-fieldtype-booleancheckbox + .hs-richtext p,
 #hubspot-form form .field.hs-fieldtype-booleancheckbox ~ .hs-richtext,
 #hubspot-form form .field.hs-fieldtype-booleancheckbox ~ .hs-richtext p {
-  padding-left: 24px;
+  padding-left: 0;
   margin-top: 2px;
   color: hsl(var(--muted-foreground));
 }
@@ -936,4 +1031,9 @@
 #hubspot-form form .hs-richtext p a {
   color: var(--primary);
   font-weight: 500;
+}
+
+/* Success message after form submission */
+#hubspot-form .submitted-message {
+  font-size: 0.75rem;
 }
