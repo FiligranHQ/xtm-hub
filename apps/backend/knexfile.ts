@@ -87,7 +87,10 @@ type BaseDatabaseType =
   | 'Competitor'
   | 'NewsFeedItem'
   | 'NewsFeedItemMetadata'
-  | 'ProvisionedNewsFeedItem';
+  | 'ProvisionedNewsFeedItem'
+  | 'ManifestRebuildQueue'
+  | 'Manifest'
+  | 'Manifest_Document';
 
 export type DatabaseType =
   | BaseDatabaseType
