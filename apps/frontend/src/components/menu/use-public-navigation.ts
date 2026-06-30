@@ -1,4 +1,3 @@
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import {
   HomeIcon,
   LogoXtmOneIcon,
@@ -9,7 +8,6 @@ import {
   SchoolIcon,
   SlackIcon,
 } from '@filigran/icon';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { useLocale, useTranslations } from 'next-intl';
 import { ElementType } from 'react';
 
@@ -46,9 +44,6 @@ export interface PublicNavigationConfig {
 export const usePublicNavigation = (): PublicNavigationConfig => {
   const t = useTranslations();
   const locale = useLocale();
-  const isCustomViewsEnabled = useIsFeatureEnabled(
-    FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS
-  );
 
   const sections: SectionConfig[] = [
     {
@@ -74,14 +69,10 @@ export const usePublicNavigation = (): PublicNavigationConfig => {
           href: `/${locale}/cybersecurity-solutions/opencti-custom-dashboards`,
           label: t('PublicMenu.CustomDashboards'),
         },
-        ...(isCustomViewsEnabled
-          ? [
-              {
-                href: `/${locale}/cybersecurity-solutions/opencti-custom-views`,
-                label: t('PublicMenu.CustomViews'),
-              },
-            ]
-          : []),
+        {
+          href: `/${locale}/cybersecurity-solutions/opencti-custom-views`,
+          label: t('PublicMenu.CustomViews'),
+        },
         {
           href: `/${locale}/cybersecurity-solutions/opencti-integrations`,
           label: t('PublicMenu.Integrations'),
