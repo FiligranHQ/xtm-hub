@@ -1,8 +1,9 @@
 import { APP_PATH } from '@/utils/path/constant';
 import {
   PlatformIdentifier,
-  PrivateNavigationServiceInstancesQuery,
+  RegisteredPlatformsListQuery,
   ServiceDefinitionIdentifier,
+  ServiceInstancesListQuery,
 } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 import {
@@ -11,23 +12,29 @@ import {
 } from './private-navigation.utils';
 
 type ServiceInstanceEdge =
-  PrivateNavigationServiceInstancesQuery['serviceInstances']['edges'][number];
+  ServiceInstancesListQuery['serviceInstances']['edges'][number];
 type ServiceInstanceLinks = NonNullable<ServiceInstanceEdge['node']>['links'];
 type RegisteredPlatform =
-  PrivateNavigationServiceInstancesQuery['registeredPlatforms'][number];
+  RegisteredPlatformsListQuery['registeredPlatforms'][number];
 
-const buildQuery = ({
+const buildServiceInstancesQuery = ({
   serviceInstancesEdges,
-  registeredPlatforms = [],
 }: {
-  serviceInstancesEdges: PrivateNavigationServiceInstancesQuery['serviceInstances']['edges'];
-  registeredPlatforms?: PrivateNavigationServiceInstancesQuery['registeredPlatforms'];
-}): PrivateNavigationServiceInstancesQuery => ({
+  serviceInstancesEdges: ServiceInstancesListQuery['serviceInstances']['edges'];
+}): ServiceInstancesListQuery => ({
   __typename: 'Query',
   serviceInstances: {
     __typename: 'ServiceConnection',
     edges: serviceInstancesEdges,
   },
+});
+
+const buildRegisteredPlatformsQuery = ({
+  registeredPlatforms = [],
+}: {
+  registeredPlatforms?: RegisteredPlatformsListQuery['registeredPlatforms'];
+}): RegisteredPlatformsListQuery => ({
+  __typename: 'Query',
   registeredPlatforms,
 });
 
@@ -85,13 +92,13 @@ describe('getPrivateNavigationServiceHrefs', () => {
   it.each`
     description                  | queryData
     ${'query data is undefined'} | ${undefined}
-    ${'query data has no edges'} | ${buildQuery({ serviceInstancesEdges: [] })}
+    ${'query data has no edges'} | ${buildServiceInstancesQuery({ serviceInstancesEdges: [] })}
   `('returns an empty map when $description', ({ queryData }) => {
     expect(getPrivateNavigationServiceHrefs(queryData)).toEqual(new Map());
   });
 
   it('skips null nodes', () => {
-    const queryData = buildQuery({
+    const queryData = buildServiceInstancesQuery({
       serviceInstancesEdges: [
         {
           __typename: 'ServiceInstanceEdge',
@@ -115,7 +122,7 @@ describe('getPrivateNavigationServiceHrefs', () => {
   });
 
   it('deduplicates by service definition identifier and keeps the first instance', () => {
-    const queryData = buildQuery({
+    const queryData = buildServiceInstancesQuery({
       serviceInstancesEdges: [
         createEdge({
           id: 'first-id',
@@ -143,7 +150,7 @@ describe('getPrivateNavigationServiceHrefs', () => {
   `(
     'for non-Link service ($identifier), builds internal path',
     ({ identifier, id }) => {
-      const queryData = buildQuery({
+      const queryData = buildServiceInstancesQuery({
         serviceInstancesEdges: [
           createEdge({
             id,
@@ -161,7 +168,7 @@ describe('getPrivateNavigationServiceHrefs', () => {
   );
 
   it('for Link identifier, uses first non-empty external URL when present', () => {
-    const queryData = buildQuery({
+    const queryData = buildServiceInstancesQuery({
       serviceInstancesEdges: [
         createEdge({
           id: 'link-service-id',
@@ -203,7 +210,7 @@ describe('getPrivateNavigationServiceHrefs', () => {
     'for Link identifier, falls back to internal path when $description',
     ({ links }) => {
       const id = 'link-service-id';
-      const queryData = buildQuery({
+      const queryData = buildServiceInstancesQuery({
         serviceInstancesEdges: [
           createEdge({
             id,
@@ -224,8 +231,7 @@ describe('getPrivateNavigationServiceHrefs', () => {
 
 describe('getPrivateNavigationRegisteredPlatformsByIdentifier', () => {
   it('returns only platforms for the requested identifier with title, url, and service instance id', () => {
-    const queryData = buildQuery({
-      serviceInstancesEdges: [],
+    const queryData = buildRegisteredPlatformsQuery({
       registeredPlatforms: [
         createRegisteredPlatform({
           title: 'OpenCTI Prod',

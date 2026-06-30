@@ -3,10 +3,7 @@ import {
   NAVIGATION_GRADIENT_STYLE,
   NAVIGATION_HOVER_CLASSES,
 } from '@/components/menu/navigation-styles';
-import {
-  SectionLink,
-  SectionSubLink,
-} from '@/components/menu/use-navigation-type';
+import { SectionLink, SectionSubLink } from '@/components/menu/navigation.type';
 import { cn } from '@/lib/utils';
 import { OpenInNewIcon } from '@filigran/icon';
 import {

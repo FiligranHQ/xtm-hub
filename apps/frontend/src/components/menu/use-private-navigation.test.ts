@@ -21,19 +21,20 @@ import { createElement, PropsWithChildren } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const graphqlMocks = vi.hoisted(() => ({
-  usePrivateNavigationServiceInstancesQuery: Object.assign(vi.fn(), {
-    getKey: vi.fn((variables: unknown) => [
-      'PrivateNavigationServiceInstances',
-      variables,
-    ]),
-    getRootKey: vi.fn(() => ['PrivateNavigationServiceInstances']),
+  useServiceInstancesListQuery: Object.assign(vi.fn(), {
+    getKey: vi.fn((variables: unknown) => ['ServiceInstancesList', variables]),
+    getRootKey: vi.fn(() => ['ServiceInstancesList']),
   }),
-  usePrivateNavigationTrialEligibilityQuery: Object.assign(vi.fn(), {
+  useRegisteredPlatformsListQuery: Object.assign(vi.fn(), {
+    getKey: vi.fn((_variables?: unknown) => ['RegisteredPlatformsList']),
+    getRootKey: vi.fn(() => ['RegisteredPlatformsList']),
+  }),
+  useTrialDeploymentsEligibilityQuery: Object.assign(vi.fn(), {
     getKey: vi.fn((variables: unknown) => [
-      'PrivateNavigationTrialEligibility',
+      'TrialDeploymentsEligibility',
       variables,
     ]),
-    getRootKey: vi.fn(() => ['PrivateNavigationTrialEligibility']),
+    getRootKey: vi.fn(() => ['TrialDeploymentsEligibility']),
   }),
 }));
 
@@ -42,10 +43,11 @@ vi.mock('@graphql/generated', async (importOriginal) => {
 
   return {
     ...actual,
-    usePrivateNavigationServiceInstancesQuery:
-      graphqlMocks.usePrivateNavigationServiceInstancesQuery,
-    usePrivateNavigationTrialEligibilityQuery:
-      graphqlMocks.usePrivateNavigationTrialEligibilityQuery,
+    useServiceInstancesListQuery: graphqlMocks.useServiceInstancesListQuery,
+    useRegisteredPlatformsListQuery:
+      graphqlMocks.useRegisteredPlatformsListQuery,
+    useTrialDeploymentsEligibilityQuery:
+      graphqlMocks.useTrialDeploymentsEligibilityQuery,
   };
 });
 
@@ -141,11 +143,15 @@ describe('usePrivateNavigation', () => {
       getPrivateNavigationRegisteredPlatformsByIdentifier
     ).mockReturnValue([]);
 
-    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
+    graphqlMocks.useServiceInstancesListQuery.mockReturnValue({
       data: undefined,
     });
 
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useRegisteredPlatformsListQuery.mockReturnValue({
+      data: undefined,
+    });
+
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: undefined,
       isLoading: false,
       isPending: false,
@@ -301,7 +307,7 @@ describe('usePrivateNavigation', () => {
   });
 
   it('does not include StartFreeTrial links when trial data is blacklisted', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: {
         trialDeployments: {
           isBlacklisted: true,
@@ -328,7 +334,7 @@ describe('usePrivateNavigation', () => {
   });
 
   it('includes highlighted StartFreeTrial href link for available platform trial', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: {
         trialDeployments: {
           isBlacklisted: false,
@@ -356,7 +362,7 @@ describe('usePrivateNavigation', () => {
   });
 
   it('does not include StartFreeTrial when trial data exists but platform is unavailable', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: {
         trialDeployments: {
           isBlacklisted: false,
@@ -387,7 +393,7 @@ describe('usePrivateNavigation', () => {
   `(
     'returns highlighted label-only StartFreeTrial link when no trial data and $description',
     ({ selectedOrganizationId, isLoading, isPending }) => {
-      graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+      graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
         data: undefined,
         isLoading,
         isPending,
@@ -415,7 +421,7 @@ describe('usePrivateNavigation', () => {
   );
 
   it('does not return label-only StartFreeTrial link when organization is selected and not loading/pending', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: undefined,
       isLoading: false,
       isPending: false,
@@ -457,26 +463,33 @@ describe('usePrivateNavigation', () => {
         },
       };
 
-      expect(
-        graphqlMocks.usePrivateNavigationServiceInstancesQuery
-      ).toHaveBeenCalledWith(portalGraphqlClient, expectedServiceVariables, {
-        queryKey: [
-          'PrivateNavigationServiceInstances',
-          expectedServiceVariables,
-        ],
-      });
+      expect(graphqlMocks.useServiceInstancesListQuery).toHaveBeenCalledWith(
+        portalGraphqlClient,
+        expectedServiceVariables,
+        {
+          queryKey: ['ServiceInstancesList', expectedServiceVariables],
+        }
+      );
+
+      expect(graphqlMocks.useRegisteredPlatformsListQuery).toHaveBeenCalledWith(
+        portalGraphqlClient,
+        undefined,
+        {
+          queryKey: ['RegisteredPlatformsList'],
+        }
+      );
 
       expect(
-        graphqlMocks.usePrivateNavigationTrialEligibilityQuery
+        graphqlMocks.useTrialDeploymentsEligibilityQuery
       ).toHaveBeenCalledWith(portalGraphqlClient, expectedTrialVariables, {
         enabled: expectedEnabled,
-        queryKey: ['PrivateNavigationTrialEligibility', expectedTrialVariables],
+        queryKey: ['TrialDeploymentsEligibility', expectedTrialVariables],
       });
     }
   );
 
   it('includes MyProduct nested links after StartFreeTrial in OpenCTI and OpenAEV sections when registrations exist', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: {
         trialDeployments: {
           isBlacklisted: false,
@@ -549,7 +562,7 @@ describe('usePrivateNavigation', () => {
   });
 
   it('uses plural MyProduct label when more than one platform is linked', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: {
         trialDeployments: {
           isBlacklisted: false,

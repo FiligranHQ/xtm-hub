@@ -6,9 +6,10 @@ import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapabi
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
   PlatformIdentifier,
-  PrivateNavigationServiceInstancesQuery,
-  PrivateNavigationTrialEligibilityQuery,
+  RegisteredPlatformsListQuery,
   ServiceDefinitionIdentifier,
+  ServiceInstancesListQuery,
+  TrialDeploymentsEligibilityQuery,
 } from '@graphql/generated';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -16,17 +17,17 @@ import { usePathname } from 'next/navigation';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const graphqlMocks = vi.hoisted(() => ({
-  usePrivateNavigationServiceInstancesQuery: Object.assign(vi.fn(), {
-    getKey: vi.fn((_variables: unknown) => [
-      'PrivateNavigationServiceInstances',
-    ]),
-    getRootKey: vi.fn(() => ['PrivateNavigationServiceInstances']),
+  useServiceInstancesListQuery: Object.assign(vi.fn(), {
+    getKey: vi.fn((_variables: unknown) => ['ServiceInstancesList']),
+    getRootKey: vi.fn(() => ['ServiceInstancesList']),
   }),
-  usePrivateNavigationTrialEligibilityQuery: Object.assign(vi.fn(), {
-    getKey: vi.fn((_variables: unknown) => [
-      'PrivateNavigationTrialEligibility',
-    ]),
-    getRootKey: vi.fn(() => ['PrivateNavigationTrialEligibility']),
+  useRegisteredPlatformsListQuery: Object.assign(vi.fn(), {
+    getKey: vi.fn((_variables?: unknown) => ['RegisteredPlatformsList']),
+    getRootKey: vi.fn(() => ['RegisteredPlatformsList']),
+  }),
+  useTrialDeploymentsEligibilityQuery: Object.assign(vi.fn(), {
+    getKey: vi.fn((_variables: unknown) => ['TrialDeploymentsEligibility']),
+    getRootKey: vi.fn(() => ['TrialDeploymentsEligibility']),
   }),
 }));
 
@@ -35,14 +36,16 @@ vi.mock('@graphql/generated', async (importOriginal) => {
 
   return {
     ...actual,
-    usePrivateNavigationServiceInstancesQuery:
-      graphqlMocks.usePrivateNavigationServiceInstancesQuery,
-    usePrivateNavigationTrialEligibilityQuery:
-      graphqlMocks.usePrivateNavigationTrialEligibilityQuery,
+    useServiceInstancesListQuery: graphqlMocks.useServiceInstancesListQuery,
+    useRegisteredPlatformsListQuery:
+      graphqlMocks.useRegisteredPlatformsListQuery,
+    useTrialDeploymentsEligibilityQuery:
+      graphqlMocks.useTrialDeploymentsEligibilityQuery,
   };
 });
 
-const privateNavigationQueryResponse: PrivateNavigationServiceInstancesQuery = {
+const privateNavigationServiceInstancesResponse: ServiceInstancesListQuery = {
+  __typename: 'Query',
   serviceInstances: {
     __typename: 'ServiceConnection',
     edges: [
@@ -87,37 +90,42 @@ const privateNavigationQueryResponse: PrivateNavigationServiceInstancesQuery = {
       },
     ],
   },
-  registeredPlatforms: [
-    {
-      __typename: 'RegisteredPlatform',
-      title: 'OpenCTI Alpha Platform',
-      url: 'https://opencti.example.com',
-      identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-      subscription: {
-        __typename: 'SubscriptionModel',
-        service_instance: {
-          __typename: 'ServiceInstance',
-          id: 'service-instance-opencti-alpha',
-        },
-      },
-    },
-    {
-      __typename: 'RegisteredPlatform',
-      title: 'OpenAEV Alpha Platform',
-      url: 'https://openaev.example.com',
-      identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
-      subscription: {
-        __typename: 'SubscriptionModel',
-        service_instance: {
-          __typename: 'ServiceInstance',
-          id: 'service-instance-openaev-alpha',
-        },
-      },
-    },
-  ],
 };
 
-const privateNavigationTrialEligibilityResponse: PrivateNavigationTrialEligibilityQuery =
+const privateNavigationRegisteredPlatformsResponse: RegisteredPlatformsListQuery =
+  {
+    __typename: 'Query',
+    registeredPlatforms: [
+      {
+        __typename: 'RegisteredPlatform',
+        title: 'OpenCTI Alpha Platform',
+        url: 'https://opencti.example.com',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        subscription: {
+          __typename: 'SubscriptionModel',
+          service_instance: {
+            __typename: 'ServiceInstance',
+            id: 'service-instance-opencti-alpha',
+          },
+        },
+      },
+      {
+        __typename: 'RegisteredPlatform',
+        title: 'OpenAEV Alpha Platform',
+        url: 'https://openaev.example.com',
+        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+        subscription: {
+          __typename: 'SubscriptionModel',
+          service_instance: {
+            __typename: 'ServiceInstance',
+            id: 'service-instance-openaev-alpha',
+          },
+        },
+      },
+    ],
+  };
+
+const privateNavigationTrialEligibilityResponse: TrialDeploymentsEligibilityQuery =
   {
     trialDeployments: {
       __typename: 'TrialsDeployments',
@@ -142,10 +150,13 @@ const expandSection = async (
 
 describe('PrivateNavigation component — open={true}', () => {
   beforeEach(() => {
-    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
-      data: privateNavigationQueryResponse,
+    graphqlMocks.useServiceInstancesListQuery.mockReturnValue({
+      data: privateNavigationServiceInstancesResponse,
     });
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useRegisteredPlatformsListQuery.mockReturnValue({
+      data: privateNavigationRegisteredPlatformsResponse,
+    });
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: privateNavigationTrialEligibilityResponse,
       isLoading: false,
       isPending: false,
@@ -192,7 +203,9 @@ describe('PrivateNavigation component — open={true}', () => {
   it('renders XTM Platform as a link, not as an accordion trigger', () => {
     testRender(<PrivateNavigation open={true} />);
 
-    const xtmPlatformLink = screen.getByRole('link', { name: 'XTMPlatform' });
+    const xtmPlatformLink = screen.getByRole('link', {
+      name: 'XTMPlatform',
+    });
     expect(xtmPlatformLink).toBeInTheDocument();
     expect(xtmPlatformLink).not.toHaveAttribute('aria-expanded');
   });
@@ -226,7 +239,9 @@ describe('PrivateNavigation component — open={true}', () => {
     vi.mocked(usePathname).mockReturnValue(`/${APP_PATH}`);
     testRender(<PrivateNavigation open={true} />);
 
-    const xtmPlatformLink = screen.getByRole('link', { name: 'XTMPlatform' });
+    const xtmPlatformLink = screen.getByRole('link', {
+      name: 'XTMPlatform',
+    });
     expect(xtmPlatformLink.className).toContain('bg-primary/10');
   });
 
@@ -260,10 +275,13 @@ describe('PrivateNavigation component — open={true}', () => {
 
 describe('PrivateNavigation component — open={false}', () => {
   beforeEach(() => {
-    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
-      data: privateNavigationQueryResponse,
+    graphqlMocks.useServiceInstancesListQuery.mockReturnValue({
+      data: privateNavigationServiceInstancesResponse,
     });
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useRegisteredPlatformsListQuery.mockReturnValue({
+      data: privateNavigationRegisteredPlatformsResponse,
+    });
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: privateNavigationTrialEligibilityResponse,
       isLoading: false,
       isPending: false,
@@ -309,10 +327,13 @@ describe('PrivateNavigation component — open={false}', () => {
 
 describe('PrivateNavigation hook behavior', () => {
   beforeEach(() => {
-    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
-      data: privateNavigationQueryResponse,
+    graphqlMocks.useServiceInstancesListQuery.mockReturnValue({
+      data: privateNavigationServiceInstancesResponse,
     });
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useRegisteredPlatformsListQuery.mockReturnValue({
+      data: privateNavigationRegisteredPlatformsResponse,
+    });
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: privateNavigationTrialEligibilityResponse,
       isLoading: false,
       isPending: false,
@@ -380,7 +401,7 @@ describe('PrivateNavigation hook behavior', () => {
   });
 
   it('shows disabled Start Free Trial placeholders while trial eligibility is loading', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: undefined,
       isLoading: true,
       isPending: true,
@@ -415,7 +436,7 @@ describe('PrivateNavigation hook behavior', () => {
   });
 
   it('hides Start Free Trial links when organization is blacklisted', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: {
         trialDeployments: {
           __typename: 'TrialsDeployments',
@@ -456,7 +477,7 @@ describe('PrivateNavigation hook behavior', () => {
   });
 
   it('shows Start Free Trial links only for available trials', () => {
-    graphqlMocks.usePrivateNavigationTrialEligibilityQuery.mockReturnValue({
+    graphqlMocks.useTrialDeploymentsEligibilityQuery.mockReturnValue({
       data: {
         trialDeployments: {
           __typename: 'TrialsDeployments',
@@ -521,11 +542,16 @@ describe('PrivateNavigation hook behavior', () => {
   it('renders plural MyProduct label when a section has more than one linked platform', async () => {
     const user = userEvent.setup();
 
-    graphqlMocks.usePrivateNavigationServiceInstancesQuery.mockReturnValue({
+    graphqlMocks.useServiceInstancesListQuery.mockReturnValue({
       data: {
-        ...privateNavigationQueryResponse,
+        ...privateNavigationServiceInstancesResponse,
+      },
+    });
+    graphqlMocks.useRegisteredPlatformsListQuery.mockReturnValue({
+      data: {
+        ...privateNavigationRegisteredPlatformsResponse,
         registeredPlatforms: [
-          ...privateNavigationQueryResponse.registeredPlatforms,
+          ...privateNavigationRegisteredPlatformsResponse.registeredPlatforms,
           {
             __typename: 'RegisteredPlatform',
             title: 'OpenCTI Beta Platform',

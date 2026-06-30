@@ -1,13 +1,13 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
-  getPrivateNavigationRegisteredPlatformsByIdentifier,
-  getPrivateNavigationServiceHrefs,
-} from '@/components/menu/private-navigation.utils';
-import {
   BottomLink,
   SectionConfig,
   SectionLink,
-} from '@/components/menu/use-navigation-type';
+} from '@/components/menu/navigation.type';
+import {
+  getPrivateNavigationRegisteredPlatformsByIdentifier,
+  getPrivateNavigationServiceHrefs,
+} from '@/components/menu/private-navigation.utils';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import {
@@ -27,17 +27,20 @@ import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
   OrderingMode,
   PlatformIdentifier,
-  PrivateNavigationServiceInstancesQueryVariables,
-  PrivateNavigationTrialEligibilityQueryVariables,
   ServiceDefinitionIdentifier,
   ServiceInstanceOrdering,
-  usePrivateNavigationServiceInstancesQuery,
-  usePrivateNavigationTrialEligibilityQuery,
+  ServiceInstancesListQueryVariables,
+  TrialDeploymentsEligibilityQueryVariables,
+  useRegisteredPlatformsListQuery,
+  useServiceInstancesListQuery,
+  useTrialDeploymentsEligibilityQuery,
 } from '@graphql/generated';
-import { privateNavigationKeys } from '@graphql/private-navigation/private-navigation.keys';
+import { registeredPlatformsKeys } from '@graphql/registered-platforms/registered-platforms.keys';
+import { serviceInstancesKeys } from '@graphql/service-instances/service-instances.keys';
+import { trialKeys } from '@graphql/trial/trial.keys';
 import { useLocale, useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
-const PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES: PrivateNavigationServiceInstancesQueryVariables =
+const PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES: ServiceInstancesListQueryVariables =
   {
     count: 50,
     orderBy: ServiceInstanceOrdering.Ordering,
@@ -55,7 +58,7 @@ export interface PrivateNavigationConfig {
 export const usePrivateNavigation = (): PrivateNavigationConfig => {
   const { me, hasCapability, hasOrganizationCapability } =
     useContext(PortalContext);
-  const t = useTranslations('PrivateMenu');
+  const tMenu = useTranslations('Menu');
   const tMenuLinks = useTranslations('MenuLinks');
   const locale = useLocale();
   const selectedOrganizationId = me?.selected_organization_id;
@@ -145,7 +148,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         ...link
       }) => link
     );
-  const privateNavigationTrialEligibilityVariables: PrivateNavigationTrialEligibilityQueryVariables =
+  const privateNavigationTrialEligibilityVariables: TrialDeploymentsEligibilityQueryVariables =
     {
       input: {
         organizationId: selectedOrganizationId ?? '',
@@ -155,26 +158,29 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         ],
       },
     };
-  const { data: serviceInstancesQueryData } =
-    usePrivateNavigationServiceInstancesQuery(
-      portalGraphqlClient,
-      PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES,
-      {
-        queryKey: privateNavigationKeys.list(
-          PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES
-        ),
-      }
-    );
+  const { data: serviceInstancesQueryData } = useServiceInstancesListQuery(
+    portalGraphqlClient,
+    PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES,
+    {
+      queryKey: serviceInstancesKeys.list(
+        PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES
+      ),
+    }
+  );
+  const { data: registeredPlatformsQueryData } =
+    useRegisteredPlatformsListQuery(portalGraphqlClient, undefined, {
+      queryKey: registeredPlatformsKeys.list(),
+    });
   const {
     data: trialEligibilityData,
     isLoading: isTrialEligibilityLoading,
     isPending: isTrialEligibilityPending,
-  } = usePrivateNavigationTrialEligibilityQuery(
+  } = useTrialDeploymentsEligibilityQuery(
     portalGraphqlClient,
     privateNavigationTrialEligibilityVariables,
     {
       enabled: !!selectedOrganizationId,
-      queryKey: privateNavigationKeys.trialEligibility(
+      queryKey: trialKeys.trialDeploymentsEligibility(
         privateNavigationTrialEligibilityVariables
       ),
     }
@@ -186,18 +192,18 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
   const openctiRegisteredPlatforms = useMemo(
     () =>
       getPrivateNavigationRegisteredPlatformsByIdentifier(
-        serviceInstancesQueryData,
+        registeredPlatformsQueryData,
         PlatformIdentifier.Opencti
       ),
-    [serviceInstancesQueryData]
+    [registeredPlatformsQueryData]
   );
   const openaevRegisteredPlatforms = useMemo(
     () =>
       getPrivateNavigationRegisteredPlatformsByIdentifier(
-        serviceInstancesQueryData,
+        registeredPlatformsQueryData,
         PlatformIdentifier.Openaev
       ),
-    [serviceInstancesQueryData]
+    [registeredPlatformsQueryData]
   );
   const trialDeployments = trialEligibilityData?.trialDeployments;
   const getStartFreeTrialLinks = (
@@ -217,7 +223,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       return [
         {
           href,
-          label: t('StartFreeTrial'),
+          label: tMenu('StartFreeTrial'),
           highlight: true,
         },
       ];
@@ -229,7 +235,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
     ) {
       return [
         {
-          label: t('StartFreeTrial'),
+          label: tMenu('StartFreeTrial'),
           highlight: true,
         },
       ];
@@ -255,7 +261,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
     ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
   const getMyProductLabel = (linkedPlatformsCount: number): string =>
-    linkedPlatformsCount === 1 ? t('MyProduct') : t('MyProducts');
+    linkedPlatformsCount === 1 ? tMenu('MyProduct') : tMenu('MyProducts');
   const openctiMyProductLinks: SectionLink[] =
     openctiRegisteredPlatforms.length > 0
       ? [
@@ -287,7 +293,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
   const sections: SectionConfig[] = [
     {
       key: 'xtm-platform',
-      label: t('XTMPlatform'),
+      label: tMenu('XTMPlatform'),
       icon: HomeIcon,
       pathPrefix: `/${APP_PATH}`,
       href: `/${APP_PATH}`,
@@ -306,28 +312,28 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         ...openctiMyProductLinks,
         {
           href: openctiCustomDashboardsHref,
-          label: t('CustomDashboards'),
+          label: tMenu('CustomDashboards'),
         },
         {
           href: openctiCustomViewsHref,
-          label: t('CustomViews'),
+          label: tMenu('CustomViews'),
         },
         {
           href: openctiIntegrationsHref,
-          label: t('Integrations'),
+          label: tMenu('Integrations'),
         },
         {
           href: openctiPlaybooksHref,
-          label: t('Playbooks'),
+          label: tMenu('Playbooks'),
         },
         {
           href: 'https://demo.opencti.io',
-          label: t('LiveDemo'),
+          label: tMenu('LiveDemo'),
           external: true,
         },
         {
           href: 'https://docs.opencti.io/latest/',
-          label: t('Documentation'),
+          label: tMenu('Documentation'),
           external: true,
         },
       ],
@@ -345,16 +351,16 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         ...openaevMyProductLinks,
         {
           href: openaevScenariosHref,
-          label: t('Scenarios'),
+          label: tMenu('Scenarios'),
         },
         {
           href: 'https://demo.openaev.io',
-          label: t('LiveDemo'),
+          label: tMenu('LiveDemo'),
           external: true,
         },
         {
           href: 'https://docs.openaev.io/latest',
-          label: t('Documentation'),
+          label: tMenu('Documentation'),
           external: true,
         },
       ],
@@ -367,10 +373,10 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       links: [
         {
           href: 'https://filigran.io/platform/xtm-one/',
-          label: t('About'),
+          label: tMenu('About'),
           external: true,
         },
-        { label: t('AICatalog'), badge: t('ComingSoon') },
+        { label: tMenu('AICatalog'), badge: tMenu('ComingSoon') },
       ],
     },
     ...(canManageUser
@@ -404,7 +410,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
             key: 'xtm-platform-roadmap',
             href: xtmPlatformRoadmapHref,
             icon: PapermapIcon,
-            label: t('XTMRoadmap'),
+            label: tMenu('XTMRoadmap'),
           },
         ]
       : []),
@@ -412,21 +418,21 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       key: 'filigran-academy',
       href: 'https://academy.filigran.io/',
       icon: SchoolIcon,
-      label: t('FiligranAcademy'),
+      label: tMenu('FiligranAcademy'),
       external: true,
     },
     {
       key: 'filigran-blog',
       href: 'https://filigran.io/our-blog/',
       icon: PostIcon,
-      label: t('Blog'),
+      label: tMenu('Blog'),
       external: true,
     },
     {
       key: 'slack',
       href: 'https://filigran-community.slack.com',
       icon: SlackIcon,
-      label: t('Slack'),
+      label: tMenu('Slack'),
       external: true,
     },
   ];

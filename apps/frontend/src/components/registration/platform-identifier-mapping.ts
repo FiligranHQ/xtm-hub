@@ -1,7 +1,9 @@
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
-import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
+import {
+  PlatformIdentifier,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
 
 export interface PlatformMetadata {
   name: string;
@@ -40,12 +42,10 @@ export const translateServiceDefinitionIdentifier = (
 };
 
 export const ServiceDefinitionIdentifierToPlatformIdentifier: Partial<
-  Record<ServiceDefinitionIdentifierEnum, PlatformIdentifierEnum>
+  Record<ServiceDefinitionIdentifier, PlatformIdentifier>
 > = {
-  [ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION]:
-    PlatformIdentifierEnum.OPENCTI,
-  [ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION]:
-    PlatformIdentifierEnum.OPENAEV,
+  [ServiceDefinitionIdentifier.OpenctiRegistration]: PlatformIdentifier.Opencti,
+  [ServiceDefinitionIdentifier.OpenaevRegistration]: PlatformIdentifier.Openaev,
 };
 
 export const serviceInstanceTagByPlatformIdentifier: Record<
@@ -54,4 +54,17 @@ export const serviceInstanceTagByPlatformIdentifier: Record<
 > = {
   [PlatformIdentifierEnum.OPENCTI]: ServiceInstanceTagEnum.OPENCTI,
   [PlatformIdentifierEnum.OPENAEV]: ServiceInstanceTagEnum.OPENAEV,
+};
+
+export const getRegisteredPlatformServiceIdentifier = (
+  platformIdentifier: PlatformIdentifier
+): ServiceDefinitionIdentifier | undefined => {
+  const mapping: Record<PlatformIdentifier, ServiceDefinitionIdentifier> = {
+    [PlatformIdentifier.Opencti]:
+      ServiceDefinitionIdentifier.OpenctiRegistration,
+    [PlatformIdentifier.Openaev]:
+      ServiceDefinitionIdentifier.OpenaevRegistration,
+  };
+
+  return mapping[platformIdentifier];
 };

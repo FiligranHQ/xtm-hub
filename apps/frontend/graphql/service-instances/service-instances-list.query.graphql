@@ -1,4 +1,4 @@
-query PrivateNavigationServiceInstances(
+query ServiceInstancesList(
   $count: Int!
   $orderBy: ServiceInstanceOrdering!
   $orderMode: OrderingMode!
@@ -14,16 +14,6 @@ query PrivateNavigationServiceInstances(
         links {
           url
         }
-      }
-    }
-  }
-  registeredPlatforms(input: {}) {
-    title
-    url
-    identifier
-    subscription {
-      service_instance {
-        id
       }
     }
   }

@@ -395,7 +395,7 @@
     "Remove": "Remove",
     "Update": "Update"
   },
-  "PublicMenu": {
+  "Menu": {
     "XTMPlatform": "XTM Platform",
     "StartFreeTrial": "Start Free Trial",
     "CustomDashboards": "Custom Dashboards",
@@ -411,27 +411,9 @@
     "Slack": "Slack",
     "About": "About",
     "AICatalog": "AI Catalog",
-    "ComingSoon": "Coming soon"
-  },
-  "PrivateMenu": {
-    "XTMPlatform": "XTM Platform",
+    "ComingSoon": "Coming soon",
     "MyProduct": "My product",
-    "MyProducts": "My products",
-    "StartFreeTrial": "Start Free Trial",
-    "CustomDashboards": "Custom Dashboards",
-    "CustomViews": "Custom Views",
-    "Integrations": "Integrations",
-    "Playbooks": "Playbooks",
-    "LiveDemo": "Live Demo",
-    "Documentation": "Documentation",
-    "Scenarios": "Scenarios",
-    "XTMRoadmap": "XTM Platform Roadmap",
-    "FiligranAcademy": "Filigran Academy",
-    "Blog": "Blog",
-    "Slack": "Slack",
-    "About": "About",
-    "AICatalog": "AI Catalog",
-    "ComingSoon": "Coming soon"
+    "MyProducts": "My products"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",

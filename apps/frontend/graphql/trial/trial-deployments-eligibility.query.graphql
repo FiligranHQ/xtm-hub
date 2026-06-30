@@ -1,4 +1,4 @@
-query PrivateNavigationTrialEligibility($input: TrialDeploymentsInput!) {
+query TrialDeploymentsEligibility($input: TrialDeploymentsInput!) {
   trialDeployments(input: $input) {
     availableTrials
     isBlacklisted

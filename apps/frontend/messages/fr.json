@@ -395,7 +395,7 @@
     "Remove": "Retirer",
     "Update": "Modifier"
   },
-  "PublicMenu": {
+  "Menu": {
     "XTMPlatform": "Plateforme XTM",
     "StartFreeTrial": "Commencer l'essai gratuit",
     "CustomDashboards": "Tableaux de bord personnalisés",
@@ -405,33 +405,15 @@
     "LiveDemo": "Démonstration en direct",
     "Documentation": "Documentation",
     "Scenarios": "Scénarios",
-    "XTMRoadmap": "Feuille de route de la plateforme XTM",
+    "XTMRoadmap": "XTM Platform Roadmap",
     "FiligranAcademy": "Filigran Academy",
     "Blog": "Blog",
     "Slack": "Slack",
     "About": "À propos",
     "AICatalog": "Catalogue IA",
-    "ComingSoon": "À venir"
-  },
-  "PrivateMenu": {
-    "XTMPlatform": "Plateforme XTM",
+    "ComingSoon": "À venir",
     "MyProduct": "Mon produit",
-    "MyProducts": "Mes produits",
-    "StartFreeTrial": "Commencer l'essai gratuit",
-    "CustomDashboards": "Tableaux de bord personnalisés",
-    "CustomViews": "Vues personnalisées",
-    "Integrations": "Intégrations",
-    "Playbooks": "Guides pratiques",
-    "LiveDemo": "Démonstration en direct",
-    "Documentation": "Documentation",
-    "Scenarios": "Scénarios",
-    "XTMRoadmap": "Feuille de route de la plateforme XTM",
-    "FiligranAcademy": "Filigran Academy",
-    "Blog": "Blog",
-    "Slack": "Slack",
-    "About": "À propos",
-    "AICatalog": "Catalogue IA",
-    "ComingSoon": "À venir"
+    "MyProducts": "Mes produits"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",

@@ -1,8 +1,10 @@
+import { getRegisteredPlatformServiceIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { APP_PATH } from '@/utils/path/constant';
 import {
   PlatformIdentifier,
-  PrivateNavigationServiceInstancesQuery,
+  RegisteredPlatformsListQuery,
   ServiceDefinitionIdentifier,
+  ServiceInstancesListQuery,
 } from '@graphql/generated';
 
 export interface PrivateNavigationRegisteredPlatformLink {
@@ -16,7 +18,7 @@ const getFirstNonEmptyServiceUrl = (
 ): string | undefined => links?.find((link) => !!link?.url)?.url ?? undefined;
 
 export const getPrivateNavigationServiceHrefs = (
-  queryData: PrivateNavigationServiceInstancesQuery | undefined
+  queryData: ServiceInstancesListQuery | undefined
 ) => {
   const serviceHrefs = new Map<ServiceDefinitionIdentifier, string>();
 
@@ -48,21 +50,8 @@ export const getPrivateNavigationServiceHrefs = (
   return serviceHrefs;
 };
 
-const getRegisteredPlatformServiceIdentifier = (
-  platformIdentifier: PlatformIdentifier
-): ServiceDefinitionIdentifier | undefined => {
-  switch (platformIdentifier) {
-    case PlatformIdentifier.Opencti:
-      return ServiceDefinitionIdentifier.OpenctiRegistration;
-    case PlatformIdentifier.Openaev:
-      return ServiceDefinitionIdentifier.OpenaevRegistration;
-    default:
-      return undefined;
-  }
-};
-
 export const getPrivateNavigationRegisteredPlatformsByIdentifier = (
-  queryData: PrivateNavigationServiceInstancesQuery | undefined,
+  queryData: RegisteredPlatformsListQuery | undefined,
   platformIdentifier: PlatformIdentifier
 ): PrivateNavigationRegisteredPlatformLink[] => {
   const registeredPlatformIdentifier =

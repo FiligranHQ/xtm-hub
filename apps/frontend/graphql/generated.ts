@@ -2634,21 +2634,26 @@ export type OrganizationSubscribedServicesListQueryVariables = Exact<{
 
 export type OrganizationSubscribedServicesListQuery = { __typename?: 'Query', subscriptions: { __typename?: 'SubscriptionConnection', totalCount: number, edges: Array<{ __typename?: 'SubscriptionEdge', node: { __typename?: 'SubscriptionModel', id: string, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string, creation_status: ServiceInstanceCreationStatus | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', id: string, name: string, identifier: ServiceDefinitionIdentifier } | null } } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null, endCursor: string | null } } };
 
-export type PrivateNavigationTrialEligibilityQueryVariables = Exact<{
-  input: TrialDeploymentsInput;
-}>;
+export type RegisteredPlatformsListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PrivateNavigationTrialEligibilityQuery = { __typename?: 'Query', trialDeployments: { __typename?: 'TrialsDeployments', availableTrials: Array<PlatformIdentifier>, isBlacklisted: boolean } };
+export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', title: string, url: string, identifier: ServiceDefinitionIdentifier, subscription: { __typename?: 'SubscriptionModel', service_instance: { __typename?: 'ServiceInstance', id: string } } | null }> };
 
-export type PrivateNavigationServiceInstancesQueryVariables = Exact<{
+export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
 }>;
 
 
-export type PrivateNavigationServiceInstancesQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, name: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null, links: Array<{ __typename?: 'ServiceLink', url: string | null } | null> | null } | null }> }, registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', title: string, url: string, identifier: ServiceDefinitionIdentifier, subscription: { __typename?: 'SubscriptionModel', service_instance: { __typename?: 'ServiceInstance', id: string } } | null }> };
+export type ServiceInstancesListQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, name: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null, links: Array<{ __typename?: 'ServiceLink', url: string | null } | null> | null } | null }> } };
+
+export type TrialDeploymentsEligibilityQueryVariables = Exact<{
+  input: TrialDeploymentsInput;
+}>;
+
+
+export type TrialDeploymentsEligibilityQuery = { __typename?: 'Query', trialDeployments: { __typename?: 'TrialsDeployments', availableTrials: Array<PlatformIdentifier>, isBlacklisted: boolean } };
 
 export type UseCaseAddMutationVariables = Exact<{
   input: AddUseCaseInput;
@@ -2910,62 +2915,68 @@ useInfiniteOrganizationSubscribedServicesListQuery.getKey = (variables: Organiza
 useInfiniteOrganizationSubscribedServicesListQuery.getRootKey = () => ['OrganizationSubscribedServicesList.infinite'] as const;
 useOrganizationSubscribedServicesListQuery.fetcher = (client: GraphQLClient, variables: OrganizationSubscribedServicesListQueryVariables, headers?: RequestInit['headers']) => fetcher<OrganizationSubscribedServicesListQuery, OrganizationSubscribedServicesListQueryVariables>(client, OrganizationSubscribedServicesListDocument, variables, headers);
 
-export const PrivateNavigationTrialEligibilityDocument = `
-    query PrivateNavigationTrialEligibility($input: TrialDeploymentsInput!) {
-  trialDeployments(input: $input) {
-    availableTrials
-    isBlacklisted
+export const RegisteredPlatformsListDocument = `
+    query RegisteredPlatformsList {
+  registeredPlatforms(input: {}) {
+    title
+    url
+    identifier
+    subscription {
+      service_instance {
+        id
+      }
+    }
   }
 }
     `;
 
-export const usePrivateNavigationTrialEligibilityQuery = <
-      TData = PrivateNavigationTrialEligibilityQuery,
+export const useRegisteredPlatformsListQuery = <
+      TData = RegisteredPlatformsListQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: PrivateNavigationTrialEligibilityQueryVariables,
-      options?: Omit<UseQueryOptions<PrivateNavigationTrialEligibilityQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<PrivateNavigationTrialEligibilityQuery, TError, TData>['queryKey'] },
+      variables?: RegisteredPlatformsListQueryVariables,
+      options?: Omit<UseQueryOptions<RegisteredPlatformsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredPlatformsListQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useQuery<PrivateNavigationTrialEligibilityQuery, TError, TData>(
+    return useQuery<RegisteredPlatformsListQuery, TError, TData>(
       {
-    queryKey: ['PrivateNavigationTrialEligibility', variables],
-    queryFn: fetcher<PrivateNavigationTrialEligibilityQuery, PrivateNavigationTrialEligibilityQueryVariables>(client, PrivateNavigationTrialEligibilityDocument, variables, headers),
+    queryKey: variables === undefined ? ['RegisteredPlatformsList'] : ['RegisteredPlatformsList', variables],
+    queryFn: fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, variables, headers),
     ...options
   }
     )};
 
-usePrivateNavigationTrialEligibilityQuery.getKey = (variables: PrivateNavigationTrialEligibilityQueryVariables) => ['PrivateNavigationTrialEligibility', variables];
-usePrivateNavigationTrialEligibilityQuery.getRootKey = () => ['PrivateNavigationTrialEligibility'] as const;
-export const useInfinitePrivateNavigationTrialEligibilityQuery = <
-      TData = InfiniteData<PrivateNavigationTrialEligibilityQuery>,
+useRegisteredPlatformsListQuery.getKey = (variables?: RegisteredPlatformsListQueryVariables) => variables === undefined ? ['RegisteredPlatformsList'] : ['RegisteredPlatformsList', variables];
+useRegisteredPlatformsListQuery.getRootKey = () => ['RegisteredPlatformsList'] as const;
+export const useInfiniteRegisteredPlatformsListQuery = <
+      TData = InfiniteData<RegisteredPlatformsListQuery>,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: PrivateNavigationTrialEligibilityQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<PrivateNavigationTrialEligibilityQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<PrivateNavigationTrialEligibilityQuery, TError, TData>['queryKey'] },
+      variables: RegisteredPlatformsListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<RegisteredPlatformsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredPlatformsListQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useInfiniteQuery<PrivateNavigationTrialEligibilityQuery, TError, TData>(
+    return useInfiniteQuery<RegisteredPlatformsListQuery, TError, TData>(
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['PrivateNavigationTrialEligibility.infinite', variables],
-      queryFn: (metaData) => fetcher<PrivateNavigationTrialEligibilityQuery, PrivateNavigationTrialEligibilityQueryVariables>(client, PrivateNavigationTrialEligibilityDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      queryKey: optionsQueryKey ?? variables === undefined ? ['RegisteredPlatformsList.infinite'] : ['RegisteredPlatformsList.infinite', variables],
+      queryFn: (metaData) => fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       ...restOptions
     }
   })()
     )};
 
-useInfinitePrivateNavigationTrialEligibilityQuery.getKey = (variables: PrivateNavigationTrialEligibilityQueryVariables) => ['PrivateNavigationTrialEligibility.infinite', variables];
-useInfinitePrivateNavigationTrialEligibilityQuery.getRootKey = () => ['PrivateNavigationTrialEligibility.infinite'] as const;
-usePrivateNavigationTrialEligibilityQuery.fetcher = (client: GraphQLClient, variables: PrivateNavigationTrialEligibilityQueryVariables, headers?: RequestInit['headers']) => fetcher<PrivateNavigationTrialEligibilityQuery, PrivateNavigationTrialEligibilityQueryVariables>(client, PrivateNavigationTrialEligibilityDocument, variables, headers);
+useInfiniteRegisteredPlatformsListQuery.getKey = (variables?: RegisteredPlatformsListQueryVariables) => variables === undefined ? ['RegisteredPlatformsList.infinite'] : ['RegisteredPlatformsList.infinite', variables];
+useInfiniteRegisteredPlatformsListQuery.getRootKey = () => ['RegisteredPlatformsList.infinite'] as const;
+useRegisteredPlatformsListQuery.fetcher = (client: GraphQLClient, variables?: RegisteredPlatformsListQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, variables, headers);
 
-export const PrivateNavigationServiceInstancesDocument = `
-    query PrivateNavigationServiceInstances($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!) {
+export const ServiceInstancesListDocument = `
+    query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!) {
   serviceInstances(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
     edges {
       node {
@@ -2980,63 +2991,107 @@ export const PrivateNavigationServiceInstancesDocument = `
       }
     }
   }
-  registeredPlatforms(input: {}) {
-    title
-    url
-    identifier
-    subscription {
-      service_instance {
-        id
-      }
-    }
-  }
 }
     `;
 
-export const usePrivateNavigationServiceInstancesQuery = <
-      TData = PrivateNavigationServiceInstancesQuery,
+export const useServiceInstancesListQuery = <
+      TData = ServiceInstancesListQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: PrivateNavigationServiceInstancesQueryVariables,
-      options?: Omit<UseQueryOptions<PrivateNavigationServiceInstancesQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<PrivateNavigationServiceInstancesQuery, TError, TData>['queryKey'] },
+      variables: ServiceInstancesListQueryVariables,
+      options?: Omit<UseQueryOptions<ServiceInstancesListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ServiceInstancesListQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useQuery<PrivateNavigationServiceInstancesQuery, TError, TData>(
+    return useQuery<ServiceInstancesListQuery, TError, TData>(
       {
-    queryKey: ['PrivateNavigationServiceInstances', variables],
-    queryFn: fetcher<PrivateNavigationServiceInstancesQuery, PrivateNavigationServiceInstancesQueryVariables>(client, PrivateNavigationServiceInstancesDocument, variables, headers),
+    queryKey: ['ServiceInstancesList', variables],
+    queryFn: fetcher<ServiceInstancesListQuery, ServiceInstancesListQueryVariables>(client, ServiceInstancesListDocument, variables, headers),
     ...options
   }
     )};
 
-usePrivateNavigationServiceInstancesQuery.getKey = (variables: PrivateNavigationServiceInstancesQueryVariables) => ['PrivateNavigationServiceInstances', variables];
-usePrivateNavigationServiceInstancesQuery.getRootKey = () => ['PrivateNavigationServiceInstances'] as const;
-export const useInfinitePrivateNavigationServiceInstancesQuery = <
-      TData = InfiniteData<PrivateNavigationServiceInstancesQuery>,
+useServiceInstancesListQuery.getKey = (variables: ServiceInstancesListQueryVariables) => ['ServiceInstancesList', variables];
+useServiceInstancesListQuery.getRootKey = () => ['ServiceInstancesList'] as const;
+export const useInfiniteServiceInstancesListQuery = <
+      TData = InfiniteData<ServiceInstancesListQuery>,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: PrivateNavigationServiceInstancesQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<PrivateNavigationServiceInstancesQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<PrivateNavigationServiceInstancesQuery, TError, TData>['queryKey'] },
+      variables: ServiceInstancesListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ServiceInstancesListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ServiceInstancesListQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useInfiniteQuery<PrivateNavigationServiceInstancesQuery, TError, TData>(
+    return useInfiniteQuery<ServiceInstancesListQuery, TError, TData>(
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['PrivateNavigationServiceInstances.infinite', variables],
-      queryFn: (metaData) => fetcher<PrivateNavigationServiceInstancesQuery, PrivateNavigationServiceInstancesQueryVariables>(client, PrivateNavigationServiceInstancesDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      queryKey: optionsQueryKey ?? ['ServiceInstancesList.infinite', variables],
+      queryFn: (metaData) => fetcher<ServiceInstancesListQuery, ServiceInstancesListQueryVariables>(client, ServiceInstancesListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       ...restOptions
     }
   })()
     )};
 
-useInfinitePrivateNavigationServiceInstancesQuery.getKey = (variables: PrivateNavigationServiceInstancesQueryVariables) => ['PrivateNavigationServiceInstances.infinite', variables];
-useInfinitePrivateNavigationServiceInstancesQuery.getRootKey = () => ['PrivateNavigationServiceInstances.infinite'] as const;
-usePrivateNavigationServiceInstancesQuery.fetcher = (client: GraphQLClient, variables: PrivateNavigationServiceInstancesQueryVariables, headers?: RequestInit['headers']) => fetcher<PrivateNavigationServiceInstancesQuery, PrivateNavigationServiceInstancesQueryVariables>(client, PrivateNavigationServiceInstancesDocument, variables, headers);
+useInfiniteServiceInstancesListQuery.getKey = (variables: ServiceInstancesListQueryVariables) => ['ServiceInstancesList.infinite', variables];
+useInfiniteServiceInstancesListQuery.getRootKey = () => ['ServiceInstancesList.infinite'] as const;
+useServiceInstancesListQuery.fetcher = (client: GraphQLClient, variables: ServiceInstancesListQueryVariables, headers?: RequestInit['headers']) => fetcher<ServiceInstancesListQuery, ServiceInstancesListQueryVariables>(client, ServiceInstancesListDocument, variables, headers);
+
+export const TrialDeploymentsEligibilityDocument = `
+    query TrialDeploymentsEligibility($input: TrialDeploymentsInput!) {
+  trialDeployments(input: $input) {
+    availableTrials
+    isBlacklisted
+  }
+}
+    `;
+
+export const useTrialDeploymentsEligibilityQuery = <
+      TData = TrialDeploymentsEligibilityQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: TrialDeploymentsEligibilityQueryVariables,
+      options?: Omit<UseQueryOptions<TrialDeploymentsEligibilityQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<TrialDeploymentsEligibilityQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<TrialDeploymentsEligibilityQuery, TError, TData>(
+      {
+    queryKey: ['TrialDeploymentsEligibility', variables],
+    queryFn: fetcher<TrialDeploymentsEligibilityQuery, TrialDeploymentsEligibilityQueryVariables>(client, TrialDeploymentsEligibilityDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useTrialDeploymentsEligibilityQuery.getKey = (variables: TrialDeploymentsEligibilityQueryVariables) => ['TrialDeploymentsEligibility', variables];
+useTrialDeploymentsEligibilityQuery.getRootKey = () => ['TrialDeploymentsEligibility'] as const;
+export const useInfiniteTrialDeploymentsEligibilityQuery = <
+      TData = InfiniteData<TrialDeploymentsEligibilityQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: TrialDeploymentsEligibilityQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<TrialDeploymentsEligibilityQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<TrialDeploymentsEligibilityQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<TrialDeploymentsEligibilityQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['TrialDeploymentsEligibility.infinite', variables],
+      queryFn: (metaData) => fetcher<TrialDeploymentsEligibilityQuery, TrialDeploymentsEligibilityQueryVariables>(client, TrialDeploymentsEligibilityDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteTrialDeploymentsEligibilityQuery.getKey = (variables: TrialDeploymentsEligibilityQueryVariables) => ['TrialDeploymentsEligibility.infinite', variables];
+useInfiniteTrialDeploymentsEligibilityQuery.getRootKey = () => ['TrialDeploymentsEligibility.infinite'] as const;
+useTrialDeploymentsEligibilityQuery.fetcher = (client: GraphQLClient, variables: TrialDeploymentsEligibilityQueryVariables, headers?: RequestInit['headers']) => fetcher<TrialDeploymentsEligibilityQuery, TrialDeploymentsEligibilityQueryVariables>(client, TrialDeploymentsEligibilityDocument, variables, headers);
 
 export const UseCaseAddDocument = `
     mutation UseCaseAdd($input: AddUseCaseInput!) {
