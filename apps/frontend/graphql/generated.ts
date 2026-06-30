@@ -863,6 +863,10 @@ export enum LogicalOperator {
   Or = 'OR'
 }
 
+export enum ManifestType {
+  Connector = 'connector'
+}
+
 export type MeUserSubscription = {
   __typename?: 'MeUserSubscription';
   delete: Maybe<User>;
