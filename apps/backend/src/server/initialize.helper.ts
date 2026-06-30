@@ -88,13 +88,14 @@ export const ensureRoleExists = async (role: InitEntityWithId) => {
 };
 
 export const ensureRoleHasCapability = async (
-  role: InitEntityWithId,
-  capability: InitEntityWithId
+  role: RolePortal,
+  capability: CapabilityPortal
 ) => {
   const roleCapability = await db<RolePortalCapabilityPortal>(
     'RolePortal_CapabilityPortal'
   )
-    .where({ capability_portal_id: capability.id, role_portal_id: role.id })
+    .where('capability_portal_id', capability.id)
+    .andWhere('role_portal_id', role.id)
     .first();
 
   if (!roleCapability) {
