@@ -257,7 +257,7 @@ const PublicNavigation = ({ open }: PublicNavigationProps) => {
   const { sections, bottomLinks } = usePublicNavigation();
 
   return (
-    <nav className="flex-1 min-h-0 pt-s overflow-y-auto">
+    <nav className="flex-1 min-h-0 overflow-y-auto">
       {open ? (
         <Accordion
           type="single"

@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@playwright/test": "1.61.0",
+    "@playwright/test": "1.61.1",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",

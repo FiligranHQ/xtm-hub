@@ -81,9 +81,11 @@ const ShareableResourceCard = ({
             />
           </div>
         ) : (
-          <p className="p-m text-muted-foreground text-sm overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
-            {document.short_description}
-          </p>
+          <div className="p-m">
+            <p className="text-muted-foreground text-sm overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
+              {document.short_description}
+            </p>
+          </div>
         )}
       </Link>
       <div className="flex items-center justify-between gap-m pl-m pb-m mt-auto">
