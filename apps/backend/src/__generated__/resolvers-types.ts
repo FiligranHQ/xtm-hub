@@ -855,6 +855,10 @@ export enum LogicalOperator {
   Or = 'OR'
 }
 
+export enum ManifestType {
+  Connector = 'connector'
+}
+
 export type MeUserSubscription = {
   __typename?: 'MeUserSubscription';
   delete?: Maybe<User>;
@@ -2756,6 +2760,7 @@ export type ResolversTypes = ResolversObject<{
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LogicalFilterInput: LogicalFilterInput;
   LogicalOperator: LogicalOperator;
+  ManifestType: ManifestType;
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;

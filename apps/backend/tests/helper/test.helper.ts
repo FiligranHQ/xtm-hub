@@ -3,6 +3,7 @@ import { db } from '../../knexfile';
 import {
   CompetitorTier,
   FiligranProduct,
+  ManifestType,
   Timeline,
 } from '../../src/__generated__/resolvers-types';
 import Competitor, {
@@ -10,6 +11,11 @@ import Competitor, {
   CompetitorMutator,
 } from '../../src/model/kanel/public/Competitor';
 import Epic, { EpicId, EpicMutator } from '../../src/model/kanel/public/Epic';
+import ManifestRebuildQueue, {
+  ManifestRebuildQueueId,
+  ManifestRebuildQueueInitializer,
+  ManifestRebuildQueueMutator,
+} from '../../src/model/kanel/public/ManifestRebuildQueue';
 import ObjectUseCase, {
   ObjectUseCaseMutator,
 } from '../../src/model/kanel/public/ObjectUseCase';
@@ -21,6 +27,7 @@ import Subscription, {
   SubscriptionMutator,
 } from '../../src/model/kanel/public/Subscription';
 import UseCase, { UseCaseMutator } from '../../src/model/kanel/public/UseCase';
+import { ManifestRebuildQueueStatus } from '../../src/modules/shareable-resource/manifest/manifest.consts';
 import { TEST_ORGANIZATIONS } from '../tests.const';
 import {
   mockPlatformConfig,
@@ -140,6 +147,41 @@ export const TestHelper = {
       field: ObjectUseCaseMutator
     ): Promise<ObjectUseCase | undefined> => {
       return db<ObjectUseCase>('Object_UseCase').where(field);
+    },
+  },
+  manifestRebuildQueue: {
+    create: async (
+      data?: Partial<ManifestRebuildQueueInitializer>
+    ): Promise<ManifestRebuildQueue> => {
+      const [row] = await db<ManifestRebuildQueue>('ManifestRebuildQueue')
+        .insert({
+          id: uuidv4() as ManifestRebuildQueueId,
+          product: 'opencti',
+          version: '6.4.0',
+          type: ManifestType.Connector,
+          status: ManifestRebuildQueueStatus.Pending,
+          ...data,
+        })
+        .returning('*');
+      return row!;
+    },
+    delete: async (field: ManifestRebuildQueueMutator) => {
+      await db<ManifestRebuildQueue>('ManifestRebuildQueue').where(field).del();
+    },
+    load: async (
+      field: ManifestRebuildQueueMutator
+    ): Promise<ManifestRebuildQueue | undefined> => {
+      return db<ManifestRebuildQueue>('ManifestRebuildQueue')
+        .where(field)
+        .select('*')
+        .first();
+    },
+    loadAll: async (
+      field: ManifestRebuildQueueMutator
+    ): Promise<ManifestRebuildQueue[]> => {
+      return db<ManifestRebuildQueue[]>('ManifestRebuildQueue')
+        .where(field)
+        .select('*');
     },
   },
 };
