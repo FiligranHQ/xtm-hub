@@ -8,7 +8,7 @@ import organizationSwitcherMutation, {
 } from '@generated/OrganizationSwitcherMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { useMutation } from 'react-relay';
 
 interface OrganizationOption {
@@ -28,22 +28,27 @@ const HeaderOrganizationSwitcher = () => {
     return null;
   }
 
-  const parsedOrganizations = me.organizations.map((org) => ({
-    ...org,
-    name:
-      org.name === me.email
+  const parsedOrganizations = useMemo(() => {
+    return me.organizations.map((org) => ({
+      ...org,
+      name: org.personal_space
         ? t('OrganizationSwitcher.PersonalSpace')
         : org.name,
-  }));
+    }));
+  }, [me.organizations, t]);
 
-  const organizationOptions = parsedOrganizations.map((organization) => ({
-    value: organization.id,
-    label: organization.name,
-  }));
+  const organizationOptions = useMemo(() => {
+    return parsedOrganizations.map((organization) => ({
+      value: organization.id,
+      label: organization.name,
+    }));
+  }, [parsedOrganizations]);
 
-  const selectedOrganization = organizationOptions.find(
-    ({ value }) => value === me.selected_organization_id
-  );
+  const selectedOrganization = useMemo(() => {
+    return organizationOptions.find(
+      ({ value }) => value === me.selected_organization_id
+    );
+  }, [organizationOptions, me.selected_organization_id]);
 
   const handleOnValueChange = (selectedValue?: OrganizationOption) => {
     if (!selectedValue || selectedValue.value === me.selected_organization_id) {

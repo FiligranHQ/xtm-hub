@@ -12,7 +12,7 @@ export interface PrivateNavigationRegisteredPlatformLink {
 }
 
 const getFirstNonEmptyServiceUrl = (
-  links: { url: string | null }[] | null | undefined
+  links: Array<{ url: string | null } | null> | null | undefined
 ): string | undefined => links?.find((link) => !!link?.url)?.url ?? undefined;
 
 export const getPrivateNavigationServiceHrefs = (
