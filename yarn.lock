@@ -14622,9 +14622,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:3.2.10":
-  version: 3.2.10
-  resolution: "knex@npm:3.2.10"
+"knex@npm:3.3.0":
+  version: 3.3.0
+  resolution: "knex@npm:3.3.0"
   dependencies:
     colorette: "npm:2.0.19"
     commander: "npm:^10.0.0"
@@ -14638,12 +14638,14 @@ __metadata:
     pg-connection-string: "npm:2.6.2"
     rechoir: "npm:^0.8.0"
     resolve-from: "npm:^5.0.0"
-    tarn: "npm:^3.0.2"
+    tarn: "npm:^3.1.0"
     tildify: "npm:2.0.0"
   peerDependencies:
     pg-query-stream: ^4.14.0
   peerDependenciesMeta:
     better-sqlite3:
+      optional: true
+    mariadb:
       optional: true
     mysql:
       optional: true
@@ -14661,7 +14663,7 @@ __metadata:
       optional: true
   bin:
     knex: bin/cli.js
-  checksum: 10/6d043d0d55bee2d6ecc977dd67fbff61121f8832d70a635f490a3979bf82cae001ee0b53a1d1222ef46c3f1bf5afac39b1fb918aaefabcc7a7a57d7c97e3cf7f
+  checksum: 10/40924546fb223d186dd76b5eea415b5eaee517b9ba1d8ddad689e5c68a0e4e08fffe8e69f9e9d31ca533c8b8c0244f7bb47bc75b308efb58bceccc16322ec11d
   languageName: node
   linkType: hard
 
@@ -19686,6 +19688,13 @@ __metadata:
   version: 3.0.2
   resolution: "tarn@npm:3.0.2"
   checksum: 10/7476ca83a39e0e4b1d951725b6c42071f16fdd65c456936c305500af00731861de0a20e41e59b54cf410b979722816db43acd137a5a580c3c8e48a73f389b523
+  languageName: node
+  linkType: hard
+
+"tarn@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "tarn@npm:3.1.0"
+  checksum: 10/79a4d189b63b19227ed75cc85af9ff4a84a8a85e485c77ced4dc5f2695a6ff8536d23b3fd4f05baf4c039ca8494c4544792d77dfe5315d83fddbef515281c53b
   languageName: node
   linkType: hard
 
