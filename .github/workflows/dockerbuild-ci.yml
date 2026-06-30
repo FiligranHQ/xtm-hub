@@ -87,6 +87,13 @@ jobs:
         run: |
           yarn i18n:check
 
+      - name: Husky setup reminder
+        if: failure()
+        run: |
+          echo "::warning::This should have been caught locally by the Husky pre-commit hook."
+          echo "::warning::Since enableScripts is disabled in .yarnrc.yml, Husky is not set up automatically."
+          echo "::warning::Run 'yarn workspace @xtm-hub/backend prepare' to install the git hooks."
+
   build-images-tests:
     needs:
       - detect-changes
