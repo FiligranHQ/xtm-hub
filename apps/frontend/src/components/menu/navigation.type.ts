@@ -31,3 +31,9 @@ export interface SectionConfig {
   links: SectionLink[];
   href?: string;
 }
+
+export interface NavigationConfig {
+  sections: SectionConfig[];
+  bottomLinks: BottomLink[];
+  footerSections?: SectionConfig[];
+}

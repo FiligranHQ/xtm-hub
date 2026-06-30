@@ -8,13 +8,14 @@ interface PublicNavigationProps {
 }
 
 const PublicNavigation = ({ open }: PublicNavigationProps) => {
-  const { sections, bottomLinks } = usePublicNavigation();
+  const { sections, bottomLinks, footerSections } = usePublicNavigation();
 
   return (
     <SharedNavigation
       open={open}
       sections={sections}
       bottomLinks={bottomLinks}
+      footerSections={footerSections}
     />
   );
 };

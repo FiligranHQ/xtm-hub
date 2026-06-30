@@ -164,7 +164,7 @@ describe('PrivateNavigation component — open={true}', () => {
   });
 
   it('renders section labels and bottom links in accordion mode', () => {
-    testRender(<PrivateNavigation open={true} />);
+    const { container } = testRender(<PrivateNavigation open={true} />);
 
     expect(screen.getByText('XTMPlatform')).toBeInTheDocument();
     expect(screen.getByText('OpenCTI')).toBeInTheDocument();
@@ -174,12 +174,16 @@ describe('PrivateNavigation component — open={true}', () => {
     expect(screen.getByText('FiligranAcademy')).toBeInTheDocument();
     expect(screen.getByText('Blog')).toBeInTheDocument();
     expect(screen.getByText('Slack')).toBeInTheDocument();
+
+    expect(
+      container.querySelectorAll('div.bg-elevation-border-strong')
+    ).toHaveLength(1);
   });
 
-  it('renders Users as a top-level link when user is authorized', async () => {
+  it('renders Users and Settings after Slack with a dedicated separator when user is authorized', async () => {
     const user = userEvent.setup();
 
-    testRender(<PrivateNavigation open={true} />, {
+    const { container } = testRender(<PrivateNavigation open={true} />, {
       me: {
         capabilities: [{ name: PortalCapabilityEnum.BYPASS } as never],
         selected_org_capabilities: [
@@ -188,16 +192,24 @@ describe('PrivateNavigation component — open={true}', () => {
       },
     });
 
+    const slackLink = screen.getByRole('link', { name: 'Slack' });
     const usersLink = screen.getByRole('link', {
       name: 'Users',
     });
+
+    expect(
+      slackLink.compareDocumentPosition(usersLink) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
     expect(usersLink).toHaveAttribute('href', `/${APP_PATH}/manage/user`);
+    expect(
+      container.querySelectorAll('div.bg-elevation-border-strong')
+    ).toHaveLength(2);
 
     await expandSection(user, 'Settings');
 
     expect(screen.getByText('Parameter')).toBeInTheDocument();
     expect(screen.getByText('Security')).toBeInTheDocument();
-    expect(screen.getAllByRole('link', { name: 'Users' })).toHaveLength(1);
   });
 
   it('renders XTM Platform as a link, not as an accordion trigger', () => {
@@ -304,6 +316,28 @@ describe('PrivateNavigation component — open={false}', () => {
 
     const academyLabel = screen.getByText('FiligranAcademy');
     expect(academyLabel.className).toContain('sr-only');
+  });
+
+  it('keeps footer settings as popover section in closed mode when visible', async () => {
+    const user = userEvent.setup();
+    testRender(<PrivateNavigation open={false} />, {
+      me: {
+        capabilities: [{ name: PortalCapabilityEnum.BYPASS } as never],
+      },
+    });
+
+    const settingsButton = screen.getByRole('button', { name: 'Settings' });
+    await user.hover(settingsButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Parameter')).toBeInTheDocument();
+    });
+
+    await user.unhover(settingsButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Parameter')).not.toBeInTheDocument();
+    });
   });
 
   it('shows and hides OpenCTI popover links on hover/unhover', async () => {

@@ -1,4 +1,8 @@
-import { BottomLink, SectionConfig } from '@/components/menu/navigation.type';
+import {
+  BottomLink,
+  NavigationConfig,
+  SectionConfig,
+} from '@/components/menu/navigation.type';
 import {
   HomeIcon,
   LogoXtmOneIcon,
@@ -11,12 +15,7 @@ import {
 } from '@filigran/icon';
 import { useLocale, useTranslations } from 'next-intl';
 
-export interface PublicNavigationConfig {
-  sections: SectionConfig[];
-  bottomLinks: BottomLink[];
-}
-
-export const usePublicNavigation = (): PublicNavigationConfig => {
+export const usePublicNavigation = (): NavigationConfig => {
   const t = useTranslations();
   const locale = useLocale();
 

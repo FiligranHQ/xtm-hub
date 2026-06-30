@@ -1,6 +1,7 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   BottomLink,
+  NavigationConfig,
   SectionConfig,
   SectionLink,
 } from '@/components/menu/navigation.type';
@@ -51,11 +52,8 @@ interface SettingsLinkConfig extends SectionLink {
   isVisible?: boolean;
   skipPortalCapabilityCheck?: boolean;
 }
-export interface PrivateNavigationConfig {
-  sections: SectionConfig[];
-  bottomLinks: BottomLink[];
-}
-export const usePrivateNavigation = (): PrivateNavigationConfig => {
+
+export const usePrivateNavigation = (): NavigationConfig => {
   const { me, hasCapability, hasOrganizationCapability } =
     useContext(PortalContext);
   const tMenu = useTranslations('Menu');
@@ -379,6 +377,8 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         { label: tMenu('AICatalog'), badge: tMenu('ComingSoon') },
       ],
     },
+  ];
+  const footerSections: SectionConfig[] = [
     ...(canManageUser
       ? [
           {
@@ -436,5 +436,5 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       external: true,
     },
   ];
-  return { sections, bottomLinks };
+  return { sections, bottomLinks, footerSections };
 };

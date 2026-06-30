@@ -1,10 +1,10 @@
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
+import { ServiceDefinitionIdentifier as ServiceDefinitionIdentifierFragment } from '@generated/serviceInstance_fragment.graphql';
 import {
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
-
 export interface PlatformMetadata {
   name: string;
   learnMorePublicUrl: string;
@@ -31,7 +31,7 @@ export const PlatformMetadataMapping: Record<
 };
 
 export const translateServiceDefinitionIdentifier = (
-  serviceDefinitionIdentifier: ServiceDefinitionIdentifier
+  serviceDefinitionIdentifier: ServiceDefinitionIdentifierFragment
 ): string => {
   const platformIdentifierEnum =
     ServiceDefinitionIdentifierToPlatformIdentifier[
@@ -42,10 +42,12 @@ export const translateServiceDefinitionIdentifier = (
 };
 
 export const ServiceDefinitionIdentifierToPlatformIdentifier: Partial<
-  Record<ServiceDefinitionIdentifier, PlatformIdentifier>
+  Record<ServiceDefinitionIdentifierFragment, PlatformIdentifierEnum>
 > = {
-  [ServiceDefinitionIdentifier.OpenctiRegistration]: PlatformIdentifier.Opencti,
-  [ServiceDefinitionIdentifier.OpenaevRegistration]: PlatformIdentifier.Openaev,
+  [ServiceDefinitionIdentifier.OpenctiRegistration]:
+    PlatformIdentifierEnum.OPENCTI,
+  [ServiceDefinitionIdentifier.OpenaevRegistration]:
+    PlatformIdentifierEnum.OPENAEV,
 };
 
 export const serviceInstanceTagByPlatformIdentifier: Record<

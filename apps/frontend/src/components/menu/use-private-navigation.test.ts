@@ -125,6 +125,13 @@ const getSection = (
   key: string
 ) => sections.find((section) => section.key === key);
 
+const getFooterSection = (
+  footerSections: ReturnType<
+    typeof usePrivateNavigation
+  >['footerSections'] = [],
+  key: string
+) => footerSections.find((section) => section.key === key);
+
 const getStartFreeTrialLinks = (
   sections: ReturnType<typeof usePrivateNavigation>['sections'],
   key: string
@@ -169,14 +176,7 @@ describe('usePrivateNavigation', () => {
       'openaev',
       'xtm-one',
     ]);
-
-    expect(result.current.sections.map((section) => section.label)).toEqual([
-      'XTMPlatform',
-      'OpenCTI',
-      'OpenAEV',
-      'XTM One',
-    ]);
-
+    expect(result.current.footerSections).toEqual([]);
     expect(result.current.bottomLinks).toEqual([
       {
         key: 'filigran-academy',
@@ -202,7 +202,7 @@ describe('usePrivateNavigation', () => {
     ]);
   });
 
-  it('adds settings section immediately after xtm-one when user is authorized', () => {
+  it('adds settings as a footer section when user is authorized', () => {
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
       capabilities: [PortalCapabilityEnum.BYPASS],
@@ -213,17 +213,21 @@ describe('usePrivateNavigation', () => {
       'opencti',
       'openaev',
       'xtm-one',
-      'settings',
     ]);
+    expect(
+      result.current.footerSections?.map((section) => section.key)
+    ).toEqual(['settings']);
   });
 
-  it('hides settings section when user has no authorized settings links', () => {
+  it('hides settings footer section when user has no authorized settings links', () => {
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
       capabilities: [],
     });
 
-    expect(getSection(result.current.sections, 'settings')).toBeUndefined();
+    expect(
+      getFooterSection(result.current.footerSections, 'settings')
+    ).toBeUndefined();
   });
 
   it.each`
@@ -241,8 +245,13 @@ describe('usePrivateNavigation', () => {
       });
 
       const settingsSection = getSection(result.current.sections, 'settings');
+      const settingsFooterSection = getFooterSection(
+        result.current.footerSections,
+        'settings'
+      );
 
-      expect(settingsSection?.links.map((link) => link.label)).toEqual(
+      expect(settingsSection).toBeUndefined();
+      expect(settingsFooterSection?.links.map((link) => link.label)).toEqual(
         expectedSettingsLabels
       );
     }
@@ -627,7 +636,7 @@ describe('usePrivateNavigation', () => {
     ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}
     ${[OrganizationCapabilityEnum.MANAGE_ACCESS]}
   `(
-    'shows Users as a top-level section before Settings when org capability allows it',
+    'shows Users and Settings as footer sections when org capability allows it',
     ({ organizationCapabilities }) => {
       const { result } = renderUsePrivateNavigation({
         selectedOrganizationId: 'org-1',
@@ -641,12 +650,19 @@ describe('usePrivateNavigation', () => {
         'opencti',
         'openaev',
         'xtm-one',
-        'users',
-        'settings',
       ]);
+      expect(
+        result.current.footerSections?.map((section) => section.key)
+      ).toEqual(['users', 'settings']);
 
-      const usersSection = getSection(result.current.sections, 'users');
-      const settingsSection = getSection(result.current.sections, 'settings');
+      const usersSection = getFooterSection(
+        result.current.footerSections,
+        'users'
+      );
+      const settingsSection = getFooterSection(
+        result.current.footerSections,
+        'settings'
+      );
 
       expect(usersSection).toMatchObject({
         key: 'users',
@@ -654,13 +670,14 @@ describe('usePrivateNavigation', () => {
         href: `/${APP_PATH}/manage/user`,
         pathPrefix: `/${APP_PATH}/manage/user`,
       });
+      expect(getSection(result.current.sections, 'users')).toBeUndefined();
       expect(
         settingsSection?.links.some((link) => link.label === 'Users')
       ).toBe(false);
     }
   );
 
-  it('hides Users top-level section when selected organization is a personal space', () => {
+  it('hides Users footer section when selected organization is a personal space', () => {
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
       organizationCapabilities: [
@@ -670,10 +687,12 @@ describe('usePrivateNavigation', () => {
       capabilities: [PortalCapabilityEnum.BYPASS],
     });
 
-    expect(getSection(result.current.sections, 'users')).toBeUndefined();
+    expect(
+      getFooterSection(result.current.footerSections, 'users')
+    ).toBeUndefined();
   });
 
-  it('hides Users top-level section when organization capabilities are missing', () => {
+  it('hides Users footer section when organization capabilities are missing', () => {
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
       organizationCapabilities: [],
@@ -681,6 +700,8 @@ describe('usePrivateNavigation', () => {
       capabilities: [PortalCapabilityEnum.BYPASS],
     });
 
-    expect(getSection(result.current.sections, 'users')).toBeUndefined();
+    expect(
+      getFooterSection(result.current.footerSections, 'users')
+    ).toBeUndefined();
   });
 });

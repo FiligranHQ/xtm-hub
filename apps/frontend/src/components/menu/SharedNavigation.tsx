@@ -11,12 +11,14 @@ interface SharedNavigationProps {
   open: boolean;
   sections: SectionConfig[];
   bottomLinks: BottomLink[];
+  footerSections?: SectionConfig[];
 }
 
 export const SharedNavigation = ({
   open,
   sections,
   bottomLinks,
+  footerSections = [],
 }: SharedNavigationProps) => {
   return (
     <nav className="flex-1 min-h-0 overflow-y-auto">
@@ -71,6 +73,48 @@ export const SharedNavigation = ({
           </li>
         ))}
       </ul>
+
+      {footerSections.length > 0 && (
+        <>
+          <Separator className="my-s" />
+          {open ? (
+            <Accordion
+              type="single"
+              collapsible
+              className="w-full">
+              {footerSections.map((section) =>
+                section.href ? (
+                  <LinkedSection
+                    key={section.key}
+                    section={section}
+                    open={true}
+                  />
+                ) : (
+                  <OpenedSection
+                    key={section.key}
+                    section={section}
+                  />
+                )
+              )}
+            </Accordion>
+          ) : (
+            <ul>
+              {footerSections.map((section) => (
+                <li key={section.key}>
+                  {section.href ? (
+                    <LinkedSection
+                      section={section}
+                      open={false}
+                    />
+                  ) : (
+                    <ClosedSection section={section} />
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
     </nav>
   );
 };

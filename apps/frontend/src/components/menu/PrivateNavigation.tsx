@@ -8,13 +8,14 @@ interface PrivateNavigationProps {
 }
 
 const PrivateNavigation = ({ open }: PrivateNavigationProps) => {
-  const { sections, bottomLinks } = usePrivateNavigation();
+  const { sections, bottomLinks, footerSections } = usePrivateNavigation();
 
   return (
     <SharedNavigation
       open={open}
       sections={sections}
       bottomLinks={bottomLinks}
+      footerSections={footerSections}
     />
   );
 };
