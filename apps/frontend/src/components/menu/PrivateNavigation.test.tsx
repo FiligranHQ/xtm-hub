@@ -2,6 +2,8 @@ import PrivateNavigation from '@/components/menu/PrivateNavigation';
 import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
 import { APP_PATH } from '@/utils/path/constant';
 import testRender, { testRenderHook } from '@/utils/test/test-render';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
   PlatformIdentifier,
   PrivateNavigationServiceInstancesQuery,
@@ -161,6 +163,29 @@ describe('PrivateNavigation component — open={true}', () => {
     expect(screen.getByText('FiligranAcademy')).toBeInTheDocument();
     expect(screen.getByText('Blog')).toBeInTheDocument();
     expect(screen.getByText('Slack')).toBeInTheDocument();
+  });
+
+  it('renders settings section in UI when user is authorized', async () => {
+    const user = userEvent.setup();
+
+    testRender(<PrivateNavigation open={true} />, {
+      me: {
+        capabilities: [{ name: PortalCapabilityEnum.BYPASS } as never],
+        selected_org_capabilities: [
+          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+        ],
+      },
+    });
+
+    await expandSection(user, 'Settings');
+
+    expect(screen.getByText('Parameter')).toBeInTheDocument();
+    expect(screen.getByText('Security')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {
+        name: 'Users',
+      })
+    ).toHaveAttribute('href', `/${APP_PATH}/manage/user`);
   });
 
   it('renders XTM Platform as a link, not as an accordion trigger', () => {

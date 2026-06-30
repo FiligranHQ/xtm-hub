@@ -19,9 +19,12 @@ import {
   PapermapIcon,
   PostIcon,
   SchoolIcon,
+  SettingsIcon,
   SlackIcon,
 } from '@filigran/icon';
 import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
   OrderingMode,
   PlatformIdentifier,
@@ -35,28 +38,123 @@ import {
 import { privateNavigationKeys } from '@graphql/private-navigation/private-navigation.keys';
 import { useLocale, useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
-
 const PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES: PrivateNavigationServiceInstancesQueryVariables =
   {
     count: 50,
     orderBy: ServiceInstanceOrdering.Ordering,
     orderMode: OrderingMode.Asc,
   };
-
+interface SettingsLinkConfig extends SectionLink {
+  restriction?: PortalCapabilityEnum[];
+  isVisible?: boolean;
+  skipPortalCapabilityCheck?: boolean;
+}
 export interface PrivateNavigationConfig {
   sections: SectionConfig[];
   bottomLinks: BottomLink[];
 }
-
 export const usePrivateNavigation = (): PrivateNavigationConfig => {
-  const { me } = useContext(PortalContext);
+  const { me, hasCapability, hasOrganizationCapability } =
+    useContext(PortalContext);
   const t = useTranslations('PrivateMenu');
+  const tMenuLinks = useTranslations('MenuLinks');
   const locale = useLocale();
   const selectedOrganizationId = me?.selected_organization_id;
+  const currentOrganization = me?.organizations.find(
+    (organization) => organization.id === selectedOrganizationId
+  );
+  const canManageUser =
+    !!hasOrganizationCapability &&
+    !currentOrganization?.personal_space &&
+    (hasOrganizationCapability(
+      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+    ) ||
+      hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
+  const isBypass = hasCapability?.(PortalCapabilityEnum.BYPASS) ?? false;
   const isCustomViewsEnabled = useIsFeatureEnabled(
     FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS
   );
+  const settingsLinksConfig: SettingsLinkConfig[] = [
+    {
+      href: `/${APP_PATH}/admin/parameters`,
+      label: tMenuLinks('Parameter'),
+    },
+    {
+      href: `/${APP_PATH}/admin/user`,
+      label: tMenuLinks('Security'),
+    },
+    {
+      href: `/${APP_PATH}/admin/use-case`,
+      label: tMenuLinks('UseCase'),
+    },
+    {
+      href: `/${APP_PATH}/admin/organizations`,
+      label: tMenuLinks('Organization'),
+    },
+    {
+      href: `/${APP_PATH}/admin/service`,
+      label: tMenuLinks('Service'),
+    },
+    {
+      href: `/${APP_PATH}/admin/opencti-trials`,
+      label: tMenuLinks('OpenCTITrial'),
+      restriction: [PortalCapabilityEnum.READ_TRIALS],
+    },
+    {
+      href: `/${APP_PATH}/admin/openaev-trials`,
+      label: tMenuLinks('OpenAEVTrial'),
+      restriction: [PortalCapabilityEnum.READ_TRIALS],
+    },
+    {
+      href: `/${APP_PATH}/admin/competitors`,
+      label: tMenuLinks('Competitor'),
+      restriction: [PortalCapabilityEnum.MODIFY_COMPETITORS],
+    },
+    {
+      href: `/${APP_PATH}/admin/news-feed`,
+      label: tMenuLinks('NewsFeed'),
+      restriction: [PortalCapabilityEnum.BYPASS],
+    },
+    {
+      href: `/${APP_PATH}/manage/user`,
+      label: tMenuLinks('Users'),
+      isVisible: canManageUser,
+      skipPortalCapabilityCheck: true,
+    },
+  ];
+  const settingsLinks = settingsLinksConfig
+    .filter(
+      ({
+        restriction = [],
+        isVisible = true,
+        skipPortalCapabilityCheck = false,
+      }) => {
+        if (!isVisible) {
+          return false;
+        }
 
+        if (skipPortalCapabilityCheck) {
+          return true;
+        }
+
+        if (!hasCapability) {
+          return false;
+        }
+
+        return (
+          restriction.some((capability) => hasCapability(capability)) ||
+          isBypass
+        );
+      }
+    )
+    .map(
+      ({
+        restriction: _restriction,
+        isVisible: _isVisible,
+        skipPortalCapabilityCheck: _skipPortalCapabilityCheck,
+        ...link
+      }) => link
+    );
   const privateNavigationTrialEligibilityVariables: PrivateNavigationTrialEligibilityQueryVariables =
     {
       input: {
@@ -67,7 +165,6 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         ],
       },
     };
-
   const { data: serviceInstancesQueryData } =
     usePrivateNavigationServiceInstancesQuery(
       portalGraphqlClient,
@@ -78,7 +175,6 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         ),
       }
     );
-
   const {
     data: trialEligibilityData,
     isLoading: isTrialEligibilityLoading,
@@ -93,12 +189,10 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       ),
     }
   );
-
   const serviceHrefs = useMemo(
     () => getPrivateNavigationServiceHrefs(serviceInstancesQueryData),
     [serviceInstancesQueryData]
   );
-
   const openctiRegisteredPlatforms = useMemo(
     () =>
       getPrivateNavigationRegisteredPlatformsByIdentifier(
@@ -115,9 +209,7 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       ),
     [serviceInstancesQueryData]
   );
-
   const trialDeployments = trialEligibilityData?.trialDeployments;
-
   const getStartFreeTrialLinks = (
     platformIdentifier: PlatformIdentifier,
     href: string
@@ -126,14 +218,12 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       if (trialDeployments.isBlacklisted) {
         return [];
       }
-
       const availableTrials = trialDeployments.availableTrials.map((trial) =>
         trial.toLowerCase()
       );
       if (!availableTrials.includes(platformIdentifier.toLowerCase())) {
         return [];
       }
-
       return [
         {
           href,
@@ -142,7 +232,6 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         },
       ];
     }
-
     if (
       !selectedOrganizationId ||
       isTrialEligibilityLoading ||
@@ -155,10 +244,8 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         },
       ];
     }
-
     return [];
   };
-
   const openctiCustomDashboardsHref = serviceHrefs.get(
     ServiceDefinitionIdentifier.OpenctiCustomDashboards
   );
@@ -177,10 +264,8 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
   const xtmPlatformRoadmapHref = serviceHrefs.get(
     ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
-
   const getMyProductLabel = (linkedPlatformsCount: number): string =>
     linkedPlatformsCount === 1 ? t('MyProduct') : t('MyProducts');
-
   const openctiMyProductLinks: SectionLink[] =
     openctiRegisteredPlatforms.length > 0
       ? [
@@ -195,7 +280,6 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
           },
         ]
       : [];
-
   const openaevMyProductLinks: SectionLink[] =
     openaevRegisteredPlatforms.length > 0
       ? [
@@ -210,7 +294,6 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
           },
         ]
       : [];
-
   const sections: SectionConfig[] = [
     {
       key: 'xtm-platform',
@@ -304,8 +387,18 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         { label: t('AICatalog'), badge: t('ComingSoon') },
       ],
     },
+    ...(settingsLinks.length > 0
+      ? [
+          {
+            key: 'settings',
+            label: tMenuLinks('Settings'),
+            icon: SettingsIcon,
+            pathPrefix: `/${APP_PATH}/admin/`,
+            links: settingsLinks,
+          },
+        ]
+      : []),
   ];
-
   const bottomLinks: BottomLink[] = [
     ...(xtmPlatformRoadmapHref
       ? [
@@ -339,6 +432,5 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       external: true,
     },
   ];
-
   return { sections, bottomLinks };
 };

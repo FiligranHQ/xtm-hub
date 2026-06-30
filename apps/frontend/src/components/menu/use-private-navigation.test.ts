@@ -8,6 +8,8 @@ import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
+import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
   OrderingMode,
   PlatformIdentifier,
@@ -62,19 +64,56 @@ vi.mock('@/lib/graphql-client', () => ({
 
 type RenderOptions = {
   selectedOrganizationId?: string;
+  capabilities?: PortalCapabilityEnum[];
+  organizationCapabilities?: OrganizationCapabilityEnum[];
+  selectedOrganizationPersonalSpace?: boolean;
+};
+
+const buildHasCapability = (capabilities: PortalCapabilityEnum[]) => {
+  return (capability: PortalCapabilityEnum) =>
+    capabilities.includes(PortalCapabilityEnum.BYPASS) ||
+    capabilities.includes(capability);
+};
+
+const buildHasOrganizationCapability = (
+  capabilities: OrganizationCapabilityEnum[]
+) => {
+  return (capability: OrganizationCapabilityEnum) =>
+    capabilities.includes(capability);
 };
 
 const renderUsePrivateNavigation = ({
   selectedOrganizationId,
+  capabilities = [],
+  organizationCapabilities = [],
+  selectedOrganizationPersonalSpace = false,
 }: RenderOptions = {}) => {
   const me = selectedOrganizationId
     ? ({
         selected_organization_id: selectedOrganizationId,
+        organizations: [
+          {
+            id: selectedOrganizationId,
+            personal_space: selectedOrganizationPersonalSpace,
+          },
+        ],
       } as Partial<meContext_fragment$data> as meContext_fragment$data)
     : undefined;
 
   const wrapper = ({ children }: PropsWithChildren) =>
-    createElement(PortalContext.Provider, { value: { me } }, children);
+    createElement(
+      PortalContext.Provider,
+      {
+        value: {
+          me,
+          hasCapability: buildHasCapability(capabilities),
+          hasOrganizationCapability: buildHasOrganizationCapability(
+            organizationCapabilities
+          ),
+        },
+      },
+      children
+    );
 
   return renderHook(() => usePrivateNavigation(), { wrapper });
 };
@@ -156,6 +195,52 @@ describe('usePrivateNavigation', () => {
       },
     ]);
   });
+
+  it('adds settings section immediately after xtm-one when user is authorized', () => {
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+      capabilities: [PortalCapabilityEnum.BYPASS],
+    });
+
+    expect(result.current.sections.map((section) => section.key)).toEqual([
+      'xtm-platform',
+      'opencti',
+      'openaev',
+      'xtm-one',
+      'settings',
+    ]);
+  });
+
+  it('hides settings section when user has no authorized settings links', () => {
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+      capabilities: [],
+    });
+
+    expect(getSection(result.current.sections, 'settings')).toBeUndefined();
+  });
+
+  it.each`
+    capabilities                                                                   | expectedSettingsLabels
+    ${[PortalCapabilityEnum.BYPASS]}                                               | ${['Parameter', 'Security', 'UseCase', 'Organization', 'Service', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor', 'NewsFeed']}
+    ${[PortalCapabilityEnum.READ_TRIALS]}                                          | ${['OpenCTITrial', 'OpenAEVTrial']}
+    ${[PortalCapabilityEnum.MODIFY_COMPETITORS]}                                   | ${['Competitor']}
+    ${[PortalCapabilityEnum.READ_TRIALS, PortalCapabilityEnum.MODIFY_COMPETITORS]} | ${['OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
+  `(
+    'filters settings links according to portal capabilities $capabilities',
+    ({ capabilities, expectedSettingsLabels }) => {
+      const { result } = renderUsePrivateNavigation({
+        selectedOrganizationId: 'org-1',
+        capabilities,
+      });
+
+      const settingsSection = getSection(result.current.sections, 'settings');
+
+      expect(settingsSection?.links.map((link) => link.label)).toEqual(
+        expectedSettingsLabels
+      );
+    }
+  );
 
   it.each`
     isCustomViewsEnabled | expectedLinkCount
@@ -544,5 +629,47 @@ describe('usePrivateNavigation', () => {
     expect(
       openaevSection?.links.some((link) => link.label === 'MyProducts')
     ).toBe(false);
+  });
+
+  it.each`
+    organizationCapabilities
+    ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}
+    ${[OrganizationCapabilityEnum.MANAGE_ACCESS]}
+  `(
+    'shows Users settings link when org capability allows it',
+    ({ organizationCapabilities }) => {
+      const { result } = renderUsePrivateNavigation({
+        selectedOrganizationId: 'org-1',
+        organizationCapabilities,
+        selectedOrganizationPersonalSpace: false,
+      });
+
+      const settingsSection = getSection(result.current.sections, 'settings');
+      const usersLink = settingsSection?.links.find(
+        (link) => link.label === 'Users'
+      );
+
+      expect(usersLink).toEqual({
+        href: `/${APP_PATH}/manage/user`,
+        label: 'Users',
+      });
+    }
+  );
+
+  it('hides Users settings link when selected organization is a personal space', () => {
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+      organizationCapabilities: [
+        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+      ],
+      selectedOrganizationPersonalSpace: true,
+      capabilities: [PortalCapabilityEnum.BYPASS],
+    });
+
+    const settingsSection = getSection(result.current.sections, 'settings');
+
+    expect(settingsSection?.links.some((link) => link.label === 'Users')).toBe(
+      false
+    );
   });
 });
