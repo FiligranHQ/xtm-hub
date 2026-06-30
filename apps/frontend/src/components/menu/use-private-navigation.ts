@@ -8,11 +8,11 @@ import {
   SectionConfig,
   SectionLink,
 } from '@/components/menu/use-navigation-type';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import {
   HomeIcon,
+  IndividualIcon,
   LogoXtmOneIcon,
   OpenAevIconIcon,
   OpenCtiIconIcon,
@@ -22,7 +22,6 @@ import {
   SettingsIcon,
   SlackIcon,
 } from '@filigran/icon';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
@@ -71,9 +70,6 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
     ) ||
       hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
   const isBypass = hasCapability?.(PortalCapabilityEnum.BYPASS) ?? false;
-  const isCustomViewsEnabled = useIsFeatureEnabled(
-    FeatureFlagEnum.OPENCTI_CUSTOM_VIEWS
-  );
   const settingsLinksConfig: SettingsLinkConfig[] = [
     {
       href: `/${APP_PATH}/admin/parameters`,
@@ -114,12 +110,6 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
       href: `/${APP_PATH}/admin/news-feed`,
       label: tMenuLinks('NewsFeed'),
       restriction: [PortalCapabilityEnum.BYPASS],
-    },
-    {
-      href: `/${APP_PATH}/manage/user`,
-      label: tMenuLinks('Users'),
-      isVisible: canManageUser,
-      skipPortalCapabilityCheck: true,
     },
   ];
   const settingsLinks = settingsLinksConfig
@@ -318,14 +308,10 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
           href: openctiCustomDashboardsHref,
           label: t('CustomDashboards'),
         },
-        ...(isCustomViewsEnabled
-          ? [
-              {
-                href: openctiCustomViewsHref,
-                label: t('CustomViews'),
-              },
-            ]
-          : []),
+        {
+          href: openctiCustomViewsHref,
+          label: t('CustomViews'),
+        },
         {
           href: openctiIntegrationsHref,
           label: t('Integrations'),
@@ -387,6 +373,18 @@ export const usePrivateNavigation = (): PrivateNavigationConfig => {
         { label: t('AICatalog'), badge: t('ComingSoon') },
       ],
     },
+    ...(canManageUser
+      ? [
+          {
+            key: 'users',
+            label: tMenuLinks('Users'),
+            icon: IndividualIcon,
+            pathPrefix: `/${APP_PATH}/manage/user`,
+            href: `/${APP_PATH}/manage/user`,
+            links: [],
+          },
+        ]
+      : []),
     ...(settingsLinks.length > 0
       ? [
           {

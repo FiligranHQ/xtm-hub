@@ -242,28 +242,6 @@ describe('usePrivateNavigation', () => {
     }
   );
 
-  it.each`
-    isCustomViewsEnabled | expectedLinkCount
-    ${true}              | ${1}
-    ${false}             | ${0}
-  `(
-    'includes Custom Views link based on feature flag ($isCustomViewsEnabled)',
-    ({ isCustomViewsEnabled, expectedLinkCount }) => {
-      vi.mocked(useIsFeatureEnabled).mockReturnValue(isCustomViewsEnabled);
-
-      const { result } = renderUsePrivateNavigation({
-        selectedOrganizationId: 'org-1',
-      });
-
-      const openctiSection = getSection(result.current.sections, 'opencti');
-      const customViewsLinks =
-        openctiSection?.links.filter((link) => link.label === 'CustomViews') ??
-        [];
-
-      expect(customViewsLinks).toHaveLength(expectedLinkCount);
-    }
-  );
-
   it('renders roadmap bottom link when roadmap service href exists', () => {
     const roadmapHref = '/app/service/xtm-platform-map';
     const serviceHrefs = new Map<ServiceDefinitionIdentifier, string>([
@@ -636,27 +614,40 @@ describe('usePrivateNavigation', () => {
     ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}
     ${[OrganizationCapabilityEnum.MANAGE_ACCESS]}
   `(
-    'shows Users settings link when org capability allows it',
+    'shows Users as a top-level section before Settings when org capability allows it',
     ({ organizationCapabilities }) => {
       const { result } = renderUsePrivateNavigation({
         selectedOrganizationId: 'org-1',
+        capabilities: [PortalCapabilityEnum.BYPASS],
         organizationCapabilities,
         selectedOrganizationPersonalSpace: false,
       });
 
-      const settingsSection = getSection(result.current.sections, 'settings');
-      const usersLink = settingsSection?.links.find(
-        (link) => link.label === 'Users'
-      );
+      expect(result.current.sections.map((section) => section.key)).toEqual([
+        'xtm-platform',
+        'opencti',
+        'openaev',
+        'xtm-one',
+        'users',
+        'settings',
+      ]);
 
-      expect(usersLink).toEqual({
-        href: `/${APP_PATH}/manage/user`,
+      const usersSection = getSection(result.current.sections, 'users');
+      const settingsSection = getSection(result.current.sections, 'settings');
+
+      expect(usersSection).toMatchObject({
+        key: 'users',
         label: 'Users',
+        href: `/${APP_PATH}/manage/user`,
+        pathPrefix: `/${APP_PATH}/manage/user`,
       });
+      expect(
+        settingsSection?.links.some((link) => link.label === 'Users')
+      ).toBe(false);
     }
   );
 
-  it('hides Users settings link when selected organization is a personal space', () => {
+  it('hides Users top-level section when selected organization is a personal space', () => {
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
       organizationCapabilities: [
@@ -666,10 +657,17 @@ describe('usePrivateNavigation', () => {
       capabilities: [PortalCapabilityEnum.BYPASS],
     });
 
-    const settingsSection = getSection(result.current.sections, 'settings');
+    expect(getSection(result.current.sections, 'users')).toBeUndefined();
+  });
 
-    expect(settingsSection?.links.some((link) => link.label === 'Users')).toBe(
-      false
-    );
+  it('hides Users top-level section when organization capabilities are missing', () => {
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+      organizationCapabilities: [],
+      selectedOrganizationPersonalSpace: false,
+      capabilities: [PortalCapabilityEnum.BYPASS],
+    });
+
+    expect(getSection(result.current.sections, 'users')).toBeUndefined();
   });
 });

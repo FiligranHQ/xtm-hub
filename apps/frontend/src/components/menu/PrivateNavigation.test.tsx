@@ -165,7 +165,7 @@ describe('PrivateNavigation component — open={true}', () => {
     expect(screen.getByText('Slack')).toBeInTheDocument();
   });
 
-  it('renders settings section in UI when user is authorized', async () => {
+  it('renders Users as a top-level link when user is authorized', async () => {
     const user = userEvent.setup();
 
     testRender(<PrivateNavigation open={true} />, {
@@ -177,15 +177,16 @@ describe('PrivateNavigation component — open={true}', () => {
       },
     });
 
+    const usersLink = screen.getByRole('link', {
+      name: 'Users',
+    });
+    expect(usersLink).toHaveAttribute('href', `/${APP_PATH}/manage/user`);
+
     await expandSection(user, 'Settings');
 
     expect(screen.getByText('Parameter')).toBeInTheDocument();
     expect(screen.getByText('Security')).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', {
-        name: 'Users',
-      })
-    ).toHaveAttribute('href', `/${APP_PATH}/manage/user`);
+    expect(screen.getAllByRole('link', { name: 'Users' })).toHaveLength(1);
   });
 
   it('renders XTM Platform as a link, not as an accordion trigger', () => {

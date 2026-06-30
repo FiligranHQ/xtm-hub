@@ -2,13 +2,14 @@
 
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { APP_PATH } from '@/utils/path/constant';
-import { Combobox } from '@filigran/ui/clients';
+import { UnfoldMoreIcon } from '@filigran/icon';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
 import organizationSwitcherMutation, {
   OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
 } from '@generated/OrganizationSwitcherMutation.graphql';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useContext, useMemo } from 'react';
+import { useContext, useId, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 interface OrganizationOption {
@@ -20,6 +21,8 @@ const HeaderOrganizationSwitcher = () => {
   const router = useRouter();
   const { me } = useContext(PortalContext);
   const t = useTranslations();
+  const [openPopover, setOpenPopover] = useState(false);
+  const listboxId = useId();
 
   const [commitOrganizationSwitcherMutation] =
     useMutation<OrganizationSwitcherMutationType>(organizationSwitcherMutation);
@@ -52,6 +55,7 @@ const HeaderOrganizationSwitcher = () => {
 
   const handleOnValueChange = (selectedValue?: OrganizationOption) => {
     if (!selectedValue || selectedValue.value === me.selected_organization_id) {
+      setOpenPopover(false);
       return;
     }
 
@@ -66,6 +70,8 @@ const HeaderOrganizationSwitcher = () => {
         router.push(`/${APP_PATH}`);
       },
     });
+
+    setOpenPopover(false);
   };
 
   return (
@@ -73,15 +79,55 @@ const HeaderOrganizationSwitcher = () => {
       <span className="txt-sub-content sm:whitespace-nowrap">
         {t('OrganizationSwitcher.Workspace')}
       </span>
-      <Combobox
-        className="w-full sm:w-55"
-        dataTab={organizationOptions}
-        order={t('OrganizationSwitcher.SelectOrganization')}
-        placeholder={t('OrganizationSwitcher.SelectOrganization')}
-        emptyCommand={t('Utils.NotFound')}
-        value={selectedOrganization}
-        onValueChange={handleOnValueChange}
-      />
+      <Popover
+        open={openPopover}
+        onOpenChange={setOpenPopover}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-label={t('OrganizationSwitcher.SelectOrganization')}
+            aria-controls={listboxId}
+            aria-expanded={openPopover}
+            aria-haspopup="listbox"
+            className="w-full justify-between sm:w-55">
+            <span className="truncate">{selectedOrganization?.label}</span>
+            <UnfoldMoreIcon
+              aria-hidden={true}
+              focusable={false}
+              className="ml-s h-4 w-4 shrink-0 opacity-70"
+            />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-(--radix-popover-trigger-width) p-s"
+          align="start">
+          <ul
+            id={listboxId}
+            role="listbox"
+            aria-label={t('OrganizationSwitcher.SelectOrganization')}
+            className="flex flex-col gap-xs">
+            {organizationOptions.map((organization) => {
+              const isSelected =
+                organization.value === me.selected_organization_id;
+
+              return (
+                <li key={organization.value}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => handleOnValueChange(organization)}
+                    className="w-full justify-start truncate normal-case">
+                    {organization.label}
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
