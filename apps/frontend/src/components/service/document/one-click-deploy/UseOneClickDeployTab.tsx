@@ -17,6 +17,7 @@ import { useMutation } from 'react-relay';
 
 const OPENCTI_URL_CONFIGS = {
   opencti_custom_dashboard: 'deploy-custom-dashboard',
+  opencti_custom_view: 'deploy-custom-view',
   opencti_integration: 'deploy-csv-feed',
   opencti_playbook: 'deploy-playbook',
 };
@@ -63,7 +64,21 @@ function computeDeployUrl(
   }
 
   const urlKey = OPENCTI_URL_CONFIGS[type as keyof typeof OPENCTI_URL_CONFIGS];
-  return `${platformBasePath}/dashboard/xtm-hub/${urlKey}/${service_instance?.id}/${id}`;
+  const baseUrl = `${platformBasePath}/dashboard/xtm-hub/${urlKey}/${service_instance?.id}/${id}`;
+
+  if (type === ShareableResourceType.OPENCTI_CUSTOM_VIEW) {
+    const entityTypes = documentData.entity_types ?? [];
+    if (entityTypes.length > 0) {
+      const queryString = entityTypes
+        .map(
+          (entityType) => `targetEntityType=${encodeURIComponent(entityType)}`
+        )
+        .join('&');
+      return `${baseUrl}?${queryString}`;
+    }
+  }
+
+  return baseUrl;
 }
 
 export const useOneClickDeployTab = ({

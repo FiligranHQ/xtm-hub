@@ -8555,7 +8555,7 @@ __metadata:
     esbuild: "npm:0.28.1"
     eslint: "catalog:"
     eslint-config-prettier: "catalog:"
-    eslint-plugin-jest: "npm:29.15.2"
+    eslint-plugin-jest: "npm:29.15.3"
     express: "npm:5.2.1"
     express-prom-bundle: "npm:8.0.0"
     express-rate-limit: "npm:8.5.2"
@@ -11626,9 +11626,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:29.15.2":
-  version: 29.15.2
-  resolution: "eslint-plugin-jest@npm:29.15.2"
+"eslint-plugin-jest@npm:29.15.3":
+  version: 29.15.3
+  resolution: "eslint-plugin-jest@npm:29.15.3"
   dependencies:
     "@typescript-eslint/utils": "npm:^8.0.0"
   peerDependencies:
@@ -11643,7 +11643,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10/c7bc4dc705e5613e51a1d19bb924a439db9897c67e694f091e29dbacaa218b758040aacbb8d3f9136f2af0171ad69c1c49736b5e3f30098bdf44d4c1e93c6381
+  checksum: 10/de57d25fe8eb02ec17c6552a4a77d64773aa9cf2f4bc312bdac736e7756f23c7a98afe217cbd09c2cb4fc4a37894e3542e7f0b93f44cb4fe7450ed95300134b6
   languageName: node
   linkType: hard
 
@@ -11767,9 +11767,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:10.5.0":
-  version: 10.5.0
-  resolution: "eslint@npm:10.5.0"
+"eslint@npm:10.6.0":
+  version: 10.6.0
+  resolution: "eslint@npm:10.6.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.8.0"
     "@eslint-community/regexpp": "npm:^4.12.2"
@@ -11808,7 +11808,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 10/28882f9b00803fca938015894d6e1ac2c80e00c1349385764f54ac4c0707c33fd0e32b678845c54ea0bc8ae04d59d7aa93d68dbd835e5e4833c65bf9b15ea91f
+  checksum: 10/36d02cdbe37668e601f255917c605d10a5d06d278648dc72cec21fe23b7b60a53453241b32c382ba8107533cacba70aeec97581cc4f4bb591544b1ada2516335
   languageName: node
   linkType: hard
 
@@ -17469,12 +17469,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.8.4":
-  version: 3.8.4
-  resolution: "prettier@npm:3.8.4"
+"prettier@npm:3.8.5":
+  version: 3.8.5
+  resolution: "prettier@npm:3.8.5"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/54684a3cc6689238692b29fab541c01934af7677be94c02293ba49981a1ac121c8bebe2a865f0c3b963e99d208f847c53aed354cc0ce8750e2d45791d64506c5
+  checksum: 10/61b59be2f6fdb06850aa8add77a4c3ea31d9536ae25ee9206cdd7a52de968276270a69f4bb71a6e23cbe7bfe6705a74eebdfae2022659c4ccea246e45c290c94
   languageName: node
   linkType: hard
 
