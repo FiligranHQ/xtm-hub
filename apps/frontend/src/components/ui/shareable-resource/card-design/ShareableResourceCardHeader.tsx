@@ -71,18 +71,12 @@ export const ShareableResourceCardHeader = ({
             className="mt-s z-[2]"
           />
         ) : (
-          <>
-            <div className="mt-s flex flex-wrap gap-s">
-              <BadgeOverflowCounter
-                badges={document.use_cases as BadgeOverflow[]}
-                className="z-[2]"
-              />
-            </div>
-            <ShareableResourceEntityTypes
-              document={document}
-              className="mt-s z-[2]"
+          <div className="mt-s flex flex-wrap gap-s">
+            <BadgeOverflowCounter
+              badges={document.use_cases as BadgeOverflow[]}
+              className="z-[2]"
             />
-          </>
+          </div>
         )}
       </div>
     </div>
