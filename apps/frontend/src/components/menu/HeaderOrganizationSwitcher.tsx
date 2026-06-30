@@ -1,12 +1,14 @@
 'use client';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
+import { invalidatePrivateNavigationQueries } from '@/components/menu/private-navigation-query-invalidation';
 import { APP_PATH } from '@/utils/path/constant';
 import { UnfoldMoreIcon } from '@filigran/icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
 import organizationSwitcherMutation, {
   OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
 } from '@generated/OrganizationSwitcherMutation.graphql';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useContext, useId, useMemo, useState } from 'react';
@@ -19,6 +21,7 @@ interface OrganizationOption {
 
 const HeaderOrganizationSwitcher = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { me } = useContext(PortalContext);
   const t = useTranslations();
   const [openPopover, setOpenPopover] = useState(false);
@@ -67,6 +70,7 @@ const HeaderOrganizationSwitcher = () => {
         store.invalidateStore();
       },
       onCompleted: () => {
+        invalidatePrivateNavigationQueries(queryClient);
         router.push(`/${APP_PATH}`);
       },
     });

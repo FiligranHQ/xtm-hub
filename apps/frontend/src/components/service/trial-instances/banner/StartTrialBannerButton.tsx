@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
+import { invalidatePrivateNavigationQueries } from '@/components/menu/private-navigation-query-invalidation';
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
 
 import {
@@ -41,6 +42,7 @@ import {
 import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 
@@ -49,6 +51,7 @@ export const StartTrialBannerButton = () => {
   const t = useTranslations();
   const environment = useRelayEnvironment();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { availableTrials, isBlacklisted, refetch } = useOrgaFreeTrial();
 
   const [openSheet, setOpenSheet] = useState(false);
@@ -105,6 +108,7 @@ export const StartTrialBannerButton = () => {
       },
 
       onCompleted: (response) => {
+        invalidatePrivateNavigationQueries(queryClient);
         toast({
           title: t('Utils.Success'),
           description: t('Service.Trials.Form.FormRequested'),

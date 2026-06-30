@@ -7,11 +7,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const testState = vi.hoisted(() => ({
   commitMutation: vi.fn(),
+  invalidateQueries: vi.fn(),
 }));
 
 vi.mock('react-relay', async (importOriginal) => ({
   ...(await importOriginal()),
   useMutation: () => [testState.commitMutation, false],
+}));
+
+vi.mock('@tanstack/react-query', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useQueryClient: () => ({
+    invalidateQueries: testState.invalidateQueries,
+  }),
 }));
 
 describe('HeaderOrganizationSwitcher', () => {
@@ -128,7 +136,7 @@ describe('HeaderOrganizationSwitcher', () => {
     expect(testState.commitMutation).not.toHaveBeenCalled();
   });
 
-  it('invalidates store and redirects when mutation completes', async () => {
+  it('invalidates store, invalidates private navigation queries and redirects when mutation completes', async () => {
     const { user } = testRender(<HeaderOrganizationSwitcher />, {
       me: {
         email: 'john.doe@filigran.io',
@@ -167,6 +175,12 @@ describe('HeaderOrganizationSwitcher', () => {
     mutationConfig.onCompleted?.();
 
     expect(invalidateStore).toHaveBeenCalledOnce();
+    expect(testState.invalidateQueries).toHaveBeenCalledTimes(3);
+    const firstInvalidationCallOrder =
+      testState.invalidateQueries.mock.invocationCallOrder[0] ?? 0;
+    const firstPushCallOrder = mockPush.mock.invocationCallOrder[0] ?? 0;
+
+    expect(firstInvalidationCallOrder).toBeLessThan(firstPushCallOrder);
     expect(mockPush).toHaveBeenCalledWith(`/${APP_PATH}`);
   });
 });
