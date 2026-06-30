@@ -190,6 +190,7 @@ type Mutation {
   addCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean!): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
+  ingestManifestFragments(manifestFragments: [ManifestFragmentInput!]!): Success!
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
   createSubscriptions(input: CreateSubscriptionsInput!): [SubscriptionModel!]!
   updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
@@ -1243,6 +1244,34 @@ type Settings {
   platform_providers: [PlatformProvider!]!
   base_url_front: String!
   environment: String!
+}
+
+input ManifestFragmentInput {
+  batch_id: String!
+  id: String!
+  title: String!
+  slug: String!
+  description: String!
+  short_description: String!
+  logo: String!
+  use_cases: [String!]!
+  verified: Boolean
+  last_verified_date: Date
+  subscription_link: String!
+  source_code: String!
+  manager_supported: Boolean!
+  min_version: String!
+  version: String!
+  image_name: String!
+  image_type: String!
+  platform: String!
+  integration_type: String!
+  additional_properties: JSON!
+  config_schema: JSON!
+}
+
+enum ManifestType {
+  connector
 }
 
 type OpenAEVScenario implements Document & Node {
