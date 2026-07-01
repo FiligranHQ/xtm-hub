@@ -1,4 +1,4 @@
-import type { HomepageRoadmapTitleKey } from '@/components/homepage/Homepage.utils';
+import type { HomepageRoadmapTitleProduct } from '@/components/homepage/Homepage.utils';
 import type { PublicLocale } from '@/i18n/config';
 import { portalGraphqlClientCached } from '@/lib/graphql-client';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -35,15 +35,19 @@ const TIMELINE_CONFIG = [
 export type XtmRoadmapProps = {
   locale: PublicLocale;
   seeMoreHref?: string;
-  titleKey?: HomepageRoadmapTitleKey;
+  titleProduct?: HomepageRoadmapTitleProduct;
 };
 
 const XtmRoadmap = async ({
   locale,
   seeMoreHref,
-  titleKey = 'Title',
+  titleProduct = 'default',
 }: XtmRoadmapProps) => {
   const t = await getTranslations('PublicHomePage.XtmRoadmap');
+
+  const titleTranslationValues: { product: HomepageRoadmapTitleProduct } = {
+    product: titleProduct,
+  };
 
   const data = await useEpicCountPerTimelineQueryQuery.fetcher(
     portalGraphqlClientCached
@@ -61,7 +65,9 @@ const XtmRoadmap = async ({
   return (
     <section className="flex flex-col lg:flex-row gap-l items-center bg-card border border-primary/30 rounded-lg px-xl py-4">
       <div className="flex flex-col gap-l flex-3">
-        <h2 className="text-xl leading-tight">{t(titleKey)}</h2>
+        <h2 className="text-xl leading-tight">
+          {t('Title', titleTranslationValues)}
+        </h2>
         <p className="text-muted-foreground text-sm min-[1330px]:text-xs">
           {t('Description')}
         </p>

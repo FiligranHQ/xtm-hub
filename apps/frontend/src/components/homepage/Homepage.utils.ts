@@ -36,11 +36,11 @@ export const findLogoUrl = (
     : undefined;
 };
 
-export type HomepageRoadmapTitleKey = 'Title' | 'OpenCTITitle' | 'OpenAEVTitle';
+export type HomepageRoadmapTitleProduct = 'opencti' | 'openaev' | 'default';
 
 export type HomepageRoadmapResolution = {
   productFilter: FiligranProductEnum | undefined;
-  titleKey: HomepageRoadmapTitleKey;
+  titleProduct: HomepageRoadmapTitleProduct;
 };
 
 export const resolveHomepageRoadmapResolution = (
@@ -52,19 +52,19 @@ export const resolveHomepageRoadmapResolution = (
   if (platformIdentifier === PlatformIdentifierEnum.OPENAEV) {
     return {
       productFilter: FiligranProductEnum.OPENAEV,
-      titleKey: 'OpenAEVTitle',
+      titleProduct: 'openaev',
     };
   }
 
   if (platformIdentifier === PlatformIdentifierEnum.OPENCTI) {
     return {
       productFilter: FiligranProductEnum.OPENCTI,
-      titleKey: 'OpenCTITitle',
+      titleProduct: 'opencti',
     };
   }
 
   return {
     productFilter: undefined,
-    titleKey: 'Title',
+    titleProduct: 'default',
   };
 };

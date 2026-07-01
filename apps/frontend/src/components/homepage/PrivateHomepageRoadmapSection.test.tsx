@@ -47,7 +47,7 @@ describe('PrivateHomepageRoadmapSection', () => {
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
         seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-1?product=${FiligranProductEnum.OPENCTI}`,
-        titleKey: 'OpenCTITitle',
+        titleProduct: 'opencti',
       }),
       undefined
     );
@@ -74,7 +74,7 @@ describe('PrivateHomepageRoadmapSection', () => {
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
         seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-2?product=${FiligranProductEnum.OPENAEV}`,
-        titleKey: 'OpenAEVTitle',
+        titleProduct: 'openaev',
       }),
       undefined
     );
@@ -102,7 +102,7 @@ describe('PrivateHomepageRoadmapSection', () => {
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
         seeMoreHref: '/app/service/xtm_platform_roadmap/roadmap-3',
-        titleKey: 'Title',
+        titleProduct: 'default',
       }),
       undefined
     );
@@ -127,7 +127,7 @@ describe('PrivateHomepageRoadmapSection', () => {
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
         seeMoreHref: '/app/service/xtm_platform_roadmap/roadmap-0',
-        titleKey: 'Title',
+        titleProduct: 'default',
       }),
       undefined
     );

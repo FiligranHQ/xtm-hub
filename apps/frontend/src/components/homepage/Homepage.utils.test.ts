@@ -122,7 +122,7 @@ describe('resolveHomepageRoadmapResolution', () => {
       identifiers: [],
       expected: {
         productFilter: undefined,
-        titleKey: 'Title',
+        titleProduct: 'default',
       },
       description: 'returns default roadmap resolution for an empty array',
     },
@@ -130,7 +130,7 @@ describe('resolveHomepageRoadmapResolution', () => {
       identifiers: [ServiceDefinitionIdentifier.OpenaevRegistration],
       expected: {
         productFilter: FiligranProductEnum.OPENAEV,
-        titleKey: 'OpenAEVTitle',
+        titleProduct: 'openaev',
       },
       description: 'returns OAEV roadmap resolution for OAEV-only identifiers',
     },
@@ -138,7 +138,7 @@ describe('resolveHomepageRoadmapResolution', () => {
       identifiers: [ServiceDefinitionIdentifier.OpenctiRegistration],
       expected: {
         productFilter: FiligranProductEnum.OPENCTI,
-        titleKey: 'OpenCTITitle',
+        titleProduct: 'opencti',
       },
       description: 'returns OCTI roadmap resolution for OCTI-only identifiers',
     },
@@ -149,7 +149,7 @@ describe('resolveHomepageRoadmapResolution', () => {
       ],
       expected: {
         productFilter: undefined,
-        titleKey: 'Title',
+        titleProduct: 'default',
       },
       description:
         'returns default roadmap resolution when both platforms are registered',

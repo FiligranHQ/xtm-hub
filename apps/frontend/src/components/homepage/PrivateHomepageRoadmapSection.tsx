@@ -45,8 +45,10 @@ const PrivateHomepageRoadmapSection = async ({
     return null;
   }
 
-  const { productFilter: roadmapProductFilter, titleKey: roadmapTitleKey } =
-    resolveHomepageRoadmapResolution(registeredIdentifiers);
+  const {
+    productFilter: roadmapProductFilter,
+    titleProduct: roadmapTitleProduct,
+  } = resolveHomepageRoadmapResolution(registeredIdentifiers);
   const roadmapHref = `${PRIVATE_ROADMAP_BASE_PATH}/${encodeURIComponent(serviceInstanceId)}`;
   const seeMoreHref = roadmapProductFilter
     ? `${roadmapHref}?product=${encodeURIComponent(roadmapProductFilter)}`
@@ -56,7 +58,7 @@ const PrivateHomepageRoadmapSection = async ({
     <XtmRoadmap
       locale={locale}
       seeMoreHref={seeMoreHref}
-      titleKey={roadmapTitleKey}
+      titleProduct={roadmapTitleProduct}
     />
   );
 };
