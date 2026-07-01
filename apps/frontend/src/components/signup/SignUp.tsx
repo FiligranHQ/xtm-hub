@@ -71,7 +71,7 @@ const SignUp = () => {
           <FiligranLogoDark className="h-8.25 w-33" />
         </div>
         {/* Body */}
-        <div className="signup-scroll-area md:flex-1 md:min-h-0 md:overflow-y-auto pr-6">
+        <div className="md:flex-1 md:min-h-0 md:overflow-y-auto pr-6 scrollbar-thin [scrollbar-color:transparent_transparent] hover:[scrollbar-color:hsl(var(--muted-foreground)/0.4)_transparent] transition-[scrollbar-color] duration-300">
           <div className="mx-auto w-full max-w-125 flex flex-col justify-start min-h-full py-6">
             <h1 className="shrink-0 mt-auto text-3xl leading-9 font-medium text-foreground">
               {t('Title1')}
@@ -97,25 +97,27 @@ const SignUp = () => {
               {t('LogIn')}
             </Link>
           </p>
-          <div className="flex items-center gap-1 text-muted-foreground/50 text-[10px]">
+          <div className="flex items-center gap-1 text-muted-foreground/20 text-xs">
             {t('MadeBy')}
-            <FiligranLogo className="h-3 w-auto" />
+            <FiligranLogo className="h-4 w-auto" />
           </div>
         </div>
       </div>
       <div
-        className="md:w-3/5 flex flex-col items-center justify-center p-8 md:p-32 gap-8 order-2 md:overflow-hidden"
+        className="md:w-3/5 flex flex-col items-center justify-center p-8 md:p-32 order-2 md:overflow-hidden"
         style={{ backgroundColor: 'var(--color-ds-bg-1)' }}>
-        <div className="shrink-0 flex flex-col gap-1">
-          <p className="text-sm leading-6 font-bold text-primary">
-            {t('WelcomeTitle')}
-          </p>
-          <h2 className="text-3xl leading-9 font-medium text-foreground">
-            {t('WelcomeSubtitle')}
-          </h2>
-        </div>
-        <div className="w-full flex items-start justify-center md:flex-1 md:min-h-0">
-          <SchemeXtmHub className="w-full h-auto md:h-full" />
+        <div className="flex flex-col items-center gap-8 w-full">
+          <div className="shrink-0 flex flex-col gap-1">
+            <p className="text-sm leading-6 font-bold text-primary">
+              {t('WelcomeTitle')}
+            </p>
+            <h2 className="text-3xl leading-9 font-medium text-foreground">
+              {t('WelcomeSubtitle')}
+            </h2>
+          </div>
+          <div className="w-full flex items-start justify-center md:flex-1 md:min-h-0">
+            <SchemeXtmHub className="w-full h-auto md:h-full" />
+          </div>
         </div>
       </div>
     </div>

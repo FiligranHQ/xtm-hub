@@ -1,34 +1,5 @@
 /* All styles are scoped under #hubspot-form to avoid leaking into the rest of the app */
 
-/* Auto-hiding scrollbar for the form panel */
-.signup-scroll-area {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-  transition: scrollbar-color 0.3s;
-}
-
-.signup-scroll-area:hover {
-  scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent;
-}
-
-.signup-scroll-area::-webkit-scrollbar {
-  width: 6px;
-}
-
-.signup-scroll-area::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.signup-scroll-area::-webkit-scrollbar-thumb {
-  background-color: transparent;
-  border-radius: 3px;
-  transition: background-color 0.3s;
-}
-
-.signup-scroll-area:hover::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--muted-foreground) / 0.4);
-}
-
 #hubspot-form {
   --light: white;
   --dark: black;
@@ -230,6 +201,11 @@
   max-width: 100%;
 }
 
+#hubspot-form form fieldset,
+#hubspot-form form fieldset.form-columns-1 {
+  max-width: 100% !important;
+}
+
 #hubspot-form .form-content .field {
   --background-field: #091026;
 }
@@ -265,8 +241,17 @@
 
 /* ── HubSpot form field styles ────────────────────────────────────────── */
 
+/*#hubspot-form {*/
+/*  width: 100%;*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*}*/
+
 #hubspot-form form {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2px, 0.4vh, 6px);
 }
 
 #hubspot-form form p {
@@ -514,8 +499,8 @@
 }
 
 #hubspot-form form .field.hs-fieldtype-booleancheckbox {
-  margin-top: 8px;
-  margin-bottom: 2px;
+  margin-top: 12px;
+  margin-bottom: 4px;
 }
 
 #hubspot-form form .field.hs-fieldtype-booleancheckbox ul {
@@ -553,8 +538,8 @@
   input {
   width: 15px;
   height: 15px;
-  border: 1px solid #a3a3a3;
-  background-color: #090b1b;
+  border: 1px solid var(--color-grayblue-500);
+  background-color: var(--color-grayblue-700);
   cursor: pointer;
   position: relative;
 }
@@ -607,8 +592,8 @@
   display: block;
   width: 15px;
   height: 15px;
-  background-color: #090b1b;
-  border: 1px solid #a3a3a3;
+  background-color: var(--color-grayblue-700);
+  border: 1px solid var(--color-grayblue-500);
   border-radius: 2px;
   position: absolute;
   top: 0;
