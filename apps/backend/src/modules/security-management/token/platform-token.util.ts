@@ -1,6 +1,6 @@
 import express from 'express';
 import { PlatformConfigurationStatus } from '../../../__generated__/resolvers-types';
-import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
+import type DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import { logApp } from '../../../utils/app-logger.util';
 import { DeploymentRequestDomain } from '../../deployment/deployment.domain';
 import { PlatformConfigurationDomain } from '../../registration/platform-configuration/platform-configuration.domain';

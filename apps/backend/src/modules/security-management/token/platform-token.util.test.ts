@@ -137,7 +137,7 @@ describe('platform Token Validation', () => {
       expect(result).toBe(undefined);
     });
 
-    it('should return null when platform id header provided is not matching token', async () => {
+    it('should return undefined when platform id does not match the deployment request token', async () => {
       const platformId = uuidv4();
       const platformToken = uuidv4();
 
@@ -156,7 +156,7 @@ describe('platform Token Validation', () => {
       expect(result).toBe(undefined);
     });
 
-    it('should return null when deployment request has no platform_id yet', async () => {
+    it('should return undefined when deployment request has no platform_id yet', async () => {
       const platformId = uuidv4();
       const platformToken = uuidv4();
 
