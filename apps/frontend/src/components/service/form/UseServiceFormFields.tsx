@@ -116,6 +116,7 @@ export const useServiceFormFields = ({
           <ServiceFormDescriptionField
             field={field}
             documentType={documentType}
+            required
             disabled={disabledFields.includes('description')}
           />
         ),
