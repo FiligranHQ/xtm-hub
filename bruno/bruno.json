@@ -1,0 +1,15 @@
+{
+  "version": "1",
+  "name": "XTM Hub",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "size": 0.0006809234619140625,
+  "filesCount": 3,
+  "presets": {
+    "requestType": "graphql",
+    "requestUrl": "{{baseUrl}}/graphql-api"
+  }
+}
