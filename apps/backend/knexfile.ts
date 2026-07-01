@@ -469,6 +469,13 @@ export const applySearch = async <T extends object>(
             .whereRaw(`"${metaAlias}"."document_id" = "Document"."id"`)
             .andWhereILike(`${metaAlias}.value`, `%${searchTerm}%`);
         });
+        qb.orWhereExists(function () {
+          this.select(dbRaw('1'))
+            .from('Object_UseCase')
+            .join('UseCase', 'UseCase.id', '=', 'Object_UseCase.use_case_id')
+            .whereRaw('"Object_UseCase"."object_id" = "Document"."id"')
+            .andWhereILike('UseCase.name', `%${searchTerm}%`);
+        });
       }
       qb.orWhereILike(`${type}.${first}`, `%${normalizedSearchTerm}%`);
       others.forEach((i) =>
