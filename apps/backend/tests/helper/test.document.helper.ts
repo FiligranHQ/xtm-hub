@@ -142,6 +142,21 @@ export const TestDocumentHelper = {
       expect(metadata).toBeDefined();
       return metadata!;
     },
+    load: async (
+      field: DocumentMetadataMutator
+    ): Promise<DocumentMetadata | undefined> => {
+      return db<DocumentMetadata>('Document_Metadata')
+        .where(field)
+        .select('*')
+        .first();
+    },
+    loadAll: async (
+      field: DocumentMetadataMutator
+    ): Promise<DocumentMetadata[]> => {
+      return db<DocumentMetadata[]>('Document_Metadata')
+        .where(field)
+        .select('*');
+    },
     delete: async (field: DocumentMetadataMutator) => {
       await db<DocumentMetadata>('Document_Metadata').where(field).del();
     },

@@ -26,8 +26,12 @@ enum DocumentMetadataKeyCode {
   subscription_link
   manager_supported
   playbook_supported
+  image_name
   image_type
   minimum_deployable_version
+  additional_properties
+  config_schema
+  id_manifest
   entity_types
 }
 

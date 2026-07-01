@@ -593,13 +593,17 @@ export type DocumentMetadata = {
 };
 
 export enum DocumentMetadataKeyCode {
+  AdditionalProperties = 'additional_properties',
   BlogpostUrl = 'blogpost_url',
+  ConfigSchema = 'config_schema',
   ContainerImage = 'container_image',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
   EntityTypes = 'entity_types',
   FeedUrl = 'feed_url',
   GithubUrl = 'github_url',
+  IdManifest = 'id_manifest',
+  ImageName = 'image_name',
   ImageType = 'image_type',
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
