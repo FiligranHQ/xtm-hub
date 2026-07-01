@@ -1,8 +1,5 @@
 export type ConsentCategory =
-  | 'necessary'
-  | 'functional'
-  | 'marketing'
-  | 'analytics';
+  'necessary' | 'functional' | 'marketing' | 'analytics';
 
 export interface ServiceDefinition {
   id: string;

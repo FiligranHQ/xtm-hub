@@ -75,8 +75,7 @@ export const TelemetryApp = {
     });
 
     const agg = result.aggregations?.resource_counts as
-      | { buckets: Array<{ key: string; doc_count: number }> }
-      | undefined;
+      { buckets: Array<{ key: string; doc_count: number }> } | undefined;
 
     return agg?.buckets.map((bucket) => bucket.key) ?? [];
   },

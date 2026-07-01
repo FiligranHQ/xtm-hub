@@ -16,8 +16,7 @@ interface ShareableResourceCarouselProps {
     | documentItem_fragment$data['children_documents']
     | PublicDocumentData['children_documents'];
   serviceInstance:
-    | seoServiceInstanceFragment$data
-    | serviceInstance_fragment$data;
+    seoServiceInstanceFragment$data | serviceInstance_fragment$data;
   className?: string;
 }
 
