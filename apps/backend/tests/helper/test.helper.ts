@@ -17,6 +17,7 @@ import ManifestRebuildQueue, {
   ManifestRebuildQueueMutator,
 } from '../../src/model/kanel/public/ManifestRebuildQueue';
 import ObjectUseCase, {
+  ObjectUseCaseInitializer,
   ObjectUseCaseMutator,
 } from '../../src/model/kanel/public/ObjectUseCase';
 import Organization, {
@@ -26,7 +27,10 @@ import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
 } from '../../src/model/kanel/public/Subscription';
-import UseCase, { UseCaseMutator } from '../../src/model/kanel/public/UseCase';
+import UseCase, {
+  UseCaseInitializer,
+  UseCaseMutator,
+} from '../../src/model/kanel/public/UseCase';
 import { ManifestRebuildQueueStatus } from '../../src/modules/shareable-resource/manifest/manifest.consts';
 import { TEST_ORGANIZATIONS } from '../tests.const';
 import {
@@ -132,6 +136,12 @@ export const TestHelper = {
     },
   },
   useCase: {
+    create: async (data: UseCaseInitializer): Promise<UseCase> => {
+      const [useCase] = await db<UseCase>('UseCase')
+        .insert(data)
+        .returning('*');
+      return useCase!;
+    },
     delete: async (field: UseCaseMutator) => {
       await db<UseCase>('UseCase').where(field).del();
     },
@@ -143,6 +153,14 @@ export const TestHelper = {
     },
   },
   objectUseCase: {
+    insert: async (
+      data: ObjectUseCaseInitializer | ObjectUseCaseInitializer[]
+    ): Promise<void> => {
+      await db<ObjectUseCase>('Object_UseCase').insert(data);
+    },
+    delete: async (field: ObjectUseCaseMutator): Promise<void> => {
+      await db<ObjectUseCase>('Object_UseCase').where(field).del();
+    },
     load: async (
       field: ObjectUseCaseMutator
     ): Promise<ObjectUseCase | undefined> => {
