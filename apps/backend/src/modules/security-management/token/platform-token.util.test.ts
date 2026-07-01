@@ -101,40 +101,6 @@ describe('platform Token Validation', () => {
     });
   });
   describe('validateAndGetRequestedPlatformToken', () => {
-    it('should return null when headers are missing', async () => {
-      const req: express.Request = {
-        headers: {},
-      } as unknown as express.Request;
-
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
-    });
-
-    it('should return null when platform id header is missing', async () => {
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: 'anything',
-        },
-      } as unknown as express.Request;
-
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
-    });
-
-    it('should return null when platform token header is missing', async () => {
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_ID_HEADER]: 'anything',
-        },
-      } as unknown as express.Request;
-
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
-    });
-
     it('should return true when valid header for requested are provided', async () => {
       const platformId = uuidv4();
       const platformToken = uuidv4();
@@ -146,14 +112,10 @@ describe('platform Token Validation', () => {
         platform_id: platformId,
       } as DeploymentRequest);
 
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
-
-      const result = await validateAndGetRequestedPlatformToken(req);
+      const result = await validateAndGetRequestedPlatformToken({
+        platform_id: platformId,
+        token: platformToken,
+      });
 
       expect(result).toBeTruthy();
     });
@@ -167,16 +129,12 @@ describe('platform Token Validation', () => {
         'loadDeploymentRequestBy'
       ).mockResolvedValue(undefined);
 
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
+      const result = await validateAndGetRequestedPlatformToken({
+        platform_id: platformId,
+        token: platformToken,
+      });
 
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
+      expect(result).toBe(undefined);
     });
 
     it('should return null when platform id header provided is not matching token', async () => {
@@ -190,16 +148,12 @@ describe('platform Token Validation', () => {
         platform_id: uuidv4(),
       } as DeploymentRequest);
 
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
+      const result = await validateAndGetRequestedPlatformToken({
+        platform_id: platformId,
+        token: platformToken,
+      });
 
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
+      expect(result).toBe(undefined);
     });
 
     it('should return null when deployment request has no platform_id yet', async () => {
@@ -213,16 +167,12 @@ describe('platform Token Validation', () => {
         platform_id: null,
       } as DeploymentRequest);
 
-      const req: express.Request = {
-        headers: {
-          [PLATFORM_TOKEN_HEADER]: platformToken,
-          [PLATFORM_ID_HEADER]: platformId,
-        },
-      } as unknown as express.Request;
+      const result = await validateAndGetRequestedPlatformToken({
+        platform_id: platformId,
+        token: platformToken,
+      });
 
-      const result = await validateAndGetRequestedPlatformToken(req);
-
-      expect(result).toBe(null);
+      expect(result).toBe(undefined);
     });
   });
 });
