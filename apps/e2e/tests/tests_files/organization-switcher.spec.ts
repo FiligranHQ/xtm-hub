@@ -46,8 +46,10 @@ test.describe('Organization switcher', async () => {
     await registerPage.navigateToAndRegister('register-opencti');
     await loginPage.navigateTo();
     await test.step("Should see his organization's items", async () => {
+      await page.getByRole('button', { name: 'OpenCTI' }).click();
+      await page.getByRole('button', { name: 'My products' }).click();
       await expect(
-        page.locator('h2').filter({ hasText: 'Open CTI Instance' })
+        page.getByRole('link', { name: 'Open CTI Instance' })
       ).toBeVisible();
       await expect(page.getByText('1 Active trial')).toBeVisible();
     });
@@ -59,9 +61,11 @@ test.describe('Organization switcher', async () => {
         .click();
       await page.getByText('Personal space').click();
       // Then he should not see his subscriptions, registrations and trials
+      await page.getByRole('button', { name: 'OpenCTI' }).click();
       await expect(
-        page.locator('h2').filter({ hasText: 'Open CTI Instance' })
+        page.getByRole('button', { name: 'My products' })
       ).not.toBeVisible();
+
       await expect(page.getByText('1 Active trial')).not.toBeVisible();
     });
 
@@ -72,9 +76,12 @@ test.describe('Organization switcher', async () => {
         .click();
       await page.getByText('Filigran', { exact: true }).click();
       // Then he should see again its subscriptions, registrations and trials
+      await page.getByRole('button', { name: 'OpenCTI' }).click();
+      await page.getByRole('button', { name: 'My products' }).click();
       await expect(
-        page.locator('h2').filter({ hasText: 'Open CTI Instance' })
+        page.getByRole('link', { name: 'Open CTI Instance' })
       ).toBeVisible();
+
       await expect(page.getByText('1 Active trial')).toBeVisible();
     });
   });

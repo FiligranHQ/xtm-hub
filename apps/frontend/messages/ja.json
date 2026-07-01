@@ -306,7 +306,13 @@
   "HomePage": {
     "Homepage": "ホームページ",
     "Manage": "管理する",
-    "OpenManagement": "管理ページへ"
+    "OpenManagement": "管理ページへ",
+    "XtmNewestResources": {
+      "Title": "新しいリソース"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "最も多くデプロイされているリソース"
+    }
   },
   "PublicHomePage": {
     "Title": "リソースと専門知識の発見",
@@ -316,9 +322,6 @@
       "Description": "OpenCTIまたはOpenAEVプラットフォームを登録すると、ワンクリックで事前構築済みのコンテンツを展開したり、製品ニュースフィードで最新情報を入手したり、無料トライアルを開始したり、XTM Platformをさらに活用したりすることができます。",
       "Cta": "製品を連携する",
       "ImageAlt": "XTM Platformの図解"
-    },
-    "XtmMostDeployedResources": {
-      "Title": "最も多く導入されているリソース"
     },
     "XtmRoadmap": {
       "Title": "XTM Platformのロードマップ",

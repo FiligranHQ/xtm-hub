@@ -1,4 +1,5 @@
 import { isDevelopment } from '@/lib/utils';
+import { buildCookieHeader } from '@/relay/environment/fetch-fn.utils';
 import { ClientError, GraphQLClient } from 'graphql-request';
 
 const SENSITIVE_FIELD_KEYS = new Set([
@@ -172,3 +173,13 @@ export const portalGraphqlClient = createPortalGraphqlClient();
 export const portalGraphqlClientCached = createPortalGraphqlClient(undefined, {
   next: { revalidate: 3600 },
 });
+
+/**
+ * Returns an authenticated GraphQL client for use in Server Components.
+ * credentials: 'include' is browser-only — cookies must be forwarded explicitly on the server.
+ */
+export const getAuthenticatedGraphqlClient = async () => {
+  const { cookies } = await import('next/headers');
+  const cookieStore = await cookies();
+  return createPortalGraphqlClient(buildCookieHeader(cookieStore.getAll()));
+};

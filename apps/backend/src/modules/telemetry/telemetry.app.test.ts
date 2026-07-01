@@ -154,6 +154,75 @@ describe('telemetryApp', () => {
 
       expect(result).toEqual([]);
     });
+
+    it.each`
+      platformIdentifiers                                         | expectedTargetProducts                                                | description
+      ${[PlatformIdentifier.Opencti]}                             | ${[TelemetryTargetProduct.OPEN_CTI]}                                  | ${'single opencti filter'}
+      ${[PlatformIdentifier.Openaev]}                             | ${[TelemetryTargetProduct.OPEN_AEV]}                                  | ${'single openaev filter'}
+      ${[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]} | ${[TelemetryTargetProduct.OPEN_CTI, TelemetryTargetProduct.OPEN_AEV]} | ${'both platform identifiers'}
+    `(
+      'should filter by target_product when platformIdentifiers is provided ($description)',
+      async ({
+        platformIdentifiers,
+        expectedTargetProducts,
+      }: {
+        platformIdentifiers: PlatformIdentifier[];
+        expectedTargetProducts: TelemetryTargetProduct[];
+      }) => {
+        vi.spyOn(esDbClient, 'search').mockResolvedValue({
+          hits: { hits: [], total: { value: 0, relation: 'eq' } },
+          aggregations: {
+            resource_counts: {
+              buckets: [{ key: 'resource-1', doc_count: 5 }],
+            },
+          },
+        } as never);
+
+        const result = await TelemetryApp.getMostDeployedResourceIds(
+          3,
+          platformIdentifiers
+        );
+
+        expect(result).toEqual(['resource-1']);
+        expect(esDbClient.search).toHaveBeenCalledWith(
+          expect.objectContaining({
+            index: 'telemetry',
+            size: 0,
+            query: {
+              bool: {
+                filter: [
+                  {
+                    term: {
+                      event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
+                    },
+                  },
+                  { terms: { target_product: expectedTargetProducts } },
+                ],
+              },
+            },
+          })
+        );
+      }
+    );
+
+    it('should use unfiltered query when platformIdentifiers is an empty array', async () => {
+      vi.spyOn(esDbClient, 'search').mockResolvedValue({
+        hits: { hits: [], total: { value: 0, relation: 'eq' } },
+        aggregations: {
+          resource_counts: {
+            buckets: [{ key: 'resource-1', doc_count: 5 }],
+          },
+        },
+      } as never);
+
+      await TelemetryApp.getMostDeployedResourceIds(3, []);
+
+      expect(esDbClient.search).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: { term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY } },
+        })
+      );
+    });
   });
 
   describe('sendOneClickDeployEvent', () => {

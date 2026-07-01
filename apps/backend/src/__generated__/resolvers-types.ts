@@ -1598,6 +1598,7 @@ export type Query = {
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me?: Maybe<User>;
   mostDeployedDocuments: Array<Document>;
+  newestDocuments: Array<Document>;
   newsFeedItems: NewsFeedItemConnection;
   node?: Maybe<Node>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
@@ -1707,6 +1708,13 @@ export type QueryIsPlatformRegisteredArgs = {
 
 export type QueryMostDeployedDocumentsArgs = {
   limit: Scalars['Int']['input'];
+  platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
+};
+
+
+export type QueryNewestDocumentsArgs = {
+  limit: Scalars['Int']['input'];
+  platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
 };
 
 
@@ -3826,6 +3834,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   mostDeployedDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryMostDeployedDocumentsArgs, 'limit'>>;
+  newestDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryNewestDocumentsArgs, 'limit'>>;
   newsFeedItems?: Resolver<ResolversTypes['NewsFeedItemConnection'], ParentType, ContextType, RequireFields<QueryNewsFeedItemsArgs, 'first'>>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   openCTIPlatformRegistrationStatus?: Resolver<ResolversTypes['OpenCTIPlatformRegistrationStatusResponse'], ParentType, ContextType, RequireFields<QueryOpenCtiPlatformRegistrationStatusArgs, 'input'>>;

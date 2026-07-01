@@ -1575,6 +1575,7 @@ export type Query = {
   isPlatformRegistered: IsPlatformRegisteredResponse;
   me: Maybe<User>;
   mostDeployedDocuments: Array<Document>;
+  newestDocuments: Array<Document>;
   newsFeedItems: NewsFeedItemConnection;
   node: Maybe<Node>;
   /** @deprecated Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint. */
@@ -1684,6 +1685,13 @@ export type QueryIsPlatformRegisteredArgs = {
 
 export type QueryMostDeployedDocumentsArgs = {
   limit: Scalars['Int']['input'];
+  platformIdentifiers: InputMaybe<Array<PlatformIdentifier>>;
+};
+
+
+export type QueryNewestDocumentsArgs = {
+  limit: Scalars['Int']['input'];
+  platformIdentifiers: InputMaybe<Array<PlatformIdentifier>>;
 };
 
 
@@ -2610,12 +2618,47 @@ export type UsersWithCapabilitiesInOrganizationInput = {
   organizationId: Scalars['OrganizationId']['input'];
 };
 
+type HomepageDocument_Connector_Fragment = { __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_CsvFeed_Fragment = { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_CustomDashboard_Fragment = { __typename?: 'CustomDashboard', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_CustomView_Fragment = { __typename?: 'CustomView', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_DefaultDocument_Fragment = { __typename?: 'DefaultDocument', id: string, name: string | null, short_description: string | null, type: string, active: boolean, slug: string | null, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_IntegrationHack_Fragment = { __typename?: 'IntegrationHack', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_OpenAevScenario_Fragment = { __typename?: 'OpenAEVScenario', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_OpenCtiPlaybook_Fragment = { __typename?: 'OpenCTIPlaybook', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_RssFeed_Fragment = { __typename?: 'RssFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_Stream_Fragment = { __typename?: 'Stream', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_TaxiiFeed_Fragment = { __typename?: 'TaxiiFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+type HomepageDocument_ThirdPartyIntegration_Fragment = { __typename?: 'ThirdPartyIntegration', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
+
+export type HomepageDocumentFragment = HomepageDocument_Connector_Fragment | HomepageDocument_CsvFeed_Fragment | HomepageDocument_CustomDashboard_Fragment | HomepageDocument_CustomView_Fragment | HomepageDocument_DefaultDocument_Fragment | HomepageDocument_IntegrationHack_Fragment | HomepageDocument_OpenAevScenario_Fragment | HomepageDocument_OpenCtiPlaybook_Fragment | HomepageDocument_RssFeed_Fragment | HomepageDocument_Stream_Fragment | HomepageDocument_TaxiiFeed_Fragment | HomepageDocument_ThirdPartyIntegration_Fragment;
+
 export type MostDeployedDocumentsQueryQueryVariables = Exact<{
   limit: Scalars['Int']['input'];
+  platformIdentifiers: InputMaybe<Array<PlatformIdentifier> | PlatformIdentifier>;
 }>;
 
 
 export type MostDeployedDocumentsQueryQuery = { __typename?: 'Query', mostDeployedDocuments: Array<{ __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomDashboard', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomView', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'DefaultDocument', id: string, name: string | null, short_description: string | null, type: string, active: boolean, slug: string | null, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'IntegrationHack', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenAEVScenario', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenCTIPlaybook', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'RssFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'Stream', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'TaxiiFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'ThirdPartyIntegration', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null }> };
+
+export type NewestDocumentsQueryQueryVariables = Exact<{
+  limit: Scalars['Int']['input'];
+  platformIdentifiers: InputMaybe<Array<PlatformIdentifier> | PlatformIdentifier>;
+}>;
+
+
+export type NewestDocumentsQueryQuery = { __typename?: 'Query', newestDocuments: Array<{ __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomDashboard', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomView', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'DefaultDocument', id: string, name: string | null, short_description: string | null, type: string, active: boolean, slug: string | null, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'IntegrationHack', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenAEVScenario', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenCTIPlaybook', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'RssFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'Stream', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'TaxiiFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'ThirdPartyIntegration', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null }> };
 
 export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2642,6 +2685,13 @@ export type RegisteredPlatformsListQueryVariables = Exact<{ [key: string]: never
 
 
 export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', title: string, url: string, identifier: ServiceDefinitionIdentifier, subscription: { __typename?: 'SubscriptionModel', service_instance: { __typename?: 'ServiceInstance', id: string } } | null }> };
+
+export type RegisteredPlatformsQueryVariables = Exact<{
+  input: RegisteredPlatformsInput;
+}>;
+
+
+export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier }> };
 
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
@@ -2699,6 +2749,29 @@ export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: nev
 export type EpicCountPerTimelineQueryQuery = { __typename?: 'Query', countEpicsPerTimeline: Array<{ __typename?: 'EpicCountPerTimeline', timeline: Timeline, count: number }> };
 
 
+export const HomepageDocumentFragmentDoc = `
+    fragment HomepageDocument on Document {
+  id
+  name
+  short_description
+  type
+  active
+  slug
+  service_instance_id
+  children_documents {
+    id
+    image_type
+  }
+  use_cases {
+    id
+    name
+  }
+  ... on Connector {
+    verified
+    manager_supported
+  }
+}
+    `;
 export const OrganizationSubscribedServiceRowFragmentDoc = `
     fragment OrganizationSubscribedServiceRow on SubscriptionModel {
   id
@@ -2724,30 +2797,12 @@ export const UseCaseRowFragmentDoc = `
 }
     `;
 export const MostDeployedDocumentsQueryDocument = `
-    query MostDeployedDocumentsQuery($limit: Int!) {
-  mostDeployedDocuments(limit: $limit) {
-    id
-    name
-    short_description
-    type
-    active
-    slug
-    service_instance_id
-    children_documents {
-      id
-      image_type
-    }
-    use_cases {
-      id
-      name
-    }
-    ... on Connector {
-      verified
-      manager_supported
-    }
+    query MostDeployedDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
+  mostDeployedDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {
+    ...HomepageDocument
   }
 }
-    `;
+    ${HomepageDocumentFragmentDoc}`;
 
 export const useMostDeployedDocumentsQueryQuery = <
       TData = MostDeployedDocumentsQueryQuery,
@@ -2793,6 +2848,59 @@ export const useInfiniteMostDeployedDocumentsQueryQuery = <
 useInfiniteMostDeployedDocumentsQueryQuery.getKey = (variables: MostDeployedDocumentsQueryQueryVariables) => ['MostDeployedDocumentsQuery.infinite', variables];
 useInfiniteMostDeployedDocumentsQueryQuery.getRootKey = () => ['MostDeployedDocumentsQuery.infinite'] as const;
 useMostDeployedDocumentsQueryQuery.fetcher = (client: GraphQLClient, variables: MostDeployedDocumentsQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<MostDeployedDocumentsQueryQuery, MostDeployedDocumentsQueryQueryVariables>(client, MostDeployedDocumentsQueryDocument, variables, headers);
+
+export const NewestDocumentsQueryDocument = `
+    query NewestDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
+  newestDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {
+    ...HomepageDocument
+  }
+}
+    ${HomepageDocumentFragmentDoc}`;
+
+export const useNewestDocumentsQueryQuery = <
+      TData = NewestDocumentsQueryQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: NewestDocumentsQueryQueryVariables,
+      options?: Omit<UseQueryOptions<NewestDocumentsQueryQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<NewestDocumentsQueryQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<NewestDocumentsQueryQuery, TError, TData>(
+      {
+    queryKey: ['NewestDocumentsQuery', variables],
+    queryFn: fetcher<NewestDocumentsQueryQuery, NewestDocumentsQueryQueryVariables>(client, NewestDocumentsQueryDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useNewestDocumentsQueryQuery.getKey = (variables: NewestDocumentsQueryQueryVariables) => ['NewestDocumentsQuery', variables];
+useNewestDocumentsQueryQuery.getRootKey = () => ['NewestDocumentsQuery'] as const;
+export const useInfiniteNewestDocumentsQueryQuery = <
+      TData = InfiniteData<NewestDocumentsQueryQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: NewestDocumentsQueryQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<NewestDocumentsQueryQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<NewestDocumentsQueryQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<NewestDocumentsQueryQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['NewestDocumentsQuery.infinite', variables],
+      queryFn: (metaData) => fetcher<NewestDocumentsQueryQuery, NewestDocumentsQueryQueryVariables>(client, NewestDocumentsQueryDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteNewestDocumentsQueryQuery.getKey = (variables: NewestDocumentsQueryQueryVariables) => ['NewestDocumentsQuery.infinite', variables];
+useInfiniteNewestDocumentsQueryQuery.getRootKey = () => ['NewestDocumentsQuery.infinite'] as const;
+useNewestDocumentsQueryQuery.fetcher = (client: GraphQLClient, variables: NewestDocumentsQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<NewestDocumentsQueryQuery, NewestDocumentsQueryQueryVariables>(client, NewestDocumentsQueryDocument, variables, headers);
 
 export const OrganizationSubscribedServicesBreadcrumbDocument = `
     query OrganizationSubscribedServicesBreadcrumb($id: ID!) {
@@ -2978,6 +3086,60 @@ export const useInfiniteRegisteredPlatformsListQuery = <
 useInfiniteRegisteredPlatformsListQuery.getKey = (variables?: RegisteredPlatformsListQueryVariables) => variables === undefined ? ['RegisteredPlatformsList.infinite'] : ['RegisteredPlatformsList.infinite', variables];
 useInfiniteRegisteredPlatformsListQuery.getRootKey = () => ['RegisteredPlatformsList.infinite'] as const;
 useRegisteredPlatformsListQuery.fetcher = (client: GraphQLClient, variables?: RegisteredPlatformsListQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, variables, headers);
+
+export const RegisteredPlatformsDocument = `
+    query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
+  registeredPlatforms(input: $input) {
+    id
+    identifier
+  }
+}
+    `;
+
+export const useRegisteredPlatformsQuery = <
+      TData = RegisteredPlatformsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredPlatformsQueryVariables,
+      options?: Omit<UseQueryOptions<RegisteredPlatformsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredPlatformsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<RegisteredPlatformsQuery, TError, TData>(
+      {
+    queryKey: ['RegisteredPlatforms', variables],
+    queryFn: fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useRegisteredPlatformsQuery.getKey = (variables: RegisteredPlatformsQueryVariables) => ['RegisteredPlatforms', variables];
+useRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms'] as const;
+export const useInfiniteRegisteredPlatformsQuery = <
+      TData = InfiniteData<RegisteredPlatformsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredPlatformsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<RegisteredPlatformsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredPlatformsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<RegisteredPlatformsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['RegisteredPlatforms.infinite', variables],
+      queryFn: (metaData) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteRegisteredPlatformsQuery.getKey = (variables: RegisteredPlatformsQueryVariables) => ['RegisteredPlatforms.infinite', variables];
+useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.infinite'] as const;
+useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
 
 export const ServiceInstancesListDocument = `
     query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!) {
