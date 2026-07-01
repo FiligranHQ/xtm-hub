@@ -3,6 +3,8 @@ import {
   IntegrationType,
   ManifestType,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
+import type { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
 import { isLtsVersion } from '../../../utils/versioning';
 import { DocumentDomain } from '../../document/domain/document.domain';
@@ -19,6 +21,28 @@ import { ManifestKey } from './manifest.consts';
 import { ManifestDomain } from './manifest.domain';
 import { ManifestHelper } from './manifest.helper';
 import { ManifestOutput } from './manifest.types';
+
+const saveManifestToDatabase = async (
+  key: ManifestKey,
+  documentIds: DocumentId[],
+  manifestName: string
+): Promise<void> => {
+  await withTransaction(async () => {
+    const savedManifest = await ManifestDomain.insertManifest({
+      product: key.platformIdentifier,
+      version: key.version,
+      type: key.type,
+      name: manifestName,
+    });
+
+    await ManifestDomain.insertManifestDocumentLinks(
+      savedManifest.id,
+      documentIds
+    );
+
+    await ManifestDomain.deleteFromRebuildQueue(key);
+  });
+};
 
 export const ManifestApp = {
   processManifestQueue: async (manifest?: ManifestKey) => {
@@ -40,16 +64,14 @@ export const ManifestApp = {
     }
   },
 
-  generateManifest: async ({
-    version,
-    platformIdentifier,
-    type,
-  }: ManifestKey): Promise<ManifestOutput | null> => {
-    if (type != ManifestType.Connector) {
-      logApp.error('UnsupportedManifestType', { type });
+  generateManifest: async (
+    key: ManifestKey
+  ): Promise<ManifestOutput | null> => {
+    if (key.type != ManifestType.Connector) {
+      logApp.error('UnsupportedManifestType', { type: key.type });
       return null;
     }
-    const tag = isLtsVersion(version) ? TAG_LATEST_LTS : TAG_LATEST;
+    const tag = isLtsVersion(key.version) ? TAG_LATEST_LTS : TAG_LATEST;
     const connectors = await DocumentDomain.loadDocumentsByMetadata(
       DocumentMetadataKeyCode.IntegrationType,
       IntegrationType.Connector,
@@ -57,27 +79,33 @@ export const ManifestApp = {
       { active: true, is_decommissioned: false, tags: [tag, TAG_DECOUPLING] }
     );
     logApp.info(
-      `Found ${connectors.length} connector(s) v2 with tag "${tag}" for version ${version}`
+      `Found ${connectors.length} connector(s) v2 with tag "${tag}" for version ${key.version}`
     );
 
     if (connectors.length === 0) {
-      logApp.error('No connectors found for manifest');
+      logApp.error('No connectors found for manifest', { key });
       return null;
     }
 
     const now = new Date();
     const manifest = ManifestHelper.buildConnectorManifestOutput(
-      version,
+      key.version,
       connectors as ConnectorV2[],
       now
     );
 
     const minioFileName = ManifestHelper.buildManifestFileNameWithPath(
-      platformIdentifier,
-      version,
+      key.platformIdentifier,
+      key.version,
       now
     );
     await ManifestHelper.uploadManifest(manifest, minioFileName);
+
+    await saveManifestToDatabase(
+      key,
+      connectors.map((c) => c.id),
+      manifest.manifest_version
+    );
 
     logApp.info(`Manifest "${minioFileName}" uploaded to MinIO`);
     return manifest;

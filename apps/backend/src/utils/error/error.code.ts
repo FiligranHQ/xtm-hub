@@ -84,6 +84,7 @@ export enum UnknownErrorCode {
   DeploymentRequestUnknownError = 'DEPLOYMENT_REQUEST_UNKNOWN_ERROR',
   HubspotError = 'HUBSPOT_ERROR',
   MissingMetadataMapping = 'MISSING_METADATA_MAPPING',
+  ManifestRebuildQueueEntryNotFound = 'MANIFEST_REBUILD_QUEUE_ENTRY_NOT_FOUND',
 }
 
 export enum AlreadyExistsErrorCode {
