@@ -1,0 +1,52 @@
+meta {
+  name: autoregister
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+headers {
+  XTM-Hub-Platform-Token: 
+  XTM-Hub-Platform-Id: {{platformId}}
+}
+
+body:graphql {
+  mutation AutoRegisterPlatform($platform: PlatformInput!) {
+    autoRegisterPlatform(platform: $platform) {
+      success
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "platform": {
+      "contract": "",
+      "id": "{{platformId}}",
+      "title": "",
+      "url": "",
+      "version": ""
+    }
+  }
+}
+
+script:pre-request {
+  bru.setVar("platformId", "");
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Fill the values in variables.
+  In script/pre-request, set the correct value for platformId
+  in Headers, set the platform token
+  
+}

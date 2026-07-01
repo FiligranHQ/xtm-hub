@@ -395,8 +395,8 @@
     "Remove": "削除する",
     "Update": "更新する"
   },
-  "PublicMenu": {
-    "XTMPlatform": "XTM Platform",
+  "Menu": {
+    "XTMPlatform": "XTMプラットフォーム",
     "StartFreeTrial": "無料トライアルを開始",
     "CustomDashboards": "カスタムダッシュボード",
     "CustomViews": "カスタムビュー",
@@ -405,13 +405,15 @@
     "LiveDemo": "ライブデモ",
     "Documentation": "ドキュメント",
     "Scenarios": "ユースケース",
-    "XTMRoadmap": "XTM Platform ロードマップ",
+    "XTMRoadmap": "XTMプラットフォームのロードマップ",
     "FiligranAcademy": "Filigran Academy",
     "Blog": "ブログ",
     "Slack": "Slack",
     "About": "会社概要",
     "AICatalog": "AIカタログ",
-    "ComingSoon": "近日公開"
+    "ComingSoon": "近日公開予定",
+    "MyProduct": "私の製品",
+    "MyProducts": "私の製品"
   },
   "MenuLinks": {
     "Backoffice": "バックオフィス",
@@ -529,7 +531,8 @@
   "OrganizationSwitcher": {
     "PersonalSpace": "パーソナルスペース",
     "SelectOrganization": "所属団体選択",
-    "SelectedOrganization": "選択した組織"
+    "SelectedOrganization": "選択した組織",
+    "Workspace": "ワークスペース："
   },
   "TrialsDashboard": {
     "Columns": {
@@ -1061,7 +1064,7 @@
         "Share": "カスタムダッシュボードの共有",
         "Updated": "カスタムダッシュボード {name} は正常に変更されました。"
       },
-      "Active": "公開",
+      "Active": "公開日",
       "AddService": "新しいダッシュボードを追加",
       "DeleteService": "カスタムダッシュボードを削除 {name}",
       "NonActive": "下書き",

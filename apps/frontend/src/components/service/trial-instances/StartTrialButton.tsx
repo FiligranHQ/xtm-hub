@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
+import { invalidatePrivateNavigationQueries } from '@/components/menu/private-navigation-query-invalidation';
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
 
 import {
@@ -33,6 +34,7 @@ import {
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
+import { useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
 interface StartTrialButtonProps {
@@ -50,6 +52,7 @@ export const StartTrialButton = ({
   const t = useTranslations();
   const environment = useRelayEnvironment();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { availableTrials, isBlacklisted, refetch } = useOrgaFreeTrial();
 
@@ -105,6 +108,7 @@ export const StartTrialButton = ({
         refetch({}, { fetchPolicy: 'network-only' });
       },
       onCompleted: (response) => {
+        invalidatePrivateNavigationQueries(queryClient);
         setOpenSheet(false);
         toast({
           title: t('Utils.Success'),

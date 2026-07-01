@@ -7061,21 +7061,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.101.1":
-  version: 5.101.1
-  resolution: "@tanstack/query-core@npm:5.101.1"
-  checksum: 10/b6e6c0bd5ee23ca6cab290f51eb4b694e5d3c172ea066d636c92273896c0c5fa463fe2583037ab4d609a5149eb5408d2d846b29b48d8418d44badb8f7ba11c36
+"@tanstack/query-core@npm:5.101.2":
+  version: 5.101.2
+  resolution: "@tanstack/query-core@npm:5.101.2"
+  checksum: 10/567af5e3c21628745a08c1a5054d838597bc620dcbbeabe20cdd6ccffdcca85a8d38128f6e80829b6e04d10f79ca793a7dd8fddc8a3d6bef10c2d580ae214c7d
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:5.101.1":
-  version: 5.101.1
-  resolution: "@tanstack/react-query@npm:5.101.1"
+"@tanstack/react-query@npm:5.101.2":
+  version: 5.101.2
+  resolution: "@tanstack/react-query@npm:5.101.2"
   dependencies:
-    "@tanstack/query-core": "npm:5.101.1"
+    "@tanstack/query-core": "npm:5.101.2"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10/e29db0bdb595c0f55d4588bb3834bc8d2b012a5aee24c9277058123ccecc5d61cc2e038cdcd5fcdec6b7a451b8db3457e6def829f323ea721654ceac788a9539
+  checksum: 10/0837c176b6afb01e3632010bbd8bdfeee7f46c4a25a50ed2ba9ddddce11c34431161d80dd8e53a2f55190c2313bbfb22a84a77308e6ccf29877b4818de68c4b3
   languageName: node
   linkType: hard
 
@@ -8548,7 +8548,7 @@ __metadata:
     body-parser: "npm:2.3.0"
     chokidar: "npm:5.0.0"
     concurrently: "catalog:"
-    config: "npm:4.4.1"
+    config: "npm:4.4.2"
     cors: "npm:2.8.6"
     cpy-cli: "npm:7.0.0"
     dataloader: "npm:2.2.3"
@@ -8608,7 +8608,7 @@ __metadata:
     "@lingual/i18n-check": "npm:0.9.5"
     "@svgr/webpack": "npm:8.1.0"
     "@tailwindcss/postcss": "npm:4.3.1"
-    "@tanstack/react-query": "npm:5.101.1"
+    "@tanstack/react-query": "npm:5.101.2"
     "@testing-library/dom": "npm:10.4.1"
     "@testing-library/jest-dom": "npm:6.9.1"
     "@testing-library/react": "npm:16.3.2"
@@ -10208,12 +10208,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"config@npm:4.4.1":
-  version: 4.4.1
-  resolution: "config@npm:4.4.1"
+"config@npm:4.4.2":
+  version: 4.4.2
+  resolution: "config@npm:4.4.2"
   dependencies:
     json5: "npm:^2.2.3"
-  checksum: 10/b237298b107111f88f8b4226c6412298a93052642c8e67a352e36f64be02fb4644351890f57e518338d1491e83064c6fb8fe31f676c7355491ef969e174ec9f1
+  checksum: 10/57c321f94d8893f3748daefc62923b806d8d79f1da12f448f5ee190c25aa75aed5c6e31f206c3dd0ea7a8f2d11d6737d24f92019509a5d2f4773156ede16e7de
   languageName: node
   linkType: hard
 
@@ -16066,9 +16066,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocart-reporter@npm:2.11.3":
-  version: 2.11.3
-  resolution: "monocart-reporter@npm:2.11.3"
+"monocart-reporter@npm:2.12.1":
+  version: 2.12.1
+  resolution: "monocart-reporter@npm:2.12.1"
   dependencies:
     console-grid: "npm:^2.2.4"
     eight-colors: "npm:^1.3.3"
@@ -16077,10 +16077,9 @@ __metadata:
     lz-utils: "npm:^2.1.1"
     monocart-coverage-reports: "npm:^2.12.12"
     monocart-locator: "npm:^1.0.3"
-    nodemailer: "npm:^8.0.7"
   bin:
     monocart: lib/cli.js
-  checksum: 10/efc13fe7a6c9b7417589c1d777b58e544882de150c2ec68ba26469c94c0b1b74b480f5f0eff6dc1afcab4e311af59d8ec697f52f6136ad3192649005908bd190
+  checksum: 10/907c7fd447de9d06ffac8da36d1e704af9eb3ae7a5780f8054a6ff221c7daae1288bbc43609d0657e8e4ca5b460d896b4d48068daa18ca58b153849d8b14e1db
   languageName: node
   linkType: hard
 
@@ -16421,13 +16420,6 @@ __metadata:
   version: 9.0.1
   resolution: "nodemailer@npm:9.0.1"
   checksum: 10/cc7782962def1575102039270ff3356535c614e6db420dda85dffe672e77e66b410198c284a508b3bc8193b9c34c8e7b4cf8c697e0de2cc978c5e02f9c708fed
-  languageName: node
-  linkType: hard
-
-"nodemailer@npm:^8.0.7":
-  version: 8.0.7
-  resolution: "nodemailer@npm:8.0.7"
-  checksum: 10/f0afea43af7f7deb55913811362b5d255e9d70c87024eb8b5161acd8a3a3c765454a52eefbfe40a5fe79ff0475b5445acafd20cb187826222b895dee15470c8f
   languageName: node
   linkType: hard
 
