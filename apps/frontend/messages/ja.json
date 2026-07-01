@@ -318,6 +318,7 @@
     "Title": "リソースと専門知識の発見",
     "XtmPlatform": {
       "Label": "XTM Hubへようこそ",
+      "LabelWithName": "ようこそ {name}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
       "Description": "OpenCTIまたはOpenAEVプラットフォームを登録すると、ワンクリックで事前構築済みのコンテンツを展開したり、製品ニュースフィードで最新情報を入手したり、無料トライアルを開始したり、XTM Platformをさらに活用したりすることができます。",
       "Cta": "製品を連携する",

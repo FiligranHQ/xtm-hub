@@ -318,6 +318,7 @@
     "Title": "Découvrez nos ressources et notre expertise",
     "XtmPlatform": {
       "Label": "Bienvenue sur XTM Hub",
+      "LabelWithName": "Bienvenue {name}",
       "Title": "Développez et faites évoluer votre plateforme XTM",
       "Description": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
       "Cta": "Connectez votre produit",
