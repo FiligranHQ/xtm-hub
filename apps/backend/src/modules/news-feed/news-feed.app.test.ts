@@ -263,6 +263,7 @@ describe('newsFeedApp', () => {
         expect.arrayContaining([
           NewsFeedItemType.ResourceCustomDashboard,
           NewsFeedItemType.ResourcePlaybook,
+          NewsFeedItemType.ResourceCustomView,
         ])
       );
     });
