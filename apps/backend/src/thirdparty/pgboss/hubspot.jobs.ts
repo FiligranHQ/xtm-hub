@@ -27,8 +27,7 @@ export const HUBSPOT_QUEUES = {
 } as const;
 
 export type HubspotQueueName =
-  | typeof HUBSPOT_QUEUES.LOGIN
-  | typeof HUBSPOT_QUEUES.REACH_OUT_SALES;
+  typeof HUBSPOT_QUEUES.LOGIN | typeof HUBSPOT_QUEUES.REACH_OUT_SALES;
 
 export const HUBSPOT_TYPE_TO_QUEUE = {
   login: HUBSPOT_QUEUES.LOGIN,

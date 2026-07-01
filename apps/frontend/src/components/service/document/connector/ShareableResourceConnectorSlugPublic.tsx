@@ -17,8 +17,7 @@ import Image from 'next/image';
 interface ShareableResourceConnectorSlugPublicProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
   serviceInstance:
-    | seoServiceInstanceFragment$data
-    | serviceInstance_fragment$data;
+    seoServiceInstanceFragment$data | serviceInstance_fragment$data;
   pageUrl: string;
 }
 

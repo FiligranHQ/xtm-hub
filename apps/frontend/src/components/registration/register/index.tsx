@@ -44,10 +44,7 @@ interface RegisterProps {
 }
 
 export type RegistrationRequestStatus =
-  | 'idle'
-  | 'succeeded'
-  | 'failed'
-  | 'missed-capability';
+  'idle' | 'succeeded' | 'failed' | 'missed-capability';
 
 interface State {
   registrationRequestStatus: RegistrationRequestStatus;

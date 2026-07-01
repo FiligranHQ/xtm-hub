@@ -26,8 +26,7 @@ type IntegrationFiltersParams = {
 };
 
 export type LogicalFiltersParams =
-  | SimpleFiltersParams
-  | IntegrationFiltersParams;
+  SimpleFiltersParams | IntegrationFiltersParams;
 
 export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
   const { serviceInstanceSlug, labels } = params;

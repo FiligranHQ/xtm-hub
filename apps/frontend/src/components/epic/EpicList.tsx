@@ -35,8 +35,7 @@ import { useDebounceCallback } from 'usehooks-ts';
 interface EpicListProps {
   epics: epic_fragment$data[];
   serviceInstance:
-    | serviceInstance_fragment$data
-    | seoServiceInstanceFragment$data;
+    serviceInstance_fragment$data | seoServiceInstanceFragment$data;
   selectedProduct?: EpicFilterType;
   onFilterChange: (filter: EpicFilterType) => void;
   onSearch: (searchTerm: string) => void;
