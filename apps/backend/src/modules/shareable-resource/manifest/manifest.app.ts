@@ -11,9 +11,14 @@ import {
   TAG_LATEST,
   TAG_LATEST_LTS,
 } from '../manifest-fragment/manifest-fragment.utils';
-import { INTEGRATION_CONNECTOR_V2_METADATA_KEYS } from '../opencti/integration/integration.model';
+import {
+  ConnectorV2,
+  INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
+} from '../opencti/integration/integration.model';
 import { ManifestKey } from './manifest.consts';
 import { ManifestDomain } from './manifest.domain';
+import { ManifestHelper } from './manifest.helper';
+import { ManifestOutput } from './manifest.types';
 
 export const ManifestApp = {
   processManifestQueue: async (manifest?: ManifestKey) => {
@@ -35,10 +40,14 @@ export const ManifestApp = {
     }
   },
 
-  generateManifest: async ({ version, type }: ManifestKey) => {
+  generateManifest: async ({
+    version,
+    platformIdentifier,
+    type,
+  }: ManifestKey): Promise<ManifestOutput | null> => {
     if (type != ManifestType.Connector) {
       logApp.error('UnsupportedManifestType', { type });
-      return;
+      return null;
     }
     const tag = isLtsVersion(version) ? TAG_LATEST_LTS : TAG_LATEST;
     const connectors = await DocumentDomain.loadDocumentsByMetadata(
@@ -50,5 +59,27 @@ export const ManifestApp = {
     logApp.info(
       `Found ${connectors.length} connector(s) v2 with tag "${tag}" for version ${version}`
     );
+
+    if (connectors.length === 0) {
+      logApp.error('No connectors found for manifest');
+      return null;
+    }
+
+    const now = new Date();
+    const manifest = ManifestHelper.buildConnectorManifestOutput(
+      version,
+      connectors as ConnectorV2[],
+      now
+    );
+
+    const minioFileName = ManifestHelper.buildManifestFileNameWithPath(
+      platformIdentifier,
+      version,
+      now
+    );
+    await ManifestHelper.uploadManifest(manifest, minioFileName);
+
+    logApp.info(`Manifest "${minioFileName}" uploaded to MinIO`);
+    return manifest;
   },
 };

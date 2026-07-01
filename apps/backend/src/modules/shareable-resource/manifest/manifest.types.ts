@@ -1,0 +1,31 @@
+export interface ManifestContract {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  short_description: string;
+  /** Base64-encoded logo image. todo #5: not yet populated. */
+  logo: string | null;
+  use_cases: string[];
+  verified: boolean;
+  last_verified_date: string;
+  subscription_link: string | null;
+  source_code: string | null;
+  manager_supported: boolean;
+  support_version: string | null;
+  version: string | null;
+  image_name: string | null;
+  image_type: string;
+  additional_properties: Record<string, unknown>;
+  config_schema: Record<string, unknown>;
+}
+
+export interface ManifestOutput {
+  id: string;
+  name: string;
+  description: string;
+  manifest_schema_version: string;
+  manifest_version: string;
+  product_version: string;
+  contracts: ManifestContract[];
+}
