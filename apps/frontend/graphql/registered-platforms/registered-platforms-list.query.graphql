@@ -1,0 +1,12 @@
+query RegisteredPlatformsList {
+  registeredPlatforms(input: {}) {
+    title
+    url
+    identifier
+    subscription {
+      service_instance {
+        id
+      }
+    }
+  }
+}

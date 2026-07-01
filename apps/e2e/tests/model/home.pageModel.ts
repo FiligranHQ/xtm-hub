@@ -10,6 +10,8 @@ export class HomePage {
 
   async assertCurrentPage() {
     await this.page.waitForURL('/app');
-    await expect(this.page.getByText('Home')).toBeVisible();
+    await expect(
+      this.page.getByText('XTM Platform', { exact: true })
+    ).toBeVisible();
   }
 }

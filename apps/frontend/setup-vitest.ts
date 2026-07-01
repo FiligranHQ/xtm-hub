@@ -32,6 +32,7 @@ vi.mock('next/navigation', async (importOriginal) => ({
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next-intl')>()),
   useTranslations: () => (key: string) => key,
+  useLocale: () => 'en',
 }));
 
 const relayRegistryMocks = vi.hoisted(() => ({
