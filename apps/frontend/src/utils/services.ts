@@ -13,6 +13,7 @@ import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefini
 import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { useTranslations } from 'next-intl';
 
@@ -135,8 +136,7 @@ export const registeredPlatformToServiceInstanceCardData = (
     [ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION]:
       'bg-gradient-to-br from-[#0F1E38] via-[#0A6D6A] to-[#0F1E38]',
   };
-  const platformIdentifier =
-    platform.identifier as ServiceDefinitionIdentifierEnum;
+  const platformIdentifier = platform.identifier as ServiceDefinitionIdentifier;
   const commonValues = {
     id: platform.id,
     url: platform.url,

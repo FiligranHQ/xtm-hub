@@ -395,7 +395,7 @@
     "Remove": "Remove",
     "Update": "Update"
   },
-  "PublicMenu": {
+  "Menu": {
     "XTMPlatform": "XTM Platform",
     "StartFreeTrial": "Start Free Trial",
     "CustomDashboards": "Custom Dashboards",
@@ -411,7 +411,9 @@
     "Slack": "Slack",
     "About": "About",
     "AICatalog": "AI Catalog",
-    "ComingSoon": "Coming soon"
+    "ComingSoon": "Coming soon",
+    "MyProduct": "My product",
+    "MyProducts": "My products"
   },
   "MenuLinks": {
     "Backoffice": "Backoffice",
@@ -529,7 +531,8 @@
   "OrganizationSwitcher": {
     "PersonalSpace": "Personal space",
     "SelectOrganization": "Select an organization",
-    "SelectedOrganization": "SelectedOrganization"
+    "SelectedOrganization": "SelectedOrganization",
+    "Workspace": "Workspace:"
   },
   "TrialsDashboard": {
     "Columns": {

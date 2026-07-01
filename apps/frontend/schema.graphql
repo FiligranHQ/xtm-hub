@@ -1245,6 +1245,10 @@ type Settings {
   environment: String!
 }
 
+enum ManifestType {
+  connector
+}
+
 type OpenAEVScenario implements Document & Node {
   id: ID!
   type: String!
