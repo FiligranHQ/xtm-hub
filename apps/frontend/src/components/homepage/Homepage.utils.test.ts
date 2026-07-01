@@ -92,8 +92,7 @@ describe('findLogoUrl', () => {
       expected,
     }: {
       children_documents:
-        | { id: string; image_type: DocumentImageType }[]
-        | null;
+        { id: string; image_type: DocumentImageType }[] | null;
       service_instance_id: string | null;
       expected: string | undefined;
     }) => {
