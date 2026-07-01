@@ -82,8 +82,8 @@ export const createAuthDirectiveTransformer = (
         // Get directives (field-level or inherited from type)
         const authDirective =
           (getDirective(schema, fieldConfig, AUTH_DIRECTIVE_NAME)?.[0] as
-            | AuthDirectiveArgs
-            | undefined) ?? authTypeDirectiveArgumentMaps[typeName];
+            AuthDirectiveArgs | undefined) ??
+          authTypeDirectiveArgumentMaps[typeName];
 
         const serviceCapaDirective =
           (getDirective(
@@ -98,8 +98,7 @@ export const createAuthDirectiveTransformer = (
           fieldConfig,
           SYSTEM_TOKEN_DIRECTIVE_NAME
         )?.[0] ?? systemTokenTypeDirectiveArgumentMaps[typeName]) as
-          | SystemTokenDirectiveArgs
-          | undefined;
+          SystemTokenDirectiveArgs | undefined;
 
         const platformTokenDirective =
           getDirective(
