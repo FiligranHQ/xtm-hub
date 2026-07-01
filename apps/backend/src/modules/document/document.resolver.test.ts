@@ -387,8 +387,7 @@ describe('document field resolvers', () => {
   it('service_instance should load service instance by service_instance_id', async () => {
     const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: serviceInstanceId } as unknown as
-      | ServiceInstance
-      | undefined;
+      ServiceInstance | undefined;
     vi.spyOn(ServiceInstanceDomain, 'getServiceInstance').mockResolvedValue(
       expected
     );

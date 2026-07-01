@@ -8,8 +8,6 @@ import { UserLoadUserBy } from '../../../model/user';
 import { OrganizationDomain } from '../../../modules/organization-management/organization/organization.domain';
 import { PlatformConfigurationDomain } from '../../../modules/registration/platform-configuration/platform-configuration.domain';
 import {
-  extractPlatformId,
-  extractPlatformToken,
   validateAndGetRequestedPlatformToken,
   validateExistsPlatformAndToken,
 } from '../../../modules/security-management/token/platform-token.util';
@@ -30,20 +28,11 @@ export const PLATFORM_TOKEN_DIRECTIVE_NAME = 'platform_token';
 const loadOrganizationFromPlatformIdAndTokenHeaders = async (
   req: express.Request
 ) => {
-  if (!validateExistsPlatformAndToken(req)) {
+  const extractedAuth = validateExistsPlatformAndToken(req);
+  if (!extractedAuth) {
     throw new Error('Invalid platform token provided');
   }
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const platform_id = extractPlatformId(req)!;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const token = extractPlatformToken(req)!;
-
-  const deploymentRequest = await validateAndGetRequestedPlatformToken(req);
-  if (deploymentRequest) {
-    return OrganizationDomain.loadOrganizationBy({
-      id: deploymentRequest.organization_requester_id,
-    });
-  }
+  const { token, platform_id } = extractedAuth;
 
   const platformConfiguration =
     await PlatformConfigurationDomain.loadConfigurationByPlatformAndToken({
@@ -51,9 +40,23 @@ const loadOrganizationFromPlatformIdAndTokenHeaders = async (
       token,
     });
   if (platformConfiguration) {
-    return OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
-      platformConfiguration.service_instance_id
-    );
+    const organization =
+      await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
+        platformConfiguration.service_instance_id
+      );
+    if (organization) {
+      return organization;
+    }
+  }
+
+  const deploymentRequest = await validateAndGetRequestedPlatformToken({
+    platform_id,
+    token,
+  });
+  if (deploymentRequest) {
+    return OrganizationDomain.loadOrganizationBy({
+      id: deploymentRequest.organization_requester_id,
+    });
   }
 
   throw new Error('Invalid token provided');

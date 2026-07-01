@@ -203,8 +203,7 @@ export const PlatformConfigurationDomain = {
     }
 
     const row = (await qb.first()) as
-      | PlatformConfigurationWithDefinition
-      | undefined;
+      PlatformConfigurationWithDefinition | undefined;
     return row ? resolvePlatformFromJoinedRow(row) : undefined;
   },
 
@@ -230,8 +229,7 @@ export const PlatformConfigurationDomain = {
     }
 
     const row = (await qb.first()) as
-      | PlatformConfigurationWithDefinition
-      | undefined;
+      PlatformConfigurationWithDefinition | undefined;
     return row ? resolvePlatformFromJoinedRow(row) : undefined;
   },
 

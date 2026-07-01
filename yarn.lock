@@ -16066,9 +16066,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocart-reporter@npm:2.11.3":
-  version: 2.11.3
-  resolution: "monocart-reporter@npm:2.11.3"
+"monocart-reporter@npm:2.12.1":
+  version: 2.12.1
+  resolution: "monocart-reporter@npm:2.12.1"
   dependencies:
     console-grid: "npm:^2.2.4"
     eight-colors: "npm:^1.3.3"
@@ -16077,10 +16077,9 @@ __metadata:
     lz-utils: "npm:^2.1.1"
     monocart-coverage-reports: "npm:^2.12.12"
     monocart-locator: "npm:^1.0.3"
-    nodemailer: "npm:^8.0.7"
   bin:
     monocart: lib/cli.js
-  checksum: 10/efc13fe7a6c9b7417589c1d777b58e544882de150c2ec68ba26469c94c0b1b74b480f5f0eff6dc1afcab4e311af59d8ec697f52f6136ad3192649005908bd190
+  checksum: 10/907c7fd447de9d06ffac8da36d1e704af9eb3ae7a5780f8054a6ff221c7daae1288bbc43609d0657e8e4ca5b460d896b4d48068daa18ca58b153849d8b14e1db
   languageName: node
   linkType: hard
 
@@ -16421,13 +16420,6 @@ __metadata:
   version: 9.0.1
   resolution: "nodemailer@npm:9.0.1"
   checksum: 10/cc7782962def1575102039270ff3356535c614e6db420dda85dffe672e77e66b410198c284a508b3bc8193b9c34c8e7b4cf8c697e0de2cc978c5e02f9c708fed
-  languageName: node
-  linkType: hard
-
-"nodemailer@npm:^8.0.7":
-  version: 8.0.7
-  resolution: "nodemailer@npm:8.0.7"
-  checksum: 10/f0afea43af7f7deb55913811362b5d255e9d70c87024eb8b5161acd8a3a3c765454a52eefbfe40a5fe79ff0475b5445acafd20cb187826222b895dee15470c8f
   languageName: node
   linkType: hard
 
@@ -17471,12 +17463,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.8.5":
-  version: 3.8.5
-  resolution: "prettier@npm:3.8.5"
+"prettier@npm:3.9.1":
+  version: 3.9.1
+  resolution: "prettier@npm:3.9.1"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/61b59be2f6fdb06850aa8add77a4c3ea31d9536ae25ee9206cdd7a52de968276270a69f4bb71a6e23cbe7bfe6705a74eebdfae2022659c4ccea246e45c290c94
+  checksum: 10/1b4317674aa9e90ff79c347fd19f91bb305df98b3122e7131d6815291707781305c45a13cd982474c2f74ed748f2fd0a9aa094f9856609ed1b6f092de8152058
   languageName: node
   linkType: hard
 
