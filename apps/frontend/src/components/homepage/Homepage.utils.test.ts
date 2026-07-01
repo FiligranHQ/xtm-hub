@@ -1,3 +1,4 @@
+import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   DocumentImageType,
@@ -7,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import {
   findLogoUrl,
   resolveHomepagePlatformIdentifiers,
+  resolveHomepageRoadmapResolution,
 } from './Homepage.utils';
 
 describe('resolveHomepagePlatformIdentifiers', () => {
@@ -112,4 +114,47 @@ describe('findLogoUrl', () => {
       );
     }
   );
+});
+
+describe('resolveHomepageRoadmapResolution', () => {
+  it.each([
+    {
+      identifiers: [],
+      expected: {
+        productFilter: undefined,
+        titleKey: 'Title',
+      },
+      description: 'returns default roadmap resolution for an empty array',
+    },
+    {
+      identifiers: [ServiceDefinitionIdentifier.OpenaevRegistration],
+      expected: {
+        productFilter: FiligranProductEnum.OPENAEV,
+        titleKey: 'OpenAEVTitle',
+      },
+      description: 'returns OAEV roadmap resolution for OAEV-only identifiers',
+    },
+    {
+      identifiers: [ServiceDefinitionIdentifier.OpenctiRegistration],
+      expected: {
+        productFilter: FiligranProductEnum.OPENCTI,
+        titleKey: 'OpenCTITitle',
+      },
+      description: 'returns OCTI roadmap resolution for OCTI-only identifiers',
+    },
+    {
+      identifiers: [
+        ServiceDefinitionIdentifier.OpenctiRegistration,
+        ServiceDefinitionIdentifier.OpenaevRegistration,
+      ],
+      expected: {
+        productFilter: undefined,
+        titleKey: 'Title',
+      },
+      description:
+        'returns default roadmap resolution when both platforms are registered',
+    },
+  ])('$description', ({ identifiers, expected }) => {
+    expect(resolveHomepageRoadmapResolution(identifiers)).toEqual(expected);
+  });
 });

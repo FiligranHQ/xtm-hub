@@ -325,6 +325,8 @@
     },
     "XtmRoadmap": {
       "Title": "Feuille de route de la plateforme XTM",
+      "OpenCTITitle": "Feuille de route OpenCTI",
+      "OpenAEVTitle": "Feuille de route OpenAEV",
       "Description": "Découvrez ce que nous développons, les prochaines étapes et l’orientation future de la plateforme XTM. Transparence totale. Pas de surprises.",
       "SeeMore": "En savoir plus",
       "ImageAlt": "Illustration de la feuille de route de la plateforme XTM",
