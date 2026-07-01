@@ -860,6 +860,93 @@ describe('document domain', () => {
         )[TEST_KEY]
       ).toBe(TEST_VALUE);
     });
+
+    describe('when documentFilters are provided', () => {
+      it.each`
+        description                             | filters                        | expectedCount
+        ${'active: true — matches'}             | ${{ active: true }}            | ${1}
+        ${'active: false — excludes'}           | ${{ active: false }}           | ${0}
+        ${'is_decommissioned: true — excludes'} | ${{ is_decommissioned: true }} | ${0}
+      `(
+        'should apply scalar filter: $description',
+        async ({
+          filters,
+          expectedCount,
+        }: {
+          filters: Partial<Document>;
+          expectedCount: number;
+        }) => {
+          const docs = await DocumentDomain.loadDocumentsByMetadata(
+            TEST_KEY,
+            TEST_VALUE,
+            [],
+            filters
+          );
+          expect(docs).toHaveLength(expectedCount);
+        }
+      );
+
+      it('should return document when tag matches', async () => {
+        await TestHelper.document.update({ id: doc1.id }, { tags: ['latest'] });
+
+        const docs = await DocumentDomain.loadDocumentsByMetadata(
+          TEST_KEY,
+          TEST_VALUE,
+          [],
+          { tags: ['latest'] }
+        );
+        expect(docs).toHaveLength(1);
+        expect(docs[0]!.id).toBe(doc1.id);
+      });
+
+      it('should return no results when tag does not match', async () => {
+        await TestHelper.document.update({ id: doc1.id }, { tags: ['latest'] });
+
+        const docs = await DocumentDomain.loadDocumentsByMetadata(
+          TEST_KEY,
+          TEST_VALUE,
+          [],
+          { tags: ['latest_lts'] }
+        );
+        expect(docs).toHaveLength(0);
+      });
+
+      it.each`
+        doc1Tags          | doc1Active | filterTags    | filterActive | expectedCount | description
+        ${['latest']}     | ${true}    | ${['latest']} | ${true}      | ${1}          | ${'tag matches, active matches'}
+        ${['latest']}     | ${false}   | ${['latest']} | ${true}      | ${0}          | ${'tag matches, active does not match'}
+        ${['latest_lts']} | ${true}    | ${['latest']} | ${true}      | ${0}          | ${'tag does not match, active matches'}
+        ${['latest_lts']} | ${false}   | ${['latest']} | ${true}      | ${0}          | ${'nothing matches'}
+      `(
+        'should combine tag and scalar filters: $description',
+        async ({
+          doc1Tags,
+          doc1Active,
+          filterTags,
+          filterActive,
+          expectedCount,
+        }: {
+          doc1Tags: string[];
+          doc1Active: boolean;
+          filterTags: string[];
+          filterActive: boolean;
+          expectedCount: number;
+        }) => {
+          await TestHelper.document.update(
+            { id: doc1.id },
+            { tags: doc1Tags, active: doc1Active }
+          );
+
+          const docs = await DocumentDomain.loadDocumentsByMetadata(
+            TEST_KEY,
+            TEST_VALUE,
+            [],
+            { active: filterActive, tags: filterTags }
+          );
+          expect(docs).toHaveLength(expectedCount);
+        }
+      );
+    });
   });
 
   describe('loadDocumentBy', () => {

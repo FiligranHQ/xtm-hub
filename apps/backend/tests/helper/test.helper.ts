@@ -4,6 +4,7 @@ import {
   CompetitorTier,
   FiligranProduct,
   ManifestType,
+  PlatformIdentifier,
   Timeline,
 } from '../../src/__generated__/resolvers-types';
 import Competitor, {
@@ -172,7 +173,7 @@ export const TestHelper = {
       const [row] = await db<ManifestRebuildQueue>('ManifestRebuildQueue')
         .insert({
           id: uuidv4() as ManifestRebuildQueueId,
-          product: 'opencti',
+          product: PlatformIdentifier.Opencti,
           version: '6.4.0',
           type: ManifestType.Connector,
           status: ManifestRebuildQueueStatus.Pending,

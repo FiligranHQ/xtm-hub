@@ -1,8 +1,8 @@
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 
 const connectorVersionRegex = /^(\d+)\.(\d{1,6})\.(\d+)(?:-lts\.(\d+))?$/i;
-const TAG_LATEST = 'latest';
-const TAG_LATEST_LTS = 'latest-lts';
+export const TAG_LATEST = 'latest';
+export const TAG_LATEST_LTS = 'latest-lts';
 export const TAG_DECOUPLING = 'decoupling';
 export const MAX_SHORT_DESCRIPTION_LENGTH = 250;
 

@@ -132,8 +132,11 @@ export const DocumentDomain = {
   loadDocumentsByMetadata: async (
     key: string,
     value: string,
-    include_metadata: DocumentMetadataKeyCode[] = []
+    include_metadata: DocumentMetadataKeyCode[] = [],
+    documentFilters: DocumentMutator = {}
   ): Promise<DocumentModel[]> => {
+    const { tags, ...scalarFilters } = documentFilters;
+
     const docQuery = db<DocumentModel>('Document')
       .leftJoin(
         'Document_Metadata',
@@ -142,8 +145,17 @@ export const DocumentDomain = {
       )
       .where('Document_Metadata.key', key)
       .andWhere('Document_Metadata.value', value)
+      .andWhere(scalarFilters)
       .select('Document.*')
       .groupBy('Document.id');
+
+    if (tags && tags.length > 0) {
+      const placeholders = tags.map(() => '?').join(',');
+      docQuery.whereRaw(
+        `"Document"."tags"::text[] @> array[${placeholders}]`,
+        tags
+      );
+    }
 
     DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
 
