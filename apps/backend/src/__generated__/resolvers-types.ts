@@ -1565,6 +1565,7 @@ export enum PortalCapability {
   Bypass = 'BYPASS',
   ManageConnectorsIngestions = 'MANAGE_CONNECTORS_INGESTIONS',
   ManageDeployment = 'MANAGE_DEPLOYMENT',
+  ManageManifestIngestions = 'MANAGE_MANIFEST_INGESTIONS',
   ModifyCompetitors = 'MODIFY_COMPETITORS',
   ModifyTrials = 'MODIFY_TRIALS',
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
