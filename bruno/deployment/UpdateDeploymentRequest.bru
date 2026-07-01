@@ -1,0 +1,56 @@
+meta {
+  name: UpdateDeploymentRequest
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+headers {
+  x-xtm-hub-token: {{xtm-hub-token}}
+}
+
+body:graphql {
+  mutation UpdateDeploymentRequest($input: UpdateDeploymentRequestInput!) {
+    updateDeploymentRequest(input: $input) {
+      id
+      start_date
+      end_date
+      hub_status
+      type
+      failure_reason
+      requester_email
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "input": {
+      "id": "",
+      "actual_state": "",
+      "start_date": "",
+      "end_date": "",
+      "platform_id": ""
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Ensure xtm-hub-token is defined in environment
+  
+  Fill variables:
+  input: deployment_request_id (not encoded)
+  state: state value, like provisioning or active
+  dates: format YYYY-MM-DD
+  platform_id: platform_id (not encoded)
+}

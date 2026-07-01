@@ -1,0 +1,20 @@
+query ServiceInstancesList(
+  $count: Int!
+  $orderBy: ServiceInstanceOrdering!
+  $orderMode: OrderingMode!
+) {
+  serviceInstances(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+    edges {
+      node {
+        id
+        name
+        service_definition {
+          identifier
+        }
+        links {
+          url
+        }
+      }
+    }
+  }
+}

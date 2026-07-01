@@ -1,4 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import {
   DocumentConnection,
   DocumentMetadataKeyCode,
@@ -24,6 +32,8 @@ import {
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import Document from '../../../model/kanel/public/Document';
+import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
+import { UseCaseId } from '../../../model/kanel/public/UseCase';
 import { ADMIN_UUID } from '../../../portal.const';
 import { DocumentUploadsHelper } from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
@@ -893,5 +903,103 @@ describe('document domain', () => {
       expect(resultFound).toMatchObject({ id: doc.id });
       expect(resultNotFound).toBeUndefined();
     });
+  });
+
+  describe('search by use case name', () => {
+    let docWithThreatHunting: Document;
+    let docWithIncidentResponse: Document;
+    let threatHuntingUseCaseId: UseCaseId;
+    let incidentResponseUseCaseId: UseCaseId;
+
+    beforeAll(async () => {
+      // Use cases are not wiped by the outer beforeEach, so create them once.
+      const uc1 = await TestHelper.useCase.create({
+        name: 'threat-hunting-label',
+        color: '#ff0000',
+      });
+      const uc2 = await TestHelper.useCase.create({
+        name: 'incident-response-label',
+        color: '#0000ff',
+      });
+      threatHuntingUseCaseId = uc1.id;
+      incidentResponseUseCaseId = uc2.id;
+    });
+
+    beforeEach(async () => {
+      docWithThreatHunting = await TestHelper.document.create({
+        slug: 'doc-alpha-uc-search',
+        name: 'doc-alpha-uc-search',
+        active: true,
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+      docWithIncidentResponse = await TestHelper.document.create({
+        slug: 'doc-beta-uc-search',
+        name: 'doc-beta-uc-search',
+        active: true,
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+      await TestHelper.objectUseCase.insert([
+        {
+          object_id:
+            docWithThreatHunting.id as unknown as ObjectUseCaseObjectId,
+          use_case_id: threatHuntingUseCaseId,
+        },
+        {
+          object_id:
+            docWithIncidentResponse.id as unknown as ObjectUseCaseObjectId,
+          use_case_id: incidentResponseUseCaseId,
+        },
+      ]);
+    });
+
+    afterAll(async () => {
+      await TestHelper.objectUseCase.delete({
+        use_case_id: threatHuntingUseCaseId,
+      });
+      await TestHelper.objectUseCase.delete({
+        use_case_id: incidentResponseUseCaseId,
+      });
+      await TestHelper.useCase.delete({ id: threatHuntingUseCaseId });
+      await TestHelper.useCase.delete({ id: incidentResponseUseCaseId });
+    });
+
+    it.each`
+      description                                   | searchTerm                   | expectedCount | getExpectedId
+      ${'exact use case name match'}                | ${'threat-hunting-label'}    | ${1}          | ${() => docWithThreatHunting.id}
+      ${'partial use case name match'}              | ${'hunting-label'}           | ${1}          | ${() => docWithThreatHunting.id}
+      ${'case-insensitive use case name match'}     | ${'THREAT-HUNTING-LABEL'}    | ${1}          | ${() => docWithThreatHunting.id}
+      ${'no match returns no test documents'}       | ${'no-match-label-zzz'}      | ${0}          | ${() => null}
+      ${'other use case does not leak into result'} | ${'incident-response-label'} | ${1}          | ${() => docWithIncidentResponse.id}
+    `(
+      'should return $expectedCount test document(s) when searching "$searchTerm" ($description)',
+      async ({
+        searchTerm,
+        expectedCount,
+        getExpectedId,
+      }: {
+        searchTerm: string;
+        expectedCount: number;
+        getExpectedId: () => string | null;
+      }) => {
+        const result = await DocumentDomain.loadDocuments(
+          {
+            searchTerm,
+            first: 100,
+            orderBy: DocumentOrdering.CreatedAt,
+            orderMode: OrderingMode.Desc,
+          },
+          {}
+        );
+
+        const ids = result.edges.map((e) => e.node.id as string);
+
+        expect(ids).toHaveLength(expectedCount);
+        if (expectedCount > 0) {
+          expect(ids).toContain(getExpectedId());
+        }
+      }
+    );
   });
 });

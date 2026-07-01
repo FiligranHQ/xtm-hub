@@ -855,6 +855,34 @@ export enum LogicalOperator {
   Or = 'OR'
 }
 
+export type ManifestFragmentInput = {
+  additional_properties: Scalars['JSON']['input'];
+  batch_id: Scalars['String']['input'];
+  config_schema: Scalars['JSON']['input'];
+  description: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  image_name: Scalars['String']['input'];
+  image_type: Scalars['String']['input'];
+  integration_type: Scalars['String']['input'];
+  last_verified_date?: InputMaybe<Scalars['Date']['input']>;
+  logo: Scalars['String']['input'];
+  manager_supported: Scalars['Boolean']['input'];
+  min_version: Scalars['String']['input'];
+  platform: Scalars['String']['input'];
+  short_description: Scalars['String']['input'];
+  slug: Scalars['String']['input'];
+  source_code: Scalars['String']['input'];
+  subscription_link: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  use_cases: Array<Scalars['String']['input']>;
+  verified?: InputMaybe<Scalars['Boolean']['input']>;
+  version: Scalars['String']['input'];
+};
+
+export enum ManifestType {
+  Connector = 'connector'
+}
+
 export type MeUserSubscription = {
   __typename?: 'MeUserSubscription';
   delete?: Maybe<User>;
@@ -909,6 +937,7 @@ export type Mutation = {
   editUserService?: Maybe<UserService>;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
+  ingestManifestFragments: Success;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
@@ -1148,6 +1177,11 @@ export type MutationFrontendErrorLogArgs = {
 
 export type MutationIncrementShareNumberDocumentArgs = {
   documentId: Scalars['DocumentId']['input'];
+};
+
+
+export type MutationIngestManifestFragmentsArgs = {
+  manifestFragments: Array<ManifestFragmentInput>;
 };
 
 
@@ -1532,6 +1566,7 @@ export enum PortalCapability {
   Bypass = 'BYPASS',
   ManageConnectorsIngestions = 'MANAGE_CONNECTORS_INGESTIONS',
   ManageDeployment = 'MANAGE_DEPLOYMENT',
+  ManageManifestIngestions = 'MANAGE_MANIFEST_INGESTIONS',
   ModifyCompetitors = 'MODIFY_COMPETITORS',
   ModifyTrials = 'MODIFY_TRIALS',
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
@@ -2757,6 +2792,8 @@ export type ResolversTypes = ResolversObject<{
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LogicalFilterInput: LogicalFilterInput;
   LogicalOperator: LogicalOperator;
+  ManifestFragmentInput: ManifestFragmentInput;
+  ManifestType: ManifestType;
   MeUserSubscription: ResolverTypeWrapper<MeUserSubscription>;
   MergeEvent: ResolverTypeWrapper<MergeEvent>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -2955,6 +2992,7 @@ export type ResolversParentTypes = ResolversObject<{
   IsPlatformRegisteredResponse: IsPlatformRegisteredResponse;
   JSON: Scalars['JSON']['output'];
   LogicalFilterInput: LogicalFilterInput;
+  ManifestFragmentInput: ManifestFragmentInput;
   MeUserSubscription: MeUserSubscription;
   MergeEvent: MergeEvent;
   Mutation: {};
@@ -3552,6 +3590,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationEditUserServiceArgs, 'input' | 'service_instance_id'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationIncrementShareNumberDocumentArgs, 'documentId'>>;
+  ingestManifestFragments?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationIngestManifestFragmentsArgs, 'manifestFragments'>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;

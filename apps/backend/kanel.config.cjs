@@ -55,6 +55,17 @@ const COLUMN_ENUM_MAP = {
     type: 'NewsFeedItemType',
     platform_identifier: 'PlatformIdentifier',
   },
+  ManifestRebuildQueue: {
+    type: 'ManifestType',
+    status: {
+      tsType: 'ManifestRebuildQueueStatus',
+      importPath:
+        '../../../modules/shareable-resource/manifest/manifest.consts',
+    },
+  },
+  Manifest: {
+    type: 'ManifestType',
+  },
 };
 
 /** @type {import('kanel').Config} */

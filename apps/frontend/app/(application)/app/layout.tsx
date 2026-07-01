@@ -9,17 +9,20 @@ import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
 import { ContentLayout } from '@/components/ContentLayout';
 import HeaderComponent from '@/components/Header';
 import Menu from '@/components/menu/Menu';
+import PrivateMenu from '@/components/menu/PrivateMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { buildLoginRedirect } from '@/utils/redirect';
+import { isFeatureEnabled } from '@/utils/settings.service';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -57,6 +60,10 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     redirect(buildLoginRedirect(pathname));
   }
 
+  const isHomePageV2Enabled = await isFeatureEnabled(
+    FeatureFlagEnum.HOME_PAGE_V2
+  );
+
   return (
     <RelayProvider>
       <ReactQueryProvider>
@@ -69,7 +76,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
               <AdminBanner />
               <TryFiligranProductsBanner />
               <div className="flex flex-row grow min-h-0">
-                <Menu />
+                {isHomePageV2Enabled ? <PrivateMenu /> : <Menu />}
                 <div className="flex flex-col w-full h-full min-h-0 min-w-0">
                   <HeaderComponent />
                   <ContentLayout>{children}</ContentLayout>

@@ -17,6 +17,8 @@ import userServiceCapabilityResolver from '../modules/security-management/user-s
 import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';
 import ServiceInstanceResolver from '../modules/service/instance/service-instance.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
+import manifestFragmentResolver from '../modules/shareable-resource/manifest-fragment/manifest-fragment.resolver';
+import manifestResolver from '../modules/shareable-resource/manifest/manifest.resolver';
 import openAEVScenariosResolver from '../modules/shareable-resource/openaev/scenario/scenario.resolver';
 import customDashboardsResolver from '../modules/shareable-resource/opencti/custom-dashboard/custom-dashboard.resolver';
 import customViewsResolver from '../modules/shareable-resource/opencti/custom-view/custom-view.resolver';
@@ -67,6 +69,8 @@ const resolvers = mergeResolvers([
   competitorResolver,
   xtmPlatformRoadmapResolver,
   newsFeedResolver,
+  manifestResolver,
+  manifestFragmentResolver,
 ]);
 
 const createSchema = () => {

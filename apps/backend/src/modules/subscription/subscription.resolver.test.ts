@@ -59,8 +59,7 @@ describe('subscription resolver - unit tests', () => {
       // Given
       const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
       const expected = { id: serviceInstanceId } as unknown as
-        | ServiceInstance
-        | undefined;
+        ServiceInstance | undefined;
       vi.spyOn(
         ServiceInstanceDomain,
         'loadServiceInstanceBy'
@@ -367,35 +366,35 @@ describe('subscription resolver - unit tests', () => {
     it.each`
       mutationName             | runMutation                                                                                                                                                            | setupAppMock                                                                                   | expectedCode
       ${'createSubscriptions'} | ${() =>
-  subscriptionResolver.Mutation!.createSubscriptions!(
-    {},
-    {
-      input: {
-        organization_id: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID] as never,
-        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
-        start_date: new Date('2025-01-01'),
-        end_date: new Date('2026-01-01'),
-        capability_ids: [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID],
-      },
-    },
-    contextSimpleUserFiligran2,
-    GRAPHQL_RESOLVE_INFO
-  )} | ${() => vi.spyOn(subscriptionApp, 'subscribeOrganizationsToService').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
+        subscriptionResolver.Mutation!.createSubscriptions!(
+          {},
+          {
+            input: {
+              organization_id: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID] as never,
+              service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+              start_date: new Date('2025-01-01'),
+              end_date: new Date('2026-01-01'),
+              capability_ids: [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID],
+            },
+          },
+          contextSimpleUserFiligran2,
+          GRAPHQL_RESOLVE_INFO
+        )} | ${() => vi.spyOn(subscriptionApp, 'subscribeOrganizationsToService').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
       ${'deleteSubscriptions'} | ${() => subscriptionResolver.Mutation!.deleteSubscriptions!({}, { subscription_ids: [uuidv4() as SubscriptionId] }, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO)} | ${() => vi.spyOn(subscriptionApp, 'deleteSubscriptions').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.DeleteSubscriptionError}
       ${'updateSubscription'} | ${() =>
-  subscriptionResolver.Mutation!.updateSubscription!(
-    {},
-    {
-      subscription_id: uuidv4() as SubscriptionId,
-      input: {
-        start_date: new Date('2025-01-01'),
-        end_date: new Date('2026-01-01'),
-        capability_ids: [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID],
-      },
-    },
-    contextSimpleUserFiligran2,
-    GRAPHQL_RESOLVE_INFO
-  )} | ${() => vi.spyOn(subscriptionApp, 'updateSubscription').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
+        subscriptionResolver.Mutation!.updateSubscription!(
+          {},
+          {
+            subscription_id: uuidv4() as SubscriptionId,
+            input: {
+              start_date: new Date('2025-01-01'),
+              end_date: new Date('2026-01-01'),
+              capability_ids: [SERVICES.INSTANCES.INTEGRATIONS.CAPABILITIES.UPLOAD.ID],
+            },
+          },
+          contextSimpleUserFiligran2,
+          GRAPHQL_RESOLVE_INFO
+        )} | ${() => vi.spyOn(subscriptionApp, 'updateSubscription').mockRejectedValue(new Error('boom'))} | ${UnknownErrorCode.ServiceSubscriptionError}
     `(
       'should map $mutationName errors with $expectedCode',
       async ({ runMutation, setupAppMock, expectedCode }) => {

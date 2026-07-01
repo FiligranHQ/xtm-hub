@@ -21,7 +21,7 @@ describe('PublicNavigation — open={true}', () => {
   it('renders all section labels in the accordion', () => {
     testRender(<PublicNavigation open={true} />);
 
-    expect(screen.getByText('PublicMenu.XTMPlatform')).toBeInTheDocument();
+    expect(screen.getByText('Menu.XTMPlatform')).toBeInTheDocument();
     // Hardcoded labels
     expect(screen.getByText('OpenCTI')).toBeInTheDocument();
     expect(screen.getByText('OpenAEV')).toBeInTheDocument();
@@ -31,10 +31,10 @@ describe('PublicNavigation — open={true}', () => {
   it('renders bottom links with their labels', () => {
     testRender(<PublicNavigation open={true} />);
 
-    expect(screen.getByText('PublicMenu.XTMRoadmap')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.FiligranAcademy')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.Blog')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.Slack')).toBeInTheDocument();
+    expect(screen.getByText('Menu.XTMRoadmap')).toBeInTheDocument();
+    expect(screen.getByText('Menu.FiligranAcademy')).toBeInTheDocument();
+    expect(screen.getByText('Menu.Blog')).toBeInTheDocument();
+    expect(screen.getByText('Menu.Slack')).toBeInTheDocument();
   });
 
   it('XTM Platform renders as a link, not an accordion trigger', () => {
@@ -42,7 +42,7 @@ describe('PublicNavigation — open={true}', () => {
 
     // LinkedSection renders a plain <a> (via next/link), not a button with aria-expanded
     const xtmPlatformLink = screen.getByRole('link', {
-      name: /PublicMenu\.XTMPlatform/,
+      name: /Menu\.XTMPlatform/,
     });
     expect(xtmPlatformLink).toBeInTheDocument();
     expect(xtmPlatformLink).not.toHaveAttribute('aria-expanded');
@@ -54,11 +54,11 @@ describe('PublicNavigation — open={true}', () => {
 
     await expandSection(user, 'OpenCTI');
 
-    expect(screen.getByText('PublicMenu.StartFreeTrial')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.CustomDashboards')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.Integrations')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.LiveDemo')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.Documentation')).toBeInTheDocument();
+    expect(screen.getByText('Menu.StartFreeTrial')).toBeInTheDocument();
+    expect(screen.getByText('Menu.CustomDashboards')).toBeInTheDocument();
+    expect(screen.getByText('Menu.Integrations')).toBeInTheDocument();
+    expect(screen.getByText('Menu.LiveDemo')).toBeInTheDocument();
+    expect(screen.getByText('Menu.Documentation')).toBeInTheDocument();
   });
 
   it('expanding the OpenAEV accordion shows its sub-links', async () => {
@@ -67,8 +67,8 @@ describe('PublicNavigation — open={true}', () => {
 
     await expandSection(user, 'OpenAEV');
 
-    expect(screen.getByText('PublicMenu.StartFreeTrial')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.Scenarios')).toBeInTheDocument();
+    expect(screen.getByText('Menu.StartFreeTrial')).toBeInTheDocument();
+    expect(screen.getByText('Menu.Scenarios')).toBeInTheDocument();
   });
 
   it('expanding XTM One accordion shows the badge-only AI Catalog entry', async () => {
@@ -77,8 +77,8 @@ describe('PublicNavigation — open={true}', () => {
 
     await expandSection(user, 'XTM One');
 
-    expect(screen.getByText('PublicMenu.AICatalog')).toBeInTheDocument();
-    expect(screen.getByText('PublicMenu.ComingSoon')).toBeInTheDocument();
+    expect(screen.getByText('Menu.AICatalog')).toBeInTheDocument();
+    expect(screen.getByText('Menu.ComingSoon')).toBeInTheDocument();
   });
 
   it('external sub-links have target="_blank" and rel="noopener noreferrer"', async () => {
@@ -88,7 +88,7 @@ describe('PublicNavigation — open={true}', () => {
     await expandSection(user, 'OpenCTI');
 
     const liveDemoLinks = screen.getAllByRole('link', {
-      name: /PublicMenu\.LiveDemo/,
+      name: /Menu\.LiveDemo/,
     });
     // At least one "Live Demo" link should be external
     const externalLink = liveDemoLinks.find(
@@ -103,7 +103,7 @@ describe('PublicNavigation — open={true}', () => {
     testRender(<PublicNavigation open={true} />);
 
     const xtmPlatformLink = screen.getByRole('link', {
-      name: /PublicMenu\.XTMPlatform/,
+      name: /Menu\.XTMPlatform/,
     });
     // Active class contains bg-primary/10
     expect(xtmPlatformLink.className).toContain('bg-primary/10');
@@ -116,7 +116,7 @@ describe('PublicNavigation — open={true}', () => {
     // The roadmap bottom link href is /en/cybersecurity-solutions/xtm-platform-roadmap
     // which does NOT equal /en
     const roadmapLink = screen.getByRole('link', {
-      name: /PublicMenu\.XTMRoadmap/,
+      name: /Menu\.XTMRoadmap/,
     });
     expect(roadmapLink.className).not.toContain('bg-primary/10');
   });
@@ -128,7 +128,7 @@ describe('PublicNavigation — open={true}', () => {
     await expandSection(user, 'OpenCTI');
 
     const dashboardsLink = screen.getByRole('link', {
-      name: 'PublicMenu.CustomDashboards',
+      name: 'Menu.CustomDashboards',
     });
     expect(dashboardsLink).toHaveAttribute(
       'href',
@@ -142,7 +142,7 @@ describe('PublicNavigation — open={true}', () => {
 
     await expandSection(user, 'XTM One');
 
-    const aiCatalogText = screen.getByText('PublicMenu.AICatalog');
+    const aiCatalogText = screen.getByText('Menu.AICatalog');
     // Rendered as a <span>, not a link
     expect(aiCatalogText.closest('a')).toBeNull();
   });
@@ -161,7 +161,7 @@ describe('PublicNavigation — open={false}', () => {
     testRender(<PublicNavigation open={false} />);
 
     // Bottom links use PublicLinkMenu which renders the label with sr-only when closed
-    const roadmapLabel = screen.getByText('PublicMenu.XTMRoadmap');
+    const roadmapLabel = screen.getByText('Menu.XTMRoadmap');
     expect(roadmapLabel.className).toContain('sr-only');
   });
 
@@ -169,7 +169,7 @@ describe('PublicNavigation — open={false}', () => {
     testRender(<PublicNavigation open={false} />);
 
     const xtmLink = screen.getByRole('link', {
-      name: 'PublicMenu.XTMPlatform',
+      name: 'Menu.XTMPlatform',
     });
     expect(xtmLink).toBeInTheDocument();
   });
@@ -182,7 +182,7 @@ describe('PublicNavigation — open={false}', () => {
     await user.hover(openctiButton);
 
     await waitFor(() => {
-      expect(screen.getByText('PublicMenu.StartFreeTrial')).toBeInTheDocument();
+      expect(screen.getByText('Menu.StartFreeTrial')).toBeInTheDocument();
     });
   });
 
@@ -194,15 +194,13 @@ describe('PublicNavigation — open={false}', () => {
     await user.hover(openctiButton);
 
     await waitFor(() => {
-      expect(screen.getByText('PublicMenu.StartFreeTrial')).toBeInTheDocument();
+      expect(screen.getByText('Menu.StartFreeTrial')).toBeInTheDocument();
     });
 
     await user.unhover(openctiButton);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText('PublicMenu.StartFreeTrial')
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('Menu.StartFreeTrial')).not.toBeInTheDocument();
     });
   });
 });
