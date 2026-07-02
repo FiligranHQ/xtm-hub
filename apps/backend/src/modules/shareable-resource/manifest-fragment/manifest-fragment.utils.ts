@@ -3,7 +3,7 @@ import { BadRequestErrorCode } from '../../../utils/error/error.code';
 const connectorVersionRegex = /^(\d+)\.(\d+)\.(\d+)(?:-lts\.(\d+))?$/i;
 const TAG_LATEST = 'latest';
 const TAG_LATEST_LTS = 'latest-lts';
-const TAG_DECOUPLING = 'decoupling';
+export const TAG_DECOUPLING = 'decoupling';
 
 export type ConnectorMetadataSnapshot = {
   datasheet_url?: string;

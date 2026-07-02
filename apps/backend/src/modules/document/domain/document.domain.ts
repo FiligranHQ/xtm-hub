@@ -29,6 +29,7 @@ import {
 } from '../../../security/restriction/document';
 import { MinioFile } from '../../../thirdparty/minio/types';
 import { stripNulls } from '../../../utils/typescript';
+import { TAG_DECOUPLING } from '../../shareable-resource/manifest-fragment/manifest-fragment.utils';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,
@@ -40,10 +41,7 @@ type UseCaseValue = UseCaseId | string;
 export type DocumentData<
   T extends DocumentModel,
   TUseCase extends UseCaseValue = UseCaseId,
-> = Omit<
-  Partial<T>,
-  'use_cases'
-> & {
+> = Omit<Partial<T>, 'use_cases'> & {
   use_cases?: TUseCase[];
   parent_document_id?: DocumentId;
 };
@@ -208,7 +206,15 @@ export const DocumentDomain = {
     const loadDocumentQuery = db<Document>('Document')
       .select(['Document.*'])
       .tap(restrictDocumentToUserOrganization)
-      .where(field);
+      .where(field)
+      .whereRaw(
+        `NOT EXISTS (
+          SELECT 1
+          FROM unnest(COALESCE("Document"."tags", ARRAY[]::text[])) AS tag
+          WHERE LOWER(tag) = ?
+        )`,
+        [TAG_DECOUPLING]
+      );
 
     if (
       field['Document.service_instance_id'] &&
@@ -289,6 +295,14 @@ export const DocumentDomain = {
       .where('Document.slug', '=', slug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
+      .whereRaw(
+        `NOT EXISTS (
+          SELECT 1
+          FROM unnest(COALESCE("Document"."tags", ARRAY[]::text[])) AS tag
+          WHERE LOWER(tag) = ?
+        )`,
+        [TAG_DECOUPLING]
+      )
       .whereNotExists(function () {
         this.select('*')
           .from('Document_Children')
@@ -348,6 +362,14 @@ export const DocumentDomain = {
       .where('ServiceInstance.slug', '=', serviceSlug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
+      .whereRaw(
+        `NOT EXISTS (
+          SELECT 1
+          FROM unnest(COALESCE("Document"."tags", ARRAY[]::text[])) AS tag
+          WHERE LOWER(tag) = ?
+        )`,
+        [TAG_DECOUPLING]
+      )
       .modify((qb) => {
         if (orderResults) {
           qb.orderBy([
