@@ -661,6 +661,7 @@ scalar NewsFeedItemId
 enum NewsFeedItemType {
   RESOURCE_CUSTOM_DASHBOARD
   RESOURCE_PLAYBOOK
+  RESOURCE_CUSTOM_VIEW
 }
 
 enum NewsFeedItemMetadataKey {

@@ -18,4 +18,8 @@ export const newsFeedConfigurationMapping: Partial<
     newsFeedType: NewsFeedItemType.ResourcePlaybook,
     platformIdentifier: PlatformIdentifier.Opencti,
   },
+  [ServiceDefinitionIdentifier.OpenctiCustomViews]: {
+    newsFeedType: NewsFeedItemType.ResourceCustomView,
+    platformIdentifier: PlatformIdentifier.Opencti,
+  },
 };
