@@ -3,6 +3,13 @@ import { BadRequestErrorCode } from '../../../utils/error/error.code';
 const connectorVersionRegex = /^(\d+)\.(\d+)\.(\d+)(?:-lts\.(\d+))?$/i;
 const TAG_LATEST = 'latest';
 const TAG_LATEST_LTS = 'latest-lts';
+const TAG_DECOUPLING = 'decoupling';
+
+export type ConnectorMetadataSnapshot = {
+  datasheet_url?: string;
+  blogpost_url?: string;
+  demo_url?: string;
+};
 
 export const formatConnectorVersion = (version: string): string => {
   const match = version.match(connectorVersionRegex);
@@ -42,4 +49,53 @@ export const isStrictlyGreaterConnectorVersion = ({
 }): boolean => {
   if (!current) return true;
   return candidate > current;
+};
+
+export const getConnectorMetadataFromExisting = ({
+  currentLatestConnector,
+  existingBatchConnectors,
+}: {
+  currentLatestConnector?: ConnectorMetadataSnapshot;
+  existingBatchConnectors: ConnectorMetadataSnapshot[];
+}): ConnectorMetadataSnapshot | undefined => {
+  const metadataFromExisting = {
+    datasheet_url:
+      currentLatestConnector?.datasheet_url ??
+      existingBatchConnectors.find((connector) => connector.datasheet_url)
+        ?.datasheet_url,
+    blogpost_url:
+      currentLatestConnector?.blogpost_url ??
+      existingBatchConnectors.find((connector) => connector.blogpost_url)
+        ?.blogpost_url,
+    demo_url:
+      currentLatestConnector?.demo_url ??
+      existingBatchConnectors.find((connector) => connector.demo_url)?.demo_url,
+  };
+
+  if (
+    !metadataFromExisting.datasheet_url &&
+    !metadataFromExisting.blogpost_url &&
+    !metadataFromExisting.demo_url
+  ) {
+    return undefined;
+  }
+
+  return metadataFromExisting;
+};
+
+export const getConnectorDocumentTags = (
+  shouldPromoteAsLatest: boolean,
+  latestTag: string
+): string[] => {
+  return shouldPromoteAsLatest ? [TAG_DECOUPLING, latestTag] : [TAG_DECOUPLING];
+};
+
+export const buildConnectorLogoFilename = ({
+  title,
+  version,
+}: {
+  title: string;
+  version: string;
+}): string => {
+  return `${title}-${version}-logo.png`;
 };

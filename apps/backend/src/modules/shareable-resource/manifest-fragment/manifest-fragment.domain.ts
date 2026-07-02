@@ -1,5 +1,6 @@
 import { db } from '../../../../knexfile';
 import {
+  DocumentImageType,
   DocumentMetadataKeyCode,
   DocumentSourceType,
   IntegrationType,
@@ -10,7 +11,10 @@ import {
 import Document from '../../../model/kanel/public/Document';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
+import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
+import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../document/domain/document.domain';
+import { IngestManifestHelper } from '../opencti/integration/ingest-manifest/ingest-manifest.helper';
 import {
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
   INTEGRATION_SERVICE_INSTANCE_ID,
@@ -18,19 +22,53 @@ import {
   type ConnectorV2,
 } from '../opencti/integration/integration.model';
 import {
+  buildConnectorLogoFilename,
   formatConnectorVersion,
+  getConnectorDocumentTags,
+  getConnectorMetadataFromExisting,
   getLatestTagForConnectorVersion,
   isStrictlyGreaterConnectorVersion,
   validateConnectorMinimumVersion,
 } from './manifest-fragment.utils';
-
-const TAG_DECOUPLING = 'decoupling';
 
 type ConnectorWithMetadata = Document & {
   version_padded?: string;
   datasheet_url?: string;
   blogpost_url?: string;
   demo_url?: string;
+};
+
+const attachConnectorLogo = async ({
+  connector,
+  fragment,
+}: {
+  connector: ConnectorV2;
+  fragment: ManifestFragmentInput;
+}) => {
+  const uploadLogo = IngestManifestHelper.base64ToUpload(
+    fragment.logo,
+    buildConnectorLogoFilename({
+      title: fragment.title,
+      version: fragment.version,
+    })
+  );
+
+  const [logoFile] = await DocumentUploadsHelper.processUploads(
+    uploadLogo,
+    INTEGRATION_SERVICE_INSTANCE_ID
+  );
+
+  if (!logoFile) {
+    return;
+  }
+
+  await DocumentChildrenDomain.createImageDocuments(
+    connector.id,
+    INTEGRATION_SERVICE_INSTANCE_ID,
+    [logoFile],
+    DocumentImageType.Logo,
+    DocumentSourceType.External
+  );
 };
 
 const createConnectorDocument = async ({
@@ -47,39 +85,45 @@ const createConnectorDocument = async ({
     'datasheet_url' | 'blogpost_url' | 'demo_url'
   >;
 }) => {
-  await DocumentApp.createDocumentWithChildrenAndMetadata<ConnectorV2>(
-    {
-      name: fragment.title,
-      slug: fragment.slug,
-      description: fragment.description,
-      short_description: fragment.short_description,
-      service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
-      tags,
-      source_type: DocumentSourceType.External,
-      type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-      version: fragment.version,
-      version_padded: formattedVersion,
-      id_manifest_fragment: fragment.id,
-      last_verified_date: fragment.last_verified_date,
-      image_name: fragment.image_name,
-      image_type: fragment.image_type,
-      integration_type: IntegrationType.Connector,
-      verified: fragment.verified ?? false,
-      source_code: fragment.source_code,
-      subscription_link: fragment.subscription_link,
-      manager_supported: fragment.manager_supported,
-      minimum_deployable_version: fragment.min_version,
-      minimum_deployable_version_padded: formatConnectorVersion(
-        fragment.min_version
-      ),
-      datasheet_url: metadataFromExisting?.datasheet_url,
-      blogpost_url: metadataFromExisting?.blogpost_url,
-      demo_url: metadataFromExisting?.demo_url,
-      additional_properties: JSON.stringify(fragment.additional_properties),
-      config_schema: JSON.stringify(fragment.config_schema),
-    },
-    INTEGRATION_CONNECTOR_V2_METADATA_KEYS
-  );
+  const createdConnector =
+    await DocumentApp.createDocumentWithChildrenAndMetadata<ConnectorV2>(
+      {
+        name: fragment.title,
+        slug: fragment.slug,
+        description: fragment.description,
+        short_description: fragment.short_description,
+        service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
+        tags,
+        source_type: DocumentSourceType.External,
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        version: fragment.version,
+        version_padded: formattedVersion,
+        id_manifest_fragment: fragment.id,
+        last_verified_date: fragment.last_verified_date,
+        image_name: fragment.image_name,
+        image_type: fragment.image_type,
+        integration_type: IntegrationType.Connector,
+        verified: fragment.verified ?? false,
+        source_code: fragment.source_code,
+        subscription_link: fragment.subscription_link,
+        manager_supported: fragment.manager_supported,
+        minimum_deployable_version: fragment.min_version,
+        minimum_deployable_version_padded: formatConnectorVersion(
+          fragment.min_version
+        ),
+        datasheet_url: metadataFromExisting?.datasheet_url,
+        blogpost_url: metadataFromExisting?.blogpost_url,
+        demo_url: metadataFromExisting?.demo_url,
+        additional_properties: JSON.stringify(fragment.additional_properties),
+        config_schema: JSON.stringify(fragment.config_schema),
+      },
+      INTEGRATION_CONNECTOR_V2_METADATA_KEYS
+    );
+
+  await attachConnectorLogo({
+    connector: createdConnector,
+    fragment,
+  });
 };
 
 const removeLatestTagFromExistingBatchConnectors = async ({
@@ -138,20 +182,10 @@ export const ManifestFragmentDomain = {
         (connector.tags ?? []).includes(latestTag)
       );
 
-      const metadataFromExisting = {
-        datasheet_url:
-          currentLatestConnector?.datasheet_url ??
-          existingBatchConnectors.find((connector) => connector.datasheet_url)
-            ?.datasheet_url,
-        blogpost_url:
-          currentLatestConnector?.blogpost_url ??
-          existingBatchConnectors.find((connector) => connector.blogpost_url)
-            ?.blogpost_url,
-        demo_url:
-          currentLatestConnector?.demo_url ??
-          existingBatchConnectors.find((connector) => connector.demo_url)
-            ?.demo_url,
-      };
+      const metadataFromExisting = getConnectorMetadataFromExisting({
+        currentLatestConnector,
+        existingBatchConnectors,
+      });
 
       const shouldPromoteAsLatest =
         !currentLatestConnector ||
@@ -167,20 +201,16 @@ export const ManifestFragmentDomain = {
         });
       }
 
-      const newDocumentTags = shouldPromoteAsLatest
-        ? [TAG_DECOUPLING, latestTag]
-        : [TAG_DECOUPLING];
+      const newDocumentTags = getConnectorDocumentTags(
+        shouldPromoteAsLatest,
+        latestTag
+      );
 
       await createConnectorDocument({
         fragment,
         formattedVersion,
         tags: newDocumentTags,
-        metadataFromExisting:
-          metadataFromExisting.datasheet_url ||
-          metadataFromExisting.blogpost_url ||
-          metadataFromExisting.demo_url
-            ? metadataFromExisting
-            : undefined,
+        metadataFromExisting,
       });
     }
 

@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import {
+  buildConnectorLogoFilename,
   formatConnectorVersion,
+  getConnectorDocumentTags,
+  getConnectorMetadataFromExisting,
   getLatestTagForConnectorVersion,
   isStrictlyGreaterConnectorVersion,
   validateConnectorMinimumVersion,
@@ -86,4 +89,62 @@ describe('isStrictlyGreaterConnectorVersion', () => {
       ).toBe(expected);
     }
   );
+});
+
+describe('getConnectorMetadataFromExisting', () => {
+  it('returns undefined when no metadata is available', () => {
+    expect(
+      getConnectorMetadataFromExisting({
+        currentLatestConnector: undefined,
+        existingBatchConnectors: [],
+      })
+    ).toBeUndefined();
+  });
+
+  it('prefers current latest metadata and falls back to existing connectors', () => {
+    expect(
+      getConnectorMetadataFromExisting({
+        currentLatestConnector: {
+          datasheet_url: 'https://latest/datasheet',
+        },
+        existingBatchConnectors: [
+          {
+            blogpost_url: 'https://existing/blogpost',
+            demo_url: 'https://existing/demo',
+          },
+        ],
+      })
+    ).toEqual({
+      datasheet_url: 'https://latest/datasheet',
+      blogpost_url: 'https://existing/blogpost',
+      demo_url: 'https://existing/demo',
+    });
+  });
+});
+
+describe('getConnectorDocumentTags', () => {
+  it.each`
+    shouldPromoteAsLatest | latestTag       | expected
+    ${true}               | ${'latest'}     | ${['decoupling', 'latest']}
+    ${true}               | ${'latest-lts'} | ${['decoupling', 'latest-lts']}
+    ${false}              | ${'latest'}     | ${['decoupling']}
+  `(
+    'builds tags for shouldPromoteAsLatest=$shouldPromoteAsLatest',
+    ({ shouldPromoteAsLatest, latestTag, expected }) => {
+      expect(
+        getConnectorDocumentTags(shouldPromoteAsLatest, latestTag)
+      ).toEqual(expected);
+    }
+  );
+});
+
+describe('buildConnectorLogoFilename', () => {
+  it('builds a unique filename based on connector title and version', () => {
+    expect(
+      buildConnectorLogoFilename({
+        title: 'MISP',
+        version: '7.260309.0-lts.5',
+      })
+    ).toBe('MISP-7.260309.0-lts.5-logo.png');
+  });
 });
