@@ -447,14 +447,36 @@ export const DocumentDomain = {
       uploader_organization_id: user.selected_organization_id,
     };
 
+    const slug = (documentData as { slug?: string }).slug;
+
+    const existingDocument = slug
+      ? await db<DocumentModel>('Document')
+          .where('slug', '=', slug)
+          .whereRaw(
+            `NOT ('${TAG_DECOUPLING}' = ANY(COALESCE(tags, ARRAY[]::text[])))`
+          )
+          .orderBy('created_at', 'desc')
+          .first()
+      : undefined;
+
+    if (existingDocument) {
+      const [updatedDocument] = await db<DocumentModel>('Document')
+        .where('id', '=', existingDocument.id)
+        .update({
+          ...omit(insertData, ['uploader_id']),
+          updated_at: new Date(),
+          updater_id: insertData.uploader_id,
+        })
+        .returning('*');
+
+      if (!updatedDocument) {
+        throw new Error(UnknownErrorCode.DocumentCreateError);
+      }
+      return updatedDocument;
+    }
+
     const [document] = await db<DocumentModel>('Document')
       .insert(insertData)
-      .onConflict('slug')
-      .merge({
-        ...omit(insertData, ['uploader_id']),
-        updated_at: new Date(),
-        updater_id: insertData.uploader_id,
-      })
       .returning('*');
 
     if (!document) {

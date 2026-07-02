@@ -5,10 +5,13 @@ import {
   DocumentSourceType,
   IntegrationType,
   ManifestType,
+  PortalCapability,
   type ManifestFragmentInput,
   type MutationIngestManifestFragmentsArgs,
 } from '../../../__generated__/resolvers-types';
+import { requestContext } from '../../../context/request.context';
 import Document from '../../../model/kanel/public/Document';
+import { securityGuard } from '../../../security/guard';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
 import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
@@ -151,6 +154,10 @@ export const ManifestFragmentDomain = {
   ingestManifestFragments: async ({
     manifestFragments,
   }: MutationIngestManifestFragmentsArgs): Promise<{ success: boolean }> => {
+    const user = requestContext.requireUser();
+    await securityGuard.assertUserPortalCapabilities(user, [
+      PortalCapability.ManageManifestIngestions,
+    ]);
     for (const fragment of manifestFragments) {
       if (fragment.integration_type !== ManifestType.Connector) {
         throw new Error(BadRequestErrorCode.IntegrationTypeNotRecognized);

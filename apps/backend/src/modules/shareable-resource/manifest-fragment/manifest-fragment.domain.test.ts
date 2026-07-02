@@ -1,15 +1,17 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
   ManifestType,
+  PortalCapability,
   type MutationIngestManifestFragmentsArgs,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import type { DocumentId } from '../../../model/kanel/public/Document';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
+import { minioInit } from '../../../server/initialize';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
@@ -18,7 +20,26 @@ import {
 import { ManifestFragmentDomain } from './manifest-fragment.domain';
 
 describe('manifestFragmentDomain', () => {
+  beforeAll(async () => {
+    await minioInit();
+  });
+
   let _createdDocumentIds: string[] = [];
+  const _manifestIngestionUser = {
+    ...SYSTEM_USER_CONTEXT.user,
+    capabilities: [
+      {
+        id: 'manifest-ingestions-capability' as never,
+        name: PortalCapability.ManageManifestIngestions,
+      },
+    ],
+  };
+
+  beforeEach(() => {
+    requestContext.set({
+      user: _manifestIngestionUser,
+    });
+  });
 
   afterEach(async () => {
     if (_createdDocumentIds.length === 0) {
@@ -100,8 +121,6 @@ describe('manifestFragmentDomain', () => {
   describe('ingestManifestFragments', () => {
     it('accepts a fragment when integration_type is connector and returns success', async () => {
       // Given
-      requestContext.set({ user: SYSTEM_USER_CONTEXT.user });
-
       const slug = 'misp-integration';
       const args = buildManifestFragments(ManifestType.Connector, { slug });
 
@@ -181,8 +200,6 @@ describe('manifestFragmentDomain', () => {
 
     it('throws when integration_type is not connector', async () => {
       // Given
-      requestContext.set({ user: SYSTEM_USER_CONTEXT.user });
-
       const slug = 'misp-invalid';
       const args = buildManifestFragments('third_party_integration', { slug });
 
@@ -200,8 +217,6 @@ describe('manifestFragmentDomain', () => {
 
     it('throws when min_version format is invalid', async () => {
       // Given
-      requestContext.set({ user: SYSTEM_USER_CONTEXT.user });
-
       const slug = 'misp-invalid-min-version';
       const args = buildManifestFragments(ManifestType.Connector, { slug });
       args.manifestFragments[0]!.min_version = '>= 7.260507.0';
@@ -220,8 +235,6 @@ describe('manifestFragmentDomain', () => {
 
     it('throws when a connector exists for the same manifest id with the same version', async () => {
       // Given
-      requestContext.set({ user: SYSTEM_USER_CONTEXT.user });
-
       const existingDocument = await TestHelper.document.create({
         slug: 'misp-existing-same',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -260,8 +273,6 @@ describe('manifestFragmentDomain', () => {
 
     it('removes latest-lts from existing connector and creates a new latest-lts connector for same manifest id', async () => {
       // Given
-      requestContext.set({ user: SYSTEM_USER_CONTEXT.user });
-
       const existingDocument = await TestHelper.document.create({
         slug: 'misp-existing-lts',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -339,8 +350,6 @@ describe('manifestFragmentDomain', () => {
 
     it('removes latest from existing connector and creates a new latest connector for same manifest id', async () => {
       // Given
-      requestContext.set({ user: SYSTEM_USER_CONTEXT.user });
-
       const existingDocument = await TestHelper.document.create({
         slug: 'misp-existing-non-lts',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -389,7 +398,6 @@ describe('manifestFragmentDomain', () => {
 
     it('keeps current latest when incoming version is lower', async () => {
       // Given
-      requestContext.set({ user: SYSTEM_USER_CONTEXT.user });
 
       const existingDocument = await TestHelper.document.create({
         slug: 'misp-existing-keep-latest',
