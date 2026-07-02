@@ -64,6 +64,8 @@ export type ConnectorV2 = Connector & {
   image_type: string;
   additional_properties: string;
   config_schema: string;
+  version_padded: string;
+  minimum_deployable_version_padded?: string;
 };
 
 export type CsvFeedMetadata = MetadataArray<
@@ -176,6 +178,10 @@ export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: DocumentMetadataKeyCode.ManagerSupported },
   { key: DocumentMetadataKeyCode.MinimumDeployableVersion, optional: true },
+  {
+    key: DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+    optional: true,
+  },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
@@ -184,6 +190,7 @@ export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
   { key: DocumentMetadataKeyCode.AdditionalProperties },
   { key: DocumentMetadataKeyCode.ConfigSchema },
   { key: DocumentMetadataKeyCode.IdManifestFragment },
+  { key: DocumentMetadataKeyCode.VersionPadded },
 ];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
   INTEGRATION_CONNECTOR_METADATA.map(({ key }) => key);

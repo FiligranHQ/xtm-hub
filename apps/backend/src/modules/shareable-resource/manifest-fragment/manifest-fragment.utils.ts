@@ -40,5 +40,6 @@ export const isStrictlyGreaterConnectorVersion = ({
   candidate: string;
   current: string;
 }): boolean => {
+  if (!current) return true;
   return candidate > current;
 };

@@ -123,7 +123,7 @@ describe('manifestFragmentDomain', () => {
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         source_type: DocumentSourceType.External,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
-        version: '007.260309.000.LTS.005',
+        version: '7.260309.0-lts.5',
       });
       expect(createdDocument!.tags).toContain('decoupling');
       expect(createdDocument!.tags).toContain('latest-lts');
@@ -162,6 +162,14 @@ describe('manifestFragmentDomain', () => {
       expect(
         metadataByKey.get(DocumentMetadataKeyCode.MinimumDeployableVersion)
       ).toBe(args.manifestFragments[0]?.min_version);
+      expect(
+        metadataByKey.get(
+          DocumentMetadataKeyCode.MinimumDeployableVersionPadded
+        )
+      ).toBe('007.260507.000');
+      expect(metadataByKey.get(DocumentMetadataKeyCode.VersionPadded)).toBe(
+        '007.260309.000.LTS.005'
+      );
       expect(
         metadataByKey.get(DocumentMetadataKeyCode.AdditionalProperties)
       ).toBe(JSON.stringify(args.manifestFragments[0]?.additional_properties));
@@ -218,7 +226,7 @@ describe('manifestFragmentDomain', () => {
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         source_type: DocumentSourceType.External,
-        version: '007.260309.000.LTS.005',
+        version: '7.260309.0-lts.5',
         tags: ['decoupling', 'latest-lts'],
       });
       _createdDocumentIds.push(existingDocument.id);
@@ -227,6 +235,11 @@ describe('manifestFragmentDomain', () => {
         document_id: existingDocument.id,
         key: DocumentMetadataKeyCode.IdManifestFragment as DocumentMetadataKey,
         value: 'abc123',
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.VersionPadded as DocumentMetadataKey,
+        value: '007.260309.000.LTS.005',
       });
 
       const slug = 'misp-new-same-version';
@@ -253,7 +266,7 @@ describe('manifestFragmentDomain', () => {
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         source_type: DocumentSourceType.External,
-        version: '007.260308.000.LTS.004',
+        version: '7.260308.0-lts.4',
         tags: ['decoupling', 'latest-lts'],
       });
       _createdDocumentIds.push(existingDocument.id);
@@ -262,6 +275,11 @@ describe('manifestFragmentDomain', () => {
         document_id: existingDocument.id,
         key: DocumentMetadataKeyCode.IdManifestFragment as DocumentMetadataKey,
         value: 'abc123',
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.VersionPadded as DocumentMetadataKey,
+        value: '007.260308.000.LTS.004',
       });
 
       const newSlug = 'misp-new-lts';
@@ -296,7 +314,7 @@ describe('manifestFragmentDomain', () => {
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         source_type: DocumentSourceType.External,
-        version: '007.260308.000',
+        version: '7.260308.0',
         tags: ['decoupling', 'latest'],
       });
       _createdDocumentIds.push(existingDocument.id);
@@ -305,6 +323,11 @@ describe('manifestFragmentDomain', () => {
         document_id: existingDocument.id,
         key: DocumentMetadataKeyCode.IdManifestFragment as DocumentMetadataKey,
         value: 'abc123',
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.VersionPadded as DocumentMetadataKey,
+        value: '007.260308.000',
       });
 
       const newSlug = 'misp-new-non-lts';
@@ -341,7 +364,7 @@ describe('manifestFragmentDomain', () => {
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         source_type: DocumentSourceType.External,
-        version: '007.260309.000',
+        version: '7.260309.0',
         tags: ['decoupling', 'latest'],
       });
       _createdDocumentIds.push(existingDocument.id);
@@ -350,6 +373,11 @@ describe('manifestFragmentDomain', () => {
         document_id: existingDocument.id,
         key: DocumentMetadataKeyCode.IdManifestFragment as DocumentMetadataKey,
         value: 'abc123',
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.VersionPadded as DocumentMetadataKey,
+        value: '007.260309.000',
       });
 
       const newSlug = 'misp-new-lower';

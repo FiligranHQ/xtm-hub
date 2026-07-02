@@ -610,12 +610,14 @@ export enum DocumentMetadataKeyCode {
   LastVerifiedDate = 'last_verified_date',
   ManagerSupported = 'manager_supported',
   MinimumDeployableVersion = 'minimum_deployable_version',
+  MinimumDeployableVersionPadded = 'minimum_deployable_version_padded',
   PlaybookSupported = 'playbook_supported',
   ProductVersion = 'product_version',
   SourceCode = 'source_code',
   SubscriptionLink = 'subscription_link',
   VendorUrl = 'vendor_url',
-  Verified = 'verified'
+  Verified = 'verified',
+  VersionPadded = 'version_padded'
 }
 
 export enum DocumentOrdering {

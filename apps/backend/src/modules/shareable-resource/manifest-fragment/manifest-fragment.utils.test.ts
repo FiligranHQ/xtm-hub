@@ -69,12 +69,14 @@ describe('getLatestTagForConnectorVersion', () => {
 
 describe('isStrictlyGreaterConnectorVersion', () => {
   it.each`
-    candidate           | current             | expected
-    ${'007.260309.001'} | ${'007.260309.000'} | ${true}
-    ${'007.260309.000'} | ${'007.260309.000'} | ${false}
-    ${'007.260308.999'} | ${'007.260309.000'} | ${false}
+    candidate                   | current                     | expected
+    ${'007.260309.001'}         | ${'007.260309.000'}         | ${true}
+    ${'007.260309.000'}         | ${'007.260309.000'}         | ${false}
+    ${'007.260308.999'}         | ${'007.260309.000'}         | ${false}
+    ${'007.260309.001.LTS.002'} | ${'007.260309.001.LTS.001'} | ${true}
+    ${'007.260309.000'}         | ${''}                       | ${true}
   `(
-    'compares candidate "$candidate" with current "$current"',
+    'compares padded candidate "$candidate" with current "$current"',
     ({ candidate, current, expected }) => {
       expect(
         isStrictlyGreaterConnectorVersion({

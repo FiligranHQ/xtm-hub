@@ -45,7 +45,8 @@ const createConnectorDocument = async ({
       tags,
       source_type: DocumentSourceType.External,
       type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-      version: formattedVersion,
+      version: fragment.version,
+      version_padded: formattedVersion,
       id_manifest_fragment: fragment.id,
       last_verified_date: fragment.last_verified_date,
       image_name: fragment.image_name,
@@ -56,6 +57,9 @@ const createConnectorDocument = async ({
       subscription_link: fragment.subscription_link,
       manager_supported: fragment.manager_supported,
       minimum_deployable_version: fragment.min_version,
+      minimum_deployable_version_padded: formatConnectorVersion(
+        fragment.min_version
+      ),
       additional_properties: JSON.stringify(fragment.additional_properties),
       config_schema: JSON.stringify(fragment.config_schema),
     },
@@ -97,13 +101,14 @@ export const ManifestFragmentDomain = {
       const latestTag = getLatestTagForConnectorVersion(formattedVersion);
 
       const existingBatchConnectors =
-        await DocumentDomain.loadDocumentsByMetadata(
+        (await DocumentDomain.loadDocumentsByMetadata(
           DocumentMetadataKeyCode.IdManifestFragment,
-          fragment.id
-        );
+          fragment.id,
+          [DocumentMetadataKeyCode.VersionPadded]
+        )) as (Document & { version_padded?: string })[];
 
       const hasSameVersion = existingBatchConnectors.some(
-        (connector) => connector.version === formattedVersion
+        (connector) => connector.version === fragment.version
       );
       if (hasSameVersion) {
         throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists);
@@ -117,7 +122,7 @@ export const ManifestFragmentDomain = {
         !currentLatestConnector ||
         isStrictlyGreaterConnectorVersion({
           candidate: formattedVersion,
-          current: currentLatestConnector.version ?? '',
+          current: currentLatestConnector.version_padded ?? '',
         });
 
       if (existingBatchConnectors.length > 0 && shouldPromoteAsLatest) {
