@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
-import { formatConnectorVersion } from './manifest-fragment.utils';
+import {
+  formatConnectorVersion,
+  getLatestTagForConnectorVersion,
+  isStrictlyGreaterConnectorVersion,
+  validateConnectorMinimumVersion,
+} from './manifest-fragment.utils';
 
 describe('formatConnectorVersion', () => {
   it.each`
@@ -30,4 +35,53 @@ describe('formatConnectorVersion', () => {
       BadRequestErrorCode.InvalidConnectorVersionFormat
     );
   });
+});
+
+describe('validateConnectorMinimumVersion', () => {
+  it.each`
+    input
+    ${'7.260309.0'}
+    ${'7.260309.0-lts.5'}
+  `('accepts "$input"', ({ input }) => {
+    expect(() => validateConnectorMinimumVersion(input)).not.toThrow();
+  });
+
+  it.each`
+    input
+    ${'>= 7.260309.0'}
+    ${'not-a-version'}
+  `('throws for invalid value "$input"', ({ input }) => {
+    expect(() => validateConnectorMinimumVersion(input)).toThrow(
+      BadRequestErrorCode.InvalidConnectorVersionFormat
+    );
+  });
+});
+
+describe('getLatestTagForConnectorVersion', () => {
+  it.each`
+    input                       | expected
+    ${'007.260309.000'}         | ${'latest'}
+    ${'007.260309.000.LTS.005'} | ${'latest-lts'}
+  `('returns "$expected" for "$input"', ({ input, expected }) => {
+    expect(getLatestTagForConnectorVersion(input)).toBe(expected);
+  });
+});
+
+describe('isStrictlyGreaterConnectorVersion', () => {
+  it.each`
+    candidate           | current             | expected
+    ${'007.260309.001'} | ${'007.260309.000'} | ${true}
+    ${'007.260309.000'} | ${'007.260309.000'} | ${false}
+    ${'007.260308.999'} | ${'007.260309.000'} | ${false}
+  `(
+    'compares candidate "$candidate" with current "$current"',
+    ({ candidate, current, expected }) => {
+      expect(
+        isStrictlyGreaterConnectorVersion({
+          candidate,
+          current,
+        })
+      ).toBe(expected);
+    }
+  );
 });

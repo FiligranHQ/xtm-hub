@@ -43,6 +43,7 @@ export enum BadRequestErrorCode {
   TenantIdMandatory = 'TENANT_ID_MANDATORY',
   NewsFeedItemMissingTitle = 'NEWS_FEED_ITEM_MISSING_TITLE',
   InvalidConnectorVersionFormat = 'INVALID_CONNECTOR_VERSION_FORMAT',
+  ConnectorVersionAlreadyExists = 'CONNECTOR_VERSION_ALREADY_EXISTS',
 }
 
 export enum UnknownErrorCode {
