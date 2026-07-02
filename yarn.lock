@@ -8579,7 +8579,7 @@ __metadata:
     openid-client: "npm:6.8.4"
     passport: "npm:0.7.0"
     pg: "catalog:"
-    pg-boss: "npm:12.20.0"
+    pg-boss: "npm:12.23.0"
     prettier: "catalog:"
     prettier-plugin-organize-imports: "catalog:"
     prom-client: "npm:15.1.3"
@@ -10406,12 +10406,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cron-parser@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "cron-parser@npm:5.5.0"
+"cron-parser@npm:^5.6.1":
+  version: 5.6.1
+  resolution: "cron-parser@npm:5.6.1"
   dependencies:
-    luxon: "npm:^3.7.1"
-  checksum: 10/ee2c710ba9ad07a1e9fd2cc5615a5d998cef08558a66f4a33915f971c124966df8f4fb164484220e7b55c79b84f2d6447f863dacd32839e62361a984095e263d
+    luxon: "npm:^3.7.2"
+  checksum: 10/b319c58bcd8a8aeca90ec19ba2e209851ed6fe82a6500c7430af61adc8413549d3228d08647fc4a4022e81888a758bc3018309a3a4d82c04aa1cf6c98d2edc84
   languageName: node
   linkType: hard
 
@@ -15118,7 +15118,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.7.1":
+"luxon@npm:^3.7.2":
   version: 3.7.2
   resolution: "luxon@npm:3.7.2"
   checksum: 10/b24cd205ed306ce7415991687897dcc4027921ae413c9116590bc33a95f93b86ce52cf74ba72b4f5c5ab1c10090517f54ac8edfb127c049e0bf55b90dc2260be
@@ -17021,16 +17021,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-boss@npm:12.20.0":
-  version: 12.20.0
-  resolution: "pg-boss@npm:12.20.0"
+"pg-boss@npm:12.23.0":
+  version: 12.23.0
+  resolution: "pg-boss@npm:12.23.0"
   dependencies:
-    cron-parser: "npm:^5.5.0"
-    pg: "npm:^8.21.0"
+    cron-parser: "npm:^5.6.1"
+    pg: "npm:^8.22.0"
     serialize-error: "npm:^13.0.1"
   bin:
     pg-boss: dist/cli.js
-  checksum: 10/94173a44532ea5d499074038d89b063968ddc79de12d98b8d5e9613edbd386968189502728497c378303c65f4387eaa3802b8f274315a5160006600fff4a3b0e
+  checksum: 10/1c1f9ebc7a903b120b8fb5e3d3f231af991ecd9bde9c0d94b9947fe764d4d40e54de985dc9632a6f9ab8d8509bd1d9156317604ba4ee80287491c298be12c78b
   languageName: node
   linkType: hard
 
@@ -17059,13 +17059,6 @@ __metadata:
   version: 2.12.0
   resolution: "pg-connection-string@npm:2.12.0"
   checksum: 10/03e5462c1f4da57166344a9eae105f95af6887a501dfe4ca2feb85ca8d351162afe9fc581cb27d44ecdaecc59a8bd55a1ec35b66714b01a9db148f0a91c0b36c
-  languageName: node
-  linkType: hard
-
-"pg-connection-string@npm:^2.13.0":
-  version: 2.13.0
-  resolution: "pg-connection-string@npm:2.13.0"
-  checksum: 10/b38bb5e27ff375b1c53e7fd805dba7c0380674db1325860d1b59a4ad668970ef0d9a97b15b8625ce393696a4b47083af9f345d998afa8abfe99a5180de52922a
   languageName: node
   linkType: hard
 
@@ -17105,13 +17098,6 @@ __metadata:
   version: 1.13.0
   resolution: "pg-protocol@npm:1.13.0"
   checksum: 10/302cd3920df00f178519693557c34949d64c8b3af7e2c12772b14f61547b947e4c761b4ca2319dbba5b0906207bb1b535cbfc7006d40d47fd823e277c2690a71
-  languageName: node
-  linkType: hard
-
-"pg-protocol@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "pg-protocol@npm:1.14.0"
-  checksum: 10/81c69dba142f3cecf3926afbef97c18c53ba54717d2073d759e2cde98dff61ac7b178c4676950e0e3e6bd43fcf4ba21ef96a217b2765020aadeef6bf6bf82a7e
   languageName: node
   linkType: hard
 
@@ -17164,7 +17150,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:8.22.0":
+"pg@npm:8.22.0, pg@npm:^8.22.0":
   version: 8.22.0
   resolution: "pg@npm:8.22.0"
   dependencies:
@@ -17205,28 +17191,6 @@ __metadata:
     pg-native:
       optional: true
   checksum: 10/a30b99c799eddbd4f7f98bef906fe25e17c17d7d8918bc7545108947388df0d9c490858b04dabd37ce0063f40b1e58987b0079f99d5a661fb66f40c17f172bfc
-  languageName: node
-  linkType: hard
-
-"pg@npm:^8.21.0":
-  version: 8.21.0
-  resolution: "pg@npm:8.21.0"
-  dependencies:
-    pg-cloudflare: "npm:^1.4.0"
-    pg-connection-string: "npm:^2.13.0"
-    pg-pool: "npm:^3.14.0"
-    pg-protocol: "npm:^1.14.0"
-    pg-types: "npm:2.2.0"
-    pgpass: "npm:1.0.5"
-  peerDependencies:
-    pg-native: ">=3.0.1"
-  dependenciesMeta:
-    pg-cloudflare:
-      optional: true
-  peerDependenciesMeta:
-    pg-native:
-      optional: true
-  checksum: 10/c02cdd43f54001910cd45a181f6c702f89d3a7336d70375502c296727fc1a1ff0242b2f64dfb55fb05b0af26926ebea409810f5a52bdc0e6a9dc01dcf5fbb441
   languageName: node
   linkType: hard
 
