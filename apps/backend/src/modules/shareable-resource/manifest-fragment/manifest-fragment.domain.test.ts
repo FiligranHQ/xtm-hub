@@ -7,6 +7,7 @@ import {
   type MutationIngestManifestFragmentsArgs,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
+import type { DocumentId } from '../../../model/kanel/public/Document';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
@@ -26,9 +27,9 @@ describe('manifestFragmentDomain', () => {
 
     for (const documentId of _createdDocumentIds) {
       await TestHelper.documentMetadata.delete({
-        document_id: documentId as never,
+        document_id: documentId as DocumentId,
       });
-      await TestHelper.document.delete({ id: documentId as never });
+      await TestHelper.document.delete({ id: documentId as DocumentId });
     }
 
     _createdDocumentIds = [];

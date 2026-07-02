@@ -92,6 +92,7 @@ const createConnectorDocument = async ({
         slug: fragment.slug,
         description: fragment.description,
         short_description: fragment.short_description,
+        use_cases: fragment.use_cases,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
         tags,
         source_type: DocumentSourceType.External,

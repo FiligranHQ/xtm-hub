@@ -22,7 +22,7 @@ import { Document, WithDocumentId } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { UseCaseId } from '../../../model/kanel/public/UseCase';
+import type { UseCaseId } from '../../../model/kanel/public/UseCase';
 import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
@@ -35,11 +35,16 @@ import {
   DocumentMetadataKeys,
 } from './document.metadata.domain';
 
-export type DocumentData<T extends DocumentModel> = Omit<
+type UseCaseValue = UseCaseId | string;
+
+export type DocumentData<
+  T extends DocumentModel,
+  TUseCase extends UseCaseValue = UseCaseId,
+> = Omit<
   Partial<T>,
   'use_cases'
 > & {
-  use_cases?: UseCaseId[];
+  use_cases?: TUseCase[];
   parent_document_id?: DocumentId;
 };
 
@@ -52,8 +57,11 @@ export const DocumentDomain = {
       .update({ active: false, remover_id: user.id });
   },
 
-  createDocument: async <T extends DocumentModel>(
-    documentData: DocumentData<T>,
+  createDocument: async <
+    T extends DocumentModel,
+    TUseCase extends UseCaseValue = UseCaseId,
+  >(
+    documentData: DocumentData<T, TUseCase>,
     metadataKeys: DocumentMetadataKeys<T>
   ): Promise<DocumentModel> => {
     const user = requestContext.requireUser();
@@ -399,11 +407,11 @@ export const DocumentDomain = {
     return updatedDocument;
   },
 
-  upsertOnSlug: async <T extends DocumentModel>(
-    documentData: Omit<Partial<T>, 'use_cases'> & {
-      use_cases?: string[];
-      parent_document_id?: string;
-    },
+  upsertOnSlug: async <
+    T extends DocumentModel,
+    TUseCase extends string = UseCaseValue,
+  >(
+    documentData: DocumentData<T, TUseCase>,
     metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<DocumentModel> => {
     const user = requestContext.requireUser();

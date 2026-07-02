@@ -413,7 +413,7 @@ export const DocumentApp = {
   },
 
   createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(
-    documentData: DocumentData<T>,
+    documentData: DocumentData<T, string>,
     metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<T> => {
     return await withTransaction(async () => {
@@ -665,7 +665,7 @@ export const DocumentApp = {
 };
 
 const upsertDocument = async <T extends DocumentModel>(
-  documentData: DocumentData<T>,
+  documentData: DocumentData<T, string>,
   metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
   return await withTransaction(async () => {
