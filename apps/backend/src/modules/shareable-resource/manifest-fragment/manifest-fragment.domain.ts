@@ -26,14 +26,26 @@ import {
 
 const TAG_DECOUPLING = 'decoupling';
 
+type ConnectorWithMetadata = Document & {
+  version_padded?: string;
+  datasheet_url?: string;
+  blogpost_url?: string;
+  demo_url?: string;
+};
+
 const createConnectorDocument = async ({
   fragment,
   formattedVersion,
   tags,
+  metadataFromExisting,
 }: {
   fragment: ManifestFragmentInput;
   formattedVersion: string;
   tags: string[];
+  metadataFromExisting?: Pick<
+    ConnectorWithMetadata,
+    'datasheet_url' | 'blogpost_url' | 'demo_url'
+  >;
 }) => {
   await DocumentApp.createDocumentWithChildrenAndMetadata<ConnectorV2>(
     {
@@ -60,6 +72,9 @@ const createConnectorDocument = async ({
       minimum_deployable_version_padded: formatConnectorVersion(
         fragment.min_version
       ),
+      datasheet_url: metadataFromExisting?.datasheet_url,
+      blogpost_url: metadataFromExisting?.blogpost_url,
+      demo_url: metadataFromExisting?.demo_url,
       additional_properties: JSON.stringify(fragment.additional_properties),
       config_schema: JSON.stringify(fragment.config_schema),
     },
@@ -104,8 +119,13 @@ export const ManifestFragmentDomain = {
         (await DocumentDomain.loadDocumentsByMetadata(
           DocumentMetadataKeyCode.IdManifestFragment,
           fragment.id,
-          [DocumentMetadataKeyCode.VersionPadded]
-        )) as (Document & { version_padded?: string })[];
+          [
+            DocumentMetadataKeyCode.VersionPadded,
+            DocumentMetadataKeyCode.DatasheetUrl,
+            DocumentMetadataKeyCode.BlogpostUrl,
+            DocumentMetadataKeyCode.DemoUrl,
+          ]
+        )) as ConnectorWithMetadata[];
 
       const hasSameVersion = existingBatchConnectors.some(
         (connector) => connector.version === fragment.version
@@ -117,6 +137,21 @@ export const ManifestFragmentDomain = {
       const currentLatestConnector = existingBatchConnectors.find((connector) =>
         (connector.tags ?? []).includes(latestTag)
       );
+
+      const metadataFromExisting = {
+        datasheet_url:
+          currentLatestConnector?.datasheet_url ??
+          existingBatchConnectors.find((connector) => connector.datasheet_url)
+            ?.datasheet_url,
+        blogpost_url:
+          currentLatestConnector?.blogpost_url ??
+          existingBatchConnectors.find((connector) => connector.blogpost_url)
+            ?.blogpost_url,
+        demo_url:
+          currentLatestConnector?.demo_url ??
+          existingBatchConnectors.find((connector) => connector.demo_url)
+            ?.demo_url,
+      };
 
       const shouldPromoteAsLatest =
         !currentLatestConnector ||
@@ -140,6 +175,12 @@ export const ManifestFragmentDomain = {
         fragment,
         formattedVersion,
         tags: newDocumentTags,
+        metadataFromExisting:
+          metadataFromExisting.datasheet_url ||
+          metadataFromExisting.blogpost_url ||
+          metadataFromExisting.demo_url
+            ? metadataFromExisting
+            : undefined,
       });
     }
 

@@ -281,6 +281,21 @@ describe('manifestFragmentDomain', () => {
         key: DocumentMetadataKeyCode.VersionPadded as DocumentMetadataKey,
         value: '007.260308.000.LTS.004',
       });
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.DatasheetUrl as DocumentMetadataKey,
+        value: 'https://filigran.io/datasheet',
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.BlogpostUrl as DocumentMetadataKey,
+        value: 'https://filigran.io/blogpost',
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.DemoUrl as DocumentMetadataKey,
+        value: 'https://filigran.io/demo',
+      });
 
       const newSlug = 'misp-new-lts';
       const args = buildManifestFragments(ManifestType.Connector, {
@@ -303,6 +318,22 @@ describe('manifestFragmentDomain', () => {
       _createdDocumentIds.push(newDocument!.id);
       expect(newDocument!.tags).toContain('decoupling');
       expect(newDocument!.tags).toContain('latest-lts');
+
+      const metadataRows = await TestHelper.documentMetadata.loadAll({
+        document_id: newDocument!.id,
+      });
+      const metadataByKey = new Map(
+        metadataRows.map((metadata) => [metadata.key as string, metadata.value])
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.DatasheetUrl)).toBe(
+        'https://filigran.io/datasheet'
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.BlogpostUrl)).toBe(
+        'https://filigran.io/blogpost'
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.DemoUrl)).toBe(
+        'https://filigran.io/demo'
+      );
     });
 
     it('removes latest from existing connector and creates a new latest connector for same manifest id', async () => {
