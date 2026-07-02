@@ -1,4 +1,5 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import {
@@ -33,4 +34,37 @@ export const findLogoUrl = (
   return logo && resource.service_instance_id
     ? `/document/images/${String(resource.service_instance_id)}/${logo.id}`
     : undefined;
+};
+
+export type HomepageRoadmapTitleProduct = 'opencti' | 'openaev' | 'default';
+
+export type HomepageRoadmapResolution = {
+  productFilter: FiligranProductEnum | undefined;
+  titleProduct: HomepageRoadmapTitleProduct;
+};
+
+export const resolveHomepageRoadmapResolution = (
+  registeredIdentifiers: ServiceDefinitionIdentifier[]
+): HomepageRoadmapResolution => {
+  const [platformIdentifier] =
+    resolveHomepagePlatformIdentifiers(registeredIdentifiers) ?? [];
+
+  if (platformIdentifier === PlatformIdentifierEnum.OPENAEV) {
+    return {
+      productFilter: FiligranProductEnum.OPENAEV,
+      titleProduct: 'openaev',
+    };
+  }
+
+  if (platformIdentifier === PlatformIdentifierEnum.OPENCTI) {
+    return {
+      productFilter: FiligranProductEnum.OPENCTI,
+      titleProduct: 'opencti',
+    };
+  }
+
+  return {
+    productFilter: undefined,
+    titleProduct: 'default',
+  };
 };

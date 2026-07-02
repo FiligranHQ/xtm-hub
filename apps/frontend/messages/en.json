@@ -325,6 +325,7 @@
     },
     "XtmRoadmap": {
       "Title": "XTM Platform Roadmap",
+      "TitleWithProduct": "{product} Roadmap",
       "Description": "Explore what we're building, what's coming next, and where the XTM Platform is headed. Full transparency. No surprises.",
       "SeeMore": "See more",
       "ImageAlt": "XTM Platform Roadmap space illustration",

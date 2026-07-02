@@ -324,7 +324,8 @@
       "ImageAlt": "XTM Platformの図解"
     },
     "XtmRoadmap": {
-      "Title": "XTM Platformのロードマップ",
+      "Title": "XTM Platform Roadmap",
+      "TitleWithProduct": "{product} Roadmap",
       "Description": "現在開発中の機能、今後の予定、そしてXTM Platformの将来像をご覧ください。完全な透明性を確保し、予期せぬ事態は発生しません。",
       "SeeMore": "詳細を見る",
       "ImageAlt": "XTM Platformロードマップの宇宙イラスト",
