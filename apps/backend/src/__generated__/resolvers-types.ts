@@ -607,6 +607,7 @@ export enum DocumentMetadataKeyCode {
   ImageType = 'image_type',
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
+  LastVerifiedDate = 'last_verified_date',
   ManagerSupported = 'manager_supported',
   MinimumDeployableVersion = 'minimum_deployable_version',
   PlaybookSupported = 'playbook_supported',
@@ -861,14 +862,13 @@ export enum LogicalOperator {
 
 export type ManifestFragmentInput = {
   additional_properties: Scalars['JSON']['input'];
-  batch_id: Scalars['String']['input'];
   config_schema: Scalars['JSON']['input'];
   description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   image_name: Scalars['String']['input'];
   image_type: Scalars['String']['input'];
   integration_type: Scalars['String']['input'];
-  last_verified_date?: InputMaybe<Scalars['Date']['input']>;
+  last_verified_date: Scalars['String']['input'];
   logo: Scalars['String']['input'];
   manager_supported: Scalars['Boolean']['input'];
   min_version: Scalars['String']['input'];

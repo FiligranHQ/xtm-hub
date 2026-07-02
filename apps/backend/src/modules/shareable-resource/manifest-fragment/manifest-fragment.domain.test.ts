@@ -53,7 +53,7 @@ describe('manifestFragmentDomain', () => {
           logo: 'SGVsbG8sIFdvcmxkIQ==',
           use_cases: ['Open Source Threat Intel'],
           verified: true,
-          last_verified_date: new Date('2025-01-01'),
+          last_verified_date: '2025-01-01',
           subscription_link: 'https://www.misp-project.org',
           source_code:
             'https://github.com/OpenCTI-Platform/connectors/tree/master/external-import/misp',
@@ -85,7 +85,6 @@ describe('manifestFragmentDomain', () => {
             },
             additionalProperties: true,
           },
-          batch_id: 'batch-misp-1',
         },
       ],
     };
@@ -111,6 +110,10 @@ describe('manifestFragmentDomain', () => {
       expect(createdDocument).toMatchObject({
         name: 'MISP',
         slug,
+        description:
+          'The MISP connector imports threat intelligence from MISP instances into OpenCTI.',
+        short_description:
+          'Import threat intelligence events, indicators, and observables from MISP instances.',
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         source_type: DocumentSourceType.External,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
@@ -131,6 +134,27 @@ describe('manifestFragmentDomain', () => {
       expect(metadataByKey.get(DocumentMetadataKeyCode.ImageType)).toBe(
         'EXTERNAL_IMPORT'
       );
+      expect(
+        metadataByKey.get(DocumentMetadataKeyCode.IdManifestFragment)
+      ).toBe(args.manifestFragments[0]?.id);
+      expect(metadataByKey.get(DocumentMetadataKeyCode.Verified)).toBe(
+        String(args.manifestFragments[0]?.verified)
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.LastVerifiedDate)).toBe(
+        args.manifestFragments[0]?.last_verified_date
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.IntegrationType)).toBe(
+        args.manifestFragments[0]?.integration_type
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.SourceCode)).toBe(
+        args.manifestFragments[0]?.source_code
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.ManagerSupported)).toBe(
+        String(args.manifestFragments[0]?.manager_supported)
+      );
+      expect(
+        metadataByKey.get(DocumentMetadataKeyCode.MinimumDeployableVersion)
+      ).toBe(args.manifestFragments[0]?.min_version);
       expect(
         metadataByKey.get(DocumentMetadataKeyCode.AdditionalProperties)
       ).toBe(JSON.stringify(args.manifestFragments[0]?.additional_properties));

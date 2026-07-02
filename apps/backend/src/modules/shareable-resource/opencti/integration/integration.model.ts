@@ -59,6 +59,7 @@ export type Connector = Integration & {
 
 export type ConnectorV2 = Connector & {
   id_manifest_fragment: string;
+  last_verified_date: string;
   image_name: string;
   image_type: string;
   additional_properties: string;
@@ -169,6 +170,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
 
 export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
   { key: DocumentMetadataKeyCode.Verified },
+  { key: DocumentMetadataKeyCode.LastVerifiedDate },
   { key: DocumentMetadataKeyCode.SourceCode },
   { key: DocumentMetadataKeyCode.SubscriptionLink, optional: true },
   { key: DocumentMetadataKeyCode.IntegrationType },

@@ -28,6 +28,7 @@ const createConnectorDocument = async (fragment: ManifestFragmentInput) => {
       type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       version: formatConnectorVersion(fragment.version),
       id_manifest_fragment: fragment.id,
+      last_verified_date: fragment.last_verified_date,
       image_name: fragment.image_name,
       image_type: fragment.image_type,
       integration_type: IntegrationType.Connector,
