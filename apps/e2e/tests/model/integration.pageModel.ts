@@ -14,10 +14,8 @@ export default class IntegrationPage {
   constructor(private page: Page) {}
 
   async navigateToIntegrationsService() {
-    await this.page
-      .locator('li')
-      .filter({ hasText: 'OpenCTI Integrations Library' })
-      .click();
+    await this.page.getByRole('button', { name: 'OpenCTI' }).click();
+    await this.page.getByRole('link', { name: 'Integrations' }).click();
   }
   async uploadJsonDocument(filePath: string) {
     const fileInput = this.page.locator(

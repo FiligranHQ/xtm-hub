@@ -1,85 +1,18 @@
-'use client';
-
-import Loader from '@/components/Loader';
-import ServiceList from '@/components/service/ServiceList';
-import useMountingLoader from '@/hooks/use-mounting-loader';
-import { useEffect } from 'react';
-import {
-  useLazyLoadQuery,
-  useQueryLoader,
-  useRefetchableFragment,
-} from 'react-relay';
-
-import {
-  ServiceListQuery,
-  servicesListFragment,
-} from '@/components/service/service.graphql';
-import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
-import RegisterRegisteredPlatformsQueryGraphql, {
-  registerRegisteredPlatformsQuery,
-} from '@generated/registerRegisteredPlatformsQuery.graphql';
-import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { serviceQuery } from '@generated/serviceQuery.graphql';
-import { servicesList_services$key } from '@generated/servicesList_services.graphql';
+import { PrivateHomepage } from '@/components/homepage/PrivateHomepage';
+import { PrivateHomepageLegacy } from '@/components/homepage/PrivateHomepageLegacy';
+import { isFeatureEnabled } from '@/utils/settings.service';
+import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 
 export const dynamic = 'force-dynamic';
 
-const Page = () => {
-  // Get services
-  const queryDataServiceInstances = useLazyLoadQuery<serviceQuery>(
-    ServiceListQuery,
-    {
-      count: 50,
-      orderBy: 'name',
-      orderMode: 'asc',
-      searchTerm: '',
-      filters: [
-        {
-          key: ServiceInstanceFilterKeyEnum.PUBLIC,
-          value: ['true'],
-        },
-      ],
-    }
-  );
-  const [data] = useRefetchableFragment<
-    serviceQuery,
-    servicesList_services$key
-  >(servicesListFragment, queryDataServiceInstances);
-  const serviceData = data?.serviceInstances?.edges.map(
-    (service) => service?.node as serviceList_fragment$data
-  );
+const Page = async () => {
+  const showHomepageV2 = await isFeatureEnabled(FeatureFlagEnum.HOME_PAGE_V2);
 
-  // Registered Platforms
-  const [queryRefRegisteredPlatforms, loadQueryRegisteredPlatforms] =
-    useQueryLoader<registerRegisteredPlatformsQuery>(
-      RegisterRegisteredPlatformsQueryGraphql
-    );
-  useMountingLoader(loadQueryRegisteredPlatforms, { input: {} });
+  if (showHomepageV2) {
+    return <PrivateHomepage />;
+  }
 
-  useEffect(() => {
-    const handleRefresh = () => {
-      loadQueryRegisteredPlatforms(
-        { input: {} },
-        { fetchPolicy: 'network-only' }
-      );
-    };
-
-    window.addEventListener('refresh-registered-platforms', handleRefresh);
-
-    return () => {
-      window.removeEventListener('refresh-registered-platforms', handleRefresh);
-    };
-  }, [loadQueryRegisteredPlatforms]);
-
-  if (!queryRefRegisteredPlatforms || !queryDataServiceInstances)
-    return <Loader />;
-
-  return (
-    <ServiceList
-      queryRefRegisteredPlatforms={queryRefRegisteredPlatforms}
-      serviceData={serviceData}
-    />
-  );
+  return <PrivateHomepageLegacy />;
 };
 
 // Component export

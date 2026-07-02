@@ -4,6 +4,7 @@ import {
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
+  PlatformIdentifier,
   QueryDocumentsArgs,
   QueryPublicDocumentsArgs,
 } from '../../__generated__/resolvers-types';
@@ -33,6 +34,7 @@ import {
   DOCUMENT_TYPE,
   DocumentHelper,
   ManageableServiceDefinitionIdentifier,
+  ServiceDefinitionIdentifiersByPlatformIdentifier,
 } from './document.helper';
 import { DocumentUploadsHelper, Upload } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
@@ -607,8 +609,14 @@ export const DocumentApp = {
     );
   },
 
-  loadMostDeployedDocuments: async (limit: number) => {
-    const resourceIds = await TelemetryApp.getMostDeployedResourceIds(limit);
+  loadMostDeployedDocuments: async (
+    limit: number,
+    platformIdentifiers?: PlatformIdentifier[]
+  ) => {
+    const resourceIds = await TelemetryApp.getMostDeployedResourceIds(
+      limit,
+      platformIdentifiers
+    );
     if (resourceIds.length === 0) return [];
 
     const documents = await DocumentDomain.loadDocumentsWithMetadataByIds(
@@ -621,6 +629,31 @@ export const DocumentApp = {
       const doc = documentById.get(id);
       return doc ? [doc] : [];
     });
+  },
+
+  loadNewestDocuments: async (
+    limit: number,
+    platformIdentifiers?: PlatformIdentifier[]
+  ) => {
+    const NEWEST_DOCUMENTS_MAX_LIMIT = 20;
+
+    // Default to all shareable service definitions so that non-shareable
+    // types (e.g. vault) are never exposed when no platform filter is provided.
+    const allShareableIdentifiers = [
+      ...ServiceDefinitionIdentifiersByPlatformIdentifier.values(),
+    ].flat();
+
+    const serviceDefinitionIdentifiers = platformIdentifiers?.length
+      ? platformIdentifiers.flatMap(
+          (p) => ServiceDefinitionIdentifiersByPlatformIdentifier.get(p) ?? []
+        )
+      : allShareableIdentifiers;
+
+    return DocumentDomain.loadNewestDocuments(
+      Math.min(limit, NEWEST_DOCUMENTS_MAX_LIMIT),
+      ALL_METADATA_KEYS,
+      serviceDefinitionIdentifiers
+    );
   },
 
   loadDocument: async (documentId: DocumentId) => {

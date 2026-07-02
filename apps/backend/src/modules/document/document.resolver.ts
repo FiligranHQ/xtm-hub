@@ -238,9 +238,22 @@ const resolvers: Resolvers = {
       }
     },
     document: async (_, { documentId }) => DocumentApp.loadDocument(documentId),
-    mostDeployedDocuments: async (_, { limit }) => {
+    mostDeployedDocuments: async (_, { limit, platformIdentifiers }) => {
       try {
-        return await DocumentApp.loadMostDeployedDocuments(limit);
+        return await DocumentApp.loadMostDeployedDocuments(
+          limit,
+          platformIdentifiers ?? undefined
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
+    newestDocuments: async (_, { limit, platformIdentifiers }) => {
+      try {
+        return await DocumentApp.loadNewestDocuments(
+          limit,
+          platformIdentifiers ?? undefined
+        );
       } catch (error) {
         throw mapToGraphQLError(error);
       }

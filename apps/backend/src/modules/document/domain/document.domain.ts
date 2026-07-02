@@ -5,6 +5,7 @@ import {
   DocumentMetadataKeyCode,
   Organization,
   QueryDocumentsArgs,
+  ServiceDefinitionIdentifier,
   UpdateDocumentInput,
 } from '../../../__generated__/resolvers-types';
 import {
@@ -434,5 +435,47 @@ export const DocumentDomain = {
 
   deleteDocuments: async (ids: DocumentId[]) => {
     await db<Document>('Document').whereIn('id', ids).delete();
+  },
+
+  loadNewestDocuments: async (
+    limit: number,
+    include_metadata: DocumentMetadataKeyCode[] = [],
+    serviceDefinitionIdentifiers?: ServiceDefinitionIdentifier[]
+  ): Promise<Document[]> => {
+    const query = db<Document>('Document')
+      .select('Document.*')
+      .join(
+        'ServiceInstance',
+        'Document.service_instance_id',
+        'ServiceInstance.id'
+      )
+      .join(
+        'ServiceDefinition',
+        'ServiceInstance.service_definition_id',
+        'ServiceDefinition.id'
+      )
+      .where('Document.active', true)
+      .whereNotExists(function () {
+        this.select(dbRaw('1'))
+          .from('Document_Children')
+          .whereRaw(
+            '"Document_Children"."child_document_id" = "Document"."id"'
+          );
+      })
+      .modify((qb) => {
+        if (serviceDefinitionIdentifiers?.length) {
+          qb.whereIn(
+            'ServiceDefinition.identifier',
+            serviceDefinitionIdentifiers
+          );
+        }
+      })
+      .orderBy('Document.created_at', 'desc')
+      .limit(limit)
+      .groupBy(['Document.id']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
+
+    return query;
   },
 };

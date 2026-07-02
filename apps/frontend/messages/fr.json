@@ -306,7 +306,13 @@
   "HomePage": {
     "Homepage": "Page d'accueil",
     "Manage": "Gérer",
-    "OpenManagement": "Aller vers la page de management"
+    "OpenManagement": "Aller vers la page de management",
+    "XtmNewestResources": {
+      "Title": "Nouvelles ressources"
+    },
+    "XtmMostDeployedResources": {
+      "Title": "Ressources les plus utilisées"
+    }
   },
   "PublicHomePage": {
     "Title": "Découvrez nos ressources et notre expertise",
@@ -317,11 +323,9 @@
       "Cta": "Connectez votre produit",
       "ImageAlt": "Illustration de la plateforme XTM"
     },
-    "XtmMostDeployedResources": {
-      "Title": "Ressources les plus déployées"
-    },
     "XtmRoadmap": {
-      "Title": "Feuille de route de la plateforme XTM",
+      "Title": "XTM Platform Roadmap",
+      "TitleWithProduct": "{product} Roadmap",
       "Description": "Découvrez ce que nous développons, les prochaines étapes et l’orientation future de la plateforme XTM. Transparence totale. Pas de surprises.",
       "SeeMore": "En savoir plus",
       "ImageAlt": "Illustration de la feuille de route de la plateforme XTM",

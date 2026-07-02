@@ -2,6 +2,7 @@ import {
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
   IntegrationType,
+  PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
@@ -80,6 +81,22 @@ export const ALL_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
     ...DOCUMENT_IMAGE_METADATA_KEYS,
   ])
 );
+
+export const ServiceDefinitionIdentifiersByPlatformIdentifier = new Map<
+  PlatformIdentifier,
+  ServiceDefinitionIdentifier[]
+>([
+  [
+    PlatformIdentifier.Opencti,
+    [
+      ServiceDefinitionIdentifier.OpenctiIntegrations,
+      ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+      ServiceDefinitionIdentifier.OpenctiCustomViews,
+      ServiceDefinitionIdentifier.OpenctiPlaybooks,
+    ],
+  ],
+  [PlatformIdentifier.Openaev, [ServiceDefinitionIdentifier.OpenaevScenarios]],
+]);
 
 export type ManageableServiceDefinitionIdentifier =
   | ServiceDefinitionIdentifier.OpenctiIntegrations

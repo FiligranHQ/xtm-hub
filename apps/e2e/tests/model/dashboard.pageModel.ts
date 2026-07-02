@@ -42,7 +42,8 @@ export default class DashboardPage {
   }
 
   async navigateToDashboardService() {
-    await this.page.locator('li').filter({ hasText: SERVICE_NAME }).click();
+    await this.page.getByRole('button', { name: 'OpenCTI' }).click();
+    await this.page.getByRole('link', { name: 'Custom Dashboards' }).click();
   }
 
   async addCustomDashboard({

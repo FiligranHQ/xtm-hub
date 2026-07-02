@@ -1,5 +1,8 @@
 import config from 'config';
-import { OneClickDeployInput } from '../../__generated__/resolvers-types';
+import {
+  OneClickDeployInput,
+  PlatformIdentifier,
+} from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { UserId } from '../../model/kanel/public/User';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
@@ -10,7 +13,10 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
-import { TelemetryHelper } from './telemetry.helper';
+import {
+  TelemetryHelper,
+  TelemetryTargetProductMappedByPlatformIdentifier,
+} from './telemetry.helper';
 import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
 
 const TELEMETRY_INDEX = 'telemetry';
@@ -56,13 +62,32 @@ export const TelemetryApp = {
     }
   },
 
-  async getMostDeployedResourceIds(limit: number): Promise<string[]> {
+  async getMostDeployedResourceIds(
+    limit: number,
+    platformIdentifiers?: PlatformIdentifier[]
+  ): Promise<string[]> {
+    const products = platformIdentifiers?.flatMap((id) => {
+      const product = TelemetryTargetProductMappedByPlatformIdentifier.get(id);
+      return product ? [product] : [];
+    });
+
+    const hasProductFilter = products && products.length > 0;
+
+    const query = hasProductFilter
+      ? {
+          bool: {
+            filter: [
+              { term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY } },
+              { terms: { target_product: products } },
+            ],
+          },
+        }
+      : { term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY } };
+
     const result = await esDbClient.search({
       index: TELEMETRY_INDEX,
       size: 0,
-      query: {
-        term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY },
-      },
+      query,
       aggs: {
         resource_counts: {
           terms: {

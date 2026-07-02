@@ -66,8 +66,10 @@ test.describe('Registration', () => {
 
       await homePage.navigateTo();
       await waitForReactIdle(page);
+      await page.getByRole('button', { name: 'OpenAEV' }).click();
+      await page.getByRole('button', { name: 'My product' }).click();
       await expect(
-        page.locator('li').filter({ hasText: 'Open AEV Instance' })
+        page.getByRole('link', { name: 'Open AEV Instance' })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();
     });
@@ -109,8 +111,10 @@ test.describe('Registration', () => {
 
       await homePage.navigateTo();
       await waitForReactIdle(page);
+      await page.getByRole('button', { name: 'OpenCTI' }).click();
+      await page.getByRole('button', { name: 'My product' }).click();
       await expect(
-        page.locator('li').filter({ hasText: 'Open CTI Instance' })
+        page.getByRole('link', { name: 'Open CTI Instance' })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();
     });

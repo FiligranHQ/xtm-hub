@@ -1,23 +1,42 @@
-query MostDeployedDocumentsQuery($limit: Int!) {
-  mostDeployedDocuments(limit: $limit) {
+fragment HomepageDocument on Document {
+  id
+  name
+  short_description
+  type
+  active
+  slug
+  service_instance_id
+  children_documents {
+    id
+    image_type
+  }
+  use_cases {
     id
     name
-    short_description
-    type
-    active
-    slug
-    service_instance_id
-    children_documents {
-      id
-      image_type
-    }
-    use_cases {
-      id
-      name
-    }
-    ... on Connector {
-      verified
-      manager_supported
-    }
+  }
+  ... on Connector {
+    verified
+    manager_supported
+  }
+}
+
+query MostDeployedDocumentsQuery(
+  $limit: Int!
+  $platformIdentifiers: [PlatformIdentifier!]
+) {
+  mostDeployedDocuments(
+    limit: $limit
+    platformIdentifiers: $platformIdentifiers
+  ) {
+    ...HomepageDocument
+  }
+}
+
+query NewestDocumentsQuery(
+  $limit: Int!
+  $platformIdentifiers: [PlatformIdentifier!]
+) {
+  newestDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {
+    ...HomepageDocument
   }
 }
