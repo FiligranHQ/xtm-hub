@@ -44,10 +44,17 @@ const XtmRoadmap = async ({
   titleProduct = 'default',
 }: XtmRoadmapProps) => {
   const t = await getTranslations('PublicHomePage.XtmRoadmap');
+  const tPlatformIdentifier = await getTranslations('PlatformIdentifier');
 
-  const titleTranslationValues: { product: HomepageRoadmapTitleProduct } = {
-    product: titleProduct,
-  };
+  const title =
+    titleProduct === 'default'
+      ? t('Title')
+      : t('TitleWithProduct', {
+          product:
+            titleProduct === 'opencti'
+              ? tPlatformIdentifier('opencti')
+              : tPlatformIdentifier('openaev'),
+        });
 
   const data = await useEpicCountPerTimelineQueryQuery.fetcher(
     portalGraphqlClientCached
@@ -65,9 +72,7 @@ const XtmRoadmap = async ({
   return (
     <section className="flex flex-col lg:flex-row gap-l items-center bg-card border border-primary/30 rounded-lg px-xl py-4">
       <div className="flex flex-col gap-l flex-3">
-        <h2 className="text-xl leading-tight">
-          {t('Title', titleTranslationValues)}
-        </h2>
+        <h2 className="text-xl leading-tight">{title}</h2>
         <p className="text-muted-foreground text-sm min-[1330px]:text-xs">
           {t('Description')}
         </p>

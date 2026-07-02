@@ -27,10 +27,39 @@ describe('XtmRoadmap', () => {
   beforeEach(() => {
     mockEpicCountFetcher.mockReset();
     mockGetTranslations.mockReset();
-    mockGetTranslations.mockResolvedValue(
-      (key: string, values?: { product?: string }) =>
-        key === 'Title' ? `Title-${values?.product ?? 'missing'}` : key
-    );
+
+    mockGetTranslations.mockImplementation(async (namespace: string) => {
+      if (namespace === 'PublicHomePage.XtmRoadmap') {
+        return (key: string, values?: { product?: string }) => {
+          if (key === 'Title') {
+            return 'Title';
+          }
+
+          if (key === 'TitleWithProduct') {
+            return `TitleWithProduct-${values?.product ?? 'missing'}`;
+          }
+
+          return key;
+        };
+      }
+
+      if (namespace === 'PlatformIdentifier') {
+        return (key: string) => {
+          if (key === 'opencti') {
+            return 'OpenCTI';
+          }
+
+          if (key === 'openaev') {
+            return 'OpenAEV';
+          }
+
+          return key;
+        };
+      }
+
+      return (key: string) => key;
+    });
+
     mockEpicCountFetcher.mockReturnValue(() =>
       Promise.resolve({
         countEpicsPerTimeline: [],
@@ -62,15 +91,15 @@ describe('XtmRoadmap', () => {
     );
   });
 
-  it('uses default title key when no titleKey is provided', async () => {
+  it('uses default title when no titleProduct is provided', async () => {
     render(await XtmRoadmap({ locale: 'en' }));
 
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Title-default' })
+      screen.getByRole('heading', { level: 2, name: 'Title' })
     ).toBeInTheDocument();
   });
 
-  it('uses custom title key when provided', async () => {
+  it('uses product title when titleProduct is provided', async () => {
     render(
       await XtmRoadmap({
         locale: 'en',
@@ -79,28 +108,10 @@ describe('XtmRoadmap', () => {
     );
 
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Title-opencti' })
-    ).toBeInTheDocument();
-  });
-
-  it('uses default title product when no titleProduct is provided', async () => {
-    render(await XtmRoadmap({ locale: 'en' }));
-
-    expect(
-      screen.getByRole('heading', { level: 2, name: 'Title-default' })
-    ).toBeInTheDocument();
-  });
-
-  it('uses custom title product when provided', async () => {
-    render(
-      await XtmRoadmap({
-        locale: 'en',
-        titleProduct: 'opencti',
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'TitleWithProduct-OpenCTI',
       })
-    );
-
-    expect(
-      screen.getByRole('heading', { level: 2, name: 'Title-opencti' })
     ).toBeInTheDocument();
   });
 });
