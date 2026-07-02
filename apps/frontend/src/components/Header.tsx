@@ -14,7 +14,7 @@ import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
-import { CloseIcon, IndividualIcon, MenuIcon } from '@filigran/icon';
+import { CloseIcon, MenuIcon } from '@filigran/icon';
 import {
   Avatar,
   Sheet,
@@ -88,13 +88,10 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
           className="rounded-full"
           icon={
             <>
-              {isHomePageV2Enabled ? (
-                <IndividualIcon className="h-5 w-5 text-primary" />
-              ) : (
-                <div className="my-auto size-10 [&_img]:object-cover">
-                  <Avatar src={me?.picture || undefined} />
-                </div>
-              )}
+              <div
+                className={`my-auto [&_img]:object-cover ${isHomePageV2Enabled ? 'size-6 text-primary [&_span]:bg-transparent' : 'size-10'}`}>
+                <Avatar src={me?.picture || undefined} />
+              </div>
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
             </>
           }>

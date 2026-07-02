@@ -1,10 +1,10 @@
 'use client';
 
 import { ConnectedProductItem } from '@/components/connected-products/ConnectedProductItem';
+import { ConnectPlatformButton } from '@/components/connected-products/ConnectPlatformButton';
 import { useConnectedPlatforms } from '@/components/connected-products/useConnectedPlatforms';
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
-import { AddIcon, ArrowDropDownIcon } from '@filigran/icon';
+import { ArrowDropDownIcon } from '@filigran/icon';
 import {
   Button,
   DropdownMenu,
@@ -15,11 +15,12 @@ import {
 } from '@filigran/ui';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useContext, useState } from 'react';
 
-const OPENCTI_DOC_URL = 'https://docs.opencti.io/latest/administration/hub/';
-const OPENAEV_DOC_URL = 'https://docs.openaev.io/latest/administration/hub/';
+const CONNECTABLE_PLATFORMS = [
+  PlatformIdentifierEnum.OPENCTI,
+  PlatformIdentifierEnum.OPENAEV,
+];
 
 export const ConnectedProductsDropdown = () => {
   const t = useTranslations();
@@ -68,42 +69,13 @@ export const ConnectedProductsDropdown = () => {
           </>
         )}
         <div className="flex flex-col gap-s p-m">
-          <Button
-            variant="outline"
-            className="w-full text-primary bg-transparent justify-center gap-xs"
-            asChild>
-            <Link
-              href={OPENCTI_DOC_URL}
-              target="_blank"
-              rel="noopener noreferrer">
-              <span>
-                {t('Header.ConnectedProducts.ConnectPlatform', {
-                  platformName:
-                    PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI]
-                      .name,
-                })}
-              </span>
-              <AddIcon className="h-3 w-3" />
-            </Link>
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full text-primary bg-transparent justify-center gap-xs"
-            asChild>
-            <Link
-              href={OPENAEV_DOC_URL}
-              target="_blank"
-              rel="noopener noreferrer">
-              <span>
-                {t('Header.ConnectedProducts.ConnectPlatform', {
-                  platformName:
-                    PlatformMetadataMapping[PlatformIdentifierEnum.OPENAEV]
-                      .name,
-                })}
-              </span>
-              <AddIcon className="h-3 w-3" />
-            </Link>
-          </Button>
+          {CONNECTABLE_PLATFORMS.map((platformId) => (
+            <ConnectPlatformButton
+              key={platformId}
+              platformIdentifier={platformId}
+              t={t}
+            />
+          ))}
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

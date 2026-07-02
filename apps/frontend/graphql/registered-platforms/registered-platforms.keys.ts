@@ -1,6 +1,10 @@
-import { useRegisteredPlatformsListQuery } from '@graphql/generated';
+import {
+  type RegisteredPlatformsListQueryVariables,
+  useRegisteredPlatformsListQuery,
+} from '@graphql/generated';
 
 export const registeredPlatformsKeys = {
   all: useRegisteredPlatformsListQuery.getRootKey,
-  list: () => useRegisteredPlatformsListQuery.getKey(undefined),
+  list: (variables: RegisteredPlatformsListQueryVariables) =>
+    useRegisteredPlatformsListQuery.getKey(variables),
 };

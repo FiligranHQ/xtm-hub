@@ -1,36 +1,36 @@
 'use client';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
-  registerRegisteredPlatformListFragment,
-  RegisterRegisteredPlatformsQuery,
-} from '@/components/registration/register/register.graphql';
-import { registerRegisteredPlatformFragment$data } from '@generated/registerRegisteredPlatformFragment.graphql';
-import { registerRegisteredPlatformListFragment$key } from '@generated/registerRegisteredPlatformListFragment.graphql';
-import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
+  RegisteredPlatformsListQuery,
+  useRegisteredPlatformsListQuery,
+} from '@graphql/generated';
+import { registeredPlatformsKeys } from '@graphql/registered-platforms/registered-platforms.keys';
 import { useContext } from 'react';
-import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+
+export type ConnectedPlatform =
+  RegisteredPlatformsListQuery['registeredPlatforms'][number];
+
+const CONNECTED_PLATFORMS_VARIABLES = {
+  input: { onlyActive: true, identifier: null, onlyTrial: null },
+};
 
 export const useConnectedPlatforms = () => {
   const { isPersonalSpace } = useContext(PortalContext);
-  const queryData = useLazyLoadQuery<registerRegisteredPlatformsQuery>(
-    RegisterRegisteredPlatformsQuery,
+
+  const { data, isLoading, isError } = useRegisteredPlatformsListQuery(
+    portalGraphqlClient,
+    CONNECTED_PLATFORMS_VARIABLES,
     {
-      input: {
-        onlyActive: true,
-      },
+      queryKey: registeredPlatformsKeys.list(CONNECTED_PLATFORMS_VARIABLES),
     }
   );
 
-  const [data] = useRefetchableFragment<
-    registerRegisteredPlatformsQuery,
-    registerRegisteredPlatformListFragment$key
-  >(registerRegisteredPlatformListFragment, queryData);
+  const connectedPlatforms: ConnectedPlatform[] =
+    !isPersonalSpace && data?.registeredPlatforms
+      ? data.registeredPlatforms
+      : [];
 
-  return {
-    connectedPlatforms:
-      data.registeredPlatforms.length > 0 && !isPersonalSpace
-        ? (data.registeredPlatforms as registerRegisteredPlatformFragment$data[])
-        : ([] as registerRegisteredPlatformFragment$data[]),
-  };
+  return { connectedPlatforms, isLoading, isError };
 };
