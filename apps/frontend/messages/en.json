@@ -301,7 +301,14 @@
   "Header": {
     "BrandName": "Filigran",
     "CloseMenu": "Close Menu",
-    "OpenMenu": "Open Menu"
+    "OpenMenu": "Open Menu",
+    "ConnectedProducts": {
+      "Count": "{count, plural, =0 {No connected product} one {# connected product} other {# connected products}}",
+      "GoToPlatform": "Go to {title}",
+      "Details": "Details",
+      "Documentation": "Documentation",
+      "ConnectPlatform": "Connect {platformName}"
+    }
   },
   "HomePage": {
     "Homepage": "Homepage",

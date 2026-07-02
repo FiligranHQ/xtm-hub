@@ -1,5 +1,6 @@
 'use client';
 
+import { ConnectedProductsDropdown } from '@/components/connected-products/ConnectedProductsDropdown';
 import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import HeaderOrganizationSwitcher from '@/components/menu/HeaderOrganizationSwitcher';
@@ -9,14 +10,13 @@ import { NotificationButton } from '@/components/notification/NotificationButton
 import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
-import { CloseIcon, MenuIcon } from '@filigran/icon';
-import { Avatar } from '@filigran/ui';
+import { CloseIcon, IndividualIcon, MenuIcon } from '@filigran/icon';
 import {
+  Avatar,
   Sheet,
   SheetClose,
   SheetContent,
@@ -51,7 +51,6 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
   // Legitimate effect: close the menu on route change.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setOpen(false), [currentPath]);
-
   const canManageUser =
     hasOrganizationCapability &&
     (hasOrganizationCapability(
@@ -79,15 +78,23 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
       <DisplayLogo className="text-primary mr-2 h-full py-l sm:hidden" />
 
       <div className="mobile:hidden flex items-center gap-s">
-        <DisplayTrialList />
+        {isHomePageV2Enabled ? (
+          <ConnectedProductsDropdown />
+        ) : (
+          <DisplayTrialList />
+        )}
         {canManageUser && <NotificationButton />}
         <IconActions
           className="rounded-full"
           icon={
             <>
-              <div className="my-auto size-10 [&_img]:object-cover">
-                <Avatar src={me?.picture || undefined} />
-              </div>
+              {isHomePageV2Enabled ? (
+                <IndividualIcon className="h-5 w-5 text-primary" />
+              ) : (
+                <div className="my-auto size-10 [&_img]:object-cover">
+                  <Avatar src={me?.picture || undefined} />
+                </div>
+              )}
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
             </>
           }>
