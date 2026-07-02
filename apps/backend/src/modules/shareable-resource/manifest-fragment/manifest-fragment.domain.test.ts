@@ -59,7 +59,7 @@ describe('manifestFragmentDomain', () => {
             'https://github.com/OpenCTI-Platform/connectors/tree/master/external-import/misp',
           manager_supported: true,
           min_version: '>= 7.260507.0',
-          version: '6.5.1',
+          version: '7.260309.0-lts.5',
           image_name: 'opencti/connector-misp',
           image_type: 'EXTERNAL_IMPORT',
           platform: 'OpenCTI',
@@ -114,7 +114,7 @@ describe('manifestFragmentDomain', () => {
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         source_type: DocumentSourceType.External,
         service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
-        version: '6.5.1',
+        version: '007.260309.000.LTS.005',
       });
       expect(createdDocument!.tags).toContain('Decoupling');
 
@@ -123,7 +123,7 @@ describe('manifestFragmentDomain', () => {
       });
 
       const metadataByKey = new Map(
-        metadataRows.map((metadata) => [metadata.key, metadata.value])
+        metadataRows.map((metadata) => [metadata.key as string, metadata.value])
       );
       expect(metadataByKey.get(DocumentMetadataKeyCode.ImageName)).toBe(
         'opencti/connector-misp'

@@ -13,6 +13,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   type ConnectorV2,
 } from '../opencti/integration/integration.model';
+import { formatConnectorVersion } from './manifest-fragment.utils';
 
 const createConnectorDocument = async (fragment: ManifestFragmentInput) => {
   await DocumentApp.createDocumentWithChildrenAndMetadata<ConnectorV2>(
@@ -25,7 +26,7 @@ const createConnectorDocument = async (fragment: ManifestFragmentInput) => {
       tags: ['Decoupling'],
       source_type: DocumentSourceType.External,
       type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-      version: fragment.version,
+      version: formatConnectorVersion(fragment.version),
       id_manifest: fragment.id,
       image_name: fragment.image_name,
       image_type: fragment.image_type,
