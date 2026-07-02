@@ -66,8 +66,6 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     );
   }
 
-
-
   return (
     <RelayProvider>
       <ReactQueryProvider>
