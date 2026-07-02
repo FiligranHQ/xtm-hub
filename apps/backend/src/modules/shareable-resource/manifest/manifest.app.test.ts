@@ -8,6 +8,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import type Document from '../../../model/kanel/public/Document';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
+import { DocumentDomain } from '../../document/domain/document.domain';
 import {
   TAG_DECOUPLING,
   TAG_LATEST,
@@ -42,6 +43,47 @@ const createConnectorDocument = async (tags: string[]): Promise<Document> => {
     key: DocumentMetadataKeyCode.IntegrationType as unknown as DocumentMetadataKey,
     value: IntegrationType.Connector,
   });
+  return doc;
+};
+
+const createConnectorWithFragment = async ({
+  manifestFragmentId,
+  minimumDeployableVersionPadded,
+  tags = [],
+  version = '007.260309.000',
+  active = true,
+  isDecommissioned = false,
+}: {
+  manifestFragmentId: string;
+  minimumDeployableVersionPadded?: string;
+  tags?: string[];
+  version?: string;
+  active?: boolean;
+  isDecommissioned?: boolean;
+}): Promise<Document> => {
+  const doc = await TestHelper.document.create({
+    active,
+    is_decommissioned: isDecommissioned,
+    tags: tags.length > 0 ? [...tags, TAG_DECOUPLING] : [],
+    version,
+  });
+  await TestHelper.documentMetadata.create({
+    document_id: doc.id,
+    key: DocumentMetadataKeyCode.IntegrationType as unknown as DocumentMetadataKey,
+    value: IntegrationType.Connector,
+  });
+  await TestHelper.documentMetadata.create({
+    document_id: doc.id,
+    key: DocumentMetadataKeyCode.ManifestFragmentId as unknown as DocumentMetadataKey,
+    value: manifestFragmentId,
+  });
+  if (minimumDeployableVersionPadded) {
+    await TestHelper.documentMetadata.create({
+      document_id: doc.id,
+      key: DocumentMetadataKeyCode.MinimumDeployableVersionPadded as unknown as DocumentMetadataKey,
+      value: minimumDeployableVersionPadded,
+    });
+  }
   return doc;
 };
 
@@ -139,6 +181,66 @@ describe('manifestApp', () => {
 
         const links = await TestHelper.manifestDocument.loadAll({});
         expect(links).toHaveLength(0);
+      });
+    });
+
+    describe('fallback resolution for incompatible connectors', () => {
+      it('includes compatible connectors as-is without querying for fallbacks', async () => {
+        const spy = vi.spyOn(
+          DocumentDomain,
+          'loadBestCompatibleConnectorsByManifestFragmentIds'
+        );
+        const doc1 = await createConnectorWithFragment({
+          manifestFragmentId: 'fragment-compatible-1',
+          tags: [TAG_LATEST],
+        });
+        const doc2 = await createConnectorWithFragment({
+          manifestFragmentId: 'fragment-compatible-2',
+          tags: [TAG_LATEST],
+          minimumDeployableVersionPadded: '007.260101.000',
+        });
+
+        await ManifestApp.generateManifest(MANIFEST_KEY);
+
+        expect(spy).not.toHaveBeenCalled();
+        const links = await TestHelper.manifestDocument.loadAll({});
+        expect(links).toHaveLength(2);
+        const linkedIds = links.map((l) => l.document_id);
+        expect(linkedIds).toContain(doc1.id);
+        expect(linkedIds).toContain(doc2.id);
+      });
+
+      it('replaces an incompatible connector with its best compatible fallback', async () => {
+        await createConnectorWithFragment({
+          manifestFragmentId: 'fragment-a',
+          tags: [TAG_LATEST],
+          minimumDeployableVersionPadded: '007.260601.000', // above MANIFEST_KEY padded version
+        });
+        const fallback = await createConnectorWithFragment({
+          manifestFragmentId: 'fragment-a',
+          version: '007.260101.000',
+        });
+
+        await ManifestApp.generateManifest(MANIFEST_KEY);
+
+        const links = await TestHelper.manifestDocument.loadAll({});
+        expect(links).toHaveLength(1);
+        expect(links[0]!.document_id).toBe(fallback.id);
+      });
+
+      it('excludes an incompatible connector when no compatible fallback exists, keeping the rest of the manifest', async () => {
+        await createConnectorWithFragment({
+          manifestFragmentId: 'fragment-no-fallback',
+          tags: [TAG_LATEST],
+          minimumDeployableVersionPadded: '007.260601.000', // above MANIFEST_KEY padded version, no fallback created
+        });
+        const compatible = await createConnectorDocument([TAG_LATEST]);
+
+        await ManifestApp.generateManifest(MANIFEST_KEY);
+
+        const links = await TestHelper.manifestDocument.loadAll({});
+        expect(links).toHaveLength(1);
+        expect(links[0]!.document_id).toBe(compatible.id);
       });
     });
 

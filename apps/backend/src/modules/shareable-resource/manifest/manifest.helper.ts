@@ -3,6 +3,7 @@ import { requestContext } from '../../../context/request.context';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { formatDateCompact } from '../../../utils/format';
+import { formatConnectorVersion } from '../manifest-fragment/manifest-fragment.utils';
 import { ConnectorV2 } from '../opencti/integration/integration.model';
 import { ManifestContract, ManifestOutput } from './manifest.types';
 
@@ -42,6 +43,26 @@ const safeParseJson = (
 };
 
 export const ManifestHelper = {
+  partitionConnectorsByVersionCompatibility: (
+    connectors: ConnectorV2[],
+    version: string
+  ): { compatible: ConnectorV2[]; incompatible: ConnectorV2[] } => {
+    const compatible: ConnectorV2[] = [];
+    const incompatible: ConnectorV2[] = [];
+    const paddedVersion = formatConnectorVersion(version);
+
+    for (const connector of connectors) {
+      const minVersion = connector.minimum_deployable_version_padded;
+      if (minVersion && minVersion > paddedVersion) {
+        incompatible.push(connector);
+      } else {
+        compatible.push(connector);
+      }
+    }
+
+    return { compatible, incompatible };
+  },
+
   buildManifestFileNameWithPath: (
     product: string,
     version: string,

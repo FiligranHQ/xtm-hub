@@ -44,12 +44,73 @@ const saveManifestToDatabase = async (
   });
 };
 
+const fetchConnectors = async (
+  version: string,
+  tag: string
+): Promise<ConnectorV2[]> => {
+  logApp.info('Fetching connectors', { tag, version });
+
+  const connectors = (await DocumentDomain.loadDocumentsByMetadata(
+    DocumentMetadataKeyCode.IntegrationType,
+    IntegrationType.Connector,
+    INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[],
+    { active: true, is_decommissioned: false, tags: [tag, TAG_DECOUPLING] }
+  )) as ConnectorV2[];
+  logApp.info(
+    `Found ${connectors.length} connector(s) v2 with tag "${tag}" for version ${version}`
+  );
+
+  const { compatible, incompatible } =
+    ManifestHelper.partitionConnectorsByVersionCompatibility(
+      connectors,
+      version
+    );
+
+  if (incompatible.length === 0) {
+    return compatible;
+  }
+
+  const incompatibleFragmentIds = incompatible
+    .map((c) => c.manifest_fragment_id)
+    .filter((id): id is string => id !== null && id !== undefined);
+
+  logApp.info('Incompatible connectors found, searching for fallbacks', {
+    count: incompatible.length,
+    version,
+    manifestFragmentIds: incompatibleFragmentIds,
+  });
+
+  const fallbacks =
+    await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+      incompatibleFragmentIds,
+      version
+    );
+
+  const fallbackFragmentIds = new Set(
+    fallbacks.map((c) => c.manifest_fragment_id)
+  );
+  const notFound = incompatibleFragmentIds.filter(
+    (id) => !fallbackFragmentIds.has(id)
+  );
+  if (notFound.length > 0) {
+    logApp.info(
+      'No compatible fallback found for some connectors, they will be excluded from the manifest',
+      {
+        manifestFragmentIds: notFound,
+      }
+    );
+  }
+  logApp.info('Fallback connectors found', { count: fallbacks.length });
+
+  return [...compatible, ...fallbacks];
+};
+
 export const ManifestApp = {
   processManifestQueue: async (manifest?: ManifestKey) => {
     logApp.info('Processing manifest queue');
     const rows =
       await ManifestDomain.loadPendingManifestsForProcessing(manifest);
-    logApp.info(`Locked ${rows.length} manifest(s) for processing`);
+    logApp.info('Manifests locked for processing', { count: rows.length });
 
     for (const row of rows) {
       try {
@@ -72,15 +133,7 @@ export const ManifestApp = {
       return null;
     }
     const tag = isLtsVersion(key.version) ? TAG_LATEST_LTS : TAG_LATEST;
-    const connectors = await DocumentDomain.loadDocumentsByMetadata(
-      DocumentMetadataKeyCode.IntegrationType,
-      IntegrationType.Connector,
-      INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[],
-      { active: true, is_decommissioned: false, tags: [tag, TAG_DECOUPLING] }
-    );
-    logApp.info(
-      `Found ${connectors.length} connector(s) v2 with tag "${tag}" for version ${key.version}`
-    );
+    const connectors = await fetchConnectors(key.version, tag);
 
     if (connectors.length === 0) {
       logApp.error('No connectors found for manifest', { key });
@@ -107,7 +160,7 @@ export const ManifestApp = {
       manifest.manifest_version
     );
 
-    logApp.info(`Manifest "${minioFileName}" uploaded to MinIO`);
+    logApp.info('Manifest uploaded to MinIO', { minioFileName });
     return manifest;
   },
 };

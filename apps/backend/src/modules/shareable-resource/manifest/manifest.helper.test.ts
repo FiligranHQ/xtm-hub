@@ -27,6 +27,7 @@ const buildConnector = (overrides: Partial<ConnectorV2> = {}): ConnectorV2 =>
     source_code: 'https://github.com/OpenCTI-Platform/connectors',
     manager_supported: true,
     minimum_deployable_version: '7.260507.0',
+    minimum_deployable_version_padded: '007.260507.000',
     version: '6.5.1',
     playbook_supported: false,
     integration_type: 'connector',
@@ -39,6 +40,108 @@ const buildConnector = (overrides: Partial<ConnectorV2> = {}): ConnectorV2 =>
   }) as unknown as ConnectorV2;
 
 describe('manifestHelper', () => {
+  describe('partitionConnectorsByVersionCompatibility', () => {
+    it.each([
+      {
+        description: 'no minimum version - compatible',
+        minimumDeployableVersion: undefined,
+        version: '7.260309.0',
+        expectedPartition: 'compatible' as const,
+      },
+      {
+        description: 'minimum version equal to manifest - compatible',
+        minimumDeployableVersion: '007.260309.000',
+        version: '7.260309.0',
+        expectedPartition: 'compatible' as const,
+      },
+      {
+        description: 'minimum version below manifest - compatible',
+        minimumDeployableVersion: '007.260101.000',
+        version: '7.260309.0',
+        expectedPartition: 'compatible' as const,
+      },
+      {
+        description: 'minimum version above manifest - incompatible',
+        minimumDeployableVersion: '007.260601.000',
+        version: '7.260309.0',
+        expectedPartition: 'incompatible' as const,
+      },
+      {
+        description: 'lts minimum version equal to lts manifest - compatible',
+        minimumDeployableVersion: '007.260309.000.LTS.005',
+        version: '7.260309.0-lts.5',
+        expectedPartition: 'compatible' as const,
+      },
+      {
+        description: 'lts minimum version above lts manifest - incompatible',
+        minimumDeployableVersion: '007.260601.000.LTS.001',
+        version: '7.260309.0-lts.5',
+        expectedPartition: 'incompatible' as const,
+      },
+    ])(
+      '$description',
+      ({
+        minimumDeployableVersion,
+        version,
+        expectedPartition,
+      }: {
+        minimumDeployableVersion: string | undefined;
+        version: string;
+        expectedPartition: 'compatible' | 'incompatible';
+      }) => {
+        const connector = buildConnector({
+          minimum_deployable_version_padded: minimumDeployableVersion,
+        });
+        const { compatible, incompatible } =
+          ManifestHelper.partitionConnectorsByVersionCompatibility(
+            [connector],
+            version
+          );
+        if (expectedPartition === 'compatible') {
+          expect(compatible).toHaveLength(1);
+          expect(incompatible).toHaveLength(0);
+        } else {
+          expect(incompatible).toHaveLength(1);
+          expect(compatible).toHaveLength(0);
+        }
+      }
+    );
+
+    it('correctly partitions a mixed list', () => {
+      const connectors = [
+        buildConnector({
+          slug: 'a',
+          minimum_deployable_version_padded: '007.260101.000',
+        }),
+        buildConnector({
+          slug: 'b',
+          minimum_deployable_version_padded: '007.260601.000',
+        }),
+        buildConnector({
+          slug: 'c',
+          minimum_deployable_version_padded: undefined,
+        }),
+        buildConnector({
+          slug: 'd',
+          minimum_deployable_version_padded: '007.260309.000',
+        }),
+      ];
+      const { compatible, incompatible } =
+        ManifestHelper.partitionConnectorsByVersionCompatibility(
+          connectors,
+          '7.260309.0'
+        );
+      expect(compatible.map((c) => c.slug)).toEqual(['a', 'c', 'd']);
+      expect(incompatible.map((c) => c.slug)).toEqual(['b']);
+    });
+
+    it('returns two empty arrays when given an empty list', () => {
+      const { compatible, incompatible } =
+        ManifestHelper.partitionConnectorsByVersionCompatibility([], '6.5.0');
+      expect(compatible).toHaveLength(0);
+      expect(incompatible).toHaveLength(0);
+    });
+  });
   describe('uploadManifest', () => {
     const fileName =
       'opencti/7.260604.0/connector/manifest/connector-manifest-7.260604.0-260701120000.json';
