@@ -602,7 +602,7 @@ export enum DocumentMetadataKeyCode {
   EntityTypes = 'entity_types',
   FeedUrl = 'feed_url',
   GithubUrl = 'github_url',
-  IdManifest = 'id_manifest',
+  IdManifestFragment = 'id_manifest_fragment',
   ImageName = 'image_name',
   ImageType = 'image_type',
   IntegrationSubtype = 'integration_subtype',

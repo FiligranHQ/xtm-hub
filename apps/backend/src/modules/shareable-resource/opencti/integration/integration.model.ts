@@ -58,7 +58,7 @@ export type Connector = Integration & {
 };
 
 export type ConnectorV2 = Connector & {
-  id_manifest: string;
+  id_manifest_fragment: string;
   image_name: string;
   image_type: string;
   additional_properties: string;
@@ -181,7 +181,7 @@ export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
   { key: DocumentMetadataKeyCode.ImageType },
   { key: DocumentMetadataKeyCode.AdditionalProperties },
   { key: DocumentMetadataKeyCode.ConfigSchema },
-  { key: DocumentMetadataKeyCode.IdManifest },
+  { key: DocumentMetadataKeyCode.IdManifestFragment },
 ];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
   INTEGRATION_CONNECTOR_METADATA.map(({ key }) => key);

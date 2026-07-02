@@ -31,7 +31,7 @@ enum DocumentMetadataKeyCode {
   minimum_deployable_version
   additional_properties
   config_schema
-  id_manifest
+  id_manifest_fragment
   entity_types
 }
 
