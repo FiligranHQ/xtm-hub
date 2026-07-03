@@ -8,6 +8,8 @@ import {
 } from '../../../__generated__/resolvers-types';
 import type Document from '../../../model/kanel/public/Document';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
+import type { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
+import type { UseCaseId } from '../../../model/kanel/public/UseCase';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import {
   TAG_DECOUPLING,
@@ -359,6 +361,46 @@ describe('manifestApp', () => {
         expect(result).not.toBeNull();
         expect(result!.product_version).toBe('7.260309.0');
         expect(result!.contracts).toHaveLength(1);
+      });
+
+      it('populates use_cases from linked use cases for each connector', async () => {
+        const doc = await createConnectorDocument([TAG_LATEST]);
+        const useCase1 = await TestHelper.useCase.create({
+          name: 'automation',
+          color: '#0099cc',
+        });
+        const useCase2 = await TestHelper.useCase.create({
+          name: 'integration',
+          color: '#ff6600',
+        });
+        await TestHelper.objectUseCase.insert([
+          {
+            object_id: doc.id as unknown as ObjectUseCaseObjectId,
+            use_case_id: useCase1.id as UseCaseId,
+          },
+          {
+            object_id: doc.id as unknown as ObjectUseCaseObjectId,
+            use_case_id: useCase2.id as UseCaseId,
+          },
+        ]);
+
+        const result = await ManifestApp.generateManifest(MANIFEST_KEY);
+
+        expect(result).not.toBeNull();
+        expect(result!.contracts).toHaveLength(1);
+        expect(result!.contracts[0]!.use_cases).toHaveLength(2);
+        expect(result!.contracts[0]!.use_cases).toContain('automation');
+        expect(result!.contracts[0]!.use_cases).toContain('integration');
+      });
+
+      it('sets use_cases to empty array when a connector has no linked use cases', async () => {
+        await createConnectorDocument([TAG_LATEST]);
+
+        const result = await ManifestApp.generateManifest(MANIFEST_KEY);
+
+        expect(result).not.toBeNull();
+        expect(result!.contracts).toHaveLength(1);
+        expect(result!.contracts[0]!.use_cases).toEqual([]);
       });
     });
   });

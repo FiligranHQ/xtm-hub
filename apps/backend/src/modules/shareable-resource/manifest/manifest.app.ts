@@ -8,6 +8,7 @@ import type { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
 import { isLtsVersion } from '../../../utils/versioning';
 import { DocumentDomain } from '../../document/domain/document.domain';
+import { useCaseDomain } from '../../use-case/use-case.domain';
 import {
   TAG_DECOUPLING,
   TAG_LATEST,
@@ -141,10 +142,22 @@ export const ManifestApp = {
     }
 
     const now = new Date();
+
+    const useCaseRows = await useCaseDomain.buildUseCasesByDocumentIdQuery(
+      connectors.map((c) => c.id as string)
+    );
+    const useCasesByConnectorId = new Map<string, string[]>();
+    for (const row of useCaseRows) {
+      const existing = useCasesByConnectorId.get(row._document_id) ?? [];
+      existing.push(row.name);
+      useCasesByConnectorId.set(row._document_id, existing);
+    }
+
     const manifest = ManifestHelper.buildConnectorManifestOutput(
       key.version,
       connectors as ConnectorV2[],
-      now
+      now,
+      useCasesByConnectorId
     );
 
     const minioFileName = ManifestHelper.buildManifestFileNameWithPath(

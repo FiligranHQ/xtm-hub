@@ -148,7 +148,8 @@ describe('manifestHelper', () => {
     const manifest = ManifestHelper.buildConnectorManifestOutput(
       '7.260604.0',
       [],
-      FIXED_DATE
+      FIXED_DATE,
+      new Map()
     );
 
     beforeEach(() => {
@@ -218,7 +219,8 @@ describe('manifestHelper', () => {
         const output = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [],
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
         );
 
         expect(output.id).toBe(MANIFEST_CATALOG_ID);
@@ -231,7 +233,8 @@ describe('manifestHelper', () => {
         const output = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [],
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
         );
         expect(output.product_version).toBe('7.260604.0');
       });
@@ -240,7 +243,8 @@ describe('manifestHelper', () => {
         const output = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [],
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
         );
         expect(output.manifest_version).toBe(
           'connector-manifest-7.260604.0-260701120000'
@@ -251,7 +255,8 @@ describe('manifestHelper', () => {
         const output = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [],
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
         );
         expect(output.contracts).toEqual([]);
       });
@@ -263,7 +268,8 @@ describe('manifestHelper', () => {
         const output = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [connector],
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
         );
 
         expect(output.contracts).toHaveLength(1);
@@ -292,16 +298,46 @@ describe('manifestHelper', () => {
         const contract = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [buildConnector()],
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
         ).contracts[0]!;
         expect(contract.logo).toBeNull();
       });
 
-      it('sets use_cases to empty array (todo #6)', () => {
+      it('sets use_cases to empty array when no map entry exists for the connector', () => {
         const contract = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [buildConnector()],
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
+        ).contracts[0]!;
+        expect(contract.use_cases).toEqual([]);
+      });
+
+      it('populates use_cases from the useCasesByConnectorId map', () => {
+        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const useCasesByConnectorId = new Map<string, string[]>([
+          ['connector-uuid-1', ['automation', 'integration']],
+        ]);
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [connector],
+          FIXED_DATE,
+          useCasesByConnectorId
+        ).contracts[0]!;
+        expect(contract.use_cases).toEqual(['automation', 'integration']);
+      });
+
+      it('sets use_cases to empty array when the map has no entry for the connector id', () => {
+        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const useCasesByConnectorId = new Map<string, string[]>([
+          ['other-connector-id', ['automation']],
+        ]);
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [connector],
+          FIXED_DATE,
+          useCasesByConnectorId
         ).contracts[0]!;
         expect(contract.use_cases).toEqual([]);
       });
@@ -310,7 +346,8 @@ describe('manifestHelper', () => {
         const contract = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [buildConnector({ last_verified_date: '2026-06-01' })],
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
         ).contracts[0]!;
         expect(contract.last_verified_date).toBe('2026-06-01');
       });
@@ -336,7 +373,8 @@ describe('manifestHelper', () => {
             const contract = ManifestHelper.buildConnectorManifestOutput(
               '7.260604.0',
               [buildConnector({ additional_properties: value })],
-              FIXED_DATE
+              FIXED_DATE,
+              new Map()
             ).contracts[0]!;
             expect(contract.additional_properties).toEqual(expected);
           }
@@ -355,7 +393,8 @@ describe('manifestHelper', () => {
                   additional_properties: value as unknown as string,
                 }),
               ],
-              FIXED_DATE
+              FIXED_DATE,
+              new Map()
             ).contracts[0]!;
             expect(contract.additional_properties).toEqual({});
           }
@@ -365,7 +404,8 @@ describe('manifestHelper', () => {
           const contract = ManifestHelper.buildConnectorManifestOutput(
             '7.260604.0',
             [buildConnector({ additional_properties: 'not-json' })],
-            FIXED_DATE
+            FIXED_DATE,
+            new Map()
           ).contracts[0]!;
           expect(contract.additional_properties).toEqual({});
           expect(logApp.error).toHaveBeenCalledWith(
@@ -377,7 +417,8 @@ describe('manifestHelper', () => {
           const contract = ManifestHelper.buildConnectorManifestOutput(
             '7.260604.0',
             [buildConnector({ additional_properties: '["a","b"]' })],
-            FIXED_DATE
+            FIXED_DATE,
+            new Map()
           ).contracts[0]!;
           expect(contract.additional_properties).toEqual({});
           expect(logApp.error).toHaveBeenCalledWith(
@@ -407,7 +448,8 @@ describe('manifestHelper', () => {
             const contract = ManifestHelper.buildConnectorManifestOutput(
               '7.260604.0',
               [buildConnector({ config_schema: value })],
-              FIXED_DATE
+              FIXED_DATE,
+              new Map()
             ).contracts[0]!;
             expect(contract.config_schema).toEqual(expected);
           }
@@ -422,7 +464,8 @@ describe('manifestHelper', () => {
             const contract = ManifestHelper.buildConnectorManifestOutput(
               '7.260604.0',
               [buildConnector({ config_schema: value as unknown as string })],
-              FIXED_DATE
+              FIXED_DATE,
+              new Map()
             ).contracts[0]!;
             expect(contract.config_schema).toEqual({});
           }
@@ -432,7 +475,8 @@ describe('manifestHelper', () => {
           const contract = ManifestHelper.buildConnectorManifestOutput(
             '7.260604.0',
             [buildConnector({ config_schema: 'not-json' })],
-            FIXED_DATE
+            FIXED_DATE,
+            new Map()
           ).contracts[0]!;
           expect(contract.config_schema).toEqual({});
           expect(logApp.error).toHaveBeenCalledWith(
@@ -444,7 +488,8 @@ describe('manifestHelper', () => {
           const contract = ManifestHelper.buildConnectorManifestOutput(
             '7.260604.0',
             [buildConnector({ config_schema: '["a","b"]' })],
-            FIXED_DATE
+            FIXED_DATE,
+            new Map()
           ).contracts[0]!;
           expect(contract.config_schema).toEqual({});
           expect(logApp.error).toHaveBeenCalledWith(
@@ -478,7 +523,8 @@ describe('manifestHelper', () => {
           const contract = ManifestHelper.buildConnectorManifestOutput(
             '7.260604.0',
             [connector],
-            FIXED_DATE
+            FIXED_DATE,
+            new Map()
           ).contracts[0]!;
           expect(contract[field]).toBeNull();
         }
@@ -498,7 +544,8 @@ describe('manifestHelper', () => {
         const output = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           connectors,
-          FIXED_DATE
+          FIXED_DATE,
+          new Map()
         );
         expect(output.contracts).toHaveLength(2);
         expect(output.contracts[0]!.id).toBe('manifest-fragment-id-1');
