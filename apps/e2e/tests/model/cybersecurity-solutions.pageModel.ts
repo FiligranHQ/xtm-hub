@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { expect } from 'playwright/test';
+import { expect } from '../fixtures/baseFixtures';
 
 export class CybersecuritySolutionsPage {
   constructor(private page: Page) {}

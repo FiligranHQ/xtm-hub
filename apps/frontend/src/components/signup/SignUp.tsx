@@ -104,9 +104,9 @@ const SignUp = () => {
         </div>
       </div>
       <div
-        className="md:w-3/5 flex flex-col items-center justify-center p-8 md:p-32 order-2 md:overflow-hidden"
+        className="md:w-3/5 flex flex-col justify-center order-2"
         style={{ backgroundColor: 'var(--color-ds-bg-1)' }}>
-        <div className="flex flex-col items-center gap-8 w-full">
+        <div className="flex flex-col items-center gap-8 m-[clamp(2rem,5vw,8rem)]">
           <div className="shrink-0 flex flex-col gap-1">
             <p className="text-sm leading-6 font-bold text-primary">
               {t('WelcomeTitle')}
