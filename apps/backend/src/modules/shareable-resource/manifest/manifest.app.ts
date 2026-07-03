@@ -108,6 +108,22 @@ const fetchConnectors = async (
 
 export const ManifestApp = {
   processManifestQueue: async (manifest?: ManifestKey) => {
+    const recovered = await ManifestDomain.recoverStuckProcessingEntries();
+    if (recovered.length > 0) {
+      logApp.error(
+        'Manifest queue recovery: resetting stuck processing entries',
+        {
+          count: recovered.length,
+          entries: recovered.map((row) => ({
+            product: row.product,
+            version: row.version,
+            type: row.type,
+            created_at: row.created_at,
+          })),
+        }
+      );
+    }
+
     logApp.info('Processing manifest queue');
     const rows =
       await ManifestDomain.loadPendingManifestsForProcessing(manifest);

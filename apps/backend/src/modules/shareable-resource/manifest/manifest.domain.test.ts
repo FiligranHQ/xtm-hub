@@ -176,4 +176,98 @@ describe('manifestDomain', () => {
       );
     });
   });
+
+  describe('recoverStuckProcessingEntries', () => {
+    afterEach(async () => {
+      await TestHelper.manifestRebuildQueue.delete({});
+    });
+
+    it('should return an empty array when the queue is empty', async () => {
+      const result = await ManifestDomain.recoverStuckProcessingEntries();
+      expect(result).toEqual([]);
+    });
+
+    it.each`
+      description                  | status                                   | ageMinutes
+      ${'a recent processing row'} | ${ManifestRebuildQueueStatus.Processing} | ${10}
+      ${'an old pending row'}      | ${ManifestRebuildQueueStatus.Pending}    | ${40}
+    `(
+      'should do nothing and leave the status unchanged for $description',
+      async ({
+        status,
+        ageMinutes,
+      }: {
+        status: ManifestRebuildQueueStatus;
+        ageMinutes: number;
+      }) => {
+        await TestHelper.manifestRebuildQueue.create({
+          product: PlatformIdentifier.Opencti,
+          version: '6.4.0',
+          type: ManifestType.Connector,
+          status,
+          created_at: new Date(Date.now() - ageMinutes * 60 * 1000),
+        });
+
+        const result = await ManifestDomain.recoverStuckProcessingEntries();
+
+        expect(result).toEqual([]);
+        const row = await TestHelper.manifestRebuildQueue.load({
+          product: PlatformIdentifier.Opencti,
+        });
+        expect(row!.status).toBe(status);
+      }
+    );
+
+    it('should reset a processing row older than 30 minutes back to pending and return it', async () => {
+      const fortyMinutesAgo = new Date(Date.now() - 40 * 60 * 1000);
+      await TestHelper.manifestRebuildQueue.create({
+        product: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+        status: ManifestRebuildQueueStatus.Processing,
+        created_at: fortyMinutesAgo,
+      });
+
+      const result = await ManifestDomain.recoverStuckProcessingEntries();
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        product: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+        status: ManifestRebuildQueueStatus.Pending,
+      });
+      const row = await TestHelper.manifestRebuildQueue.load({
+        product: PlatformIdentifier.Opencti,
+      });
+      expect(row!.status).toBe(ManifestRebuildQueueStatus.Pending);
+    });
+
+    it('should reset only the old processing rows, leaving recent processing rows untouched', async () => {
+      const fortyMinutesAgo = new Date(Date.now() - 40 * 60 * 1000);
+      await TestHelper.manifestRebuildQueue.create({
+        product: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+        status: ManifestRebuildQueueStatus.Processing,
+        created_at: fortyMinutesAgo,
+      });
+      await TestHelper.manifestRebuildQueue.create({
+        product: PlatformIdentifier.Openaev,
+        version: '1.0.0',
+        type: ManifestType.Connector,
+        status: ManifestRebuildQueueStatus.Processing,
+        created_at: new Date(),
+      });
+
+      const result = await ManifestDomain.recoverStuckProcessingEntries();
+
+      expect(result).toHaveLength(1);
+      expect(result[0]!.product).toBe(PlatformIdentifier.Opencti);
+      const recentRow = await TestHelper.manifestRebuildQueue.load({
+        product: PlatformIdentifier.Openaev,
+      });
+      expect(recentRow!.status).toBe(ManifestRebuildQueueStatus.Processing);
+    });
+  });
 });

@@ -98,4 +98,13 @@ export const ManifestDomain = {
       throw new Error(UnknownErrorCode.ManifestRebuildQueueEntryNotFound);
     }
   },
+
+  recoverStuckProcessingEntries: async (): Promise<ManifestRebuildQueue[]> => {
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+    return db<ManifestRebuildQueue>('ManifestRebuildQueue')
+      .where({ status: ManifestRebuildQueueStatus.Processing })
+      .where('created_at', '<', thirtyMinutesAgo)
+      .update({ status: ManifestRebuildQueueStatus.Pending })
+      .returning('*');
+  },
 };
