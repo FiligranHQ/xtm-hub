@@ -109,6 +109,7 @@ type Query {
   document(documentId: DocumentId!, serviceInstanceId: ServiceInstanceId!): Document
   mostDeployedDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   newestDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
+  undeployedResourceTypesByProduct: [UndeployedResourceTypesByProduct!]!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -542,6 +543,19 @@ enum DocumentMetadataKeyCode {
   image_type
   minimum_deployable_version
   entity_types
+}
+
+enum DeployableResourceType {
+  integrations
+  custom_dashboards
+  custom_views
+  playbooks
+  scenarios
+}
+
+type UndeployedResourceTypesByProduct {
+  product: PlatformIdentifier!
+  resourceTypes: [DeployableResourceType!]!
 }
 
 type ShareableResource {

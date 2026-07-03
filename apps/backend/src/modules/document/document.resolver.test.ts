@@ -6,6 +6,7 @@ import {
   SERVICES,
 } from '../../../tests/tests.const';
 import {
+  DeployableResourceType,
   DocumentResolvers,
   IntegrationType,
   MutationCreateDocumentArgs,
@@ -192,7 +193,7 @@ describe('delete document GraphQL mutation', () => {
     const call = documentResolver.Mutation!.deleteDocument!(
       {},
       {
-        documentId: uuidv4(),
+        documentId: uuidv4() as DocumentId,
         service_instance_id: SERVICES.INSTANCES.EPIC.ID,
         forceDelete: false,
       },
@@ -246,7 +247,7 @@ describe('increment share number document GraphQL mutation', () => {
 
     const call = documentResolver.Mutation!.incrementShareNumberDocument!(
       {},
-      { documentId: uuidv4() },
+      { documentId: uuidv4() as DocumentId },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -268,7 +269,7 @@ describe('document.__resolveType', () => {
       const doc = { id: uuidv4(), type } as unknown as DocumentModel;
       const result = await (
         documentResolver.Document as unknown as DocumentResolvers
-      ).__resolveType(doc, contextSimpleUserFiligran2);
+      ).__resolveType(doc, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
       expect(result).toBe(expected);
     }
   );
@@ -295,7 +296,7 @@ describe('document.__resolveType', () => {
 
       const result = await (
         documentResolver.Document as unknown as DocumentResolvers
-      ).__resolveType(doc, contextSimpleUserFiligran2);
+      ).__resolveType(doc, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
 
       expect(result).toBe(expected);
     }
@@ -308,7 +309,7 @@ describe('document.__resolveType', () => {
     } as unknown as DocumentModel;
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
-    ).__resolveType(doc, contextSimpleUserFiligran2);
+    ).__resolveType(doc, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
     expect(result).toBe('DefaultDocument');
   });
 });
@@ -331,7 +332,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).children_documents!(
-      { id },
+      { id } as never,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -353,7 +354,12 @@ describe('document field resolvers', () => {
 
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
-    ).uploader!({ id }, {}, contextSimpleUserFiligran2, GRAPHQL_RESOLVE_INFO);
+    ).uploader!(
+      { id } as never,
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
 
     expect(
       contextSimpleUserFiligran2.dataLoaders.uploaderLoader.load
@@ -372,7 +378,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).uploader_organization!(
-      { id },
+      { id } as never,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -395,7 +401,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).service_instance!(
-      { service_instance_id: serviceInstanceId },
+      { service_instance_id: serviceInstanceId } as never,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -419,7 +425,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).subscription!(
-      { service_instance_id: serviceInstanceId },
+      { service_instance_id: serviceInstanceId } as never,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -552,7 +558,7 @@ describe('document GraphQL query', () => {
 
     const result = await documentResolver.Query!.document!(
       {},
-      { documentId: docId },
+      { documentId: docId, serviceInstanceId: SERVICES.INSTANCES.EPIC.ID },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -642,5 +648,58 @@ describe('newestDocuments GraphQL query', () => {
       PlatformIdentifier.Opencti,
     ]);
     expect(result).toEqual(expected);
+  });
+});
+
+describe('undeployedResourceTypesByProduct GraphQL query', () => {
+  it('should delegate to DocumentApp.loadUndeployedResourceTypesByProduct', async () => {
+    const expected = [
+      {
+        product: PlatformIdentifier.Opencti,
+        resourceTypes: [DeployableResourceType.Integrations],
+      },
+      {
+        product: PlatformIdentifier.Openaev,
+        resourceTypes: [DeployableResourceType.Scenarios],
+      },
+    ] as Awaited<
+      ReturnType<typeof DocumentApp.loadUndeployedResourceTypesByProduct>
+    >;
+
+    vi.spyOn(
+      DocumentApp,
+      'loadUndeployedResourceTypesByProduct'
+    ).mockResolvedValue(expected);
+
+    const result = await documentResolver.Query!
+      .undeployedResourceTypesByProduct!(
+      {},
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    expect(
+      DocumentApp.loadUndeployedResourceTypesByProduct
+    ).toHaveBeenCalledWith(
+      contextSimpleUserFiligran2.user.selected_organization_id
+    );
+    expect(result).toEqual(expected);
+  });
+
+  it('should map app errors to graphql errors', async () => {
+    vi.spyOn(
+      DocumentApp,
+      'loadUndeployedResourceTypesByProduct'
+    ).mockRejectedValue(new Error(BadRequestErrorCode.DocumentMissingMetadata));
+
+    const call = documentResolver.Query!.undeployedResourceTypesByProduct!(
+      {},
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
   });
 });

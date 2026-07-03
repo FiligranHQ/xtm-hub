@@ -31,6 +31,19 @@ enum DocumentMetadataKeyCode {
   entity_types
 }
 
+enum DeployableResourceType {
+  integrations
+  custom_dashboards
+  custom_views
+  playbooks
+  scenarios
+}
+
+type UndeployedResourceTypesByProduct {
+  product: PlatformIdentifier!
+  resourceTypes: [DeployableResourceType!]!
+}
+
 type ShareableResource {
   id: ID!
   file_name: String!
@@ -209,4 +222,5 @@ type Query {
     limit: Int!
     platformIdentifiers: [PlatformIdentifier!]
   ): [Document!]!
+  undeployedResourceTypesByProduct: [UndeployedResourceTypesByProduct!]! @auth
 }

@@ -1,5 +1,6 @@
 import {
   CreateDocumentInput,
+  DeployableResourceType,
   DocumentImageType,
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
@@ -25,6 +26,10 @@ import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
+import {
+  TelemetryEventService,
+  TelemetryTargetProduct,
+} from '../telemetry/telemetry.const';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
 import { useCaseApp } from '../use-case/use-case.app';
@@ -47,6 +52,59 @@ import {
 type DocumentMetadataValue = string | boolean | null;
 type DocumentWithDynamicMetadata = DocumentModel &
   Record<string, DocumentMetadataValue>;
+
+const PlatformIdentifierByTelemetryTargetProduct = new Map<
+  TelemetryTargetProduct,
+  PlatformIdentifier
+>([
+  [TelemetryTargetProduct.OPEN_CTI, PlatformIdentifier.Opencti],
+  [TelemetryTargetProduct.OPEN_AEV, PlatformIdentifier.Openaev],
+]);
+
+const DeployableServicesByTelemetryTargetProduct = new Map<
+  TelemetryTargetProduct,
+  TelemetryEventService[]
+>([
+  [
+    TelemetryTargetProduct.OPEN_CTI,
+    [
+      TelemetryEventService.INTEGRATIONS_LIBRARY,
+      TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
+      TelemetryEventService.OPENCTI_CUSTOM_VIEWS_LIBRARY,
+      TelemetryEventService.OPENCTI_PLAYBOOKS_LIBRARY,
+    ],
+  ],
+  [
+    TelemetryTargetProduct.OPEN_AEV,
+    [TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY],
+  ],
+]);
+
+const DeployableResourceTypeByTelemetryEventService = new Map<
+  TelemetryEventService,
+  DeployableResourceType
+>([
+  [
+    TelemetryEventService.INTEGRATIONS_LIBRARY,
+    DeployableResourceType.Integrations,
+  ],
+  [
+    TelemetryEventService.CUSTOM_DASHBOARDS_LIBRARY,
+    DeployableResourceType.CustomDashboards,
+  ],
+  [
+    TelemetryEventService.OPENCTI_CUSTOM_VIEWS_LIBRARY,
+    DeployableResourceType.CustomViews,
+  ],
+  [
+    TelemetryEventService.OPENCTI_PLAYBOOKS_LIBRARY,
+    DeployableResourceType.Playbooks,
+  ],
+  [
+    TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY,
+    DeployableResourceType.Scenarios,
+  ],
+]);
 
 const toObjectUseCaseObjectId = (id: string): ObjectUseCaseObjectId =>
   id as ObjectUseCaseObjectId;
@@ -661,6 +719,44 @@ export const DocumentApp = {
       documentId,
       ALL_METADATA_KEYS
     );
+  },
+
+  loadUndeployedResourceTypesByProduct: async (organization_id: string) => {
+    const deployedServicesByProduct =
+      await TelemetryApp.getDeployedResourceServicesByTargetProduct(
+        organization_id
+      );
+
+    return [
+      TelemetryTargetProduct.OPEN_CTI,
+      TelemetryTargetProduct.OPEN_AEV,
+    ].map((product) => {
+      const platformIdentifier =
+        PlatformIdentifierByTelemetryTargetProduct.get(product);
+      if (!platformIdentifier) {
+        throw new Error(`Unsupported telemetry target product: ${product}`);
+      }
+
+      const expectedServices =
+        DeployableServicesByTelemetryTargetProduct.get(product) ?? [];
+      const deployedServices =
+        deployedServicesByProduct.get(product) ?? new Set();
+
+      const resourceTypes = expectedServices.flatMap((service) => {
+        if (deployedServices.has(service)) {
+          return [];
+        }
+
+        const resourceType =
+          DeployableResourceTypeByTelemetryEventService.get(service);
+        return resourceType ? [resourceType] : [];
+      });
+
+      return {
+        product: platformIdentifier,
+        resourceTypes,
+      };
+    });
   },
 };
 

@@ -14,12 +14,22 @@ import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import {
+  TelemetryEventService,
+  TelemetryTargetProduct,
+} from './telemetry.const';
+import {
   TelemetryHelper,
   TelemetryTargetProductMappedByPlatformIdentifier,
 } from './telemetry.helper';
 import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
 
 const TELEMETRY_INDEX = 'telemetry';
+const TelemetryTargetProductValues = new Set<string>(
+  Object.values(TelemetryTargetProduct)
+);
+const TelemetryEventServiceValues = new Set<string>(
+  Object.values(TelemetryEventService)
+);
 
 const useQueueProcessing = (): boolean =>
   config.get<boolean>('telemetry_use_queue_processing');
@@ -60,6 +70,74 @@ export const TelemetryApp = {
     } catch (error) {
       logApp.error('Error sending telemetry event ', { event, error });
     }
+  },
+
+  async getDeployedResourceServicesByTargetProduct(
+    organization_id: string
+  ): Promise<Map<TelemetryTargetProduct, Set<TelemetryEventService>>> {
+    const result = await esDbClient.search({
+      index: TELEMETRY_INDEX,
+      size: 0,
+      query: {
+        bool: {
+          filter: [
+            { term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY } },
+            { term: { organization_id } },
+          ],
+        },
+      },
+      aggs: {
+        products: {
+          terms: {
+            field: 'target_product',
+            size: Object.keys(TelemetryTargetProduct).length,
+          },
+          aggs: {
+            services: {
+              terms: {
+                field: 'service',
+                size: Object.keys(TelemetryEventService).length,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const products = new Map<
+      TelemetryTargetProduct,
+      Set<TelemetryEventService>
+    >();
+    const productBuckets = (
+      result.aggregations?.products as {
+        buckets?: Array<{
+          key: string;
+          services?: { buckets?: Array<{ key: string }> };
+        }>;
+      }
+    )?.buckets;
+
+    if (!productBuckets) {
+      return products;
+    }
+
+    for (const productBucket of productBuckets) {
+      if (!TelemetryTargetProductValues.has(productBucket.key)) {
+        continue;
+      }
+
+      const services = new Set<TelemetryEventService>();
+      const serviceBuckets = productBucket.services?.buckets ?? [];
+      for (const serviceBucket of serviceBuckets) {
+        if (TelemetryEventServiceValues.has(serviceBucket.key)) {
+          services.add(serviceBucket.key as TelemetryEventService);
+        }
+      }
+
+      products.set(productBucket.key as TelemetryTargetProduct, services);
+    }
+
+    return products;
   },
 
   async getMostDeployedResourceIds(

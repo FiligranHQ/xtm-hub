@@ -258,6 +258,15 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
+    undeployedResourceTypesByProduct: async (_, __, context) => {
+      try {
+        return await DocumentApp.loadUndeployedResourceTypesByProduct(
+          context.user.selected_organization_id
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
   },
 };
 

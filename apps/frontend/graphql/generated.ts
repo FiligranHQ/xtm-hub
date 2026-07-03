@@ -357,6 +357,14 @@ export type DefaultDocument = Document & Node & {
   use_cases: Maybe<Array<UseCase>>;
 };
 
+export enum DeployableResourceType {
+  CustomDashboards = 'custom_dashboards',
+  CustomViews = 'custom_views',
+  Integrations = 'integrations',
+  Playbooks = 'playbooks',
+  Scenarios = 'scenarios'
+}
+
 export type DeployedPlatform = {
   __typename?: 'DeployedPlatform';
   platformIdentifier: PlatformIdentifier;
@@ -1631,6 +1639,7 @@ export type Query = {
   subscriptionById: Maybe<SubscriptionModel>;
   subscriptions: SubscriptionConnection;
   trialDeployments: TrialsDeployments;
+  undeployedResourceTypesByProduct: Array<UndeployedResourceTypesByProduct>;
   updateOpenCTIManifest: Success;
   useCases: Maybe<UseCaseConnection>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
@@ -2413,6 +2422,12 @@ export type TrialsDeployments = {
   availableTrials: Array<PlatformIdentifier>;
   deployed: Array<DeployedPlatform>;
   isBlacklisted: Scalars['Boolean']['output'];
+};
+
+export type UndeployedResourceTypesByProduct = {
+  __typename?: 'UndeployedResourceTypesByProduct';
+  product: PlatformIdentifier;
+  resourceTypes: Array<DeployableResourceType>;
 };
 
 export type UnregisterPlatformInput = {
