@@ -1,3 +1,4 @@
+import DeployFirstResourceBlock from '@/components/homepage/DeployFirstResourceBlock';
 import {
   mapRegisteredPlatformsToHomepageCards,
   resolveHomepageCrossSellProduct,
@@ -51,6 +52,8 @@ export const RegisteredPlatformsSection = async ({
             platform={platformCard}
           />
         ))}
+
+        <DeployFirstResourceBlock />
 
         {crossSellProduct && (
           <TryOtherPlatformProductBlock product={crossSellProduct} />

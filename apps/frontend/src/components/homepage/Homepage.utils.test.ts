@@ -2,13 +2,16 @@ import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
+  DeployableResourceType,
   DocumentImageType,
+  PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   findLogoUrl,
   mapRegisteredPlatformsToHomepageCards,
+  resolveDeployFirstResourceCtaTarget,
   resolveHomepageCrossSellProduct,
   resolveHomepagePlatformIdentifiers,
   resolveHomepageRoadmapResolution,
@@ -32,49 +35,58 @@ describe('resolveHomepagePlatformIdentifiers', () => {
 describe('resolveRemainingTrialDays', () => {
   const now = new Date('2026-01-01T00:00:00.000Z');
 
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(now);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it.each`
     endDate                       | expected     | description
     ${null}                       | ${undefined} | ${'returns undefined when end date is missing'}
     ${'2026-01-05T00:00:00.000Z'} | ${4}         | ${'returns rounded remaining days for future trial end date'}
     ${'2025-12-30T00:00:00.000Z'} | ${0}         | ${'returns zero when trial end date is already passed'}
   `('$description', ({ endDate, expected }) => {
-    expect(resolveRemainingTrialDays(endDate, now)).toBe(expected);
+    expect(resolveRemainingTrialDays(endDate)).toBe(expected);
   });
 });
 
 describe('mapRegisteredPlatformsToHomepageCards', () => {
-  it('maps registered platforms to homepage cards and resolves deploy hrefs', () => {
-    const now = new Date('2026-01-01T00:00:00.000Z');
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+  });
 
-    const cards = mapRegisteredPlatformsToHomepageCards(
-      [
-        {
-          id: 'rp-1',
-          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-          title: 'OpenCTI Platform',
-          contract: PlatformContractEnum.CE,
-          subscription: {
-            start_date: '2025-12-01T00:00:00.000Z',
-            end_date: null,
-          },
-        },
-        {
-          id: 'rp-2',
-          identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
-          title: 'OpenAEV Trial Platform',
-          contract: PlatformContractEnum.TRIAL,
-          subscription: {
-            start_date: '2025-12-15T00:00:00.000Z',
-            end_date: '2026-01-03T00:00:00.000Z',
-          },
-        },
-      ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0],
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('maps registered platforms to homepage cards and resolves deploy hrefs', () => {
+    const cards = mapRegisteredPlatformsToHomepageCards([
       {
-        [ServiceDefinitionIdentifier.OpenctiRegistration]:
-          '/app/service/opencti_integrations/service-1',
+        id: 'rp-1',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        title: 'OpenCTI Platform',
+        contract: PlatformContractEnum.CE,
+        subscription: {
+          start_date: '2025-12-01T00:00:00.000Z',
+          end_date: null,
+        },
       },
-      now
-    );
+      {
+        id: 'rp-2',
+        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+        title: 'OpenAEV Trial Platform',
+        contract: PlatformContractEnum.TRIAL,
+        subscription: {
+          start_date: '2025-12-15T00:00:00.000Z',
+          end_date: '2026-01-03T00:00:00.000Z',
+        },
+      },
+    ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0]);
 
     expect(cards).toEqual([
       {
@@ -155,5 +167,78 @@ describe('resolveHomepageRoadmapResolution', () => {
     ${[ServiceDefinitionIdentifier.OpenctiRegistration, ServiceDefinitionIdentifier.OpenaevRegistration]} | ${{ productFilter: undefined, titleProduct: 'default' }}                   | ${'returns default roadmap resolution when both platforms are registered'}
   `('$description', ({ identifiers, expected }) => {
     expect(resolveHomepageRoadmapResolution(identifiers)).toEqual(expected);
+  });
+});
+
+describe('resolveDeployFirstResourceCtaTarget', () => {
+  const serviceInstanceIdByDefinition = {
+    [ServiceDefinitionIdentifier.OpenctiIntegrations]: 'svc-integrations',
+    [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
+      'svc-custom-dashboards',
+    [ServiceDefinitionIdentifier.OpenctiPlaybooks]: 'svc-playbooks',
+    [ServiceDefinitionIdentifier.OpenctiCustomViews]: 'svc-custom-views',
+    [ServiceDefinitionIdentifier.OpenaevScenarios]: 'svc-scenarios',
+  };
+
+  it('prioritizes OpenCTI integration over all other undeployed resource types', () => {
+    const ctaTarget = resolveDeployFirstResourceCtaTarget(
+      [
+        {
+          product: PlatformIdentifier.Opencti,
+          resourceTypes: [
+            DeployableResourceType.CustomViews,
+            DeployableResourceType.Integrations,
+            DeployableResourceType.Playbooks,
+          ],
+        },
+        {
+          product: PlatformIdentifier.Openaev,
+          resourceTypes: [DeployableResourceType.Scenarios],
+        },
+      ],
+      serviceInstanceIdByDefinition
+    );
+
+    expect(ctaTarget).toEqual({
+      href: '/app/service/opencti_integrations/svc-integrations',
+      resourceType: DeployableResourceType.Integrations,
+    });
+  });
+
+  it('falls back to OpenAEV scenario when no OpenCTI undeployed type is available', () => {
+    const ctaTarget = resolveDeployFirstResourceCtaTarget(
+      [
+        {
+          product: PlatformIdentifier.Openaev,
+          resourceTypes: [DeployableResourceType.Scenarios],
+        },
+      ],
+      serviceInstanceIdByDefinition
+    );
+
+    expect(ctaTarget).toEqual({
+      href: '/app/service/openaev_scenarios/svc-scenarios',
+      resourceType: DeployableResourceType.Scenarios,
+    });
+  });
+
+  it('returns undefined when there is no undeployed resource type', () => {
+    expect(
+      resolveDeployFirstResourceCtaTarget([], serviceInstanceIdByDefinition)
+    ).toBeUndefined();
+  });
+
+  it('returns undefined when service instance id is missing', () => {
+    const ctaTarget = resolveDeployFirstResourceCtaTarget(
+      [
+        {
+          product: PlatformIdentifier.Opencti,
+          resourceTypes: [DeployableResourceType.CustomDashboards],
+        },
+      ],
+      {}
+    );
+
+    expect(ctaTarget).toBeUndefined();
   });
 });

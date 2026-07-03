@@ -324,6 +324,16 @@
       "Remaining": "remaining",
       "DaysRemaining": "{days, plural, =1 {# day} other {# days}}"
     },
+    "DeployFirstResource": {
+      "Title": "Deploy your first {type}",
+      "Types": {
+        "integrations": "integration",
+        "custom_dashboards": "custom dashboard",
+        "playbooks": "playbook",
+        "custom_views": "custom view",
+        "scenarios": "scenario"
+      }
+    },
     "TryOtherPlatform": {
       "Title": "Extend and scale your XTM Platform",
       "OpenAEV": {

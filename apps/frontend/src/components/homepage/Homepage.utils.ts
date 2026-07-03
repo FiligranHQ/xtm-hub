@@ -5,10 +5,13 @@ import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import {
+  DeployableResourceType,
   DocumentImageType,
   HomepageDocumentFragment,
+  PlatformIdentifier,
   RegisteredPlatformsQuery,
   ServiceDefinitionIdentifier,
+  UndeployedResourceTypesByProductQuery,
 } from '@graphql/generated';
 
 type RegisteredPlatformForHomepage =
@@ -186,5 +189,107 @@ export const resolveHomepageRoadmapResolution = (
   return {
     productFilter: undefined,
     titleProduct: 'default',
+  };
+};
+
+export type HomepageDeployFirstResourceCtaTarget = {
+  href: string;
+  resourceType: DeployableResourceType;
+};
+
+type UndeployedResourceTypesByProductItem =
+  UndeployedResourceTypesByProductQuery['undeployedResourceTypesByProduct'][number];
+
+const HOMEPAGE_RESOURCE_PRIORITY_BY_PRODUCT: Record<
+  PlatformIdentifier,
+  DeployableResourceType[]
+> = {
+  [PlatformIdentifier.Opencti]: [
+    DeployableResourceType.Integrations,
+    DeployableResourceType.CustomDashboards,
+    DeployableResourceType.Playbooks,
+    DeployableResourceType.CustomViews,
+  ],
+  [PlatformIdentifier.Openaev]: [DeployableResourceType.Scenarios],
+};
+
+const HOMEPAGE_RESOURCE_CTA_MAPPING: Record<
+  DeployableResourceType,
+  {
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
+  }
+> = {
+  [DeployableResourceType.Integrations]: {
+    serviceDefinitionIdentifier:
+      ServiceDefinitionIdentifier.OpenctiIntegrations,
+  },
+  [DeployableResourceType.CustomDashboards]: {
+    serviceDefinitionIdentifier:
+      ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+  },
+  [DeployableResourceType.Playbooks]: {
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier.OpenctiPlaybooks,
+  },
+  [DeployableResourceType.CustomViews]: {
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier.OpenctiCustomViews,
+  },
+  [DeployableResourceType.Scenarios]: {
+    serviceDefinitionIdentifier: ServiceDefinitionIdentifier.OpenaevScenarios,
+  },
+};
+
+const resolveDeployFirstResourceTypeByProduct = (
+  undeployedResourceTypesByProduct: UndeployedResourceTypesByProductItem[],
+  product: PlatformIdentifier
+): DeployableResourceType | undefined => {
+  const undeployedByProduct = undeployedResourceTypesByProduct.find(
+    (item) => item.product === product
+  );
+
+  if (!undeployedByProduct) {
+    return undefined;
+  }
+
+  const productPriority = HOMEPAGE_RESOURCE_PRIORITY_BY_PRODUCT[product];
+
+  return productPriority.find((resourceType) =>
+    undeployedByProduct.resourceTypes.includes(resourceType)
+  );
+};
+
+export const resolveDeployFirstResourceCtaTarget = (
+  undeployedResourceTypesByProduct: UndeployedResourceTypesByProductQuery['undeployedResourceTypesByProduct'],
+  serviceInstanceIdByDefinition: Partial<
+    Record<ServiceDefinitionIdentifier, string>
+  >
+): HomepageDeployFirstResourceCtaTarget | undefined => {
+  const firstOpenctiType = resolveDeployFirstResourceTypeByProduct(
+    undeployedResourceTypesByProduct,
+    PlatformIdentifier.Opencti
+  );
+  const selectedResourceType =
+    firstOpenctiType ??
+    resolveDeployFirstResourceTypeByProduct(
+      undeployedResourceTypesByProduct,
+      PlatformIdentifier.Openaev
+    );
+
+  if (!selectedResourceType) {
+    return undefined;
+  }
+
+  const { serviceDefinitionIdentifier } =
+    HOMEPAGE_RESOURCE_CTA_MAPPING[selectedResourceType];
+
+  const serviceInstanceId =
+    serviceInstanceIdByDefinition[serviceDefinitionIdentifier];
+
+  if (!serviceInstanceId) {
+    return undefined;
+  }
+
+  return {
+    href: `/app/service/${serviceDefinitionIdentifier}/${serviceInstanceId}`,
+    resourceType: selectedResourceType,
   };
 };

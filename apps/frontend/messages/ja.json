@@ -324,6 +324,16 @@
       "Remaining": "残り",
       "DaysRemaining": "{days, plural, =1 {# day} その他 {# days}}"
     },
+    "DeployFirstResource": {
+      "Title": "初めての {type} を導入する",
+      "Types": {
+        "integrations": "統合",
+        "custom_dashboards": "カスタムダッシュボード",
+        "playbooks": "プレイブック",
+        "custom_views": "カスタムビュー",
+        "scenarios": "シナリオ"
+      }
+    },
     "TryOtherPlatform": {
       "Title": "XTMプラットフォームを拡張・スケールアップ",
       "OpenAEV": {

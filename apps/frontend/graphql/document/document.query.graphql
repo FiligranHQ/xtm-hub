@@ -40,3 +40,10 @@ query NewestDocumentsQuery(
     ...HomepageDocument
   }
 }
+
+query UndeployedResourceTypesByProduct {
+  undeployedResourceTypesByProduct {
+    product
+    resourceTypes
+  }
+}
