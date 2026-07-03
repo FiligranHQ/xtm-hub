@@ -1,6 +1,8 @@
+import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
+  DocumentImageType,
   DocumentMetadataKeyCode,
   IntegrationType,
   ManifestType,
@@ -10,12 +12,16 @@ import type Document from '../../../model/kanel/public/Document';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
 import type { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
 import type { UseCaseId } from '../../../model/kanel/public/UseCase';
+import { MinIOClient } from '../../../thirdparty/minio/client';
+import { logApp } from '../../../utils/app-logger.util';
+import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import {
   TAG_DECOUPLING,
   TAG_LATEST,
   TAG_LATEST_LTS,
 } from '../manifest-fragment/manifest-fragment.utils';
+import { INTEGRATION_SERVICE_INSTANCE_ID } from '../opencti/integration/integration.model';
 import { ManifestApp } from './manifest.app';
 import type { ManifestKey } from './manifest.consts';
 import { ManifestRebuildQueueStatus } from './manifest.consts';
@@ -401,6 +407,61 @@ describe('manifestApp', () => {
         expect(result).not.toBeNull();
         expect(result!.contracts).toHaveLength(1);
         expect(result!.contracts[0]!.use_cases).toEqual([]);
+      });
+
+      it('populates logo as a base64 data URI when the connector has a logo', async () => {
+        const doc = await createConnectorDocument([TAG_LATEST]);
+        await DocumentChildrenDomain.createImageDocuments(
+          doc.id,
+          INTEGRATION_SERVICE_INSTANCE_ID,
+          [
+            {
+              fileName: 'logo.png',
+              minioName: 'minio-logo-name',
+              mimeType: 'image/png',
+            },
+          ],
+          DocumentImageType.Logo
+        );
+        vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(
+          Readable.from([
+            Buffer.from('fake-image-bytes'),
+          ]) as unknown as Awaited<ReturnType<typeof MinIOClient.downloadFile>>
+        );
+
+        const result = await ManifestApp.generateManifest(MANIFEST_KEY);
+
+        expect(result).not.toBeNull();
+        expect(result!.contracts).toHaveLength(1);
+        expect(result!.contracts[0]!.logo).toBe(
+          `data:image/png;base64,${Buffer.from('fake-image-bytes').toString('base64')}`
+        );
+      });
+
+      it('sets logo to null and continues when MinIO download fails for one connector', async () => {
+        vi.spyOn(logApp, 'error').mockImplementation(() => undefined);
+        const doc = await createConnectorDocument([TAG_LATEST]);
+        await DocumentChildrenDomain.createImageDocuments(
+          doc.id,
+          INTEGRATION_SERVICE_INSTANCE_ID,
+          [
+            {
+              fileName: 'logo.png',
+              minioName: 'minio-logo-name',
+              mimeType: 'image/png',
+            },
+          ],
+          DocumentImageType.Logo
+        );
+        vi.spyOn(MinIOClient, 'downloadFile').mockRejectedValue(
+          new Error('S3 unavailable')
+        );
+
+        const result = await ManifestApp.generateManifest(MANIFEST_KEY);
+
+        expect(result).not.toBeNull();
+        expect(result!.contracts).toHaveLength(1);
+        expect(result!.contracts[0]!.logo).toBeNull();
       });
     });
   });

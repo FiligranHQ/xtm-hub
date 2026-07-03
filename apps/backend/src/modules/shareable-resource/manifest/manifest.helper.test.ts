@@ -1,7 +1,13 @@
+import { Readable } from 'stream';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import { DocumentImageType } from '../../../__generated__/resolvers-types';
+import { DocumentId } from '../../../model/kanel/public/Document';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
+import { WithParentId } from '../../document/document.helper';
+import { DocumentImage } from '../../document/document.model';
+import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { ConnectorV2 } from '../opencti/integration/integration.model';
 import {
   MANIFEST_CATALOG_DESCRIPTION,
@@ -294,7 +300,7 @@ describe('manifestHelper', () => {
         expect(contract.config_schema).toEqual({ type: 'object' });
       });
 
-      it('sets logo to null (todo #5)', () => {
+      it('sets logo to null when logoByConnectorId has no entry for the connector (also covers the default parameter)', () => {
         const contract = ManifestHelper.buildConnectorManifestOutput(
           '7.260604.0',
           [buildConnector()],
@@ -302,6 +308,21 @@ describe('manifestHelper', () => {
           new Map()
         ).contracts[0]!;
         expect(contract.logo).toBeNull();
+      });
+
+      it('populates logo from the logoByConnectorId map', () => {
+        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const logoByConnectorId = new Map<DocumentId, string | null>([
+          ['connector-uuid-1' as DocumentId, 'abc123base64'],
+        ]);
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [connector],
+          FIXED_DATE,
+          new Map(),
+          logoByConnectorId
+        ).contracts[0]!;
+        expect(contract.logo).toBe('abc123base64');
       });
 
       it('sets use_cases to empty array when no map entry exists for the connector', () => {
@@ -551,6 +572,206 @@ describe('manifestHelper', () => {
         expect(output.contracts[0]!.id).toBe('manifest-fragment-id-1');
         expect(output.contracts[1]!.id).toBe('manifest-fragment-id-2');
       });
+    });
+  });
+
+  describe('loadConnectorLogosBase64', () => {
+    const CONNECTOR_ID = 'connector-id' as DocumentId;
+    const CONNECTOR_ID_2 = 'connector-id-2' as DocumentId;
+
+    const buildImage = (
+      overrides: Partial<WithParentId<DocumentImage>> = {}
+    ): WithParentId<DocumentImage> =>
+      ({
+        id: 'image-id-1',
+        minio_name: 'minio-logo-name',
+        mime_type: 'image/png',
+        image_type: DocumentImageType.Logo,
+        _parent_id: CONNECTOR_ID,
+        ...overrides,
+      }) as unknown as WithParentId<DocumentImage>;
+
+    beforeEach(() => {
+      vi.spyOn(logApp, 'error').mockImplementation(() => undefined);
+    });
+
+    it('returns an empty map when given an empty list of connector ids', async () => {
+      vi.spyOn(DocumentChildrenDomain, 'buildImagesByDocumentIdQuery');
+
+      const result = await ManifestHelper.loadConnectorLogosBase64([]);
+
+      expect(result.size).toBe(0);
+      expect(
+        DocumentChildrenDomain.buildImagesByDocumentIdQuery
+      ).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      {
+        description: 'there are no image documents at all',
+        images: [],
+        downloadResult: undefined,
+      },
+      {
+        description: 'the connector has images but none is a logo',
+        images: [buildImage({ image_type: DocumentImageType.Image })],
+        downloadResult: undefined,
+      },
+      {
+        description: 'the logo document has no minio_name',
+        images: [buildImage({ minio_name: null })],
+        downloadResult: undefined,
+      },
+      {
+        description: 'MinIOClient.downloadFile resolves null',
+        images: [buildImage()],
+        downloadResult: null,
+      },
+    ])('returns null when $description', async ({ images, downloadResult }) => {
+      vi.spyOn(
+        DocumentChildrenDomain,
+        'buildImagesByDocumentIdQuery'
+      ).mockResolvedValue(images);
+      if (downloadResult !== undefined) {
+        vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(downloadResult);
+      }
+
+      const result = await ManifestHelper.loadConnectorLogosBase64([
+        CONNECTOR_ID,
+      ]);
+
+      expect(result.get(CONNECTOR_ID)).toBeNull();
+    });
+
+    it('returns a data URI when the logo is found', async () => {
+      vi.spyOn(
+        DocumentChildrenDomain,
+        'buildImagesByDocumentIdQuery'
+      ).mockResolvedValue([buildImage({ mime_type: 'image/png' })]);
+      const stream = Readable.from([Buffer.from('fake-image-bytes')]);
+      vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(
+        stream as unknown as Awaited<
+          ReturnType<typeof MinIOClient.downloadFile>
+        >
+      );
+
+      const result = await ManifestHelper.loadConnectorLogosBase64([
+        CONNECTOR_ID,
+      ]);
+
+      expect(result.get(CONNECTOR_ID)).toBe(
+        `data:image/png;base64,${Buffer.from('fake-image-bytes').toString('base64')}`
+      );
+    });
+
+    it('falls back to image/png when the logo document has no mime_type', async () => {
+      vi.spyOn(
+        DocumentChildrenDomain,
+        'buildImagesByDocumentIdQuery'
+      ).mockResolvedValue([buildImage({ mime_type: null })]);
+      const stream = Readable.from([Buffer.from('fake-image-bytes')]);
+      vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(
+        stream as unknown as Awaited<
+          ReturnType<typeof MinIOClient.downloadFile>
+        >
+      );
+
+      const result = await ManifestHelper.loadConnectorLogosBase64([
+        CONNECTOR_ID,
+      ]);
+
+      expect(result.get(CONNECTOR_ID)).toBe(
+        `data:image/png;base64,${Buffer.from('fake-image-bytes').toString('base64')}`
+      );
+    });
+
+    it('isolates a single connector logo failure: other connectors still resolve', async () => {
+      vi.spyOn(
+        DocumentChildrenDomain,
+        'buildImagesByDocumentIdQuery'
+      ).mockResolvedValue([
+        buildImage({
+          _parent_id: CONNECTOR_ID,
+          minio_name: 'failing-logo-name',
+        }),
+        buildImage({
+          _parent_id: CONNECTOR_ID_2,
+          minio_name: 'ok-logo-name',
+        }),
+      ]);
+      const stream = Readable.from([Buffer.from('fake-image-bytes')]);
+      vi.spyOn(MinIOClient, 'downloadFile').mockImplementation(
+        async (minioName: string) => {
+          if (minioName === 'failing-logo-name') {
+            throw new Error('MinIO is down');
+          }
+          return stream as unknown as Awaited<
+            ReturnType<typeof MinIOClient.downloadFile>
+          >;
+        }
+      );
+
+      const result = await ManifestHelper.loadConnectorLogosBase64([
+        CONNECTOR_ID,
+        CONNECTOR_ID_2,
+      ]);
+
+      expect(result.get(CONNECTOR_ID)).toBeNull();
+      expect(result.get(CONNECTOR_ID_2)).toBe(
+        `data:image/png;base64,${Buffer.from('fake-image-bytes').toString('base64')}`
+      );
+      expect(logApp.error).toHaveBeenCalledWith(
+        '[MANIFEST] Failed to load connector logo',
+        expect.objectContaining({ connectorId: CONNECTOR_ID })
+      );
+    });
+
+    it('returns null for every connector and logs once when the batched query throws', async () => {
+      vi.spyOn(
+        DocumentChildrenDomain,
+        'buildImagesByDocumentIdQuery'
+      ).mockRejectedValue(new Error('DB connection lost'));
+
+      const result = await ManifestHelper.loadConnectorLogosBase64([
+        CONNECTOR_ID,
+        CONNECTOR_ID_2,
+      ]);
+
+      expect(result.get(CONNECTOR_ID)).toBeNull();
+      expect(result.get(CONNECTOR_ID_2)).toBeNull();
+      expect(logApp.error).toHaveBeenCalledWith(
+        '[MANIFEST] Failed to load connector logo documents',
+        expect.objectContaining({
+          connectorIds: [CONNECTOR_ID, CONNECTOR_ID_2],
+        })
+      );
+    });
+
+    it('returns null and logs an error when the download stream errors', async () => {
+      vi.spyOn(
+        DocumentChildrenDomain,
+        'buildImagesByDocumentIdQuery'
+      ).mockResolvedValue([buildImage()]);
+      const stream = new Readable({
+        read() {
+          this.emit('error', new Error('stream broke'));
+        },
+      });
+      vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(
+        stream as unknown as Awaited<
+          ReturnType<typeof MinIOClient.downloadFile>
+        >
+      );
+
+      const result = await ManifestHelper.loadConnectorLogosBase64([
+        CONNECTOR_ID,
+      ]);
+
+      expect(result.get(CONNECTOR_ID)).toBeNull();
+      expect(logApp.error).toHaveBeenCalledWith(
+        '[MANIFEST] Failed to load connector logo',
+        expect.objectContaining({ connectorId: CONNECTOR_ID })
+      );
     });
   });
 });

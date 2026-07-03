@@ -4,7 +4,6 @@ export interface ManifestContract {
   slug: string;
   description: string;
   short_description: string;
-  /** Base64-encoded logo image. todo #5: not yet populated. */
   logo: string | null;
   use_cases: string[];
   verified: boolean;

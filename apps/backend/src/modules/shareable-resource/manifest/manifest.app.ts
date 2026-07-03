@@ -153,11 +153,16 @@ export const ManifestApp = {
       useCasesByConnectorId.set(row._document_id, existing);
     }
 
+    const logoByConnectorId = await ManifestHelper.loadConnectorLogosBase64(
+      connectors.map((c) => c.id)
+    );
+
     const manifest = ManifestHelper.buildConnectorManifestOutput(
       key.version,
       connectors as ConnectorV2[],
       now,
-      useCasesByConnectorId
+      useCasesByConnectorId,
+      logoByConnectorId
     );
 
     const minioFileName = ManifestHelper.buildManifestFileNameWithPath(
