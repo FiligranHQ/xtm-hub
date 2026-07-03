@@ -46,6 +46,8 @@ const PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES: ServiceInstancesListQueryV
     count: 50,
     orderBy: ServiceInstanceOrdering.Ordering,
     orderMode: OrderingMode.Asc,
+    filters: null,
+    searchTerm: null,
   };
 interface SettingsLinkConfig extends SectionLink {
   restriction?: PortalCapabilityEnum[];

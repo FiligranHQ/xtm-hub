@@ -863,6 +863,30 @@ export enum LogicalOperator {
   Or = 'OR'
 }
 
+export type ManifestFragmentInput = {
+  additional_properties: Scalars['JSON']['input'];
+  batch_id: Scalars['String']['input'];
+  config_schema: Scalars['JSON']['input'];
+  description: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  image_name: Scalars['String']['input'];
+  image_type: Scalars['String']['input'];
+  integration_type: Scalars['String']['input'];
+  last_verified_date: InputMaybe<Scalars['Date']['input']>;
+  logo: Scalars['String']['input'];
+  manager_supported: Scalars['Boolean']['input'];
+  min_version: Scalars['String']['input'];
+  platform: Scalars['String']['input'];
+  short_description: Scalars['String']['input'];
+  slug: Scalars['String']['input'];
+  source_code: Scalars['String']['input'];
+  subscription_link: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  use_cases: Array<Scalars['String']['input']>;
+  verified: InputMaybe<Scalars['Boolean']['input']>;
+  version: Scalars['String']['input'];
+};
+
 export enum ManifestType {
   Connector = 'connector'
 }
@@ -921,6 +945,7 @@ export type Mutation = {
   editUserService: Maybe<UserService>;
   frontendErrorLog: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
+  ingestManifestFragments: Success;
   login: Maybe<User>;
   logout: Scalars['ID']['output'];
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
@@ -1160,6 +1185,11 @@ export type MutationFrontendErrorLogArgs = {
 
 export type MutationIncrementShareNumberDocumentArgs = {
   documentId: Scalars['DocumentId']['input'];
+};
+
+
+export type MutationIngestManifestFragmentsArgs = {
+  manifestFragments: Array<ManifestFragmentInput>;
 };
 
 
@@ -1543,6 +1573,7 @@ export enum PortalCapability {
   Bypass = 'BYPASS',
   ManageConnectorsIngestions = 'MANAGE_CONNECTORS_INGESTIONS',
   ManageDeployment = 'MANAGE_DEPLOYMENT',
+  ManageManifestIngestions = 'MANAGE_MANIFEST_INGESTIONS',
   ModifyCompetitors = 'MODIFY_COMPETITORS',
   ModifyTrials = 'MODIFY_TRIALS',
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
@@ -2691,12 +2722,14 @@ export type RegisteredPlatformsQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier }> };
+export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null } | null }> };
 
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
+  filters: InputMaybe<Array<ServiceInstanceFilter> | ServiceInstanceFilter>;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -3092,6 +3125,12 @@ export const RegisteredPlatformsDocument = `
   registeredPlatforms(input: $input) {
     id
     identifier
+    title
+    contract
+    subscription {
+      start_date
+      end_date
+    }
   }
 }
     `;
@@ -3142,8 +3181,14 @@ useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.inf
 useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
 
 export const ServiceInstancesListDocument = `
-    query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!) {
-  serviceInstances(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+    query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!, $filters: [ServiceInstanceFilter!], $searchTerm: String) {
+  serviceInstances(
+    first: $count
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+    searchTerm: $searchTerm
+  ) {
     edges {
       node {
         id

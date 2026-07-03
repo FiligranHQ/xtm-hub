@@ -312,6 +312,30 @@
     },
     "XtmMostDeployedResources": {
       "Title": "Ressources les plus utilisées"
+    },
+    "RegisteredPlatformsCard": {
+      "RegisteredOn": "sur",
+      "Contract": "Contrat",
+      "Contracts": {
+        "CE": "Édition Communauté",
+        "EE": "Édition Entreprise",
+        "TRIAL": "Essai gratuit"
+      },
+      "Remaining": "restant",
+      "DaysRemaining": "{jours, pluriel, =1 {# day} autres {# days}}"
+    },
+    "TryOtherPlatform": {
+      "Title": "Étendez et adaptez votre plateforme XTM",
+      "OpenAEV": {
+        "Description1": "Profitez pleinement de la plateforme XTM.",
+        "Description2": "Commencez un essai gratuit d’OpenAEV et validez vos renseignements sur les menaces en situation réelle.",
+        "Cta": "Essayez OpenAEV"
+      },
+      "OpenCTI": {
+        "Description1": "Profitez pleinement de la plateforme XTM.",
+        "Description2": "Commencez un essai gratuit d’OpenCTI et optimisez vos simulations grâce à de véritables renseignements sur les menaces.",
+        "Cta": "Essayez OpenCTI"
+      }
     }
   },
   "PublicHomePage": {

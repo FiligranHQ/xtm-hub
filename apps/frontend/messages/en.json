@@ -312,6 +312,30 @@
     },
     "XtmMostDeployedResources": {
       "Title": "Most deployed resources"
+    },
+    "RegisteredPlatformsCard": {
+      "RegisteredOn": "on",
+      "Contract": "Contract",
+      "Contracts": {
+        "CE": "Community Edition",
+        "EE": "Enterprise Edition",
+        "TRIAL": "Free trial"
+      },
+      "Remaining": "remaining",
+      "DaysRemaining": "{days, plural, =1 {# day} other {# days}}"
+    },
+    "TryOtherPlatform": {
+      "Title": "Extend and scale your XTM Platform",
+      "OpenAEV": {
+        "Description1": "Get the full XTM Platform experience.",
+        "Description2": "Start a free OpenAEV trial and validate your threat intelligence in action.",
+        "Cta": "Try OpenAEV"
+      },
+      "OpenCTI": {
+        "Description1": "Get the full XTM Platform experience. ",
+        "Description2": "Start a free OpenCTI trial and power your simulations with real threat intelligence.",
+        "Cta": "Try OpenCTI"
+      }
     }
   },
   "PublicHomePage": {

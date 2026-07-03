@@ -2,8 +2,16 @@ query ServiceInstancesList(
   $count: Int!
   $orderBy: ServiceInstanceOrdering!
   $orderMode: OrderingMode!
+  $filters: [ServiceInstanceFilter!]
+  $searchTerm: String
 ) {
-  serviceInstances(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+  serviceInstances(
+    first: $count
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+    searchTerm: $searchTerm
+  ) {
     edges {
       node {
         id

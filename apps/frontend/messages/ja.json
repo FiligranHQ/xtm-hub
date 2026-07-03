@@ -312,6 +312,30 @@
     },
     "XtmMostDeployedResources": {
       "Title": "最も多くデプロイされているリソース"
+    },
+    "RegisteredPlatformsCard": {
+      "RegisteredOn": "on",
+      "Contract": "契約",
+      "Contracts": {
+        "CE": "コミュニティ版",
+        "EE": "エンタープライズ版",
+        "TRIAL": "無料トライアル"
+      },
+      "Remaining": "残り",
+      "DaysRemaining": "{days, plural, =1 {# day} その他 {# days}}"
+    },
+    "TryOtherPlatform": {
+      "Title": "XTMプラットフォームを拡張・スケールアップ",
+      "OpenAEV": {
+        "Description1": "XTMプラットフォームの全機能を体験してください。",
+        "Description2": "OpenAEVの無料トライアルを開始し、実際の脅威インテリジェンスを検証してください。",
+        "Cta": "OpenAEVをお試しください"
+      },
+      "OpenCTI": {
+        "Description1": "XTMプラットフォームの機能をフルに体験してください。",
+        "Description2": "OpenCTIの無料トライアルを開始し、実際の脅威インテリジェンスを活用したシミュレーションを実現してください。",
+        "Cta": "OpenCTIをお試しください"
+      }
     }
   },
   "PublicHomePage": {
