@@ -1,9 +1,5 @@
 import MeLoaderQuery from '@generated/meLoaderQuery.graphql';
-import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
-import { ServiceInstanceOrderingEnum } from '@generated/models/ServiceInstanceOrdering.enum';
 import { ServiceDefinitionIdentifier } from '@graphql/generated';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -16,8 +12,7 @@ const {
   mockMostDeployedResources,
   mockPrivateHomepageRoadmapSection,
   mockXtmPlatform,
-  mockRegisteredPlatformCard,
-  mockTryOtherPlatformProductBlock,
+  mockRegisteredPlatformsSection,
 } = vi.hoisted(() => ({
   mockRegisteredPlatformsFetcher: vi.fn(),
   mockServiceInstancesFetcher: vi.fn(),
@@ -30,11 +25,8 @@ const {
     <div data-testid="private-homepage-roadmap-section" />
   )),
   mockXtmPlatform: vi.fn(() => <div data-testid="xtm-platform" />),
-  mockRegisteredPlatformCard: vi.fn(() => (
-    <div data-testid="registered-platform-card" />
-  )),
-  mockTryOtherPlatformProductBlock: vi.fn(() => (
-    <div data-testid="try-other-platform-product-block" />
+  mockRegisteredPlatformsSection: vi.fn(() => (
+    <div data-testid="registered-platforms-section" />
   )),
 }));
 
@@ -79,12 +71,8 @@ vi.mock('@/components/homepage/XtmPlatform', () => ({
   default: mockXtmPlatform,
 }));
 
-vi.mock('@/components/homepage/RegisteredPlatformCard', () => ({
-  default: mockRegisteredPlatformCard,
-}));
-
-vi.mock('@/components/homepage/TryOtherPlatformProductBlock', () => ({
-  default: mockTryOtherPlatformProductBlock,
+vi.mock('@/components/homepage/RegisteredPlatformsSection', () => ({
+  RegisteredPlatformsSection: mockRegisteredPlatformsSection,
 }));
 
 import { PrivateHomepage } from './PrivateHomepage';
@@ -99,8 +87,7 @@ describe('PrivateHomepage', () => {
     mockMostDeployedResources.mockClear();
     mockPrivateHomepageRoadmapSection.mockClear();
     mockXtmPlatform.mockClear();
-    mockRegisteredPlatformCard.mockClear();
-    mockTryOtherPlatformProductBlock.mockClear();
+    mockRegisteredPlatformsSection.mockClear();
 
     mockServiceInstancesFetcher.mockReturnValue(() =>
       Promise.resolve({
@@ -129,64 +116,29 @@ describe('PrivateHomepage', () => {
       })
     );
 
-    mockServiceInstancesFetcher
-      .mockReturnValueOnce(() =>
-        Promise.resolve({
-          serviceInstances: {
-            edges: [{ node: { id: 'svc-opencti' } }],
-          },
-        })
-      )
-      .mockReturnValueOnce(() =>
-        Promise.resolve({
-          serviceInstances: {
-            edges: [{ node: { id: 'svc-openaev' } }],
-          },
-        })
-      );
-
     const element = await PrivateHomepage();
     render(element);
 
     expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(1);
-    expect(mockServiceInstancesFetcher).toHaveBeenCalledTimes(2);
-    expect(mockServerFetchGraphQL).not.toHaveBeenCalled();
+    expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
+    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsFetcher.mock.calls[0]?.[1]).toEqual({
       input: { identifier: null, onlyActive: true, onlyTrial: null },
     });
-    expect(mockServiceInstancesFetcher).toHaveBeenNthCalledWith(
-      1,
-      {},
-      {
-        count: 1,
-        orderBy: ServiceInstanceOrderingEnum.NAME,
-        orderMode: OrderingModeEnum.ASC,
-        filters: [
-          {
-            key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
-            value: [ServiceDefinitionIdentifierEnum.OPENCTI_INTEGRATIONS],
-          },
+
+    expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        welcomeName: undefined,
+        registeredIdentifiers: [
+          ServiceDefinitionIdentifier.OpenctiRegistration,
         ],
-        searchTerm: null,
-      }
-    );
-    expect(mockServiceInstancesFetcher).toHaveBeenNthCalledWith(
-      2,
-      {},
-      {
-        count: 1,
-        orderBy: ServiceInstanceOrderingEnum.NAME,
-        orderMode: OrderingModeEnum.ASC,
-        filters: [
-          {
-            key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
-            value: [ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS],
-          },
-        ],
-        searchTerm: null,
-      }
+        registeredPlatformsData: expect.objectContaining({
+          registeredPlatforms: expect.any(Array),
+        }),
+      }),
+      undefined
     );
 
     expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
@@ -197,6 +149,7 @@ describe('PrivateHomepage', () => {
       }),
       undefined
     );
+
     expect(mockNewestResources).toHaveBeenCalledWith(
       expect.objectContaining({
         platformIdentifiers: [PlatformIdentifierEnum.OPENCTI],
@@ -210,12 +163,7 @@ describe('PrivateHomepage', () => {
       undefined
     );
 
-    expect(mockTryOtherPlatformProductBlock).toHaveBeenCalledWith(
-      expect.objectContaining({ product: PlatformIdentifierEnum.OPENAEV }),
-      undefined
-    );
-    expect(screen.getByTestId('registered-platform-card')).toBeTruthy();
-    expect(screen.getByTestId('try-other-platform-product-block')).toBeTruthy();
+    expect(screen.getByTestId('registered-platforms-section')).toBeTruthy();
   });
 
   it('passes undefined platformIdentifiers and hides cross-sell block when both products are registered', async () => {
@@ -250,10 +198,21 @@ describe('PrivateHomepage', () => {
     render(element);
 
     expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(1);
-    expect(mockServiceInstancesFetcher).toHaveBeenCalledTimes(2);
-    expect(mockServerFetchGraphQL).not.toHaveBeenCalled();
+    expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
+    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
     expect(mockXtmPlatform).not.toHaveBeenCalled();
-    expect(mockTryOtherPlatformProductBlock).not.toHaveBeenCalled();
+
+    expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        welcomeName: undefined,
+        registeredIdentifiers: [
+          ServiceDefinitionIdentifier.OpenctiRegistration,
+          ServiceDefinitionIdentifier.OpenaevRegistration,
+        ],
+      }),
+      undefined
+    );
+
     expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
       expect.objectContaining({
         registeredIdentifiers: [
@@ -263,6 +222,7 @@ describe('PrivateHomepage', () => {
       }),
       undefined
     );
+
     expect(mockNewestResources).toHaveBeenCalledWith(
       expect.objectContaining({ platformIdentifiers: undefined }),
       undefined
@@ -290,9 +250,13 @@ describe('PrivateHomepage', () => {
       expect.objectContaining({ welcomeName: undefined }),
       undefined
     );
-    expect(screen.getByTestId('xtm-platform')).toBeTruthy();
-    expect(mockRegisteredPlatformCard).not.toHaveBeenCalled();
-    expect(mockTryOtherPlatformProductBlock).not.toHaveBeenCalled();
+    expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        welcomeName: undefined,
+        registeredIdentifiers: [],
+      }),
+      undefined
+    );
     expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
       expect.objectContaining({
         registeredIdentifiers: [],
@@ -364,6 +328,12 @@ describe('PrivateHomepage', () => {
 
     render(await PrivateHomepage());
 
+    expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        registeredIdentifiers: [],
+      }),
+      undefined
+    );
     expect(screen.getByTestId('private-homepage-roadmap-section')).toBeTruthy();
   });
 });
