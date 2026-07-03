@@ -3,7 +3,6 @@
 import { ConnectedProductItem } from '@/components/connected-products/ConnectedProductItem';
 import { ConnectPlatformButton } from '@/components/connected-products/ConnectPlatformButton';
 import { useConnectedPlatforms } from '@/components/connected-products/useConnectedPlatforms';
-import { PortalContext } from '@/components/me/AppPortalContext';
 import { ArrowDropDownIcon } from '@filigran/icon';
 import {
   Button,
@@ -15,7 +14,7 @@ import {
 } from '@filigran/ui';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 const CONNECTABLE_PLATFORMS = [
   PlatformIdentifierEnum.OPENCTI,
@@ -24,12 +23,9 @@ const CONNECTABLE_PLATFORMS = [
 
 export const ConnectedProductsDropdown = () => {
   const t = useTranslations();
-  const { isPersonalSpace } = useContext(PortalContext);
   const { connectedPlatforms } = useConnectedPlatforms();
 
   const [open, setOpen] = useState(false);
-
-  if (isPersonalSpace) return null;
 
   return (
     <DropdownMenu

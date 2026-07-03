@@ -9,7 +9,6 @@ import { UseTranslationsProps } from '@/i18n/config';
 import { APP_PATH } from '@/utils/path/constant';
 import { OpenInNewIcon, TextSnippetIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
-import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -23,9 +22,7 @@ export const ConnectedProductItem = ({
   t,
 }: ConnectedProductItemProps) => {
   const platformIdentifier =
-    ServiceDefinitionIdentifierToPlatformIdentifier[
-      platform.identifier as ServiceDefinitionIdentifier
-    ];
+    ServiceDefinitionIdentifierToPlatformIdentifier[platform.identifier];
   const platformMeta = platformIdentifier
     ? PlatformMetadataMapping[platformIdentifier]
     : undefined;
