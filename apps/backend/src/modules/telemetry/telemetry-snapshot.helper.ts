@@ -3,6 +3,57 @@
  * and OpenTelemetry imports so they stay trivially unit-testable.
  */
 
+const PRODUCTION_ENDPOINT = 'https://telemetry.hub.filigran.io/v1/metrics';
+const STAGING_ENDPOINT = 'https://telemetry.hub.staging.filigran.io/v1/metrics';
+
+const HOUR_MS = 60 * 60 * 1000;
+// Fixed cadence for EVERY environment: DB counts hourly, export every 6h
+// (the shared Filigran contract). The debug cadence below exists only for
+// explicitly opted-in pipeline testing.
+const REFRESH_INTERVAL_MS = HOUR_MS;
+const EXPORT_INTERVAL_MS = 6 * HOUR_MS;
+const DEBUG_REFRESH_INTERVAL_MS = 60 * 1000;
+const DEBUG_EXPORT_INTERVAL_MS = 2 * 60 * 1000;
+
+export interface SnapshotTelemetrySettings {
+  enabled: boolean;
+  endpoint: string;
+  refreshIntervalMillis: number;
+  exportIntervalMillis: number;
+}
+
+/**
+ * Resolve whether and how gauge telemetry runs for a given environment.
+ *
+ * Gauge telemetry only starts in `production` and `staging`. Unlike the
+ * sibling products where "dev mode" means a developer laptop, the hub's
+ * infrastructure deploys long-lived environments with NODE_ENV=development
+ * (per-PR feature envs, dev, prerelease): letting those export - especially
+ * at a tighter dev cadence - flooded the staging collector with one upload
+ * every 2 minutes per environment and minted a fresh instance identity for
+ * every CI run. Hence: disabled everywhere else, fixed 1h-refresh /
+ * 6h-export cadence for everyone.
+ *
+ * `TELEMETRY_GAUGE_DEBUG=true` is the explicit opt-in for exercising the
+ * pipeline end-to-end (any environment, tight cadence, staging collector
+ * unless production).
+ */
+export const resolveSnapshotTelemetrySettings = (
+  environment: string,
+  debugFlag: string | undefined
+): SnapshotTelemetrySettings => {
+  const debug = debugFlag === 'true';
+  return {
+    enabled: debug || environment === 'production' || environment === 'staging',
+    endpoint:
+      environment === 'production' ? PRODUCTION_ENDPOINT : STAGING_ENDPOINT,
+    refreshIntervalMillis: debug
+      ? DEBUG_REFRESH_INTERVAL_MS
+      : REFRESH_INTERVAL_MS,
+    exportIntervalMillis: debug ? DEBUG_EXPORT_INTERVAL_MS : EXPORT_INTERVAL_MS,
+  };
+};
+
 /** One gauge observation: a value plus optional low-cardinality dimensions. */
 export interface GaugeObservation {
   value: number;

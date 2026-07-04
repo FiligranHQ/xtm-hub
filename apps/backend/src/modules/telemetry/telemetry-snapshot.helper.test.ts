@@ -4,8 +4,54 @@ import {
   getSnapshotObservations,
   normalizeTelemetryTags,
   probeTelemetryEndpoint,
+  resolveSnapshotTelemetrySettings,
   setSnapshotObservations,
 } from './telemetry-snapshot.helper';
+
+const HOUR_MS = 60 * 60 * 1000;
+const PROD_URL = 'https://telemetry.hub.filigran.io/v1/metrics';
+const STAGING_URL = 'https://telemetry.hub.staging.filigran.io/v1/metrics';
+
+describe('resolveSnapshotTelemetrySettings', () => {
+  it.each([
+    { environment: 'production', enabled: true, endpoint: PROD_URL },
+    { environment: 'staging', enabled: true, endpoint: STAGING_URL },
+    { environment: 'development', enabled: false, endpoint: STAGING_URL },
+    { environment: 'test', enabled: false, endpoint: STAGING_URL },
+    { environment: '', enabled: false, endpoint: STAGING_URL },
+  ])(
+    'is enabled=$enabled towards $endpoint in $environment',
+    ({ environment, enabled, endpoint }) => {
+      const settings = resolveSnapshotTelemetrySettings(environment, undefined);
+      expect(settings.enabled).toBe(enabled);
+      expect(settings.endpoint).toBe(endpoint);
+    }
+  );
+
+  it('always uses the fixed 1h refresh / 6h export cadence outside debug', () => {
+    for (const environment of ['production', 'staging', 'development']) {
+      const settings = resolveSnapshotTelemetrySettings(environment, undefined);
+      expect(settings.refreshIntervalMillis).toBe(HOUR_MS);
+      expect(settings.exportIntervalMillis).toBe(6 * HOUR_MS);
+    }
+  });
+
+  it('enables telemetry with the tight cadence only on explicit debug opt-in', () => {
+    const settings = resolveSnapshotTelemetrySettings('development', 'true');
+    expect(settings.enabled).toBe(true);
+    expect(settings.endpoint).toBe(STAGING_URL);
+    expect(settings.refreshIntervalMillis).toBe(60 * 1000);
+    expect(settings.exportIntervalMillis).toBe(2 * 60 * 1000);
+  });
+
+  it('ignores non-"true" debug flag values', () => {
+    for (const flag of ['1', 'TRUE', 'yes', '']) {
+      expect(
+        resolveSnapshotTelemetrySettings('development', flag).enabled
+      ).toBe(false);
+    }
+  });
+});
 
 describe('normalizeTelemetryTags', () => {
   it.each([

@@ -20,6 +20,7 @@ import {
   getSnapshotObservations,
   normalizeTelemetryTags,
   probeTelemetryEndpoint,
+  resolveSnapshotTelemetrySettings,
   setSnapshotObservations,
 } from './telemetry-snapshot.helper';
 
@@ -36,18 +37,12 @@ import {
  * Mirrors the OpenCTI model: DELTA temporality, hardcoded collector
  * endpoints, and a startup connectivity probe that self-disables gauge
  * telemetry when the collector is unreachable.
+ *
+ * Gauge telemetry only runs in production and staging, at a fixed
+ * 1h-refresh / 6h-export cadence (see resolveSnapshotTelemetrySettings for
+ * the incident that motivated this): feature environments, dev/prerelease,
+ * CI and laptops never export.
  */
-
-const PRODUCTION_ENDPOINT = 'https://telemetry.hub.filigran.io/v1/metrics';
-const STAGING_ENDPOINT = 'https://telemetry.hub.staging.filigran.io/v1/metrics';
-
-const HOUR_MS = 60 * 60 * 1000;
-// Snapshot refresh (DB counts) and export cadences. Tighter outside
-// production so the pipeline can be exercised without waiting hours.
-const PROD_REFRESH_INTERVAL_MS = HOUR_MS;
-const PROD_EXPORT_INTERVAL_MS = 6 * HOUR_MS;
-const DEV_REFRESH_INTERVAL_MS = 60 * 1000;
-const DEV_EXPORT_INTERVAL_MS = 2 * 60 * 1000;
 
 type Meter = ReturnType<MeterProvider['getMeter']>;
 
@@ -81,8 +76,17 @@ const registerGauges = (meter: Meter): void => {
 };
 
 const startSnapshotTelemetry = async (): Promise<void> => {
-  const isProduction = portalConfig.environment === 'production';
-  const endpoint = isProduction ? PRODUCTION_ENDPOINT : STAGING_ENDPOINT;
+  const { enabled, endpoint, refreshIntervalMillis, exportIntervalMillis } =
+    resolveSnapshotTelemetrySettings(
+      portalConfig.environment,
+      process.env.TELEMETRY_GAUGE_DEBUG
+    );
+  if (!enabled) {
+    logApp.info('Gauge telemetry is disabled in this environment', {
+      environment: portalConfig.environment,
+    });
+    return;
+  }
 
   const reachable = await probeTelemetryEndpoint(endpoint);
   if (!reachable) {
@@ -112,13 +116,6 @@ const startSnapshotTelemetry = async (): Promise<void> => {
     // landed as a `tags` column on every metric row by the warehouse.
     attributes['filigran.telemetry.tags'] = tags.join(',');
   }
-
-  const exportIntervalMillis = isProduction
-    ? PROD_EXPORT_INTERVAL_MS
-    : DEV_EXPORT_INTERVAL_MS;
-  const refreshIntervalMillis = isProduction
-    ? PROD_REFRESH_INTERVAL_MS
-    : DEV_REFRESH_INTERVAL_MS;
 
   meterProvider = new MeterProvider({
     resource: resourceFromAttributes(attributes),
