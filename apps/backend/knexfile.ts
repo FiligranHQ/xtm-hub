@@ -90,7 +90,8 @@ type BaseDatabaseType =
   | 'ProvisionedNewsFeedItem'
   | 'ManifestRebuildQueue'
   | 'Manifest'
-  | 'Manifest_Document';
+  | 'Manifest_Document'
+  | 'PlatformMetadata';
 
 export type DatabaseType =
   | BaseDatabaseType

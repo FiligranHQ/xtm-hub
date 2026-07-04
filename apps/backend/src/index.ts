@@ -27,6 +27,7 @@ import { documentDownloadEndpoint } from './modules/document/document-download-e
 import { DocumentDataLoader } from './modules/document/document.dataloader';
 import { documentVisualizeEndpoint } from './modules/document/visualize-document-endpoint';
 import { initAuthPlatform } from './modules/security-management/authentication/auth-platform';
+import { TelemetrySnapshotApp } from './modules/telemetry/telemetry-snapshot.app';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import {
   operationMetricsPlugin,
@@ -409,6 +410,10 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
 
   initCronJobs();
 
+  // Anonymous usage gauge telemetry (fire-and-forget: probes the collector
+  // and self-disables when unreachable, never blocks or breaks the boot).
+  void TelemetrySnapshotApp.start();
+
   // Centralized graceful shutdown — registers SIGTERM, SIGINT,
   // uncaughtException and unhandledRejection handlers.
   // The HTTP server hook is registered inside initShutdown.
@@ -416,6 +421,9 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   registerShutdownHook('pg-boss', async () => PgBossApp.stop());
   registerShutdownHook('session-cleanup', async () => stopSessionCleanup());
   registerShutdownHook('cron-jobs', async () => stopCronJobs());
+  registerShutdownHook('gauge-telemetry', async () =>
+    TelemetrySnapshotApp.stop()
+  );
   registerShutdownHook('apollo-server', async () => {
     await server.stop();
   });
