@@ -21,6 +21,7 @@ export enum TelemetryEventType {
   DOWNLOAD = 'download',
   CREATE = 'create',
   REGISTER = 'register',
+  UNREGISTER = 'unregister',
   ONE_CLICK_DEPLOY = 'one_click_deploy',
   UPDATE_ORGANIZATION = 'update_organization',
   CREATE_ORGANIZATION = 'create_organization',
@@ -84,6 +85,16 @@ export interface RegisterPlatformEvent extends BaseTelemetryEvent {
   tenant_id?: string;
 }
 
+export interface UnregisterPlatformEvent extends BaseTelemetryEvent {
+  event_type: TelemetryEventType.UNREGISTER;
+  target_product: TelemetryTargetProduct;
+  platform_id: string;
+  platform_contract: string;
+  platform_version: string | null | undefined;
+  platform_url: string;
+  tenant_id?: string;
+}
+
 export interface OneClickDeployEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.ONE_CLICK_DEPLOY;
   target_product: TelemetryTargetProduct;
@@ -136,6 +147,7 @@ export type TelemetryEvent =
   | DownloadEvent
   | CreateEvent
   | RegisterPlatformEvent
+  | UnregisterPlatformEvent
   | OneClickDeployEvent
   | UpdateOrganizationEvent
   | CreateOrganizationEvent

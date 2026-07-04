@@ -32,6 +32,7 @@ import {
   ShareEvent,
   SubscribeEvent,
   TelemetryEventType,
+  UnregisterPlatformEvent,
   UpdateDeploymentEvent,
   UpdateOrganizationEvent,
 } from './telemetry.types';
@@ -269,6 +270,34 @@ export const TelemetryHelper = {
       ...(existingUsersCount !== undefined && {
         existing_users_count: existingUsersCount,
       }),
+      ...(tenantId !== undefined && { tenant_id: tenantId }),
+    };
+  },
+
+  buildUnregisterEvent: (
+    organization: Organization,
+    user_id: UserId,
+    platform_identifier: PlatformIdentifier,
+    platform_id: string,
+    platform_contract: PlatformContract,
+    platform_version: string | null | undefined,
+    platform_url: string,
+    tenantId?: string,
+    timestamp?: Date
+  ): UnregisterPlatformEvent => {
+    const baseEvent = buildBaseEvent(organization, user_id, timestamp);
+
+    return {
+      event_type: TelemetryEventType.UNREGISTER,
+      ...baseEvent,
+      target_product: getOrThrow(
+        TelemetryTargetProductMappedByPlatformIdentifier,
+        platform_identifier
+      ),
+      platform_id,
+      platform_contract,
+      platform_version,
+      platform_url,
       ...(tenantId !== undefined && { tenant_id: tenantId }),
     };
   },

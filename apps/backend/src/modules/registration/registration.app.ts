@@ -345,6 +345,31 @@ export const RegistrationApp = {
         })
       )
     );
+
+    try {
+      const selectedOrga = await OrganizationDomain.loadOrganizationBy({
+        id: subscription.organization_id,
+      });
+      if (!selectedOrga) {
+        throw new Error(NotFoundErrorCode.OrganizationNotFound);
+      }
+
+      const unregisterEvent = TelemetryHelper.buildUnregisterEvent(
+        selectedOrga,
+        user.id,
+        identifier,
+        platformConfiguration.platform_id,
+        platformConfiguration.platform_contract,
+        platformConfiguration.platform_version,
+        platformConfiguration.platform_url,
+        platformConfiguration.tenant_id ?? undefined
+      );
+      await TelemetryApp.sendTelemetryEvent(unregisterEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event for unregistration', {
+        error,
+      });
+    }
   },
 
   isPlatformRegistered: async (

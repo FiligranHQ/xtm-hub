@@ -94,6 +94,7 @@
   },
   "telemetry_use_queue_processing": true,
   "telemetry_queued_event_types": [],
+  "telemetry_tags": "",
   "hubspot_use_queue_processing": true,
   "mail_use_queue_processing": true,
   "hubspot_webhook_url": "changeMe",
