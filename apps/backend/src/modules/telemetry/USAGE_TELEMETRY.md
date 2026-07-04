@@ -7,8 +7,10 @@ The hub has two complementary telemetry pipelines:
 
 ## Transport
 
-- OTLP/HTTP to `https://telemetry.hub.filigran.io/v1/metrics` (production) or `https://telemetry.hub.staging.filigran.io/v1/metrics` (non-production environments).
-- Database counts are refreshed hourly; export happens every 6 hours (tighter cadence outside production).
+- Gauge telemetry only runs when the configured environment is `production` or `staging`. Feature environments, dev, prerelease, CI and developer machines never export (the hub deploys long-lived environments with `NODE_ENV=development`, so a dev-mode export path would flood the staging collector - one upload per 2 minutes per environment - and mint a throwaway instance identity for every CI run).
+- OTLP/HTTP to `https://telemetry.hub.filigran.io/v1/metrics` (production) or `https://telemetry.hub.staging.filigran.io/v1/metrics` (staging).
+- Fixed cadence for every environment: database counts are refreshed hourly, export happens every 6 hours.
+- `TELEMETRY_GAUGE_DEBUG=true` is the explicit opt-in for end-to-end pipeline testing: it enables gauge telemetry in any environment with a tight cadence (1 min refresh / 2 min export) towards the staging collector (production endpoint only in the production environment).
 - At startup the collector is probed once (POST `{}`, expect 200); when unreachable, gauge telemetry silently self-disables for the lifetime of the process.
 - Implemented in `telemetry-snapshot.app.ts` / `telemetry-snapshot.domain.ts` / `telemetry-snapshot.helper.ts`; started from `index.ts`, stopped via a shutdown hook.
 
@@ -42,6 +44,7 @@ All gauges are aggregate counts. Dimensions (OTLP attributes) are low-cardinalit
 
 ## Configuration
 
-| Env var          | Default | Description                                                                                                                               |
-| :--------------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| `TELEMETRY_TAGS` | (empty) | Comma-separated deployment tags (e.g. `saas,eu-west`) attached to every gauge export as the `filigran.telemetry.tags` resource attribute. |
+| Env var                 | Default | Description                                                                                                                               |
+| :---------------------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| `TELEMETRY_TAGS`        | (empty) | Comma-separated deployment tags (e.g. `saas,eu-west`) attached to every gauge export as the `filigran.telemetry.tags` resource attribute. |
+| `TELEMETRY_GAUGE_DEBUG` | (unset) | Set to `true` to force-enable gauge telemetry with the tight debug cadence (1 min refresh / 2 min export) for pipeline testing.           |
