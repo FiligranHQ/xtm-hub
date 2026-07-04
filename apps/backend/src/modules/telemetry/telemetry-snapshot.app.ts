@@ -100,8 +100,12 @@ const startSnapshotTelemetry = async (): Promise<void> => {
     [ATTR_SERVICE_VERSION]:
       process.env.APP_VERSION ?? process.env.npm_package_version ?? '0.0.0-dev',
     [ATTR_SERVICE_INSTANCE_ID]: instanceId,
-    'service.instance.creation': instanceCreation,
   };
+  if (instanceCreation) {
+    // Omitted when the PlatformMetadata row is missing: an empty-string
+    // resource attribute would be ambiguous for downstream consumers.
+    attributes['service.instance.creation'] = instanceCreation;
+  }
   const tags = normalizeTelemetryTags(config.get<string>('telemetry_tags'));
   if (tags.length > 0) {
     // Shared Filigran contract: ONE comma-separated resource attribute,

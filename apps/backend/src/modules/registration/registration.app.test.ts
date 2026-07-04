@@ -932,6 +932,113 @@ describe('registration app', () => {
       expect(subscription?.end_date).toBeDefined();
     });
 
+    describe('telemetry', () => {
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it('should send an unregister telemetry event when the platform is unregistered', async () => {
+        await RegistrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform,
+          identifier: PlatformIdentifier.Opencti,
+        });
+
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+        const telemetrySpy = vi
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
+
+        await RegistrationApp.unregisterPlatform({
+          platformId,
+          identifier: PlatformIdentifier.Opencti,
+        });
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UNREGISTER,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TelemetrySource.XTMHUB,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          platform_contract: PlatformContract.Ee,
+          platform_version: '1.0.0',
+          platform_id: platformId,
+          platform_url: platform.url,
+          target_product: TelemetryTargetProduct.OPEN_CTI,
+        });
+      });
+
+      it('should include tenant_id in the unregister event when the platform is tenanted', async () => {
+        const tenantId = uuidv4();
+        await RegistrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: { ...platform, tenantId, tenantName: 'My OpenAEV tenant' },
+          identifier: PlatformIdentifier.Openaev,
+        });
+
+        vi.useFakeTimers();
+        const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
+        vi.setSystemTime(date);
+        const telemetrySpy = vi
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
+          .mockResolvedValue();
+
+        await RegistrationApp.unregisterPlatform({
+          platformId,
+          identifier: PlatformIdentifier.Openaev,
+          tenantId,
+        });
+
+        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UNREGISTER,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TelemetrySource.XTMHUB,
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+          platform_contract: PlatformContract.Ee,
+          platform_version: '1.0.0',
+          platform_id: platformId,
+          platform_url: platform.url,
+          target_product: TelemetryTargetProduct.OPEN_AEV,
+          tenant_id: tenantId,
+        });
+      });
+
+      it('should not fail the unregistration when telemetry emission fails', async () => {
+        await RegistrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform,
+          identifier: PlatformIdentifier.Opencti,
+        });
+
+        const telemetrySpy = vi
+          .spyOn(TelemetryApp, 'sendTelemetryEvent')
+          .mockRejectedValue(new Error('telemetry unavailable'));
+
+        await expect(
+          RegistrationApp.unregisterPlatform({
+            platformId,
+            identifier: PlatformIdentifier.Opencti,
+          })
+        ).resolves.toBeUndefined();
+
+        expect(telemetrySpy).toHaveBeenCalledOnce();
+        const configuration =
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
+            platformId
+          );
+        expect(configuration?.status).toBe(
+          PlatformConfigurationStatus.Inactive
+        );
+      });
+    });
+
     describe('with tenantId', () => {
       let tenantId: string;
 

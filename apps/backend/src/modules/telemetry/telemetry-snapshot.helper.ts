@@ -60,6 +60,10 @@ const PROBE_TIMEOUT_MS = 10_000;
  * (egress blocked, collector down), gauge telemetry self-disables for the
  * lifetime of the process instead of retrying and logging export errors
  * every cycle.
+ *
+ * The JSON body is intentional: `@opentelemetry/exporter-metrics-otlp-http`
+ * speaks OTLP/HTTP JSON (protobuf is the separate `-proto` exporter), so the
+ * probe payload matches exactly what the exporter will send.
  */
 export const probeTelemetryEndpoint = async (
   url: string,

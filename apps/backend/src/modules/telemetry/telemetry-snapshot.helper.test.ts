@@ -80,9 +80,16 @@ describe('probeTelemetryEndpoint', () => {
         fetchFn as unknown as typeof fetch
       )
     ).resolves.toBe(true);
+    // The probe intentionally speaks OTLP/HTTP JSON - the exact protocol of
+    // @opentelemetry/exporter-metrics-otlp-http (protobuf is the separate
+    // -proto exporter package).
     expect(fetchFn).toHaveBeenCalledWith(
       'https://telemetry.example/v1/metrics',
-      expect.objectContaining({ method: 'POST', body: '{}' })
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
+      })
     );
   });
 
