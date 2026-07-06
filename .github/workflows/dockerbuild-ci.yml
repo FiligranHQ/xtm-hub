@@ -378,6 +378,19 @@ jobs:
       - name: Install AWX cli
         run: pip install awxkit
 
+      - name: Prepare deployment metadata
+        if: contains(github.ref, 'refs/tags/')
+        id: deployment_metadata
+        run: |
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          TAG_NAME="${GITHUB_REF_NAME}"
+          VERSION=$(echo "${GITHUB_REF_NAME}" | sed 's/^v//')
+          DEPLOYMENT_KEY="${{ github.repository }}:production:${TAG_NAME}"
+          echo "started_at=$NOW" >> "$GITHUB_OUTPUT"
+          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "deployment_key=$DEPLOYMENT_KEY" >> "$GITHUB_OUTPUT"
+
       - name: Deploy
         run: |
           max_attempts=5
@@ -509,7 +522,38 @@ jobs:
       - name: Install AWX cli
         run: pip install awxkit
 
+      - name: Store deployment started event
+        if: contains(github.ref, 'refs/tags/')
+        env:
+          N8N_DELIVERY_FILE_WRITER_URL: ${{ secrets.N8N_DELIVERY_FILE_WRITER_URL }}
+          N8N_DELIVERY_WEBHOOK_TOKEN: ${{ secrets.N8N_DELIVERY_WEBHOOK_TOKEN }}
+        run: |
+          curl -sS -X POST "$N8N_DELIVERY_FILE_WRITER_URL" \
+            -H "Content-Type: application/json" \
+            -H "x-delivery-token: $N8N_DELIVERY_WEBHOOK_TOKEN" \
+            -d @- <<EOF || true
+          {
+            "category": "deployments",
+            "event_type": "deployment_started",
+            "occurred_at": "${{ steps.deployment_metadata.outputs.started_at }}",
+            "payload": {
+              "deployment_key": "${{ steps.deployment_metadata.outputs.deployment_key }}",
+              "repository": "${{ github.repository }}",
+              "environment": "production",
+              "version": "${{ steps.deployment_metadata.outputs.tag_name }}",
+              "sha": "${{ github.sha }}",
+              "status": "in_progress",
+              "started_at": "${{ steps.deployment_metadata.outputs.started_at }}",
+              "workflow": "${{ github.workflow }}",
+              "github_run_id": "${{ github.run_id }}",
+              "github_run_attempt": "${{ github.run_attempt }}",
+              "actor": "${{ github.actor }}"
+            }
+          }
+          EOF
+
       - name: Deploy on Production
+        id: awx_production_deploy
         if: contains(github.ref, 'refs/tags/')
         run: |
           export VERSION=$(echo "${GITHUB_REF_NAME}" | sed 's/^v//')
