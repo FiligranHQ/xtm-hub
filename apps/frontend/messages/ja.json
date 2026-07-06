@@ -336,16 +336,7 @@
     },
     "TryOtherPlatform": {
       "Title": "XTMプラットフォームを拡張・スケールアップ",
-      "OpenAEV": {
-        "Description1": "XTMプラットフォームの全機能を体験してください。",
-        "Description2": "OpenAEVの無料トライアルを開始し、実際の脅威インテリジェンスを検証してください。",
-        "Cta": "OpenAEVをお試しください"
-      },
-      "OpenCTI": {
-        "Description1": "XTMプラットフォームの機能をフルに体験してください。",
-        "Description2": "OpenCTIの無料トライアルを開始し、実際の脅威インテリジェンスを活用したシミュレーションを実現してください。",
-        "Cta": "OpenCTIをお試しください"
-      }
+      "Cta": "{productName}を試してみてください"
     }
   },
   "PublicHomePage": {
@@ -353,6 +344,7 @@
     "XtmPlatform": {
       "Label": "XTM Hubへようこそ",
       "LabelWithName": "ようこそ {name}",
+      "ConnectedProducts": "{count, plural, one {コネクテッド製品} other {コネクテッド製品}}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
       "Description": "OpenCTIまたはOpenAEVプラットフォームを登録すると、ワンクリックで事前構築済みのコンテンツを展開したり、製品ニュースフィードで最新情報を入手したり、無料トライアルを開始したり、XTM Platformをさらに活用したりすることができます。",
       "Cta": "製品を連携する",

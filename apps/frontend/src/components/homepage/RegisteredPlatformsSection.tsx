@@ -1,4 +1,3 @@
-import DeployFirstResourceBlock from '@/components/homepage/DeployFirstResourceBlock';
 import {
   mapRegisteredPlatformsToHomepageCards,
   resolveHomepageCrossSellProduct,
@@ -31,7 +30,8 @@ export const RegisteredPlatformsSection = async ({
     registeredIdentifiers
   );
 
-  if (!homepageRegisteredPlatformCards.length) {
+  const registeredProductsCount = homepageRegisteredPlatformCards.length;
+  if (!registeredProductsCount) {
     return null;
   }
 
@@ -45,6 +45,11 @@ export const RegisteredPlatformsSection = async ({
               })
             : t('PublicHomePage.XtmPlatform.Label', {})}
         </span>
+        <span className="mt-l txt-small">
+          {t('PublicHomePage.XtmPlatform.ConnectedProducts', {
+            count: registeredProductsCount,
+          })}
+        </span>
 
         {homepageRegisteredPlatformCards.map((platformCard) => (
           <RegisteredPlatformCard
@@ -52,8 +57,6 @@ export const RegisteredPlatformsSection = async ({
             platform={platformCard}
           />
         ))}
-
-        <DeployFirstResourceBlock />
 
         {crossSellProduct && (
           <TryOtherPlatformProductBlock product={crossSellProduct} />

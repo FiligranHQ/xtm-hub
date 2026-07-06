@@ -30,13 +30,8 @@ const TryOtherPlatformProductBlock = ({
 
   return (
     <Card className="bg-elevation-background-layer-3 pt-l border-none rounded-xl">
-      <CardContent className="p-l flex flex-col gap-s md:justify-between">
+      <CardContent className="p-l flex flex-col gap-xl md:justify-between">
         <h2 className="font-semibold">{t('Title')}</h2>
-        <p className="text-sm">
-          {t(`${productKey}.Description1`)}
-          <br />
-          {t(`${productKey}.Description2`)}
-        </p>
         <Button
           asChild
           variant="outline"
@@ -45,7 +40,7 @@ const TryOtherPlatformProductBlock = ({
             href={href}
             className="inline-flex items-center gap-xs text-primary">
             <ProductIcon className="size-4" />
-            {t(`${productKey}.Cta`)}
+            {t(`Cta`, { productName: productKey })}
           </Link>
         </Button>
       </CardContent>

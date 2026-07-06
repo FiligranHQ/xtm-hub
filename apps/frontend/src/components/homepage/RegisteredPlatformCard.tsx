@@ -35,6 +35,15 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
       })
     : '-';
 
+  const remainingTrialDaysBadgeClassName =
+    platform.remainingTrialDays !== undefined &&
+    platform.remainingTrialDays <= 8
+      ? 'bg-feedback-error-secondary-transparency'
+      : platform.remainingTrialDays !== undefined &&
+          platform.remainingTrialDays <= 22
+        ? 'bg-feedback-alert-secondary-transparency'
+        : 'bg-feedback-success-secondary-transparency';
+
   return (
     <Card className="border pt-l my-l bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
       <CardContent className="p-l flex flex-col gap-m">
@@ -65,9 +74,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: NAVIGATION_GRADIENT_STYLE }}>
-              {t(
-                CONTRACT_LABEL_BY_CONTRACT[platform.contract] ?? 'Contracts.CE'
-              )}
+              {t('Contracts.EE')}
             </span>
           ) : (
             <Badge className="bg-elevation-surface-highlight-layer-1 border-none">
@@ -80,7 +87,8 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             platform.remainingTrialDays !== undefined && (
               <div className="flex gap-s items-center">
                 <p>{t('Remaining')}</p>
-                <Badge className="border-none bg-feedback-success-secondary-transparency">
+                <Badge
+                  className={`border-none ${remainingTrialDaysBadgeClassName}`}>
                   {t('DaysRemaining', { days: platform.remainingTrialDays })}
                 </Badge>
               </div>

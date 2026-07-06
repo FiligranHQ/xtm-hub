@@ -314,7 +314,7 @@
       "Title": "Ressources les plus utilisées"
     },
     "RegisteredPlatformsCard": {
-      "RegisteredOn": "sur",
+      "RegisteredOn": "le",
       "Contract": "Contrat",
       "Contracts": {
         "CE": "Édition Communauté",
@@ -322,7 +322,7 @@
         "TRIAL": "Essai gratuit"
       },
       "Remaining": "restant",
-      "DaysRemaining": "{jours, pluriel, =1 {# day} autres {# days}}"
+      "DaysRemaining": "{days, plural, =1 {# jour} other {# jours}}"
     },
     "DeployFirstResource": {
       "Title": "Déployez votre premier {type}",
@@ -336,16 +336,7 @@
     },
     "TryOtherPlatform": {
       "Title": "Étendez et adaptez votre plateforme XTM",
-      "OpenAEV": {
-        "Description1": "Profitez pleinement de la plateforme XTM.",
-        "Description2": "Commencez un essai gratuit d’OpenAEV et validez vos renseignements sur les menaces en situation réelle.",
-        "Cta": "Essayez OpenAEV"
-      },
-      "OpenCTI": {
-        "Description1": "Profitez pleinement de la plateforme XTM.",
-        "Description2": "Commencez un essai gratuit d’OpenCTI et optimisez vos simulations grâce à de véritables renseignements sur les menaces.",
-        "Cta": "Essayez OpenCTI"
-      }
+      "Cta": "Essayez {productName}"
     }
   },
   "PublicHomePage": {
@@ -353,6 +344,7 @@
     "XtmPlatform": {
       "Label": "Bienvenue sur XTM Hub",
       "LabelWithName": "Bienvenue {name}",
+      "ConnectedProducts": "{count, plural, one {Produit connecté} other {Produits connectés}}",
       "Title": "Développez et faites évoluer votre plateforme XTM",
       "Description": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
       "Cta": "Connectez votre produit",
