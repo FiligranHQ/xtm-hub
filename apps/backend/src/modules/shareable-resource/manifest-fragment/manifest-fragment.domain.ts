@@ -32,6 +32,7 @@ import {
   getLatestTagForConnectorVersion,
   isStrictlyGreaterConnectorVersion,
   validateConnectorMinimumVersion,
+  validateShortDescriptionLength,
 } from './manifest-fragment.utils';
 
 type ConnectorWithMetadata = Document & {
@@ -153,7 +154,7 @@ const removeLatestTagFromExistingBatchConnectors = async ({
 export const ManifestFragmentDomain = {
   ingestManifestFragments: async ({
     manifestFragments,
-  }: MutationIngestManifestFragmentsArgs): Promise<{ success: boolean }> => {
+  }: MutationIngestManifestFragmentsArgs): Promise<void> => {
     const user = requestContext.requireUser();
     await securityGuard.assertUserPortalCapabilities(user, [
       PortalCapability.ManageManifestIngestions,
@@ -164,6 +165,7 @@ export const ManifestFragmentDomain = {
       }
 
       validateConnectorMinimumVersion(fragment.min_version);
+      validateShortDescriptionLength(fragment.short_description);
       const formattedVersion = formatConnectorVersion(fragment.version);
       const latestTag = getLatestTagForConnectorVersion(formattedVersion);
 
@@ -221,7 +223,5 @@ export const ManifestFragmentDomain = {
         metadataFromExisting,
       });
     }
-
-    return { success: true };
   },
 };

@@ -38,6 +38,13 @@ import {
 
 type UseCaseValue = UseCaseId | string;
 
+// Excludes documents tagged with TAG_DECOUPLING (case-insensitive), regardless of casing.
+const excludeDecouplingTag = (query: Knex.QueryBuilder) =>
+  query.whereRaw(
+    `NOT (? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[])))`,
+    [TAG_DECOUPLING]
+  );
+
 export type DocumentData<
   T extends DocumentModel,
   TUseCase extends UseCaseValue = UseCaseId,
@@ -207,14 +214,7 @@ export const DocumentDomain = {
       .select(['Document.*'])
       .tap(restrictDocumentToUserOrganization)
       .where(field)
-      .whereRaw(
-        `NOT EXISTS (
-          SELECT 1
-          FROM unnest(COALESCE("Document"."tags", ARRAY[]::text[])) AS tag
-          WHERE LOWER(tag) = ?
-        )`,
-        [TAG_DECOUPLING]
-      );
+      .modify(excludeDecouplingTag);
 
     if (
       field['Document.service_instance_id'] &&
@@ -295,14 +295,7 @@ export const DocumentDomain = {
       .where('Document.slug', '=', slug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
-      .whereRaw(
-        `NOT EXISTS (
-          SELECT 1
-          FROM unnest(COALESCE("Document"."tags", ARRAY[]::text[])) AS tag
-          WHERE LOWER(tag) = ?
-        )`,
-        [TAG_DECOUPLING]
-      )
+      .modify(excludeDecouplingTag)
       .whereNotExists(function () {
         this.select('*')
           .from('Document_Children')
@@ -362,14 +355,7 @@ export const DocumentDomain = {
       .where('ServiceInstance.slug', '=', serviceSlug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
-      .whereRaw(
-        `NOT EXISTS (
-          SELECT 1
-          FROM unnest(COALESCE("Document"."tags", ARRAY[]::text[])) AS tag
-          WHERE LOWER(tag) = ?
-        )`,
-        [TAG_DECOUPLING]
-      )
+      .modify(excludeDecouplingTag)
       .modify((qb) => {
         if (orderResults) {
           qb.orderBy([
@@ -452,9 +438,7 @@ export const DocumentDomain = {
     const existingDocument = slug
       ? await db<DocumentModel>('Document')
           .where('slug', '=', slug)
-          .whereRaw(
-            `NOT ('${TAG_DECOUPLING}' = ANY(COALESCE(tags, ARRAY[]::text[])))`
-          )
+          .modify(excludeDecouplingTag)
           .orderBy('created_at', 'desc')
           .first()
       : undefined;

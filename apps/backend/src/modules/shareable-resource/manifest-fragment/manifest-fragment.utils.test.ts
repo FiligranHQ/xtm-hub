@@ -8,6 +8,7 @@ import {
   getLatestTagForConnectorVersion,
   isStrictlyGreaterConnectorVersion,
   validateConnectorMinimumVersion,
+  validateShortDescriptionLength,
 } from './manifest-fragment.utils';
 
 describe('formatConnectorVersion', () => {
@@ -37,6 +38,9 @@ describe('formatConnectorVersion', () => {
     expect(() => formatConnectorVersion('LTS.1.2.3')).toThrow(
       BadRequestErrorCode.InvalidConnectorVersionFormat
     );
+    expect(() => formatConnectorVersion('7.20260703.0')).toThrow(
+      BadRequestErrorCode.InvalidConnectorVersionFormat
+    );
   });
 });
 
@@ -53,11 +57,41 @@ describe('validateConnectorMinimumVersion', () => {
     input
     ${'>= 7.260309.0'}
     ${'not-a-version'}
+    ${'7.20260703.0'}
   `('throws for invalid value "$input"', ({ input }) => {
     expect(() => validateConnectorMinimumVersion(input)).toThrow(
       BadRequestErrorCode.InvalidConnectorVersionFormat
     );
   });
+});
+
+describe('validateShortDescriptionLength', () => {
+  it.each`
+    length | description
+    ${0}   | ${'empty string'}
+    ${1}   | ${'single character'}
+    ${250} | ${'exactly the max length'}
+  `(
+    'accepts a short_description of length $length ($description)',
+    ({ length }) => {
+      expect(() =>
+        validateShortDescriptionLength('a'.repeat(length))
+      ).not.toThrow();
+    }
+  );
+
+  it.each`
+    length | description
+    ${251} | ${'one character over the max length'}
+    ${300} | ${'well over the max length'}
+  `(
+    'throws for a short_description of length $length ($description)',
+    ({ length }) => {
+      expect(() => validateShortDescriptionLength('a'.repeat(length))).toThrow(
+        BadRequestErrorCode.ShortDescriptionTooLong
+      );
+    }
+  );
 });
 
 describe('getLatestTagForConnectorVersion', () => {

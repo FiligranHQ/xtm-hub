@@ -119,17 +119,15 @@ describe('manifestFragmentDomain', () => {
   };
 
   describe('ingestManifestFragments', () => {
-    it('accepts a fragment when integration_type is connector and returns success', async () => {
+    it('accepts a fragment when integration_type is connector', async () => {
       // Given
       const slug = 'misp-integration';
       const args = buildManifestFragments(ManifestType.Connector, { slug });
 
       // When
-      const result = await ManifestFragmentDomain.ingestManifestFragments(args);
+      await ManifestFragmentDomain.ingestManifestFragments(args);
 
       // Then
-      expect(result).toMatchObject({ success: true });
-
       const createdDocument = await TestHelper.document.load({ slug });
       _createdDocumentIds.push(createdDocument!.id);
 
@@ -227,6 +225,24 @@ describe('manifestFragmentDomain', () => {
       // Then
       await expect(call).rejects.toThrow(
         BadRequestErrorCode.InvalidConnectorVersionFormat
+      );
+
+      const createdDocument = await TestHelper.document.load({ slug });
+      expect(createdDocument).toBeUndefined();
+    });
+
+    it('throws when short_description is longer than 250 characters', async () => {
+      // Given
+      const slug = 'misp-invalid-short-description';
+      const args = buildManifestFragments(ManifestType.Connector, { slug });
+      args.manifestFragments[0]!.short_description = 'a'.repeat(251);
+
+      // When
+      const call = ManifestFragmentDomain.ingestManifestFragments(args);
+
+      // Then
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.ShortDescriptionTooLong
       );
 
       const createdDocument = await TestHelper.document.load({ slug });

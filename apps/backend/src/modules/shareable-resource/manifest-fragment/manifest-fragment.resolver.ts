@@ -3,8 +3,10 @@ import { ManifestFragmentDomain } from './manifest-fragment.domain';
 
 const resolvers: Resolvers = {
   Mutation: {
-    ingestManifestFragments: (_, args) =>
-      ManifestFragmentDomain.ingestManifestFragments(args),
+    ingestManifestFragments: async (_, args) => {
+      await ManifestFragmentDomain.ingestManifestFragments(args);
+      return { success: true };
+    },
   },
 };
 
