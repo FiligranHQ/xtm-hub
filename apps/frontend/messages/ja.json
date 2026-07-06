@@ -340,6 +340,8 @@
   "PublicLayout": {
     "Documentation": "XTM Hubのドキュメント",
     "SignIn": "サインイン",
+    "Login": "ログイン",
+    "SignUp": "サインアップ",
     "AllRightsReserved": "無断複写・転載を禁じます",
     "FiligranWebsite": "Filigranウェブサイト",
     "PrivacyPolicy": "プライバシーポリシー",
@@ -381,15 +383,24 @@
     "ja": "日本語"
   },
   "LoginPage": {
-    "CreateYourAccount": "アカウント作成",
+    "DontHaveAccount": "Filigranアカウントをお持ちでないですか？",
     "Email": "Eメール",
     "Login": "ログイン",
     "Logout": "ログアウト",
-    "OnFiligranWebsite": "フィリグラン ウェブサイト",
     "Password": "パスワード",
     "SignIn": "サインイン",
-    "Title": "XTM Hub ログインページ",
-    "ToLoginPlease": "ログインするには"
+    "SignUp": "サインアップ",
+    "Title": "XTM Hub ログインページ"
+  },
+  "SignUpPage": {
+    "Title1": "あなたのゲートウェイ",
+    "Title2": "Filigran XTM ワールドへ",
+    "Subtitle": "XTM Hub、Filigran Academy、ライブデモ。",
+    "AlreadyHaveAccount": "すでにアカウントをお持ちですか？",
+    "LogIn": "ログイン",
+    "MadeBy": "制作",
+    "WelcomeTitle": "XTM Hubへようこそ",
+    "WelcomeSubtitle": "XTMプラットフォームを拡張・スケール"
   },
   "MenuActions": {
     "Continue": "続けてください",

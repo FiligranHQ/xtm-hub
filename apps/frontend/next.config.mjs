@@ -106,6 +106,7 @@ const nextConfig = {
       'https://js-eu1.hubspot.com',
       'https://js-eu1.hs-analytics.net',
       'https://js-eu1.hs-banner.com',
+      'https://js-eu1.hsforms.net',
     ];
     const apolloCdnHosts = [
       'https://embeddable-sandbox.cdn.apollographql.com',
@@ -165,10 +166,10 @@ const nextConfig = {
       `img-src ${imgSrc}`,
       `font-src 'self' data:${!isProductionOrStaging ? ' https://fonts.gstatic.com' : ''}`,
       `connect-src 'self' https:${!isProductionOrStaging ? ' http:' : ''}`,
-      `frame-src 'self' https://www.youtube.com${!isProductionOrStaging ? ' https://sandbox.embed.apollographql.com' : ''}`,
+      `frame-src 'self' https://www.youtube.com https://forms-eu1.hsforms.com${!isProductionOrStaging ? ' https://sandbox.embed.apollographql.com' : ''}`,
       "frame-ancestors 'none'",
       "base-uri 'self'",
-      "form-action 'self'",
+      "form-action 'self' https://forms-eu1.hsforms.com",
       "object-src 'none'",
       `manifest-src ${manifestSrc}`,
       ...(!isProductionOrStaging ? ['upgrade-insecure-requests'] : []),
@@ -254,6 +255,14 @@ const nextConfig = {
     fileLoaderRule.exclude = /\.svg$/i;
 
     return config;
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/hs/:path*',
+        destination: 'https://js-eu1.hs-analytics.net/:path*',
+      },
+    ];
   },
 };
 
