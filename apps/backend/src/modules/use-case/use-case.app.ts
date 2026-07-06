@@ -1,4 +1,8 @@
 import { EditUseCaseInput } from '../../__generated__/resolvers-types';
+import {
+  ObjectUseCaseInitializer,
+  ObjectUseCaseObjectId,
+} from '../../model/kanel/public/ObjectUseCase';
 import UseCase, {
   UseCaseId,
   UseCaseInitializer,
@@ -20,6 +24,28 @@ export const useCaseApp = {
     }
 
     return useCaseDomain.insertUseCase({ name, color });
+  },
+
+  linkUseCasesByNameToObject: async (
+    objectId: ObjectUseCaseObjectId,
+    useCaseNames: string[]
+  ): Promise<void> => {
+    if (!useCaseNames.length) {
+      return;
+    }
+
+    const insertObjectUseCase: ObjectUseCaseInitializer[] = [];
+    for (const name of useCaseNames) {
+      const useCase = await useCaseApp.loadOrCreateUseCase({
+        name,
+        color: '#0099cc',
+      });
+      insertObjectUseCase.push({
+        object_id: objectId,
+        use_case_id: useCase.id,
+      });
+    }
+    await objectUseCaseDomain.insertObjectUseCase(insertObjectUseCase);
   },
 
   deleteUseCaseBy: async (field: UseCaseMutator): Promise<UseCase> => {

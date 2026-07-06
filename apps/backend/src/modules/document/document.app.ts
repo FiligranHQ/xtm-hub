@@ -14,10 +14,7 @@ import Document, {
   DocumentId,
   default as DocumentModel,
 } from '../../model/kanel/public/Document';
-import {
-  ObjectUseCaseInitializer,
-  ObjectUseCaseObjectId,
-} from '../../model/kanel/public/ObjectUseCase';
+import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
@@ -429,6 +426,13 @@ export const DocumentApp = {
         });
       }
 
+      if (documentData.use_cases?.length) {
+        await useCaseApp.linkUseCasesByNameToObject(
+          toObjectUseCaseObjectId(document.id),
+          documentData.use_cases
+        );
+      }
+
       if (metadataKeys.length) {
         const metadatas = await DocumentMetadataDomain.insertMetadata(
           document.id,
@@ -697,18 +701,10 @@ const upsertDocument = async <T extends DocumentModel>(
           object_id: toObjectUseCaseObjectId(document.id),
         });
       }
-      const insertObjectUseCase: ObjectUseCaseInitializer[] = [];
-      for (const name of documentData.use_cases) {
-        const useCase = await useCaseApp.loadOrCreateUseCase({
-          name,
-          color: '#0099cc',
-        });
-        insertObjectUseCase.push({
-          object_id: toObjectUseCaseObjectId(document.id),
-          use_case_id: useCase.id,
-        });
-      }
-      await objectUseCaseDomain.insertObjectUseCase(insertObjectUseCase);
+      await useCaseApp.linkUseCasesByNameToObject(
+        toObjectUseCaseObjectId(document.id),
+        documentData.use_cases
+      );
     }
 
     if (metadataKeys.length > 0) {

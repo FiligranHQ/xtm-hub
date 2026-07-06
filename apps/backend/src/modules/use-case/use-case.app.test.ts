@@ -123,6 +123,118 @@ describe('use Case app', () => {
     });
   });
 
+  describe('linkUseCasesByNameToObject', () => {
+    beforeEach(async () => {
+      // Object_UseCase rows must be cleared first: UseCase deletion is
+      // blocked by the foreign key while links still reference it.
+      await TestHelper.objectUseCase.delete({});
+      await TestHelper.useCase.delete({});
+    });
+
+    it('should not create any link when useCaseNames is empty', async () => {
+      const objectId = uuidv4() as ObjectUseCaseObjectId;
+
+      await useCaseApp.linkUseCasesByNameToObject(objectId, []);
+
+      const links = await TestHelper.objectUseCase.load({
+        object_id: objectId,
+      });
+      expect(links).toHaveLength(0);
+    });
+
+    it('should create new use cases and link them to the given object', async () => {
+      const objectId = uuidv4() as ObjectUseCaseObjectId;
+
+      await useCaseApp.linkUseCasesByNameToObject(objectId, ['New UseCase']);
+
+      const useCase = await useCaseDomain.loadUseCaseBy({
+        name: 'New UseCase',
+      });
+      expect(useCase).toBeDefined();
+
+      const links = await TestHelper.objectUseCase.load({
+        object_id: objectId,
+      });
+      expect(links).toHaveLength(1);
+      expect(links?.[0]).toMatchObject({
+        object_id: objectId,
+        use_case_id: useCase?.id,
+      });
+    });
+
+    it('should reuse an existing use case (case-insensitive) instead of duplicating it', async () => {
+      const existingUseCase = await useCaseApp.loadOrCreateUseCase({
+        name: 'Existing UseCase',
+        color: '#aaaaaa',
+      });
+      const objectId = uuidv4() as ObjectUseCaseObjectId;
+
+      await useCaseApp.linkUseCasesByNameToObject(objectId, [
+        'existing usecase',
+      ]);
+
+      const useCases = await TestHelper.useCase.loadAll({
+        name: 'existing usecase',
+      });
+      expect(useCases).toHaveLength(0); // stored name keeps its original casing
+      const allUseCases = await TestHelper.useCase.loadAll({});
+      expect(allUseCases).toHaveLength(1);
+
+      const links = await TestHelper.objectUseCase.load({
+        object_id: objectId,
+      });
+      expect(links).toHaveLength(1);
+      expect(links?.[0]).toMatchObject({
+        object_id: objectId,
+        use_case_id: existingUseCase.id,
+      });
+    });
+
+    it('should link multiple use-case names to the same object without duplicates', async () => {
+      const objectId = uuidv4() as ObjectUseCaseObjectId;
+
+      await useCaseApp.linkUseCasesByNameToObject(objectId, [
+        'UseCase A',
+        'UseCase B',
+      ]);
+
+      const links = await TestHelper.objectUseCase.load({
+        object_id: objectId,
+      });
+      expect(links).toHaveLength(2);
+
+      const useCaseIds = links?.map((link) => link.use_case_id);
+      expect(new Set(useCaseIds).size).toBe(2);
+    });
+
+    it('should allow the same use-case name to be linked to two different objects', async () => {
+      const firstObjectId = uuidv4() as ObjectUseCaseObjectId;
+      const secondObjectId = uuidv4() as ObjectUseCaseObjectId;
+
+      await useCaseApp.linkUseCasesByNameToObject(firstObjectId, [
+        'Shared UseCase',
+      ]);
+      await useCaseApp.linkUseCasesByNameToObject(secondObjectId, [
+        'Shared UseCase',
+      ]);
+
+      const useCases = await TestHelper.useCase.loadAll({
+        name: 'Shared UseCase',
+      });
+      expect(useCases).toHaveLength(1);
+
+      const firstLinks = await TestHelper.objectUseCase.load({
+        object_id: firstObjectId,
+      });
+      const secondLinks = await TestHelper.objectUseCase.load({
+        object_id: secondObjectId,
+      });
+      expect(firstLinks).toHaveLength(1);
+      expect(secondLinks).toHaveLength(1);
+      expect(firstLinks?.[0]?.use_case_id).toBe(secondLinks?.[0]?.use_case_id);
+    });
+  });
+
   describe('deleteUseCaseBy', () => {
     it('should remove object use case associated to use case', async () => {
       const useCase1 = await useCaseApp.loadOrCreateUseCase({
@@ -157,6 +269,7 @@ describe('use Case app', () => {
 
   describe('editUseCaseById', () => {
     beforeEach(async () => {
+      await TestHelper.objectUseCase.delete({});
       await TestHelper.useCase.delete({});
     });
 

@@ -161,10 +161,8 @@ export const TestHelper = {
     delete: async (field: ObjectUseCaseMutator): Promise<void> => {
       await db<ObjectUseCase>('Object_UseCase').where(field).del();
     },
-    load: async (
-      field: ObjectUseCaseMutator
-    ): Promise<ObjectUseCase | undefined> => {
-      return db<ObjectUseCase>('Object_UseCase').where(field);
+    load: async (field: ObjectUseCaseMutator): Promise<ObjectUseCase[]> => {
+      return db<ObjectUseCase[]>('Object_UseCase').where(field).select('*');
     },
   },
   manifestRebuildQueue: {
