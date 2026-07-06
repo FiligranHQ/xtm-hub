@@ -14,6 +14,7 @@ import type { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUs
 import type { UseCaseId } from '../../../model/kanel/public/UseCase';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
+import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import {
@@ -25,6 +26,7 @@ import { INTEGRATION_SERVICE_INSTANCE_ID } from '../opencti/integration/integrat
 import { ManifestApp } from './manifest.app';
 import type { ManifestKey } from './manifest.consts';
 import { ManifestRebuildQueueStatus } from './manifest.consts';
+import { ManifestDomain } from './manifest.domain';
 import { ManifestHelper } from './manifest.helper';
 
 const MANIFEST_KEY: ManifestKey = {
@@ -466,6 +468,59 @@ describe('manifestApp', () => {
         expect(result!.contracts[0]!.logo).toBeNull();
       });
     });
+  });
+
+  describe('requestManifestGeneration', () => {
+    it('should queue and process the manifest when the version is valid', async () => {
+      const insertIfNotPendingSpy = vi
+        .spyOn(ManifestDomain, 'insertIfNotPending')
+        .mockResolvedValue(undefined);
+      const processManifestQueueSpy = vi
+        .spyOn(ManifestApp, 'processManifestQueue')
+        .mockResolvedValue(undefined);
+
+      await ManifestApp.requestManifestGeneration({
+        product: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+      });
+
+      const expectedKey = {
+        platformIdentifier: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+      };
+      expect(insertIfNotPendingSpy).toHaveBeenCalledWith(expectedKey);
+      expect(processManifestQueueSpy).toHaveBeenCalledWith(expectedKey);
+    });
+
+    it.each`
+      version
+      ${'not-a-version'}
+      ${'6.4'}
+      ${''}
+    `(
+      'should throw and not queue nor process when the version "$version" is invalid',
+      async ({ version }: { version: string }) => {
+        const insertIfNotPendingSpy = vi
+          .spyOn(ManifestDomain, 'insertIfNotPending')
+          .mockResolvedValue(undefined);
+        const processManifestQueueSpy = vi
+          .spyOn(ManifestApp, 'processManifestQueue')
+          .mockResolvedValue(undefined);
+
+        await expect(
+          ManifestApp.requestManifestGeneration({
+            product: PlatformIdentifier.Opencti,
+            version,
+            type: ManifestType.Connector,
+          })
+        ).rejects.toThrow(BadRequestErrorCode.InvalidPlatformVersion);
+
+        expect(insertIfNotPendingSpy).not.toHaveBeenCalled();
+        expect(processManifestQueueSpy).not.toHaveBeenCalled();
+      }
+    );
   });
 
   describe('processManifestQueue', () => {

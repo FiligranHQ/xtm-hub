@@ -1,0 +1,43 @@
+meta {
+  name: NewProductVersion
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+headers {
+  x-xtm-hub-token: {{xtm-hub-token}}
+}
+
+body:graphql {
+  mutation NewProductVersion($product: PlatformIdentifier!, $version: String!) {
+    newProductVersion(product: $product, version: $version) {
+      success
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "product": "opencti",
+    "version": "6.4.0"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Ensure xtm-hub-token is defined in environment (requires GENERATE_MANIFEST capability)
+
+  Fill variables:
+  product: PlatformIdentifier enum value (e.g. opencti, openaev)
+  version: product version, e.g. 6.4.0
+}

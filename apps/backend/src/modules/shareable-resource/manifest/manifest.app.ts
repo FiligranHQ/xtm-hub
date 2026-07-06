@@ -2,11 +2,14 @@ import {
   DocumentMetadataKeyCode,
   IntegrationType,
   ManifestType,
+  PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import type { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
-import { isLtsVersion } from '../../../utils/versioning';
+import { BadRequestErrorCode } from '../../../utils/error/error.code';
+import { BadRequestError } from '../../../utils/error/error.util';
+import { isLtsVersion, isValidVersion } from '../../../utils/versioning';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import { useCaseDomain } from '../../use-case/use-case.domain';
 import {
@@ -110,6 +113,31 @@ const fetchConnectors = async (
 };
 
 export const ManifestApp = {
+  requestManifestGeneration: async ({
+    product,
+    version,
+    type,
+  }: {
+    product: PlatformIdentifier;
+    version: string;
+    type: ManifestType;
+  }): Promise<void> => {
+    if (!isValidVersion(version)) {
+      throw BadRequestError(BadRequestErrorCode.InvalidPlatformVersion, {
+        detail: `Invalid version format: ${version}`,
+      });
+    }
+
+    const key: ManifestKey = {
+      platformIdentifier: product,
+      version,
+      type,
+    };
+
+    await ManifestDomain.insertIfNotPending(key);
+    await ManifestApp.processManifestQueue(key);
+  },
+
   processManifestQueue: async (manifest?: ManifestKey) => {
     const recovered = await ManifestDomain.recoverStuckProcessingEntries();
     if (recovered.length > 0) {

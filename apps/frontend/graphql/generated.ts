@@ -952,10 +952,12 @@ export type Mutation = {
   editUserCapabilities: User;
   editUserService: Maybe<UserService>;
   frontendErrorLog: Maybe<Scalars['Boolean']['output']>;
+  generateManifest: Success;
   incrementShareNumberDocument: Document;
   ingestManifestFragments: Success;
   login: Maybe<User>;
   logout: Scalars['ID']['output'];
+  newProductVersion: Success;
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
   refreshPlatformRegistrationConnectivityStatusAllTenants: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse;
   refreshPlatformRegistrationConnectivityStatusSingleTenant: RefreshPlatformRegistrationConnectivityStatusResponse;
@@ -1191,6 +1193,13 @@ export type MutationFrontendErrorLogArgs = {
 };
 
 
+export type MutationGenerateManifestArgs = {
+  product: PlatformIdentifier;
+  type: ManifestType;
+  version: Scalars['String']['input'];
+};
+
+
 export type MutationIncrementShareNumberDocumentArgs = {
   documentId: Scalars['DocumentId']['input'];
 };
@@ -1204,6 +1213,12 @@ export type MutationIngestManifestFragmentsArgs = {
 export type MutationLoginArgs = {
   email: Scalars['String']['input'];
   password: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationNewProductVersionArgs = {
+  product: PlatformIdentifier;
+  version: Scalars['String']['input'];
 };
 
 
@@ -1580,6 +1595,7 @@ export enum PlatformRegistrationStatus {
 
 export enum PortalCapability {
   Bypass = 'BYPASS',
+  GenerateManifest = 'GENERATE_MANIFEST',
   ManageConnectorsIngestions = 'MANAGE_CONNECTORS_INGESTIONS',
   ManageDeployment = 'MANAGE_DEPLOYMENT',
   ManageManifestIngestions = 'MANAGE_MANIFEST_INGESTIONS',
