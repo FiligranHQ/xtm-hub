@@ -1,10 +1,5 @@
-import {
-  useMostDeployedDocumentsQueryQuery,
-  useUndeployedResourceTypesByProductQuery,
-} from '@graphql/generated';
+import { useMostDeployedDocumentsQueryQuery } from '@graphql/generated';
 
 export const homepageDocumentKeys = {
   mostDeployed: useMostDeployedDocumentsQueryQuery.getRootKey,
-  undeployedResourceTypesByProduct:
-    useUndeployedResourceTypesByProductQuery.getRootKey,
 };

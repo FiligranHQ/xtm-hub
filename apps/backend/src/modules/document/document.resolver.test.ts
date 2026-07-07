@@ -6,7 +6,6 @@ import {
   SERVICES,
 } from '../../../tests/tests.const';
 import {
-  DeployableResourceType,
   DocumentResolvers,
   IntegrationType,
   MutationCreateDocumentArgs,
@@ -648,58 +647,5 @@ describe('newestDocuments GraphQL query', () => {
       PlatformIdentifier.Opencti,
     ]);
     expect(result).toEqual(expected);
-  });
-});
-
-describe('undeployedResourceTypesByProduct GraphQL query', () => {
-  it('should delegate to DocumentApp.loadUndeployedResourceTypesByProduct', async () => {
-    const expected = [
-      {
-        product: PlatformIdentifier.Opencti,
-        resourceTypes: [DeployableResourceType.Integrations],
-      },
-      {
-        product: PlatformIdentifier.Openaev,
-        resourceTypes: [DeployableResourceType.Scenarios],
-      },
-    ] as Awaited<
-      ReturnType<typeof DocumentApp.loadUndeployedResourceTypesByProduct>
-    >;
-
-    vi.spyOn(
-      DocumentApp,
-      'loadUndeployedResourceTypesByProduct'
-    ).mockResolvedValue(expected);
-
-    const result = await documentResolver.Query!
-      .undeployedResourceTypesByProduct!(
-      {},
-      {},
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    expect(
-      DocumentApp.loadUndeployedResourceTypesByProduct
-    ).toHaveBeenCalledWith(
-      contextSimpleUserFiligran2.user.selected_organization_id
-    );
-    expect(result).toEqual(expected);
-  });
-
-  it('should map app errors to graphql errors', async () => {
-    vi.spyOn(
-      DocumentApp,
-      'loadUndeployedResourceTypesByProduct'
-    ).mockRejectedValue(new Error(BadRequestErrorCode.DocumentMissingMetadata));
-
-    const call = documentResolver.Query!.undeployedResourceTypesByProduct!(
-      {},
-      {},
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    await expect(call).rejects.toMatchObject({ name: ErrorType.BadRequest });
   });
 });

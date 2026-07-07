@@ -2,17 +2,14 @@ import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
-  DeployableResourceType,
   DeploymentRequestHubStatus,
   DocumentImageType,
-  PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   findLogoUrl,
   mapRegisteredPlatformsToHomepageCards,
-  resolveDeployFirstResourceCtaTarget,
   resolveHomepageCrossSellProduct,
   resolveHomepagePlatformIdentifiers,
   resolveHomepageRoadmapResolution,
@@ -489,79 +486,6 @@ describe('resolveHomepageRoadmapResolution', () => {
     ${[ServiceDefinitionIdentifier.OpenctiRegistration, ServiceDefinitionIdentifier.OpenaevRegistration]} | ${{ productFilter: undefined, titleProduct: 'default' }}                   | ${'returns default roadmap resolution when both platforms are registered'}
   `('$description', ({ identifiers, expected }) => {
     expect(resolveHomepageRoadmapResolution(identifiers)).toEqual(expected);
-  });
-});
-
-describe('resolveDeployFirstResourceCtaTarget', () => {
-  const serviceInstanceIdByDefinition = {
-    [ServiceDefinitionIdentifier.OpenctiIntegrations]: 'svc-integrations',
-    [ServiceDefinitionIdentifier.OpenctiCustomDashboards]:
-      'svc-custom-dashboards',
-    [ServiceDefinitionIdentifier.OpenctiPlaybooks]: 'svc-playbooks',
-    [ServiceDefinitionIdentifier.OpenctiCustomViews]: 'svc-custom-views',
-    [ServiceDefinitionIdentifier.OpenaevScenarios]: 'svc-scenarios',
-  };
-
-  it('prioritizes OpenCTI integration over all other undeployed resource types', () => {
-    const ctaTarget = resolveDeployFirstResourceCtaTarget(
-      [
-        {
-          product: PlatformIdentifier.Opencti,
-          resourceTypes: [
-            DeployableResourceType.CustomViews,
-            DeployableResourceType.Integrations,
-            DeployableResourceType.Playbooks,
-          ],
-        },
-        {
-          product: PlatformIdentifier.Openaev,
-          resourceTypes: [DeployableResourceType.Scenarios],
-        },
-      ],
-      serviceInstanceIdByDefinition
-    );
-
-    expect(ctaTarget).toEqual({
-      href: '/app/service/opencti_integrations/svc-integrations',
-      resourceType: DeployableResourceType.Integrations,
-    });
-  });
-
-  it('falls back to OpenAEV scenario when no OpenCTI undeployed type is available', () => {
-    const ctaTarget = resolveDeployFirstResourceCtaTarget(
-      [
-        {
-          product: PlatformIdentifier.Openaev,
-          resourceTypes: [DeployableResourceType.Scenarios],
-        },
-      ],
-      serviceInstanceIdByDefinition
-    );
-
-    expect(ctaTarget).toEqual({
-      href: '/app/service/openaev_scenarios/svc-scenarios',
-      resourceType: DeployableResourceType.Scenarios,
-    });
-  });
-
-  it('returns undefined when there is no undeployed resource type', () => {
-    expect(
-      resolveDeployFirstResourceCtaTarget([], serviceInstanceIdByDefinition)
-    ).toBeUndefined();
-  });
-
-  it('returns undefined when service instance id is missing', () => {
-    const ctaTarget = resolveDeployFirstResourceCtaTarget(
-      [
-        {
-          product: PlatformIdentifier.Opencti,
-          resourceTypes: [DeployableResourceType.CustomDashboards],
-        },
-      ],
-      {}
-    );
-
-    expect(ctaTarget).toBeUndefined();
   });
 });
 

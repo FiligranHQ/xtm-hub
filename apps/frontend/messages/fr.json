@@ -324,16 +324,6 @@
       "Remaining": "restant",
       "DaysRemaining": "{days, plural, =1 {# jour} other {# jours}}"
     },
-    "DeployFirstResource": {
-      "Title": "Déployez votre premier {type}",
-      "Types": {
-        "integrations": "intégration",
-        "custom_dashboards": "tableau de bord personnalisé",
-        "playbooks": "guide pratique",
-        "custom_views": "vue personnalisée",
-        "scenarios": "scénario"
-      }
-    },
     "TryOtherPlatform": {
       "Title": "Étendez et adaptez votre plateforme XTM",
       "Cta": "Essayez {productName}"

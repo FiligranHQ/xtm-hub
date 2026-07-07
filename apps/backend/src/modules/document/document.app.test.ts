@@ -12,7 +12,6 @@ import {
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
-  DeployableResourceType,
   DocumentImageType,
   DocumentMetadataKeyCode,
   DocumentSourceType,
@@ -42,7 +41,6 @@ import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
   TelemetrySource,
-  TelemetryTargetProduct,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { DocumentApp } from './document.app';
@@ -1003,90 +1001,6 @@ describe('documentApp', () => {
         source_type: DocumentSourceType.External,
         file_name: 'new-image.png',
       });
-    });
-  });
-
-  describe('loadUndeployedResourceTypesByProduct', () => {
-    const organizationId = TEST_ORGANIZATIONS.FILIGRAN.ID;
-
-    it.each`
-      label                    | deployedByProduct
-      ${'without deployments'} | ${new Map()}
-      ${'with empty products'} | ${new Map([[TelemetryTargetProduct.OPEN_CTI, new Set()], [TelemetryTargetProduct.OPEN_AEV, new Set()]])}
-    `(
-      'should return all deployable resource types when telemetry has no deployed services ($label)',
-      async ({
-        deployedByProduct,
-      }: {
-        deployedByProduct: Map<
-          TelemetryTargetProduct,
-          Set<TelemetryEventService>
-        >;
-      }) => {
-        vi.spyOn(
-          TelemetryApp,
-          'getDeployedResourceServicesByTargetProduct'
-        ).mockResolvedValue(deployedByProduct);
-
-        const result =
-          await DocumentApp.loadUndeployedResourceTypesByProduct(
-            organizationId
-          );
-
-        expect(result).toEqual([
-          {
-            product: PlatformIdentifier.Opencti,
-            resourceTypes: [
-              DeployableResourceType.Integrations,
-              DeployableResourceType.CustomDashboards,
-              DeployableResourceType.CustomViews,
-              DeployableResourceType.Playbooks,
-            ],
-          },
-          {
-            product: PlatformIdentifier.Openaev,
-            resourceTypes: [DeployableResourceType.Scenarios],
-          },
-        ]);
-      }
-    );
-
-    it('should return only missing resource types by product', async () => {
-      vi.spyOn(
-        TelemetryApp,
-        'getDeployedResourceServicesByTargetProduct'
-      ).mockResolvedValue(
-        new Map([
-          [
-            TelemetryTargetProduct.OPEN_CTI,
-            new Set([
-              TelemetryEventService.INTEGRATIONS_LIBRARY,
-              TelemetryEventService.OPENCTI_PLAYBOOKS_LIBRARY,
-            ]),
-          ],
-          [
-            TelemetryTargetProduct.OPEN_AEV,
-            new Set([TelemetryEventService.OPENAEV_SCENARIOS_LIBRARY]),
-          ],
-        ])
-      );
-
-      const result =
-        await DocumentApp.loadUndeployedResourceTypesByProduct(organizationId);
-
-      expect(result).toEqual([
-        {
-          product: PlatformIdentifier.Opencti,
-          resourceTypes: [
-            DeployableResourceType.CustomDashboards,
-            DeployableResourceType.CustomViews,
-          ],
-        },
-        {
-          product: PlatformIdentifier.Openaev,
-          resourceTypes: [],
-        },
-      ]);
     });
   });
 

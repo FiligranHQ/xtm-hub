@@ -357,14 +357,6 @@ export type DefaultDocument = Document & Node & {
   use_cases: Maybe<Array<UseCase>>;
 };
 
-export enum DeployableResourceType {
-  CustomDashboards = 'custom_dashboards',
-  CustomViews = 'custom_views',
-  Integrations = 'integrations',
-  Playbooks = 'playbooks',
-  Scenarios = 'scenarios'
-}
-
 export type DeployedPlatform = {
   __typename?: 'DeployedPlatform';
   platformIdentifier: PlatformIdentifier;
@@ -1639,7 +1631,6 @@ export type Query = {
   subscriptionById: Maybe<SubscriptionModel>;
   subscriptions: SubscriptionConnection;
   trialDeployments: TrialsDeployments;
-  undeployedResourceTypesByProduct: Array<UndeployedResourceTypesByProduct>;
   updateOpenCTIManifest: Success;
   useCases: Maybe<UseCaseConnection>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
@@ -2424,12 +2415,6 @@ export type TrialsDeployments = {
   isBlacklisted: Scalars['Boolean']['output'];
 };
 
-export type UndeployedResourceTypesByProduct = {
-  __typename?: 'UndeployedResourceTypesByProduct';
-  product: PlatformIdentifier;
-  resourceTypes: Array<DeployableResourceType>;
-};
-
 export type UnregisterPlatformInput = {
   identifier: PlatformIdentifier;
   platformId: Scalars['String']['input'];
@@ -2706,11 +2691,6 @@ export type NewestDocumentsQueryQueryVariables = Exact<{
 
 export type NewestDocumentsQueryQuery = { __typename?: 'Query', newestDocuments: Array<{ __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomDashboard', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomView', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'DefaultDocument', id: string, name: string | null, short_description: string | null, type: string, active: boolean, slug: string | null, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'IntegrationHack', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenAEVScenario', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenCTIPlaybook', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'RssFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'Stream', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'TaxiiFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'ThirdPartyIntegration', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null }> };
 
-export type UndeployedResourceTypesByProductQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type UndeployedResourceTypesByProductQuery = { __typename?: 'Query', undeployedResourceTypesByProduct: Array<{ __typename?: 'UndeployedResourceTypesByProduct', product: PlatformIdentifier, resourceTypes: Array<DeployableResourceType> }> };
-
 export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -2954,60 +2934,6 @@ export const useInfiniteNewestDocumentsQueryQuery = <
 useInfiniteNewestDocumentsQueryQuery.getKey = (variables: NewestDocumentsQueryQueryVariables) => ['NewestDocumentsQuery.infinite', variables];
 useInfiniteNewestDocumentsQueryQuery.getRootKey = () => ['NewestDocumentsQuery.infinite'] as const;
 useNewestDocumentsQueryQuery.fetcher = (client: GraphQLClient, variables: NewestDocumentsQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<NewestDocumentsQueryQuery, NewestDocumentsQueryQueryVariables>(client, NewestDocumentsQueryDocument, variables, headers);
-
-export const UndeployedResourceTypesByProductDocument = `
-    query UndeployedResourceTypesByProduct {
-  undeployedResourceTypesByProduct {
-    product
-    resourceTypes
-  }
-}
-    `;
-
-export const useUndeployedResourceTypesByProductQuery = <
-      TData = UndeployedResourceTypesByProductQuery,
-      TError = unknown
-    >(
-      client: GraphQLClient,
-      variables?: UndeployedResourceTypesByProductQueryVariables,
-      options?: Omit<UseQueryOptions<UndeployedResourceTypesByProductQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<UndeployedResourceTypesByProductQuery, TError, TData>['queryKey'] },
-      headers?: RequestInit['headers']
-    ) => {
-    
-    return useQuery<UndeployedResourceTypesByProductQuery, TError, TData>(
-      {
-    queryKey: variables === undefined ? ['UndeployedResourceTypesByProduct'] : ['UndeployedResourceTypesByProduct', variables],
-    queryFn: fetcher<UndeployedResourceTypesByProductQuery, UndeployedResourceTypesByProductQueryVariables>(client, UndeployedResourceTypesByProductDocument, variables, headers),
-    ...options
-  }
-    )};
-
-useUndeployedResourceTypesByProductQuery.getKey = (variables?: UndeployedResourceTypesByProductQueryVariables) => variables === undefined ? ['UndeployedResourceTypesByProduct'] : ['UndeployedResourceTypesByProduct', variables];
-useUndeployedResourceTypesByProductQuery.getRootKey = () => ['UndeployedResourceTypesByProduct'] as const;
-export const useInfiniteUndeployedResourceTypesByProductQuery = <
-      TData = InfiniteData<UndeployedResourceTypesByProductQuery>,
-      TError = unknown
-    >(
-      client: GraphQLClient,
-      variables: UndeployedResourceTypesByProductQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<UndeployedResourceTypesByProductQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<UndeployedResourceTypesByProductQuery, TError, TData>['queryKey'] },
-      headers?: RequestInit['headers']
-    ) => {
-    
-    return useInfiniteQuery<UndeployedResourceTypesByProductQuery, TError, TData>(
-      (() => {
-    const { queryKey: optionsQueryKey, ...restOptions } = options;
-    return {
-      queryKey: optionsQueryKey ?? variables === undefined ? ['UndeployedResourceTypesByProduct.infinite'] : ['UndeployedResourceTypesByProduct.infinite', variables],
-      queryFn: (metaData) => fetcher<UndeployedResourceTypesByProductQuery, UndeployedResourceTypesByProductQueryVariables>(client, UndeployedResourceTypesByProductDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
-      ...restOptions
-    }
-  })()
-    )};
-
-useInfiniteUndeployedResourceTypesByProductQuery.getKey = (variables?: UndeployedResourceTypesByProductQueryVariables) => variables === undefined ? ['UndeployedResourceTypesByProduct.infinite'] : ['UndeployedResourceTypesByProduct.infinite', variables];
-useInfiniteUndeployedResourceTypesByProductQuery.getRootKey = () => ['UndeployedResourceTypesByProduct.infinite'] as const;
-useUndeployedResourceTypesByProductQuery.fetcher = (client: GraphQLClient, variables?: UndeployedResourceTypesByProductQueryVariables, headers?: RequestInit['headers']) => fetcher<UndeployedResourceTypesByProductQuery, UndeployedResourceTypesByProductQueryVariables>(client, UndeployedResourceTypesByProductDocument, variables, headers);
 
 export const OrganizationSubscribedServicesBreadcrumbDocument = `
     query OrganizationSubscribedServicesBreadcrumb($id: ID!) {
