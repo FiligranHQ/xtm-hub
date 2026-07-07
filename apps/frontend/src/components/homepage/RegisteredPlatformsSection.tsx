@@ -4,21 +4,16 @@ import {
 } from '@/components/homepage/Homepage.utils';
 import RegisteredPlatformCard from '@/components/homepage/RegisteredPlatformCard';
 import TryOtherPlatformProductBlock from '@/components/homepage/TryOtherPlatformProductBlock';
-import {
-  RegisteredPlatformsQuery,
-  ServiceDefinitionIdentifier,
-} from '@graphql/generated';
+import { RegisteredPlatformsQuery } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 
 interface RegisteredPlatformsSectionProps {
   welcomeName?: string;
-  registeredIdentifiers: ServiceDefinitionIdentifier[];
   registeredPlatformsData: RegisteredPlatformsQuery;
 }
 
 export const RegisteredPlatformsSection = async ({
   welcomeName,
-  registeredIdentifiers,
   registeredPlatformsData,
 }: RegisteredPlatformsSectionProps) => {
   const t = await getTranslations();
@@ -27,7 +22,7 @@ export const RegisteredPlatformsSection = async ({
   );
 
   const crossSellProduct = resolveHomepageCrossSellProduct(
-    registeredIdentifiers
+    homepageRegisteredPlatformCards
   );
 
   const registeredProductsCount = homepageRegisteredPlatformCards.length;
@@ -45,7 +40,7 @@ export const RegisteredPlatformsSection = async ({
               })
             : t('PublicHomePage.XtmPlatform.Label', {})}
         </span>
-        <span className="mt-l txt-small">
+        <span className="my-l txt-small">
           {t('PublicHomePage.XtmPlatform.ConnectedProducts', {
             count: registeredProductsCount,
           })}

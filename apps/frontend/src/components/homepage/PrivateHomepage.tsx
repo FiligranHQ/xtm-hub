@@ -1,4 +1,7 @@
-import { resolveHomepagePlatformIdentifiers } from '@/components/homepage/Homepage.utils';
+import {
+  hasPlatformConfiguration,
+  resolveHomepagePlatformIdentifiers,
+} from '@/components/homepage/Homepage.utils';
 import MostDeployedResources from '@/components/homepage/MostDeployedResources';
 import NewestResources from '@/components/homepage/NewestResources';
 import PrivateHomepageRoadmapSection from '@/components/homepage/PrivateHomepageRoadmapSection';
@@ -24,6 +27,7 @@ const breadcrumbValue = [
     href: `/${APP_PATH}`,
   },
 ];
+
 export const PrivateHomepage = async () => {
   const userLocale = await getLocale();
   const locale = (publicLocales as readonly string[]).includes(userLocale)
@@ -35,13 +39,13 @@ export const PrivateHomepage = async () => {
   const registeredPlatformsData = await useRegisteredPlatformsQuery.fetcher(
     authenticatedClient,
     {
-      input: { identifier: null, onlyActive: true, onlyTrial: null },
+      input: { identifier: null, onlyActive: false, onlyTrial: null },
     }
   )();
 
-  const registeredIdentifiers = registeredPlatformsData.registeredPlatforms.map(
-    (platform) => platform.identifier
-  );
+  const registeredIdentifiers = registeredPlatformsData.registeredPlatforms
+    .filter(hasPlatformConfiguration)
+    .map((platform) => platform.identifier);
 
   const platformIdentifiers = resolveHomepagePlatformIdentifiers(
     registeredIdentifiers
@@ -63,7 +67,6 @@ export const PrivateHomepage = async () => {
         )}
         <RegisteredPlatformsSection
           welcomeName={welcomeName}
-          registeredIdentifiers={registeredIdentifiers}
           registeredPlatformsData={registeredPlatformsData}
         />
         <PrivateHomepageRoadmapSection

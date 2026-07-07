@@ -77,6 +77,14 @@ vi.mock('@/components/homepage/RegisteredPlatformsSection', () => ({
 
 import { PrivateHomepage } from './PrivateHomepage';
 
+const mockRegisteredPlatformsResponses = (registeredPlatforms: unknown[]) => {
+  mockRegisteredPlatformsFetcher.mockReturnValue(() =>
+    Promise.resolve({
+      registeredPlatforms,
+    })
+  );
+};
+
 describe('PrivateHomepage', () => {
   beforeEach(() => {
     mockRegisteredPlatformsFetcher.mockClear();
@@ -99,22 +107,35 @@ describe('PrivateHomepage', () => {
   });
 
   it('passes a single-item platformIdentifiers array and renders cards when one platform is registered', async () => {
-    mockRegisteredPlatformsFetcher.mockReturnValue(() =>
-      Promise.resolve({
-        registeredPlatforms: [
-          {
-            id: '1',
-            identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-            title: 'OpenCTI Platform',
-            contract: 'CE',
-            subscription: {
-              start_date: '2026-01-01T00:00:00.000Z',
-              end_date: null,
-            },
-          },
-        ],
-      })
-    );
+    mockRegisteredPlatformsResponses([
+      {
+        id: '1',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        title: 'OpenCTI Platform',
+        contract: 'CE',
+        subscription: {
+          start_date: '2026-01-01T00:00:00.000Z',
+          end_date: null,
+        },
+      },
+      {
+        id: 'trial-1',
+        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+        title: 'OpenAEV Trial Request',
+        contract: 'TRIAL',
+        subscription: {
+          start_date: null,
+          end_date: null,
+        },
+        deployment_request: {
+          id: 'dr-1',
+          hub_status: 'PENDING',
+          request_date: '2026-01-02T00:00:00.000Z',
+          start_date: null,
+          end_date: '2026-01-12T00:00:00.000Z',
+        },
+      },
+    ]);
 
     const element = await PrivateHomepage();
     render(element);
@@ -125,17 +146,17 @@ describe('PrivateHomepage', () => {
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsFetcher.mock.calls[0]?.[1]).toEqual({
-      input: { identifier: null, onlyActive: true, onlyTrial: null },
+      input: { identifier: null, onlyActive: false, onlyTrial: null },
     });
 
     expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
       expect.objectContaining({
         welcomeName: undefined,
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenctiRegistration,
-        ],
         registeredPlatformsData: expect.objectContaining({
-          registeredPlatforms: expect.any(Array),
+          registeredPlatforms: expect.arrayContaining([
+            expect.objectContaining({ id: '1' }),
+            expect.objectContaining({ id: 'trial-1' }),
+          ]),
         }),
       }),
       undefined
@@ -167,32 +188,28 @@ describe('PrivateHomepage', () => {
   });
 
   it('passes undefined platformIdentifiers and hides cross-sell block when both products are registered', async () => {
-    mockRegisteredPlatformsFetcher.mockReturnValue(() =>
-      Promise.resolve({
-        registeredPlatforms: [
-          {
-            id: '1',
-            identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-            title: 'OpenCTI Platform',
-            contract: 'CE',
-            subscription: {
-              start_date: '2026-01-01T00:00:00.000Z',
-              end_date: null,
-            },
-          },
-          {
-            id: '2',
-            identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
-            title: 'OpenAEV Platform',
-            contract: 'EE',
-            subscription: {
-              start_date: '2026-01-01T00:00:00.000Z',
-              end_date: null,
-            },
-          },
-        ],
-      })
-    );
+    mockRegisteredPlatformsResponses([
+      {
+        id: '1',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        title: 'OpenCTI Platform',
+        contract: 'CE',
+        subscription: {
+          start_date: '2026-01-01T00:00:00.000Z',
+          end_date: null,
+        },
+      },
+      {
+        id: '2',
+        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+        title: 'OpenAEV Platform',
+        contract: 'EE',
+        subscription: {
+          start_date: '2026-01-01T00:00:00.000Z',
+          end_date: null,
+        },
+      },
+    ]);
 
     const element = await PrivateHomepage();
     render(element);
@@ -205,10 +222,6 @@ describe('PrivateHomepage', () => {
     expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
       expect.objectContaining({
         welcomeName: undefined,
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenctiRegistration,
-          ServiceDefinitionIdentifier.OpenaevRegistration,
-        ],
       }),
       undefined
     );
@@ -234,11 +247,7 @@ describe('PrivateHomepage', () => {
   });
 
   it('renders XtmPlatform when no platforms are registered', async () => {
-    mockRegisteredPlatformsFetcher.mockReturnValue(() =>
-      Promise.resolve({
-        registeredPlatforms: [],
-      })
-    );
+    mockRegisteredPlatformsResponses([]);
 
     const element = await PrivateHomepage();
     render(element);
@@ -253,7 +262,6 @@ describe('PrivateHomepage', () => {
     expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
       expect.objectContaining({
         welcomeName: undefined,
-        registeredIdentifiers: [],
       }),
       undefined
     );
@@ -274,11 +282,7 @@ describe('PrivateHomepage', () => {
   });
 
   it('passes personalized welcome name when me has names', async () => {
-    mockRegisteredPlatformsFetcher.mockReturnValue(() =>
-      Promise.resolve({
-        registeredPlatforms: [],
-      })
-    );
+    mockRegisteredPlatformsResponses([]);
     mockServerFetchGraphQL.mockResolvedValue({
       data: {
         me: {
@@ -297,11 +301,7 @@ describe('PrivateHomepage', () => {
   });
 
   it('falls back to default XtmPlatform label when me has no names', async () => {
-    mockRegisteredPlatformsFetcher.mockReturnValue(() =>
-      Promise.resolve({
-        registeredPlatforms: [],
-      })
-    );
+    mockRegisteredPlatformsResponses([]);
     mockServerFetchGraphQL.mockResolvedValue({
       data: {
         me: {
@@ -320,11 +320,7 @@ describe('PrivateHomepage', () => {
   });
 
   it('renders roadmap section', async () => {
-    mockRegisteredPlatformsFetcher.mockReturnValue(() =>
-      Promise.resolve({
-        registeredPlatforms: [],
-      })
-    );
+    mockRegisteredPlatformsResponses([]);
 
     render(await PrivateHomepage());
 

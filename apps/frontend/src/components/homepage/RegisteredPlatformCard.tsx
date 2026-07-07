@@ -45,7 +45,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
         : 'bg-feedback-success-secondary-transparency';
 
   return (
-    <Card className="border pt-l my-l bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
+    <Card className="border pt-l my-xs bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
       <CardContent className="p-l flex flex-col gap-m">
         <div className="flex gap-s items-center justify-between">
           <div className="flex gap-s items-center">
@@ -74,7 +74,9 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: NAVIGATION_GRADIENT_STYLE }}>
-              {t('Contracts.EE')}
+              {t(
+                CONTRACT_LABEL_BY_CONTRACT[platform.contract] ?? 'Contracts.CE'
+              )}
             </span>
           ) : (
             <Badge className="bg-elevation-surface-highlight-layer-1 border-none">

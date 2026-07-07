@@ -6,6 +6,7 @@ import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enu
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import {
   DeployableResourceType,
+  DeploymentRequestHubStatus,
   DocumentImageType,
   HomepageDocumentFragment,
   PlatformIdentifier,
@@ -33,15 +34,6 @@ export type HomepageRegisteredPlatformCardViewModel = {
   registrationDate: string | null | undefined;
   contract: PlatformContractEnum;
   remainingTrialDays: number | undefined;
-};
-
-export const HomepageDeployServiceIdentifierByRegisteredPlatform: Partial<
-  Record<ServiceDefinitionIdentifier, ServiceDefinitionIdentifierEnum>
-> = {
-  [ServiceDefinitionIdentifier.OpenctiRegistration]:
-    ServiceDefinitionIdentifierEnum.OPENCTI_INTEGRATIONS,
-  [ServiceDefinitionIdentifier.OpenaevRegistration]:
-    ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS,
 };
 
 export const resolveHomepagePlatformIdentifiers = (
@@ -93,6 +85,15 @@ const resolvePlatformContract = (
   return PlatformContractEnum.TRIAL;
 };
 
+export const hasPlatformConfiguration = (
+  platform: RegisteredPlatformForHomepage
+): boolean => {
+  return Boolean(
+    platform.subscription?.service_instance?.id ??
+    platform.subscription?.start_date
+  );
+};
+
 export const resolveRemainingTrialDays = (
   endDate: string | null | undefined
 ): number | undefined => {
@@ -105,45 +106,136 @@ export const resolveRemainingTrialDays = (
   return remainingDays < 0 ? 0 : remainingDays;
 };
 
+const mapRegisteredPlatformToHomepageCard = (
+  platform: RegisteredPlatformForHomepage,
+  registrationDate: string | null | undefined
+): HomepageRegisteredPlatformCardViewModel | undefined => {
+  const product = resolveHomepageRegisteredProduct(platform.identifier);
+  if (!product) {
+    return undefined;
+  }
+
+  const contract = resolvePlatformContract(platform.contract);
+
+  return {
+    id: platform.id,
+    product,
+    title: platform.title,
+    registrationDate,
+    contract,
+    remainingTrialDays:
+      contract === PlatformContractEnum.TRIAL
+        ? resolveRemainingTrialDays(
+            platform.subscription?.end_date ??
+              platform.deployment_request?.end_date
+          )
+        : undefined,
+  };
+};
+
+const resolveRequestOnlySortTimestamp = (
+  platform: RegisteredPlatformForHomepage
+): number => {
+  const dateCandidate =
+    platform.deployment_request?.request_date ??
+    platform.deployment_request?.start_date ??
+    null;
+
+  if (!dateCandidate) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  const timestamp = new Date(dateCandidate).getTime();
+  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+};
+
+const isEligibleRequestOnlyPlatform = (
+  platform: RegisteredPlatformForHomepage,
+  configuredIdentifiers: Set<ServiceDefinitionIdentifier>
+): boolean => {
+  if (hasPlatformConfiguration(platform)) {
+    return false;
+  }
+  if (configuredIdentifiers.has(platform.identifier)) {
+    return false;
+  }
+  return (
+    platform.deployment_request?.hub_status !== undefined &&
+    platform.deployment_request.hub_status !==
+      DeploymentRequestHubStatus.Cancelled
+  );
+};
+
 export const mapRegisteredPlatformsToHomepageCards = (
   registeredPlatforms: RegisteredPlatformForHomepage[]
 ): HomepageRegisteredPlatformCardViewModel[] => {
-  return registeredPlatforms.flatMap((platform) => {
-    const product = resolveHomepageRegisteredProduct(platform.identifier);
-    if (!product) {
+  const configuredPlatforms = registeredPlatforms.filter(
+    hasPlatformConfiguration
+  );
+  const configuredIdentifiers = new Set(
+    configuredPlatforms.map((platform) => platform.identifier)
+  );
+
+  const seenConfiguredKeys = new Set<string>();
+  const configuredCards = configuredPlatforms.flatMap((platform) => {
+    const key = platform.subscription?.service_instance?.id ?? platform.id;
+    if (seenConfiguredKeys.has(key)) {
       return [];
     }
+    seenConfiguredKeys.add(key);
 
-    const contract = resolvePlatformContract(platform.contract);
-
-    return {
-      id: platform.id,
-      product,
-      title: platform.title,
-      registrationDate: platform.subscription?.start_date,
-      contract,
-      remainingTrialDays:
-        contract === PlatformContractEnum.TRIAL
-          ? resolveRemainingTrialDays(platform.subscription?.end_date)
-          : undefined,
-    };
+    const card = mapRegisteredPlatformToHomepageCard(
+      platform,
+      platform.subscription?.start_date
+    );
+    return card ? [card] : [];
   });
+
+  const requestOnlyPlatformsByIdentifier = new Map<
+    ServiceDefinitionIdentifier,
+    RegisteredPlatformForHomepage
+  >();
+
+  for (const platform of registeredPlatforms) {
+    if (!isEligibleRequestOnlyPlatform(platform, configuredIdentifiers)) {
+      continue;
+    }
+
+    const current = requestOnlyPlatformsByIdentifier.get(platform.identifier);
+    if (
+      !current ||
+      resolveRequestOnlySortTimestamp(platform) >
+        resolveRequestOnlySortTimestamp(current)
+    ) {
+      requestOnlyPlatformsByIdentifier.set(platform.identifier, platform);
+    }
+  }
+
+  const requestOnlyCards = [
+    ...requestOnlyPlatformsByIdentifier.values(),
+  ].flatMap((platform) => {
+    const card = mapRegisteredPlatformToHomepageCard(
+      platform,
+      platform.deployment_request?.request_date ??
+        platform.deployment_request?.start_date
+    );
+    return card ? [card] : [];
+  });
+
+  return [...configuredCards, ...requestOnlyCards];
 };
 
 export const resolveHomepageCrossSellProduct = (
-  registeredIdentifiers: ServiceDefinitionIdentifier[]
+  cards: HomepageRegisteredPlatformCardViewModel[]
 ): PlatformIdentifierEnum | undefined => {
   const registeredProducts = new Set<PlatformIdentifierEnum>();
 
-  for (const identifier of registeredIdentifiers) {
-    const product =
-      ServiceDefinitionIdentifierToPlatformIdentifier[
-        identifier as unknown as ServiceDefinitionIdentifierEnum
-      ];
-
-    if (product) {
-      registeredProducts.add(product);
-    }
+  for (const card of cards) {
+    registeredProducts.add(
+      card.product === 'opencti'
+        ? PlatformIdentifierEnum.OPENCTI
+        : PlatformIdentifierEnum.OPENAEV
+    );
   }
 
   if (registeredProducts.size !== 1) {
