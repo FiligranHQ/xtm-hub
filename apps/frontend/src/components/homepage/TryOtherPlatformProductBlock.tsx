@@ -1,5 +1,6 @@
 'use client';
 
+import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { OpenAevIconIcon, OpenCtiIconIcon } from '@filigran/icon';
 import { Button, Card, CardContent } from '@filigran/ui';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';

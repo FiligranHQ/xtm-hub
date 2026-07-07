@@ -1,11 +1,13 @@
 'use client';
 
 import { HomepageRegisteredPlatformCardViewModel } from '@/components/homepage/Homepage.utils';
-import { NAVIGATION_GRADIENT_STYLE } from '@/components/menu/navigation-styles';
+import { cn } from '@/lib/utils';
 import { OpenAevIconIcon, OpenCtiIconIcon } from '@filigran/icon';
 import { Badge, Card, CardContent } from '@filigran/ui';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
+import { PlatformContract } from '@graphql/generated';
 import { useFormatter, useTranslations } from 'next-intl';
+import React from 'react';
 
 type RegisteredPlatformCardProps = {
   platform: HomepageRegisteredPlatformCardViewModel;
@@ -59,6 +61,14 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
   const remainingTrialDaysBadgeClassName = resolveTrialDaysBadgeClassName(
     platform.remainingTrialDays
   );
+  const gradientFrom = 'hsl(var(--blue-default))';
+  const gradientTo = 'hsl(var(--turquoise-300))';
+  const gradientBg = 'hsl(var(--background))';
+  const customStyle = {
+    '--gradient-from': gradientFrom,
+    '--gradient-to': gradientTo,
+    '--gradient-bg': gradientBg,
+  } as React.CSSProperties;
 
   return (
     <Card className="border pt-l my-xs bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
@@ -86,18 +96,23 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
           </p>
         </div>
         <div className="text-sm flex gap-l items-center">
-          {platform.contract === PlatformContractEnum.EE ? (
-            <span
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: NAVIGATION_GRADIENT_STYLE }}>
-              {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
-            </span>
+          {platform.contract === PlatformContract.Ee ? (
+            <Badge
+              className={cn(
+                'border-2 border-transparent',
+                '[background:linear-gradient(var(--gradient-bg),var(--gradient-bg))_padding-box,linear-gradient(99.95deg,var(--gradient-from)_0%,var(--gradient-to)_100%)_border-box]'
+              )}
+              style={customStyle}>
+              <span className="bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] bg-clip-text text-transparent">
+                {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
+              </span>
+            </Badge>
           ) : (
             <Badge className="bg-elevation-surface-highlight-layer-1 border-none">
               {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
             </Badge>
           )}
-          {platform.contract === PlatformContractEnum.TRIAL &&
+          {platform.contract === PlatformContract.Trial &&
             platform.remainingTrialDays !== undefined && (
               <div className="flex gap-s items-center">
                 <p>{t('Remaining')}</p>
