@@ -45,6 +45,7 @@ export enum BadRequestErrorCode {
   InvalidConnectorVersionFormat = 'INVALID_CONNECTOR_VERSION_FORMAT',
   ConnectorVersionAlreadyExists = 'CONNECTOR_VERSION_ALREADY_EXISTS',
   ShortDescriptionTooLong = 'SHORT_DESCRIPTION_TOO_LONG',
+  MixedLtsManifestFragments = 'MIXED_LTS_MANIFEST_FRAGMENTS',
 }
 
 export enum UnknownErrorCode {

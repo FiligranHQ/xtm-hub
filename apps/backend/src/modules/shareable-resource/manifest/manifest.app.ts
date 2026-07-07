@@ -13,6 +13,7 @@ import { isLtsVersion, isValidVersion } from '../../../utils/versioning';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import { useCaseDomain } from '../../use-case/use-case.domain';
 import {
+  formatConnectorVersion,
   TAG_DECOUPLING,
   TAG_LATEST,
   TAG_LATEST_LTS,
@@ -35,6 +36,7 @@ const saveManifestToDatabase = async (
     const savedManifest = await ManifestDomain.insertManifest({
       product: key.platformIdentifier,
       version: key.version,
+      version_padded: formatConnectorVersion(key.version),
       type: key.type,
       name: manifestName,
     });

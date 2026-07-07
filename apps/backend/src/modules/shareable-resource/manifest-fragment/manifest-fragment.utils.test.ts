@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import {
+  assertHomogeneousLtsBatch,
   buildConnectorLogoFilename,
+  findMinConnectorVersion,
   formatConnectorVersion,
   getConnectorDocumentTags,
   getConnectorMetadataFromExisting,
@@ -174,5 +176,49 @@ describe('buildConnectorLogoFilename', () => {
         version: '7.260309.0-lts.5',
       })
     ).toBe('MISP-7.260309.0-lts.5-logo.png');
+  });
+});
+
+describe('findMinConnectorVersion', () => {
+  it.each([
+    [[], undefined],
+    [['6.5.1'], '6.5.1'],
+    [['6.5.1', '7.0.0'], '6.5.1'],
+    [['7.0.0', '6.5.1'], '6.5.1'],
+    [['7.260309.0-lts.5', '6.5.1'], '6.5.1'],
+    [['6.5.1-lts.2', '6.5.1-lts.1'], '6.5.1-lts.1'],
+    [['6.5.1', '6.5.1'], '6.5.1'],
+  ])('returns %s for %s', (versions, expected) => {
+    expect(findMinConnectorVersion(versions)).toBe(expected);
+  });
+});
+
+describe('assertHomogeneousLtsBatch', () => {
+  it('returns false (non-LTS) for an empty batch', () => {
+    expect(assertHomogeneousLtsBatch([])).toBe(false);
+  });
+
+  it('returns false for a non-LTS batch', () => {
+    expect(
+      assertHomogeneousLtsBatch([{ version: '7.0.0' }, { version: '7.1.0' }])
+    ).toBe(false);
+  });
+
+  it('returns true for an LTS batch', () => {
+    expect(
+      assertHomogeneousLtsBatch([
+        { version: '7.260309.0-lts.5' },
+        { version: '7.260309.0-lts.6' },
+      ])
+    ).toBe(true);
+  });
+
+  it('rejects a batch mixing LTS and non-LTS fragments', () => {
+    expect(() =>
+      assertHomogeneousLtsBatch([
+        { version: '7.0.0' },
+        { version: '7.260309.0-lts.5' },
+      ])
+    ).toThrow(BadRequestErrorCode.MixedLtsManifestFragments);
   });
 });

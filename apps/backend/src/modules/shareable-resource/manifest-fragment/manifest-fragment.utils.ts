@@ -1,4 +1,5 @@
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
+import { compareVersions, isLtsVersion } from '../../../utils/versioning';
 
 const connectorVersionRegex = /^(\d+)\.(\d{1,6})\.(\d+)(?:-lts\.(\d+))?$/i;
 export const TAG_LATEST = 'latest';
@@ -97,6 +98,29 @@ export const getConnectorDocumentTags = (
   latestTag: string
 ): string[] => {
   return shouldPromoteAsLatest ? [TAG_DECOUPLING, latestTag] : [TAG_DECOUPLING];
+};
+
+export const findMinConnectorVersion = (
+  versions: string[]
+): string | undefined => {
+  if (versions.length === 0) return undefined;
+  return versions.reduce((min, current) =>
+    compareVersions(current, min) < 0 ? current : min
+  );
+};
+
+export const assertHomogeneousLtsBatch = (
+  fragments: { version: string }[]
+): boolean => {
+  const isLts = isLtsVersion(fragments[0]?.version ?? '');
+  const hasMixedLtsStatus = fragments.some(
+    (fragment) => isLtsVersion(fragment.version) !== isLts
+  );
+  if (hasMixedLtsStatus) {
+    throw new Error(BadRequestErrorCode.MixedLtsManifestFragments);
+  }
+
+  return isLts;
 };
 
 export const buildConnectorLogoFilename = ({

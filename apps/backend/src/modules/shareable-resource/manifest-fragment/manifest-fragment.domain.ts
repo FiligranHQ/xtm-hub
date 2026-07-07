@@ -5,13 +5,9 @@ import {
   DocumentSourceType,
   IntegrationType,
   ManifestType,
-  PortalCapability,
   type ManifestFragmentInput,
-  type MutationIngestManifestFragmentsArgs,
 } from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
 import Document from '../../../model/kanel/public/Document';
-import { securityGuard } from '../../../security/guard';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
 import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
@@ -152,76 +148,70 @@ const removeLatestTagFromExistingBatchConnectors = async ({
 };
 
 export const ManifestFragmentDomain = {
-  ingestManifestFragments: async ({
-    manifestFragments,
-  }: MutationIngestManifestFragmentsArgs): Promise<void> => {
-    const user = requestContext.requireUser();
-    await securityGuard.assertUserPortalCapabilities(user, [
-      PortalCapability.ManageManifestIngestions,
-    ]);
-    for (const fragment of manifestFragments) {
-      if (fragment.integration_type !== ManifestType.Connector) {
-        throw new Error(BadRequestErrorCode.IntegrationTypeNotRecognized);
-      }
+  ingestManifestFragment: async (
+    fragment: ManifestFragmentInput
+  ): Promise<void> => {
+    if (fragment.integration_type !== ManifestType.Connector) {
+      throw new Error(BadRequestErrorCode.IntegrationTypeNotRecognized);
+    }
 
-      validateConnectorMinimumVersion(fragment.min_version);
-      validateShortDescriptionLength(fragment.short_description);
-      const formattedVersion = formatConnectorVersion(fragment.version);
-      const latestTag = getLatestTagForConnectorVersion(formattedVersion);
+    validateConnectorMinimumVersion(fragment.min_version);
+    validateShortDescriptionLength(fragment.short_description);
+    const formattedVersion = formatConnectorVersion(fragment.version);
+    const latestTag = getLatestTagForConnectorVersion(formattedVersion);
 
-      const existingBatchConnectors =
-        (await DocumentDomain.loadDocumentsByMetadata(
-          DocumentMetadataKeyCode.ManifestFragmentId,
-          fragment.id,
-          [
-            DocumentMetadataKeyCode.VersionPadded,
-            DocumentMetadataKeyCode.DatasheetUrl,
-            DocumentMetadataKeyCode.BlogpostUrl,
-            DocumentMetadataKeyCode.DemoUrl,
-          ]
-        )) as ConnectorWithMetadata[];
+    const existingBatchConnectors =
+      (await DocumentDomain.loadDocumentsByMetadata(
+        DocumentMetadataKeyCode.ManifestFragmentId,
+        fragment.id,
+        [
+          DocumentMetadataKeyCode.VersionPadded,
+          DocumentMetadataKeyCode.DatasheetUrl,
+          DocumentMetadataKeyCode.BlogpostUrl,
+          DocumentMetadataKeyCode.DemoUrl,
+        ]
+      )) as ConnectorWithMetadata[];
 
-      const hasSameVersion = existingBatchConnectors.some(
-        (connector) => connector.version === fragment.version
-      );
-      if (hasSameVersion) {
-        throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists);
-      }
+    const hasSameVersion = existingBatchConnectors.some(
+      (connector) => connector.version === fragment.version
+    );
+    if (hasSameVersion) {
+      throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists);
+    }
 
-      const currentLatestConnector = existingBatchConnectors.find((connector) =>
-        (connector.tags ?? []).includes(latestTag)
-      );
+    const currentLatestConnector = existingBatchConnectors.find((connector) =>
+      (connector.tags ?? []).includes(latestTag)
+    );
 
-      const metadataFromExisting = getConnectorMetadataFromExisting({
-        currentLatestConnector,
-        existingBatchConnectors,
+    const metadataFromExisting = getConnectorMetadataFromExisting({
+      currentLatestConnector,
+      existingBatchConnectors,
+    });
+
+    const shouldPromoteAsLatest =
+      !currentLatestConnector ||
+      isStrictlyGreaterConnectorVersion({
+        candidate: formattedVersion,
+        current: currentLatestConnector.version_padded ?? '',
       });
 
-      const shouldPromoteAsLatest =
-        !currentLatestConnector ||
-        isStrictlyGreaterConnectorVersion({
-          candidate: formattedVersion,
-          current: currentLatestConnector.version_padded ?? '',
-        });
-
-      if (existingBatchConnectors.length > 0 && shouldPromoteAsLatest) {
-        await removeLatestTagFromExistingBatchConnectors({
-          connectors: existingBatchConnectors,
-          latestTag,
-        });
-      }
-
-      const newDocumentTags = getConnectorDocumentTags(
-        shouldPromoteAsLatest,
-        latestTag
-      );
-
-      await createConnectorDocument({
-        fragment,
-        formattedVersion,
-        tags: newDocumentTags,
-        metadataFromExisting,
+    if (existingBatchConnectors.length > 0 && shouldPromoteAsLatest) {
+      await removeLatestTagFromExistingBatchConnectors({
+        connectors: existingBatchConnectors,
+        latestTag,
       });
     }
+
+    const newDocumentTags = getConnectorDocumentTags(
+      shouldPromoteAsLatest,
+      latestTag
+    );
+
+    await createConnectorDocument({
+      fragment,
+      formattedVersion,
+      tags: newDocumentTags,
+      metadataFromExisting,
+    });
   },
 };

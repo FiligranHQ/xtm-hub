@@ -13,6 +13,8 @@ import Competitor, {
 } from '../../src/model/kanel/public/Competitor';
 import Epic, { EpicId, EpicMutator } from '../../src/model/kanel/public/Epic';
 import Manifest, {
+  ManifestId,
+  ManifestInitializer,
   ManifestMutator,
 } from '../../src/model/kanel/public/Manifest';
 import ManifestDocument, {
@@ -38,6 +40,7 @@ import UseCase, {
   UseCaseInitializer,
   UseCaseMutator,
 } from '../../src/model/kanel/public/UseCase';
+import { formatConnectorVersion } from '../../src/modules/shareable-resource/manifest-fragment/manifest-fragment.utils';
 import { ManifestRebuildQueueStatus } from '../../src/modules/shareable-resource/manifest/manifest.consts';
 import { TEST_ORGANIZATIONS } from '../tests.const';
 import {
@@ -208,6 +211,21 @@ export const TestHelper = {
     },
   },
   manifest: {
+    create: async (data?: Partial<ManifestInitializer>): Promise<Manifest> => {
+      const version = data?.version ?? '6.4.0';
+      const [row] = await db<Manifest>('Manifest')
+        .insert({
+          id: uuidv4() as ManifestId,
+          product: PlatformIdentifier.Opencti,
+          version,
+          version_padded: formatConnectorVersion(version),
+          type: ManifestType.Connector,
+          name: 'test-manifest',
+          ...data,
+        })
+        .returning('*');
+      return row!;
+    },
     loadAll: async (field: ManifestMutator): Promise<Manifest[]> => {
       return db<Manifest[]>('Manifest').where(field).select('*');
     },
