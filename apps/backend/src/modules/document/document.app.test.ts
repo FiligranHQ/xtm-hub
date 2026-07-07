@@ -43,6 +43,8 @@ import {
   TelemetrySource,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
+import { useCaseApp } from '../use-case/use-case.app';
+import { useCaseDomain } from '../use-case/use-case.domain';
 import { DocumentApp } from './document.app';
 import { VAULT_DOCUMENT_TYPE } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from './document.model';
@@ -912,6 +914,98 @@ describe('documentApp', () => {
     });
   });
 
+  describe('createDocumentWithChildrenAndMetadata', () => {
+    beforeEach(async () => {
+      await TestHelper.objectUseCase.delete({});
+      await TestHelper.useCase.delete({});
+    });
+
+    it('should create a document without linking any use case when use_cases is omitted', async () => {
+      // When
+      const document = await DocumentApp.createDocumentWithChildrenAndMetadata(
+        {
+          name: 'Document without use cases',
+          description: 'description',
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          active: true,
+        },
+        []
+      );
+
+      // Then
+      const links = await TestHelper.objectUseCase.load({
+        object_id: document.id,
+      });
+      expect(links).toHaveLength(0);
+    });
+
+    it('should create and link use cases by name when use_cases is provided', async () => {
+      // When
+      const document = await DocumentApp.createDocumentWithChildrenAndMetadata(
+        {
+          name: 'Document with use cases',
+          description: 'description',
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          active: true,
+          use_cases: ['Detection', 'Response'],
+        },
+        []
+      );
+
+      // Then
+      const links = await TestHelper.objectUseCase.load({
+        object_id: document.id,
+      });
+      expect(links).toHaveLength(2);
+
+      const detectionUseCase = await useCaseDomain.loadUseCaseBy({
+        name: 'Detection',
+      });
+      const responseUseCase = await useCaseDomain.loadUseCaseBy({
+        name: 'Response',
+      });
+      expect(links?.map((link) => link.use_case_id)).toEqual(
+        expect.arrayContaining([detectionUseCase?.id, responseUseCase?.id])
+      );
+    });
+
+    it('should reuse an existing use case by name (case-insensitive) rather than duplicating it', async () => {
+      // Given
+      const existingUseCase = await useCaseApp.loadOrCreateUseCase({
+        name: 'Detection',
+        color: '#0099cc',
+      });
+
+      // When
+      const document = await DocumentApp.createDocumentWithChildrenAndMetadata(
+        {
+          name: 'Document reusing use case',
+          description: 'description',
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          active: true,
+          use_cases: ['detection'],
+        },
+        []
+      );
+
+      // Then
+      const allUseCases = await TestHelper.useCase.loadAll({});
+      expect(allUseCases).toHaveLength(1);
+
+      const links = await TestHelper.objectUseCase.load({
+        object_id: document.id,
+      });
+      expect(links).toHaveLength(1);
+      expect(links?.[0]).toMatchObject({
+        object_id: document.id,
+        use_case_id: existingUseCase.id,
+      });
+    });
+  });
+
   describe('upsertDocumentWithExternalImage', () => {
     const metadataKeys = [
       {
@@ -1000,6 +1094,128 @@ describe('documentApp', () => {
       expect(children[0]).toMatchObject({
         source_type: DocumentSourceType.External,
         file_name: 'new-image.png',
+      });
+    });
+
+    describe('use_cases linking', () => {
+      beforeEach(async () => {
+        await TestHelper.objectUseCase.delete({});
+        await TestHelper.useCase.delete({});
+      });
+
+      it('should link use cases by name when creating a new document', async () => {
+        // Given
+        const input = {
+          ...documentData,
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          slug: 'use-case-create-slug',
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          use_cases: ['Detection'],
+        };
+
+        // When
+        const doc = await DocumentApp.upsertDocumentWithExternalImage(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          input,
+          mockUpload,
+          metadataKeys
+        );
+
+        // Then
+        const links = await TestHelper.objectUseCase.load({
+          object_id: doc.id,
+        });
+        expect(links).toHaveLength(1);
+        const detectionUseCase = await useCaseDomain.loadUseCaseBy({
+          name: 'Detection',
+        });
+        expect(links?.[0]).toMatchObject({
+          object_id: doc.id,
+          use_case_id: detectionUseCase?.id,
+        });
+      });
+
+      it('should replace previous use-case links with the new ones on update', async () => {
+        // Given — first create with "Detection"
+        const input = {
+          ...documentData,
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          slug: 'use-case-update-slug',
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          use_cases: ['Detection'],
+        };
+        const doc1 = await DocumentApp.upsertDocumentWithExternalImage(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          input,
+          mockUpload,
+          metadataKeys
+        );
+
+        // When — update with "Response" instead
+        const doc2 = await DocumentApp.upsertDocumentWithExternalImage(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          { ...input, use_cases: ['Response'] },
+          mockUpload,
+          metadataKeys
+        );
+
+        // Then
+        expect(doc2.id).toBe(doc1.id);
+        const links = await TestHelper.objectUseCase.load({
+          object_id: doc2.id,
+        });
+        expect(links).toHaveLength(1);
+        const responseUseCase = await useCaseDomain.loadUseCaseBy({
+          name: 'Response',
+        });
+        expect(links?.[0]).toMatchObject({
+          object_id: doc2.id,
+          use_case_id: responseUseCase?.id,
+        });
+      });
+
+      it('should leave existing use-case links untouched when the update omits use_cases', async () => {
+        // Given — first create with "Detection"
+        const input = {
+          ...documentData,
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          slug: 'use-case-unchanged-slug',
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          use_cases: ['Detection'],
+        };
+        const doc1 = await DocumentApp.upsertDocumentWithExternalImage(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          input,
+          mockUpload,
+          metadataKeys
+        );
+
+        // When — update without use_cases at all
+        // NOTE: unlike `updateDocument` (which clears links when `use_cases`
+        // is explicitly undefined), `upsertDocument` only touches links when
+        // `use_cases?.length` is truthy — this is the current, intentional
+        // behavior being verified here.
+        const { use_cases: _useCases, ...inputWithoutUseCases } = input;
+        const doc2 = await DocumentApp.upsertDocumentWithExternalImage(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          inputWithoutUseCases,
+          mockUpload,
+          metadataKeys
+        );
+
+        // Then — the original "Detection" link is still present
+        expect(doc2.id).toBe(doc1.id);
+        const links = await TestHelper.objectUseCase.load({
+          object_id: doc2.id,
+        });
+        expect(links).toHaveLength(1);
+        const detectionUseCase = await useCaseDomain.loadUseCaseBy({
+          name: 'Detection',
+        });
+        expect(links?.[0]).toMatchObject({
+          object_id: doc2.id,
+          use_case_id: detectionUseCase?.id,
+        });
       });
     });
   });
