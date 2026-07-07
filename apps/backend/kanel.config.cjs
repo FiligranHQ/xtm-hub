@@ -56,6 +56,7 @@ const COLUMN_ENUM_MAP = {
     platform_identifier: 'PlatformIdentifier',
   },
   ManifestRebuildQueue: {
+    product: 'PlatformIdentifier',
     type: 'ManifestType',
     status: {
       tsType: 'ManifestRebuildQueueStatus',

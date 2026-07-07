@@ -1,5 +1,6 @@
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -19,6 +20,7 @@ import {
   OrderingMode,
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
+import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 import { IngestManifestDomain } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
 import { ManifestInformation } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.model';
@@ -860,6 +862,93 @@ describe('document domain', () => {
         )[TEST_KEY]
       ).toBe(TEST_VALUE);
     });
+
+    describe('when documentFilters are provided', () => {
+      it.each`
+        description                             | filters                        | expectedCount
+        ${'active: true — matches'}             | ${{ active: true }}            | ${1}
+        ${'active: false — excludes'}           | ${{ active: false }}           | ${0}
+        ${'is_decommissioned: true — excludes'} | ${{ is_decommissioned: true }} | ${0}
+      `(
+        'should apply scalar filter: $description',
+        async ({
+          filters,
+          expectedCount,
+        }: {
+          filters: Partial<Document>;
+          expectedCount: number;
+        }) => {
+          const docs = await DocumentDomain.loadDocumentsByMetadata(
+            TEST_KEY,
+            TEST_VALUE,
+            [],
+            filters
+          );
+          expect(docs).toHaveLength(expectedCount);
+        }
+      );
+
+      it('should return document when tag matches', async () => {
+        await TestHelper.document.update({ id: doc1.id }, { tags: ['latest'] });
+
+        const docs = await DocumentDomain.loadDocumentsByMetadata(
+          TEST_KEY,
+          TEST_VALUE,
+          [],
+          { tags: ['latest'] }
+        );
+        expect(docs).toHaveLength(1);
+        expect(docs[0]!.id).toBe(doc1.id);
+      });
+
+      it('should return no results when tag does not match', async () => {
+        await TestHelper.document.update({ id: doc1.id }, { tags: ['latest'] });
+
+        const docs = await DocumentDomain.loadDocumentsByMetadata(
+          TEST_KEY,
+          TEST_VALUE,
+          [],
+          { tags: ['latest_lts'] }
+        );
+        expect(docs).toHaveLength(0);
+      });
+
+      it.each`
+        doc1Tags          | doc1Active | filterTags    | filterActive | expectedCount | description
+        ${['latest']}     | ${true}    | ${['latest']} | ${true}      | ${1}          | ${'tag matches, active matches'}
+        ${['latest']}     | ${false}   | ${['latest']} | ${true}      | ${0}          | ${'tag matches, active does not match'}
+        ${['latest_lts']} | ${true}    | ${['latest']} | ${true}      | ${0}          | ${'tag does not match, active matches'}
+        ${['latest_lts']} | ${false}   | ${['latest']} | ${true}      | ${0}          | ${'nothing matches'}
+      `(
+        'should combine tag and scalar filters: $description',
+        async ({
+          doc1Tags,
+          doc1Active,
+          filterTags,
+          filterActive,
+          expectedCount,
+        }: {
+          doc1Tags: string[];
+          doc1Active: boolean;
+          filterTags: string[];
+          filterActive: boolean;
+          expectedCount: number;
+        }) => {
+          await TestHelper.document.update(
+            { id: doc1.id },
+            { tags: doc1Tags, active: doc1Active }
+          );
+
+          const docs = await DocumentDomain.loadDocumentsByMetadata(
+            TEST_KEY,
+            TEST_VALUE,
+            [],
+            { active: filterActive, tags: filterTags }
+          );
+          expect(docs).toHaveLength(expectedCount);
+        }
+      );
+    });
   });
 
   describe('loadDocumentBy', () => {
@@ -1104,5 +1193,265 @@ describe('document domain', () => {
         }
       }
     );
+  });
+
+  describe('loadBestCompatibleConnectorsByManifestFragmentIds', () => {
+    const createConnector = async ({
+      manifestFragmentId,
+      version,
+      minimumDeployableVersionPadded,
+      active = true,
+      isDecommissioned = false,
+      integrationType = IntegrationType.Connector,
+    }: {
+      manifestFragmentId: string;
+      version: string;
+      minimumDeployableVersionPadded?: string;
+      active?: boolean;
+      isDecommissioned?: boolean;
+      integrationType?: IntegrationType;
+    }) => {
+      const doc = await TestHelper.document.create({
+        active,
+        is_decommissioned: isDecommissioned,
+        version,
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: doc.id,
+        key: DocumentMetadataKeyCode.IntegrationType as unknown as DocumentMetadataKey,
+        value: integrationType,
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: doc.id,
+        key: DocumentMetadataKeyCode.ManifestFragmentId as unknown as DocumentMetadataKey,
+        value: manifestFragmentId,
+      });
+      if (minimumDeployableVersionPadded) {
+        await TestHelper.documentMetadata.create({
+          document_id: doc.id,
+          key: DocumentMetadataKeyCode.MinimumDeployableVersionPadded as unknown as DocumentMetadataKey,
+          value: minimumDeployableVersionPadded,
+        });
+      }
+      return doc;
+    };
+
+    afterEach(async () => {
+      await TestHelper.documentMetadata.delete({});
+      await TestHelper.document.delete({});
+    });
+
+    it('returns an empty array when the id list is empty', async () => {
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          [],
+          '7.260309.0'
+        );
+      expect(result).toHaveLength(0);
+    });
+
+    it.each([
+      {
+        description: 'no minimum_deployable_version_padded set',
+        minimumDeployableVersionPadded: undefined,
+        manifestVersion: '7.260309.0',
+      },
+      {
+        description: 'minimum_deployable_version_padded equals manifestVersion',
+        minimumDeployableVersionPadded: '007.260309.000',
+        manifestVersion: '7.260309.0',
+      },
+      {
+        description:
+          'minimum_deployable_version_padded is below manifestVersion',
+        minimumDeployableVersionPadded: '007.260101.000',
+        manifestVersion: '7.260309.0',
+      },
+    ])(
+      'returns the connector when $description',
+      async ({
+        minimumDeployableVersionPadded,
+        manifestVersion,
+      }: {
+        minimumDeployableVersionPadded: string | undefined;
+        manifestVersion: string;
+      }) => {
+        const doc = await createConnector({
+          manifestFragmentId: 'fragment-a',
+          version: '007.260309.000',
+          minimumDeployableVersionPadded,
+        });
+
+        const result =
+          await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+            ['fragment-a'],
+            manifestVersion
+          );
+
+        expect(result).toHaveLength(1);
+        expect(result[0]!.id).toBe(doc.id);
+      }
+    );
+
+    it('excludes the connector when minimum_deployable_version_padded is above manifestVersion', async () => {
+      await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260309.000',
+        minimumDeployableVersionPadded: '007.260601.000',
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a'],
+          '7.260309.0'
+        );
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('excludes inactive connectors', async () => {
+      await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260309.000',
+        active: false,
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a'],
+          '7.260309.0'
+        );
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('excludes decommissioned connectors', async () => {
+      await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260309.000',
+        isDecommissioned: true,
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a'],
+          '7.260309.0'
+        );
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('excludes documents whose integration_type is not connector', async () => {
+      await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260309.000',
+        integrationType: IntegrationType.CsvFeed,
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a'],
+          '7.260309.0'
+        );
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('only returns connectors whose manifest_fragment_id is in the provided list', async () => {
+      await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260309.000',
+      });
+      await createConnector({
+        manifestFragmentId: 'fragment-b',
+        version: '007.260309.000',
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a'],
+          '7.260309.0'
+        );
+
+      expect(result).toHaveLength(1);
+      expect(result[0]!.manifest_fragment_id).toBe('fragment-a');
+    });
+
+    it('returns one compatible result per manifest_fragment_id and skips incompatible ones', async () => {
+      await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260309.000',
+        minimumDeployableVersionPadded: '007.260101.000',
+      });
+      await createConnector({
+        manifestFragmentId: 'fragment-b',
+        version: '007.260309.000',
+        minimumDeployableVersionPadded: '007.260601.000',
+      });
+      await createConnector({
+        manifestFragmentId: 'fragment-c',
+        version: '007.260101.000',
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a', 'fragment-b', 'fragment-c'],
+          '7.260309.0'
+        );
+
+      expect(result).toHaveLength(2);
+      const fragmentIds = result.map((r) => r.manifest_fragment_id);
+      expect(fragmentIds).toContain('fragment-a');
+      expect(fragmentIds).toContain('fragment-c');
+      expect(fragmentIds).not.toContain('fragment-b');
+    });
+
+    it('excludes LTS connectors when manifest version is not LTS', async () => {
+      await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260309.000.LTS.005',
+        minimumDeployableVersionPadded: '007.260101.000.LTS.001',
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a'],
+          '7.260309.0'
+        );
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('excludes non-LTS connectors when manifest version is LTS', async () => {
+      await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260309.000',
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a'],
+          '7.260309.0-lts.5'
+        );
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('returns LTS connector when manifest version is LTS and connector is compatible', async () => {
+      const doc = await createConnector({
+        manifestFragmentId: 'fragment-a',
+        version: '007.260101.000.LTS.001',
+        minimumDeployableVersionPadded: '007.260101.000.LTS.001',
+      });
+
+      const result =
+        await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+          ['fragment-a'],
+          '7.260309.0-lts.5'
+        );
+
+      expect(result).toHaveLength(1);
+      expect(result[0]!.id).toBe(doc.id);
+    });
   });
 });

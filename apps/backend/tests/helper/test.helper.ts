@@ -4,6 +4,7 @@ import {
   CompetitorTier,
   FiligranProduct,
   ManifestType,
+  PlatformIdentifier,
   Timeline,
 } from '../../src/__generated__/resolvers-types';
 import Competitor, {
@@ -11,6 +12,12 @@ import Competitor, {
   CompetitorMutator,
 } from '../../src/model/kanel/public/Competitor';
 import Epic, { EpicId, EpicMutator } from '../../src/model/kanel/public/Epic';
+import Manifest, {
+  ManifestMutator,
+} from '../../src/model/kanel/public/Manifest';
+import ManifestDocument, {
+  ManifestDocumentMutator,
+} from '../../src/model/kanel/public/ManifestDocument';
 import ManifestRebuildQueue, {
   ManifestRebuildQueueId,
   ManifestRebuildQueueInitializer,
@@ -172,7 +179,7 @@ export const TestHelper = {
       const [row] = await db<ManifestRebuildQueue>('ManifestRebuildQueue')
         .insert({
           id: uuidv4() as ManifestRebuildQueueId,
-          product: 'opencti',
+          product: PlatformIdentifier.Opencti,
           version: '6.4.0',
           type: ManifestType.Connector,
           status: ManifestRebuildQueueStatus.Pending,
@@ -198,6 +205,29 @@ export const TestHelper = {
       return db<ManifestRebuildQueue[]>('ManifestRebuildQueue')
         .where(field)
         .select('*');
+    },
+  },
+  manifest: {
+    loadAll: async (field: ManifestMutator): Promise<Manifest[]> => {
+      return db<Manifest[]>('Manifest').where(field).select('*');
+    },
+    load: async (field: ManifestMutator): Promise<Manifest | undefined> => {
+      return db<Manifest>('Manifest').where(field).select('*').first();
+    },
+    delete: async (field: ManifestMutator): Promise<void> => {
+      await db<Manifest>('Manifest').where(field).del();
+    },
+  },
+  manifestDocument: {
+    loadAll: async (
+      field: ManifestDocumentMutator
+    ): Promise<ManifestDocument[]> => {
+      return db<ManifestDocument[]>('Manifest_Document')
+        .where(field)
+        .select('*');
+    },
+    delete: async (field: ManifestDocumentMutator): Promise<void> => {
+      await db<ManifestDocument>('Manifest_Document').where(field).del();
     },
   },
 };

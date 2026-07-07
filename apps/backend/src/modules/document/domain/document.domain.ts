@@ -3,6 +3,7 @@ import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
   DocumentConnection,
   DocumentMetadataKeyCode,
+  IntegrationType,
   Organization,
   QueryDocumentsArgs,
   ServiceDefinitionIdentifier,
@@ -18,6 +19,12 @@ import User, { UserId } from '../../../model/kanel/public/User';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { omit } from '../../../utils/utils';
+import { isLtsVersion } from '../../../utils/versioning';
+import { formatConnectorVersion } from '../../shareable-resource/manifest-fragment/manifest-fragment.utils';
+import {
+  ConnectorV2,
+  INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
+} from '../../shareable-resource/opencti/integration/integration.model';
 import { Document, WithDocumentId } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
@@ -132,8 +139,11 @@ export const DocumentDomain = {
   loadDocumentsByMetadata: async (
     key: string,
     value: string,
-    include_metadata: DocumentMetadataKeyCode[] = []
+    include_metadata: DocumentMetadataKeyCode[] = [],
+    documentFilters: DocumentMutator = {}
   ): Promise<DocumentModel[]> => {
+    const { tags, ...scalarFilters } = documentFilters;
+
     const docQuery = db<DocumentModel>('Document')
       .leftJoin(
         'Document_Metadata',
@@ -142,8 +152,17 @@ export const DocumentDomain = {
       )
       .where('Document_Metadata.key', key)
       .andWhere('Document_Metadata.value', value)
+      .andWhere(scalarFilters)
       .select('Document.*')
       .groupBy('Document.id');
+
+    if (tags && tags.length > 0) {
+      const placeholders = tags.map(() => '?').join(',');
+      docQuery.whereRaw(
+        `"Document"."tags"::text[] @> array[${placeholders}]`,
+        tags
+      );
+    }
 
     DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
 
@@ -513,5 +532,62 @@ export const DocumentDomain = {
     DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
 
     return query;
+  },
+
+  /**
+   * For each manifest_fragment_id in the provided list, returns the connector
+   * with the highest product_version that is still compatible with manifestVersion
+   * (i.e. minimum_deployable_version_padded is absent or <= manifestVersion, padded).
+   * Exactly one row per manifest_fragment_id is returned (or none if no compatible version exists).
+   */
+  loadBestCompatibleConnectorsByManifestFragmentIds: async (
+    manifestFragmentIds: string[],
+    version: string
+  ): Promise<ConnectorV2[]> => {
+    if (manifestFragmentIds.length === 0) return [];
+
+    const paddedVersion = formatConnectorVersion(version);
+    const isLts = isLtsVersion(version);
+    const metadataKeys =
+      INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[];
+
+    const query = db<DocumentModel>('Document')
+      .distinctOn('dm_fragment.value')
+      .join(
+        'Document_Metadata as dm_type',
+        'Document.id',
+        'dm_type.document_id'
+      )
+      .join(
+        'Document_Metadata as dm_fragment',
+        'Document.id',
+        'dm_fragment.document_id'
+      )
+      .where('dm_type.key', DocumentMetadataKeyCode.IntegrationType)
+      .andWhere('dm_type.value', IntegrationType.Connector)
+      .andWhere('dm_fragment.key', DocumentMetadataKeyCode.ManifestFragmentId)
+      .whereIn('dm_fragment.value', manifestFragmentIds)
+      .where('Document.active', true)
+      .where('Document.is_decommissioned', false)
+      .select('Document.*')
+      .groupBy('Document.id', 'dm_fragment.value')
+      // dm_pivot comes from addIncludeMetadataQuery
+      .havingRaw(
+        `(MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) IS NULL
+          OR MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) <= ?)
+         AND "Document"."version" ${isLts ? 'LIKE' : 'NOT LIKE'} '%.LTS.%'`,
+        [
+          DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+          DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+          paddedVersion,
+        ]
+      )
+      .orderByRaw(
+        `"dm_fragment"."value" ASC, "Document"."version" DESC NULLS LAST`
+      );
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(query, metadataKeys);
+
+    return query as unknown as Promise<ConnectorV2[]>;
   },
 };
