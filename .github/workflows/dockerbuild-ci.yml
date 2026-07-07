@@ -77,6 +77,32 @@ jobs:
         working-directory: ${{ matrix.working-directory }}
         run: yarn lint
 
+      - name: Check forbidden enum/relay imports on modified frontend files
+        if: matrix.label == 'frontend'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Fetch the PR base branch so git diff can compare against it.
+            git fetch --depth=1 origin "${{ github.base_ref }}"
+
+            mapfile -t changed_files < <(
+              git diff --name-only "origin/${{ github.base_ref }}" HEAD \
+                | grep -E '^apps/frontend/.*\.(ts|tsx|js|jsx)$' || true
+            )
+          else
+            # workflow_dispatch or push: scan every tracked frontend file.
+            mapfile -t changed_files < <(git ls-files | grep -E '^apps/frontend/.*\.(ts|tsx|js|jsx)$' || true)
+          fi
+
+          if [[ ${#changed_files[@]} -eq 0 ]]; then
+            echo "No modified frontend JS/TS files to check."
+            exit 0
+          fi
+
+          yarn check:forbidden-enum-imports "${changed_files[@]}"
+
       - name: Check formatting
         working-directory: ${{ matrix.working-directory }}
         run: yarn format:check
@@ -563,7 +589,7 @@ jobs:
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-production \
-              --extra_vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}"; then
+              --extra-vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}"; then
               echo "✅ Deployment successful"
               exit 0
             fi
@@ -669,7 +695,7 @@ jobs:
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-staging \
-              --extra_vars '{"env":"Development"}'; then
+              --extra-vars '{"env":"Development"}'; then
               echo "✅ Deployment successful"
               exit 0
             fi
@@ -691,7 +717,7 @@ jobs:
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-staging \
-              --extra_vars '{"env":"Prerelease"}'; then
+              --extra-vars '{"env":"Prerelease"}'; then
               echo "✅ Deployment successful"
               exit 0
             fi
