@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import RegisteredPlatformCard from './RegisteredPlatformCard';
 
 describe('RegisteredPlatformCard', () => {
-  it('renders trial-specific fields and deploy CTA when deploy href is available', () => {
+  it('renders trial-specific fields when contract is a trial', () => {
     testRender(
       <RegisteredPlatformCard
         platform={{
@@ -24,7 +24,7 @@ describe('RegisteredPlatformCard', () => {
     expect(screen.getByText('DaysRemaining')).toBeInTheDocument();
   });
 
-  it('hides deploy CTA when deploy href is not available', () => {
+  it('hides trial-specific fields for non-trial contracts', () => {
     testRender(
       <RegisteredPlatformCard
         platform={{
@@ -39,9 +39,6 @@ describe('RegisteredPlatformCard', () => {
     );
 
     expect(screen.getByText('OpenAEV')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('link', { name: 'DeployScenarioCta' })
-    ).toBeNull();
     expect(screen.queryByText('DaysRemaining')).toBeNull();
   });
 });

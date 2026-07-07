@@ -329,7 +329,7 @@
         "TRIAL": "無料トライアル"
       },
       "Remaining": "残り",
-      "DaysRemaining": "{days, plural, =1 {# day} その他 {# days}}"
+      "DaysRemaining": "{days, plural, =1 {#日} other {#日}}"
     },
     "TryOtherPlatform": {
       "Title": "XTMプラットフォームを拡張・スケールアップ",

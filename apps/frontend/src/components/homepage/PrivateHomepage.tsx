@@ -36,12 +36,12 @@ export const PrivateHomepage = async () => {
 
   const authenticatedClient = await getAuthenticatedGraphqlClient();
 
-  const registeredPlatformsData = await useRegisteredPlatformsQuery.fetcher(
-    authenticatedClient,
-    {
+  const [registeredPlatformsData, meData] = await Promise.all([
+    useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
       input: { identifier: null, onlyActive: false, onlyTrial: null },
-    }
-  )();
+    })(),
+    serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
+  ]);
 
   const registeredIdentifiers = registeredPlatformsData.registeredPlatforms
     .filter(hasPlatformConfiguration)
@@ -51,7 +51,6 @@ export const PrivateHomepage = async () => {
     registeredIdentifiers
   );
 
-  const meData = await serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery);
   const me = meData.data.me as MeNameData | null | undefined;
   const firstName = me?.first_name?.trim() ?? '';
   const lastName = me?.last_name?.trim() ?? '';

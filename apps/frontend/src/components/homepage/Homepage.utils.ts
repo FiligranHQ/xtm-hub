@@ -1,13 +1,13 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
 import { daysUntil } from '@/utils/date';
 import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import {
   DeploymentRequestHubStatus,
   DocumentImageType,
   HomepageDocumentFragment,
+  PlatformContract,
   RegisteredPlatformsQuery,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
@@ -29,7 +29,7 @@ export type HomepageRegisteredPlatformCardViewModel = {
   product: HomepageRegisteredProduct;
   title: string;
   registrationDate: string | null | undefined;
-  contract: PlatformContractEnum;
+  contract: PlatformContract;
   remainingTrialDays: number | undefined;
 };
 
@@ -68,20 +68,6 @@ const resolveHomepageRegisteredProduct = (
   return undefined;
 };
 
-const resolvePlatformContract = (
-  contract: RegisteredPlatformForHomepage['contract']
-): PlatformContractEnum => {
-  if (contract === 'CE') {
-    return PlatformContractEnum.CE;
-  }
-
-  if (contract === 'EE') {
-    return PlatformContractEnum.EE;
-  }
-
-  return PlatformContractEnum.TRIAL;
-};
-
 export const hasPlatformConfiguration = (
   platform: RegisteredPlatformForHomepage
 ): boolean => {
@@ -112,16 +98,14 @@ const mapRegisteredPlatformToHomepageCard = (
     return undefined;
   }
 
-  const contract = resolvePlatformContract(platform.contract);
-
   return {
     id: platform.id,
     product,
     title: platform.title,
     registrationDate,
-    contract,
+    contract: platform.contract,
     remainingTrialDays:
-      contract === PlatformContractEnum.TRIAL
+      platform.contract === PlatformContract.Trial
         ? resolveRemainingTrialDays(
             platform.subscription?.end_date ??
               platform.deployment_request?.end_date

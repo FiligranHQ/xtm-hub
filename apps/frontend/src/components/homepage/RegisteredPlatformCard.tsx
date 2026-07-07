@@ -22,6 +22,27 @@ const CONTRACT_LABEL_BY_CONTRACT: Record<PlatformContractEnum, string> = {
   [PlatformContractEnum.TRIAL]: 'Contracts.TRIAL',
 };
 
+const TRIAL_DAYS_ERROR_THRESHOLD = 8;
+const TRIAL_DAYS_WARNING_THRESHOLD = 22;
+
+const resolveTrialDaysBadgeClassName = (
+  remainingTrialDays: number | undefined
+): string => {
+  if (remainingTrialDays === undefined) {
+    return 'bg-feedback-success-secondary-transparency';
+  }
+
+  if (remainingTrialDays <= TRIAL_DAYS_ERROR_THRESHOLD) {
+    return 'bg-feedback-error-secondary-transparency';
+  }
+
+  if (remainingTrialDays <= TRIAL_DAYS_WARNING_THRESHOLD) {
+    return 'bg-feedback-alert-secondary-transparency';
+  }
+
+  return 'bg-feedback-success-secondary-transparency';
+};
+
 const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
   const t = useTranslations('HomePage.RegisteredPlatformsCard');
   const format = useFormatter();
@@ -35,14 +56,9 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
       })
     : '-';
 
-  const remainingTrialDaysBadgeClassName =
-    platform.remainingTrialDays !== undefined &&
-    platform.remainingTrialDays <= 8
-      ? 'bg-feedback-error-secondary-transparency'
-      : platform.remainingTrialDays !== undefined &&
-          platform.remainingTrialDays <= 22
-        ? 'bg-feedback-alert-secondary-transparency'
-        : 'bg-feedback-success-secondary-transparency';
+  const remainingTrialDaysBadgeClassName = resolveTrialDaysBadgeClassName(
+    platform.remainingTrialDays
+  );
 
   return (
     <Card className="border pt-l my-xs bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
@@ -74,15 +90,11 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             <span
               className="bg-clip-text text-transparent"
               style={{ backgroundImage: NAVIGATION_GRADIENT_STYLE }}>
-              {t(
-                CONTRACT_LABEL_BY_CONTRACT[platform.contract] ?? 'Contracts.CE'
-              )}
+              {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
             </span>
           ) : (
             <Badge className="bg-elevation-surface-highlight-layer-1 border-none">
-              {t(
-                CONTRACT_LABEL_BY_CONTRACT[platform.contract] ?? 'Contracts.CE'
-              )}
+              {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
             </Badge>
           )}
           {platform.contract === PlatformContractEnum.TRIAL &&
