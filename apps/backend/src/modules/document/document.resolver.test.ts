@@ -331,7 +331,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).children_documents!(
-      { id } as never,
+      { id } as DocumentModel,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -354,7 +354,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).uploader!(
-      { id } as never,
+      { id } as DocumentModel,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -377,7 +377,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).uploader_organization!(
-      { id } as never,
+      { id } as DocumentModel,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -400,7 +400,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).service_instance!(
-      { service_instance_id: serviceInstanceId } as never,
+      { service_instance_id: serviceInstanceId } as DocumentModel,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -424,7 +424,7 @@ describe('document field resolvers', () => {
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
     ).subscription!(
-      { service_instance_id: serviceInstanceId } as never,
+      { service_instance_id: serviceInstanceId } as DocumentModel,
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO

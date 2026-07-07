@@ -15,14 +15,8 @@ const TryOtherPlatformProductBlock = ({
 }: TryOtherPlatformProductBlockProps) => {
   const t = useTranslations('HomePage.TryOtherPlatform');
 
-  const href =
-    product === PlatformIdentifierEnum.OPENAEV
-      ? '/app/service/openaev-free-trial'
-      : '/app/service/opencti-free-trial';
-
-  const productKey =
-    product === PlatformIdentifierEnum.OPENAEV ? 'OpenAEV' : 'OpenCTI';
-
+  const href = PlatformMetadataMapping[product].learnMorePrivateUrl;
+  const productKey = PlatformMetadataMapping[product].name;
   const ProductIcon =
     product === PlatformIdentifierEnum.OPENAEV
       ? OpenAevIconIcon
