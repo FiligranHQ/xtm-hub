@@ -10,6 +10,7 @@ export interface PlatformMetadata {
   learnMorePublicUrl: string;
   learnMorePrivateUrl: string;
   logoUrl: string;
+  docUrl: string;
 }
 
 export const PlatformMetadataMapping: Record<
@@ -21,12 +22,14 @@ export const PlatformMetadataMapping: Record<
     learnMorePublicUrl: '/cybersecurity-solutions/opencti-free-trial',
     learnMorePrivateUrl: '/app/service/opencti-free-trial',
     logoUrl: '/logo_opencti_dark.png',
+    docUrl: 'https://docs.opencti.io/latest/administration/hub/',
   },
   [PlatformIdentifierEnum.OPENAEV]: {
     name: 'OpenAEV',
     learnMorePublicUrl: '/cybersecurity-solutions/openaev-free-trial',
     learnMorePrivateUrl: '/app/service/openaev-free-trial',
     logoUrl: '/logo_openaev_dark.png',
+    docUrl: 'https://docs.openaev.io/latest/administration/hub/',
   },
 };
 
