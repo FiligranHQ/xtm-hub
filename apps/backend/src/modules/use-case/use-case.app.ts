@@ -5,27 +5,15 @@ import {
 } from '../../model/kanel/public/ObjectUseCase';
 import UseCase, {
   UseCaseId,
-  UseCaseInitializer,
   UseCaseMutator,
 } from '../../model/kanel/public/UseCase';
+import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { stripNulls } from '../../utils/typescript';
 import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseDomain } from './use-case.domain';
 
 export const useCaseApp = {
-  loadOrCreateUseCase: async ({
-    name,
-    color = '#0099cc',
-  }: UseCaseInitializer): Promise<UseCase> => {
-    const existing = await useCaseDomain.loadUseCaseByLikeName(name);
-    if (existing) {
-      return existing;
-    }
-
-    return useCaseDomain.insertUseCase({ name, color });
-  },
-
   linkUseCasesByNameToObject: async (
     objectId: ObjectUseCaseObjectId,
     useCaseNames: string[]
@@ -36,15 +24,23 @@ export const useCaseApp = {
 
     const insertObjectUseCase: ObjectUseCaseInitializer[] = [];
     for (const name of useCaseNames) {
-      const useCase = await useCaseApp.loadOrCreateUseCase({
-        name,
-        color: '#0099cc',
-      });
+      const useCase = await useCaseDomain.loadUseCaseByLikeName(name);
+      if (!useCase) {
+        logApp.warn(
+          `Skipping unknown use case link for object ${objectId}: ${name}`
+        );
+        continue;
+      }
       insertObjectUseCase.push({
         object_id: objectId,
         use_case_id: useCase.id,
       });
     }
+
+    if (!insertObjectUseCase.length) {
+      return;
+    }
+
     await objectUseCaseDomain.insertObjectUseCase(insertObjectUseCase);
   },
 

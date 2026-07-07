@@ -13,6 +13,14 @@ describe('update open CTI manifest GraphQL query', () => {
     vi.spyOn(IngestManifestApp, 'updateOpenCTIManifest').mockResolvedValue({
       validContracts: [],
       errors: [],
+      warnings: ['contract-a: unknown use case skipped'],
+      invalidUseCasesByConnector: [
+        {
+          contractTitle: 'Contract A',
+          contractSlug: 'contract-a',
+          invalidUseCases: ['unknown-use-case'],
+        },
+      ],
     });
 
     // When
@@ -25,7 +33,17 @@ describe('update open CTI manifest GraphQL query', () => {
 
     // Then
     expect(IngestManifestApp.updateOpenCTIManifest).toHaveBeenCalledWith(tag);
-    expect(result).toMatchObject({ success: true });
+    expect(result).toMatchObject({
+      success: true,
+      warnings: ['contract-a: unknown use case skipped'],
+      invalidUseCasesByConnector: [
+        {
+          contractTitle: 'Contract A',
+          contractSlug: 'contract-a',
+          invalidUseCases: ['unknown-use-case'],
+        },
+      ],
+    });
   });
 
   it('should propagate error thrown by IngestManifestApp', async () => {

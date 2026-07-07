@@ -834,6 +834,13 @@ export enum IntegrationType {
   ThirdPartyIntegration = 'third_party_integration'
 }
 
+export type InvalidUseCasesByConnector = {
+  __typename?: 'InvalidUseCasesByConnector';
+  contractSlug?: Maybe<Scalars['String']['output']>;
+  contractTitle?: Maybe<Scalars['String']['output']>;
+  invalidUseCases: Array<Scalars['String']['output']>;
+};
+
 export type IsPlatformRegisteredInput = {
   platformId: Scalars['String']['input'];
   tenantId?: InputMaybe<Scalars['String']['input']>;
@@ -2309,7 +2316,9 @@ export enum SubscriptionOrdering {
 
 export type Success = {
   __typename?: 'Success';
+  invalidUseCasesByConnector?: Maybe<Array<InvalidUseCasesByConnector>>;
   success: Scalars['Boolean']['output'];
+  warnings?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 export type TaxiiFeed = Document & Integration & Node & {
@@ -2800,6 +2809,7 @@ export type ResolversTypes = ResolversObject<{
   IntegrationHack: ResolverTypeWrapper<IntegrationHack>;
   IntegrationSubType: IntegrationSubType;
   IntegrationType: IntegrationType;
+  InvalidUseCasesByConnector: ResolverTypeWrapper<InvalidUseCasesByConnector>;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
   IsPlatformRegisteredResponse: ResolverTypeWrapper<IsPlatformRegisteredResponse>;
@@ -3001,6 +3011,7 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars['Int']['output'];
   Integration: ResolversInterfaceTypes<ResolversParentTypes>['Integration'];
   IntegrationHack: IntegrationHack;
+  InvalidUseCasesByConnector: InvalidUseCasesByConnector;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: IsPlatformRegisteredOrganization;
   IsPlatformRegisteredResponse: IsPlatformRegisteredResponse;
@@ -3532,6 +3543,13 @@ export type IntegrationHackResolvers<ContextType = PortalContext, ParentType ext
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   uploader_organization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType>;
   use_cases?: Resolver<Maybe<Array<ResolversTypes['UseCase']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type InvalidUseCasesByConnectorResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['InvalidUseCasesByConnector'] = ResolversParentTypes['InvalidUseCasesByConnector']> = ResolversObject<{
+  contractSlug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contractTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  invalidUseCases?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4160,7 +4178,9 @@ export type SubscriptionModelResolvers<ContextType = PortalContext, ParentType e
 }>;
 
 export type SuccessResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Success'] = ResolversParentTypes['Success']> = ResolversObject<{
+  invalidUseCasesByConnector?: Resolver<Maybe<Array<ResolversTypes['InvalidUseCasesByConnector']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  warnings?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4400,6 +4420,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   IntegrationHack?: IntegrationHackResolvers<ContextType>;
+  InvalidUseCasesByConnector?: InvalidUseCasesByConnectorResolvers<ContextType>;
   IsPlatformRegisteredOrganization?: IsPlatformRegisteredOrganizationResolvers<ContextType>;
   IsPlatformRegisteredResponse?: IsPlatformRegisteredResponseResolvers<ContextType>;
   JSON?: GraphQLScalarType;

@@ -4,11 +4,12 @@ import { IngestManifestApp } from './ingest-manifest.app';
 const resolvers: Resolvers = {
   Query: {
     updateOpenCTIManifest: async (_, { tag }) => {
-      // Error handling is now done in the app layer
-      await IngestManifestApp.updateOpenCTIManifest(tag);
+      const result = await IngestManifestApp.updateOpenCTIManifest(tag);
 
       return {
         success: true,
+        warnings: result.warnings,
+        invalidUseCasesByConnector: result.invalidUseCasesByConnector,
       };
     },
   },

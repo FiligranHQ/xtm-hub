@@ -1,10 +1,10 @@
 import { PortalCapability } from '../../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../../context/request.context';
 import { securityGuard } from '../../../../../security/guard';
-import { BadRequestError } from '../../../../../utils/error/error.util';
 import { IngestManifestDomain } from './ingest-manifest.domain';
 import {
   IngestManifestHelper,
+  InvalidConnectorUseCases,
   ManifestExtractionResult,
 } from './ingest-manifest.helper';
 
@@ -12,7 +12,12 @@ const getOpenCTIConnectorsManifest = (tag: string) =>
   `https://raw.githubusercontent.com/OpenCTI-Platform/connectors/tags/${tag}/manifest.json`;
 
 export const IngestManifestApp = {
-  async updateOpenCTIManifest(tag: string): Promise<ManifestExtractionResult> {
+  async updateOpenCTIManifest(tag: string): Promise<
+    ManifestExtractionResult & {
+      warnings: string[];
+      invalidUseCasesByConnector: InvalidConnectorUseCases[];
+    }
+  > {
     const user = requestContext.requireUser();
 
     await securityGuard.assertUserPortalCapabilities(user, [
@@ -23,27 +28,41 @@ export const IngestManifestApp = {
       getOpenCTIConnectorsManifest(tag)
     );
     const result = IngestManifestHelper.extractManifestInformation(manifest);
+    const {
+      sanitizedContracts,
+      warnings,
+      invalidUseCases,
+      invalidUseCasesByConnector,
+    } = await IngestManifestHelper.filterUnknownUseCases(result.validContracts);
 
-    if (result.validContracts.length > 0) {
-      void IngestManifestDomain.upsertConnectors(result.validContracts);
+    if (sanitizedContracts.length > 0) {
+      void IngestManifestDomain.upsertConnectors(sanitizedContracts);
     }
 
-    // If there are errors, throw a GraphQL error with details
-    if (result.errors.length > 0) {
-      const errorDetails = result.errors
-        .map(
-          (err) => `${err.contractTitle} (${err.contractSlug}): ${err.error}`
-        )
-        .join('; ');
+    const validationWarnings = result.errors.map(
+      (err) =>
+        `${err.contractTitle ?? 'Unknown'} (${err.contractSlug ?? 'Unknown'}): ${err.error}`
+    );
 
-      throw BadRequestError(
-        `Manifest ingestion completed with ${result.errors.length} validation error(s): ${errorDetails}`,
-        {
-          detail: `Successfully processed ${result.validContracts.length} valid contracts, but ${result.errors.length} contracts had validation errors: ${result.errors}`,
-        }
-      );
-    }
+    const unknownUseCaseWarnings = warnings.map(
+      (warning) =>
+        `${warning.contractTitle ?? 'Unknown'} (${warning.contractSlug ?? 'Unknown'}): ${warning.warning}`
+    );
 
-    return result;
+    const aggregatedInvalidUseCasesWarning =
+      invalidUseCases.length > 0
+        ? [`Incorrect use case(s): ${invalidUseCases.join(', ')}`]
+        : [];
+
+    return {
+      ...result,
+      validContracts: sanitizedContracts,
+      invalidUseCasesByConnector,
+      warnings: [
+        ...validationWarnings,
+        ...unknownUseCaseWarnings,
+        ...aggregatedInvalidUseCasesWarning,
+      ],
+    };
   },
 };

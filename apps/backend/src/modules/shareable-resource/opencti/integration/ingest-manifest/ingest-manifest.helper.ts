@@ -11,6 +11,7 @@ import { getErrorMessage } from '../../../../../utils/error/error-guard.util';
 import { fetchWithCacheForLocalTesting } from '../../../../../utils/fetch-with-cache';
 import { isValidVersion } from '../../../../../utils/versioning';
 import { Upload } from '../../../../document/document.uploads.helper';
+import { useCaseDomain } from '../../../../use-case/use-case.domain';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -24,6 +25,18 @@ export interface ManifestExtractionResult {
     contractSlug?: string;
     error: string;
   }[];
+}
+
+export interface UseCaseValidationWarning {
+  contractTitle?: string;
+  contractSlug?: string;
+  warning: string;
+}
+
+export interface InvalidConnectorUseCases {
+  contractTitle?: string;
+  contractSlug?: string;
+  invalidUseCases: string[];
 }
 
 const CACHE_OPENCTI_FILE_NAME = 'manifest_octi_connectors.json';
@@ -156,6 +169,103 @@ export const IngestManifestHelper = {
       errors.push({ error: `Unexpected error: ${errorMessage}` });
       return { validContracts, errors };
     }
+  },
+  filterUnknownUseCases: async (
+    contracts: ManifestInformation[]
+  ): Promise<{
+    sanitizedContracts: ManifestInformation[];
+    warnings: UseCaseValidationWarning[];
+    invalidUseCases: string[];
+    invalidUseCasesByConnector: InvalidConnectorUseCases[];
+  }> => {
+    if (!contracts.length) {
+      return {
+        sanitizedContracts: contracts,
+        warnings: [],
+        invalidUseCases: [],
+        invalidUseCasesByConnector: [],
+      };
+    }
+
+    const uniqueUseCases = [
+      ...new Set(
+        contracts.flatMap((contract) =>
+          (contract.use_cases ?? []).map((useCase) => useCase.trim())
+        )
+      ),
+    ].filter(Boolean);
+
+    if (!uniqueUseCases.length) {
+      return {
+        sanitizedContracts: contracts,
+        warnings: [],
+        invalidUseCases: [],
+        invalidUseCasesByConnector: [],
+      };
+    }
+
+    const knownUseCases = await Promise.all(
+      uniqueUseCases.map(async (useCaseName) => {
+        const existingUseCase =
+          await useCaseDomain.loadUseCaseByLikeName(useCaseName);
+        return existingUseCase ? useCaseName.toLowerCase() : null;
+      })
+    );
+
+    const knownUseCaseNameSet = new Set(
+      knownUseCases.filter(
+        (useCaseName): useCaseName is string => !!useCaseName
+      )
+    );
+
+    const warnings: UseCaseValidationWarning[] = [];
+    const invalidUseCaseSet = new Set<string>();
+    const invalidUseCasesByConnector: InvalidConnectorUseCases[] = [];
+    const sanitizedContracts = contracts.map((contract) => {
+      const knownContractUseCases: string[] = [];
+      const unknownContractUseCases: string[] = [];
+
+      for (const useCaseName of contract.use_cases ?? []) {
+        const normalizedUseCaseName = useCaseName.trim();
+        if (!normalizedUseCaseName) {
+          continue;
+        }
+
+        if (knownUseCaseNameSet.has(normalizedUseCaseName.toLowerCase())) {
+          knownContractUseCases.push(normalizedUseCaseName);
+          continue;
+        }
+
+        unknownContractUseCases.push(normalizedUseCaseName);
+        invalidUseCaseSet.add(normalizedUseCaseName);
+      }
+
+      if (unknownContractUseCases.length > 0) {
+        warnings.push({
+          contractTitle: contract.name ?? undefined,
+          contractSlug: contract.slug ?? undefined,
+          warning: `Unknown use case(s) skipped: ${unknownContractUseCases.join(', ')}`,
+        });
+
+        invalidUseCasesByConnector.push({
+          contractTitle: contract.name ?? undefined,
+          contractSlug: contract.slug ?? undefined,
+          invalidUseCases: unknownContractUseCases,
+        });
+      }
+
+      return {
+        ...contract,
+        use_cases: knownContractUseCases,
+      };
+    });
+
+    return {
+      sanitizedContracts,
+      warnings,
+      invalidUseCases: [...invalidUseCaseSet],
+      invalidUseCasesByConnector,
+    };
   },
   base64ToUpload: (
     base64String: string,

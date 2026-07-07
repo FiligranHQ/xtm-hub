@@ -1,10 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
 } from '../../../../../__generated__/resolvers-types';
+import { useCaseDomain } from '../../../../use-case/use-case.domain';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integration.model';
 import {
   IngestManifestHelper,
@@ -384,6 +385,55 @@ describe('ingest manifest helper', () => {
         expect(result.errors).toHaveLength(1);
         expect(result.errors[0]?.contractTitle).toBe('Invalid Middle');
       });
+    });
+  });
+
+  describe('filterUnknownUseCases', () => {
+    it('should keep known use cases, skip unknown ones and return warnings', async () => {
+      vi.spyOn(useCaseDomain, 'loadUseCaseByLikeName').mockImplementation(
+        async (name) => {
+          if (name.toLowerCase() === 'automation') {
+            return {
+              id: 'use-case-id' as never,
+              name: 'automation',
+              color: '#0099cc',
+            };
+          }
+          return undefined;
+        }
+      );
+
+      const {
+        sanitizedContracts,
+        warnings,
+        invalidUseCases,
+        invalidUseCasesByConnector,
+      } = await IngestManifestHelper.filterUnknownUseCases([
+        {
+          name: 'Contract One',
+          slug: 'contract-one',
+          description: 'desc',
+          short_description: 'short',
+          logo: 'https://example.com/logo.png',
+          use_cases: ['automation', 'unknown-use-case'],
+          service_instance_id: 'service-id' as never,
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          source_type: DocumentSourceType.External,
+        },
+      ]);
+
+      expect(sanitizedContracts).toHaveLength(1);
+      expect(sanitizedContracts[0]?.use_cases).toEqual(['automation']);
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]?.warning).toContain('unknown-use-case');
+      expect(invalidUseCases).toEqual(['unknown-use-case']);
+      expect(invalidUseCasesByConnector).toEqual([
+        {
+          contractTitle: 'Contract One',
+          contractSlug: 'contract-one',
+          invalidUseCases: ['unknown-use-case'],
+        },
+      ]);
     });
   });
 });

@@ -16,9 +16,28 @@ import { IngestManifestDomain } from './ingest-manifest.domain';
 import { ManifestInformation } from './ingest-manifest.model';
 import sampleExtractedManifest from './test/sample-extracted-manifest.json';
 
+const ensureUseCases = async (names: string[]) => {
+  for (const name of names) {
+    const existing = await useCaseDomain.loadUseCaseByLikeName(name);
+    if (!existing) {
+      await useCaseDomain.insertUseCase({
+        name,
+        color: '#0099cc',
+      });
+    }
+  }
+};
+
 describe('upsertConnectors', () => {
   beforeAll(async () => {
     await minioInit();
+    await ensureUseCases([
+      'automation',
+      'integration',
+      'monitoring',
+      'updated useCase 1',
+      'updated useCase 2',
+    ]);
   });
   describe('when creating new connectors', () => {
     let result: Connector[];

@@ -43,7 +43,6 @@ import {
   TelemetrySource,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { useCaseApp } from '../use-case/use-case.app';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { DocumentApp } from './document.app';
 import { VAULT_DOCUMENT_TYPE } from './document.helper';
@@ -940,7 +939,16 @@ describe('documentApp', () => {
       expect(links).toHaveLength(0);
     });
 
-    it('should create and link use cases by name when use_cases is provided', async () => {
+    it('should only link existing use cases by name when use_cases is provided', async () => {
+      await useCaseDomain.insertUseCase({
+        name: 'Detection',
+        color: '#0099cc',
+      });
+      await useCaseDomain.insertUseCase({
+        name: 'Response',
+        color: '#0099cc',
+      });
+
       // When
       const document = await DocumentApp.createDocumentWithChildrenAndMetadata(
         {
@@ -973,7 +981,7 @@ describe('documentApp', () => {
 
     it('should reuse an existing use case by name (case-insensitive) rather than duplicating it', async () => {
       // Given
-      const existingUseCase = await useCaseApp.loadOrCreateUseCase({
+      const existingUseCase = await useCaseDomain.insertUseCase({
         name: 'Detection',
         color: '#0099cc',
       });
@@ -1101,6 +1109,14 @@ describe('documentApp', () => {
       beforeEach(async () => {
         await TestHelper.objectUseCase.delete({});
         await TestHelper.useCase.delete({});
+        await useCaseDomain.insertUseCase({
+          name: 'Detection',
+          color: '#0099cc',
+        });
+        await useCaseDomain.insertUseCase({
+          name: 'Response',
+          color: '#0099cc',
+        });
       });
 
       it('should link use cases by name when creating a new document', async () => {

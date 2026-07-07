@@ -842,6 +842,13 @@ export enum IntegrationType {
   ThirdPartyIntegration = 'third_party_integration'
 }
 
+export type InvalidUseCasesByConnector = {
+  __typename?: 'InvalidUseCasesByConnector';
+  contractSlug: Maybe<Scalars['String']['output']>;
+  contractTitle: Maybe<Scalars['String']['output']>;
+  invalidUseCases: Array<Scalars['String']['output']>;
+};
+
 export type IsPlatformRegisteredInput = {
   platformId: Scalars['String']['input'];
   tenantId: InputMaybe<Scalars['String']['input']>;
@@ -2317,7 +2324,9 @@ export enum SubscriptionOrdering {
 
 export type Success = {
   __typename?: 'Success';
+  invalidUseCasesByConnector: Maybe<Array<InvalidUseCasesByConnector>>;
   success: Scalars['Boolean']['output'];
+  warnings: Maybe<Array<Scalars['String']['output']>>;
 };
 
 export type TaxiiFeed = Document & Integration & Node & {
