@@ -301,7 +301,14 @@
   "Header": {
     "BrandName": "Filigran",
     "CloseMenu": "Fermer le menu",
-    "OpenMenu": "Ouvrir le menu"
+    "OpenMenu": "Ouvrir le menu",
+    "ConnectedProducts": {
+      "Count": "{count, plural, =0 {Aucun produit connecté} one {# produit connecté} other {# produits connectés}}",
+      "GoToPlatform": "Accéder à {title}",
+      "Details": "Détails",
+      "Documentation": "Documentation",
+      "ConnectPlatform": "Connecter {platformName}"
+    }
   },
   "HomePage": {
     "Homepage": "Page d'accueil",
@@ -357,6 +364,8 @@
   "PublicLayout": {
     "Documentation": "Documentation du Hub XTM",
     "SignIn": "Connexion",
+    "Login": "Connexion",
+    "SignUp": "Créer un compte",
     "AllRightsReserved": "Tous droits réservés",
     "FiligranWebsite": "Site Filigran",
     "PrivacyPolicy": "Politique de confidentialité",
@@ -398,15 +407,24 @@
     "ja": "日本語"
   },
   "LoginPage": {
-    "CreateYourAccount": "créer votre compte",
+    "DontHaveAccount": "Vous n'avez pas de compte Filigran ?",
     "Email": "Email",
     "Login": "Connexion",
     "Logout": "Déconnexion",
-    "OnFiligranWebsite": "sur le site Filigran",
     "Password": "Mot de passe",
     "SignIn": "S'inscrire",
-    "Title": "Page de connexion XTM Hub",
-    "ToLoginPlease": "Pour vous connecter, veuillez"
+    "SignUp": "Créer un compte",
+    "Title": "Page de connexion XTM Hub"
+  },
+  "SignUpPage": {
+    "Title1": "Votre passerelle vers",
+    "Title2": "le monde Filigran XTM",
+    "Subtitle": "XTM Hub, Filigran Academy et démo en direct.",
+    "AlreadyHaveAccount": "Vous avez déjà un compte ?",
+    "LogIn": "Se connecter",
+    "MadeBy": "Fait par",
+    "WelcomeTitle": "Bienvenue sur XTM Hub",
+    "WelcomeSubtitle": "Étendez et dimensionnez votre plateforme XTM"
   },
   "MenuActions": {
     "Continue": "Continuer",

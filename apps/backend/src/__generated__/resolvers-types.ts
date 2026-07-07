@@ -1334,6 +1334,7 @@ export enum NewsFeedItemMetadataKey {
 
 export enum NewsFeedItemType {
   ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD',
+  ResourceCustomView = 'RESOURCE_CUSTOM_VIEW',
   ResourcePlaybook = 'RESOURCE_PLAYBOOK'
 }
 

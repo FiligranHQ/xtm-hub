@@ -1342,6 +1342,7 @@ export enum NewsFeedItemMetadataKey {
 
 export enum NewsFeedItemType {
   ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD',
+  ResourceCustomView = 'RESOURCE_CUSTOM_VIEW',
   ResourcePlaybook = 'RESOURCE_PLAYBOOK'
 }
 
@@ -2712,10 +2713,12 @@ export type OrganizationSubscribedServicesListQueryVariables = Exact<{
 
 export type OrganizationSubscribedServicesListQuery = { __typename?: 'Query', subscriptions: { __typename?: 'SubscriptionConnection', totalCount: number, edges: Array<{ __typename?: 'SubscriptionEdge', node: { __typename?: 'SubscriptionModel', id: string, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string, creation_status: ServiceInstanceCreationStatus | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', id: string, name: string, identifier: ServiceDefinitionIdentifier } | null } } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null, endCursor: string | null } } };
 
-export type RegisteredPlatformsListQueryVariables = Exact<{ [key: string]: never; }>;
+export type RegisteredPlatformsListQueryVariables = Exact<{
+  input: RegisteredPlatformsInput;
+}>;
 
 
-export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', title: string, url: string, identifier: ServiceDefinitionIdentifier, subscription: { __typename?: 'SubscriptionModel', service_instance: { __typename?: 'ServiceInstance', id: string } } | null }> };
+export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, platform_id: string, title: string, url: string, contract: PlatformContract, identifier: ServiceDefinitionIdentifier, subscription: { __typename?: 'SubscriptionModel', end_date: any | null, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string } } | null }> };
 
 export type RegisteredPlatformsQueryVariables = Exact<{
   input: RegisteredPlatformsInput;
@@ -3061,14 +3064,20 @@ useInfiniteOrganizationSubscribedServicesListQuery.getRootKey = () => ['Organiza
 useOrganizationSubscribedServicesListQuery.fetcher = (client: GraphQLClient, variables: OrganizationSubscribedServicesListQueryVariables, headers?: RequestInit['headers']) => fetcher<OrganizationSubscribedServicesListQuery, OrganizationSubscribedServicesListQueryVariables>(client, OrganizationSubscribedServicesListDocument, variables, headers);
 
 export const RegisteredPlatformsListDocument = `
-    query RegisteredPlatformsList {
-  registeredPlatforms(input: {}) {
+    query RegisteredPlatformsList($input: RegisteredPlatformsInput!) {
+  registeredPlatforms(input: $input) {
+    id
+    platform_id
     title
     url
+    contract
     identifier
     subscription {
+      end_date
+      start_date
       service_instance {
         id
+        name
       }
     }
   }
@@ -3080,20 +3089,20 @@ export const useRegisteredPlatformsListQuery = <
       TError = unknown
     >(
       client: GraphQLClient,
-      variables?: RegisteredPlatformsListQueryVariables,
+      variables: RegisteredPlatformsListQueryVariables,
       options?: Omit<UseQueryOptions<RegisteredPlatformsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredPlatformsListQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
     return useQuery<RegisteredPlatformsListQuery, TError, TData>(
       {
-    queryKey: variables === undefined ? ['RegisteredPlatformsList'] : ['RegisteredPlatformsList', variables],
+    queryKey: ['RegisteredPlatformsList', variables],
     queryFn: fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, variables, headers),
     ...options
   }
     )};
 
-useRegisteredPlatformsListQuery.getKey = (variables?: RegisteredPlatformsListQueryVariables) => variables === undefined ? ['RegisteredPlatformsList'] : ['RegisteredPlatformsList', variables];
+useRegisteredPlatformsListQuery.getKey = (variables: RegisteredPlatformsListQueryVariables) => ['RegisteredPlatformsList', variables];
 useRegisteredPlatformsListQuery.getRootKey = () => ['RegisteredPlatformsList'] as const;
 export const useInfiniteRegisteredPlatformsListQuery = <
       TData = InfiniteData<RegisteredPlatformsListQuery>,
@@ -3109,16 +3118,16 @@ export const useInfiniteRegisteredPlatformsListQuery = <
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? variables === undefined ? ['RegisteredPlatformsList.infinite'] : ['RegisteredPlatformsList.infinite', variables],
+      queryKey: optionsQueryKey ?? ['RegisteredPlatformsList.infinite', variables],
       queryFn: (metaData) => fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       ...restOptions
     }
   })()
     )};
 
-useInfiniteRegisteredPlatformsListQuery.getKey = (variables?: RegisteredPlatformsListQueryVariables) => variables === undefined ? ['RegisteredPlatformsList.infinite'] : ['RegisteredPlatformsList.infinite', variables];
+useInfiniteRegisteredPlatformsListQuery.getKey = (variables: RegisteredPlatformsListQueryVariables) => ['RegisteredPlatformsList.infinite', variables];
 useInfiniteRegisteredPlatformsListQuery.getRootKey = () => ['RegisteredPlatformsList.infinite'] as const;
-useRegisteredPlatformsListQuery.fetcher = (client: GraphQLClient, variables?: RegisteredPlatformsListQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, variables, headers);
+useRegisteredPlatformsListQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsListQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsListQuery, RegisteredPlatformsListQueryVariables>(client, RegisteredPlatformsListDocument, variables, headers);
 
 export const RegisteredPlatformsDocument = `
     query RegisteredPlatforms($input: RegisteredPlatformsInput!) {

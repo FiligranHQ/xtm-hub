@@ -26,7 +26,11 @@ const graphqlMocks = vi.hoisted(() => ({
     getRootKey: vi.fn(() => ['ServiceInstancesList']),
   }),
   useRegisteredPlatformsListQuery: Object.assign(vi.fn(), {
-    getKey: vi.fn((_variables?: unknown) => ['RegisteredPlatformsList']),
+    getKey: vi.fn((variables?: unknown) =>
+      variables === undefined
+        ? ['RegisteredPlatformsList']
+        : ['RegisteredPlatformsList', variables]
+    ),
     getRootKey: vi.fn(() => ['RegisteredPlatformsList']),
   }),
   useTrialDeploymentsEligibilityQuery: Object.assign(vi.fn(), {
@@ -484,9 +488,16 @@ describe('usePrivateNavigation', () => {
 
       expect(graphqlMocks.useRegisteredPlatformsListQuery).toHaveBeenCalledWith(
         portalGraphqlClient,
-        undefined,
         {
-          queryKey: ['RegisteredPlatformsList'],
+          input: { identifier: null, onlyActive: null, onlyTrial: null },
+        },
+        {
+          queryKey: [
+            'RegisteredPlatformsList',
+            {
+              input: { identifier: null, onlyActive: null, onlyTrial: null },
+            },
+          ],
         }
       );
 

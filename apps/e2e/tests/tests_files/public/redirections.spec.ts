@@ -1,4 +1,4 @@
-import { test } from '../../fixtures/baseFixtures';
+import { expect, test } from '../../fixtures/baseFixtures';
 import LoginPage from '../../model/login.pageModel';
 import { CybersecuritySolutionsPage } from '../../model/cybersecurity-solutions.pageModel';
 import { HomePage } from '../../model/home.pageModel';
@@ -31,8 +31,15 @@ test.describe('Public redirections', () => {
       await loginPage.assertCurrentPage();
     });
 
+    await test.step('should navigate user to sign up page from a public page', async () => {
+      await cyberSecurityPage.navigateTo();
+      await cyberSecurityPage.clickOnSignUp();
+      await page.waitForURL('**/sign-up**');
+      await expect(page.locator('#hubspot-form')).toBeAttached();
+    });
+
     await test.step('should log in user and redirect him to home', async () => {
-      await loginPage.login();
+      await loginPage.navigateToAndLogin();
       await homePage.assertCurrentPage();
     });
 

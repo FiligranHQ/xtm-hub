@@ -51,7 +51,7 @@ test.describe('Organization switcher', async () => {
       await expect(
         page.getByRole('link', { name: 'Open CTI Instance' })
       ).toBeVisible();
-      await expect(page.getByText('1 Active trial')).toBeVisible();
+      await expect(page.getByText('2 connected products')).toBeVisible();
     });
 
     // When User switch on personal space
@@ -66,7 +66,7 @@ test.describe('Organization switcher', async () => {
         page.getByRole('button', { name: 'My products' })
       ).not.toBeVisible();
 
-      await expect(page.getByText('1 Active trial')).not.toBeVisible();
+      await expect(page.getByText('2 connected products')).not.toBeVisible();
     });
 
     // WHen User comes back to organization
@@ -82,7 +82,7 @@ test.describe('Organization switcher', async () => {
         page.getByRole('link', { name: 'Open CTI Instance' })
       ).toBeVisible();
 
-      await expect(page.getByText('1 Active trial')).toBeVisible();
+      await expect(page.getByText('2 connected products')).toBeVisible();
     });
   });
 });

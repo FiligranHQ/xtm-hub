@@ -41,6 +41,10 @@ import { serviceInstancesKeys } from '@graphql/service-instances/service-instanc
 import { trialKeys } from '@graphql/trial/trial.keys';
 import { useLocale, useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
+const PRIVATE_NAVIGATION_REGISTERED_PLATFORMS_VARIABLES = {
+  input: { identifier: null, onlyActive: null, onlyTrial: null },
+};
+
 const PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES: ServiceInstancesListQueryVariables =
   {
     count: 50,
@@ -168,9 +172,15 @@ export const usePrivateNavigation = (): NavigationConfig => {
     }
   );
   const { data: registeredPlatformsQueryData } =
-    useRegisteredPlatformsListQuery(portalGraphqlClient, undefined, {
-      queryKey: registeredPlatformsKeys.list(),
-    });
+    useRegisteredPlatformsListQuery(
+      portalGraphqlClient,
+      PRIVATE_NAVIGATION_REGISTERED_PLATFORMS_VARIABLES,
+      {
+        queryKey: registeredPlatformsKeys.list(
+          PRIVATE_NAVIGATION_REGISTERED_PLATFORMS_VARIABLES
+        ),
+      }
+    );
   const {
     data: trialEligibilityData,
     isLoading: isTrialEligibilityLoading,

@@ -65,6 +65,40 @@ jobs:
           git tag "v${{ env.NEW_VERSION }}"
           git push origin "v${{ env.NEW_VERSION }}"
 
+      - name: Store release requested event
+        env:
+          N8N_DELIVERY_FILE_WRITER_URL: ${{ secrets.N8N_DELIVERY_FILE_WRITER_URL }}
+          N8N_DELIVERY_WEBHOOK_TOKEN: ${{ secrets.N8N_DELIVERY_WEBHOOK_TOKEN }}
+        run: |
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          SHA=$(git rev-parse HEAD)
+          TAG_NAME="v${{ env.NEW_VERSION }}"
+          DEPLOYMENT_KEY="${{ github.repository }}:production:${TAG_NAME}"
+
+          curl -sS -X POST "$N8N_DELIVERY_FILE_WRITER_URL" \
+            -H "Content-Type: application/json" \
+            -H "x-delivery-token: $N8N_DELIVERY_WEBHOOK_TOKEN" \
+            -d @- <<EOF || true
+          {
+            "category": "deployments",
+            "event_type": "release_requested",
+            "occurred_at": "$NOW",
+            "payload": {
+              "deployment_key": "$DEPLOYMENT_KEY",
+              "repository": "${{ github.repository }}",
+              "environment": "production",
+              "version": "$TAG_NAME",
+              "sha": "$SHA",
+              "status": "requested",
+              "requested_at": "$NOW",
+              "workflow": "${{ github.workflow }}",
+              "github_run_id": "${{ github.run_id }}",
+              "github_run_attempt": "${{ github.run_attempt }}",
+              "actor": "${{ github.actor }}"
+            }
+          }
+          EOF
+
       - name: Trigger Docker Build Workflow
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

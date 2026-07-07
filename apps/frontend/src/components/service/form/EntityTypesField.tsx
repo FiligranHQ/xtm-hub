@@ -20,7 +20,10 @@ export const ServiceFormEntityTypesField = ({
   const t = useTranslations();
   return (
     <FormItem>
-      <FormLabel>{t('Service.Form.EntityTypesLabel')}</FormLabel>
+      <FormLabel>
+        {t('Service.Form.EntityTypesLabel')}
+        <span className="text-sm text-destructive"> *</span>
+      </FormLabel>
       <FormControl>
         <MultiSelectFormField
           disabled={disabled}

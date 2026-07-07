@@ -1,11 +1,17 @@
-query RegisteredPlatformsList {
-  registeredPlatforms(input: {}) {
+query RegisteredPlatformsList($input: RegisteredPlatformsInput!) {
+  registeredPlatforms(input: $input) {
+    id
+    platform_id
     title
     url
+    contract
     identifier
     subscription {
+      end_date
+      start_date
       service_instance {
         id
+        name
       }
     }
   }
