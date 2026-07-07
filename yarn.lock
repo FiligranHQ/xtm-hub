@@ -2262,10 +2262,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electric-sql/pglite@npm:0.5.3":
-  version: 0.5.3
-  resolution: "@electric-sql/pglite@npm:0.5.3"
-  checksum: 10/8d23b0fcd9b0acf81f4b6ec203b38c05b858a9f1b73e26ceddb9f6df130468aeb3f010ab76bdd82bef90290b58c2f2ed19d487b0a2a4c8797f8be17aaa51901f
+"@electric-sql/pglite@npm:0.5.4":
+  version: 0.5.4
+  resolution: "@electric-sql/pglite@npm:0.5.4"
+  checksum: 10/64bc159c8782a4b2aba621e92ebd552a2fda7462cd773a0dfe01483470529d7054ce40a24a2d3edc066e5bfb8c390b9c15b7ea2cbd244d06218a92bd30d7d68f
   languageName: node
   linkType: hard
 
@@ -4700,12 +4700,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:16.2.9":
-  version: 16.2.9
-  resolution: "@next/eslint-plugin-next@npm:16.2.9"
+"@next/eslint-plugin-next@npm:16.2.10":
+  version: 16.2.10
+  resolution: "@next/eslint-plugin-next@npm:16.2.10"
   dependencies:
     fast-glob: "npm:3.3.1"
-  checksum: 10/1c70d686291846353544bbc9f4c49c84e0b44ceda9cc8a22c31563a37929dabe4812d3393c7ef14d01017cfbf1803107c6166dbda20b0e365964fe6da4530a93
+  checksum: 10/0693044cb9d10fa2745a84845f919dced6468ad7e94bc3f14dc68af37004b04c925b284006f5a619c2788453c49ff4af9ff10b9e89af62a8ba7000300ca670e3
   languageName: node
   linkType: hard
 
@@ -8612,7 +8612,7 @@ __metadata:
     "@aws-sdk/client-s3": "npm:3.1075.0"
     "@aws-sdk/lib-storage": "npm:3.1075.0"
     "@elastic/elasticsearch": "npm:8.19.1"
-    "@electric-sql/pglite": "npm:0.5.3"
+    "@electric-sql/pglite": "npm:0.5.4"
     "@eslint/js": "catalog:"
     "@graphql-codegen/cli": "catalog:"
     "@graphql-codegen/plugin-helpers": "npm:5.1.1"
@@ -8722,7 +8722,7 @@ __metadata:
     clsx: "npm:2.1.1"
     concurrently: "catalog:"
     eslint: "catalog:"
-    eslint-config-next: "npm:16.2.9"
+    eslint-config-next: "npm:16.2.10"
     eslint-config-prettier: "catalog:"
     eslint-plugin-formatjs: "npm:6.4.16"
     extract-files: "npm:13.0.0"
@@ -11592,11 +11592,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:16.2.9":
-  version: 16.2.9
-  resolution: "eslint-config-next@npm:16.2.9"
+"eslint-config-next@npm:16.2.10":
+  version: 16.2.10
+  resolution: "eslint-config-next@npm:16.2.10"
   dependencies:
-    "@next/eslint-plugin-next": "npm:16.2.9"
+    "@next/eslint-plugin-next": "npm:16.2.10"
     eslint-import-resolver-node: "npm:^0.3.6"
     eslint-import-resolver-typescript: "npm:^3.5.2"
     eslint-plugin-import: "npm:^2.32.0"
@@ -11611,7 +11611,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/0efa09cc9848973a8dfe924a56bca88ad3810978dcda8f23bbf46cae482e6a65febe46990b9d36da5a4ca4689b6082af8758d0c08122b87fedd339e6d64f556e
+  checksum: 10/ebbd9a4976606c5c700b1a671789c8a6c0831906280cab3ab2f5b6c0b25bc5dd5316b2a2191e7e2b1db630dd01d24a2452aa6b74b3a63b62a2c50c9e70a6dad2
   languageName: node
   linkType: hard
 
