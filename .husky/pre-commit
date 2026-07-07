@@ -1,8 +1,4 @@
 # .husky/pre-commit
 . "$(dirname -- "$0")/common.sh"
 
-cd apps/backend
-yarn lint-staged
-
-cd ../frontend
-yarn lint-staged
+yarn lint-staged --config .lintstagedrc.cjs
