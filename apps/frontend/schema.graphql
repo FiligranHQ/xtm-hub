@@ -547,7 +547,7 @@ enum DocumentMetadataKeyCode {
   version_padded
   additional_properties
   config_schema
-  id_manifest_fragment
+  manifest_fragment_id
   entity_types
 }
 

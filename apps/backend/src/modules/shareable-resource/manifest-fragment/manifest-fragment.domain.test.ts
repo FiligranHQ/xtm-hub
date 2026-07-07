@@ -160,7 +160,7 @@ describe('manifestFragmentDomain', () => {
         'EXTERNAL_IMPORT'
       );
       expect(
-        metadataByKey.get(DocumentMetadataKeyCode.IdManifestFragment)
+        metadataByKey.get(DocumentMetadataKeyCode.ManifestFragmentId)
       ).toBe(args.manifestFragments[0]?.id);
       expect(metadataByKey.get(DocumentMetadataKeyCode.Verified)).toBe(
         String(args.manifestFragments[0]?.verified)
@@ -263,7 +263,7 @@ describe('manifestFragmentDomain', () => {
 
       await TestHelper.documentMetadata.create({
         document_id: existingDocument.id,
-        key: DocumentMetadataKeyCode.IdManifestFragment as DocumentMetadataKey,
+        key: DocumentMetadataKeyCode.ManifestFragmentId as DocumentMetadataKey,
         value: 'abc123',
       });
       await TestHelper.documentMetadata.create({
@@ -301,7 +301,7 @@ describe('manifestFragmentDomain', () => {
 
       await TestHelper.documentMetadata.create({
         document_id: existingDocument.id,
-        key: DocumentMetadataKeyCode.IdManifestFragment as DocumentMetadataKey,
+        key: DocumentMetadataKeyCode.ManifestFragmentId as DocumentMetadataKey,
         value: 'abc123',
       });
       await TestHelper.documentMetadata.create({
@@ -378,7 +378,7 @@ describe('manifestFragmentDomain', () => {
 
       await TestHelper.documentMetadata.create({
         document_id: existingDocument.id,
-        key: DocumentMetadataKeyCode.IdManifestFragment as DocumentMetadataKey,
+        key: DocumentMetadataKeyCode.ManifestFragmentId as DocumentMetadataKey,
         value: 'abc123',
       });
       await TestHelper.documentMetadata.create({
@@ -427,7 +427,7 @@ describe('manifestFragmentDomain', () => {
 
       await TestHelper.documentMetadata.create({
         document_id: existingDocument.id,
-        key: DocumentMetadataKeyCode.IdManifestFragment as DocumentMetadataKey,
+        key: DocumentMetadataKeyCode.ManifestFragmentId as DocumentMetadataKey,
         value: 'abc123',
       });
       await TestHelper.documentMetadata.create({

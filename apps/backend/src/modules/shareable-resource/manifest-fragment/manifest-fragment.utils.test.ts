@@ -22,23 +22,16 @@ describe('formatConnectorVersion', () => {
     expect(formatConnectorVersion(input)).toBe(expected);
   });
 
-  it('throws when version format is invalid', () => {
-    expect(() => formatConnectorVersion('not-a-version')).toThrow(
-      BadRequestErrorCode.InvalidConnectorVersionFormat
-    );
-    expect(() => formatConnectorVersion('6.5')).toThrow(
-      BadRequestErrorCode.InvalidConnectorVersionFormat
-    );
-    expect(() => formatConnectorVersion('6')).toThrow(
-      BadRequestErrorCode.InvalidConnectorVersionFormat
-    );
-    expect(() => formatConnectorVersion('6.0.4.5')).toThrow(
-      BadRequestErrorCode.InvalidConnectorVersionFormat
-    );
-    expect(() => formatConnectorVersion('LTS.1.2.3')).toThrow(
-      BadRequestErrorCode.InvalidConnectorVersionFormat
-    );
-    expect(() => formatConnectorVersion('7.20260703.0')).toThrow(
+  it.each`
+    input
+    ${'not-a-version'}
+    ${'6.5'}
+    ${'6'}
+    ${'6.0.4.5'}
+    ${'LTS.1.2.3'}
+    ${'7.20260703.0'}
+  `('throws when version format is invalid: "$input"', ({ input }) => {
+    expect(() => formatConnectorVersion(input)).toThrow(
       BadRequestErrorCode.InvalidConnectorVersionFormat
     );
   });
@@ -143,6 +136,7 @@ describe('getConnectorMetadataFromExisting', () => {
         },
         existingBatchConnectors: [
           {
+            datasheet_url: 'https://existing/datasheet',
             blogpost_url: 'https://existing/blogpost',
             demo_url: 'https://existing/demo',
           },

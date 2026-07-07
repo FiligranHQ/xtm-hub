@@ -103,7 +103,7 @@ const createConnectorDocument = async ({
         type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         version: fragment.version,
         version_padded: formattedVersion,
-        id_manifest_fragment: fragment.id,
+        manifest_fragment_id: fragment.id,
         last_verified_date: fragment.last_verified_date,
         image_name: fragment.image_name,
         image_type: fragment.image_type,
@@ -171,7 +171,7 @@ export const ManifestFragmentDomain = {
 
       const existingBatchConnectors =
         (await DocumentDomain.loadDocumentsByMetadata(
-          DocumentMetadataKeyCode.IdManifestFragment,
+          DocumentMetadataKeyCode.ManifestFragmentId,
           fragment.id,
           [
             DocumentMetadataKeyCode.VersionPadded,

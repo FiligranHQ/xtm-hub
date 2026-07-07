@@ -454,7 +454,7 @@ export const DocumentDomain = {
         .returning('*');
 
       if (!updatedDocument) {
-        throw new Error(UnknownErrorCode.DocumentCreateError);
+        throw new Error(UnknownErrorCode.DocumentUpdateError);
       }
       return updatedDocument;
     }

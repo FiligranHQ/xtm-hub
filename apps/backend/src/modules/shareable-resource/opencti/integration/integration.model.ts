@@ -58,7 +58,7 @@ export type Connector = Integration & {
 };
 
 export type ConnectorV2 = Connector & {
-  id_manifest_fragment: string;
+  manifest_fragment_id: string;
   last_verified_date: string;
   image_name: string;
   image_type: string;
@@ -189,7 +189,7 @@ export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
   { key: DocumentMetadataKeyCode.ImageType },
   { key: DocumentMetadataKeyCode.AdditionalProperties },
   { key: DocumentMetadataKeyCode.ConfigSchema },
-  { key: DocumentMetadataKeyCode.IdManifestFragment },
+  { key: DocumentMetadataKeyCode.ManifestFragmentId },
   { key: DocumentMetadataKeyCode.VersionPadded },
 ];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
