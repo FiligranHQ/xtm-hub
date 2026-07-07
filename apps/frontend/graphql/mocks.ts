@@ -524,7 +524,7 @@ export const mockDocumentMetadata = (overrides?: Partial<DocumentMetadata>, _rel
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('DocumentMetadata');
     return {
-        key: overrides && overrides.hasOwnProperty('key') ? overrides.key! : DocumentMetadataKeyCode.BlogpostUrl,
+        key: overrides && overrides.hasOwnProperty('key') ? overrides.key! : DocumentMetadataKeyCode.AdditionalProperties,
         value: overrides && overrides.hasOwnProperty('value') ? overrides.value! : 'ascit',
     };
 };
@@ -749,14 +749,13 @@ export const mockManifestFragmentInput = (overrides?: Partial<ManifestFragmentIn
     relationshipsToOmit.add('ManifestFragmentInput');
     return {
         additional_properties: overrides && overrides.hasOwnProperty('additional_properties') ? overrides.additional_properties! : 'cicuta',
-        batch_id: overrides && overrides.hasOwnProperty('batch_id') ? overrides.batch_id! : 'sint',
         config_schema: overrides && overrides.hasOwnProperty('config_schema') ? overrides.config_schema! : 'cupressus',
         description: overrides && overrides.hasOwnProperty('description') ? overrides.description! : 'studio',
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : 'coruscus',
         image_name: overrides && overrides.hasOwnProperty('image_name') ? overrides.image_name! : 'reiciendis',
         image_type: overrides && overrides.hasOwnProperty('image_type') ? overrides.image_type! : 'absens',
         integration_type: overrides && overrides.hasOwnProperty('integration_type') ? overrides.integration_type! : 'decretum',
-        last_verified_date: overrides && overrides.hasOwnProperty('last_verified_date') ? overrides.last_verified_date! : '2021-09-13T06:55:00.637Z',
+        last_verified_date: overrides && overrides.hasOwnProperty('last_verified_date') ? overrides.last_verified_date! : 'subnecto',
         logo: overrides && overrides.hasOwnProperty('logo') ? overrides.logo! : 'umerus',
         manager_supported: overrides && overrides.hasOwnProperty('manager_supported') ? overrides.manager_supported! : false,
         min_version: overrides && overrides.hasOwnProperty('min_version') ? overrides.min_version! : 'deserunt',

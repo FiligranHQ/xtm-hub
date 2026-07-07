@@ -14,6 +14,7 @@ enum DocumentMetadataKeyCode {
   feed_url
   integration_type
   integration_subtype
+  last_verified_date
   datasheet_url
   blogpost_url
   demo_url
@@ -26,8 +27,14 @@ enum DocumentMetadataKeyCode {
   subscription_link
   manager_supported
   playbook_supported
+  image_name
   image_type
   minimum_deployable_version
+  minimum_deployable_version_padded
+  version_padded
+  additional_properties
+  config_schema
+  manifest_fragment_id
   entity_types
 }
 

@@ -22,24 +22,34 @@ import { Document, WithDocumentId } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { UseCaseId } from '../../../model/kanel/public/UseCase';
+import type { UseCaseId } from '../../../model/kanel/public/UseCase';
 import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
 } from '../../../security/restriction/document';
 import { MinioFile } from '../../../thirdparty/minio/types';
 import { stripNulls } from '../../../utils/typescript';
+import { TAG_DECOUPLING } from '../../shareable-resource/manifest-fragment/manifest-fragment.utils';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './document.metadata.domain';
 
-export type DocumentData<T extends DocumentModel> = Omit<
-  Partial<T>,
-  'use_cases'
-> & {
-  use_cases?: UseCaseId[];
+type UseCaseValue = UseCaseId | string;
+
+// Excludes documents tagged with TAG_DECOUPLING (case-insensitive), regardless of casing.
+const excludeDecouplingTag = (query: Knex.QueryBuilder) =>
+  query.whereRaw(
+    `NOT (? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[])))`,
+    [TAG_DECOUPLING]
+  );
+
+export type DocumentData<
+  T extends DocumentModel,
+  TUseCase extends UseCaseValue = UseCaseId,
+> = Omit<Partial<T>, 'use_cases'> & {
+  use_cases?: TUseCase[];
   parent_document_id?: DocumentId;
 };
 
@@ -52,8 +62,11 @@ export const DocumentDomain = {
       .update({ active: false, remover_id: user.id });
   },
 
-  createDocument: async <T extends DocumentModel>(
-    documentData: DocumentData<T>,
+  createDocument: async <
+    T extends DocumentModel,
+    TUseCase extends UseCaseValue = UseCaseId,
+  >(
+    documentData: DocumentData<T, TUseCase>,
     metadataKeys: DocumentMetadataKeys<T>
   ): Promise<DocumentModel> => {
     const user = requestContext.requireUser();
@@ -200,7 +213,8 @@ export const DocumentDomain = {
     const loadDocumentQuery = db<Document>('Document')
       .select(['Document.*'])
       .tap(restrictDocumentToUserOrganization)
-      .where(field);
+      .where(field)
+      .modify(excludeDecouplingTag);
 
     if (
       field['Document.service_instance_id'] &&
@@ -281,6 +295,7 @@ export const DocumentDomain = {
       .where('Document.slug', '=', slug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
+      .modify(excludeDecouplingTag)
       .whereNotExists(function () {
         this.select('*')
           .from('Document_Children')
@@ -340,6 +355,7 @@ export const DocumentDomain = {
       .where('ServiceInstance.slug', '=', serviceSlug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
+      .modify(excludeDecouplingTag)
       .modify((qb) => {
         if (orderResults) {
           qb.orderBy([
@@ -399,11 +415,11 @@ export const DocumentDomain = {
     return updatedDocument;
   },
 
-  upsertOnSlug: async <T extends DocumentModel>(
-    documentData: Omit<Partial<T>, 'use_cases'> & {
-      use_cases?: string[];
-      parent_document_id?: string;
-    },
+  upsertOnSlug: async <
+    T extends DocumentModel,
+    TUseCase extends string = UseCaseValue,
+  >(
+    documentData: DocumentData<T, TUseCase>,
     metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<DocumentModel> => {
     const user = requestContext.requireUser();
@@ -417,14 +433,34 @@ export const DocumentDomain = {
       uploader_organization_id: user.selected_organization_id,
     };
 
+    const slug = (documentData as { slug?: string }).slug;
+
+    const existingDocument = slug
+      ? await db<DocumentModel>('Document')
+          .where('slug', '=', slug)
+          .modify(excludeDecouplingTag)
+          .orderBy('created_at', 'desc')
+          .first()
+      : undefined;
+
+    if (existingDocument) {
+      const [updatedDocument] = await db<DocumentModel>('Document')
+        .where('id', '=', existingDocument.id)
+        .update({
+          ...omit(insertData, ['uploader_id']),
+          updated_at: new Date(),
+          updater_id: insertData.uploader_id,
+        })
+        .returning('*');
+
+      if (!updatedDocument) {
+        throw new Error(UnknownErrorCode.DocumentUpdateError);
+      }
+      return updatedDocument;
+    }
+
     const [document] = await db<DocumentModel>('Document')
       .insert(insertData)
-      .onConflict('slug')
-      .merge({
-        ...omit(insertData, ['uploader_id']),
-        updated_at: new Date(),
-        updater_id: insertData.uploader_id,
-      })
       .returning('*');
 
     if (!document) {

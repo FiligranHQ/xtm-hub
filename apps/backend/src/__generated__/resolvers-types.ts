@@ -593,24 +593,31 @@ export type DocumentMetadata = {
 };
 
 export enum DocumentMetadataKeyCode {
+  AdditionalProperties = 'additional_properties',
   BlogpostUrl = 'blogpost_url',
+  ConfigSchema = 'config_schema',
   ContainerImage = 'container_image',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
   EntityTypes = 'entity_types',
   FeedUrl = 'feed_url',
   GithubUrl = 'github_url',
+  ImageName = 'image_name',
   ImageType = 'image_type',
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
+  LastVerifiedDate = 'last_verified_date',
   ManagerSupported = 'manager_supported',
+  ManifestFragmentId = 'manifest_fragment_id',
   MinimumDeployableVersion = 'minimum_deployable_version',
+  MinimumDeployableVersionPadded = 'minimum_deployable_version_padded',
   PlaybookSupported = 'playbook_supported',
   ProductVersion = 'product_version',
   SourceCode = 'source_code',
   SubscriptionLink = 'subscription_link',
   VendorUrl = 'vendor_url',
-  Verified = 'verified'
+  Verified = 'verified',
+  VersionPadded = 'version_padded'
 }
 
 export enum DocumentOrdering {
@@ -857,14 +864,13 @@ export enum LogicalOperator {
 
 export type ManifestFragmentInput = {
   additional_properties: Scalars['JSON']['input'];
-  batch_id: Scalars['String']['input'];
   config_schema: Scalars['JSON']['input'];
   description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   image_name: Scalars['String']['input'];
   image_type: Scalars['String']['input'];
   integration_type: Scalars['String']['input'];
-  last_verified_date?: InputMaybe<Scalars['Date']['input']>;
+  last_verified_date: Scalars['String']['input'];
   logo: Scalars['String']['input'];
   manager_supported: Scalars['Boolean']['input'];
   min_version: Scalars['String']['input'];

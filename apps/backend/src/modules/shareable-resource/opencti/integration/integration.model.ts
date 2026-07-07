@@ -57,6 +57,17 @@ export type Connector = Integration & {
   minimum_deployable_version?: string;
 };
 
+export type ConnectorV2 = Connector & {
+  manifest_fragment_id: string;
+  last_verified_date: string;
+  image_name: string;
+  image_type: string;
+  additional_properties: string;
+  config_schema: string;
+  version_padded: string;
+  minimum_deployable_version_padded?: string;
+};
+
 export type CsvFeedMetadata = MetadataArray<
   keyof Omit<CsvFeed, keyof Document>
 >;
@@ -79,6 +90,10 @@ export type ThirdPartyIntegrationMetadata = MetadataArray<
 
 export type ConnectorMetadata = MetadataArray<
   keyof Omit<Connector, keyof Document>
+>;
+
+export type ConnectorV2Metadata = MetadataArray<
+  keyof Omit<ConnectorV2, keyof Document>
 >;
 
 export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [
@@ -154,8 +169,33 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
 ];
+
+export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
+  { key: DocumentMetadataKeyCode.Verified },
+  { key: DocumentMetadataKeyCode.LastVerifiedDate },
+  { key: DocumentMetadataKeyCode.SourceCode },
+  { key: DocumentMetadataKeyCode.SubscriptionLink, optional: true },
+  { key: DocumentMetadataKeyCode.IntegrationType },
+  { key: DocumentMetadataKeyCode.ManagerSupported },
+  { key: DocumentMetadataKeyCode.MinimumDeployableVersion, optional: true },
+  {
+    key: DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+    optional: true,
+  },
+  { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
+  { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
+  { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
+  { key: DocumentMetadataKeyCode.ImageName },
+  { key: DocumentMetadataKeyCode.ImageType },
+  { key: DocumentMetadataKeyCode.AdditionalProperties },
+  { key: DocumentMetadataKeyCode.ConfigSchema },
+  { key: DocumentMetadataKeyCode.ManifestFragmentId },
+  { key: DocumentMetadataKeyCode.VersionPadded },
+];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
   INTEGRATION_CONNECTOR_METADATA.map(({ key }) => key);
+export const INTEGRATION_CONNECTOR_V2_METADATA_KEYS =
+  INTEGRATION_CONNECTOR_V2_METADATA.map(({ key }) => key);
 
 export const INTEGRATION_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
   new Set([
@@ -163,6 +203,7 @@ export const INTEGRATION_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
     ...INTEGRATION_TAXII_FEED_METADATA_KEYS,
     ...INTEGRATION_RSS_FEED_METADATA_KEYS,
     ...INTEGRATION_CONNECTOR_METADATA_KEYS,
+    ...INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
     ...INTEGRATION_STREAM_METADATA_KEYS,
     ...INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS,
   ])
