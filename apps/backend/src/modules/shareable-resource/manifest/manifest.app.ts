@@ -41,7 +41,10 @@ const saveManifestToDatabase = async (
       documentIds
     );
 
-    await ManifestDomain.deleteFromRebuildQueue(key);
+    const deletedCount = await ManifestDomain.deleteFromRebuildQueue(key);
+    if (deletedCount === 0) {
+      logApp.error('No processing queue entry found to delete', { key });
+    }
   });
 };
 

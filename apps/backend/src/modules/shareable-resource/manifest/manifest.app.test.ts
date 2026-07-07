@@ -25,7 +25,6 @@ import { INTEGRATION_SERVICE_INSTANCE_ID } from '../opencti/integration/integrat
 import { ManifestApp } from './manifest.app';
 import type { ManifestKey } from './manifest.consts';
 import { ManifestRebuildQueueStatus } from './manifest.consts';
-import { ManifestDomain } from './manifest.domain';
 import { ManifestHelper } from './manifest.helper';
 
 const MANIFEST_KEY: ManifestKey = {
@@ -321,18 +320,21 @@ describe('manifestApp', () => {
         expect(remaining[0]!.product).toBe(PlatformIdentifier.Openaev);
       });
 
-      it('throws when no processing queue entry exists for the key', async () => {
-        vi.spyOn(
-          ManifestDomain,
-          'deleteFromRebuildQueue'
-        ).mockRejectedValueOnce(
-          new Error('MANIFEST_REBUILD_QUEUE_ENTRY_NOT_FOUND')
-        );
+      it('logs an error and still persists the manifest when no processing queue entry exists for the key', async () => {
+        // Remove the Processing queue entry created in beforeEach so
+        // deleteFromRebuildQueue really deletes 0 rows (no mocking).
+        await TestHelper.manifestRebuildQueue.delete({});
         await createConnectorDocument([TAG_LATEST]);
+        const logSpy = vi.spyOn(logApp, 'error');
 
-        await expect(
-          ManifestApp.generateManifest(MANIFEST_KEY)
-        ).rejects.toThrow('MANIFEST_REBUILD_QUEUE_ENTRY_NOT_FOUND');
+        await ManifestApp.generateManifest(MANIFEST_KEY);
+
+        expect(logSpy).toHaveBeenCalledWith(
+          'No processing queue entry found to delete',
+          { key: MANIFEST_KEY }
+        );
+        const manifests = await TestHelper.manifest.loadAll({});
+        expect(manifests).toHaveLength(1);
       });
     });
 

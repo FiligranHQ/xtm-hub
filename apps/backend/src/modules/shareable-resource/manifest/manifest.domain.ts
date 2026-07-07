@@ -85,18 +85,19 @@ export const ManifestDomain = {
     platformIdentifier,
     version,
     type,
-  }: ManifestKey): Promise<void> => {
-    const count = await db<ManifestRebuildQueue>('ManifestRebuildQueue')
+  }: ManifestKey): Promise<number> => {
+    // .returning('id') is required here: a bare .delete() result is a plain
+    // number, which postProcessResponse silently turns into undefined.
+    const deletedRows = await db<ManifestRebuildQueue>('ManifestRebuildQueue')
       .where({
         product: platformIdentifier,
         version,
         type,
         status: ManifestRebuildQueueStatus.Processing,
       })
-      .delete();
-    if (count === 0) {
-      throw new Error(UnknownErrorCode.ManifestRebuildQueueEntryNotFound);
-    }
+      .delete()
+      .returning('id');
+    return deletedRows.length;
   },
 
   recoverStuckProcessingEntries: async (): Promise<ManifestRebuildQueue[]> => {
