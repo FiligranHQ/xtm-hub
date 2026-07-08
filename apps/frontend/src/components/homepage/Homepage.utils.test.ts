@@ -1,5 +1,3 @@
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   DocumentImageType,
   PlatformContract,
@@ -219,12 +217,16 @@ describe('findLogoUrl', () => {
 
 describe('resolveHomepageCrossSellProduct', () => {
   it.each`
-    cards                                                                                                                                                                                                                                                                                                                                                 | expected                          | description
-    ${[]}                                                                                                                                                                                                                                                                                                                                                 | ${undefined}                      | ${'returns undefined when no cards are visible'}
-    ${[{ id: '1', platformIdentifier: PlatformIdentifier.Opencti, title: 'OpenCTI', registrationDate: null, contract: PlatformContractEnum.CE, remainingTrialDays: undefined }]}                                                                                                                                                                          | ${PlatformIdentifierEnum.OPENAEV} | ${'returns OpenAEV when only an OpenCTI card is visible'}
-    ${[{ id: '1', platformIdentifier: PlatformIdentifier.Openaev, title: 'OpenAEV', registrationDate: null, contract: PlatformContractEnum.CE, remainingTrialDays: undefined }]}                                                                                                                                                                          | ${PlatformIdentifierEnum.OPENCTI} | ${'returns OpenCTI when only an OpenAEV card is visible'}
-    ${[{ id: '1', platformIdentifier: PlatformIdentifier.Opencti, title: 'OpenCTI', registrationDate: null, contract: PlatformContractEnum.CE, remainingTrialDays: undefined }, { id: '2', platformIdentifier: PlatformIdentifier.Openaev, title: 'OpenAEV', registrationDate: null, contract: PlatformContractEnum.CE, remainingTrialDays: undefined }]} | ${undefined}                      | ${'returns undefined when cards are visible for both products'}
-  `('$description', ({ cards, expected }) => {
-    expect(resolveHomepageCrossSellProduct(cards)).toBe(expected);
+    trialDeploymentsEligibility                                                                            | expected                      | description
+    ${undefined}                                                                                           | ${undefined}                  | ${'returns undefined when no eligibility data is available'}
+    ${{ availableTrials: [], isBlacklisted: false }}                                                       | ${undefined}                  | ${'returns undefined when no trial is available'}
+    ${{ availableTrials: [PlatformIdentifier.Opencti], isBlacklisted: false }}                             | ${PlatformIdentifier.Opencti} | ${'returns OpenCTI when only OpenCTI trial is available'}
+    ${{ availableTrials: [PlatformIdentifier.Openaev], isBlacklisted: false }}                             | ${PlatformIdentifier.Openaev} | ${'returns OpenAEV when only OpenAEV trial is available'}
+    ${{ availableTrials: [PlatformIdentifier.Opencti, PlatformIdentifier.Openaev], isBlacklisted: false }} | ${PlatformIdentifier.Opencti} | ${'returns OpenCTI first when both trials are available'}
+    ${{ availableTrials: [PlatformIdentifier.Opencti, PlatformIdentifier.Openaev], isBlacklisted: true }}  | ${undefined}                  | ${'returns undefined when organization is blacklisted'}
+  `('$description', ({ trialDeploymentsEligibility, expected }) => {
+    expect(resolveHomepageCrossSellProduct(trialDeploymentsEligibility)).toBe(
+      expected
+    );
   });
 });

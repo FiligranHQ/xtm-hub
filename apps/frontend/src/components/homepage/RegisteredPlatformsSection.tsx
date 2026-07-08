@@ -1,7 +1,4 @@
-import {
-  mapRegisteredPlatformsToHomepageCards,
-  resolveHomepageCrossSellProduct,
-} from '@/components/homepage/Homepage.utils';
+import { mapRegisteredPlatformsToHomepageCards } from '@/components/homepage/Homepage.utils';
 import RegisteredPlatformCard from '@/components/homepage/RegisteredPlatformCard';
 import TryOtherPlatformProductBlock from '@/components/homepage/TryOtherPlatformProductBlock';
 import { RegisteredPlatformsQuery } from '@graphql/generated';
@@ -19,10 +16,6 @@ export const RegisteredPlatformsSection = async ({
   const t = await getTranslations();
   const homepageRegisteredPlatformCards = mapRegisteredPlatformsToHomepageCards(
     registeredPlatformsData.registeredPlatforms
-  );
-
-  const crossSellProduct = resolveHomepageCrossSellProduct(
-    homepageRegisteredPlatformCards
   );
 
   const registeredProductsCount = homepageRegisteredPlatformCards.length;
@@ -53,9 +46,7 @@ export const RegisteredPlatformsSection = async ({
           />
         ))}
 
-        {crossSellProduct && (
-          <TryOtherPlatformProductBlock product={crossSellProduct} />
-        )}
+        <TryOtherPlatformProductBlock />
       </div>
     </section>
   );

@@ -1,19 +1,48 @@
 'use client';
 
+import { resolveHomepageCrossSellProduct } from '@/components/homepage/Homepage.utils';
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { Button, Card, CardContent } from '@filigran/ui';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import {
+  PlatformIdentifier,
+  TrialDeploymentsEligibilityQueryVariables,
+  useTrialDeploymentsEligibilityQuery,
+} from '@graphql/generated';
+import { trialKeys } from '@graphql/trial/trial.keys';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useContext } from 'react';
 
-type TryOtherPlatformProductBlockProps = {
-  product: PlatformIdentifierEnum.OPENCTI | PlatformIdentifierEnum.OPENAEV;
-};
-
-const TryOtherPlatformProductBlock = ({
-  product,
-}: TryOtherPlatformProductBlockProps) => {
+const TryOtherPlatformProductBlock = () => {
   const t = useTranslations('HomePage.TryOtherPlatform');
+  const { me } = useContext(PortalContext);
+  const selectedOrganizationId = me?.selected_organization_id;
+
+  const variables: TrialDeploymentsEligibilityQueryVariables = {
+    input: {
+      organizationId: selectedOrganizationId ?? '',
+      platformIdentifiers: [
+        PlatformIdentifier.Opencti,
+        PlatformIdentifier.Openaev,
+      ],
+    },
+  };
+
+  const { data } = useTrialDeploymentsEligibilityQuery(
+    portalGraphqlClient,
+    variables,
+    {
+      enabled: !!selectedOrganizationId,
+      queryKey: trialKeys.trialDeploymentsEligibility(variables),
+    }
+  );
+
+  const product = resolveHomepageCrossSellProduct(data?.trialDeployments);
+  if (!product) {
+    return null;
+  }
 
   const { learnMorePrivateUrl, name, Icon } = PlatformMetadataMapping[product];
 

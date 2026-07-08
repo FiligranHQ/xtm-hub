@@ -1,12 +1,12 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { daysUntil } from '@/utils/date';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   DocumentImageType,
   HomepageDocumentFragment,
   PlatformContract,
   PlatformIdentifier,
   RegisteredPlatformsQuery,
+  TrialsDeployments,
 } from '@graphql/generated';
 
 type RegisteredPlatformForHomepage =
@@ -79,25 +79,27 @@ export const mapRegisteredPlatformsToHomepageCards = (
 };
 
 export const resolveHomepageCrossSellProduct = (
-  cards: HomepageRegisteredPlatformCardViewModel[]
-): PlatformIdentifierEnum | undefined => {
-  const registeredProducts = new Set<PlatformIdentifierEnum>();
-
-  for (const card of cards) {
-    registeredProducts.add(
-      card.platformIdentifier === 'opencti'
-        ? PlatformIdentifierEnum.OPENCTI
-        : PlatformIdentifierEnum.OPENAEV
-    );
-  }
-
-  if (registeredProducts.size !== 1) {
+  trialDeploymentsEligibility:
+    Pick<TrialsDeployments, 'availableTrials' | 'isBlacklisted'> | undefined
+): PlatformIdentifier | undefined => {
+  if (
+    !trialDeploymentsEligibility ||
+    trialDeploymentsEligibility.isBlacklisted
+  ) {
     return undefined;
   }
 
-  return registeredProducts.has(PlatformIdentifierEnum.OPENCTI)
-    ? PlatformIdentifierEnum.OPENAEV
-    : PlatformIdentifierEnum.OPENCTI;
+  const { availableTrials } = trialDeploymentsEligibility;
+
+  if (availableTrials.includes(PlatformIdentifier.Opencti)) {
+    return PlatformIdentifier.Opencti;
+  }
+
+  if (availableTrials.includes(PlatformIdentifier.Openaev)) {
+    return PlatformIdentifier.Openaev;
+  }
+
+  return undefined;
 };
 
 export const findLogoUrl = (
