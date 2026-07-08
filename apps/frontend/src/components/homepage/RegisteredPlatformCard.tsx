@@ -71,8 +71,8 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
   } as React.CSSProperties;
 
   return (
-    <Card className="border pt-l my-xs bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
-      <CardContent className="p-l flex flex-col gap-m">
+    <Card className="border pt-s my-xs bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
+      <CardContent className="p-s flex flex-col gap-m">
         <div className="flex gap-s items-center justify-between">
           <div className="flex gap-s items-center">
             <Badge className="border-none font-medium bg-feedback-info-secondary-transparency">
