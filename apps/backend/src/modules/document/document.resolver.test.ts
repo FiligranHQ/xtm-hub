@@ -37,7 +37,7 @@ import { DocumentDomain } from './domain/document.domain';
 
 describe('create document GraphQL mutation', () => {
   it('should delegate to DocumentApp.createDocument and return result', async () => {
-    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID;
     const expected = { id: uuidv4() as DocumentId } as unknown as Awaited<
       ReturnType<typeof DocumentApp.createDocument>
     >;
@@ -61,7 +61,7 @@ describe('create document GraphQL mutation', () => {
     const call = documentResolver.Mutation!.createDocument!(
       {},
       {
-        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         input: {},
       } as unknown as MutationCreateDocumentArgs,
       contextSimpleUserFiligran2,
@@ -79,7 +79,7 @@ describe('create document GraphQL mutation', () => {
     const call = documentResolver.Mutation!.createDocument!(
       {},
       {
-        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         input: {},
       } as unknown as MutationCreateDocumentArgs,
       contextSimpleUserFiligran2,
@@ -102,7 +102,7 @@ describe('update document GraphQL mutation', () => {
       {},
       {
         documentId: docId,
-        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         existingImageIds: [],
         input: {},
       } as unknown as MutationUpdateDocumentArgs,
@@ -125,7 +125,7 @@ describe('update document GraphQL mutation', () => {
       {},
       {
         documentId: uuidv4(),
-        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         existingImageIds: [],
         input: {},
       } as unknown as MutationUpdateDocumentArgs,
@@ -145,7 +145,7 @@ describe('update document GraphQL mutation', () => {
       {},
       {
         documentId: uuidv4(),
-        serviceInstanceId: SERVICES.INSTANCES.EPIC.ID,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         existingImageIds: [],
         input: {},
       } as unknown as MutationUpdateDocumentArgs,
@@ -169,7 +169,7 @@ describe('delete document GraphQL mutation', () => {
       {},
       {
         documentId: docId,
-        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         forceDelete: false,
       },
       contextSimpleUserFiligran2,
@@ -178,7 +178,7 @@ describe('delete document GraphQL mutation', () => {
 
     expect(DocumentApp.deleteDocument).toHaveBeenCalledWith(
       docId,
-      SERVICES.INSTANCES.EPIC.ID,
+      SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       false
     );
     expect(result).toEqual(expected);
@@ -193,7 +193,7 @@ describe('delete document GraphQL mutation', () => {
       {},
       {
         documentId: uuidv4() as DocumentId,
-        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
         forceDelete: false,
       },
       contextSimpleUserFiligran2,
@@ -209,7 +209,7 @@ describe('increment share number document GraphQL mutation', () => {
     const docId = uuidv4() as DocumentId;
     const doc = {
       id: docId,
-      service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+      service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       name: 'doc',
     } as unknown as Awaited<
       ReturnType<typeof DocumentDomain.loadDocumentWithMetadataById>
@@ -390,7 +390,7 @@ describe('document field resolvers', () => {
   });
 
   it('service_instance should load service instance by service_instance_id', async () => {
-    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID;
     const expected = { id: serviceInstanceId } as unknown as
       ServiceInstance | undefined;
     vi.spyOn(ServiceInstanceDomain, 'getServiceInstance').mockResolvedValue(
@@ -413,7 +413,7 @@ describe('document field resolvers', () => {
   });
 
   it('subscription should load subscription by service_instance_id and organization_id', async () => {
-    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID;
     const expected = { id: uuidv4() } as unknown as SubscriptionModel;
     vi.spyOn(SubscriptionDomain, 'loadSubscriptionBy').mockResolvedValue(
       expected as unknown as Awaited<
@@ -446,7 +446,7 @@ describe('document exists GraphQL query', () => {
       {},
       {
         documentName: 'test.md',
-        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -454,7 +454,7 @@ describe('document exists GraphQL query', () => {
 
     expect(DocumentHelper.checkDocumentExists).toHaveBeenCalledWith(
       'test.md',
-      SERVICES.INSTANCES.EPIC.ID
+      SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID
     );
     expect(result).toBe(false);
   });
@@ -470,7 +470,7 @@ describe('public documents GraphQL query', () => {
     const result = await documentResolver.Query!.publicDocuments!(
       {},
       {
-        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       } as unknown as QueryPublicDocumentsArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -514,13 +514,16 @@ describe('public document by slug GraphQL query', () => {
 
     const result = await documentResolver.Query!.publicDocumentBySlug!(
       {},
-      { serviceInstanceId: SERVICES.INSTANCES.EPIC.ID, slug: 'my-slug' },
+      {
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        slug: 'my-slug',
+      },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     expect(DocumentApp.loadPublicDocumentBySlug).toHaveBeenCalledWith(
-      SERVICES.INSTANCES.EPIC.ID,
+      SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       'my-slug'
     );
     expect(result).toEqual(expected);
@@ -537,7 +540,7 @@ describe('documents GraphQL query', () => {
     const result = await documentResolver.Query!.documents!(
       {},
       {
-        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
+        service_instance_id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
       } as unknown as QueryDocumentsArgs,
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -557,7 +560,10 @@ describe('document GraphQL query', () => {
 
     const result = await documentResolver.Query!.document!(
       {},
-      { documentId: docId, serviceInstanceId: SERVICES.INSTANCES.EPIC.ID },
+      {
+        documentId: docId,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+      },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
