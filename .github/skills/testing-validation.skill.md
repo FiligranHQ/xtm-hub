@@ -15,6 +15,8 @@ these.
   codebase.
 - Favor deterministic tests and avoid brittle implementation-detail assertions.
 - Use parametric tests with `it.each` when tests share logic but differ in data sets.
+- Use the array form `(it.each([...]))` when a test case value is null or undefined
+- Check tests aren't redundant with others.
 - Proactively identify edge cases and ensure comprehensive coverage.
 
 ## Validating Changes

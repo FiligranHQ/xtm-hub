@@ -29,9 +29,8 @@ performance bottlenecks and security weaknesses before delivering it.
 - Preserve accessibility basics (keyboard interactions, labels, ARIA where relevant, focus handling).
 
 ## Data Layer Rules
-- `@tanstack/react-query` is the target data layer; Relay is being phased out.
-- For new queries and mutations, always use `@tanstack/react-query`, matching the pattern in neighboring components. Do not add new Relay usages.
-- When touching a component that still uses Relay, migrate it to `@tanstack/react-query` as part of the change instead of extending its Relay code, unless the task explicitly asks to leave it as-is.
+- `@tanstack/react-query` is the preferred data layer for new work; avoid introducing new Relay usage.
+- When touching a component that still uses Relay, only migrate it to `@tanstack/react-query` when the task scope explicitly includes migration or the change is small and low-risk.
 - After removing a component's last Relay usage, confirm no other files still depend on its generated Relay artifacts before deleting them.
 
 Default posture: implement like a maintainer of this codebase, not a generic generator.

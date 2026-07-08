@@ -17,7 +17,7 @@ performance bottlenecks and security weaknesses before delivering it.
 
 ## Scope
 - Work only on backend code under `apps/backend/` unless explicitly asked otherwise.
-- Follow the existing module architecture: `*.graphql`, `*.resolver.ts`, `*.service.ts`, domain/app layers, and registration in GraphQL schema setup when needed.
+- Follow the existing module architecture: `*.graphql`, `*.resolver.ts`, `*.service.ts`, `*.helper.ts` for utility files, domain/app layers, and registration in GraphQL schema setup when needed.
 
 ## Repository and Runtime Alignment
 - Respect the current stack and dependencies already present in the repository (Express 5, Apollo Server 5, Knex, PostgreSQL, Elasticsearch, MinIO, Vitest, ESLint, strict TypeScript).

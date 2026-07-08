@@ -26,3 +26,4 @@ stack-specific rules on top.
   rerenders, overfetching, large lists) and avoid obvious bottlenecks.
 - Preserve existing naming conventions, folder structure, and import style.
 - Add concise comments only when the logic is non-obvious.
+- Never use as type casts unless strictly necessary and explicitly justified. Prefer proper typing over casting.
