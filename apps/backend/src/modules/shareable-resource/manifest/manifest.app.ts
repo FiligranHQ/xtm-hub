@@ -9,7 +9,7 @@ import type { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { BadRequestError } from '../../../utils/error/error.util';
-import { isLtsVersion, isValidVersion } from '../../../utils/versioning';
+import { isLtsVersion } from '../../../utils/versioning';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import { useCaseDomain } from '../../use-case/use-case.domain';
 import {
@@ -36,7 +36,7 @@ const saveManifestToDatabase = async (
     const savedManifest = await ManifestDomain.insertManifest({
       product: key.platformIdentifier,
       version: key.version,
-      version_padded: ManifestFragmentHelper.formatConnectorVersion(
+      version_padded: ManifestFragmentHelper.validateAndFormatManifestVersion(
         key.version
       ),
       type: key.type,
@@ -126,7 +126,9 @@ export const ManifestApp = {
     version: string;
     type: ManifestType;
   }): Promise<void> => {
-    if (!isValidVersion(version)) {
+    try {
+      ManifestFragmentHelper.validateAndFormatManifestVersion(version);
+    } catch {
       throw BadRequestError(BadRequestErrorCode.InvalidPlatformVersion, {
         detail: `Invalid version format: ${version}`,
       });

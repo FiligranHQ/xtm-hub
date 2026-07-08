@@ -219,7 +219,7 @@ export const TestHelper = {
           product: PlatformIdentifier.Opencti,
           version,
           version_padded:
-            ManifestFragmentHelper.formatConnectorVersion(version),
+            ManifestFragmentHelper.validateAndFormatManifestVersion(version),
           type: ManifestType.Connector,
           name: 'test-manifest',
           ...data,

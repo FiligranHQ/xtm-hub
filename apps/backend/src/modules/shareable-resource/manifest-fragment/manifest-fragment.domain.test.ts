@@ -224,7 +224,7 @@ describe('manifestFragmentDomain', () => {
 
       // Then
       await expect(call).rejects.toThrow(
-        BadRequestErrorCode.InvalidConnectorVersionFormat
+        BadRequestErrorCode.InvalidManifestVersionFormat
       );
 
       const createdDocument = await TestHelper.document.load({ slug });

@@ -40,7 +40,7 @@ export const ManifestFragmentApp = {
 
     const impactedManifests =
       await ManifestDomain.loadDistinctManifestsAboveVersion(
-        ManifestFragmentHelper.formatConnectorVersion(minVersion),
+        ManifestFragmentHelper.validateAndFormatManifestVersion(minVersion),
         isLts,
         ManifestType.Connector
       );

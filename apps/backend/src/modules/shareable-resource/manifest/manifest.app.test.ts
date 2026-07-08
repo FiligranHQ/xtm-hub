@@ -499,6 +499,8 @@ describe('manifestApp', () => {
       ${'not-a-version'}
       ${'6.4'}
       ${''}
+      ${'7.20260703.0'}
+      ${'7.260309.0-lts'}
     `(
       'should throw and not queue nor process when the version "$version" is invalid',
       async ({ version }: { version: string }) => {

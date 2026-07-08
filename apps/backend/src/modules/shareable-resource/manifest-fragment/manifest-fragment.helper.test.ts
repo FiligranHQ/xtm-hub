@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { ManifestFragmentHelper } from './manifest-fragment.helper';
 
-describe('formatConnectorVersion', () => {
+describe('validateAndFormatManifestVersion', () => {
   it.each`
     input                 | expected
     ${'7.260309.0-lts.5'} | ${'007.260309.000.LTS.005'}
@@ -10,7 +10,9 @@ describe('formatConnectorVersion', () => {
     ${'6.5.1'}            | ${'006.000005.001'}
     ${'6.5.1-lts.2'}      | ${'006.000005.001.LTS.002'}
   `('formats "$input" as "$expected"', ({ input, expected }) => {
-    expect(ManifestFragmentHelper.formatConnectorVersion(input)).toBe(expected);
+    expect(ManifestFragmentHelper.validateAndFormatManifestVersion(input)).toBe(
+      expected
+    );
   });
 
   it.each`
@@ -21,33 +23,11 @@ describe('formatConnectorVersion', () => {
     ${'6.0.4.5'}
     ${'LTS.1.2.3'}
     ${'7.20260703.0'}
-  `('throws when version format is invalid: "$input"', ({ input }) => {
-    expect(() => ManifestFragmentHelper.formatConnectorVersion(input)).toThrow(
-      BadRequestErrorCode.InvalidConnectorVersionFormat
-    );
-  });
-});
-
-describe('validateConnectorMinimumVersion', () => {
-  it.each`
-    input
-    ${'7.260309.0'}
-    ${'7.260309.0-lts.5'}
-  `('accepts "$input"', ({ input }) => {
-    expect(() =>
-      ManifestFragmentHelper.validateConnectorMinimumVersion(input)
-    ).not.toThrow();
-  });
-
-  it.each`
-    input
     ${'>= 7.260309.0'}
-    ${'not-a-version'}
-    ${'7.20260703.0'}
-  `('throws for invalid value "$input"', ({ input }) => {
+  `('throws when version format is invalid: "$input"', ({ input }) => {
     expect(() =>
-      ManifestFragmentHelper.validateConnectorMinimumVersion(input)
-    ).toThrow(BadRequestErrorCode.InvalidConnectorVersionFormat);
+      ManifestFragmentHelper.validateAndFormatManifestVersion(input)
+    ).toThrow(BadRequestErrorCode.InvalidManifestVersionFormat);
   });
 });
 

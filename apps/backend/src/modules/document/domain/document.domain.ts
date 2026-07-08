@@ -535,7 +535,7 @@ export const DocumentDomain = {
     if (manifestFragmentIds.length === 0) return [];
 
     const paddedVersion =
-      ManifestFragmentHelper.formatConnectorVersion(version);
+      ManifestFragmentHelper.validateAndFormatManifestVersion(version);
     const isLts = isLtsVersion(version);
     const metadataKeys =
       INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[];

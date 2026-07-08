@@ -1,7 +1,7 @@
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { compareVersions, isLtsVersion } from '../../../utils/versioning';
 
-const connectorVersionRegex = /^(\d+)\.(\d{1,6})\.(\d+)(?:-lts\.(\d+))?$/i;
+const manifestVersionRegex = /^(\d+)\.(\d{1,6})\.(\d+)(?:-lts\.(\d+))?$/i;
 export const TAG_LATEST = 'latest';
 export const TAG_LATEST_LTS = 'latest-lts';
 export const TAG_DECOUPLING = 'decoupling';
@@ -14,10 +14,10 @@ export type ConnectorMetadataSnapshot = {
 };
 
 export const ManifestFragmentHelper = {
-  formatConnectorVersion: (version: string): string => {
-    const match = version.match(connectorVersionRegex);
+  validateAndFormatManifestVersion: (version: string): string => {
+    const match = version.match(manifestVersionRegex);
     if (!match) {
-      throw new Error(BadRequestErrorCode.InvalidConnectorVersionFormat);
+      throw new Error(BadRequestErrorCode.InvalidManifestVersionFormat);
     }
 
     const major = (match[1] ?? '0').padStart(3, '0');
@@ -31,10 +31,6 @@ export const ManifestFragmentHelper = {
 
     const ltsPatch = (match[4] ?? '0').padStart(3, '0');
     return `${major}.${datePart}.${patch}.LTS.${ltsPatch}`;
-  },
-
-  validateConnectorMinimumVersion: (minVersion: string): void => {
-    ManifestFragmentHelper.formatConnectorVersion(minVersion);
   },
 
   validateShortDescriptionLength: (shortDescription: string): void => {

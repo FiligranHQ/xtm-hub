@@ -147,7 +147,7 @@ export const ManifestHelper = {
     const compatible: ConnectorV2[] = [];
     const incompatible: ConnectorV2[] = [];
     const paddedVersion =
-      ManifestFragmentHelper.formatConnectorVersion(version);
+      ManifestFragmentHelper.validateAndFormatManifestVersion(version);
 
     for (const connector of connectors) {
       const minVersion = connector.minimum_deployable_version_padded;

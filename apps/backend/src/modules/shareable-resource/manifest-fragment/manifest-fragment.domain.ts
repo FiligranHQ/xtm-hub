@@ -101,7 +101,9 @@ const createConnectorDocument = async ({
         manager_supported: fragment.manager_supported,
         minimum_deployable_version: fragment.min_version,
         minimum_deployable_version_padded:
-          ManifestFragmentHelper.formatConnectorVersion(fragment.min_version),
+          ManifestFragmentHelper.validateAndFormatManifestVersion(
+            fragment.min_version
+          ),
         datasheet_url: metadataFromExisting?.datasheet_url,
         blogpost_url: metadataFromExisting?.blogpost_url,
         demo_url: metadataFromExisting?.demo_url,
@@ -145,15 +147,14 @@ export const ManifestFragmentDomain = {
       throw new Error(BadRequestErrorCode.IntegrationTypeNotRecognized);
     }
 
-    ManifestFragmentHelper.validateConnectorMinimumVersion(
+    ManifestFragmentHelper.validateAndFormatManifestVersion(
       fragment.min_version
     );
     ManifestFragmentHelper.validateShortDescriptionLength(
       fragment.short_description
     );
-    const formattedVersion = ManifestFragmentHelper.formatConnectorVersion(
-      fragment.version
-    );
+    const formattedVersion =
+      ManifestFragmentHelper.validateAndFormatManifestVersion(fragment.version);
     const latestTag =
       ManifestFragmentHelper.getLatestTagForConnectorVersion(formattedVersion);
 

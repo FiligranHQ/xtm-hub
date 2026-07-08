@@ -42,7 +42,7 @@ export enum BadRequestErrorCode {
   DocumentFileMissing = 'DOCUMENT_FILE_MISSING',
   TenantIdMandatory = 'TENANT_ID_MANDATORY',
   NewsFeedItemMissingTitle = 'NEWS_FEED_ITEM_MISSING_TITLE',
-  InvalidConnectorVersionFormat = 'INVALID_CONNECTOR_VERSION_FORMAT',
+  InvalidManifestVersionFormat = 'INVALID_MANIFEST_VERSION_FORMAT',
   ConnectorVersionAlreadyExists = 'CONNECTOR_VERSION_ALREADY_EXISTS',
   ShortDescriptionTooLong = 'SHORT_DESCRIPTION_TOO_LONG',
   MixedLtsManifestFragments = 'MIXED_LTS_MANIFEST_FRAGMENTS',
