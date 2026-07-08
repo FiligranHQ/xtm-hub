@@ -6,6 +6,7 @@ import { portalGraphqlClient } from '@/lib/graphql-client';
 import { removeFromQueryCache, updateInQueryCache } from '@/utils/query-cache';
 import { toast } from '@filigran/ui';
 import {
+  FiligranProduct,
   UseCaseDeleteMutation,
   UseCaseEditMutation,
   UseCasesListQuery,
@@ -35,8 +36,8 @@ const EditUseCase = ({
       toast({
         title: t('Utils.Success'),
       });
-      queryClient.setQueryData<UseCasesListQuery>(
-        useCaseListKeys.all(),
+      queryClient.setQueriesData<UseCasesListQuery>(
+        { queryKey: useCaseListKeys.all() },
         updateInQueryCache('useCases', data.editUseCase)
       );
       handleOpenSheet(false);
@@ -59,8 +60,8 @@ const EditUseCase = ({
         toast({
           title: t('Utils.Success'),
         });
-        queryClient.setQueryData<UseCasesListQuery>(
-          useCaseListKeys.all(),
+        queryClient.setQueriesData<UseCasesListQuery>(
+          { queryKey: useCaseListKeys.all() },
           removeFromQueryCache('useCases', data.deleteUseCase.id)
         );
         handleOpenSheet(false);
@@ -93,7 +94,11 @@ const EditUseCase = ({
     });
   };
 
-  const onUpdateUseCase = (input: { name: string; color: string }) => {
+  const onUpdateUseCase = (input: {
+    name: string;
+    color: string;
+    product: FiligranProduct[];
+  }) => {
     editUseCase({
       id: useCase.id,
       input,
@@ -106,6 +111,7 @@ const EditUseCase = ({
       setOpen={handleOpenSheet}
       open={openSheet}>
       <UseCaseForm
+        key={useCase.id}
         useCase={useCase}
         onClose={() => handleOpenSheet(false)}
         handleDelete={onDeleteUseCase}
