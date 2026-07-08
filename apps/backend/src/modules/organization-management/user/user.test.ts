@@ -10,6 +10,7 @@ import { requestContext } from '../../../context/request.context';
 import Organization from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
+import * as MailService from '../../../server/mail-service';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { UserOrganizationCapabilityDomain } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { TelemetryApp } from '../../telemetry/telemetry.app';
@@ -124,6 +125,34 @@ describe('user helpers', async () => {
       expect(newUser.selected_org_capabilities).toHaveLength(1);
 
       expect(newUserPendingOrg).toHaveLength(0);
+    });
+
+    it('should send a welcome email by default when creating a new user', async () => {
+      const sendMailSpy = vi.spyOn(MailService, 'sendMail').mockResolvedValue();
+      const testMail = `testWelcomeEmail${uuidv4()}@whatever.io`;
+
+      await createNewUserFromInvitation({ email: testMail });
+
+      expect(sendMailSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ to: testMail, template: 'welcome' })
+      );
+
+      await removeUser({ email: testMail });
+      sendMailSpy.mockRestore();
+    });
+
+    it('should not send a welcome email when sendWelcomeEmail is false', async () => {
+      const sendMailSpy = vi.spyOn(MailService, 'sendMail').mockResolvedValue();
+      const testMail = `testWelcomeEmail${uuidv4()}@whatever.io`;
+
+      await createNewUserFromInvitation({ email: testMail }, false, false);
+
+      expect(sendMailSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({ template: 'welcome' })
+      );
+
+      await removeUser({ email: testMail });
+      sendMailSpy.mockRestore();
     });
   });
 

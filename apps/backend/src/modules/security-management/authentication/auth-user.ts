@@ -21,7 +21,7 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   }
   const isFiligranUser = email.endsWith('@filigran.io');
 
-  const user = await getOrCreateUser(userInfo, true, isFiligranUser);
+  const user = await getOrCreateUser(userInfo, true, isFiligranUser, false);
   if (!user) {
     throw new Error(ErrorCode.UserNotFound);
   }
