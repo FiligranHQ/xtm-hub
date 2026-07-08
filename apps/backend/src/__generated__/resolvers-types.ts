@@ -61,6 +61,7 @@ export type AddSubscriptionCapabilityInput = {
 export type AddUseCaseInput = {
   color: Scalars['String']['input'];
   name: Scalars['String']['input'];
+  product?: InputMaybe<Array<FiligranProduct>>;
 };
 
 export type AddUserInput = {
@@ -649,6 +650,7 @@ export type EditServiceCapabilityInput = {
 export type EditUseCaseInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  product?: InputMaybe<Array<FiligranProduct>>;
 };
 
 export type EditUserCapabilitiesInput = {
@@ -1870,6 +1872,7 @@ export type QueryUseCasesArgs = {
   first: Scalars['Int']['input'];
   orderBy: UseCaseOrdering;
   orderMode: OrderingMode;
+  product?: InputMaybe<FiligranProduct>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2491,6 +2494,7 @@ export type UseCase = Node & {
   color: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  product: Array<FiligranProduct>;
 };
 
 export type UseCaseConnection = {
@@ -4255,6 +4259,7 @@ export type UseCaseResolvers<ContextType = PortalContext, ParentType extends Res
   color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  product?: Resolver<Array<ResolversTypes['FiligranProduct']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
