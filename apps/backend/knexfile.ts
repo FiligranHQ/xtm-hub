@@ -91,7 +91,8 @@ type BaseDatabaseType =
   | 'ManifestRebuildQueue'
   | 'Manifest'
   | 'Manifest_Document'
-  | 'PlatformMetadata';
+  | 'PlatformMetadata'
+  | 'OneClickDeployment';
 
 export type DatabaseType =
   | BaseDatabaseType
