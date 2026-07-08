@@ -21,7 +21,7 @@ import {
   TAG_DECOUPLING,
   TAG_LATEST,
   TAG_LATEST_LTS,
-} from '../manifest-fragment/manifest-fragment.utils';
+} from '../manifest-fragment/manifest-fragment.helper';
 import { INTEGRATION_SERVICE_INSTANCE_ID } from '../opencti/integration/integration.model';
 import { ManifestApp } from './manifest.app';
 import type { ManifestKey } from './manifest.consts';

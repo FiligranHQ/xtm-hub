@@ -40,7 +40,7 @@ import UseCase, {
   UseCaseInitializer,
   UseCaseMutator,
 } from '../../src/model/kanel/public/UseCase';
-import { formatConnectorVersion } from '../../src/modules/shareable-resource/manifest-fragment/manifest-fragment.utils';
+import { ManifestFragmentHelper } from '../../src/modules/shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { ManifestRebuildQueueStatus } from '../../src/modules/shareable-resource/manifest/manifest.consts';
 import { TEST_ORGANIZATIONS } from '../tests.const';
 import {
@@ -218,7 +218,8 @@ export const TestHelper = {
           id: uuidv4() as ManifestId,
           product: PlatformIdentifier.Opencti,
           version,
-          version_padded: formatConnectorVersion(version),
+          version_padded:
+            ManifestFragmentHelper.formatConnectorVersion(version),
           type: ManifestType.Connector,
           name: 'test-manifest',
           ...data,

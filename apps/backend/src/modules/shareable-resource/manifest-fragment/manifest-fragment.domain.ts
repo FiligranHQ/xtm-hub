@@ -20,16 +20,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   type ConnectorV2,
 } from '../opencti/integration/integration.model';
-import {
-  buildConnectorLogoFilename,
-  formatConnectorVersion,
-  getConnectorDocumentTags,
-  getConnectorMetadataFromExisting,
-  getLatestTagForConnectorVersion,
-  isStrictlyGreaterConnectorVersion,
-  validateConnectorMinimumVersion,
-  validateShortDescriptionLength,
-} from './manifest-fragment.utils';
+import { ManifestFragmentHelper } from './manifest-fragment.helper';
 
 type ConnectorWithMetadata = Document & {
   version_padded?: string;
@@ -47,7 +38,7 @@ const attachConnectorLogo = async ({
 }) => {
   const uploadLogo = IngestManifestHelper.base64ToUpload(
     fragment.logo,
-    buildConnectorLogoFilename({
+    ManifestFragmentHelper.buildConnectorLogoFilename({
       title: fragment.title,
       version: fragment.version,
     })
@@ -109,9 +100,8 @@ const createConnectorDocument = async ({
         subscription_link: fragment.subscription_link,
         manager_supported: fragment.manager_supported,
         minimum_deployable_version: fragment.min_version,
-        minimum_deployable_version_padded: formatConnectorVersion(
-          fragment.min_version
-        ),
+        minimum_deployable_version_padded:
+          ManifestFragmentHelper.formatConnectorVersion(fragment.min_version),
         datasheet_url: metadataFromExisting?.datasheet_url,
         blogpost_url: metadataFromExisting?.blogpost_url,
         demo_url: metadataFromExisting?.demo_url,
@@ -155,10 +145,17 @@ export const ManifestFragmentDomain = {
       throw new Error(BadRequestErrorCode.IntegrationTypeNotRecognized);
     }
 
-    validateConnectorMinimumVersion(fragment.min_version);
-    validateShortDescriptionLength(fragment.short_description);
-    const formattedVersion = formatConnectorVersion(fragment.version);
-    const latestTag = getLatestTagForConnectorVersion(formattedVersion);
+    ManifestFragmentHelper.validateConnectorMinimumVersion(
+      fragment.min_version
+    );
+    ManifestFragmentHelper.validateShortDescriptionLength(
+      fragment.short_description
+    );
+    const formattedVersion = ManifestFragmentHelper.formatConnectorVersion(
+      fragment.version
+    );
+    const latestTag =
+      ManifestFragmentHelper.getLatestTagForConnectorVersion(formattedVersion);
 
     const existingBatchConnectors =
       (await DocumentDomain.loadDocumentsByMetadata(
@@ -183,14 +180,15 @@ export const ManifestFragmentDomain = {
       (connector.tags ?? []).includes(latestTag)
     );
 
-    const metadataFromExisting = getConnectorMetadataFromExisting({
-      currentLatestConnector,
-      existingBatchConnectors,
-    });
+    const metadataFromExisting =
+      ManifestFragmentHelper.getConnectorMetadataFromExisting({
+        currentLatestConnector,
+        existingBatchConnectors,
+      });
 
     const shouldPromoteAsLatest =
       !currentLatestConnector ||
-      isStrictlyGreaterConnectorVersion({
+      ManifestFragmentHelper.isStrictlyGreaterConnectorVersion({
         candidate: formattedVersion,
         current: currentLatestConnector.version_padded ?? '',
       });
@@ -202,7 +200,7 @@ export const ManifestFragmentDomain = {
       });
     }
 
-    const newDocumentTags = getConnectorDocumentTags(
+    const newDocumentTags = ManifestFragmentHelper.getConnectorDocumentTags(
       shouldPromoteAsLatest,
       latestTag
     );

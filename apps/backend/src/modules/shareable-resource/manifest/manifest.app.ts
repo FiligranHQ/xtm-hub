@@ -13,11 +13,11 @@ import { isLtsVersion, isValidVersion } from '../../../utils/versioning';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import { useCaseDomain } from '../../use-case/use-case.domain';
 import {
-  formatConnectorVersion,
+  ManifestFragmentHelper,
   TAG_DECOUPLING,
   TAG_LATEST,
   TAG_LATEST_LTS,
-} from '../manifest-fragment/manifest-fragment.utils';
+} from '../manifest-fragment/manifest-fragment.helper';
 import {
   ConnectorV2,
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
@@ -36,7 +36,9 @@ const saveManifestToDatabase = async (
     const savedManifest = await ManifestDomain.insertManifest({
       product: key.platformIdentifier,
       version: key.version,
-      version_padded: formatConnectorVersion(key.version),
+      version_padded: ManifestFragmentHelper.formatConnectorVersion(
+        key.version
+      ),
       type: key.type,
       name: manifestName,
     });

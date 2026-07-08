@@ -19,7 +19,6 @@ import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { omit } from '../../../utils/utils';
 import { isLtsVersion } from '../../../utils/versioning';
-import { formatConnectorVersion } from '../../shareable-resource/manifest-fragment/manifest-fragment.utils';
 import {
   ConnectorV2,
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
@@ -35,7 +34,10 @@ import {
 } from '../../../security/restriction/document';
 import { MinioFile } from '../../../thirdparty/minio/types';
 import { stripNulls } from '../../../utils/typescript';
-import { TAG_DECOUPLING } from '../../shareable-resource/manifest-fragment/manifest-fragment.utils';
+import {
+  ManifestFragmentHelper,
+  TAG_DECOUPLING,
+} from '../../shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,
@@ -532,7 +534,8 @@ export const DocumentDomain = {
   ): Promise<ConnectorV2[]> => {
     if (manifestFragmentIds.length === 0) return [];
 
-    const paddedVersion = formatConnectorVersion(version);
+    const paddedVersion =
+      ManifestFragmentHelper.formatConnectorVersion(version);
     const isLts = isLtsVersion(version);
     const metadataKeys =
       INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[];

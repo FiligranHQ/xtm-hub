@@ -9,11 +9,7 @@ import { securityGuard } from '../../../security/guard';
 import { ManifestKey } from '../manifest/manifest.consts';
 import { ManifestDomain } from '../manifest/manifest.domain';
 import { ManifestFragmentDomain } from './manifest-fragment.domain';
-import {
-  assertHomogeneousLtsBatch,
-  findMinConnectorVersion,
-  formatConnectorVersion,
-} from './manifest-fragment.utils';
+import { ManifestFragmentHelper } from './manifest-fragment.helper';
 
 export const ManifestFragmentApp = {
   ingestManifestFragments: async ({
@@ -27,7 +23,7 @@ export const ManifestFragmentApp = {
     if (manifestFragments.length === 0) {
       return;
     }
-    const minVersion = findMinConnectorVersion(
+    const minVersion = ManifestFragmentHelper.findMinConnectorVersion(
       manifestFragments.map((fragment) => fragment.min_version)
     );
     // min version is null only if there is no fragment to ingest
@@ -35,7 +31,8 @@ export const ManifestFragmentApp = {
       return;
     }
 
-    const isLts = assertHomogeneousLtsBatch(manifestFragments);
+    const isLts =
+      ManifestFragmentHelper.assertHomogeneousLtsBatch(manifestFragments);
 
     for (const fragment of manifestFragments) {
       await ManifestFragmentDomain.ingestManifestFragment(fragment);
@@ -43,7 +40,7 @@ export const ManifestFragmentApp = {
 
     const impactedManifests =
       await ManifestDomain.loadDistinctManifestsAboveVersion(
-        formatConnectorVersion(minVersion),
+        ManifestFragmentHelper.formatConnectorVersion(minVersion),
         isLts,
         ManifestType.Connector
       );

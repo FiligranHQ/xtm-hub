@@ -1,7 +1,7 @@
 const CONNECTOR_VERSION_REGEX = /^(\d+)\.(\d{1,6})\.(\d+)(?:-lts\.(\d+))?$/i;
 
 /**
- * Mirrors src/modules/shareable-resource/manifest-fragment/manifest-fragment.utils.ts#formatConnectorVersion.
+ * Mirrors src/modules/shareable-resource/manifest-fragment/manifest-fragment.helper.ts#ManifestFragmentHelper.formatConnectorVersion.
  * Duplicated here since migrations do not import application source code.
  * @param {string} version
  * @returns {string}

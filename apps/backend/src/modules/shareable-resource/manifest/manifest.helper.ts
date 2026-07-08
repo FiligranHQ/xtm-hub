@@ -11,7 +11,7 @@ import { mapWithConcurrency } from '../../../utils/typescript';
 import { WithParentId } from '../../document/document.helper';
 import { DocumentImage } from '../../document/document.model';
 import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
-import { formatConnectorVersion } from '../manifest-fragment/manifest-fragment.utils';
+import { ManifestFragmentHelper } from '../manifest-fragment/manifest-fragment.helper';
 import { ConnectorV2 } from '../opencti/integration/integration.model';
 import { ManifestContract, ManifestOutput } from './manifest.types';
 
@@ -146,7 +146,8 @@ export const ManifestHelper = {
   ): { compatible: ConnectorV2[]; incompatible: ConnectorV2[] } => {
     const compatible: ConnectorV2[] = [];
     const incompatible: ConnectorV2[] = [];
-    const paddedVersion = formatConnectorVersion(version);
+    const paddedVersion =
+      ManifestFragmentHelper.formatConnectorVersion(version);
 
     for (const connector of connectors) {
       const minVersion = connector.minimum_deployable_version_padded;
