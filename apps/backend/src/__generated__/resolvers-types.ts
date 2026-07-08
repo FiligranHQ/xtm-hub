@@ -745,6 +745,13 @@ export type GenericServiceCapability = Node & {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type IngestManifestSuccess = {
+  __typename?: 'IngestManifestSuccess';
+  invalidUseCasesByConnector?: Maybe<Array<InvalidUseCasesByConnector>>;
+  success: Scalars['Boolean']['output'];
+  warnings?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 export type Integration = {
   active: Scalars['Boolean']['output'];
   blogpost_url?: Maybe<Scalars['String']['output']>;
@@ -950,7 +957,7 @@ export type Mutation = {
   editUserService?: Maybe<UserService>;
   frontendErrorLog?: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
-  ingestManifestFragments: Success;
+  ingestManifestFragments: IngestManifestSuccess;
   login?: Maybe<User>;
   logout: Scalars['ID']['output'];
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
@@ -1637,7 +1644,7 @@ export type Query = {
   subscriptionById?: Maybe<SubscriptionModel>;
   subscriptions: SubscriptionConnection;
   trialDeployments: TrialsDeployments;
-  updateOpenCTIManifest: Success;
+  updateOpenCTIManifest: IngestManifestSuccess;
   useCases?: Maybe<UseCaseConnection>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
@@ -2316,9 +2323,7 @@ export enum SubscriptionOrdering {
 
 export type Success = {
   __typename?: 'Success';
-  invalidUseCasesByConnector?: Maybe<Array<InvalidUseCasesByConnector>>;
   success: Scalars['Boolean']['output'];
-  warnings?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 export type TaxiiFeed = Document & Integration & Node & {
@@ -2804,6 +2809,7 @@ export type ResolversTypes = ResolversObject<{
   FilterKey: FilterKey;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  IngestManifestSuccess: ResolverTypeWrapper<IngestManifestSuccess>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Integration: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Integration']>;
   IntegrationHack: ResolverTypeWrapper<IntegrationHack>;
@@ -3008,6 +3014,7 @@ export type ResolversParentTypes = ResolversObject<{
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
+  IngestManifestSuccess: IngestManifestSuccess;
   Int: Scalars['Int']['output'];
   Integration: ResolversInterfaceTypes<ResolversParentTypes>['Integration'];
   IntegrationHack: IntegrationHack;
@@ -3488,6 +3495,13 @@ export type GenericServiceCapabilityResolvers<ContextType = PortalContext, Paren
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type IngestManifestSuccessResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IngestManifestSuccess'] = ResolversParentTypes['IngestManifestSuccess']> = ResolversObject<{
+  invalidUseCasesByConnector?: Resolver<Maybe<Array<ResolversTypes['InvalidUseCasesByConnector']>>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  warnings?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type IntegrationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Integration'] = ResolversParentTypes['Integration']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Connector' | 'CsvFeed' | 'IntegrationHack' | 'RssFeed' | 'Stream' | 'TaxiiFeed' | 'ThirdPartyIntegration', ParentType, ContextType>;
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -3622,7 +3636,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationEditUserServiceArgs, 'input' | 'service_instance_id'>>;
   frontendErrorLog?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationFrontendErrorLogArgs, 'message'>>;
   incrementShareNumberDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationIncrementShareNumberDocumentArgs, 'documentId'>>;
-  ingestManifestFragments?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationIngestManifestFragmentsArgs, 'manifestFragments'>>;
+  ingestManifestFragments?: Resolver<ResolversTypes['IngestManifestSuccess'], ParentType, ContextType, RequireFields<MutationIngestManifestFragmentsArgs, 'manifestFragments'>>;
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email'>>;
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;
@@ -3883,7 +3897,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
   subscriptions?: Resolver<ResolversTypes['SubscriptionConnection'], ParentType, ContextType, RequireFields<QuerySubscriptionsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   trialDeployments?: Resolver<ResolversTypes['TrialsDeployments'], ParentType, ContextType, RequireFields<QueryTrialDeploymentsArgs, 'input'>>;
-  updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<QueryUpdateOpenCtiManifestArgs, 'tag'>>;
+  updateOpenCTIManifest?: Resolver<ResolversTypes['IngestManifestSuccess'], ParentType, ContextType, RequireFields<QueryUpdateOpenCtiManifestArgs, 'tag'>>;
   useCases?: Resolver<Maybe<ResolversTypes['UseCaseConnection']>, ParentType, ContextType, RequireFields<QueryUseCasesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
@@ -4178,9 +4192,7 @@ export type SubscriptionModelResolvers<ContextType = PortalContext, ParentType e
 }>;
 
 export type SuccessResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Success'] = ResolversParentTypes['Success']> = ResolversObject<{
-  invalidUseCasesByConnector?: Resolver<Maybe<Array<ResolversTypes['InvalidUseCasesByConnector']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  warnings?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4418,6 +4430,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   EpicCountPerTimeline?: EpicCountPerTimelineResolvers<ContextType>;
   EpicEdge?: EpicEdgeResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
+  IngestManifestSuccess?: IngestManifestSuccessResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   IntegrationHack?: IntegrationHackResolvers<ContextType>;
   InvalidUseCasesByConnector?: InvalidUseCasesByConnectorResolvers<ContextType>;

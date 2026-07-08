@@ -28,13 +28,8 @@ export const IngestManifestApp = {
       getOpenCTIConnectorsManifest(tag)
     );
     const result = IngestManifestHelper.extractManifestInformation(manifest);
-    const {
-      sanitizedContracts,
-      warnings,
-      invalidUseCases,
-      invalidUseCasesByConnector,
-    } = await IngestManifestHelper.filterUnknownUseCases(result.validContracts);
-
+    const { sanitizedContracts, warnings, invalidUseCasesByConnector } =
+      await IngestManifestHelper.filterUnknownUseCases(result.validContracts);
     if (sanitizedContracts.length > 0) {
       void IngestManifestDomain.upsertConnectors(sanitizedContracts);
     }
@@ -49,20 +44,11 @@ export const IngestManifestApp = {
         `${warning.contractTitle ?? 'Unknown'} (${warning.contractSlug ?? 'Unknown'}): ${warning.warning}`
     );
 
-    const aggregatedInvalidUseCasesWarning =
-      invalidUseCases.length > 0
-        ? [`Incorrect use case(s): ${invalidUseCases.join(', ')}`]
-        : [];
-
     return {
       ...result,
       validContracts: sanitizedContracts,
       invalidUseCasesByConnector,
-      warnings: [
-        ...validationWarnings,
-        ...unknownUseCaseWarnings,
-        ...aggregatedInvalidUseCasesWarning,
-      ],
+      warnings: [...validationWarnings, ...unknownUseCaseWarnings],
     };
   },
 };

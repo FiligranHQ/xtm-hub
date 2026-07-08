@@ -1,4 +1,16 @@
+type IngestManifestSuccess {
+  success: Boolean!
+  warnings: [String!]
+  invalidUseCasesByConnector: [InvalidUseCasesByConnector!]
+}
+
+type InvalidUseCasesByConnector {
+  contractTitle: String
+  contractSlug: String
+  invalidUseCases: [String!]!
+}
+
 type Query {
-  updateOpenCTIManifest(tag: String!): Success!
+  updateOpenCTIManifest(tag: String!): IngestManifestSuccess!
     @system_token(portalCapa: [MANAGE_CONNECTORS_INGESTIONS])
 }

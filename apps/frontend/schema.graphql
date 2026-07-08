@@ -44,14 +44,6 @@ input LogicalFilterInput {
 
 type Success {
   success: Boolean!
-  warnings: [String!]
-  invalidUseCasesByConnector: [InvalidUseCasesByConnector!]
-}
-
-type InvalidUseCasesByConnector {
-  contractTitle: String
-  contractSlug: String
-  invalidUseCases: [String!]!
 }
 
 """
@@ -139,7 +131,7 @@ type Query {
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
-  updateOpenCTIManifest(tag: String!): Success!
+  updateOpenCTIManifest(tag: String!): IngestManifestSuccess!
   subscriptionById(subscription_id: SubscriptionId): SubscriptionModel
   subscriptions(first: Int!, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [SubscriptionFilter!]): SubscriptionConnection!
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
@@ -199,7 +191,7 @@ type Mutation {
   addCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean!): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
-  ingestManifestFragments(manifestFragments: [ManifestFragmentInput!]!): Success!
+  ingestManifestFragments(manifestFragments: [ManifestFragmentInput!]!): IngestManifestSuccess!
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
   createSubscriptions(input: CreateSubscriptionsInput!): [SubscriptionModel!]!
   updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
@@ -1361,6 +1353,18 @@ type CustomView implements Document & Node {
   children_documents: [ShareableResource!]
   product_version: String
   entity_types: [String!]
+}
+
+type IngestManifestSuccess {
+  success: Boolean!
+  warnings: [String!]
+  invalidUseCasesByConnector: [InvalidUseCasesByConnector!]
+}
+
+type InvalidUseCasesByConnector {
+  contractTitle: String
+  contractSlug: String
+  invalidUseCases: [String!]!
 }
 
 enum IntegrationType {

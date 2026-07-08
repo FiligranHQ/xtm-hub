@@ -175,14 +175,12 @@ export const IngestManifestHelper = {
   ): Promise<{
     sanitizedContracts: ManifestInformation[];
     warnings: UseCaseValidationWarning[];
-    invalidUseCases: string[];
     invalidUseCasesByConnector: InvalidConnectorUseCases[];
   }> => {
     if (!contracts.length) {
       return {
         sanitizedContracts: contracts,
         warnings: [],
-        invalidUseCases: [],
         invalidUseCasesByConnector: [],
       };
     }
@@ -194,12 +192,10 @@ export const IngestManifestHelper = {
         )
       ),
     ].filter(Boolean);
-
     if (!uniqueUseCases.length) {
       return {
         sanitizedContracts: contracts,
         warnings: [],
-        invalidUseCases: [],
         invalidUseCasesByConnector: [],
       };
     }
@@ -219,7 +215,6 @@ export const IngestManifestHelper = {
     );
 
     const warnings: UseCaseValidationWarning[] = [];
-    const invalidUseCaseSet = new Set<string>();
     const invalidUseCasesByConnector: InvalidConnectorUseCases[] = [];
     const sanitizedContracts = contracts.map((contract) => {
       const knownContractUseCases: string[] = [];
@@ -237,14 +232,13 @@ export const IngestManifestHelper = {
         }
 
         unknownContractUseCases.push(normalizedUseCaseName);
-        invalidUseCaseSet.add(normalizedUseCaseName);
       }
 
       if (unknownContractUseCases.length > 0) {
         warnings.push({
           contractTitle: contract.name ?? undefined,
           contractSlug: contract.slug ?? undefined,
-          warning: `Unknown use case(s) skipped: ${unknownContractUseCases.join(', ')}`,
+          warning: `Unknown use case(s): ${unknownContractUseCases.join(', ')}`,
         });
 
         invalidUseCasesByConnector.push({
@@ -263,7 +257,6 @@ export const IngestManifestHelper = {
     return {
       sanitizedContracts,
       warnings,
-      invalidUseCases: [...invalidUseCaseSet],
       invalidUseCasesByConnector,
     };
   },

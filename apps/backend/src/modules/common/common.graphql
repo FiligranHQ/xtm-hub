@@ -34,12 +34,4 @@ input LogicalFilterInput {
 
 type Success {
   success: Boolean!
-  warnings: [String!]
-  invalidUseCasesByConnector: [InvalidUseCasesByConnector!]
-}
-
-type InvalidUseCasesByConnector {
-  contractTitle: String
-  contractSlug: String
-  invalidUseCases: [String!]!
 }

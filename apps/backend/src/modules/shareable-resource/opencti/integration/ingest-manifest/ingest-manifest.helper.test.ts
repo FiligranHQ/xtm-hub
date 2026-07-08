@@ -403,30 +403,25 @@ describe('ingest manifest helper', () => {
         }
       );
 
-      const {
-        sanitizedContracts,
-        warnings,
-        invalidUseCases,
-        invalidUseCasesByConnector,
-      } = await IngestManifestHelper.filterUnknownUseCases([
-        {
-          name: 'Contract One',
-          slug: 'contract-one',
-          description: 'desc',
-          short_description: 'short',
-          logo: 'https://example.com/logo.png',
-          use_cases: ['automation', 'unknown-use-case'],
-          service_instance_id: 'service-id' as never,
-          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          source_type: DocumentSourceType.External,
-        },
-      ]);
+      const { sanitizedContracts, warnings, invalidUseCasesByConnector } =
+        await IngestManifestHelper.filterUnknownUseCases([
+          {
+            name: 'Contract One',
+            slug: 'contract-one',
+            description: 'desc',
+            short_description: 'short',
+            logo: 'https://example.com/logo.png',
+            use_cases: ['automation', 'unknown-use-case'],
+            service_instance_id: 'service-id' as never,
+            type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+            source_type: DocumentSourceType.External,
+          },
+        ]);
 
       expect(sanitizedContracts).toHaveLength(1);
       expect(sanitizedContracts[0]?.use_cases).toEqual(['automation']);
       expect(warnings).toHaveLength(1);
       expect(warnings[0]?.warning).toContain('unknown-use-case');
-      expect(invalidUseCases).toEqual(['unknown-use-case']);
       expect(invalidUseCasesByConnector).toEqual([
         {
           contractTitle: 'Contract One',

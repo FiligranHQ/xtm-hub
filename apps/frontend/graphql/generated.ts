@@ -753,6 +753,13 @@ export type GenericServiceCapability = Node & {
   name: Maybe<Scalars['String']['output']>;
 };
 
+export type IngestManifestSuccess = {
+  __typename?: 'IngestManifestSuccess';
+  invalidUseCasesByConnector: Maybe<Array<InvalidUseCasesByConnector>>;
+  success: Scalars['Boolean']['output'];
+  warnings: Maybe<Array<Scalars['String']['output']>>;
+};
+
 export type Integration = {
   active: Scalars['Boolean']['output'];
   blogpost_url: Maybe<Scalars['String']['output']>;
@@ -958,7 +965,7 @@ export type Mutation = {
   editUserService: Maybe<UserService>;
   frontendErrorLog: Maybe<Scalars['Boolean']['output']>;
   incrementShareNumberDocument: Document;
-  ingestManifestFragments: Success;
+  ingestManifestFragments: IngestManifestSuccess;
   login: Maybe<User>;
   logout: Scalars['ID']['output'];
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
@@ -1645,7 +1652,7 @@ export type Query = {
   subscriptionById: Maybe<SubscriptionModel>;
   subscriptions: SubscriptionConnection;
   trialDeployments: TrialsDeployments;
-  updateOpenCTIManifest: Success;
+  updateOpenCTIManifest: IngestManifestSuccess;
   useCases: Maybe<UseCaseConnection>;
   userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
@@ -2324,9 +2331,7 @@ export enum SubscriptionOrdering {
 
 export type Success = {
   __typename?: 'Success';
-  invalidUseCasesByConnector: Maybe<Array<InvalidUseCasesByConnector>>;
   success: Scalars['Boolean']['output'];
-  warnings: Maybe<Array<Scalars['String']['output']>>;
 };
 
 export type TaxiiFeed = Document & Integration & Node & {

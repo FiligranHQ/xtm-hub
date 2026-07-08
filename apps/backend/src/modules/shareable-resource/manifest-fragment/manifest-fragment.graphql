@@ -24,5 +24,6 @@ input ManifestFragmentInput {
 type Mutation {
   ingestManifestFragments(
     manifestFragments: [ManifestFragmentInput!]!
-  ): Success! @system_token(portalCapa: [MANAGE_MANIFEST_INGESTIONS])
+  ): IngestManifestSuccess!
+    @system_token(portalCapa: [MANAGE_MANIFEST_INGESTIONS])
 }
