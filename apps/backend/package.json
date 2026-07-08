@@ -89,7 +89,7 @@
     "openid-client": "6.8.4",
     "passport": "0.7.0",
     "pg": "catalog:",
-    "pg-boss": "12.23.0",
+    "pg-boss": "12.25.1",
     "prom-client": "15.1.3",
     "uuid": "catalog:",
     "winston": "3.19.0",
