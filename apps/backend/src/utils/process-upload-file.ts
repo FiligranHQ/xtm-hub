@@ -58,3 +58,13 @@ export const streamToBlob = (
       .once('error', reject);
   });
 };
+
+export const streamToBase64 = (stream: Readable): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    stream
+      .on('data', (chunk: Buffer) => chunks.push(chunk))
+      .once('end', () => resolve(Buffer.concat(chunks).toString('base64')))
+      .once('error', reject);
+  });
+};

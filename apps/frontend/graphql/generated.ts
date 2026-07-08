@@ -69,6 +69,7 @@ export type AddSubscriptionCapabilityInput = {
 export type AddUseCaseInput = {
   color: Scalars['String']['input'];
   name: Scalars['String']['input'];
+  product: InputMaybe<Array<FiligranProduct>>;
 };
 
 export type AddUserInput = {
@@ -657,6 +658,7 @@ export type EditServiceCapabilityInput = {
 export type EditUseCaseInput = {
   color: InputMaybe<Scalars['String']['input']>;
   name: InputMaybe<Scalars['String']['input']>;
+  product: InputMaybe<Array<FiligranProduct>>;
 };
 
 export type EditUserCapabilitiesInput = {
@@ -1878,6 +1880,7 @@ export type QueryUseCasesArgs = {
   first: Scalars['Int']['input'];
   orderBy: UseCaseOrdering;
   orderMode: OrderingMode;
+  product: InputMaybe<FiligranProduct>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2499,6 +2502,7 @@ export type UseCase = Node & {
   color: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  product: Array<FiligranProduct>;
 };
 
 export type UseCaseConnection = {
@@ -2756,7 +2760,7 @@ export type UseCaseAddMutationVariables = Exact<{
 }>;
 
 
-export type UseCaseAddMutation = { __typename?: 'Mutation', addUseCase: { __typename?: 'UseCase', id: string, name: string, color: string } };
+export type UseCaseAddMutation = { __typename?: 'Mutation', addUseCase: { __typename?: 'UseCase', id: string, name: string, color: string, product: Array<FiligranProduct> } };
 
 export type UseCaseEditMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2764,7 +2768,7 @@ export type UseCaseEditMutationVariables = Exact<{
 }>;
 
 
-export type UseCaseEditMutation = { __typename?: 'Mutation', editUseCase: { __typename?: 'UseCase', id: string, name: string, color: string } };
+export type UseCaseEditMutation = { __typename?: 'Mutation', editUseCase: { __typename?: 'UseCase', id: string, name: string, color: string, product: Array<FiligranProduct> } };
 
 export type UseCaseDeleteMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2773,17 +2777,18 @@ export type UseCaseDeleteMutationVariables = Exact<{
 
 export type UseCaseDeleteMutation = { __typename?: 'Mutation', deleteUseCase: { __typename?: 'UseCase', id: string } };
 
-export type UseCaseRowFragment = { __typename?: 'UseCase', id: string, name: string, color: string };
+export type UseCaseRowFragment = { __typename?: 'UseCase', id: string, name: string, color: string, product: Array<FiligranProduct> };
 
 export type UseCasesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
   orderBy: UseCaseOrdering;
   orderMode: OrderingMode;
   documentType: InputMaybe<Scalars['String']['input']>;
+  product: InputMaybe<FiligranProduct>;
 }>;
 
 
-export type UseCasesListQuery = { __typename?: 'Query', useCases: { __typename?: 'UseCaseConnection', totalCount: number, edges: Array<{ __typename?: 'UseCaseEdge', node: { __typename?: 'UseCase', id: string, name: string, color: string } }> } | null };
+export type UseCasesListQuery = { __typename?: 'Query', useCases: { __typename?: 'UseCaseConnection', totalCount: number, edges: Array<{ __typename?: 'UseCaseEdge', node: { __typename?: 'UseCase', id: string, name: string, color: string, product: Array<FiligranProduct> } }> } | null };
 
 export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2836,6 +2841,7 @@ export const UseCaseRowFragmentDoc = `
   id
   name
   color
+  product
 }
     `;
 export const MostDeployedDocumentsQueryDocument = `
@@ -3417,12 +3423,13 @@ useUseCaseDeleteMutation.getRootKey = () => ['UseCaseDelete'] as const;
 useUseCaseDeleteMutation.fetcher = (client: GraphQLClient, variables: UseCaseDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<UseCaseDeleteMutation, UseCaseDeleteMutationVariables>(client, UseCaseDeleteDocument, variables, headers);
 
 export const UseCasesListDocument = `
-    query UseCasesList($count: Int!, $orderBy: UseCaseOrdering!, $orderMode: OrderingMode!, $documentType: String) {
+    query UseCasesList($count: Int!, $orderBy: UseCaseOrdering!, $orderMode: OrderingMode!, $documentType: String, $product: FiligranProduct) {
   useCases(
     first: $count
     orderBy: $orderBy
     orderMode: $orderMode
     documentType: $documentType
+    product: $product
   ) {
     totalCount
     edges {
@@ -3430,6 +3437,7 @@ export const UseCasesListDocument = `
         id
         name
         color
+        product
       }
     }
   }

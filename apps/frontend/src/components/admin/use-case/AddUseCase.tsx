@@ -22,11 +22,9 @@ const AddUseCase = () => {
       setOpenSheet(false);
       const newUseCase = data.addUseCase;
       if (newUseCase) {
-        queryClient.setQueryData<UseCasesListQuery>(
-          useCaseListKeys.all(),
-          prependToQueryCache('useCases', {
-            node: newUseCase,
-          })
+        queryClient.setQueriesData<UseCasesListQuery>(
+          { queryKey: useCaseListKeys.all() },
+          prependToQueryCache('useCases', { node: newUseCase })
         );
       }
       toast({

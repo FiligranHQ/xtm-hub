@@ -78,6 +78,22 @@ setDefaultGlobalMocks();
 // @ts-expect-error
 global.jest = vi;
 
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+Object.defineProperty(globalThis, 'ResizeObserver', {
+  writable: true,
+  value: ResizeObserverMock,
+});
+
+Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+  writable: true,
+  value: vi.fn(),
+});
+
 expect.extend(matchers);
 
 beforeAll(() => {

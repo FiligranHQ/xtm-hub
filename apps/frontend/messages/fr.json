@@ -394,11 +394,14 @@
   },
   "UseCaseForm": {
     "Color": "Couleur",
-    "Name": "Nom"
+    "Name": "Nom",
+    "Product": "Produit"
   },
   "UseCaseListPage": {
+    "AllProducts": "Tous les produits",
     "Color": "Couleur",
-    "Name": "Nom"
+    "Name": "Nom",
+    "Product": "Produit"
   },
   "LocaleSwitcher": {
     "Label": "Langage",

@@ -2,6 +2,7 @@ fragment UseCaseRow on UseCase {
   id
   name
   color
+  product
 }
 
 query UseCasesList(
@@ -9,12 +10,14 @@ query UseCasesList(
   $orderBy: UseCaseOrdering!
   $orderMode: OrderingMode!
   $documentType: String
+  $product: FiligranProduct
 ) {
   useCases(
     first: $count
     orderBy: $orderBy
     orderMode: $orderMode
     documentType: $documentType
+    product: $product
   ) {
     totalCount
     edges {
@@ -22,6 +25,7 @@ query UseCasesList(
         id
         name
         color
+        product
       }
     }
   }

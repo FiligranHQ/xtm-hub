@@ -28,6 +28,7 @@ export const mockAddUseCaseInput = (overrides?: Partial<AddUseCaseInput>, _relat
     return {
         color: overrides && overrides.hasOwnProperty('color') ? overrides.color! : 'claudeo',
         name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : 'sordeo',
+        product: overrides && overrides.hasOwnProperty('product') ? overrides.product! : [FiligranProduct.Openaev],
     };
 };
 
@@ -555,6 +556,7 @@ export const mockEditUseCaseInput = (overrides?: Partial<EditUseCaseInput>, _rel
     return {
         color: overrides && overrides.hasOwnProperty('color') ? overrides.color! : 'aptus',
         name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : 'patrocinor',
+        product: overrides && overrides.hasOwnProperty('product') ? overrides.product! : [FiligranProduct.Openaev],
     };
 };
 
@@ -1950,6 +1952,7 @@ export const mockUseCase = (overrides?: Partial<UseCase>, _relationshipsToOmit: 
         color: overrides && overrides.hasOwnProperty('color') ? overrides.color! : 'spoliatio',
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : '493b625d-7763-46eb-92f0-b603171f51a1',
         name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : 'adopto',
+        product: overrides && overrides.hasOwnProperty('product') ? overrides.product! : [FiligranProduct.Openaev],
     };
 };
 

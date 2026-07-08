@@ -7,9 +7,12 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
   Input,
+  MultiSelectFormField,
   SheetFooter,
 } from '@filigran/ui';
+import { FiligranProduct } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
@@ -19,7 +22,18 @@ export interface UseCaseFormModel {
   id: string;
   name: string;
   color: string;
+  product: FiligranProduct[];
 }
+
+const productTagValues = Object.values(FiligranProduct) as [
+  FiligranProduct,
+  ...FiligranProduct[],
+];
+
+const productTagOptions = productTagValues.map((productTag) => ({
+  id: productTag,
+  label: productTag.toUpperCase(),
+}));
 
 export const useCaseFormSchema = z.object({
   name: z.string().min(2, {
@@ -28,6 +42,7 @@ export const useCaseFormSchema = z.object({
   color: z
     .string()
     .refine((value) => /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(value ?? '')),
+  product: z.array(z.enum(productTagValues)),
 });
 
 const UseCaseForm = ({
@@ -47,7 +62,8 @@ const UseCaseForm = ({
     resolver: zodResolver(useCaseFormSchema),
     defaultValues: {
       name: useCase?.name ?? '',
-      color: useCase?.color ?? '',
+      color: useCase?.color ?? '#FFFFFF',
+      product: useCase?.product ?? [],
     },
   });
 
@@ -68,6 +84,29 @@ const UseCaseForm = ({
                   {...field}
                 />
               </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="product"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('UseCaseForm.Product')}</FormLabel>
+              <FormControl>
+                <MultiSelectFormField
+                  options={productTagOptions}
+                  keyValue="id"
+                  keyLabel="label"
+                  defaultValue={field.value}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  noResultString={t('Utils.NotFound')}
+                  placeholder={t('UseCaseForm.Product')}
+                  variant="inverted"
+                />
+              </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

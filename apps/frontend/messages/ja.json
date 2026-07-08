@@ -394,11 +394,14 @@
   },
   "UseCaseForm": {
     "Color": "カラー",
-    "Name": "名前"
+    "Name": "名前",
+    "Product": "製品"
   },
   "UseCaseListPage": {
+    "AllProducts": "すべての製品",
     "Color": "色",
-    "Name": "名前"
+    "Name": "名前",
+    "Product": "製品"
   },
   "LocaleSwitcher": {
     "Label": "言語",

@@ -12,6 +12,13 @@ scalar Date
 
 scalar Upload
 
+enum FiligranProduct {
+  opencti
+  openaev
+  xtmone
+  xtmhub
+}
+
 enum FilterKey {
   label
   organization_id
@@ -134,7 +141,7 @@ type Query {
   updateOpenCTIManifest(tag: String!): Success!
   subscriptionById(subscription_id: SubscriptionId): SubscriptionModel
   subscriptions(first: Int!, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [SubscriptionFilter!]): SubscriptionConnection!
-  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String): UseCaseConnection
+  useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String, product: FiligranProduct): UseCaseConnection
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: SubscriptionId!): UserServiceConnection
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
   countEpicsPerTimeline: [EpicCountPerTimeline!]!
@@ -1743,6 +1750,7 @@ type UseCase implements Node {
   id: ID!
   name: String!
   color: String!
+  product: [FiligranProduct!]!
 }
 
 enum UseCaseOrdering {
@@ -1764,11 +1772,13 @@ type UseCaseConnection {
 input AddUseCaseInput {
   name: String!
   color: String!
+  product: [FiligranProduct!]
 }
 
 input EditUseCaseInput {
   name: String
   color: String
+  product: [FiligranProduct!]
 }
 
 """
@@ -1833,13 +1843,6 @@ type UserServiceDeleted implements Node {
   id: ID!
   subscription_id: ID!
   user_id: ID!
-}
-
-enum FiligranProduct {
-  opencti
-  openaev
-  xtmone
-  xtmhub
 }
 
 enum Timeline {

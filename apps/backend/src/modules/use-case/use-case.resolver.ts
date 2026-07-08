@@ -10,7 +10,8 @@ const resolvers: Resolvers = {
     useCases: (_, opts) => useCaseDomain.loadUseCases(opts),
   },
   Mutation: {
-    addUseCase: (_, { input }) => useCaseDomain.insertUseCase(input),
+    addUseCase: (_, { input }) =>
+      useCaseDomain.insertUseCase({ ...input, product: input.product ?? [] }),
     editUseCase: (_, { id, input }) =>
       useCaseApp.editUseCaseById(id as UseCaseId, input),
     deleteUseCase: (_, { id }) =>

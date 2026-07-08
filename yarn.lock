@@ -8661,18 +8661,16 @@ __metadata:
     graphql-subscriptions: "npm:3.0.0"
     graphql-upload: "npm:17.0.0"
     handlebars: "npm:4.7.9"
-    husky: "catalog:"
     jwt-decode: "npm:4.0.0"
     kanel: "npm:4.0.2"
     knex: "catalog:"
-    lint-staged: "catalog:"
     migrate: "npm:^2.1.0"
     node-cron: "npm:4.5.0"
     nodemailer: "npm:9.0.3"
     openid-client: "npm:6.8.4"
     passport: "npm:0.7.0"
     pg: "catalog:"
-    pg-boss: "npm:12.23.0"
+    pg-boss: "npm:12.25.1"
     prettier: "catalog:"
     prettier-plugin-organize-imports: "catalog:"
     prom-client: "npm:15.1.3"
@@ -8730,10 +8728,8 @@ __metadata:
     graphql-codegen-typescript-mock-data: "npm:5.1.2"
     graphql-request: "npm:6.1.0"
     graphql-sse: "catalog:"
-    husky: "catalog:"
     i18n-auto-translation: "npm:2.2.3"
     jsdom: "npm:29.1.1"
-    lint-staged: "catalog:"
     monocart-reporter: "catalog:"
     msw: "npm:2.14.6"
     next: "npm:16.2.10"
@@ -17083,16 +17079,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-boss@npm:12.23.0":
-  version: 12.23.0
-  resolution: "pg-boss@npm:12.23.0"
+"pg-boss@npm:12.25.1":
+  version: 12.25.1
+  resolution: "pg-boss@npm:12.25.1"
   dependencies:
     cron-parser: "npm:^5.6.1"
     pg: "npm:^8.22.0"
     serialize-error: "npm:^13.0.1"
   bin:
     pg-boss: dist/cli.js
-  checksum: 10/1c1f9ebc7a903b120b8fb5e3d3f231af991ecd9bde9c0d94b9947fe764d4d40e54de985dc9632a6f9ab8d8509bd1d9156317604ba4ee80287491c298be12c78b
+  checksum: 10/2adbe2380cd34ccb22d7e44842d65c6aab7f2379ce79a6f60e2cd3aaca764c7d360d5db6f6109fd0fea15e5f8c838000961f7c49811aef3d886f011762b7a921
   languageName: node
   linkType: hard
 
@@ -20003,9 +19999,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:4.22.4":
-  version: 4.22.4
-  resolution: "tsx@npm:4.22.4"
+"tsx@npm:4.23.0":
+  version: 4.23.0
+  resolution: "tsx@npm:4.23.0"
   dependencies:
     esbuild: "npm:~0.28.0"
     fsevents: "npm:~2.3.3"
@@ -20014,7 +20010,7 @@ __metadata:
       optional: true
   bin:
     tsx: dist/cli.mjs
-  checksum: 10/9d6e7e9d1158eb84327d822720a2053bcfd972f8988e4789041bac5a767fc394ef302b1ff7e1d3dfbee391a0b03bd3dbb02cd302387729baf1dc7b9dce93b3ba
+  checksum: 10/66f8b85ea0593da3267ac15ddf5a24b0283373a7e00a57445fab871d779ca1fa240fa6eb4839fb57eedad7b314a34f4ff70889e9786d2829993f14b3f7b7f209
   languageName: node
   linkType: hard
 
@@ -21255,6 +21251,9 @@ __metadata:
     eslint: "catalog:"
     eslint-config-prettier: "catalog:"
     eslint-plugin-unicorn: "npm:64.0.0"
+    husky: "catalog:"
+    lint-staged: "catalog:"
+    prettier: "catalog:"
     tsx: "catalog:"
     typescript: "catalog:"
   languageName: unknown
