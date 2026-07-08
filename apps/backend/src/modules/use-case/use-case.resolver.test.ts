@@ -6,6 +6,7 @@ import {
 } from '../../../tests/tests.const';
 import {
   AddUseCaseInput,
+  FiligranProduct,
   OrderingMode,
   PageInfo,
   UseCaseConnection,
@@ -24,6 +25,7 @@ describe('use cases GraphQL query', () => {
       first: 10,
       orderBy: UseCaseOrdering.Name,
       orderMode: OrderingMode.Asc,
+      product: FiligranProduct.Opencti,
     };
     const useCaseId = uuidv4() as UseCaseId;
     const edge: UseCaseEdge = {
@@ -66,7 +68,11 @@ describe('use cases GraphQL query', () => {
 describe('add use case GraphQL mutation', () => {
   it('should delegate to useCaseDomain.insertUseCase and return result', async () => {
     // Given
-    const input: AddUseCaseInput = { name: 'Threat Hunting', color: '#ff0000' };
+    const input: AddUseCaseInput = {
+      name: 'Threat Hunting',
+      color: '#ff0000',
+      product: [FiligranProduct.Opencti],
+    };
     const expected = {
       id: uuidv4(),
       name: 'Threat Hunting',

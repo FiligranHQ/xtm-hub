@@ -6,7 +6,6 @@ import {
   IntegrationType,
   Organization,
   QueryDocumentsArgs,
-  ServiceDefinitionIdentifier,
   UpdateDocumentInput,
 } from '../../../__generated__/resolvers-types';
 import {
@@ -25,7 +24,7 @@ import {
   ConnectorV2,
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
 } from '../../shareable-resource/opencti/integration/integration.model';
-import { Document, WithDocumentId } from '../document.helper';
+import { Document, DOCUMENT_TYPE, WithDocumentId } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
@@ -495,20 +494,10 @@ export const DocumentDomain = {
   loadNewestDocuments: async (
     limit: number,
     include_metadata: DocumentMetadataKeyCode[] = [],
-    serviceDefinitionIdentifiers?: ServiceDefinitionIdentifier[]
+    documentTypes?: DOCUMENT_TYPE[]
   ): Promise<Document[]> => {
     const query = db<Document>('Document')
       .select('Document.*')
-      .join(
-        'ServiceInstance',
-        'Document.service_instance_id',
-        'ServiceInstance.id'
-      )
-      .join(
-        'ServiceDefinition',
-        'ServiceInstance.service_definition_id',
-        'ServiceDefinition.id'
-      )
       .where('Document.active', true)
       .whereNotExists(function () {
         this.select(dbRaw('1'))
@@ -518,11 +507,8 @@ export const DocumentDomain = {
           );
       })
       .modify((qb) => {
-        if (serviceDefinitionIdentifiers?.length) {
-          qb.whereIn(
-            'ServiceDefinition.identifier',
-            serviceDefinitionIdentifiers
-          );
+        if (documentTypes?.length) {
+          qb.whereIn('Document.type', documentTypes);
         }
       })
       .orderBy('Document.created_at', 'desc')

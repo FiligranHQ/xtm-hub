@@ -46,6 +46,13 @@ export const useCaseDomain = {
           .innerJoin('Document', 'Document.id', 'Object_UseCase.object_id')
           .where('Document.type', opts.documentType);
       }
+
+      if (opts.product) {
+        queryBuilder.andWhereRaw(
+          '"UseCase"."product"::text[] @> ARRAY[?]::text[]',
+          [opts.product]
+        );
+      }
     });
     return paginate<UseCase, UseCaseConnection>(
       'UseCase',
