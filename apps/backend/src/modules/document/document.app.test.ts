@@ -1285,6 +1285,28 @@ describe('documentApp', () => {
       expect(result).toHaveLength(2);
     });
 
+    it('should not include service_picture documents when no platformIdentifiers are given', async () => {
+      // Given — a service picture (logo) document alongside the shareable ones created in beforeEach
+      await DocumentApp.createDocumentWithChildrenAndMetadata(
+        {
+          name: 'Service logo',
+          description: 'description',
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          type: 'service_picture',
+          active: true,
+        },
+        []
+      );
+
+      // When — no platform filter provided (homepage / unauthenticated caller scenario)
+      const result = await DocumentApp.loadNewestDocuments(10);
+
+      // Then — only the 2 shareable docs from beforeEach should be returned;
+      // the service_picture document must not leak through the unfiltered query
+      expect(result.map((d) => d.name)).not.toContain('Service logo');
+      expect(result).toHaveLength(2);
+    });
+
     it('should enforce the 20-document cap when limit exceeds maximum', async () => {
       // Given
       const domainSpy = vi

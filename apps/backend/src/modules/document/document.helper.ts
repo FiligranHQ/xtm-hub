@@ -84,7 +84,7 @@ export const ALL_METADATA_KEYS: DocumentMetadataKeyCode[] = Array.from(
 
 export const ServiceDefinitionIdentifiersByPlatformIdentifier = new Map<
   PlatformIdentifier,
-  ServiceDefinitionIdentifier[]
+  ManageableServiceDefinitionIdentifier[]
 >([
   [
     PlatformIdentifier.Opencti,
@@ -116,7 +116,7 @@ export type DOCUMENT_TYPE =
   | typeof OPENCTI_PLAYBOOK_DOCUMENT_TYPE
   | typeof VAULT_DOCUMENT_TYPE;
 
-const DocumentTypeMappedByServiceDefinition: Record<
+export const DocumentTypeMappedByServiceDefinition: Record<
   ManageableServiceDefinitionIdentifier,
   DOCUMENT_TYPE
 > = {
