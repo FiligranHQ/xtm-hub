@@ -8,12 +8,12 @@ import {
   publicServiceInstanceToInstanceCardData,
   registeredPlatformToServiceInstanceCardData,
 } from '@/utils/services';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import registerRegisteredPlatformListFragmentGraphql, {
   registerRegisteredPlatformListFragment$key,
 } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import {
@@ -47,7 +47,7 @@ const ServiceList = ({
   const freeTrialsSkeletonDataCards = availableTrials.map(
     (platformIdentifier) =>
       freeTrialSkeletonToServiceInstanceCardData(
-        platformIdentifier as PlatformIdentifierEnum,
+        platformIdentifier as PlatformIdentifier,
         t
       )
   );

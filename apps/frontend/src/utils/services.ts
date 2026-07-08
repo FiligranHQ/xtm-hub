@@ -15,6 +15,7 @@ import { registerRegisteredPlatformListFragment$data } from '@generated/register
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
 export const isExternalService = (
@@ -93,7 +94,7 @@ const buildDocumentUrl = (
 };
 
 const freeTrialStaticData = (
-  platformIdentifier: PlatformIdentifierEnum,
+  platformIdentifier: PlatformIdentifier,
   t: ReturnType<typeof useTranslations>
 ) => {
   return {
@@ -108,11 +109,11 @@ const freeTrialStaticData = (
 };
 
 export const freeTrialSkeletonToServiceInstanceCardData = (
-  platformIdentifier: PlatformIdentifierEnum,
+  platformIdentifier: PlatformIdentifier,
   t: ReturnType<typeof useTranslations>
 ) => {
   const page =
-    platformIdentifier === PlatformIdentifierEnum.OPENAEV
+    platformIdentifier === PlatformIdentifier.Openaev
       ? 'openaev-free-trial'
       : 'opencti-free-trial';
 
@@ -155,7 +156,7 @@ export const registeredPlatformToServiceInstanceCardData = (
       ...commonValues,
       ...freeTrialStaticData(
         ServiceDefinitionIdentifierToPlatformIdentifier[platformIdentifier] ??
-          PlatformIdentifierEnum.OPENCTI,
+          PlatformIdentifier.Opencti,
         t
       ),
       displayedServiceStatus: getDisplayDays(platform),

@@ -1,5 +1,6 @@
 import { findLogoUrl } from '@/components/homepage/Homepage.utils';
 import HomepageResourceCard from '@/components/homepage/HomepageResourceCard';
+import { PublicLocale } from '@/i18n/config';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   SHAREABLE_RESOURCE_LIBRARY_MAPPING,
@@ -16,14 +17,17 @@ type HomepageResourceListProps = {
   title: string;
   documents: HomepageDocumentFragment[];
   isAuthenticated?: boolean;
+  paramsLocale?: PublicLocale;
 };
 
 const HomepageResourceList = ({
   title,
   documents,
   isAuthenticated = false,
+  paramsLocale,
 }: HomepageResourceListProps) => {
-  const locale = useLocale();
+  const globalLocale = useLocale();
+  const usedLocale = paramsLocale ?? globalLocale;
   if (documents.length === 0) {
     return null;
   }
@@ -41,7 +45,7 @@ const HomepageResourceList = ({
           const url =
             isAuthenticated && resource.service_instance_id
               ? `/app/service/${SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING[resourceType]}/${resource.service_instance_id}/${resource.id}`
-              : `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceSlug}/${resource.slug}`;
+              : `/${usedLocale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceSlug}/${resource.slug}`;
           const footerTags = [
             SHAREABLE_RESOURCE_PRODUCT_MAPPING[resourceType],
             SHAREABLE_RESOURCE_LIBRARY_MAPPING[resourceType],

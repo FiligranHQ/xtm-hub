@@ -12,7 +12,7 @@ import {
 type RegisteredPlatformForHomepage =
   RegisteredPlatformsQuery['registeredPlatforms'][number];
 
-export type HomepageRoadmapTitleProduct = 'opencti' | 'openaev' | 'default';
+export type HomepageRoadmapTitleProduct = PlatformIdentifier | 'default';
 
 export interface HomepageRegisteredPlatformCardViewModel {
   id: string;
