@@ -1,6 +1,5 @@
 import '@/components/signup/SignUp.css';
 import '@filigran/ui/theme.css';
-import { FeatureFlag } from '@graphql/generated';
 import '@styles/globals.css';
 
 import SignUp from '@/components/signup/SignUp';
@@ -11,7 +10,7 @@ import {
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { hasLocalProvider, isFeatureEnabled } from '@/utils/settings.service';
-import { useMeCheckQuery } from '@graphql/generated';
+import { FeatureFlag, useMeCheckQuery } from '@graphql/generated';
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 

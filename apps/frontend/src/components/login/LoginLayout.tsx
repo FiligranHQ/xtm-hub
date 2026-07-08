@@ -7,14 +7,14 @@ import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import useDecodedQuery from '@/hooks/use-decoded-query';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useToast } from '@filigran/ui/clients';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
+import { FeatureFlag } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
 export const LoginLayout = ({}) => {
   const { settings } = useContext(SettingsContext);
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlagEnum.HOME_PAGE_V2);
+  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const router = useRouter();
 
   const { error, redirect } = useDecodedQuery();

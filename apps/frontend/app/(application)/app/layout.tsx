@@ -1,4 +1,3 @@
-import { FeatureFlag } from '@graphql/generated';
 import * as React from 'react';
 
 import '@styles/globals.css';
@@ -23,6 +22,7 @@ import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
+import { FeatureFlag } from '@graphql/generated';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
