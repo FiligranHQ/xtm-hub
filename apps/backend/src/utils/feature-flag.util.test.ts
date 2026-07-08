@@ -53,33 +53,47 @@ describe('resolveFeatureFlags', () => {
 });
 
 describe('isFeatureEnabled', () => {
-  describe('when feature is enabled', () => {
-    it.each`
-      enabledFeatures       | description
-      ${['DUMMY']}          | ${'flag is explicitly listed'}
-      ${['DUMMY', 'OTHER']} | ${'flag is among multiple flags'}
-      ${['*']}              | ${'wildcard is present'}
-      ${['*', 'DUMMY']}     | ${'wildcard is mixed with flag'}
-    `('should return true when $description', ({ enabledFeatures }) => {
+  it.each([
+    {
+      enabledFeatures: ['DUMMY'],
+      expected: true,
+      description: 'flag is explicitly listed',
+    },
+    {
+      enabledFeatures: ['DUMMY', 'OTHER'],
+      expected: true,
+      description: 'flag is among multiple flags',
+    },
+    {
+      enabledFeatures: ['*'],
+      expected: true,
+      description: 'wildcard is present',
+    },
+    {
+      enabledFeatures: ['*', 'DUMMY'],
+      expected: true,
+      description: 'wildcard is mixed with flag',
+    },
+    {
+      enabledFeatures: [],
+      expected: false,
+      description: 'list is empty',
+    },
+    {
+      enabledFeatures: ['OTHER'],
+      expected: false,
+      description: 'flag is not in list',
+    },
+    {
+      enabledFeatures: undefined,
+      expected: false,
+      description: 'config returns undefined',
+    },
+  ])(
+    'should return $expected when $description',
+    ({ enabledFeatures, expected }) => {
       vi.mocked(config.get).mockReturnValue(enabledFeatures);
-      expect(isFeatureEnabled(FeatureFlag.Dummy)).toBe(true);
-    });
-  });
-
-  describe('when feature is not enabled', () => {
-    it.each`
-      enabledFeatures | description
-      ${[]}           | ${'list is empty'}
-      ${['OTHER']}    | ${'flag is not in list'}
-      ${undefined}    | ${'config returns undefined'}
-    `(
-      'should throw ForbiddenAccess when $description',
-      ({ enabledFeatures }) => {
-        vi.mocked(config.get).mockReturnValue(enabledFeatures);
-        expect(() => isFeatureEnabled(FeatureFlag.Dummy)).toThrow(
-          "Feature 'DUMMY' is not enabled."
-        );
-      }
-    );
-  });
+      expect(isFeatureEnabled(FeatureFlag.Dummy)).toBe(expected);
+    }
+  );
 });

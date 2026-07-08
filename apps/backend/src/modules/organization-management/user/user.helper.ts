@@ -51,6 +51,10 @@ import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 
+interface WelcomeEmailOptions {
+  sendWelcomeEmail?: boolean;
+}
+
 export const createUserWithPersonalSpace = async (
   data: Pick<
     UserInitializer,
@@ -59,7 +63,7 @@ export const createUserWithPersonalSpace = async (
     password?: string | null;
     selected_organization_id?: OrganizationId;
   },
-  sendWelcomeEmail = true
+  { sendWelcomeEmail = true }: WelcomeEmailOptions = {}
 ): Promise<User> => {
   const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
@@ -112,7 +116,7 @@ export const createUserWithPersonalSpace = async (
 
 async function createOrganisationWithAdminUser(
   email: string,
-  sendWelcomeEmail = true
+  { sendWelcomeEmail = true }: WelcomeEmailOptions = {}
 ) {
   const extractedDomain = extractDomain(email);
 
@@ -129,7 +133,7 @@ async function createOrganisationWithAdminUser(
     {
       email,
     },
-    sendWelcomeEmail
+    { sendWelcomeEmail }
   );
 
   try {
@@ -171,7 +175,7 @@ export const createNewUserWithPendingOrga = async (
     picture,
   }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
   organization: Organization,
-  sendWelcomeEmail = true
+  { sendWelcomeEmail = true }: WelcomeEmailOptions = {}
 ) => {
   const addedUser = await createUserWithPersonalSpace(
     {
@@ -180,7 +184,7 @@ export const createNewUserWithPendingOrga = async (
       first_name,
       picture,
     },
-    sendWelcomeEmail
+    { sendWelcomeEmail }
   );
   await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
     user_id: addedUser.id,
@@ -189,6 +193,10 @@ export const createNewUserWithPendingOrga = async (
   return addedUser;
 };
 
+interface CreateNewUserOptions extends WelcomeEmailOptions {
+  isFiligranUser?: boolean;
+}
+
 export const createNewUserFromInvitation = async (
   {
     email,
@@ -196,17 +204,15 @@ export const createNewUserFromInvitation = async (
     last_name,
     picture,
   }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
-  isFiligranUser: boolean = false,
-  sendWelcomeEmail = true
+  { isFiligranUser = false, sendWelcomeEmail = true }: CreateNewUserOptions = {}
 ): Promise<User> => {
   const [organization] =
     await OrganizationDomain.loadOrganizationsFromEmail(email);
   let userWithRoles: User;
   if (!organization) {
-    userWithRoles = await createOrganisationWithAdminUser(
-      email,
-      sendWelcomeEmail
-    );
+    userWithRoles = await createOrganisationWithAdminUser(email, {
+      sendWelcomeEmail,
+    });
   } else if (isFiligranUser) {
     userWithRoles = await createUserWithPersonalSpace(
       {
@@ -215,7 +221,7 @@ export const createNewUserFromInvitation = async (
         first_name,
         picture,
       },
-      sendWelcomeEmail
+      { sendWelcomeEmail }
     );
   } else {
     userWithRoles = await createNewUserWithPendingOrga(
@@ -226,7 +232,7 @@ export const createNewUserFromInvitation = async (
         picture,
       },
       organization,
-      sendWelcomeEmail
+      { sendWelcomeEmail }
     );
   }
 
@@ -237,14 +243,20 @@ export const createNewUserFromInvitation = async (
   return user;
 };
 
+interface GetOrCreateUserOptions extends CreateNewUserOptions {
+  upsert?: boolean;
+}
+
 export const getOrCreateUser = async (
   userInfo: Pick<
     UserInitializer,
     'email' | 'first_name' | 'last_name' | 'picture'
   >,
-  upsert = false,
-  isFiligranUser = false,
-  sendWelcomeEmail = true
+  {
+    upsert = false,
+    isFiligranUser = false,
+    sendWelcomeEmail = true,
+  }: GetOrCreateUserOptions = {}
 ): Promise<User> => {
   const user = await UserDomain.loadUserBy({ email: userInfo.email });
   if (user && upsert) {
@@ -263,11 +275,10 @@ export const getOrCreateUser = async (
   }
   return user
     ? user
-    : await createNewUserFromInvitation(
-        userInfo,
+    : await createNewUserFromInvitation(userInfo, {
         isFiligranUser,
-        sendWelcomeEmail
-      );
+        sendWelcomeEmail,
+      });
 };
 
 export const insertUserIntoOrganization = async (

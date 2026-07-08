@@ -145,7 +145,10 @@ describe('user helpers', async () => {
       const sendMailSpy = vi.spyOn(MailService, 'sendMail').mockResolvedValue();
       const testMail = `testWelcomeEmail${uuidv4()}@whatever.io`;
 
-      await createNewUserFromInvitation({ email: testMail }, false, false);
+      await createNewUserFromInvitation(
+        { email: testMail },
+        { sendWelcomeEmail: false }
+      );
 
       expect(sendMailSpy).not.toHaveBeenCalledWith(
         expect.objectContaining({ template: 'welcome' })

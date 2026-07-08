@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { FeatureFlag } from '../../../__generated__/resolvers-types';
 import { UserInfo } from '../../../model/user';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import {
@@ -7,6 +8,7 @@ import {
 } from '../../../server/initialize.helper';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
+import { isFeatureEnabled } from '../../../utils/feature-flag.util';
 import { isEmptyField } from '../../../utils/utils';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { getOrCreateUser } from '../../organization-management/user/user.helper';
@@ -21,7 +23,12 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   }
   const isFiligranUser = email.endsWith('@filigran.io');
 
-  const user = await getOrCreateUser(userInfo, true, isFiligranUser, false);
+  const sendWelcomeEmail = !isFeatureEnabled(FeatureFlag.HomePageV2);
+  const user = await getOrCreateUser(userInfo, {
+    upsert: true,
+    isFiligranUser,
+    sendWelcomeEmail,
+  });
   if (!user) {
     throw new Error(ErrorCode.UserNotFound);
   }
