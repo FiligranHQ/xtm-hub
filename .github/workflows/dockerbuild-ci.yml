@@ -77,7 +77,7 @@ jobs:
         working-directory: ${{ matrix.working-directory }}
         run: yarn lint
 
-      - name: Check forbidden enum/relay imports on modified frontend files
+      - name: Check forbidden enum imports on modified frontend files
         if: matrix.label == 'frontend'
         shell: bash
         run: |
