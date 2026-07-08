@@ -30,6 +30,7 @@ import {
   BOOLEAN_METADATA,
   DOCUMENT_TYPE,
   DocumentHelper,
+  DocumentTypeMappedByServiceDefinition,
   ManageableServiceDefinitionIdentifier,
   ServiceDefinitionIdentifiersByPlatformIdentifier,
 } from './document.helper';
@@ -642,7 +643,8 @@ export const DocumentApp = {
     const NEWEST_DOCUMENTS_MAX_LIMIT = 20;
 
     // Default to all shareable service definitions so that non-shareable
-    // types (e.g. vault) are never exposed when no platform filter is provided.
+    // types (e.g. vault, service_picture) are never exposed when no platform
+    // filter is provided.
     const allShareableIdentifiers = [
       ...ServiceDefinitionIdentifiersByPlatformIdentifier.values(),
     ].flat();
@@ -653,10 +655,14 @@ export const DocumentApp = {
         )
       : allShareableIdentifiers;
 
+    const documentTypes = serviceDefinitionIdentifiers.map(
+      (identifier) => DocumentTypeMappedByServiceDefinition[identifier]
+    );
+
     return DocumentDomain.loadNewestDocuments(
       Math.min(limit, NEWEST_DOCUMENTS_MAX_LIMIT),
       ALL_METADATA_KEYS,
-      serviceDefinitionIdentifiers
+      documentTypes
     );
   },
 
