@@ -1,15 +1,12 @@
-import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { daysUntil } from '@/utils/date';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import {
-  DeploymentRequestHubStatus,
   DocumentImageType,
   HomepageDocumentFragment,
   PlatformContract,
+  PlatformIdentifier,
   RegisteredPlatformsQuery,
-  ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 
 type RegisteredPlatformForHomepage =
@@ -17,64 +14,30 @@ type RegisteredPlatformForHomepage =
 
 export type HomepageRoadmapTitleProduct = 'opencti' | 'openaev' | 'default';
 
-export type HomepageRoadmapResolution = {
-  productFilter: FiligranProductEnum | undefined;
-  titleProduct: HomepageRoadmapTitleProduct;
-};
-
-export type HomepageRegisteredProduct = 'opencti' | 'openaev';
-
-export type HomepageRegisteredPlatformCardViewModel = {
+export interface HomepageRegisteredPlatformCardViewModel {
   id: string;
-  product: HomepageRegisteredProduct;
+  platformIdentifier: PlatformIdentifier;
   title: string;
   registrationDate: string | null | undefined;
   contract: PlatformContract;
   remainingTrialDays: number | undefined;
-};
+}
 
-export const resolveHomepagePlatformIdentifiers = (
-  registeredIdentifiers: ServiceDefinitionIdentifier[]
-): PlatformIdentifierEnum[] | undefined => {
-  const platformSet = new Set<PlatformIdentifierEnum>();
-  for (const identifier of registeredIdentifiers) {
+export const buildDistinctPlatformIdentifiersFromServiceDefinition = (
+  registeredPlatforms: RegisteredPlatformsQuery['registeredPlatforms']
+): PlatformIdentifier[] => {
+  const platformSet = new Set<PlatformIdentifier>();
+  for (const registeredPlatform of registeredPlatforms) {
     const platform =
       ServiceDefinitionIdentifierToPlatformIdentifier[
-        identifier as unknown as ServiceDefinitionIdentifierEnum
+        registeredPlatform.identifier
       ];
     if (platform) {
       platformSet.add(platform);
     }
   }
-  return platformSet.size === 1 ? [...platformSet] : undefined;
-};
 
-const resolveHomepageRegisteredProduct = (
-  identifier: ServiceDefinitionIdentifier
-): HomepageRegisteredProduct | undefined => {
-  const platformIdentifier =
-    ServiceDefinitionIdentifierToPlatformIdentifier[
-      identifier as unknown as ServiceDefinitionIdentifierEnum
-    ];
-
-  if (platformIdentifier === PlatformIdentifierEnum.OPENCTI) {
-    return 'opencti';
-  }
-
-  if (platformIdentifier === PlatformIdentifierEnum.OPENAEV) {
-    return 'openaev';
-  }
-
-  return undefined;
-};
-
-export const hasPlatformConfiguration = (
-  platform: RegisteredPlatformForHomepage
-): boolean => {
-  return Boolean(
-    platform.subscription?.service_instance?.id ??
-    platform.subscription?.start_date
-  );
+  return Array.from(platformSet) ?? [];
 };
 
 export const resolveRemainingTrialDays = (
@@ -89,121 +52,30 @@ export const resolveRemainingTrialDays = (
   return remainingDays < 0 ? 0 : remainingDays;
 };
 
-const mapRegisteredPlatformToHomepageCard = (
-  platform: RegisteredPlatformForHomepage,
-  registrationDate: string | null | undefined
-): HomepageRegisteredPlatformCardViewModel | undefined => {
-  const product = resolveHomepageRegisteredProduct(platform.identifier);
-  if (!product) {
-    return undefined;
-  }
-
-  return {
-    id: platform.id,
-    product,
-    title: platform.title,
-    registrationDate,
-    contract: platform.contract,
-    remainingTrialDays:
-      platform.contract === PlatformContract.Trial
-        ? resolveRemainingTrialDays(
-            platform.subscription?.end_date ??
-              platform.deployment_request?.end_date
-          )
-        : undefined,
-  };
-};
-
-const resolveRequestOnlySortTimestamp = (
-  platform: RegisteredPlatformForHomepage
-): number => {
-  const dateCandidate =
-    platform.deployment_request?.request_date ??
-    platform.deployment_request?.start_date ??
-    null;
-
-  if (!dateCandidate) {
-    return Number.NEGATIVE_INFINITY;
-  }
-
-  const timestamp = new Date(dateCandidate).getTime();
-  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
-};
-
-const isEligibleRequestOnlyPlatform = (
-  platform: RegisteredPlatformForHomepage,
-  configuredIdentifiers: Set<ServiceDefinitionIdentifier>
-): boolean => {
-  if (hasPlatformConfiguration(platform)) {
-    return false;
-  }
-  if (configuredIdentifiers.has(platform.identifier)) {
-    return false;
-  }
-  return (
-    platform.deployment_request?.hub_status !== undefined &&
-    platform.deployment_request.hub_status !==
-      DeploymentRequestHubStatus.Cancelled
-  );
-};
-
 export const mapRegisteredPlatformsToHomepageCards = (
   registeredPlatforms: RegisteredPlatformForHomepage[]
 ): HomepageRegisteredPlatformCardViewModel[] => {
-  const configuredPlatforms = registeredPlatforms.filter(
-    hasPlatformConfiguration
-  );
-  const configuredIdentifiers = new Set(
-    configuredPlatforms.map((platform) => platform.identifier)
-  );
-
-  const seenConfiguredKeys = new Set<string>();
-  const configuredCards = configuredPlatforms.flatMap((platform) => {
-    const key = platform.subscription?.service_instance?.id ?? platform.id;
-    if (seenConfiguredKeys.has(key)) {
+  return registeredPlatforms.flatMap((platform) => {
+    const platformIdentifier: PlatformIdentifier | undefined =
+      ServiceDefinitionIdentifierToPlatformIdentifier[platform.identifier];
+    if (!platformIdentifier) {
       return [];
     }
-    seenConfiguredKeys.add(key);
 
-    const card = mapRegisteredPlatformToHomepageCard(
-      platform,
-      platform.subscription?.start_date
-    );
-    return card ? [card] : [];
+    return [
+      {
+        id: platform.id,
+        platformIdentifier,
+        title: platform.title,
+        registrationDate: platform.subscription?.start_date,
+        contract: platform.contract,
+        remainingTrialDays:
+          platform.contract === PlatformContract.Trial
+            ? resolveRemainingTrialDays(platform.subscription?.end_date)
+            : undefined,
+      },
+    ];
   });
-
-  const requestOnlyPlatformsByIdentifier = new Map<
-    ServiceDefinitionIdentifier,
-    RegisteredPlatformForHomepage
-  >();
-
-  for (const platform of registeredPlatforms) {
-    if (!isEligibleRequestOnlyPlatform(platform, configuredIdentifiers)) {
-      continue;
-    }
-
-    const current = requestOnlyPlatformsByIdentifier.get(platform.identifier);
-    if (
-      !current ||
-      resolveRequestOnlySortTimestamp(platform) >
-        resolveRequestOnlySortTimestamp(current)
-    ) {
-      requestOnlyPlatformsByIdentifier.set(platform.identifier, platform);
-    }
-  }
-
-  const requestOnlyCards = [
-    ...requestOnlyPlatformsByIdentifier.values(),
-  ].flatMap((platform) => {
-    const card = mapRegisteredPlatformToHomepageCard(
-      platform,
-      platform.deployment_request?.request_date ??
-        platform.deployment_request?.start_date
-    );
-    return card ? [card] : [];
-  });
-
-  return [...configuredCards, ...requestOnlyCards];
 };
 
 export const resolveHomepageCrossSellProduct = (
@@ -213,7 +85,7 @@ export const resolveHomepageCrossSellProduct = (
 
   for (const card of cards) {
     registeredProducts.add(
-      card.product === 'opencti'
+      card.platformIdentifier === 'opencti'
         ? PlatformIdentifierEnum.OPENCTI
         : PlatformIdentifierEnum.OPENAEV
     );
@@ -237,30 +109,4 @@ export const findLogoUrl = (
   return logo && resource.service_instance_id
     ? `/document/images/${String(resource.service_instance_id)}/${logo.id}`
     : undefined;
-};
-
-export const resolveHomepageRoadmapResolution = (
-  registeredIdentifiers: ServiceDefinitionIdentifier[]
-): HomepageRoadmapResolution => {
-  const [platformIdentifier] =
-    resolveHomepagePlatformIdentifiers(registeredIdentifiers) ?? [];
-
-  if (platformIdentifier === PlatformIdentifierEnum.OPENAEV) {
-    return {
-      productFilter: FiligranProductEnum.OPENAEV,
-      titleProduct: 'openaev',
-    };
-  }
-
-  if (platformIdentifier === PlatformIdentifierEnum.OPENCTI) {
-    return {
-      productFilter: FiligranProductEnum.OPENCTI,
-      titleProduct: 'opencti',
-    };
-  }
-
-  return {
-    productFilter: undefined,
-    titleProduct: 'default',
-  };
 };

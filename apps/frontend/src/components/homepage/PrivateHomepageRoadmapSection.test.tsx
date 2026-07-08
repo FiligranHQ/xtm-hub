@@ -1,6 +1,5 @@
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceDefinitionIdentifier } from '@graphql/generated';
+import { PlatformIdentifier } from '@graphql/generated';
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -37,16 +36,14 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     render(
       await PrivateHomepageRoadmapSection({
-        locale: 'en',
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenctiRegistration,
-        ],
+        platformIdentifiers: [PlatformIdentifier.Opencti],
       })
     );
 
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
-        seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-1?product=${FiligranProductEnum.OPENCTI}`,
+        seeMoreHref:
+          '/app/service/xtm_platform_roadmap/roadmap-1?product=opencti',
         titleProduct: 'opencti',
       }),
       undefined
@@ -64,16 +61,14 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     render(
       await PrivateHomepageRoadmapSection({
-        locale: 'en',
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenaevRegistration,
-        ],
+        platformIdentifiers: [PlatformIdentifier.Openaev],
       })
     );
 
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
-        seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-2?product=${FiligranProductEnum.OPENAEV}`,
+        seeMoreHref:
+          '/app/service/xtm_platform_roadmap/roadmap-2?product=openaev',
         titleProduct: 'openaev',
       }),
       undefined
@@ -91,10 +86,9 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     render(
       await PrivateHomepageRoadmapSection({
-        locale: 'en',
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenctiRegistration,
-          ServiceDefinitionIdentifier.OpenaevRegistration,
+        platformIdentifiers: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
         ],
       })
     );
@@ -119,8 +113,7 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     render(
       await PrivateHomepageRoadmapSection({
-        locale: 'en',
-        registeredIdentifiers: [],
+        platformIdentifiers: [],
       })
     );
 
@@ -143,8 +136,7 @@ describe('PrivateHomepageRoadmapSection', () => {
     });
 
     const result = await PrivateHomepageRoadmapSection({
-      locale: 'en',
-      registeredIdentifiers: [],
+      platformIdentifiers: [],
     });
 
     expect(result).toBeNull();
@@ -161,8 +153,7 @@ describe('PrivateHomepageRoadmapSection', () => {
     });
 
     await PrivateHomepageRoadmapSection({
-      locale: 'en',
-      registeredIdentifiers: [],
+      platformIdentifiers: [],
     });
 
     expect(mockServerFetchGraphQL).toHaveBeenCalledWith(

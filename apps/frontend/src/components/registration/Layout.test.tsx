@@ -1,6 +1,6 @@
 import { RegistrationContext } from '@/components/registration/Context';
 import { RegistrationLayout } from '@/components/registration/Layout';
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { screen } from '@testing-library/react';

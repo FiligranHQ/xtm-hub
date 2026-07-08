@@ -1,5 +1,4 @@
 import type { HomepageRoadmapTitleProduct } from '@/components/homepage/Homepage.utils';
-import type { PublicLocale } from '@/i18n/config';
 import { portalGraphqlClientCached } from '@/lib/graphql-client';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { Button } from '@filigran/ui/servers';
@@ -7,7 +6,7 @@ import {
   Timeline,
   useEpicCountPerTimelineQueryQuery,
 } from '@graphql/generated';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -33,18 +32,17 @@ const TIMELINE_CONFIG = [
 ];
 
 export type XtmRoadmapProps = {
-  locale: PublicLocale;
   seeMoreHref?: string;
   titleProduct?: HomepageRoadmapTitleProduct;
 };
 
 const XtmRoadmap = async ({
-  locale,
   seeMoreHref,
   titleProduct = 'default',
 }: XtmRoadmapProps) => {
   const t = await getTranslations('PublicHomePage.XtmRoadmap');
   const tPlatformIdentifier = await getTranslations('PlatformIdentifier');
+  const locale = await getLocale();
 
   const title =
     titleProduct === 'default'

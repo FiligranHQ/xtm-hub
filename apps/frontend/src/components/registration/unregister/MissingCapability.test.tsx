@@ -1,5 +1,5 @@
 import { RegistrationContext } from '@/components/registration/Context';
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { UnregisterMissingCapability } from '@/components/registration/unregister/MissingCapability';
 import testRender from '@/utils/test/test-render';
 import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';

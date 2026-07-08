@@ -40,7 +40,7 @@ export const RegisteredPlatformsSection = async ({
               })
             : t('PublicHomePage.XtmPlatform.Label', {})}
         </span>
-        <span className="my-l txt-small">
+        <span className="mt-l mb-s txt-small">
           {t('PublicHomePage.XtmPlatform.ConnectedProducts', {
             count: registeredProductsCount,
           })}

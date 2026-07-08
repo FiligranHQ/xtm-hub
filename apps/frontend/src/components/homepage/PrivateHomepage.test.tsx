@@ -1,6 +1,8 @@
 import MeLoaderQuery from '@generated/meLoaderQuery.graphql';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceDefinitionIdentifier } from '@graphql/generated';
+import {
+  PlatformIdentifier,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -118,23 +120,6 @@ describe('PrivateHomepage', () => {
           end_date: null,
         },
       },
-      {
-        id: 'trial-1',
-        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
-        title: 'OpenAEV Trial Request',
-        contract: 'TRIAL',
-        subscription: {
-          start_date: null,
-          end_date: null,
-        },
-        deployment_request: {
-          id: 'dr-1',
-          hub_status: 'PENDING',
-          request_date: '2026-01-02T00:00:00.000Z',
-          start_date: null,
-          end_date: '2026-01-12T00:00:00.000Z',
-        },
-      },
     ]);
 
     const element = await PrivateHomepage();
@@ -146,7 +131,7 @@ describe('PrivateHomepage', () => {
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsFetcher.mock.calls[0]?.[1]).toEqual({
-      input: { identifier: null, onlyActive: false, onlyTrial: null },
+      input: { identifier: null, onlyActive: true, onlyTrial: null },
     });
 
     expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
@@ -155,7 +140,6 @@ describe('PrivateHomepage', () => {
         registeredPlatformsData: expect.objectContaining({
           registeredPlatforms: expect.arrayContaining([
             expect.objectContaining({ id: '1' }),
-            expect.objectContaining({ id: 'trial-1' }),
           ]),
         }),
       }),
@@ -164,22 +148,20 @@ describe('PrivateHomepage', () => {
 
     expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
       expect.objectContaining({
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenctiRegistration,
-        ],
+        platformIdentifiers: [PlatformIdentifier.Opencti],
       }),
       undefined
     );
 
     expect(mockNewestResources).toHaveBeenCalledWith(
       expect.objectContaining({
-        platformIdentifiers: [PlatformIdentifierEnum.OPENCTI],
+        platformIdentifiers: [PlatformIdentifier.Opencti],
       }),
       undefined
     );
     expect(mockMostDeployedResources).toHaveBeenCalledWith(
       expect.objectContaining({
-        platformIdentifiers: [PlatformIdentifierEnum.OPENCTI],
+        platformIdentifiers: [PlatformIdentifier.Opencti],
       }),
       undefined
     );
@@ -187,7 +169,7 @@ describe('PrivateHomepage', () => {
     expect(screen.getByTestId('registered-platforms-section')).toBeTruthy();
   });
 
-  it('passes undefined platformIdentifiers and hides cross-sell block when both products are registered', async () => {
+  it('passes both platformIdentifiers when both products are registered', async () => {
     mockRegisteredPlatformsResponses([
       {
         id: '1',
@@ -228,20 +210,30 @@ describe('PrivateHomepage', () => {
 
     expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
       expect.objectContaining({
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenctiRegistration,
-          ServiceDefinitionIdentifier.OpenaevRegistration,
+        platformIdentifiers: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
         ],
       }),
       undefined
     );
 
     expect(mockNewestResources).toHaveBeenCalledWith(
-      expect.objectContaining({ platformIdentifiers: undefined }),
+      expect.objectContaining({
+        platformIdentifiers: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ],
+      }),
       undefined
     );
     expect(mockMostDeployedResources).toHaveBeenCalledWith(
-      expect.objectContaining({ platformIdentifiers: undefined }),
+      expect.objectContaining({
+        platformIdentifiers: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ],
+      }),
       undefined
     );
   });
@@ -267,16 +259,16 @@ describe('PrivateHomepage', () => {
     );
     expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
       expect.objectContaining({
-        registeredIdentifiers: [],
+        platformIdentifiers: [],
       }),
       undefined
     );
     expect(mockNewestResources).toHaveBeenCalledWith(
-      expect.objectContaining({ platformIdentifiers: undefined }),
+      expect.objectContaining({ platformIdentifiers: [] }),
       undefined
     );
     expect(mockMostDeployedResources).toHaveBeenCalledWith(
-      expect.objectContaining({ platformIdentifiers: undefined }),
+      expect.objectContaining({ platformIdentifiers: [] }),
       undefined
     );
   });
@@ -326,7 +318,7 @@ describe('PrivateHomepage', () => {
 
     expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
       expect.objectContaining({
-        registeredIdentifiers: [],
+        platformIdentifiers: [],
       }),
       undefined
     );

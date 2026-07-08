@@ -1,7 +1,5 @@
 import HomepageResourceList from '@/components/homepage/HomepageResourceList';
-import type { PublicLocale } from '@/i18n/config';
 import { portalGraphqlClientCached } from '@/lib/graphql-client';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   PlatformIdentifier,
   useNewestDocumentsQueryQuery,
@@ -11,13 +9,11 @@ import { getTranslations } from 'next-intl/server';
 const NEWEST_LIMIT = 8;
 
 type NewestResourcesProps = {
-  locale: PublicLocale;
-  platformIdentifiers?: PlatformIdentifierEnum[];
+  platformIdentifiers?: PlatformIdentifier[];
   isAuthenticated?: boolean;
 };
 
 const NewestResources = async ({
-  locale,
   platformIdentifiers,
   isAuthenticated = false,
 }: NewestResourcesProps) => {
@@ -27,15 +23,13 @@ const NewestResources = async ({
     portalGraphqlClientCached,
     {
       limit: NEWEST_LIMIT,
-      platformIdentifiers: (platformIdentifiers ??
-        []) as unknown as PlatformIdentifier[],
+      platformIdentifiers: platformIdentifiers ?? [],
     }
   )();
 
   return (
     <HomepageResourceList
       title={t('Title')}
-      locale={locale}
       documents={data.newestDocuments}
       isAuthenticated={isAuthenticated}
     />

@@ -57,6 +57,11 @@
       }
     }
   },
+  "Contracts": {
+    "CE": "Édition Communauté",
+    "EE": "Édition Entreprise",
+    "TRIAL": "Essai gratuit"
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Colonnes",
@@ -323,11 +328,6 @@
     "RegisteredPlatformsCard": {
       "RegisteredOn": "le",
       "Contract": "Contrat",
-      "Contracts": {
-        "CE": "Édition Communauté",
-        "EE": "Édition Entreprise",
-        "TRIAL": "Essai gratuit"
-      },
       "Remaining": "restant",
       "DaysRemaining": "{days, plural, =1 {# jour} other {# jours}}"
     },
@@ -702,10 +702,6 @@
     "Confirm": "Inscrire",
     "Details": {
       "Contract": "Contrat",
-      "Contracts": {
-        "CE": "Édition communautaire",
-        "EE": "Édition Entreprise"
-      },
       "ConnectionStatus": {
         "Title": "Statut de connexion",
         "Connected": "Connecté",

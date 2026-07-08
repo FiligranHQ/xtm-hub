@@ -1,5 +1,6 @@
 import testRender from '@/utils/test/test-render';
 import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import RegisteredPlatformCard from './RegisteredPlatformCard';
@@ -10,7 +11,7 @@ describe('RegisteredPlatformCard', () => {
       <RegisteredPlatformCard
         platform={{
           id: 'rp-1',
-          product: 'opencti',
+          platformIdentifier: PlatformIdentifier.Opencti,
           title: 'OpenCTI Trial',
           registrationDate: '2026-01-01T00:00:00.000Z',
           contract: PlatformContractEnum.TRIAL,
@@ -29,7 +30,7 @@ describe('RegisteredPlatformCard', () => {
       <RegisteredPlatformCard
         platform={{
           id: 'rp-2',
-          product: 'openaev',
+          platformIdentifier: PlatformIdentifier.Openaev,
           title: 'OpenAEV Platform',
           registrationDate: '2026-01-01T00:00:00.000Z',
           contract: PlatformContractEnum.CE,

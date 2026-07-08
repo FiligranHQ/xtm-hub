@@ -1,27 +1,18 @@
 'use client';
 
 import { HomepageRegisteredPlatformCardViewModel } from '@/components/homepage/Homepage.utils';
+import {
+  CONTRACT_LABEL_BY_CONTRACT,
+  PlatformMetadataMapping,
+} from '@/components/registration/PlatformIdentifierMapping';
 import { cn } from '@/lib/utils';
-import { OpenAevIconIcon, OpenCtiIconIcon } from '@filigran/icon';
 import { Badge, Card, CardContent } from '@filigran/ui';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
 import { PlatformContract } from '@graphql/generated';
 import { useFormatter, useTranslations } from 'next-intl';
 import React from 'react';
 
 type RegisteredPlatformCardProps = {
   platform: HomepageRegisteredPlatformCardViewModel;
-};
-
-const PRODUCT_LABEL_BY_PRODUCT = {
-  opencti: 'OpenCTI',
-  openaev: 'OpenAEV',
-} as const;
-
-const CONTRACT_LABEL_BY_CONTRACT: Record<PlatformContractEnum, string> = {
-  [PlatformContractEnum.CE]: 'Contracts.CE',
-  [PlatformContractEnum.EE]: 'Contracts.EE',
-  [PlatformContractEnum.TRIAL]: 'Contracts.TRIAL',
 };
 
 const TRIAL_DAYS_ERROR_THRESHOLD = 8;
@@ -46,7 +37,10 @@ const resolveTrialDaysBadgeClassName = (
 };
 
 const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
-  const t = useTranslations('HomePage.RegisteredPlatformsCard');
+  const tRegisteredPlatformsCard = useTranslations(
+    'HomePage.RegisteredPlatformsCard'
+  );
+  const t = useTranslations();
   const format = useFormatter();
 
   const registrationDate = platform.registrationDate
@@ -70,6 +64,8 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
     '--gradient-bg': gradientBg,
   } as React.CSSProperties;
 
+  const { Icon } = PlatformMetadataMapping[platform.platformIdentifier];
+  const contractLabel = CONTRACT_LABEL_BY_CONTRACT[platform.contract];
   return (
     <Card className="border pt-s my-xs bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
       <CardContent className="p-s flex flex-col gap-m">
@@ -78,20 +74,20 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             <Badge className="border-none font-medium bg-feedback-info-secondary-transparency">
               <div className="flex gap-s">
                 <span>
-                  {platform.product === 'opencti' ? (
-                    <OpenCtiIconIcon className="w-4 h-4" />
-                  ) : (
-                    <OpenAevIconIcon className="w-4 h-4" />
-                  )}
+                  <Icon className="w-4 h-4" />
                 </span>
-                <span>{PRODUCT_LABEL_BY_PRODUCT[platform.product]}</span>
+                <span>
+                  {PlatformMetadataMapping[platform.platformIdentifier].name}
+                </span>
               </div>
             </Badge>
 
             <p className="text-xs">{platform.title}</p>
           </div>
           <p className="text-xs">
-            <span className="text-muted-foreground">{t('RegisteredOn')}</span>{' '}
+            <span className="text-muted-foreground">
+              {tRegisteredPlatformsCard('RegisteredOn')}
+            </span>{' '}
             {registrationDate}
           </p>
         </div>
@@ -104,21 +100,23 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
               )}
               style={customStyle}>
               <span className="bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] bg-clip-text text-transparent">
-                {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
+                {t(contractLabel)}
               </span>
             </Badge>
           ) : (
             <Badge className="bg-elevation-surface-highlight-layer-1 border-none">
-              {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
+              {t(contractLabel)}
             </Badge>
           )}
           {platform.contract === PlatformContract.Trial &&
             platform.remainingTrialDays !== undefined && (
               <div className="flex gap-s items-center">
-                <p>{t('Remaining')}</p>
+                <p>{tRegisteredPlatformsCard('Remaining')}</p>
                 <Badge
                   className={`border-none ${remainingTrialDaysBadgeClassName}`}>
-                  {t('DaysRemaining', { days: platform.remainingTrialDays })}
+                  {tRegisteredPlatformsCard('DaysRemaining', {
+                    days: platform.remainingTrialDays,
+                  })}
                 </Badge>
               </div>
             )}

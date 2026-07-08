@@ -1,4 +1,4 @@
-import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
 import { daysUntil } from '@/utils/date';
 import {

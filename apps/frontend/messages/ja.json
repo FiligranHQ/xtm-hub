@@ -57,6 +57,11 @@
       }
     }
   },
+  "Contracts": {
+    "CE": "コミュニティ版",
+    "EE": "エンタープライズ版",
+    "TRIAL": "無料トライアル"
+  },
   "Datatable": {
     "Asc": "として",
     "Columns": "列",
@@ -323,11 +328,6 @@
     "RegisteredPlatformsCard": {
       "RegisteredOn": "on",
       "Contract": "契約",
-      "Contracts": {
-        "CE": "コミュニティ版",
-        "EE": "エンタープライズ版",
-        "TRIAL": "無料トライアル"
-      },
       "Remaining": "残り",
       "DaysRemaining": "{days, plural, =1 {#日} other {#日}}"
     },
@@ -702,10 +702,6 @@
     "Confirm": "登録する",
     "Details": {
       "Contract": "契約",
-      "Contracts": {
-        "CE": "コミュニティ版",
-        "EE": "エンタープライズ版"
-      },
       "ConnectionStatus": {
         "Title": "接続状況",
         "Connected": "つながる",

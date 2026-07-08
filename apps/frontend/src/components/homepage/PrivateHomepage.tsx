@@ -1,20 +1,15 @@
-import {
-  hasPlatformConfiguration,
-  resolveHomepagePlatformIdentifiers,
-} from '@/components/homepage/Homepage.utils';
+import { buildDistinctPlatformIdentifiersFromServiceDefinition } from '@/components/homepage/Homepage.utils';
 import MostDeployedResources from '@/components/homepage/MostDeployedResources';
 import NewestResources from '@/components/homepage/NewestResources';
 import PrivateHomepageRoadmapSection from '@/components/homepage/PrivateHomepageRoadmapSection';
 import { RegisteredPlatformsSection } from '@/components/homepage/RegisteredPlatformsSection';
 import XtmPlatform from '@/components/homepage/XtmPlatform';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { defaultLocale, publicLocales } from '@/i18n/config';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { APP_PATH } from '@/utils/path/constant';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import { useRegisteredPlatformsQuery } from '@graphql/generated';
-import { getLocale } from 'next-intl/server';
 
 type MeNameData = {
   first_name?: string | null;
@@ -29,27 +24,19 @@ const breadcrumbValue = [
 ];
 
 export const PrivateHomepage = async () => {
-  const userLocale = await getLocale();
-  const locale = (publicLocales as readonly string[]).includes(userLocale)
-    ? (userLocale as (typeof publicLocales)[number])
-    : defaultLocale;
-
   const authenticatedClient = await getAuthenticatedGraphqlClient();
 
   const [registeredPlatformsData, meData] = await Promise.all([
     useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
-      input: { identifier: null, onlyActive: false, onlyTrial: null },
+      input: { identifier: null, onlyActive: true, onlyTrial: null },
     })(),
     serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
   ]);
 
-  const registeredIdentifiers = registeredPlatformsData.registeredPlatforms
-    .filter(hasPlatformConfiguration)
-    .map((platform) => platform.identifier);
-
-  const platformIdentifiers = resolveHomepagePlatformIdentifiers(
-    registeredIdentifiers
-  );
+  const platformIdentifiers =
+    buildDistinctPlatformIdentifiersFromServiceDefinition(
+      registeredPlatformsData.registeredPlatforms
+    );
 
   const me = meData.data.me as MeNameData | null | undefined;
   const firstName = me?.first_name?.trim() ?? '';
@@ -59,9 +46,11 @@ export const PrivateHomepage = async () => {
 
   return (
     <>
-      <BreadcrumbNav value={breadcrumbValue} />
+      {platformIdentifiers.length !== 0 && (
+        <BreadcrumbNav value={breadcrumbValue} />
+      )}
       <div className="p-xl flex flex-col gap-xl">
-        {registeredIdentifiers.length === 0 && (
+        {platformIdentifiers.length === 0 && (
           <XtmPlatform welcomeName={welcomeName} />
         )}
         <RegisteredPlatformsSection
@@ -69,16 +58,13 @@ export const PrivateHomepage = async () => {
           registeredPlatformsData={registeredPlatformsData}
         />
         <PrivateHomepageRoadmapSection
-          locale={locale}
-          registeredIdentifiers={registeredIdentifiers}
+          platformIdentifiers={platformIdentifiers}
         />
         <NewestResources
-          locale={locale}
           platformIdentifiers={platformIdentifiers}
           isAuthenticated={true}
         />
         <MostDeployedResources
-          locale={locale}
           platformIdentifiers={platformIdentifiers}
           isAuthenticated={true}
         />

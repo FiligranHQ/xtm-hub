@@ -1,5 +1,5 @@
 'use client';
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { IconActionContext } from '@/components/ui/IconActions';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {

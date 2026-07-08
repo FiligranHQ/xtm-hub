@@ -1,6 +1,5 @@
 import { findLogoUrl } from '@/components/homepage/Homepage.utils';
 import HomepageResourceCard from '@/components/homepage/HomepageResourceCard';
-import type { PublicLocale } from '@/i18n/config';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   SHAREABLE_RESOURCE_LIBRARY_MAPPING,
@@ -11,20 +10,20 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { HomepageDocumentFragment } from '@graphql/generated';
+import { useLocale } from 'next-intl';
 
 type HomepageResourceListProps = {
   title: string;
-  locale: PublicLocale;
   documents: HomepageDocumentFragment[];
   isAuthenticated?: boolean;
 };
 
 const HomepageResourceList = ({
   title,
-  locale,
   documents,
   isAuthenticated = false,
 }: HomepageResourceListProps) => {
+  const locale = useLocale();
   if (documents.length === 0) {
     return null;
   }

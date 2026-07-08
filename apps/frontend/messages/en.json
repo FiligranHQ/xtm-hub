@@ -57,6 +57,11 @@
       }
     }
   },
+  "Contracts": {
+    "CE": "Community Edition",
+    "EE": "Enterprise Edition",
+    "TRIAL": "Free trial"
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Columns",
@@ -323,11 +328,6 @@
     "RegisteredPlatformsCard": {
       "RegisteredOn": "on",
       "Contract": "Contract",
-      "Contracts": {
-        "CE": "Community Edition",
-        "EE": "Enterprise Edition",
-        "TRIAL": "Free trial"
-      },
       "Remaining": "remaining",
       "DaysRemaining": "{days, plural, =1 {# day} other {# days}}"
     },
@@ -702,10 +702,6 @@
     "Confirm": "Register",
     "Details": {
       "Contract": "Contract",
-      "Contracts": {
-        "CE": "Community Edition",
-        "EE": "Enterprise Edition"
-      },
       "ConnectionStatus": {
         "Title": "Connection status",
         "Connected": "Connected",

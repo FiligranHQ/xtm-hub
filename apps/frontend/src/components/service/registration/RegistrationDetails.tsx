@@ -1,6 +1,9 @@
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { translateServiceDefinitionIdentifier } from '@/components/registration/platform-identifier-mapping';
+import {
+  CONTRACT_LABEL_BY_CONTRACT,
+  translateServiceDefinitionIdentifier,
+} from '@/components/registration/PlatformIdentifierMapping';
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
 import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
 import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
@@ -175,9 +178,7 @@ export const RegistrationDetails = ({
           <span className="text-gray/60 mr-1">
             {t('Register.Details.License')}:
           </span>
-          {platform.contract === 'CE'
-            ? t('Register.Details.Contracts.CE')
-            : t('Register.Details.Contracts.EE')}
+          {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
         </li>
         {isLastConnectivityCheckDisplayed && (
           <>

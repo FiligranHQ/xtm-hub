@@ -1,6 +1,4 @@
-import { resolveHomepageRoadmapResolution } from '@/components/homepage/Homepage.utils';
 import XtmRoadmap from '@/components/homepage/XtmRoadmap';
-import type { PublicLocale } from '@/i18n/config';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
 import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
@@ -9,18 +7,16 @@ import { ServiceInstanceOrderingEnum } from '@generated/models/ServiceInstanceOr
 import ServiceInstancesListQuery, {
   serviceInstancesListQuery,
 } from '@generated/serviceInstancesListQuery.graphql';
-import { ServiceDefinitionIdentifier } from '@graphql/generated';
+import { PlatformIdentifier } from '@graphql/generated';
 
 const PRIVATE_ROADMAP_BASE_PATH = '/app/service/xtm_platform_roadmap';
 
 type PrivateHomepageRoadmapSectionProps = {
-  locale: PublicLocale;
-  registeredIdentifiers: ServiceDefinitionIdentifier[];
+  platformIdentifiers: PlatformIdentifier[];
 };
 
 const PrivateHomepageRoadmapSection = async ({
-  locale,
-  registeredIdentifiers,
+  platformIdentifiers,
 }: PrivateHomepageRoadmapSectionProps) => {
   const response = await serverFetchGraphQL<serviceInstancesListQuery>(
     ServiceInstancesListQuery,
@@ -40,25 +36,25 @@ const PrivateHomepageRoadmapSection = async ({
   );
 
   const serviceInstanceId = response.data.serviceInstances.edges[0]?.node?.id;
-
   if (!serviceInstanceId) {
     return null;
   }
 
-  const {
-    productFilter: roadmapProductFilter,
-    titleProduct: roadmapTitleProduct,
-  } = resolveHomepageRoadmapResolution(registeredIdentifiers);
+  const homepageRoadmapTitleProduct =
+    platformIdentifiers.length === 1
+      ? (platformIdentifiers?.[0] ?? 'default')
+      : 'default';
+
   const roadmapHref = `${PRIVATE_ROADMAP_BASE_PATH}/${encodeURIComponent(serviceInstanceId)}`;
-  const seeMoreHref = roadmapProductFilter
-    ? `${roadmapHref}?product=${encodeURIComponent(roadmapProductFilter)}`
-    : roadmapHref;
+  const seeMoreHref =
+    homepageRoadmapTitleProduct !== 'default'
+      ? `${roadmapHref}?product=${encodeURIComponent(homepageRoadmapTitleProduct)}`
+      : roadmapHref;
 
   return (
     <XtmRoadmap
-      locale={locale}
       seeMoreHref={seeMoreHref}
-      titleProduct={roadmapTitleProduct}
+      titleProduct={homepageRoadmapTitleProduct}
     />
   );
 };

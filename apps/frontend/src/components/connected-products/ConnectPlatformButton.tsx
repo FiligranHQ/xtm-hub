@@ -3,7 +3,7 @@
 import {
   PlatformMetadata,
   PlatformMetadataMapping,
-} from '@/components/registration/platform-identifier-mapping';
+} from '@/components/registration/PlatformIdentifierMapping';
 import { UseTranslationsProps } from '@/i18n/config';
 import { AddIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';

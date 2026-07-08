@@ -1,7 +1,6 @@
 'use client';
 
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
-import { OpenAevIconIcon, OpenCtiIconIcon } from '@filigran/icon';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { Button, Card, CardContent } from '@filigran/ui';
 import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
@@ -16,15 +15,10 @@ const TryOtherPlatformProductBlock = ({
 }: TryOtherPlatformProductBlockProps) => {
   const t = useTranslations('HomePage.TryOtherPlatform');
 
-  const href = PlatformMetadataMapping[product].learnMorePrivateUrl;
-  const productKey = PlatformMetadataMapping[product].name;
-  const ProductIcon =
-    product === PlatformIdentifierEnum.OPENAEV
-      ? OpenAevIconIcon
-      : OpenCtiIconIcon;
+  const { learnMorePrivateUrl, name, Icon } = PlatformMetadataMapping[product];
 
   return (
-    <Card className="bg-elevation-background-layer-3 pt-l border-none rounded-xl">
+    <Card className="bg-elevation-background-layer-3 pt-l mt-xxl border-none rounded-xl">
       <CardContent className="p-l flex flex-col gap-xl md:justify-between">
         <h2 className="font-semibold">{t('Title')}</h2>
         <Button
@@ -32,10 +26,10 @@ const TryOtherPlatformProductBlock = ({
           variant="outline"
           className="font-semibold w-full border-elevation-border-strong-layer-3">
           <Link
-            href={href}
+            href={learnMorePrivateUrl}
             className="inline-flex items-center gap-xs text-primary">
-            <ProductIcon className="size-4" />
-            {t(`Cta`, { productName: productKey })}
+            <Icon className="size-4" />
+            {t(`Cta`, { productName: name })}
           </Link>
         </Button>
       </CardContent>
