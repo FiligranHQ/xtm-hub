@@ -15,6 +15,7 @@ import { FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
 import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { FiligranProduct } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
@@ -48,6 +49,11 @@ const integrationTypeMappedByDocumentType: Record<
 };
 
 type Platform = 'OpenCTI' | 'OpenAEV';
+
+const productTagByPlatform: Record<Platform, FiligranProduct> = {
+  OpenCTI: FiligranProduct.Opencti,
+  OpenAEV: FiligranProduct.Openaev,
+};
 
 type AvailableFields =
   | 'description'
@@ -157,6 +163,7 @@ export const useServiceFormFields = ({
           <ServiceFormUseCasesField
             field={field}
             disabled={disabledFields.includes('use_cases')}
+            product={productTagByPlatform[platform]}
           />
         ),
       },

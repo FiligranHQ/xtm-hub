@@ -1,9 +1,3 @@
-enum FiligranProduct {
-  opencti
-  openaev
-  xtmone
-  xtmhub
-}
 enum Timeline {
   now
   next

@@ -1,17 +1,27 @@
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { formatName } from '@/utils/format/name';
 import {
+  FiligranProduct,
   OrderingMode,
   UseCaseOrdering,
   useUseCasesListQuery,
 } from '@graphql/generated';
 
-export const getUseCases = (documentType?: string) => {
+interface GetUseCasesOptions {
+  documentType?: string;
+  product?: FiligranProduct;
+}
+
+export const getUseCases = ({
+  documentType,
+  product,
+}: GetUseCasesOptions = {}) => {
   const variables = {
     count: 500,
     orderBy: UseCaseOrdering.Name,
     orderMode: OrderingMode.Asc,
     documentType: documentType ?? null,
+    product: product ?? null,
   };
   const { data } = useUseCasesListQuery(portalGraphqlClient, variables);
   return (data?.useCases?.edges ?? [])

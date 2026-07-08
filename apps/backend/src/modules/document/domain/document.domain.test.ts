@@ -18,7 +18,6 @@ import {
   IntegrationType,
   LogicalOperator,
   OrderingMode,
-  ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
@@ -1063,7 +1062,7 @@ describe('document domain', () => {
       expect(result[0]?.id).toBe(activeDoc.id);
     });
 
-    it('should filter documents by serviceDefinitionIdentifiers', async () => {
+    it('should filter documents by documentTypes', async () => {
       // Given
       const integrationDoc = await TestHelper.document.create({
         name: 'Integration document',
@@ -1088,7 +1087,40 @@ describe('document domain', () => {
       const result = await DocumentDomain.loadNewestDocuments(
         10,
         [],
-        [ServiceDefinitionIdentifier.OpenctiIntegrations]
+        [OPENCTI_INTEGRATION_DOCUMENT_TYPE]
+      );
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]?.id).toBe(integrationDoc.id);
+    });
+
+    it('should exclude service_picture documents when documentTypes filter does not include it', async () => {
+      // Given
+      const integrationDoc = await TestHelper.document.create({
+        name: 'Integration document',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'integration-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+      });
+      await TestHelper.document.create({
+        name: 'Service logo',
+        type: 'service_picture',
+        slug: 'service-logo',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+      });
+
+      // When
+      const result = await DocumentDomain.loadNewestDocuments(
+        10,
+        [],
+        [OPENCTI_INTEGRATION_DOCUMENT_TYPE]
       );
 
       // Then
