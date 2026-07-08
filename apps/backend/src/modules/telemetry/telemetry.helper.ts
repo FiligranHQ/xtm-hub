@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import {
   DeploymentRequestSource,
   IntegrationType,
@@ -318,7 +317,6 @@ export const TelemetryHelper = {
     const baseEvent = buildBaseEvent(organization, user_id, timestamp);
 
     return {
-      id: uuidv4(),
       event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
       ...baseEvent,
       target_product: getOrThrow(

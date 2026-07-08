@@ -295,7 +295,6 @@ describe('telemetryApp', () => {
       });
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-        id: expect.any(String),
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
@@ -318,12 +317,10 @@ describe('telemetryApp', () => {
       });
       expect(deployment).toBeDefined();
       expect(deployment.platform_id).toBe(platform_id);
-      expect(deployment.target_product).toBe(TelemetryTargetProduct.OPEN_CTI);
+      expect(deployment.tenant_id).toBe('c4a88438-abf8-4a76-8594-6df800434865');
       expect(deployment.user_id).toBe(
         TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
       );
-      expect(deployment.organization_id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
-      expect(deployment.source_event_id).toEqual(expect.any(String));
     });
     it('should send a OneClickDeployEvent without version and without tenant_id', async () => {
       vi.useFakeTimers();
@@ -395,7 +392,6 @@ describe('telemetryApp', () => {
       });
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-        id: expect.any(String),
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
@@ -480,7 +476,6 @@ describe('telemetryApp', () => {
       });
 
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
-        id: expect.any(String),
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.ONE_CLICK_DEPLOY,
         organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,

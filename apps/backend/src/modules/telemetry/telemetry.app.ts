@@ -5,7 +5,6 @@ import {
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { OneClickDeploymentInitializer } from '../../model/kanel/public/OneClickDeployment';
-import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
@@ -26,21 +25,15 @@ import {
   TelemetryEventType,
 } from './telemetry.types';
 
-export const TELEMETRY_INDEX = 'telemetry';
+const TELEMETRY_INDEX = 'telemetry';
 
-export const toOneClickDeploymentInitializer = (
+const toOneClickDeploymentInitializer = (
   event: OneClickDeployEvent
 ): OneClickDeploymentInitializer => ({
-  source_event_id: event.id,
   resource_id: event.resource_id,
-  resource_title: event.resource_title,
   platform_id: event.platform_id,
-  platform_version: event.platform_version ?? null,
-  organization_id: (event.organization_id as OrganizationId) ?? null,
-  user_id: (event.user_id as UserId) ?? null,
-  target_product: event.target_product,
-  service: event.service,
   tenant_id: event.tenant_id ?? null,
+  user_id: event.user_id ?? null,
   deployed_at: new Date(event['@timestamp']),
 });
 
@@ -55,7 +48,6 @@ export const TelemetryApp = {
     await esDbClient.index({
       index: TELEMETRY_INDEX,
       document: event,
-      ...(event.id ? { id: event.id } : {}),
     });
   },
 

@@ -30,7 +30,6 @@ export enum TelemetryEventType {
 }
 
 export interface BaseTelemetryEvent {
-  id?: string;
   event_type: string;
   organization_id?: string;
   organization_name?: string;
@@ -97,7 +96,6 @@ export interface UnregisterPlatformEvent extends BaseTelemetryEvent {
 }
 
 export interface OneClickDeployEvent extends BaseTelemetryEvent {
-  id: string;
   event_type: TelemetryEventType.ONE_CLICK_DEPLOY;
   target_product: TelemetryTargetProduct;
   service: TelemetryEventService;

@@ -13,7 +13,6 @@
     "check-ts": "tsc --noEmit",
     "generate:ts": "graphql-codegen-esm --config codegen.yml",
     "generate:module": "tsx src/scripts/generate-new-module.ts",
-    "import:one-click": "tsx src/scripts/import-one-click-deployments.ts",
     "knex:run": "NODE_OPTIONS='--import tsx' knex --knexfile knexfile.ts",
     "migrate:make": "yarn knex:run migrate:make",
     "migrate:latest": "yarn knex:run migrate:latest",
