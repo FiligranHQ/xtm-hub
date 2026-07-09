@@ -57,6 +57,11 @@
       }
     }
   },
+  "Contracts": {
+    "CE": "Édition Communauté",
+    "EE": "Édition Entreprise",
+    "TRIAL": "Essai gratuit"
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Colonnes",
@@ -319,12 +324,24 @@
     },
     "XtmMostDeployedResources": {
       "Title": "Ressources les plus utilisées"
+    },
+    "RegisteredPlatformsCard": {
+      "RegisteredOn": "le",
+      "Contract": "Contrat",
+      "Remaining": "restant",
+      "DaysRemaining": "{days, plural, =1 {# jour} other {# jours}}"
+    },
+    "TryOtherPlatform": {
+      "Title": "Étendez et adaptez votre plateforme XTM",
+      "Cta": "Essayez {productName}"
     }
   },
   "PublicHomePage": {
     "Title": "Découvrez nos ressources et notre expertise",
     "XtmPlatform": {
       "Label": "Bienvenue sur XTM Hub",
+      "LabelWithName": "Bienvenue {name}",
+      "ConnectedProducts": "{count, plural, one {Produit connecté} other {Produits connectés}}",
       "Title": "Développez et faites évoluer votre plateforme XTM",
       "Description": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
       "Cta": "Connectez votre produit",
@@ -688,10 +705,6 @@
     "Confirm": "Inscrire",
     "Details": {
       "Contract": "Contrat",
-      "Contracts": {
-        "CE": "Édition communautaire",
-        "EE": "Édition Entreprise"
-      },
       "ConnectionStatus": {
         "Title": "Statut de connexion",
         "Connected": "Connecté",

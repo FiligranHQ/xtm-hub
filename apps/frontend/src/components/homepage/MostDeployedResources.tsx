@@ -1,5 +1,5 @@
 import HomepageResourceList from '@/components/homepage/HomepageResourceList';
-import type { PublicLocale } from '@/i18n/config';
+import { PublicLocale } from '@/i18n/config';
 import { portalGraphqlClientCached } from '@/lib/graphql-client';
 import {
   PlatformIdentifier,
@@ -10,15 +10,15 @@ import { getTranslations } from 'next-intl/server';
 const MOST_DEPLOYED_LIMIT = 8;
 
 type MostDeployedResourcesProps = {
-  locale: PublicLocale;
   platformIdentifiers?: PlatformIdentifier[];
   isAuthenticated?: boolean;
+  paramsLocale?: PublicLocale;
 };
 
 const MostDeployedResources = async ({
-  locale,
   platformIdentifiers,
   isAuthenticated = false,
+  paramsLocale,
 }: MostDeployedResourcesProps) => {
   const t = await getTranslations('HomePage.XtmMostDeployedResources');
 
@@ -26,17 +26,16 @@ const MostDeployedResources = async ({
     portalGraphqlClientCached,
     {
       limit: MOST_DEPLOYED_LIMIT,
-      platformIdentifiers: (platformIdentifiers ??
-        []) as unknown as PlatformIdentifier[],
+      platformIdentifiers: platformIdentifiers ?? [],
     }
   )();
 
   return (
     <HomepageResourceList
       title={t('Title')}
-      locale={locale}
       documents={data.mostDeployedDocuments}
       isAuthenticated={isAuthenticated}
+      paramsLocale={paramsLocale}
     />
   );
 };

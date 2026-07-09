@@ -1,58 +1,191 @@
 import {
   DocumentImageType,
-  FiligranProduct,
+  PlatformContract,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  buildDistinctPlatformIdentifiersFromServiceDefinition,
   findLogoUrl,
-  resolveHomepagePlatformIdentifiers,
-  resolveHomepageRoadmapResolution,
+  mapRegisteredPlatformsToHomepageCards,
+  resolveHomepageCrossSellProduct,
+  resolveRemainingTrialDays,
 } from './Homepage.utils';
 
-describe('resolveHomepagePlatformIdentifiers', () => {
+describe('buildDistinctPlatformIdentifiersFromServiceDefinition', () => {
+  it.each`
+    identifiers                                                                                                                           | expected                                                    | description
+    ${[]}                                                                                                                                 | ${[]}                                                       | ${'returns an empty array for an empty array'}
+    ${[{ identifier: ServiceDefinitionIdentifier.OpenctiRegistration }]}                                                                  | ${[PlatformIdentifier.Opencti]}                             | ${'returns [opencti] for a single OPENCTI identifier'}
+    ${[{ identifier: ServiceDefinitionIdentifier.OpenaevRegistration }]}                                                                  | ${[PlatformIdentifier.Openaev]}                             | ${'returns [openaev] for a single OPENAEV identifier'}
+    ${[{ identifier: ServiceDefinitionIdentifier.OpenctiRegistration }, { identifier: ServiceDefinitionIdentifier.OpenctiRegistration }]} | ${[PlatformIdentifier.Opencti]}                             | ${'deduplicates identifiers resolving to the same platform'}
+    ${[{ identifier: ServiceDefinitionIdentifier.OpenctiRegistration }, { identifier: ServiceDefinitionIdentifier.OpenaevRegistration }]} | ${[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]} | ${'returns both platforms when identifiers span two different platforms'}
+    ${[{ identifier: ServiceDefinitionIdentifier.Vault }]}                                                                                | ${[]}                                                       | ${'returns an empty array for an unmapped identifier'}
+  `(
+    '$description',
+    ({
+      identifiers,
+      expected,
+    }: {
+      identifiers: Parameters<
+        typeof buildDistinctPlatformIdentifiersFromServiceDefinition
+      >[0];
+      expected: PlatformIdentifier[];
+    }) => {
+      expect(
+        buildDistinctPlatformIdentifiersFromServiceDefinition(identifiers)
+      ).toEqual(expected);
+    }
+  );
+});
+
+describe('resolveRemainingTrialDays', () => {
+  const now = new Date('2026-01-01T00:00:00.000Z');
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(now);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it.each([
     {
-      identifiers: [],
+      endDate: null,
       expected: undefined,
-      description: 'returns undefined for an empty array',
+      description: 'returns undefined when end date is missing',
     },
     {
-      identifiers: [ServiceDefinitionIdentifier.OpenctiRegistration],
-      expected: [PlatformIdentifier.Opencti],
-      description: 'returns [OPENCTI] for a single OPENCTI identifier',
+      endDate: '2026-01-05T00:00:00.000Z',
+      expected: 4,
+      description: 'returns rounded remaining days for future trial end date',
     },
     {
-      identifiers: [ServiceDefinitionIdentifier.OpenaevRegistration],
-      expected: [PlatformIdentifier.Openaev],
-      description: 'returns [OPENAEV] for a single OPENAEV identifier',
+      endDate: '2025-12-30T00:00:00.000Z',
+      expected: 0,
+      description: 'returns zero when trial end date is already passed',
     },
-    {
-      identifiers: [
-        ServiceDefinitionIdentifier.OpenctiRegistration,
-        ServiceDefinitionIdentifier.OpenctiRegistration,
-      ],
-      expected: [PlatformIdentifier.Opencti],
-      description:
-        'returns [OPENCTI] when duplicate identifiers resolve to the same platform',
-    },
-    {
-      identifiers: [
-        ServiceDefinitionIdentifier.OpenctiRegistration,
-        ServiceDefinitionIdentifier.OpenaevRegistration,
-      ],
-      expected: undefined,
-      description:
-        'returns undefined when identifiers span two different platforms',
-    },
-    {
-      identifiers: [ServiceDefinitionIdentifier.Vault],
-      expected: undefined,
-      description: 'returns undefined for an unmapped identifier',
-    },
-  ])('$description', ({ identifiers, expected }) => {
-    expect(resolveHomepagePlatformIdentifiers(identifiers)).toEqual(expected);
+  ])('$description', ({ endDate, expected }) => {
+    expect(resolveRemainingTrialDays(endDate)).toBe(expected);
+  });
+});
+
+describe('mapRegisteredPlatformsToHomepageCards', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('maps registered platforms to homepage cards and resolves remaining trial days', () => {
+    const cards = mapRegisteredPlatformsToHomepageCards([
+      {
+        id: 'rp-1',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        title: 'OpenCTI Platform',
+        contract: PlatformContract.Ce,
+        subscription: {
+          start_date: '2025-12-01T00:00:00.000Z',
+          end_date: null,
+        },
+      },
+      {
+        id: 'rp-2',
+        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+        title: 'OpenAEV Trial Platform',
+        contract: PlatformContract.Trial,
+        subscription: {
+          start_date: '2025-12-15T00:00:00.000Z',
+          end_date: '2026-01-03T00:00:00.000Z',
+        },
+      },
+    ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0]);
+
+    expect(cards).toEqual([
+      {
+        id: 'rp-1',
+        platformIdentifier: PlatformIdentifier.Opencti,
+        title: 'OpenCTI Platform',
+        registrationDate: '2025-12-01T00:00:00.000Z',
+        contract: PlatformContract.Ce,
+        remainingTrialDays: undefined,
+      },
+      {
+        id: 'rp-2',
+        platformIdentifier: PlatformIdentifier.Openaev,
+        title: 'OpenAEV Trial Platform',
+        registrationDate: '2025-12-15T00:00:00.000Z',
+        contract: PlatformContract.Trial,
+        remainingTrialDays: 2,
+      },
+    ]);
+  });
+
+  it('excludes entries whose identifier does not resolve to a platform', () => {
+    const cards = mapRegisteredPlatformsToHomepageCards([
+      {
+        id: 'rp-vault',
+        identifier: ServiceDefinitionIdentifier.Vault,
+        title: 'Vault',
+        contract: PlatformContract.Ce,
+        subscription: {
+          start_date: '2025-12-01T00:00:00.000Z',
+          end_date: null,
+        },
+      },
+    ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0]);
+
+    expect(cards).toEqual([]);
+  });
+
+  it('returns all configured platforms even when multiple entries share the same identifier', () => {
+    const cards = mapRegisteredPlatformsToHomepageCards([
+      {
+        id: 'rp-opencti-1',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        title: 'OpenCTI Platform 1',
+        contract: PlatformContract.Ce,
+        subscription: {
+          start_date: '2025-12-01T00:00:00.000Z',
+          end_date: null,
+        },
+      },
+      {
+        id: 'rp-opencti-2',
+        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+        title: 'OpenCTI Platform 2',
+        contract: PlatformContract.Ee,
+        subscription: {
+          start_date: '2025-12-02T00:00:00.000Z',
+          end_date: null,
+        },
+      },
+    ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0]);
+
+    expect(cards).toEqual([
+      {
+        id: 'rp-opencti-1',
+        platformIdentifier: PlatformIdentifier.Opencti,
+        title: 'OpenCTI Platform 1',
+        registrationDate: '2025-12-01T00:00:00.000Z',
+        contract: PlatformContract.Ce,
+        remainingTrialDays: undefined,
+      },
+      {
+        id: 'rp-opencti-2',
+        platformIdentifier: PlatformIdentifier.Opencti,
+        title: 'OpenCTI Platform 2',
+        registrationDate: '2025-12-02T00:00:00.000Z',
+        contract: PlatformContract.Ee,
+        remainingTrialDays: undefined,
+      },
+    ]);
   });
 });
 
@@ -86,18 +219,14 @@ describe('findLogoUrl', () => {
       description:
         'returns the image URL when logo and service_instance_id are both present',
     },
-  ])(
+  ] as {
+    children_documents: { id: string; image_type: DocumentImageType }[] | null;
+    service_instance_id: string | null;
+    expected: string | undefined;
+    description: string;
+  }[])(
     '$description',
-    ({
-      children_documents,
-      service_instance_id,
-      expected,
-    }: {
-      children_documents:
-        { id: string; image_type: DocumentImageType }[] | null;
-      service_instance_id: string | null;
-      expected: string | undefined;
-    }) => {
+    ({ children_documents, service_instance_id, expected }) => {
       const resource = {
         id: 'res-1',
         name: 'Resource',
@@ -116,45 +245,62 @@ describe('findLogoUrl', () => {
   );
 });
 
-describe('resolveHomepageRoadmapResolution', () => {
+describe('resolveHomepageCrossSellProduct', () => {
   it.each([
     {
-      identifiers: [],
-      expected: {
-        productFilter: undefined,
-        titleProduct: 'default',
-      },
-      description: 'returns default roadmap resolution for an empty array',
+      trialDeploymentsEligibility: undefined,
+      expected: undefined,
+      description: 'returns undefined when no eligibility data is available',
     },
     {
-      identifiers: [ServiceDefinitionIdentifier.OpenaevRegistration],
-      expected: {
-        productFilter: FiligranProduct.Openaev,
-        titleProduct: 'openaev',
+      trialDeploymentsEligibility: {
+        availableTrials: [],
+        isBlacklisted: false,
       },
-      description: 'returns OAEV roadmap resolution for OAEV-only identifiers',
+      expected: undefined,
+      description: 'returns undefined when no trial is available',
     },
     {
-      identifiers: [ServiceDefinitionIdentifier.OpenctiRegistration],
-      expected: {
-        productFilter: FiligranProduct.Opencti,
-        titleProduct: 'opencti',
+      trialDeploymentsEligibility: {
+        availableTrials: [PlatformIdentifier.Opencti],
+        isBlacklisted: false,
       },
-      description: 'returns OCTI roadmap resolution for OCTI-only identifiers',
+      expected: PlatformIdentifier.Opencti,
+      description: 'returns OpenCTI when only OpenCTI trial is available',
     },
     {
-      identifiers: [
-        ServiceDefinitionIdentifier.OpenctiRegistration,
-        ServiceDefinitionIdentifier.OpenaevRegistration,
-      ],
-      expected: {
-        productFilter: undefined,
-        titleProduct: 'default',
+      trialDeploymentsEligibility: {
+        availableTrials: [PlatformIdentifier.Openaev],
+        isBlacklisted: false,
       },
-      description:
-        'returns default roadmap resolution when both platforms are registered',
+      expected: PlatformIdentifier.Openaev,
+      description: 'returns OpenAEV when only OpenAEV trial is available',
     },
-  ])('$description', ({ identifiers, expected }) => {
-    expect(resolveHomepageRoadmapResolution(identifiers)).toEqual(expected);
+    {
+      trialDeploymentsEligibility: {
+        availableTrials: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ],
+        isBlacklisted: false,
+      },
+      expected: PlatformIdentifier.Opencti,
+      description: 'returns OpenCTI first when both trials are available',
+    },
+    {
+      trialDeploymentsEligibility: {
+        availableTrials: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ],
+        isBlacklisted: true,
+      },
+      expected: undefined,
+      description: 'returns undefined when organization is blacklisted',
+    },
+  ])('$description', ({ trialDeploymentsEligibility, expected }) => {
+    expect(resolveHomepageCrossSellProduct(trialDeploymentsEligibility)).toBe(
+      expected
+    );
   });
 });

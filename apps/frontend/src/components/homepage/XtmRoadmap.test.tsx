@@ -19,6 +19,7 @@ vi.mock('@graphql/generated', async (importOriginal) => {
 
 vi.mock('next-intl/server', () => ({
   getTranslations: mockGetTranslations,
+  getLocale: vi.fn().mockResolvedValue('en'),
 }));
 
 import XtmRoadmap from './XtmRoadmap';
@@ -68,7 +69,7 @@ describe('XtmRoadmap', () => {
   });
 
   it('uses public roadmap url by default', async () => {
-    render(await XtmRoadmap({ locale: 'en' }));
+    render(await XtmRoadmap({}));
 
     expect(screen.getByRole('link', { name: 'SeeMore' })).toHaveAttribute(
       'href',
@@ -79,7 +80,6 @@ describe('XtmRoadmap', () => {
   it('uses custom roadmap href when provided', async () => {
     render(
       await XtmRoadmap({
-        locale: 'en',
         seeMoreHref:
           '/app/service/xtm_platform_roadmap/instance-1?product=opencti',
       })
@@ -92,7 +92,7 @@ describe('XtmRoadmap', () => {
   });
 
   it('uses default title when no titleProduct is provided', async () => {
-    render(await XtmRoadmap({ locale: 'en' }));
+    render(await XtmRoadmap({}));
 
     expect(
       screen.getByRole('heading', { level: 2, name: 'Title' })
@@ -102,7 +102,6 @@ describe('XtmRoadmap', () => {
   it('uses product title when titleProduct is provided', async () => {
     render(
       await XtmRoadmap({
-        locale: 'en',
         titleProduct: 'opencti',
       })
     );
