@@ -4,19 +4,9 @@ query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
     identifier
     title
     contract
-    deployment_request {
-      id
-      hub_status
-      request_date
-      start_date
-      end_date
-    }
     subscription {
       start_date
       end_date
-      service_instance {
-        id
-      }
     }
   }
 }

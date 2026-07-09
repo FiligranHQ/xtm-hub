@@ -52,12 +52,23 @@ describe('resolveRemainingTrialDays', () => {
     vi.useRealTimers();
   });
 
-  it.each`
-    endDate                       | expected     | description
-    ${null}                       | ${undefined} | ${'returns undefined when end date is missing'}
-    ${'2026-01-05T00:00:00.000Z'} | ${4}         | ${'returns rounded remaining days for future trial end date'}
-    ${'2025-12-30T00:00:00.000Z'} | ${0}         | ${'returns zero when trial end date is already passed'}
-  `('$description', ({ endDate, expected }) => {
+  it.each([
+    {
+      endDate: null,
+      expected: undefined,
+      description: 'returns undefined when end date is missing',
+    },
+    {
+      endDate: '2026-01-05T00:00:00.000Z',
+      expected: 4,
+      description: 'returns rounded remaining days for future trial end date',
+    },
+    {
+      endDate: '2025-12-30T00:00:00.000Z',
+      expected: 0,
+      description: 'returns zero when trial end date is already passed',
+    },
+  ])('$description', ({ endDate, expected }) => {
     expect(resolveRemainingTrialDays(endDate)).toBe(expected);
   });
 });
@@ -179,24 +190,43 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
 });
 
 describe('findLogoUrl', () => {
-  it.each`
-    children_documents                                          | service_instance_id | expected                        | description
-    ${null}                                                     | ${'inst-1'}         | ${undefined}                    | ${'returns undefined when children_documents is null'}
-    ${[{ id: 'd1', image_type: DocumentImageType.Screenshot }]} | ${'inst-1'}         | ${undefined}                    | ${'returns undefined when no child has Logo image type'}
-    ${[{ id: 'd1', image_type: DocumentImageType.Logo }]}       | ${null}             | ${undefined}                    | ${'returns undefined when logo is present but service_instance_id is null'}
-    ${[{ id: 'd1', image_type: DocumentImageType.Logo }]}       | ${'inst-1'}         | ${'/document/images/inst-1/d1'} | ${'returns the image URL when logo and service_instance_id are both present'}
-  `(
+  it.each([
+    {
+      children_documents: null,
+      service_instance_id: 'inst-1',
+      expected: undefined,
+      description: 'returns undefined when children_documents is null',
+    },
+    {
+      children_documents: [
+        { id: 'd1', image_type: DocumentImageType.Screenshot },
+      ],
+      service_instance_id: 'inst-1',
+      expected: undefined,
+      description: 'returns undefined when no child has Logo image type',
+    },
+    {
+      children_documents: [{ id: 'd1', image_type: DocumentImageType.Logo }],
+      service_instance_id: null,
+      expected: undefined,
+      description:
+        'returns undefined when logo is present but service_instance_id is null',
+    },
+    {
+      children_documents: [{ id: 'd1', image_type: DocumentImageType.Logo }],
+      service_instance_id: 'inst-1',
+      expected: '/document/images/inst-1/d1',
+      description:
+        'returns the image URL when logo and service_instance_id are both present',
+    },
+  ] as {
+    children_documents: { id: string; image_type: DocumentImageType }[] | null;
+    service_instance_id: string | null;
+    expected: string | undefined;
+    description: string;
+  }[])(
     '$description',
-    ({
-      children_documents,
-      service_instance_id,
-      expected,
-    }: {
-      children_documents:
-        { id: string; image_type: DocumentImageType }[] | null;
-      service_instance_id: string | null;
-      expected: string | undefined;
-    }) => {
+    ({ children_documents, service_instance_id, expected }) => {
       const resource = {
         id: 'res-1',
         name: 'Resource',
@@ -216,15 +246,59 @@ describe('findLogoUrl', () => {
 });
 
 describe('resolveHomepageCrossSellProduct', () => {
-  it.each`
-    trialDeploymentsEligibility                                                                            | expected                      | description
-    ${undefined}                                                                                           | ${undefined}                  | ${'returns undefined when no eligibility data is available'}
-    ${{ availableTrials: [], isBlacklisted: false }}                                                       | ${undefined}                  | ${'returns undefined when no trial is available'}
-    ${{ availableTrials: [PlatformIdentifier.Opencti], isBlacklisted: false }}                             | ${PlatformIdentifier.Opencti} | ${'returns OpenCTI when only OpenCTI trial is available'}
-    ${{ availableTrials: [PlatformIdentifier.Openaev], isBlacklisted: false }}                             | ${PlatformIdentifier.Openaev} | ${'returns OpenAEV when only OpenAEV trial is available'}
-    ${{ availableTrials: [PlatformIdentifier.Opencti, PlatformIdentifier.Openaev], isBlacklisted: false }} | ${PlatformIdentifier.Opencti} | ${'returns OpenCTI first when both trials are available'}
-    ${{ availableTrials: [PlatformIdentifier.Opencti, PlatformIdentifier.Openaev], isBlacklisted: true }}  | ${undefined}                  | ${'returns undefined when organization is blacklisted'}
-  `('$description', ({ trialDeploymentsEligibility, expected }) => {
+  it.each([
+    {
+      trialDeploymentsEligibility: undefined,
+      expected: undefined,
+      description: 'returns undefined when no eligibility data is available',
+    },
+    {
+      trialDeploymentsEligibility: {
+        availableTrials: [],
+        isBlacklisted: false,
+      },
+      expected: undefined,
+      description: 'returns undefined when no trial is available',
+    },
+    {
+      trialDeploymentsEligibility: {
+        availableTrials: [PlatformIdentifier.Opencti],
+        isBlacklisted: false,
+      },
+      expected: PlatformIdentifier.Opencti,
+      description: 'returns OpenCTI when only OpenCTI trial is available',
+    },
+    {
+      trialDeploymentsEligibility: {
+        availableTrials: [PlatformIdentifier.Openaev],
+        isBlacklisted: false,
+      },
+      expected: PlatformIdentifier.Openaev,
+      description: 'returns OpenAEV when only OpenAEV trial is available',
+    },
+    {
+      trialDeploymentsEligibility: {
+        availableTrials: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ],
+        isBlacklisted: false,
+      },
+      expected: PlatformIdentifier.Opencti,
+      description: 'returns OpenCTI first when both trials are available',
+    },
+    {
+      trialDeploymentsEligibility: {
+        availableTrials: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ],
+        isBlacklisted: true,
+      },
+      expected: undefined,
+      description: 'returns undefined when organization is blacklisted',
+    },
+  ])('$description', ({ trialDeploymentsEligibility, expected }) => {
     expect(resolveHomepageCrossSellProduct(trialDeploymentsEligibility)).toBe(
       expected
     );
