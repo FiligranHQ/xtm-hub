@@ -1,10 +1,10 @@
 import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
 import { isValueInEnum } from '@/utils/is-value-in-enum';
 import { APP_PATH } from '@/utils/path/constant';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import OrganizationSwitcherMutation, {
   OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
 } from '@generated/OrganizationSwitcherMutation.graphql';
+import { ServiceDefinitionIdentifier } from '@graphql/generated';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   loadBaseUrlFront,
@@ -75,7 +75,7 @@ export const redirectToResource = async (
   await switchOrganization(organizationId ?? user.selected_organization_id);
 
   // --------------------------Redirect to correct serviceInstance--------------------------
-  if (!isValueInEnum(identifier, ServiceDefinitionIdentifierEnum)) {
+  if (!isValueInEnum(identifier, ServiceDefinitionIdentifier)) {
     console.error(`Invalid service definition identifier: ${identifier}`);
     return new Response('Invalid identifier', { status: 400 });
   }
