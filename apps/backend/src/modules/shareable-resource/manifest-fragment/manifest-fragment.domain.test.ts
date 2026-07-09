@@ -5,7 +5,7 @@ import {
   DocumentSourceType,
   ManifestType,
   PortalCapability,
-  type MutationIngestManifestFragmentsArgs,
+  type ManifestFragmentInput,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import type { DocumentId } from '../../../model/kanel/public/Document';
@@ -56,7 +56,7 @@ describe('manifestFragmentDomain', () => {
     _createdDocumentIds = [];
   });
 
-  const buildManifestFragments = (
+  const buildManifestFragment = (
     integrationType: string,
     {
       slug = 'misp',
@@ -67,65 +67,61 @@ describe('manifestFragmentDomain', () => {
       id?: string;
       version?: string;
     } = {}
-  ): MutationIngestManifestFragmentsArgs => {
+  ): ManifestFragmentInput => {
     return {
-      manifestFragments: [
-        {
-          id,
-          title: 'MISP',
-          slug,
-          description:
-            'The MISP connector imports threat intelligence from MISP instances into OpenCTI.',
-          short_description:
-            'Import threat intelligence events, indicators, and observables from MISP instances.',
-          logo: 'SGVsbG8sIFdvcmxkIQ==',
-          use_cases: ['Open Source Threat Intel'],
-          verified: true,
-          last_verified_date: '2025-01-01',
-          subscription_link: 'https://www.misp-project.org',
-          source_code:
-            'https://github.com/OpenCTI-Platform/connectors/tree/master/external-import/misp',
-          manager_supported: true,
-          min_version: '7.260507.0',
-          version,
-          image_name: 'opencti/connector-misp',
-          image_type: 'EXTERNAL_IMPORT',
-          platform: 'OpenCTI',
-          integration_type: integrationType,
-          additional_properties: {
-            max_confidence_level: 50,
+      id,
+      title: 'MISP',
+      slug,
+      description:
+        'The MISP connector imports threat intelligence from MISP instances into OpenCTI.',
+      short_description:
+        'Import threat intelligence events, indicators, and observables from MISP instances.',
+      logo: 'SGVsbG8sIFdvcmxkIQ==',
+      use_cases: ['Open Source Threat Intel'],
+      verified: true,
+      last_verified_date: '2025-01-01',
+      subscription_link: 'https://www.misp-project.org',
+      source_code:
+        'https://github.com/OpenCTI-Platform/connectors/tree/master/external-import/misp',
+      manager_supported: true,
+      min_version: '7.260507.0',
+      version,
+      image_name: 'opencti/connector-misp',
+      image_type: 'EXTERNAL_IMPORT',
+      platform: 'OpenCTI',
+      integration_type: integrationType,
+      additional_properties: {
+        max_confidence_level: 50,
+      },
+      config_schema: {
+        $schema: 'https://json-schema.org/draft/2020-12/schema',
+        $id: 'https://www.filigran.io/connectors/misp_config.schema.json',
+        type: 'object',
+        required: ['OPENCTI_URL', 'OPENCTI_TOKEN'],
+        properties: {
+          OPENCTI_URL: {
+            type: 'string',
+            format: 'uri',
+            description: 'The base URL of the OpenCTI instance.',
           },
-          config_schema: {
-            $schema: 'https://json-schema.org/draft/2020-12/schema',
-            $id: 'https://www.filigran.io/connectors/misp_config.schema.json',
-            type: 'object',
-            required: ['OPENCTI_URL', 'OPENCTI_TOKEN'],
-            properties: {
-              OPENCTI_URL: {
-                type: 'string',
-                format: 'uri',
-                description: 'The base URL of the OpenCTI instance.',
-              },
-              OPENCTI_TOKEN: {
-                type: 'string',
-                description: 'The API token to connect to OpenCTI.',
-              },
-            },
-            additionalProperties: true,
+          OPENCTI_TOKEN: {
+            type: 'string',
+            description: 'The API token to connect to OpenCTI.',
           },
         },
-      ],
+        additionalProperties: true,
+      },
     };
   };
 
-  describe('ingestManifestFragments', () => {
+  describe('ingestManifestFragment', () => {
     it('accepts a fragment when integration_type is connector', async () => {
       // Given
       const slug = 'misp-integration';
-      const args = buildManifestFragments(ManifestType.Connector, { slug });
+      const fragment = buildManifestFragment(ManifestType.Connector, { slug });
 
       // When
-      await ManifestFragmentDomain.ingestManifestFragments(args);
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
 
       // Then
       const createdDocument = await TestHelper.document.load({ slug });
@@ -161,25 +157,25 @@ describe('manifestFragmentDomain', () => {
       );
       expect(
         metadataByKey.get(DocumentMetadataKeyCode.ManifestFragmentId)
-      ).toBe(args.manifestFragments[0]?.id);
+      ).toBe(fragment.id);
       expect(metadataByKey.get(DocumentMetadataKeyCode.Verified)).toBe(
-        String(args.manifestFragments[0]?.verified)
+        String(fragment.verified)
       );
       expect(metadataByKey.get(DocumentMetadataKeyCode.LastVerifiedDate)).toBe(
-        args.manifestFragments[0]?.last_verified_date
+        fragment.last_verified_date
       );
       expect(metadataByKey.get(DocumentMetadataKeyCode.IntegrationType)).toBe(
-        args.manifestFragments[0]?.integration_type
+        fragment.integration_type
       );
       expect(metadataByKey.get(DocumentMetadataKeyCode.SourceCode)).toBe(
-        args.manifestFragments[0]?.source_code
+        fragment.source_code
       );
       expect(metadataByKey.get(DocumentMetadataKeyCode.ManagerSupported)).toBe(
-        String(args.manifestFragments[0]?.manager_supported)
+        String(fragment.manager_supported)
       );
       expect(
         metadataByKey.get(DocumentMetadataKeyCode.MinimumDeployableVersion)
-      ).toBe(args.manifestFragments[0]?.min_version);
+      ).toBe(fragment.min_version);
       expect(
         metadataByKey.get(
           DocumentMetadataKeyCode.MinimumDeployableVersionPadded
@@ -190,19 +186,21 @@ describe('manifestFragmentDomain', () => {
       );
       expect(
         metadataByKey.get(DocumentMetadataKeyCode.AdditionalProperties)
-      ).toBe(JSON.stringify(args.manifestFragments[0]?.additional_properties));
+      ).toBe(JSON.stringify(fragment.additional_properties));
       expect(metadataByKey.get(DocumentMetadataKeyCode.ConfigSchema)).toBe(
-        JSON.stringify(args.manifestFragments[0]?.config_schema)
+        JSON.stringify(fragment.config_schema)
       );
     });
 
     it('throws when integration_type is not connector', async () => {
       // Given
       const slug = 'misp-invalid';
-      const args = buildManifestFragments('third_party_integration', { slug });
+      const fragment = buildManifestFragment('third_party_integration', {
+        slug,
+      });
 
       // When
-      const call = ManifestFragmentDomain.ingestManifestFragments(args);
+      const call = ManifestFragmentDomain.ingestManifestFragment(fragment);
 
       // Then
       await expect(call).rejects.toThrow(
@@ -216,15 +214,17 @@ describe('manifestFragmentDomain', () => {
     it('throws when min_version format is invalid', async () => {
       // Given
       const slug = 'misp-invalid-min-version';
-      const args = buildManifestFragments(ManifestType.Connector, { slug });
-      args.manifestFragments[0]!.min_version = '>= 7.260507.0';
+      const fragment = buildManifestFragment(ManifestType.Connector, {
+        slug,
+      });
+      fragment.min_version = '>= 7.260507.0';
 
       // When
-      const call = ManifestFragmentDomain.ingestManifestFragments(args);
+      const call = ManifestFragmentDomain.ingestManifestFragment(fragment);
 
       // Then
       await expect(call).rejects.toThrow(
-        BadRequestErrorCode.InvalidConnectorVersionFormat
+        BadRequestErrorCode.InvalidManifestVersionFormat
       );
 
       const createdDocument = await TestHelper.document.load({ slug });
@@ -234,11 +234,13 @@ describe('manifestFragmentDomain', () => {
     it('throws when short_description is longer than 250 characters', async () => {
       // Given
       const slug = 'misp-invalid-short-description';
-      const args = buildManifestFragments(ManifestType.Connector, { slug });
-      args.manifestFragments[0]!.short_description = 'a'.repeat(251);
+      const fragment = buildManifestFragment(ManifestType.Connector, {
+        slug,
+      });
+      fragment.short_description = 'a'.repeat(251);
 
       // When
-      const call = ManifestFragmentDomain.ingestManifestFragments(args);
+      const call = ManifestFragmentDomain.ingestManifestFragment(fragment);
 
       // Then
       await expect(call).rejects.toThrow(
@@ -273,10 +275,12 @@ describe('manifestFragmentDomain', () => {
       });
 
       const slug = 'misp-new-same-version';
-      const args = buildManifestFragments(ManifestType.Connector, { slug });
+      const fragment = buildManifestFragment(ManifestType.Connector, {
+        slug,
+      });
 
       // When
-      const call = ManifestFragmentDomain.ingestManifestFragments(args);
+      const call = ManifestFragmentDomain.ingestManifestFragment(fragment);
 
       // Then
       await expect(call).rejects.toThrow(
@@ -326,12 +330,12 @@ describe('manifestFragmentDomain', () => {
       });
 
       const newSlug = 'misp-new-lts';
-      const args = buildManifestFragments(ManifestType.Connector, {
+      const fragment = buildManifestFragment(ManifestType.Connector, {
         slug: newSlug,
       });
 
       // When
-      await ManifestFragmentDomain.ingestManifestFragments(args);
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
 
       // Then
       const updatedExisting = await TestHelper.document.load({
@@ -388,13 +392,13 @@ describe('manifestFragmentDomain', () => {
       });
 
       const newSlug = 'misp-new-non-lts';
-      const args = buildManifestFragments(ManifestType.Connector, {
+      const fragment = buildManifestFragment(ManifestType.Connector, {
         slug: newSlug,
         version: '7.260309.0',
       });
 
       // When
-      await ManifestFragmentDomain.ingestManifestFragments(args);
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
 
       // Then
       const updatedExisting = await TestHelper.document.load({
@@ -437,13 +441,13 @@ describe('manifestFragmentDomain', () => {
       });
 
       const newSlug = 'misp-new-lower';
-      const args = buildManifestFragments(ManifestType.Connector, {
+      const fragment = buildManifestFragment(ManifestType.Connector, {
         slug: newSlug,
         version: '7.260308.0',
       });
 
       // When
-      await ManifestFragmentDomain.ingestManifestFragments(args);
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
 
       // Then
       const updatedExisting = await TestHelper.document.load({

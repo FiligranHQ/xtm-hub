@@ -1,0 +1,49 @@
+meta {
+  name: GenerateManifest
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: none
+}
+
+headers {
+  Cookie: {{cookie}}
+}
+
+body:graphql {
+  mutation GenerateManifest(
+    $product: PlatformIdentifier!
+    $version: String!
+    $type: ManifestType!
+  ) {
+    generateManifest(product: $product, version: $version, type: $type) {
+      success
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "product": "opencti",
+    "version": "6.4.0",
+    "type": "connector"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Ensure cookie is set (requires a logged-in session with the BYPASS portal capability)
+
+  Fill variables:
+  product: PlatformIdentifier enum value (e.g. opencti, openaev)
+  version: product version, e.g. 6.4.0
+  type: ManifestType enum value (e.g. connector)
+}

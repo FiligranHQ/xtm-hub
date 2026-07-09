@@ -1,10 +1,10 @@
 import { Resolvers } from '../../../__generated__/resolvers-types';
-import { ManifestFragmentDomain } from './manifest-fragment.domain';
+import { ManifestFragmentApp } from './manifest-fragment.app';
 
 const resolvers: Resolvers = {
   Mutation: {
     ingestManifestFragments: async (_, args) => {
-      await ManifestFragmentDomain.ingestManifestFragments(args);
+      await ManifestFragmentApp.ingestManifestFragments(args);
       return { success: true };
     },
   },

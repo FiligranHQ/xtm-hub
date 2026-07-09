@@ -5,13 +5,9 @@ import {
   DocumentSourceType,
   IntegrationType,
   ManifestType,
-  PortalCapability,
   type ManifestFragmentInput,
-  type MutationIngestManifestFragmentsArgs,
 } from '../../../__generated__/resolvers-types';
-import { requestContext } from '../../../context/request.context';
 import Document from '../../../model/kanel/public/Document';
-import { securityGuard } from '../../../security/guard';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
 import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
@@ -24,16 +20,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   type ConnectorV2,
 } from '../opencti/integration/integration.model';
-import {
-  buildConnectorLogoFilename,
-  formatConnectorVersion,
-  getConnectorDocumentTags,
-  getConnectorMetadataFromExisting,
-  getLatestTagForConnectorVersion,
-  isStrictlyGreaterConnectorVersion,
-  validateConnectorMinimumVersion,
-  validateShortDescriptionLength,
-} from './manifest-fragment.utils';
+import { ManifestFragmentHelper } from './manifest-fragment.helper';
 
 type ConnectorWithMetadata = Document & {
   version_padded?: string;
@@ -51,7 +38,7 @@ const attachConnectorLogo = async ({
 }) => {
   const uploadLogo = IngestManifestHelper.base64ToUpload(
     fragment.logo,
-    buildConnectorLogoFilename({
+    ManifestFragmentHelper.buildConnectorLogoFilename({
       title: fragment.title,
       version: fragment.version,
     })
@@ -113,9 +100,10 @@ const createConnectorDocument = async ({
         subscription_link: fragment.subscription_link,
         manager_supported: fragment.manager_supported,
         minimum_deployable_version: fragment.min_version,
-        minimum_deployable_version_padded: formatConnectorVersion(
-          fragment.min_version
-        ),
+        minimum_deployable_version_padded:
+          ManifestFragmentHelper.validateAndFormatManifestVersion(
+            fragment.min_version
+          ),
         datasheet_url: metadataFromExisting?.datasheet_url,
         blogpost_url: metadataFromExisting?.blogpost_url,
         demo_url: metadataFromExisting?.demo_url,
@@ -152,76 +140,77 @@ const removeLatestTagFromExistingBatchConnectors = async ({
 };
 
 export const ManifestFragmentDomain = {
-  ingestManifestFragments: async ({
-    manifestFragments,
-  }: MutationIngestManifestFragmentsArgs): Promise<void> => {
-    const user = requestContext.requireUser();
-    await securityGuard.assertUserPortalCapabilities(user, [
-      PortalCapability.ManageManifestIngestions,
-    ]);
-    for (const fragment of manifestFragments) {
-      if (fragment.integration_type !== ManifestType.Connector) {
-        throw new Error(BadRequestErrorCode.IntegrationTypeNotRecognized);
-      }
+  ingestManifestFragment: async (
+    fragment: ManifestFragmentInput
+  ): Promise<void> => {
+    if (fragment.integration_type !== ManifestType.Connector) {
+      throw new Error(BadRequestErrorCode.IntegrationTypeNotRecognized);
+    }
 
-      validateConnectorMinimumVersion(fragment.min_version);
-      validateShortDescriptionLength(fragment.short_description);
-      const formattedVersion = formatConnectorVersion(fragment.version);
-      const latestTag = getLatestTagForConnectorVersion(formattedVersion);
+    ManifestFragmentHelper.validateAndFormatManifestVersion(
+      fragment.min_version
+    );
+    ManifestFragmentHelper.validateShortDescriptionLength(
+      fragment.short_description
+    );
+    const formattedVersion =
+      ManifestFragmentHelper.validateAndFormatManifestVersion(fragment.version);
+    const latestTag =
+      ManifestFragmentHelper.getLatestTagForConnectorVersion(formattedVersion);
 
-      const existingBatchConnectors =
-        (await DocumentDomain.loadDocumentsByMetadata(
-          DocumentMetadataKeyCode.ManifestFragmentId,
-          fragment.id,
-          [
-            DocumentMetadataKeyCode.VersionPadded,
-            DocumentMetadataKeyCode.DatasheetUrl,
-            DocumentMetadataKeyCode.BlogpostUrl,
-            DocumentMetadataKeyCode.DemoUrl,
-          ]
-        )) as ConnectorWithMetadata[];
+    const existingBatchConnectors =
+      (await DocumentDomain.loadDocumentsByMetadata(
+        DocumentMetadataKeyCode.ManifestFragmentId,
+        fragment.id,
+        [
+          DocumentMetadataKeyCode.VersionPadded,
+          DocumentMetadataKeyCode.DatasheetUrl,
+          DocumentMetadataKeyCode.BlogpostUrl,
+          DocumentMetadataKeyCode.DemoUrl,
+        ]
+      )) as ConnectorWithMetadata[];
 
-      const hasSameVersion = existingBatchConnectors.some(
-        (connector) => connector.version === fragment.version
-      );
-      if (hasSameVersion) {
-        throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists);
-      }
+    const hasSameVersion = existingBatchConnectors.some(
+      (connector) => connector.version === fragment.version
+    );
+    if (hasSameVersion) {
+      throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists);
+    }
 
-      const currentLatestConnector = existingBatchConnectors.find((connector) =>
-        (connector.tags ?? []).includes(latestTag)
-      );
+    const currentLatestConnector = existingBatchConnectors.find((connector) =>
+      (connector.tags ?? []).includes(latestTag)
+    );
 
-      const metadataFromExisting = getConnectorMetadataFromExisting({
+    const metadataFromExisting =
+      ManifestFragmentHelper.getConnectorMetadataFromExisting({
         currentLatestConnector,
         existingBatchConnectors,
       });
 
-      const shouldPromoteAsLatest =
-        !currentLatestConnector ||
-        isStrictlyGreaterConnectorVersion({
-          candidate: formattedVersion,
-          current: currentLatestConnector.version_padded ?? '',
-        });
+    const shouldPromoteAsLatest =
+      !currentLatestConnector ||
+      ManifestFragmentHelper.isStrictlyGreaterConnectorVersion({
+        candidate: formattedVersion,
+        current: currentLatestConnector.version_padded ?? '',
+      });
 
-      if (existingBatchConnectors.length > 0 && shouldPromoteAsLatest) {
-        await removeLatestTagFromExistingBatchConnectors({
-          connectors: existingBatchConnectors,
-          latestTag,
-        });
-      }
-
-      const newDocumentTags = getConnectorDocumentTags(
-        shouldPromoteAsLatest,
-        latestTag
-      );
-
-      await createConnectorDocument({
-        fragment,
-        formattedVersion,
-        tags: newDocumentTags,
-        metadataFromExisting,
+    if (existingBatchConnectors.length > 0 && shouldPromoteAsLatest) {
+      await removeLatestTagFromExistingBatchConnectors({
+        connectors: existingBatchConnectors,
+        latestTag,
       });
     }
+
+    const newDocumentTags = ManifestFragmentHelper.getConnectorDocumentTags(
+      shouldPromoteAsLatest,
+      latestTag
+    );
+
+    await createConnectorDocument({
+      fragment,
+      formattedVersion,
+      tags: newDocumentTags,
+      metadataFromExisting,
+    });
   },
 };
