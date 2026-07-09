@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
   Separator,
 } from '@filigran/ui';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import { PortalCapability } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -128,22 +128,22 @@ const adminLinksData = (t: UseTranslationsProps) => [
   {
     href: `/${APP_PATH}/admin/opencti-trials`,
     label: t('MenuLinks.OpenCTITrial'),
-    restriction: [PortalCapabilityEnum.READ_TRIALS],
+    restriction: [PortalCapability.ReadTrials],
   },
   {
     href: `/${APP_PATH}/admin/openaev-trials`,
     label: t('MenuLinks.OpenAEVTrial'),
-    restriction: [PortalCapabilityEnum.READ_TRIALS],
+    restriction: [PortalCapability.ReadTrials],
   },
   {
     href: `/${APP_PATH}/admin/competitors`,
     label: t('MenuLinks.Competitor'),
-    restriction: [PortalCapabilityEnum.MODIFY_COMPETITORS],
+    restriction: [PortalCapability.ModifyCompetitors],
   },
   {
     href: `/${APP_PATH}/admin/news-feed`,
     label: t('MenuLinks.NewsFeed'),
-    restriction: [PortalCapabilityEnum.BYPASS],
+    restriction: [PortalCapability.Bypass],
   },
 ];
 

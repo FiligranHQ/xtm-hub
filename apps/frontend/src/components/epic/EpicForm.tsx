@@ -20,10 +20,12 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { EditionTypeEnum } from '@generated/models/EditionType.enum';
-import { EpicTypeEnum } from '@generated/models/EpicType.enum';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
-import { TimelineEnum } from '@generated/models/Timeline.enum';
+import {
+  EditionType,
+  EpicType,
+  FiligranProduct,
+  Timeline,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
@@ -41,11 +43,11 @@ export const descriptionValue =
   '### Expected Value\n' +
   'Short point-form list (3-5 points) of what a customer will now be able to do and the value to be gained.\n' +
   "'If EPIC is aimed at a specific persona, worth mentioning it here.\n";
-export const FILIGRAN_PRODUCTS_VALUES = Object.values(FiligranProductEnum);
-export const TIMELINE_VALUES = Object.values(TimelineEnum);
+export const FILIGRAN_PRODUCTS_VALUES = Object.values(FiligranProduct);
+export const TIMELINE_VALUES = Object.values(Timeline);
 export const epicFormSchema = z.object({
   product: z.enum(FILIGRAN_PRODUCTS_VALUES),
-  edition_type: z.enum(EditionTypeEnum),
+  edition_type: z.enum(EditionType),
   title: z.string().min(2, 'EpicForm.Error.Title').max(160),
   short_description: z.string().min(1, 'Required').max(215),
   description: z.string().min(1, 'Required'),
@@ -65,7 +67,7 @@ const EpicForm = ({
   const t = useTranslations();
 
   const [isIntegration, setIsIntegration] = useState(
-    epic?.epic_type === EpicTypeEnum.INTEGRATION
+    epic?.epic_type === EpicType.Integration
   );
 
   return (
@@ -79,14 +81,11 @@ const EpicForm = ({
         title: epic?.title ?? '',
         short_description: epic?.short_description ?? '',
         description: epic?.description ?? descriptionValue,
-        edition_type:
-          (epic?.edition_type as EditionTypeEnum) ??
-          EditionTypeEnum.COMMUNITY_EDITION,
-        product:
-          (epic?.product as FiligranProductEnum) ?? FiligranProductEnum.OPENCTI,
-        timeline: (epic?.timeline as TimelineEnum) ?? TimelineEnum.NOW,
+        edition_type: epic?.edition_type ?? EditionType.CommunityEdition,
+        product: epic?.product ?? FiligranProduct.Opencti,
+        timeline: epic?.timeline ?? Timeline.Now,
         active: epic?.active ?? false,
-        is_integration: epic?.epic_type === EpicTypeEnum.INTEGRATION,
+        is_integration: epic?.epic_type === EpicType.Integration,
         illustration_document: undefined,
       }}
       fieldConfig={{
@@ -130,7 +129,7 @@ const EpicForm = ({
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
-                defaultValue={epic?.product ?? FiligranProductEnum.OPENCTI}>
+                defaultValue={epic?.product ?? FiligranProduct.Opencti}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
@@ -139,7 +138,7 @@ const EpicForm = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.values(FiligranProductEnum).map((product) => {
+                  {Object.values(FiligranProduct).map((product) => {
                     return (
                       <SelectItem
                         key={product}
@@ -167,14 +166,14 @@ const EpicForm = ({
               </FormLabel>
               <Select
                 onValueChange={field.onChange}
-                defaultValue={epic?.timeline ?? TimelineEnum.NOW}>
+                defaultValue={epic?.timeline ?? Timeline.Now}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder={t('Epic.Timeline.now')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.values(TimelineEnum).map((timeline) => {
+                  {Object.values(Timeline).map((timeline) => {
                     return (
                       <SelectItem
                         key={timeline}
@@ -224,9 +223,9 @@ const EpicForm = ({
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
-                  value={field.value ?? EditionTypeEnum.COMMUNITY_EDITION}
+                  value={field.value ?? EditionType.CommunityEdition}
                   className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                  {Object.values(EditionTypeEnum).map((value) => (
+                  {Object.values(EditionType).map((value) => (
                     <FormItem
                       key={value}
                       className="flex flex-row items-center gap-3 space-y-0">

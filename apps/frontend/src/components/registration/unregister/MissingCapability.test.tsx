@@ -2,8 +2,7 @@ import { RegistrationContext } from '@/components/registration/Context';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { UnregisterMissingCapability } from '@/components/registration/unregister/MissingCapability';
 import testRender from '@/utils/test/test-render';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { OrganizationCapability, PlatformIdentifier } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -32,8 +31,8 @@ const renderMissingCapability = (cancel: () => void = vi.fn()) =>
     <RegistrationContext.Provider
       value={{
         displayedIdentifier:
-          PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
-        capability: OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+          PlatformMetadataMapping[PlatformIdentifier.Opencti].name,
+        capability: OrganizationCapability.ManagePlatformRegistration,
       }}>
       <UnregisterMissingCapability
         organizationId="org-id"

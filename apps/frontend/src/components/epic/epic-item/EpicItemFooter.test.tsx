@@ -1,9 +1,7 @@
 import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 import testRender from '@/utils/test/test-render';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { EditionTypeEnum } from '@generated/models/EditionType.enum';
-import { EpicTypeEnum } from '@generated/models/EpicType.enum';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { EditionType, EpicType, FiligranProduct } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it } from 'vitest';
@@ -12,9 +10,9 @@ describe('EpicItemFooter', () => {
   const epic = {
     id: 'epic-1',
     title: 'Roadmap epic',
-    epic_type: EpicTypeEnum.OTHER,
-    edition_type: EditionTypeEnum.COMMUNITY_EDITION,
-    product: FiligranProductEnum.OPENCTI,
+    epic_type: EpicType.Other,
+    edition_type: EditionType.CommunityEdition,
+    product: FiligranProduct.Opencti,
     document_id: null,
   } as epic_fragment$data;
 
@@ -37,10 +35,10 @@ describe('EpicItemFooter', () => {
   });
 
   it.each`
-    editionType                           | expectedLabel
-    ${EditionTypeEnum.COMMUNITY_EDITION}  | ${null}
-    ${EditionTypeEnum.ENTERPRISE_EDITION} | ${'EE'}
-    ${EditionTypeEnum.PARTIAL_EE}         | ${'Partial EE'}
+    editionType                      | expectedLabel
+    ${EditionType.CommunityEdition}  | ${null}
+    ${EditionType.EnterpriseEdition} | ${'EE'}
+    ${EditionType.PartialEe}         | ${'Partial EE'}
   `(
     'renders edition tag according to edition type (editionType=$editionType)',
     ({ editionType, expectedLabel }) => {
@@ -71,10 +69,10 @@ describe('EpicItemFooter', () => {
   );
 
   it.each`
-    epicType                    | documentId            | shouldRenderIntegration
-    ${EpicTypeEnum.INTEGRATION} | ${'document-image-1'} | ${true}
-    ${EpicTypeEnum.INTEGRATION} | ${null}               | ${false}
-    ${EpicTypeEnum.OTHER}       | ${'document-image-1'} | ${false}
+    epicType                | documentId            | shouldRenderIntegration
+    ${EpicType.Integration} | ${'document-image-1'} | ${true}
+    ${EpicType.Integration} | ${null}               | ${false}
+    ${EpicType.Other}       | ${'document-image-1'} | ${false}
   `(
     'renders integration block according to type and document id (epicType=$epicType, documentId=$documentId)',
     ({ epicType, documentId, shouldRenderIntegration }) => {

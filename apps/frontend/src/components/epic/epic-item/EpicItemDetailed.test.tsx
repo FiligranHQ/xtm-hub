@@ -1,20 +1,18 @@
 import { EpicItemDetailed } from '@/components/epic/epic-item/EpicItemDetailed';
 import testRender from '@/utils/test/test-render';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { EditionTypeEnum } from '@generated/models/EditionType.enum';
-import { EpicTypeEnum } from '@generated/models/EpicType.enum';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { EditionType, EpicType, FiligranProduct } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('EpicItemDetailed', () => {
-  const epic = (product: FiligranProductEnum) =>
+  const epic = (product: FiligranProduct) =>
     ({
       id: 'epic-1',
       title: 'Roadmap epic',
-      epic_type: EpicTypeEnum.OTHER,
-      edition_type: EditionTypeEnum.COMMUNITY_EDITION,
+      epic_type: EpicType.Other,
+      edition_type: EditionType.CommunityEdition,
       product,
       short_description: 'short description',
       description: 'long **description**',
@@ -24,7 +22,7 @@ describe('EpicItemDetailed', () => {
     }) as epic_fragment$data;
 
   const defaultProps = {
-    epic: epic(FiligranProductEnum.OPENCTI),
+    epic: epic(FiligranProduct.Opencti),
     serviceInstanceId: 'service-instance-1',
   };
 
@@ -48,11 +46,11 @@ describe('EpicItemDetailed', () => {
   });
 
   it.each`
-    product                        | expectedLink
-    ${FiligranProductEnum.OPENCTI} | ${'https://filigran-community.slack.com/archives/CHZC2D38C'}
-    ${FiligranProductEnum.OPENAEV} | ${'https://filigran-community.slack.com/archives/CJ1PHBHF1'}
-    ${FiligranProductEnum.XTMONE}  | ${'https://filigran-community.slack.com/archives/CHNEM9NUT'}
-    ${FiligranProductEnum.XTMHUB}  | ${'https://filigran-community.slack.com/archives/C08HU35NPD4'}
+    product                    | expectedLink
+    ${FiligranProduct.Opencti} | ${'https://filigran-community.slack.com/archives/CHZC2D38C'}
+    ${FiligranProduct.Openaev} | ${'https://filigran-community.slack.com/archives/CJ1PHBHF1'}
+    ${FiligranProduct.Xtmone}  | ${'https://filigran-community.slack.com/archives/CHNEM9NUT'}
+    ${FiligranProduct.Xtmhub}  | ${'https://filigran-community.slack.com/archives/C08HU35NPD4'}
   `(
     'renders community call-to-action for $product',
     ({ product, expectedLink }) => {

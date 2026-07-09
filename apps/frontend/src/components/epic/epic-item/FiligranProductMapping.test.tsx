@@ -5,22 +5,22 @@ import {
   OpenAevIconIcon,
   OpenCtiIconIcon,
 } from '@filigran/icon';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { FiligranProduct } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 
 describe('FiligranProductMapping', () => {
   it('contains all Filigran products from enum', () => {
     expect(Object.keys(FiligranProductMapping).sort()).toEqual(
-      Object.values(FiligranProductEnum).sort()
+      Object.values(FiligranProduct).sort()
     );
   });
 
   it.each`
-    product                        | expectedName | expectedLogoComponent
-    ${FiligranProductEnum.OPENCTI} | ${'OpenCTI'} | ${OpenCtiIconIcon}
-    ${FiligranProductEnum.OPENAEV} | ${'OpenAEV'} | ${OpenAevIconIcon}
-    ${FiligranProductEnum.XTMHUB}  | ${'XTM Hub'} | ${LogoFiligranIcon}
-    ${FiligranProductEnum.XTMONE}  | ${'XTM One'} | ${LogoXtmOneIcon}
+    product                    | expectedName | expectedLogoComponent
+    ${FiligranProduct.Opencti} | ${'OpenCTI'} | ${OpenCtiIconIcon}
+    ${FiligranProduct.Openaev} | ${'OpenAEV'} | ${OpenAevIconIcon}
+    ${FiligranProduct.Xtmhub}  | ${'XTM Hub'} | ${LogoFiligranIcon}
+    ${FiligranProduct.Xtmone}  | ${'XTM One'} | ${LogoXtmOneIcon}
   `(
     'maps $product with expected name and logo',
     ({
@@ -28,7 +28,7 @@ describe('FiligranProductMapping', () => {
       expectedName,
       expectedLogoComponent,
     }: {
-      product: FiligranProductEnum;
+      product: FiligranProduct;
       expectedName: string;
       expectedLogoComponent: React.ElementType;
     }) => {

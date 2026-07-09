@@ -1,7 +1,7 @@
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   DocumentImageType,
+  FiligranProduct,
+  PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
@@ -20,12 +20,12 @@ describe('resolveHomepagePlatformIdentifiers', () => {
     },
     {
       identifiers: [ServiceDefinitionIdentifier.OpenctiRegistration],
-      expected: [PlatformIdentifierEnum.OPENCTI],
+      expected: [PlatformIdentifier.Opencti],
       description: 'returns [OPENCTI] for a single OPENCTI identifier',
     },
     {
       identifiers: [ServiceDefinitionIdentifier.OpenaevRegistration],
-      expected: [PlatformIdentifierEnum.OPENAEV],
+      expected: [PlatformIdentifier.Openaev],
       description: 'returns [OPENAEV] for a single OPENAEV identifier',
     },
     {
@@ -33,7 +33,7 @@ describe('resolveHomepagePlatformIdentifiers', () => {
         ServiceDefinitionIdentifier.OpenctiRegistration,
         ServiceDefinitionIdentifier.OpenctiRegistration,
       ],
-      expected: [PlatformIdentifierEnum.OPENCTI],
+      expected: [PlatformIdentifier.Opencti],
       description:
         'returns [OPENCTI] when duplicate identifiers resolve to the same platform',
     },
@@ -129,7 +129,7 @@ describe('resolveHomepageRoadmapResolution', () => {
     {
       identifiers: [ServiceDefinitionIdentifier.OpenaevRegistration],
       expected: {
-        productFilter: FiligranProductEnum.OPENAEV,
+        productFilter: FiligranProduct.Openaev,
         titleProduct: 'openaev',
       },
       description: 'returns OAEV roadmap resolution for OAEV-only identifiers',
@@ -137,7 +137,7 @@ describe('resolveHomepageRoadmapResolution', () => {
     {
       identifiers: [ServiceDefinitionIdentifier.OpenctiRegistration],
       expected: {
-        productFilter: FiligranProductEnum.OPENCTI,
+        productFilter: FiligranProduct.Opencti,
         titleProduct: 'opencti',
       },
       description: 'returns OCTI roadmap resolution for OCTI-only identifiers',

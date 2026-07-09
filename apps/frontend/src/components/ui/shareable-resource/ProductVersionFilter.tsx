@@ -4,12 +4,12 @@ import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 interface ProductVersionFilterProps {
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 
 export const ProductVersionFilter = ({

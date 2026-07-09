@@ -9,16 +9,16 @@ import {
   SelectValue,
   Switch,
 } from '@filigran/ui';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { FiligranProduct } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
-export type EpicFilterType = 'all' | FiligranProductEnum;
+export type EpicFilterType = 'all' | FiligranProduct;
 
 interface EpicFilterProps {
   selectedFilter?: EpicFilterType;
   onSelectedFilterChange: (filter: EpicFilterType) => void;
-  countsByProduct: Record<FiligranProductEnum, number>;
+  countsByProduct: Record<FiligranProduct, number>;
   showFinished: boolean;
   onShowFinishedChange: (show: boolean) => void;
   debounceHandleInput?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -34,7 +34,7 @@ export const EpicFilter = ({
 }: EpicFilterProps) => {
   const t = useTranslations();
 
-  const products = Object.values(FiligranProductEnum);
+  const products = Object.values(FiligranProduct);
 
   const totalCount = products.reduce(
     (sum, product) => sum + (countsByProduct[product] ?? 0),

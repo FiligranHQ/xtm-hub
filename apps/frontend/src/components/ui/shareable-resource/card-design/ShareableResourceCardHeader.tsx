@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
+import { DocumentMetadataKeyCode } from '@graphql/generated';
 
 interface ShareableResourceCardHeaderProps {
   document: documentItem_fragment$data | PublicDocumentData;
@@ -28,7 +28,7 @@ export const ShareableResourceCardHeader = ({
   let documentMetadata;
   if (
     isConnector &&
-    docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE)
+    docHasMetadata(document, DocumentMetadataKeyCode.IntegrationSubtype)
   ) {
     documentMetadata = getIntegrationSubTypeMetadata(
       document.integration_subtype

@@ -2,8 +2,7 @@ import { EditionTypeMapping } from '@/components/epic/epic-item/EditionTypeMappi
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import { Badge } from '@filigran/ui/servers';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { EditionTypeEnum } from '@generated/models/EditionType.enum';
-import { EpicTypeEnum } from '@generated/models/EpicType.enum';
+import { EditionType, EpicType } from '@graphql/generated';
 import Image from 'next/image';
 
 interface EpicItemFooterProps {
@@ -23,7 +22,7 @@ export const EpicItemFooter = ({
           <p className="bold">{FiligranProductMapping[epic.product].logo}</p>
 
           <p className="bold">{FiligranProductMapping[epic.product].name}</p>
-          {epic.edition_type !== EditionTypeEnum.COMMUNITY_EDITION && (
+          {epic.edition_type !== EditionType.CommunityEdition && (
             <Badge
               variant="secondary"
               className="ml-s font-semibold">
@@ -31,7 +30,7 @@ export const EpicItemFooter = ({
             </Badge>
           )}
         </div>
-        {epic.document_id && epic.epic_type === EpicTypeEnum.INTEGRATION && (
+        {epic.document_id && epic.epic_type === EpicType.Integration && (
           <div
             className={`flex items-center mr-s gap-xs ${shiftEpicType ? 'pr-xxl' : ''}`}>
             <Image

@@ -12,9 +12,8 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
+import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
@@ -33,12 +32,10 @@ interface ShareableResourceCardProps {
   publicPath?: boolean;
 }
 
-const FOOTER_VERSIONS_INTEGRATION_TYPES: string[] = [
-  IntegrationTypeEnum.CONNECTOR,
-];
+const FOOTER_VERSIONS_INTEGRATION_TYPES: string[] = [IntegrationType.Connector];
 
 const FOOTER_NO_AUTHOR_INTEGRATION_TYPES: string[] = [
-  IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
+  IntegrationType.ThirdPartyIntegration,
 ];
 
 const ShareableResourceCard = ({
@@ -54,7 +51,7 @@ const ShareableResourceCard = ({
     save();
   };
   const isConnector =
-    docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_TYPE) &&
+    docHasMetadata(document, DocumentMetadataKeyCode.IntegrationType) &&
     !!document.integration_type &&
     FOOTER_VERSIONS_INTEGRATION_TYPES.includes(document.integration_type);
 
@@ -101,7 +98,7 @@ const ShareableResourceCard = ({
             shouldDisplayAuthor={
               (docHasMetadata(
                 document,
-                DocumentMetadataKeyCodeEnum.INTEGRATION_TYPE
+                DocumentMetadataKeyCode.IntegrationType
               ) &&
                 document.integration_type &&
                 !FOOTER_NO_AUTHOR_INTEGRATION_TYPES.includes(
