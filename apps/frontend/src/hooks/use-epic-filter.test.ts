@@ -17,14 +17,33 @@ describe('useEpicFilter', () => {
   });
 
   describe('selectedProduct', () => {
-    it.each`
-      searchQuery                             | expectedSelectedProduct    | description
-      ${''}                                   | ${undefined}               | ${'no param → undefined'}
-      ${'product=all'}                        | ${'all'}                   | ${'explicit "all" → "all"'}
-      ${`product=${FiligranProduct.Opencti}`} | ${FiligranProduct.Opencti} | ${'valid enum value → enum'}
-      ${'product=unknown'}                    | ${undefined}               | ${'unknown value → undefined'}
-      ${'product='}                           | ${undefined}               | ${'empty value → undefined'}
-    `(
+    it.each([
+      {
+        searchQuery: '',
+        expectedSelectedProduct: undefined,
+        description: 'no param → undefined',
+      },
+      {
+        searchQuery: 'product=all',
+        expectedSelectedProduct: 'all',
+        description: 'explicit "all" → "all"',
+      },
+      {
+        searchQuery: `product=${FiligranProduct.Opencti}`,
+        expectedSelectedProduct: FiligranProduct.Opencti,
+        description: 'valid enum value → enum',
+      },
+      {
+        searchQuery: 'product=unknown',
+        expectedSelectedProduct: undefined,
+        description: 'unknown value → undefined',
+      },
+      {
+        searchQuery: 'product=',
+        expectedSelectedProduct: undefined,
+        description: 'empty value → undefined',
+      },
+    ])(
       'should expose "$expectedSelectedProduct" from "$searchQuery" ($description)',
       ({ searchQuery, expectedSelectedProduct }) => {
         vi.mocked(useSearchParams).mockReturnValue(

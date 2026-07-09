@@ -78,6 +78,7 @@ export const PublicTryFiligranProductsBanner = () => {
           className="w-full flex flex-col">
           <IconActionContext.Provider value={{ setMenuOpen }}>
             {getLink(PlatformIdentifier.Opencti)}
+            {getLink(PlatformIdentifier.Openaev)}
           </IconActionContext.Provider>
         </DropdownMenuContent>
       </DropdownMenu>

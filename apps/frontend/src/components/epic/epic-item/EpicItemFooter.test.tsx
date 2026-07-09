@@ -36,7 +36,7 @@ describe('EpicItemFooter', () => {
 
   it.each`
     editionType                      | expectedLabel
-    ${EditionType.CommunityEdition}  | ${null}
+    ${EditionType.CommunityEdition}  | ${'__NO_LABEL__'}
     ${EditionType.EnterpriseEdition} | ${'EE'}
     ${EditionType.PartialEe}         | ${'Partial EE'}
   `(
@@ -44,6 +44,8 @@ describe('EpicItemFooter', () => {
     ({ editionType, expectedLabel }) => {
       // Given
       const environment = createMockEnvironment();
+      const resolvedExpectedLabel =
+        expectedLabel === '__NO_LABEL__' ? null : expectedLabel;
 
       // When
       const { queryByText } = testRender(
@@ -57,8 +59,8 @@ describe('EpicItemFooter', () => {
       );
 
       // Then
-      if (expectedLabel) {
-        expect(screen.getByText(expectedLabel)).toBeInTheDocument();
+      if (resolvedExpectedLabel) {
+        expect(screen.getByText(resolvedExpectedLabel)).toBeInTheDocument();
         return;
       }
 
@@ -69,12 +71,12 @@ describe('EpicItemFooter', () => {
   );
 
   it.each`
-    epicType                | documentId            | shouldRenderIntegration
-    ${EpicType.Integration} | ${'document-image-1'} | ${true}
-    ${EpicType.Integration} | ${null}               | ${false}
-    ${EpicType.Other}       | ${'document-image-1'} | ${false}
+    epicType                | documentId            | documentIdLabel       | shouldRenderIntegration
+    ${EpicType.Integration} | ${'document-image-1'} | ${'document-image-1'} | ${true}
+    ${EpicType.Integration} | ${null}               | ${'null'}             | ${false}
+    ${EpicType.Other}       | ${'document-image-1'} | ${'document-image-1'} | ${false}
   `(
-    'renders integration block according to type and document id (epicType=$epicType, documentId=$documentId)',
+    'renders integration block according to type and document id (epicType=$epicType, documentId=$documentIdLabel)',
     ({ epicType, documentId, shouldRenderIntegration }) => {
       // Given
       const environment = createMockEnvironment();

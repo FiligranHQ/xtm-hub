@@ -55,8 +55,9 @@ describe('Filigran product banner text', () => {
       // Then
       const bannerText = await queryByText(expectedText);
       expect(bannerText).toBeInTheDocument();
-      nonExpectedText &&
+      if (nonExpectedText !== null) {
         expect(await queryByText(nonExpectedText)).not.toBeInTheDocument();
+      }
     }
   );
 
