@@ -1,8 +1,8 @@
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import type { publicDocumentByServiceSlugItemFragment$data } from '@generated/publicDocumentByServiceSlugItemFragment.graphql';
 import type { publicDocumentBySlugItemFragment$data } from '@generated/publicDocumentBySlugItemFragment.graphql';
 import type { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
+import { ServiceDefinitionIdentifier } from '@graphql/generated';
 
 export type PublicDocumentData =
   | publicDocumentListItemFragment$data
@@ -65,18 +65,18 @@ export const SHAREABLE_RESOURCE_LIBRARY_MAPPING: Record<
 
 export const SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING: Record<
   ShareableResourceType,
-  ServiceDefinitionIdentifierEnum
+  ServiceDefinitionIdentifier
 > = {
   [ShareableResourceType.OPENCTI_INTEGRATION]:
-    ServiceDefinitionIdentifierEnum.OPENCTI_INTEGRATIONS,
+    ServiceDefinitionIdentifier.OpenctiIntegrations,
   [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]:
-    ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_DASHBOARDS,
+    ServiceDefinitionIdentifier.OpenctiCustomDashboards,
   [ShareableResourceType.OPENCTI_CUSTOM_VIEW]:
-    ServiceDefinitionIdentifierEnum.OPENCTI_CUSTOM_VIEWS,
+    ServiceDefinitionIdentifier.OpenctiCustomViews,
   [ShareableResourceType.OPENAEV_SCENARIO]:
-    ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS,
+    ServiceDefinitionIdentifier.OpenaevScenarios,
   [ShareableResourceType.OPENCTI_PLAYBOOK]:
-    ServiceDefinitionIdentifierEnum.OPENCTI_PLAYBOOKS,
+    ServiceDefinitionIdentifier.OpenctiPlaybooks,
 };
 
 export const SHAREABLE_RESOURCE_SERVICE_SLUG_MAPPING: Record<
