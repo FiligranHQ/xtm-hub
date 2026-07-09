@@ -33,10 +33,15 @@ export const IntegrationTypeFilter = () => {
         })) ?? undefined,
     }));
     const availableOption = allOptions
-      .filter((option) => availableIntegrationTypes.includes(option.value))
+      .filter((option) =>
+        availableIntegrationTypes.includes(option.value as IntegrationType)
+      )
       .sort((a, b) => a.label.localeCompare(b.label));
     const comingSoonOption = allOptions
-      .filter((option) => !availableIntegrationTypes.includes(option.value))
+      .filter(
+        (option) =>
+          !availableIntegrationTypes.includes(option.value as IntegrationType)
+      )
       .sort((a, b) => a.label.localeCompare(b.label));
     return [...availableOption, ...comingSoonOption];
   }, [t]);

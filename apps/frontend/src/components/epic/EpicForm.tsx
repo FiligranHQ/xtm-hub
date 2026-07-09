@@ -81,9 +81,10 @@ const EpicForm = ({
         title: epic?.title ?? '',
         short_description: epic?.short_description ?? '',
         description: epic?.description ?? descriptionValue,
-        edition_type: epic?.edition_type ?? EditionType.CommunityEdition,
-        product: epic?.product ?? FiligranProduct.Opencti,
-        timeline: epic?.timeline ?? Timeline.Now,
+        edition_type:
+          (epic?.edition_type as EditionType) ?? EditionType.CommunityEdition,
+        product: (epic?.product as FiligranProduct) ?? FiligranProduct.Opencti,
+        timeline: (epic?.timeline as Timeline) ?? Timeline.Now,
         active: epic?.active ?? false,
         is_integration: epic?.epic_type === EpicType.Integration,
         illustration_document: undefined,

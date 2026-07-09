@@ -57,9 +57,13 @@ export const parseSelection = (
     const subtypesRaw = colonIndex === -1 ? '' : entry.slice(colonIndex + 1);
 
     if (paramName === INTEGRATION_TYPE_PARAM) {
-      if (!validIntegrationTypes.has(key)) continue;
+      if (!validIntegrationTypes.has(key as IntegrationType)) continue;
       result[key] = subtypesRaw
-        ? subtypesRaw.split('|').filter((s) => validIntegrationSubTypes.has(s))
+        ? subtypesRaw
+            .split('|')
+            .filter((s) =>
+              validIntegrationSubTypes.has(s as IntegrationSubType)
+            )
         : [];
     } else {
       if (!key) continue;

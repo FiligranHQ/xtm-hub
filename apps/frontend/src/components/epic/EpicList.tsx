@@ -179,7 +179,7 @@ export const EpicList = ({
           return null;
         }
         const timelineColor =
-          FiligranTimelineMapping[timeline.title]?.color ?? 'white';
+          FiligranTimelineMapping[timeline.title as Timeline]?.color ?? 'white';
 
         return (
           <div
