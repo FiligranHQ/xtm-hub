@@ -1,6 +1,6 @@
 import useGranted from '@/hooks/use-granted';
 import { ProvidersWrapperProps, TestWrapper } from '@/utils/test/test-render';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { OrganizationCapability } from '@graphql/generated';
 import { renderHook } from '@testing-library/react';
 
 describe('useGranted', () => {
@@ -11,9 +11,7 @@ describe('useGranted', () => {
         <TestWrapper
           options={{
             me: {
-              selected_org_capabilities: [
-                OrganizationCapabilityEnum.MANAGE_ACCESS,
-              ],
+              selected_org_capabilities: [OrganizationCapability.ManageAccess],
             },
           }}>
           {children}
@@ -22,7 +20,7 @@ describe('useGranted', () => {
     };
 
     const { result: resultAdmin } = renderHook(
-      () => useGranted(OrganizationCapabilityEnum.MANAGE_ACCESS),
+      () => useGranted(OrganizationCapability.ManageAccess),
       {
         wrapper,
       }
@@ -45,7 +43,7 @@ describe('useGranted', () => {
       );
     };
     const { result: resultBypass } = renderHook(
-      () => useGranted(OrganizationCapabilityEnum.MANAGE_ACCESS),
+      () => useGranted(OrganizationCapability.ManageAccess),
       {
         wrapper,
       }

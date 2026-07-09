@@ -5,7 +5,6 @@ import { RegisterStateMissingCapability } from '@/components/registration/regist
 import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 import { RegisterPlatform } from '@/components/registration/register/register.graphql';
 import { toast } from '@filigran/ui/clients';
-import { PlatformRegistrationStatusEnum } from '@generated/models/PlatformRegistrationStatus.enum';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
@@ -22,6 +21,7 @@ import {
   PlatformInput,
   registerPlatformMutation,
 } from '@generated/registerPlatformMutation.graphql';
+import { PlatformRegistrationStatus } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import {
   useCallback,
@@ -166,8 +166,7 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
 
   useLayoutEffect(() => {
     const shouldAutoRegister =
-      isPlatformRegistered.status ===
-        PlatformRegistrationStatusEnum.REGISTERED &&
+      isPlatformRegistered.status === PlatformRegistrationStatus.Registered &&
       isPlatformRegistered.organization &&
       !hasAutoRegisteredRef.current;
 
@@ -211,8 +210,7 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   }
 
   const shouldRegisterOnSameOrganization =
-    isPlatformRegistered.status ===
-      PlatformRegistrationStatusEnum.UNREGISTERED &&
+    isPlatformRegistered.status === PlatformRegistrationStatus.Unregistered &&
     userOrganizationsQueryData.userOrganizations.length > 2;
   if (shouldRegisterOnSameOrganization) {
     return (
@@ -234,8 +232,8 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
 
   if (
     isPlatformRegistered.status ===
-      PlatformRegistrationStatusEnum.NEVER_REGISTERED ||
-    isPlatformRegistered.status === PlatformRegistrationStatusEnum.UNREGISTERED
+      PlatformRegistrationStatus.NeverRegistered ||
+    isPlatformRegistered.status === PlatformRegistrationStatus.Unregistered
   ) {
     return (
       <RegisterOrganizationForm

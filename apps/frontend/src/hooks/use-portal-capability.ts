@@ -1,5 +1,5 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import { PortalCapability } from '@graphql/generated';
 import { useContext } from 'react';
 
 // Mock the useContext hook
@@ -7,20 +7,15 @@ import { useContext } from 'react';
 export const useAdminByPass = () => {
   const { hasCapability } = useContext(PortalContext);
 
-  return hasCapability && hasCapability(PortalCapabilityEnum.BYPASS);
+  return hasCapability && hasCapability(PortalCapability.Bypass);
 };
 
 export const useUserHasPortalCapability = (
-  restrictions: PortalCapabilityEnum[]
+  restrictions: PortalCapability[]
 ) => {
   const { hasCapability } = useContext(PortalContext);
   return (
     hasCapability &&
     restrictions.some((restriction) => hasCapability(restriction))
   );
-};
-
-export const useUserHasAtLeastOnePortalCapabilities = () => {
-  const { me } = useContext(PortalContext);
-  return (me?.capabilities ?? []).length > 0;
 };

@@ -16,13 +16,13 @@ import {
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentSourceTypeEnum } from '@generated/models/DocumentSourceType.enum';
+import { DocumentSourceType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useRef } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 export type ServiceFormMultipleImagesFieldImages = (ExistingFile | NewFile) & {
-  source_type: DocumentSourceTypeEnum;
+  source_type: DocumentSourceType;
 };
 
 interface ServiceFormMultipleImagesFieldProps {
@@ -72,11 +72,11 @@ export const ServiceFormMultipleImagesField = ({
               if (e.target?.files) {
                 for (const image of Array.from(e.target.files)) {
                   const extendedImage = image as NewFile & {
-                    source_type: DocumentSourceTypeEnum;
+                    source_type: DocumentSourceType;
                   };
                   extendedImage.preview = await fileToBase64(image as File);
                   extendedImage.id = new Date().getTime().toString();
-                  extendedImage.source_type = DocumentSourceTypeEnum.INTERNAL;
+                  extendedImage.source_type = DocumentSourceType.Internal;
                   localImages.push(extendedImage);
                 }
               }
@@ -152,9 +152,7 @@ export const ServiceFormMultipleImagesField = ({
                         (doc as NewFile)?.name}
                     </div>
                     <Button
-                      disabled={
-                        doc.source_type === DocumentSourceTypeEnum.EXTERNAL
-                      }
+                      disabled={doc.source_type === DocumentSourceType.External}
                       variant="outline-destructive"
                       size="icon"
                       type="button"

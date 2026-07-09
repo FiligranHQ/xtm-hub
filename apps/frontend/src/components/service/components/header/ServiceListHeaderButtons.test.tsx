@@ -1,9 +1,11 @@
 import ServiceListHeaderButtons from '@/components/service/components/header/ServiceListHeaderButtons';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import testRender from '@/utils/test/test-render';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
+import {
+  OrganizationCapability,
+  PortalCapability,
+  ServiceRestriction,
+} from '@graphql/generated';
 import { createMockEnvironment } from 'relay-test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -34,13 +36,13 @@ describe('ServiceListHeaderButtons', () => {
   });
 
   it.each`
-    portalCapabilities                         | serviceCapabilities                       | organizationCapabilities                                  | shouldRender
-    ${[]}                                      | ${[ServiceRestrictionEnum.MANAGE_ACCESS]} | ${[]}                                                     | ${true}
-    ${[]}                                      | ${[ServiceRestrictionEnum.MANAGE_ACCESS]} | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]} | ${true}
-    ${[]}                                      | ${[]}                                     | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]} | ${true}
-    ${[]}                                      | ${[]}                                     | ${[OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION]}       | ${true}
-    ${[]}                                      | ${[]}                                     | ${[]}                                                     | ${false}
-    ${[{ name: PortalCapabilityEnum.BYPASS }]} | ${[]}                                     | ${[]}                                                     | ${true}
+    portalCapabilities                     | serviceCapabilities                  | organizationCapabilities                             | shouldRender
+    ${[]}                                  | ${[ServiceRestriction.ManageAccess]} | ${[]}                                                | ${true}
+    ${[]}                                  | ${[ServiceRestriction.ManageAccess]} | ${[OrganizationCapability.AdministrateOrganization]} | ${true}
+    ${[]}                                  | ${[]}                                | ${[OrganizationCapability.AdministrateOrganization]} | ${true}
+    ${[]}                                  | ${[]}                                | ${[OrganizationCapability.ManageSubscription]}       | ${true}
+    ${[]}                                  | ${[]}                                | ${[]}                                                | ${false}
+    ${[{ name: PortalCapability.Bypass }]} | ${[]}                                | ${[]}                                                | ${true}
   `(
     'renders manage access button when shouldRender=$shouldRender',
     ({

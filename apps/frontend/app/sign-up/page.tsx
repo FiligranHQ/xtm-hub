@@ -1,5 +1,6 @@
 import '@/components/signup/SignUp.css';
 import '@filigran/ui/theme.css';
+import { FeatureFlag } from '@graphql/generated';
 import '@styles/globals.css';
 
 import SignUp from '@/components/signup/SignUp';
@@ -12,7 +13,6 @@ import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 
@@ -27,9 +27,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 export const dynamic = 'force-dynamic';
 
 const Page = async () => {
-  const isHomePageV2Enabled = await isFeatureEnabled(
-    FeatureFlagEnum.HOME_PAGE_V2
-  );
+  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
 
   if (!isHomePageV2Enabled) {
     notFound();

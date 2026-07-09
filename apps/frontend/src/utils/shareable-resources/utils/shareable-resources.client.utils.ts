@@ -6,7 +6,7 @@ import {
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { IntegrationType } from '@graphql/generated';
 
 export function getServiceInfo(
   serviceInstance: { id: string; slug: ServiceSlug },
@@ -35,7 +35,5 @@ export const docHasMetadata = <T, K extends string>(
 export const isResourceDownloadable = (
   document: documentItem_fragment$data | PublicDocumentData
 ): boolean => {
-  return (
-    document.integration_type !== IntegrationTypeEnum.THIRD_PARTY_INTEGRATION
-  );
+  return document.integration_type !== IntegrationType.ThirdPartyIntegration;
 };

@@ -2,7 +2,7 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
+import { IntegrationType, ServiceRestriction } from '@graphql/generated';
 
 import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
@@ -23,7 +23,6 @@ import useScrollPosition from '@/hooks/use-scroll-position';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { useTranslations } from 'next-intl';
 import { Fragment, useContext, useLayoutEffect } from 'react';
 
@@ -49,7 +48,7 @@ const ServiceList = ({
   const { settings } = useContext(SettingsContext);
   const { translationKey, serviceInstance, type } = useServiceContext();
   const userCanUpdate = useServiceCapability(
-    ServiceRestrictionEnum.UPLOAD,
+    ServiceRestriction.Upload,
     serviceInstance
   );
 
@@ -123,8 +122,8 @@ const ServiceList = ({
       {Object.entries(activeByIntegrationType).map(
         ([integrationType, documents]) => (
           <Fragment key={integrationType}>
-            {Object.values(IntegrationTypeEnum).includes(
-              integrationType as IntegrationTypeEnum
+            {Object.values(IntegrationType).includes(
+              integrationType as IntegrationType
             ) && (
               <h2>
                 {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}

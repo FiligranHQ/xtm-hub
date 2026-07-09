@@ -1,6 +1,6 @@
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
+import { DocumentImageType } from '@graphql/generated';
 
 export interface ExistingFile {
   file_name: string;
@@ -42,7 +42,7 @@ export const splitExistingAndNewImages = (
   );
 
 export const transformToFileList = (
-  filteredImageType: DocumentImageTypeEnum,
+  filteredImageType: DocumentImageType,
   document?: documentItem_fragment$data
 ): FileList => {
   return (document?.children_documents ?? []).filter(
@@ -54,7 +54,7 @@ export const filterDocumentImages = (
   document?: documentItem_fragment$data | PublicDocumentData
 ) => {
   return (document?.children_documents ?? []).filter(
-    (doc) => doc.image_type === DocumentImageTypeEnum.IMAGE
+    (doc) => doc.image_type === DocumentImageType.Image
   );
 };
 
@@ -62,6 +62,6 @@ export const findDocumentLogo = (
   document?: documentItem_fragment$data | PublicDocumentData
 ) => {
   return (document?.children_documents ?? []).find(
-    (doc) => doc.image_type === DocumentImageTypeEnum.LOGO
+    (doc) => doc.image_type === DocumentImageType.Logo
   );
 };

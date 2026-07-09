@@ -1,7 +1,6 @@
 import HomepageResourceList from '@/components/homepage/HomepageResourceList';
 import type { PublicLocale } from '@/i18n/config';
 import { portalGraphqlClientCached } from '@/lib/graphql-client';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import {
   PlatformIdentifier,
   useMostDeployedDocumentsQueryQuery,
@@ -12,7 +11,7 @@ const MOST_DEPLOYED_LIMIT = 8;
 
 type MostDeployedResourcesProps = {
   locale: PublicLocale;
-  platformIdentifiers?: PlatformIdentifierEnum[];
+  platformIdentifiers?: PlatformIdentifier[];
   isAuthenticated?: boolean;
 };
 

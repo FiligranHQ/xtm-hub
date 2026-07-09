@@ -1,6 +1,6 @@
 import FreeTrialPage from '@/components/service/trial-instances/page/FreeTrialPage';
 import { parseFreeTrialSearchParams } from '@/utils/free-trial-search-params';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -11,7 +11,7 @@ const Page = async ({ searchParams }: PageProps) => {
     await parseFreeTrialSearchParams(searchParams);
   return (
     <FreeTrialPage
-      platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+      platformIdentifier={PlatformIdentifier.Opencti}
       openTrialForm={openTrialForm}
       source={source}
     />

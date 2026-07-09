@@ -20,7 +20,6 @@ import {
 } from '@/components/service/trial-instances/TryFiligranProductForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { toast } from '@filigran/ui/clients';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
 import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
 
 import {
@@ -39,9 +38,12 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@filigran/ui';
-import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
+import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestSource,
+  PlatformIdentifier,
+} from '@graphql/generated';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
@@ -57,7 +59,7 @@ export const StartTrialBannerButton = () => {
   const [openSheet, setOpenSheet] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [platformIdentifier, setPlatformIdentifier] =
-    useState<PlatformIdentifierEnum>(PlatformIdentifierEnum.OPENCTI);
+    useState<PlatformIdentifier>(PlatformIdentifier.Opencti);
   if (isBlacklisted) {
     return (
       <Button
@@ -95,8 +97,8 @@ export const StartTrialBannerButton = () => {
         input: {
           ...valuesWithoutAcceptTerms,
           platform_identifier: platformIdentifier,
-          type: DeploymentRequestDeploymentTypeEnum.TRIAL,
-          source: DeploymentRequestSourceEnum.XTMHUB,
+          type: DeploymentRequestDeploymentType.Trial,
+          source: DeploymentRequestSource.Xtmhub,
         },
       },
       updater: () => {
@@ -131,13 +133,13 @@ export const StartTrialBannerButton = () => {
       },
     });
   };
-  const handleProductChosen = (platformIdentifier: PlatformIdentifierEnum) => {
+  const handleProductChosen = (platformIdentifier: PlatformIdentifier) => {
     setOpenSheet(true);
     setMenuOpen(false);
     setPlatformIdentifier(platformIdentifier);
   };
 
-  const getButton = (product: PlatformIdentifierEnum) => {
+  const getButton = (product: PlatformIdentifier) => {
     return (
       <Button
         variant="ghost"
@@ -184,8 +186,8 @@ export const StartTrialBannerButton = () => {
               align="end"
               className="w-full flex flex-col">
               <IconActionContext.Provider value={{ setMenuOpen }}>
-                {getButton(PlatformIdentifierEnum.OPENCTI)}
-                {getButton(PlatformIdentifierEnum.OPENAEV)}
+                {getButton(PlatformIdentifier.Opencti)}
+                {getButton(PlatformIdentifier.Openaev)}
               </IconActionContext.Provider>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -193,9 +195,7 @@ export const StartTrialBannerButton = () => {
           <Button
             onClick={() => {
               setOpenSheet(true);
-              setPlatformIdentifier(
-                availableTrials[0]! as PlatformIdentifierEnum
-              );
+              setPlatformIdentifier(availableTrials[0]! as PlatformIdentifier);
             }}
             className="bg-white text-black hover:bg-white text-[12px] px-s py-0.5 min-h-0 h-auto">
             {t('Service.Trials.StartTrial')}

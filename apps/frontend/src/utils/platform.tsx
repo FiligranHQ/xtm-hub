@@ -1,33 +1,33 @@
 import { PlatformHoverAction } from '@/components/service/ServiceInstanceCard';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
+import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  PlatformContract,
+  PlatformIdentifier,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
-export const getPlatformIdentifier = (type: string): PlatformIdentifierEnum => {
+export const getPlatformIdentifier = (type: string): PlatformIdentifier => {
   return type === ShareableResourceType.OPENAEV_SCENARIO
-    ? PlatformIdentifierEnum.OPENAEV
-    : PlatformIdentifierEnum.OPENCTI;
+    ? PlatformIdentifier.Openaev
+    : PlatformIdentifier.Opencti;
 };
 
 export const isTrial = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
 ) => {
   return (
-    platform.deployment_request?.type ===
-    DeploymentRequestDeploymentTypeEnum.TRIAL
+    platform.deployment_request?.type === DeploymentRequestDeploymentType.Trial
   );
 };
 
 export const isEeCapableContract = (
-  contract: PlatformContractEnum | string | null | undefined
+  contract: PlatformContract | string | null | undefined
 ): boolean =>
-  contract === PlatformContractEnum.EE ||
-  contract === PlatformContractEnum.TRIAL;
+  contract === PlatformContract.Ee || contract === PlatformContract.Trial;
 
 export const buildPlatformHoverLinks = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number],
@@ -35,7 +35,7 @@ export const buildPlatformHoverLinks = (
 ): PlatformHoverAction[] | undefined => {
   const isTrialActive =
     platform.deployment_request?.hub_status ===
-    DeploymentRequestHubStatusEnum.ACTIVE;
+    DeploymentRequestHubStatus.Active;
   const shouldDisplayPlatformLink = isTrialActive || !isTrial(platform);
 
   const actions: PlatformHoverAction[] = [

@@ -1,7 +1,7 @@
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { cn } from '@/lib/utils';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
+import { FeatureFlag } from '@graphql/generated';
 import Link from 'next/link';
 
 interface MenuLogoProps {
@@ -13,7 +13,7 @@ export const MenuLogo = ({
   withDarkBackground = true,
   href,
 }: MenuLogoProps) => {
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlagEnum.HOME_PAGE_V2);
+  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
 
   return (
     <div

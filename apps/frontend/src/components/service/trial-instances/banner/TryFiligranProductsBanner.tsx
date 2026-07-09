@@ -16,8 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { OrganizationCapability, PlatformIdentifier } from '@graphql/generated';
 import Image from 'next/image'; // Component
 import Link from 'next/link';
 import { ReactNode, useContext, useState } from 'react';
@@ -40,7 +39,7 @@ export const TryFiligranProductsBanner = () => {
 
   if (availableTrials.length === 0) return null; // Dont display the banner if user already has the 2 products in trial
 
-  const getLink = (product: PlatformIdentifierEnum) => {
+  const getLink = (product: PlatformIdentifier) => {
     return (
       <Link
         onClick={() => setMenuOpen(false)}
@@ -91,8 +90,8 @@ export const TryFiligranProductsBanner = () => {
             align="end"
             className="w-full flex flex-col">
             <IconActionContext.Provider value={{ setMenuOpen }}>
-              {getLink(PlatformIdentifierEnum.OPENCTI)}
-              {getLink(PlatformIdentifierEnum.OPENAEV)}
+              {getLink(PlatformIdentifier.Opencti)}
+              {getLink(PlatformIdentifier.Openaev)}
             </IconActionContext.Provider>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -103,14 +102,14 @@ export const TryFiligranProductsBanner = () => {
         <span>
           {t('Service.Trials.ExplorePlatform', {
             platformName:
-              PlatformMetadataMapping[PlatformIdentifierEnum.OPENAEV].name,
+              PlatformMetadataMapping[PlatformIdentifier.Openaev].name,
           })}{' '}
           <strong>{t('Service.Trials.ExploreBold')}</strong>
         </span>
       ),
       learnMore: (
         <Link
-          href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifierEnum.OPENAEV].learnMorePrivateUrl}`}
+          href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifier.Openaev].learnMorePrivateUrl}`}
           className="ml-xs mr-s underline font-bold">
           {t('Service.Trials.LearnMore.Link')}
         </Link>
@@ -121,14 +120,14 @@ export const TryFiligranProductsBanner = () => {
         <span>
           {t('Service.Trials.ExplorePlatform', {
             platformName:
-              PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
+              PlatformMetadataMapping[PlatformIdentifier.Opencti].name,
           })}{' '}
           <strong>{t('Service.Trials.ExploreBold')}</strong>
         </span>
       ),
       learnMore: (
         <Link
-          href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].learnMorePrivateUrl}`}
+          href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifier.Opencti].learnMorePrivateUrl}`}
           className="ml-xs mr-s underline font-bold">
           {t('Service.Trials.LearnMore.Link')}
         </Link>
@@ -151,8 +150,8 @@ export const TryFiligranProductsBanner = () => {
       <GuardCapacityComponent
         shouldNotBePersonalSpace
         capacityRestriction={[
-          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-          OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+          OrganizationCapability.AdministrateOrganization,
+          OrganizationCapability.ManagePlatformRegistration,
         ]}>
         <StartTrialBannerButton />
       </GuardCapacityComponent>

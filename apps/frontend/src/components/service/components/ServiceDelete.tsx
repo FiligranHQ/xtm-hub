@@ -2,7 +2,7 @@ import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { IconActionsItem } from '@/components/ui/IconActions';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { Button } from '@filigran/ui';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
 interface ServiceDeleteProps {
@@ -13,15 +13,15 @@ interface ServiceDeleteProps {
   type?: 'menuitem' | 'button';
 }
 
-export type CardTypeEnum = IntegrationTypeEnum | ShareableResourceType;
+export type CardTypeEnum = IntegrationType | ShareableResourceType;
 
 const INTEGRATION_TRANSLATION_KEY_MAP: Partial<Record<CardTypeEnum, string>> = {
-  [IntegrationTypeEnum.CSV_FEED]: 'CsvFeed',
-  [IntegrationTypeEnum.CONNECTOR]: 'Connector',
-  [IntegrationTypeEnum.TAXII_FEED]: 'TaxiiFeed',
-  [IntegrationTypeEnum.RSS_FEED]: 'RssFeed',
-  [IntegrationTypeEnum.STREAM]: 'Stream',
-  [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]: 'ThirdPartyIntegration',
+  [IntegrationType.CsvFeed]: 'CsvFeed',
+  [IntegrationType.Connector]: 'Connector',
+  [IntegrationType.TaxiiFeed]: 'TaxiiFeed',
+  [IntegrationType.RssFeed]: 'RssFeed',
+  [IntegrationType.Stream]: 'Stream',
+  [IntegrationType.ThirdPartyIntegration]: 'ThirdPartyIntegration',
   [ShareableResourceType.OPENAEV_SCENARIO]: 'OpenAEVScenario',
   [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: 'OpenctiCustomDashboards',
   [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: 'OpenctiCustomViews',

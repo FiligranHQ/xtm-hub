@@ -12,6 +12,7 @@ import {
   isConnectorResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { IntegrationType } from '@graphql/generated';
 
 import {
   documentItem,
@@ -20,7 +21,6 @@ import {
 import { useDocumentContext } from '@/components/service/document/use-document-context';
 import { documentItem_fragment$key } from '@generated/documentItem_fragment.graphql';
 import { documentQuery } from '@generated/documentQuery.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useContext, useEffect } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
@@ -67,8 +67,8 @@ const IntegrationSlug = ({
 
   useEffect(() => {
     setIntegrationType(
-      (documentData?.integration_type as IntegrationTypeEnum) ??
-        IntegrationTypeEnum.CSV_FEED
+      (documentData?.integration_type as IntegrationType) ??
+        IntegrationType.CsvFeed
     );
   }, [setIntegrationType, documentData?.integration_type]);
 

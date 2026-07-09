@@ -7,7 +7,6 @@ import {
 import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
 import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
 import { DataTable } from '@filigran/ui';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { PlatformIdentifier } from '@generated/OneClickDeployMutation.graphql';
 import trialsDeploymentAvailabilityFragmentGraphql, {
   trialsDeploymentAvailabilityFragment$data,
@@ -15,6 +14,7 @@ import trialsDeploymentAvailabilityFragmentGraphql, {
 } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
 import { trialsDeploymentRequestsAvailableList$key } from '@generated/trialsDeploymentRequestsAvailableList.graphql';
 import { trialsDeploymentRequestsAvailableQuery } from '@generated/trialsDeploymentRequestsAvailableQuery.graphql';
+import { PortalCapability } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -33,7 +33,7 @@ export const TrialsTabQuotasPlatform = ({
 }: TrialsTabQuotasPlatformProps) => {
   const t = useTranslations();
   const userHasModifyTrialQuotaCapa = useUserHasPortalCapability([
-    PortalCapabilityEnum.MODIFY_TRIALS_QUOTA,
+    PortalCapability.ModifyTrialsQuota,
   ]);
 
   const queryData = useLazyLoadQuery<trialsDeploymentRequestsAvailableQuery>(

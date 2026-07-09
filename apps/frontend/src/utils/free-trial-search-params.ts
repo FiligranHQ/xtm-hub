@@ -1,9 +1,9 @@
 import { isValueInEnum } from '@/utils/is-value-in-enum';
-import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
+import { DeploymentRequestSource } from '@graphql/generated';
 
 export interface FreeTrialSearchParams {
   openTrialForm: boolean;
-  source: DeploymentRequestSourceEnum;
+  source: DeploymentRequestSource;
 }
 
 export const parseFreeTrialSearchParams = async (
@@ -15,9 +15,9 @@ export const parseFreeTrialSearchParams = async (
   const openTrialForm = openFormParam === 'true';
 
   const sourceParam = params.source;
-  const source = isValueInEnum(sourceParam, DeploymentRequestSourceEnum)
+  const source = isValueInEnum(sourceParam, DeploymentRequestSource)
     ? sourceParam
-    : DeploymentRequestSourceEnum.XTMHUB;
+    : DeploymentRequestSource.Xtmhub;
 
   return { openTrialForm, source };
 };

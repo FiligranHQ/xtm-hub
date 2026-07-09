@@ -15,13 +15,13 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 interface ServiceFormIntegrationSubtypeFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
-  integrationType: IntegrationTypeEnum;
+  integrationType: IntegrationType;
   document?: documentItem_fragment$data;
   disabled?: boolean;
 }

@@ -10,8 +10,7 @@ import {
 import { semanticVersionRegex, validLtsVersionRegex } from '@/utils/versioning';
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { DocumentImageType, IntegrationType } from '@graphql/generated';
 import { useContext, useMemo } from 'react';
 import { z } from 'zod';
 
@@ -95,12 +94,12 @@ export const ConnectorForm = ({
     () =>
       ({
         ...document,
-        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
-        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
+        images: transformToFileList(DocumentImageType.Image, document),
+        logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((label) => label.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id: document?.uploader_organization?.id ?? '',
-        integration_type: IntegrationTypeEnum.CONNECTOR,
+        integration_type: IntegrationType.Connector,
       }) as ConnectorFormValues,
     [me, document]
   );

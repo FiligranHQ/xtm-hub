@@ -1,4 +1,5 @@
 'use client';
+import { OrganizationOrdering } from '@graphql/generated';
 
 import { CreateOrganization } from '@/components/organization/CreateOrganization';
 import { DeleteOrganization } from '@/components/organization/DeleteOrganization';
@@ -17,7 +18,6 @@ import { i18nKey } from '@/utils/datatable';
 import { MoreVertIcon } from '@filigran/icon';
 import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import { OrganizationsPaginationQuery$variables } from '@generated/OrganizationsPaginationQuery.graphql';
-import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
@@ -146,7 +146,7 @@ const OrganizationList = () => {
   };
 
   const onSortingChange = (updater: unknown) => {
-    handleSortingChange<OrganizationOrderingEnum>({
+    handleSortingChange<OrganizationOrdering>({
       updater,
       orderBy,
       orderMode,

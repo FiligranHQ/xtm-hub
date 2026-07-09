@@ -5,8 +5,7 @@ import MenuAdmin from '@/components/menu/MenuAdmin';
 import { OrganizationSwitcher } from '@/components/menu/OrganizationSwitcher';
 import { APP_PATH } from '@/utils/path/constant';
 import { HomeIcon, IndividualIcon } from '@filigran/icon';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import { OrganizationCapability, PortalCapability } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 
@@ -23,9 +22,9 @@ export const NavigationApp = ({ open }: NavigationAppProps) => {
   const canManageUser =
     hasOrganizationCapability &&
     (hasOrganizationCapability(
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      OrganizationCapability.AdministrateOrganization
     ) ||
-      hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
+      hasOrganizationCapability(OrganizationCapability.ManageAccess));
 
   return (
     <nav className="flex-1 shrink-0">
@@ -52,7 +51,7 @@ export const NavigationApp = ({ open }: NavigationAppProps) => {
         )}
 
         <GuardCapacityComponent
-          portalCapabilityRestriction={[PortalCapabilityEnum.READ_TRIALS]}>
+          portalCapabilityRestriction={[PortalCapability.ReadTrials]}>
           <MenuAdmin open={open} />
         </GuardCapacityComponent>
       </ul>

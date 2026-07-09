@@ -1,4 +1,5 @@
 'use client';
+import { SubscriptionFilterKey } from '@graphql/generated';
 
 import Loader from '@/components/Loader';
 import ServiceSlug from '@/components/service/[slug]/ServiceSlug';
@@ -10,7 +11,6 @@ import {
   SubscriptionListQuery,
 } from '@/components/subcription/subscription.graphql';
 import useMountingLoader from '@/hooks/use-mounting-loader';
-import { SubscriptionFilterKeyEnum } from '@generated/models/SubscriptionFilterKey.enum';
 import { serviceInstanceByIdQuery } from '@generated/serviceInstanceByIdQuery.graphql';
 import { subscriptionListQuery } from '@generated/subscriptionListQuery.graphql';
 import { subscriptionList_fragment$key } from '@generated/subscriptionList_fragment.graphql';
@@ -45,7 +45,7 @@ const PageLoader = ({ id }: PreloaderProps) => {
       searchTerm: '',
       filters: [
         {
-          key: SubscriptionFilterKeyEnum.SERVICE_INSTANCE_ID,
+          key: SubscriptionFilterKey.ServiceInstanceId,
           value: [id],
         },
       ],

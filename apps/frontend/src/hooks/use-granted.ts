@@ -1,10 +1,10 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { OrganizationCapability } from '@graphql/generated';
 import { useContext } from 'react';
 
 // Mock the useContext hook
 
-const useGranted = (capability: OrganizationCapabilityEnum) => {
+const useGranted = (capability: OrganizationCapability) => {
   const { hasOrganizationCapability } = useContext(PortalContext);
 
   return hasOrganizationCapability && hasOrganizationCapability(capability);

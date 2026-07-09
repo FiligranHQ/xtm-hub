@@ -12,13 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@filigran/ui';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 const CONNECTABLE_PLATFORMS = [
-  PlatformIdentifierEnum.OPENCTI,
-  PlatformIdentifierEnum.OPENAEV,
+  PlatformIdentifier.Opencti,
+  PlatformIdentifier.Openaev,
 ];
 
 export const ConnectedProductsDropdown = () => {

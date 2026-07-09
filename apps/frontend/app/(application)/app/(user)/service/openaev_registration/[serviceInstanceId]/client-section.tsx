@@ -8,9 +8,8 @@ import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader'
 import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { APP_PATH } from '@/utils/path/constant';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registeredPlatformByServiceInstanceIdQuery.graphql';
+import { PlatformContract, PlatformIdentifier } from '@graphql/generated';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
@@ -46,21 +45,21 @@ const ClientSection = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
   ];
 
   const isTrial =
-    queryData.registeredPlatform.contract === PlatformContractEnum.TRIAL;
+    queryData.registeredPlatform.contract === PlatformContract.Trial;
 
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
       {isTrial && (
         <TrialsHeader
-          platformIdentifier={PlatformIdentifierEnum.OPENAEV}
+          platformIdentifier={PlatformIdentifier.Openaev}
           actions={
             <>
               <SlackSupportButton />
               <ReachSalesButton
                 variant="gradient"
                 platformId={queryData.registeredPlatform.platform_id}
-                platformIdentifier={PlatformIdentifierEnum.OPENAEV}
+                platformIdentifier={PlatformIdentifier.Openaev}
               />
             </>
           }
@@ -68,7 +67,7 @@ const ClientSection = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
       )}
       <RegistrationDetails registeredPlatform={queryData.registeredPlatform} />
       {isTrial && (
-        <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENAEV} />
+        <TrialsLearnMore platformIdentifier={PlatformIdentifier.Openaev} />
       )}
     </>
   );

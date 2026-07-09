@@ -9,12 +9,14 @@ import { TrialCancelSheet } from '@/components/service/trial-instances/TrialCanc
 import { formatDate, isWithinLastMonths } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
 import { Button } from '@filigran/ui/servers';
-import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import {
+  DeploymentRequestHubStatus,
+  OrganizationCapability,
+  PlatformContract,
+  PlatformIdentifier,
+  PortalCapability,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -39,12 +41,12 @@ export const RegistrationDetails = ({
     useContext(PortalContext);
 
   const canUpdatePlatform =
-    hasCapability?.(PortalCapabilityEnum.BYPASS) ||
+    hasCapability?.(PortalCapability.Bypass) ||
     hasOrganizationCapability?.(
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      OrganizationCapability.AdministrateOrganization
     ) ||
     hasOrganizationCapability?.(
-      OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+      OrganizationCapability.ManagePlatformRegistration
     );
 
   const platform =
@@ -56,17 +58,17 @@ export const RegistrationDetails = ({
   const isCancellable =
     platform.deployment_request &&
     ![
-      DeploymentRequestHubStatusEnum.EXPIRED,
-      DeploymentRequestHubStatusEnum.CANCELLED,
+      DeploymentRequestHubStatus.Expired,
+      DeploymentRequestHubStatus.Cancelled,
     ].includes(
-      platform.deployment_request?.hub_status as DeploymentRequestHubStatusEnum
+      platform.deployment_request?.hub_status as DeploymentRequestHubStatus
     );
 
   const isCancellationDefinitive =
-    DeploymentRequestHubStatusEnum.ACTIVE ===
-    (platform.deployment_request?.hub_status as DeploymentRequestHubStatusEnum);
+    DeploymentRequestHubStatus.Active ===
+    platform.deployment_request?.hub_status;
 
-  const isTrial = platform.contract === PlatformContractEnum.TRIAL;
+  const isTrial = platform.contract === PlatformContract.Trial;
   const serviceInstanceId = platform.subscription?.service_instance?.id;
   const displayUpdatePlatform =
     canUpdatePlatform && !isTrial && serviceInstanceId;
@@ -78,14 +80,14 @@ export const RegistrationDetails = ({
   const isTrialActive =
     isTrial &&
     platform.deployment_request?.hub_status ===
-      DeploymentRequestHubStatusEnum.ACTIVE;
+      DeploymentRequestHubStatus.Active;
 
   const userHasTrialAccess = Boolean(platform.myGroups?.length);
   const displayAccessPlatformButtonForTrial =
     userHasTrialAccess &&
     platform.url &&
     platform.deployment_request?.hub_status ===
-      DeploymentRequestHubStatusEnum.ACTIVE;
+      DeploymentRequestHubStatus.Active;
 
   const isConnectionStatusOk = isWithinLastMonths(
     new Date(platform.last_connectivity_check),
@@ -95,7 +97,7 @@ export const RegistrationDetails = ({
   const isLastConnectivityCheckDisplayed =
     !isTrial ||
     platform?.deployment_request?.hub_status ===
-      DeploymentRequestHubStatusEnum.ACTIVE;
+      DeploymentRequestHubStatus.Active;
 
   return (
     <section className="flex justify-between p-xl border border-solid border-blue rounded">
@@ -259,8 +261,8 @@ export const RegistrationDetails = ({
           serviceInstanceId && (
             <GuardCapacityComponent
               capacityRestriction={[
-                OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-                OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+                OrganizationCapability.AdministrateOrganization,
+                OrganizationCapability.ManagePlatformRegistration,
               ]}>
               <TrialsManageUsersDialog
                 serviceInstanceId={serviceInstanceId}
@@ -293,7 +295,7 @@ export const RegistrationDetails = ({
         <TrialCancelSheet
           platformIdentifier={
             platform.deployment_request
-              .platform_identifier as PlatformIdentifierEnum
+              .platform_identifier as PlatformIdentifier
           }
           deploymentRequestId={platform.deployment_request.id}
           isCancellationDefinitive={isCancellationDefinitive}

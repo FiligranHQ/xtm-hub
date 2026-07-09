@@ -8,7 +8,7 @@ import {
   ArrowsInputIcon,
   ArrowsOutputIcon,
 } from '@filigran/icon';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
@@ -26,7 +26,7 @@ const P = ({
 }) => <p className={cn('text-sm', className)}>{children}</p>;
 
 interface H2Props {
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 
 export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
@@ -42,7 +42,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
               height="232"
               allowFullScreen
               src={
-                platformIdentifier === PlatformIdentifierEnum.OPENCTI
+                platformIdentifier === PlatformIdentifier.Opencti
                   ? 'https://www.youtube.com/embed/KwF22zye3iI'
                   : 'https://www.youtube.com/embed/wb_v7sa7y8w'
               }
@@ -61,7 +61,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href={
-                  platformIdentifier === PlatformIdentifierEnum.OPENCTI
+                  platformIdentifier === PlatformIdentifier.Opencti
                     ? 'https://filigran.io/offerings/opencti-enterprise-edition/'
                     : 'https://filigran.io/offerings/openaev-enterprise-edition/'
                 }

@@ -33,9 +33,8 @@ import { documentCreateMutation } from '@generated/documentCreateMutation.graphq
 import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -74,8 +73,8 @@ export function useDocumentContext({
   type,
 }: UseDocumentContextProps): ServiceContextProps {
   const { me } = useContext(PortalContext);
-  const [integrationType, setIntegrationType] = useState<IntegrationTypeEnum>(
-    IntegrationTypeEnum.CSV_FEED
+  const [integrationType, setIntegrationType] = useState<IntegrationType>(
+    IntegrationType.CsvFeed
   );
   const t = useTranslations();
   const [createMutation] = useMutation<documentCreateMutation>(
@@ -110,7 +109,7 @@ export function useDocumentContext({
         },
         metadata: Object.keys(metadata)
           .map((key) => ({
-            key: key as DocumentMetadataKeyCodeEnum,
+            key: key as DocumentMetadataKeyCode,
             value: metadata[key as keyof typeof metadata],
           }))
           .filter(({ value }) => Boolean(value)),
@@ -202,7 +201,7 @@ export function useDocumentContext({
         documentId: resource.id,
         metadata: Object.keys(metadata)
           .map((key) => ({
-            key: key as DocumentMetadataKeyCodeEnum,
+            key: key as DocumentMetadataKeyCode,
             value: metadata[key as keyof typeof metadata],
           }))
           .filter(({ value }) => Boolean(value)),
@@ -234,15 +233,14 @@ export function useDocumentContext({
       [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: () => CustomViewForm,
       [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
         const integrationMapping: Partial<
-          Record<IntegrationTypeEnum, ServiceForm>
+          Record<IntegrationType, ServiceForm>
         > = {
-          [IntegrationTypeEnum.CSV_FEED]: CsvFeedForm,
-          [IntegrationTypeEnum.TAXII_FEED]: TaxiiFeedForm,
-          [IntegrationTypeEnum.RSS_FEED]: RssFeedForm,
-          [IntegrationTypeEnum.STREAM]: StreamForm,
-          [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
-            ThirdPartyIntegrationForm,
-          [IntegrationTypeEnum.CONNECTOR]: ConnectorForm,
+          [IntegrationType.CsvFeed]: CsvFeedForm,
+          [IntegrationType.TaxiiFeed]: TaxiiFeedForm,
+          [IntegrationType.RssFeed]: RssFeedForm,
+          [IntegrationType.Stream]: StreamForm,
+          [IntegrationType.ThirdPartyIntegration]: ThirdPartyIntegrationForm,
+          [IntegrationType.Connector]: ConnectorForm,
         };
 
         return integrationMapping[integrationType] ?? CsvFeedForm;
@@ -261,16 +259,15 @@ export function useDocumentContext({
       [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: () =>
         'Service.OpenctiCustomViews',
       [ShareableResourceType.OPENCTI_INTEGRATION]: () => {
-        const integrationMapping: Partial<Record<IntegrationTypeEnum, string>> =
-          {
-            [IntegrationTypeEnum.CSV_FEED]: 'Service.CsvFeed',
-            [IntegrationTypeEnum.TAXII_FEED]: 'Service.TaxiiFeed',
-            [IntegrationTypeEnum.RSS_FEED]: 'Service.RssFeed',
-            [IntegrationTypeEnum.STREAM]: 'Service.Stream',
-            [IntegrationTypeEnum.THIRD_PARTY_INTEGRATION]:
-              'Service.ThirdPartyIntegration',
-            [IntegrationTypeEnum.CONNECTOR]: 'Service.Connector',
-          };
+        const integrationMapping: Partial<Record<IntegrationType, string>> = {
+          [IntegrationType.CsvFeed]: 'Service.CsvFeed',
+          [IntegrationType.TaxiiFeed]: 'Service.TaxiiFeed',
+          [IntegrationType.RssFeed]: 'Service.RssFeed',
+          [IntegrationType.Stream]: 'Service.Stream',
+          [IntegrationType.ThirdPartyIntegration]:
+            'Service.ThirdPartyIntegration',
+          [IntegrationType.Connector]: 'Service.Connector',
+        };
 
         return integrationMapping[integrationType] ?? '';
       },

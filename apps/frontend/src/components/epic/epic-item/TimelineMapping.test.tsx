@@ -1,27 +1,27 @@
 import { FiligranTimelineMapping } from '@/components/epic/epic-item/TimelineMapping';
-import { TimelineEnum } from '@generated/models/Timeline.enum';
+import { Timeline } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 
 describe('FiligranTimelineMapping', () => {
   it('contains all Timeline items from enum', () => {
     expect(Object.keys(FiligranTimelineMapping).sort()).toEqual(
-      Object.values(TimelineEnum).sort()
+      Object.values(Timeline).sort()
     );
   });
 
   it.each`
-    timeline                            | expectedColor
-    ${TimelineEnum.NOW}                 | ${'orange'}
-    ${TimelineEnum.NEXT}                | ${'primary'}
-    ${TimelineEnum.UNDER_CONSIDERATION} | ${'green'}
-    ${TimelineEnum.FINISHED}            | ${'white'}
+    timeline                       | expectedColor
+    ${Timeline.Now}                | ${'orange'}
+    ${Timeline.Next}               | ${'primary'}
+    ${Timeline.UnderConsideration} | ${'green'}
+    ${Timeline.Finished}           | ${'white'}
   `(
     'maps $timeline with expected color',
     ({
       timeline,
       expectedColor,
     }: {
-      timeline: TimelineEnum;
+      timeline: Timeline;
       expectedColor: string;
     }) => {
       const metadata = FiligranTimelineMapping[timeline];

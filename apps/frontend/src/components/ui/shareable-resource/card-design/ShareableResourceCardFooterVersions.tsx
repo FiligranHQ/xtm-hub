@@ -3,7 +3,7 @@ import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
+import { DocumentMetadataKeyCode } from '@graphql/generated';
 import { ReactNode } from 'react';
 
 interface ShareableResourceCardFooterVersionProps {
@@ -22,33 +22,22 @@ export const ShareableResourceCardFooterVersion = ({
     <>
       <div className="flex gap-l min-w-0 overflow-hidden">
         {publicPath ||
-        (docHasMetadata(
-          document,
-          DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
-        ) &&
+        (docHasMetadata(document, DocumentMetadataKeyCode.ManagerSupported) &&
           !document.manager_supported) ? (
           <span className="text-sm">
-            {docHasMetadata(
-              document,
-              DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
-            ) && document.product_version}
+            {docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion) &&
+              document.product_version}
           </span>
         ) : (
           <ShareableResourceCardVersion
             className="text-sm"
             product_version={
-              docHasMetadata(
-                document,
-                DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
-              )
+              docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
                 ? document.product_version
                 : ''
             }
             requiredProductVersion={
-              docHasMetadata(
-                document,
-                DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
-              )
+              docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
                 ? document.product_version
                 : ''
             }

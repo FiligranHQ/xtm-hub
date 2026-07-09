@@ -1,4 +1,8 @@
 'use client';
+import {
+  ServiceDefinitionIdentifier,
+  ServiceInstanceFilterKey,
+} from '@graphql/generated';
 
 import { EditService } from '@/components/service/EditService';
 import {
@@ -12,8 +16,6 @@ import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
 import { MoreVertIcon } from '@filigran/icon';
 import { Combobox, DataTable } from '@filigran/ui';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
@@ -29,12 +31,12 @@ interface AdminServiceTabProps {
 }
 
 export const ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS = Object.values(
-  ServiceDefinitionIdentifierEnum
+  ServiceDefinitionIdentifier
 ).filter(
   (val) =>
     ![
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-      ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+      ServiceDefinitionIdentifier.OpenctiRegistration,
+      ServiceDefinitionIdentifier.OpenaevRegistration,
     ].includes(val)
 );
 
@@ -79,7 +81,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
                   </>
                 }>
                 {row.original.service_definition?.identifier !==
-                  ServiceDefinitionIdentifierEnum.LINK && (
+                  ServiceDefinitionIdentifier.Link && (
                   <IconActionsLink
                     href={`/${APP_PATH}/admin/service/${row.id}`}>
                     {t('Service.GoToAdminLabel')}
@@ -123,7 +125,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
     refetch({
       filters: [
         {
-          key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
+          key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
           value: [selectedValue.value],
         },
       ],

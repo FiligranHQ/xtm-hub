@@ -1,4 +1,3 @@
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { ServiceDefinitionIdentifier } from '@graphql/generated';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -49,6 +48,7 @@ vi.mock('@/components/homepage/PrivateHomepageRoadmapSection', () => ({
   default: mockPrivateHomepageRoadmapSection,
 }));
 
+import { PlatformIdentifier } from '@graphql/generated';
 import { PrivateHomepage } from './PrivateHomepage';
 
 describe('PrivateHomepage', () => {
@@ -88,13 +88,13 @@ describe('PrivateHomepage', () => {
     );
     expect(mockNewestResources).toHaveBeenCalledWith(
       expect.objectContaining({
-        platformIdentifiers: [PlatformIdentifierEnum.OPENCTI],
+        platformIdentifiers: [PlatformIdentifier.Opencti],
       }),
       undefined
     );
     expect(mockMostDeployedResources).toHaveBeenCalledWith(
       expect.objectContaining({
-        platformIdentifiers: [PlatformIdentifierEnum.OPENCTI],
+        platformIdentifiers: [PlatformIdentifier.Opencti],
       }),
       undefined
     );

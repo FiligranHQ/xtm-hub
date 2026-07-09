@@ -1,9 +1,8 @@
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { ServiceDefinitionIdentifier as ServiceDefinitionIdentifierFragment } from '@generated/serviceInstance_fragment.graphql';
 import {
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
+  ServiceInstanceTag,
 } from '@graphql/generated';
 export interface PlatformMetadata {
   name: string;
@@ -14,17 +13,17 @@ export interface PlatformMetadata {
 }
 
 export const PlatformMetadataMapping: Record<
-  PlatformIdentifierEnum,
+  PlatformIdentifier,
   PlatformMetadata
 > = {
-  [PlatformIdentifierEnum.OPENCTI]: {
+  [PlatformIdentifier.Opencti]: {
     name: 'OpenCTI',
     learnMorePublicUrl: '/cybersecurity-solutions/opencti-free-trial',
     learnMorePrivateUrl: '/app/service/opencti-free-trial',
     logoUrl: '/logo_opencti_dark.png',
     docUrl: 'https://docs.opencti.io/latest/administration/hub/',
   },
-  [PlatformIdentifierEnum.OPENAEV]: {
+  [PlatformIdentifier.Openaev]: {
     name: 'OpenAEV',
     learnMorePublicUrl: '/cybersecurity-solutions/openaev-free-trial',
     learnMorePrivateUrl: '/app/service/openaev-free-trial',
@@ -36,29 +35,27 @@ export const PlatformMetadataMapping: Record<
 export const translateServiceDefinitionIdentifier = (
   serviceDefinitionIdentifier: ServiceDefinitionIdentifierFragment
 ): string => {
-  const platformIdentifierEnum =
+  const platformIdentifier =
     ServiceDefinitionIdentifierToPlatformIdentifier[
       serviceDefinitionIdentifier
-    ] ?? PlatformIdentifierEnum.OPENAEV;
+    ] ?? PlatformIdentifier.Openaev;
 
-  return PlatformMetadataMapping[platformIdentifierEnum].name;
+  return PlatformMetadataMapping[platformIdentifier].name;
 };
 
 export const ServiceDefinitionIdentifierToPlatformIdentifier: Partial<
-  Record<ServiceDefinitionIdentifierFragment, PlatformIdentifierEnum>
+  Record<ServiceDefinitionIdentifierFragment, PlatformIdentifier>
 > = {
-  [ServiceDefinitionIdentifier.OpenctiRegistration]:
-    PlatformIdentifierEnum.OPENCTI,
-  [ServiceDefinitionIdentifier.OpenaevRegistration]:
-    PlatformIdentifierEnum.OPENAEV,
+  [ServiceDefinitionIdentifier.OpenctiRegistration]: PlatformIdentifier.Opencti,
+  [ServiceDefinitionIdentifier.OpenaevRegistration]: PlatformIdentifier.Openaev,
 };
 
 export const serviceInstanceTagByPlatformIdentifier: Record<
-  PlatformIdentifierEnum,
-  ServiceInstanceTagEnum
+  PlatformIdentifier,
+  ServiceInstanceTag
 > = {
-  [PlatformIdentifierEnum.OPENCTI]: ServiceInstanceTagEnum.OPENCTI,
-  [PlatformIdentifierEnum.OPENAEV]: ServiceInstanceTagEnum.OPENAEV,
+  [PlatformIdentifier.Opencti]: ServiceInstanceTag.OpenCti,
+  [PlatformIdentifier.Openaev]: ServiceInstanceTag.OpenAev,
 };
 
 export const getRegisteredPlatformServiceIdentifier = (

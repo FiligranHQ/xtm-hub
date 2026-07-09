@@ -19,6 +19,7 @@ import {
   userServices_fragment$data,
   userServices_fragment$key,
 } from '@generated/userServices_fragment.graphql';
+import { OrganizationCapability, ServiceRestriction } from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 
@@ -44,8 +45,6 @@ import ServiceSlugHeader from '@/components/service/[slug]/ServiceSlugHeader';
 import { SubscriptionSlugAddCapabilities } from '@/components/subcription/[slug]/SubscriptionSlugAddCapabilities';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { APP_PATH } from '@/utils/path/constant';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
@@ -140,14 +139,14 @@ const SubscriptionSlug = ({
           userService.user_service_capability?.some(
             (user_service_capa) =>
               user_service_capa?.generic_service_capability?.name ===
-              ServiceRestrictionEnum.MANAGE_ACCESS
+              ServiceRestriction.ManageAccess
           )) ||
         (hasOrganizationCapability &&
           (hasOrganizationCapability(
-            OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+            OrganizationCapability.AdministrateOrganization
           ) ||
             hasOrganizationCapability(
-              OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION
+              OrganizationCapability.ManageSubscription
             )))
       );
     });
@@ -177,8 +176,8 @@ const SubscriptionSlug = ({
     });
 
     const manageAccessCapability: BadgeOverflow = {
-      id: ServiceRestrictionEnum.MANAGE_ACCESS,
-      name: ServiceRestrictionEnum.MANAGE_ACCESS,
+      id: ServiceRestriction.ManageAccess,
+      name: ServiceRestriction.ManageAccess,
     };
 
     return [manageAccessCapability, ...capabilities];
@@ -224,12 +223,10 @@ const SubscriptionSlug = ({
           if (
             capabilities.length === 1 &&
             capabilities[0]?.generic_service_capability?.name ===
-              ServiceRestrictionEnum.ACCESS
+              ServiceRestriction.Access
           ) {
             return (
-              <Badge className="capitalize">
-                {ServiceRestrictionEnum.ACCESS}
-              </Badge>
+              <Badge className="capitalize">{ServiceRestriction.Access}</Badge>
             );
           }
           const capabilityNames = capabilities
@@ -237,7 +234,7 @@ const SubscriptionSlug = ({
               const genericName = capability?.generic_service_capability?.name;
               const fallbackName =
                 capability?.subscription_capability?.service_capability?.name;
-              if (genericName === ServiceRestrictionEnum.ACCESS) return null;
+              if (genericName === ServiceRestriction.Access) return null;
               return {
                 id: genericName ?? fallbackName,
                 name: genericName ?? fallbackName,

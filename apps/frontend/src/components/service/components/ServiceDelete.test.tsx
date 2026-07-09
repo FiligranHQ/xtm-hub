@@ -1,7 +1,7 @@
 import { ServiceDelete } from '@/components/service/components/ServiceDelete';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import testRender from '@/utils/test/test-render';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { IntegrationType } from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
@@ -22,7 +22,7 @@ describe('ServiceDelete', () => {
         <ServiceDelete
           userCanDelete={userCanDelete}
           serviceName={'My service'}
-          integrationType={IntegrationTypeEnum.CSV_FEED}
+          integrationType={IntegrationType.CsvFeed}
         />,
         { relayConfig: environment }
       );
@@ -41,12 +41,12 @@ describe('ServiceDelete', () => {
 
   it.each`
     shareableResourceType                             | expectedTextKey
-    ${IntegrationTypeEnum.CSV_FEED}                   | ${'Service.CsvFeed.SureDeleteService'}
-    ${IntegrationTypeEnum.CONNECTOR}                  | ${'Service.Connector.SureDeleteService'}
-    ${IntegrationTypeEnum.TAXII_FEED}                 | ${'Service.TaxiiFeed.SureDeleteService'}
-    ${IntegrationTypeEnum.RSS_FEED}                   | ${'Service.RssFeed.SureDeleteService'}
-    ${IntegrationTypeEnum.STREAM}                     | ${'Service.Stream.SureDeleteService'}
-    ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}    | ${'Service.ThirdPartyIntegration.SureDeleteService'}
+    ${IntegrationType.CsvFeed}                        | ${'Service.CsvFeed.SureDeleteService'}
+    ${IntegrationType.Connector}                      | ${'Service.Connector.SureDeleteService'}
+    ${IntegrationType.TaxiiFeed}                      | ${'Service.TaxiiFeed.SureDeleteService'}
+    ${IntegrationType.RssFeed}                        | ${'Service.RssFeed.SureDeleteService'}
+    ${IntegrationType.Stream}                         | ${'Service.Stream.SureDeleteService'}
+    ${IntegrationType.ThirdPartyIntegration}          | ${'Service.ThirdPartyIntegration.SureDeleteService'}
     ${ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD} | ${'Service.OpenctiCustomDashboards.SureDeleteService'}
     ${ShareableResourceType.OPENAEV_SCENARIO}         | ${'Service.OpenAEVScenario.SureDeleteService'}
   `(
@@ -80,7 +80,7 @@ describe('ServiceDelete', () => {
       <ServiceDelete
         userCanDelete={true}
         serviceName={'Connector A'}
-        integrationType={IntegrationTypeEnum.CONNECTOR}
+        integrationType={IntegrationType.Connector}
         onDelete={onDelete}
       />,
       { relayConfig: environment }
