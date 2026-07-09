@@ -1,6 +1,6 @@
 'use client';
 import { EpicFilterType } from '@/components/epic/EpicFilter';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { FiligranProduct } from '@graphql/generated';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
@@ -16,10 +16,8 @@ export const useEpicFilter = () => {
     rawParam === 'all'
       ? 'all'
       : rawParam &&
-          Object.values(FiligranProductEnum).includes(
-            rawParam as FiligranProductEnum
-          )
-        ? (rawParam as FiligranProductEnum)
+          Object.values(FiligranProduct).includes(rawParam as FiligranProduct)
+        ? (rawParam as FiligranProduct)
         : undefined;
 
   const setSelectedProduct = useCallback(

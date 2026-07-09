@@ -1,9 +1,9 @@
 import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import { IntegrationType } from '@graphql/generated';
 import { useLocale, useTranslations } from 'next-intl';
 import { Fragment, useMemo } from 'react';
 
@@ -50,8 +50,8 @@ export const PublicShareableResourceList = ({
       {Object.entries(documentsByIntegrationType).map(
         ([integrationType, documents]) => (
           <Fragment key={integrationType}>
-            {Object.values(IntegrationTypeEnum).includes(
-              integrationType as IntegrationTypeEnum
+            {Object.values(IntegrationType).includes(
+              integrationType as IntegrationType
             ) && (
               <h2 className="mt-xl">
                 {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}

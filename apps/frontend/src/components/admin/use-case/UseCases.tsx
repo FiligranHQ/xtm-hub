@@ -4,8 +4,17 @@ import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';
-import { Badge, DataTable } from '@filigran/ui';
 import {
+  Badge,
+  DataTable,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@filigran/ui';
+import {
+  FiligranProduct,
   OrderingMode,
   UseCaseOrdering,
   UseCaseRowFragment,
@@ -21,18 +30,26 @@ const UseCases = () => {
   const [useCaseEdit, setUseCaseEdit] = useState<
     UseCaseRowFragment | undefined
   >(undefined);
-  const useCasesListVariables = {
-    count: 100,
-    orderMode: OrderingMode.Asc,
-    orderBy: UseCaseOrdering.Name,
-    documentType: null,
-  };
+  const [selectedProduct, setSelectedProduct] = useState<
+    FiligranProduct | undefined
+  >(undefined);
+
+  const useCasesListVariables = useMemo(
+    () => ({
+      count: 100,
+      orderMode: OrderingMode.Asc,
+      orderBy: UseCaseOrdering.Name,
+      documentType: null,
+      product: selectedProduct ?? null,
+    }),
+    [selectedProduct]
+  );
 
   const { data: queryData, isError } = useUseCasesListQuery(
     portalGraphqlClient,
     useCasesListVariables,
     {
-      queryKey: useCaseListKeys.all(),
+      queryKey: useCaseListKeys.list(useCasesListVariables),
     }
   );
 
@@ -48,6 +65,24 @@ const UseCases = () => {
             color={row.original.color}>
             {formatName(row.original.name)}
           </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'product',
+      id: 'product',
+      header: t('UseCaseListPage.Product'),
+      cell: ({ row }) => {
+        return (
+          <div className="flex flex-wrap gap-xs">
+            {row.original.product.map((product) => (
+              <Badge
+                key={product}
+                variant="outline">
+                {product.toUpperCase()}
+              </Badge>
+            ))}
+          </div>
         );
       },
     },
@@ -86,6 +121,29 @@ const UseCases = () => {
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
             <div />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+              <Select
+                value={selectedProduct ?? 'all'}
+                onValueChange={(value) =>
+                  setSelectedProduct(
+                    value === 'all' ? undefined : (value as FiligranProduct)
+                  )
+                }>
+                <SelectTrigger className="w-45">
+                  <SelectValue placeholder={t('UseCaseListPage.Product')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    {t('UseCaseListPage.AllProducts')}
+                  </SelectItem>
+                  {Object.values(FiligranProduct).map((product) => (
+                    <SelectItem
+                      key={product}
+                      value={product}>
+                      {product.toUpperCase()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <AddUseCase />
             </div>
           </div>

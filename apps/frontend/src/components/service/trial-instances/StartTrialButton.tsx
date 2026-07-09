@@ -20,8 +20,6 @@ import {
 } from '@/components/service/trial-instances/TryFiligranProductForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { toast } from '@filigran/ui/clients';
-import { DeploymentRequestDeploymentTypeEnum } from '@generated/models/DeploymentRequestDeploymentType.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesCreateDeploymentRequestMutation } from '@generated/trialInstancesCreateDeploymentRequestMutation.graphql';
 
 import {
@@ -32,21 +30,25 @@ import {
 } from 'react-relay';
 
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
-import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
+import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestSource,
+  PlatformIdentifier,
+} from '@graphql/generated';
 import { useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
 interface StartTrialButtonProps {
   openForm?: boolean;
-  platformIdentifier?: PlatformIdentifierEnum;
-  source: DeploymentRequestSourceEnum;
+  platformIdentifier?: PlatformIdentifier;
+  source: DeploymentRequestSource;
 }
 
 // Component
 export const StartTrialButton = ({
   openForm = false,
-  platformIdentifier = PlatformIdentifierEnum.OPENCTI,
+  platformIdentifier = PlatformIdentifier.Opencti,
   source,
 }: StartTrialButtonProps) => {
   const t = useTranslations();
@@ -95,7 +97,7 @@ export const StartTrialButton = ({
         input: {
           ...valuesWithoutAcceptTerms,
           platform_identifier: platformIdentifier,
-          type: DeploymentRequestDeploymentTypeEnum.TRIAL,
+          type: DeploymentRequestDeploymentType.Trial,
           source,
         },
       },

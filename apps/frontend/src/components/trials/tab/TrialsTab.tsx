@@ -42,12 +42,6 @@ import { toast } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { TrialsListPaginationQuery$variables } from '@generated/TrialsListPaginationQuery.graphql';
 import { OrderingMode } from '@generated/UserListQuery.graphql';
-import { DeploymentRequestFilterKeyEnum } from '@generated/models/DeploymentRequestFilterKey.enum';
-import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
-import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
-import { ReorderDeploymentRequestInQueueDirectionEnum } from '@generated/models/ReorderDeploymentRequestInQueueDirection.enum';
 import { trialsAdminCancelDeploymentRequestMutation } from '@generated/trialsAdminCancelDeploymentRequestMutation.graphql';
 import { trialsList$key } from '@generated/trialsList.graphql';
 import { trialsListQuery } from '@generated/trialsListQuery.graphql';
@@ -56,6 +50,14 @@ import {
   trials_fragment$data,
   trials_fragment$key,
 } from '@generated/trials_fragment.graphql';
+import {
+  DeploymentRequestFilterKey,
+  DeploymentRequestHubStatus,
+  DeploymentRequestOrdering,
+  PlatformIdentifier,
+  PortalCapability,
+  ReorderDeploymentRequestInQueueDirection,
+} from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
@@ -69,36 +71,36 @@ import { useDebounceCallback } from 'usehooks-ts';
 
 interface TrialsTabProps {
   type: TrialsTabType;
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 
 const trialsTabConfig: Record<
   TrialsTabType,
   {
-    statuses: DeploymentRequestHubStatusEnum[];
-    defaultOrder: DeploymentRequestOrderingEnum;
+    statuses: DeploymentRequestHubStatus[];
+    defaultOrder: DeploymentRequestOrdering;
     defaultOrderingMode?: OrderingMode;
   }
 > = {
   [TrialsTabType.Cancelled]: {
-    statuses: [DeploymentRequestHubStatusEnum.CANCELLED],
-    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
+    statuses: [DeploymentRequestHubStatus.Cancelled],
+    defaultOrder: DeploymentRequestOrdering.RequestDate,
   },
   [TrialsTabType.Expired]: {
-    statuses: [DeploymentRequestHubStatusEnum.EXPIRED],
-    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
+    statuses: [DeploymentRequestHubStatus.Expired],
+    defaultOrder: DeploymentRequestOrdering.RequestDate,
   },
   [TrialsTabType.Running]: {
     statuses: [
-      DeploymentRequestHubStatusEnum.ACTIVE,
-      DeploymentRequestHubStatusEnum.PENDING,
-      DeploymentRequestHubStatusEnum.PROVISIONING,
+      DeploymentRequestHubStatus.Active,
+      DeploymentRequestHubStatus.Pending,
+      DeploymentRequestHubStatus.Provisioning,
     ],
-    defaultOrder: DeploymentRequestOrderingEnum.REQUEST_DATE,
+    defaultOrder: DeploymentRequestOrdering.RequestDate,
   },
   [TrialsTabType.Waiting]: {
-    statuses: [DeploymentRequestHubStatusEnum.QUEUED],
-    defaultOrder: DeploymentRequestOrderingEnum.ORDERING,
+    statuses: [DeploymentRequestHubStatus.Queued],
+    defaultOrder: DeploymentRequestOrdering.Ordering,
     defaultOrderingMode: 'asc',
   },
 };
@@ -109,7 +111,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
   const t = useTranslations();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([
-    PortalCapabilityEnum.MODIFY_TRIALS,
+    PortalCapability.ModifyTrials,
   ]);
 
   const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
@@ -132,7 +134,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
     );
 
   const onReorderClick = useCallback(
-    (id: string, direction: ReorderDeploymentRequestInQueueDirectionEnum) => {
+    (id: string, direction: ReorderDeploymentRequestInQueueDirection) => {
       commitReorderRequestInQueue({
         variables: {
           input: {
@@ -438,7 +440,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                               onClick={() =>
                                 onReorderClick(
                                   row.original.id,
-                                  ReorderDeploymentRequestInQueueDirectionEnum.TOP
+                                  ReorderDeploymentRequestInQueueDirection.Top
                                 )
                               }>
                               <ArrowShapeUpStackIcon className="h-4 w-4" />
@@ -459,7 +461,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                               onClick={() =>
                                 onReorderClick(
                                   row.original.id,
-                                  ReorderDeploymentRequestInQueueDirectionEnum.UP
+                                  ReorderDeploymentRequestInQueueDirection.Up
                                 )
                               }>
                               <ArrowShapeUpIcon className="h-4 w-4" />
@@ -475,7 +477,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                   {type === TrialsTabType.Running &&
                     isAdminByPass &&
                     row.original.hub_status ===
-                      DeploymentRequestHubStatusEnum.ACTIVE && (
+                      DeploymentRequestHubStatus.Active && (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -537,10 +539,10 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
       orderMode: defaultOrderingMode,
       orderBy: defaultOrder,
       filters: [
-        { key: DeploymentRequestFilterKeyEnum.TYPE, value: ['trial'] },
-        { key: DeploymentRequestFilterKeyEnum.HUB_STATUS, value: statuses },
+        { key: DeploymentRequestFilterKey.Type, value: ['trial'] },
+        { key: DeploymentRequestFilterKey.HubStatus, value: statuses },
         {
-          key: DeploymentRequestFilterKeyEnum.PLATFORM_IDENTIFIER,
+          key: DeploymentRequestFilterKey.PlatformIdentifier,
           value: [platformIdentifier],
         },
       ],
@@ -600,7 +602,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
   }, [reorderTrigger, handleRefetchData]);
 
   const onSortingChange = (updater: unknown) => {
-    handleSortingChange<DeploymentRequestOrderingEnum>({
+    handleSortingChange<DeploymentRequestOrdering>({
       updater,
       orderBy,
       orderMode,

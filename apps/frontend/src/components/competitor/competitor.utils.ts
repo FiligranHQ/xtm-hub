@@ -1,5 +1,5 @@
-import { CompetitorTierEnum } from '@generated/models/CompetitorTier.enum';
+import { CompetitorTier } from '@graphql/generated';
 
-export const formatTier = (tier: CompetitorTierEnum) => {
+export const formatTier = (tier: CompetitorTier) => {
   return tier.charAt(0).toUpperCase() + tier.slice(1, 4) + ' ' + tier.slice(4);
 };

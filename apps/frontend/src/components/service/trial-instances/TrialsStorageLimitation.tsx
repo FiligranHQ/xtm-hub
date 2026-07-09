@@ -1,19 +1,19 @@
 'use client';
 
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
 interface TrialsStorageLimitationProps {
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 
 export const TrialsStorageLimitation = ({
   platformIdentifier,
 }: TrialsStorageLimitationProps) => {
   const t = useTranslations();
-  const isOpenCTI = platformIdentifier === PlatformIdentifierEnum.OPENCTI;
+  const isOpenCTI = platformIdentifier === PlatformIdentifier.Opencti;
 
   const renderLink = (chunks: ReactNode) => (
     <Link

@@ -1,9 +1,7 @@
 import { EpicItem } from '@/components/epic/epic-item/EpicItem';
 import testRender from '@/utils/test/test-render';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { EditionTypeEnum } from '@generated/models/EditionType.enum';
-import { EpicTypeEnum } from '@generated/models/EpicType.enum';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { EditionType, EpicType, FiligranProduct } from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createMockEnvironment } from 'relay-test-utils';
@@ -19,9 +17,9 @@ describe('EpicItem', () => {
   const epic = {
     id: 'epic-1',
     title: 'Roadmap epic',
-    epic_type: EpicTypeEnum.OTHER,
-    product: FiligranProductEnum.OPENCTI,
-    edition_type: EditionTypeEnum.COMMUNITY_EDITION,
+    epic_type: EpicType.Other,
+    product: FiligranProduct.Opencti,
+    edition_type: EditionType.CommunityEdition,
     short_description: 'short description',
     description: 'long description',
   } as epic_fragment$data;

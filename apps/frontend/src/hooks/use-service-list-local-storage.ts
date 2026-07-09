@@ -4,8 +4,7 @@ import {
   LogicalMultiSelectSelection,
 } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 import usePublicPath from '@/hooks/use-public-path';
-import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
-import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
+import { DocumentOrdering, OrderingMode } from '@graphql/generated';
 import { useCallback } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -134,19 +133,19 @@ export const useServiceListLocalStorage = (
 
   const defaultOrderBy =
     serviceName === ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
-      ? DocumentOrderingEnum.NAME
-      : DocumentOrderingEnum.CREATED_AT;
+      ? DocumentOrdering.Name
+      : DocumentOrdering.CreatedAt;
 
   const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<DocumentOrderingEnum>(
+    useLocalStorage<DocumentOrdering>(
       `orderBy${pagePrefix}${serviceName}List`,
       defaultOrderBy
     );
 
   const [orderMode, setOrderMode, removeOrderMode] =
-    useLocalStorage<OrderingModeEnum>(
+    useLocalStorage<OrderingMode>(
       `orderMode${pagePrefix}${serviceName}List`,
-      OrderingModeEnum.ASC
+      OrderingMode.Asc
     );
 
   const resetAll = useCallback(() => {

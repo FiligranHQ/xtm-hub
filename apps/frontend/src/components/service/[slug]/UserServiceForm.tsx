@@ -1,6 +1,6 @@
 import { UserFragment } from '@/components/admin/user/UserList';
 import { DEBOUNCE_TIME } from '@/utils/constant';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
+import { ServiceRestriction } from '@graphql/generated';
 import { useContext, useEffect, useMemo } from 'react';
 
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
@@ -67,9 +67,9 @@ export const UserServiceForm = ({
   const organizationId = subscription.subscriptionById?.organization?.id;
   const genericCapabilities = [
     {
-      id: ServiceRestrictionEnum.MANAGE_ACCESS as string,
-      name: ServiceRestrictionEnum.MANAGE_ACCESS as string,
-      description: ServiceRestrictionEnum.MANAGE_ACCESS as string,
+      id: ServiceRestriction.ManageAccess as string,
+      name: ServiceRestriction.ManageAccess as string,
+      description: ServiceRestriction.ManageAccess as string,
     },
   ];
 
@@ -218,7 +218,7 @@ export const UserServiceForm = ({
   const { pageSize, orderMode, orderBy } = useUserListLocalstorage();
 
   const isCapabilityDisabled = (id: string) => {
-    if (id === ServiceRestrictionEnum.MANAGE_ACCESS) {
+    if (id === ServiceRestriction.ManageAccess) {
       return false;
     }
 
@@ -347,8 +347,7 @@ export const UserServiceForm = ({
                           htmlFor={capability!.id}
                           aria-disabled={isCapabilityDisabled(capability!.id)}
                           className="txt-sub-content cursor-pointer aria-disabled:cursor-not-allowed">
-                          {capability!.name ===
-                          ServiceRestrictionEnum.MANAGE_ACCESS
+                          {capability!.name === ServiceRestriction.ManageAccess
                             ? t('Service.Form.ManageAccessCapabilityLabel')
                             : t('Service.Form.CapabilityAccessLabel', {
                                 name: capability!.name ?? '',

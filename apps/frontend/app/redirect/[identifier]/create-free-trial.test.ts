@@ -1,8 +1,10 @@
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
-import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import {
+  DeploymentRequestSource,
+  OrganizationCapability,
+  PlatformIdentifier,
+  PortalCapability,
+} from '@graphql/generated';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { redirectToCreateFreeTrial } from './create-free-trial';
@@ -17,8 +19,8 @@ const BASE_URL = 'http://localhost:3002';
 const REQUEST_URL = `/redirect/create-free-trial`;
 const EXPECTED_LOGIN_REDIRECT_URL = `${BASE_URL}/login?redirect=${btoa(REQUEST_URL)}`;
 
-const OPENCTI_FREE_TRIAL_URL = `${BASE_URL}/app/service/opencti-free-trial?source=${DeploymentRequestSourceEnum.OPENCTI_DEMO}`;
-const OPENAEV_FREE_TRIAL_URL = `${BASE_URL}/app/service/openaev-free-trial?source=${DeploymentRequestSourceEnum.OPENAEV_DEMO}`;
+const OPENCTI_FREE_TRIAL_URL = `${BASE_URL}/app/service/opencti-free-trial?source=${DeploymentRequestSource.OpenctiDemo}`;
+const OPENAEV_FREE_TRIAL_URL = `${BASE_URL}/app/service/openaev-free-trial?source=${DeploymentRequestSource.OpenaevDemo}`;
 
 const makeRequest = () => new NextRequest(`${BASE_URL}${REQUEST_URL}`);
 
@@ -29,13 +31,11 @@ const baseUser: LoadMeUserResult = {
   selected_organization_id: 'org-1',
   organizations: [],
   capabilities: [],
-  selected_org_capabilities: [
-    OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-  ],
+  selected_org_capabilities: [OrganizationCapability.AdministrateOrganization],
 };
 
 const defaultTrialDeployments = {
-  availableTrials: [PlatformIdentifierEnum.OPENCTI],
+  availableTrials: [PlatformIdentifier.Opencti],
   deployed: [],
   isBlacklisted: false,
 };
@@ -102,7 +102,7 @@ describe('redirectToCreateFreeTrial', () => {
     it('admin (BYPASS) bypasses capability check and reaches GraphQL', async () => {
       vi.mocked(loadMeUser).mockResolvedValue({
         ...baseUser,
-        capabilities: [{ name: PortalCapabilityEnum.BYPASS }],
+        capabilities: [{ name: PortalCapability.Bypass }],
         selected_org_capabilities: [],
       });
 
@@ -156,7 +156,7 @@ describe('redirectToCreateFreeTrial', () => {
       vi.mocked(serverFetchGraphQL).mockResolvedValue({
         data: {
           trialDeployments: {
-            availableTrials: [PlatformIdentifierEnum.OPENCTI],
+            availableTrials: [PlatformIdentifier.Opencti],
             deployed: [],
             isBlacklisted: true,
           },
@@ -169,7 +169,7 @@ describe('redirectToCreateFreeTrial', () => {
     });
   });
 
-  describe('with PlatformIdentifierEnum.OPENAEV', () => {
+  describe('with PlatformIdentifier.Openaev', () => {
     it('uses openaev path and source when user is not allowed', async () => {
       vi.mocked(loadMeUser).mockResolvedValue({
         ...baseUser,
@@ -179,7 +179,7 @@ describe('redirectToCreateFreeTrial', () => {
 
       const response = await redirectToCreateFreeTrial(
         makeRequest(),
-        PlatformIdentifierEnum.OPENAEV
+        PlatformIdentifier.Openaev
       );
 
       expect(response.headers.get('location')).toBe(OPENAEV_FREE_TRIAL_URL);
@@ -197,7 +197,7 @@ describe('redirectToCreateFreeTrial', () => {
 
       const response = await redirectToCreateFreeTrial(
         makeRequest(),
-        PlatformIdentifierEnum.OPENAEV
+        PlatformIdentifier.Openaev
       );
 
       expect(response.headers.get('location')).toBe(

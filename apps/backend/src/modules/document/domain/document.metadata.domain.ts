@@ -56,9 +56,9 @@ export const DocumentMetadataDomain = {
       .returning('*');
   },
 
-  insertMetadata: async <T extends DocumentModel>(
+  insertMetadata: async <T extends DocumentModel, TUseCase extends string>(
     id: DocumentId,
-    data: DocumentData<T>,
+    data: DocumentData<T, TUseCase>,
     metadataKeys: DocumentMetadataKeys<T>
   ): Promise<DocumentMetadata[]> => {
     if (metadataKeys.length === 0) {
@@ -68,7 +68,7 @@ export const DocumentMetadataDomain = {
     const metadataToInsert = metadataKeys.map((key) => ({
       document_id: id,
       key: key as DocumentMetadataKey,
-      value: data[key as keyof DocumentData<T>] as string,
+      value: data[key as keyof DocumentData<T, TUseCase>] as string,
     }));
 
     return db<DocumentMetadata>('Document_Metadata')

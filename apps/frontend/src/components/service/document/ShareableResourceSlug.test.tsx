@@ -2,8 +2,8 @@ import ShareableResourceSlug from '@/components/service/document/ShareableResour
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,11 +36,11 @@ describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
     shouldShowOneClickComponent | documentType                  | documentActive | integrationType
     ${true}                     | ${'opencti_custom_dashboard'} | ${true}        | ${false}
     ${false}                    | ${'opencti_custom_dashboard'} | ${false}       | ${false}
-    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.CSV_FEED}
-    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.TAXII_FEED}
-    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.STREAM}
-    ${false}                    | ${'opencti_integration'}      | ${true}        | ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}
-    ${false}                    | ${'opencti_integration'}      | ${false}       | ${IntegrationTypeEnum.CSV_FEED}
+    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationType.CsvFeed}
+    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationType.TaxiiFeed}
+    ${true}                     | ${'opencti_integration'}      | ${true}        | ${IntegrationType.Stream}
+    ${false}                    | ${'opencti_integration'}      | ${true}        | ${IntegrationType.ThirdPartyIntegration}
+    ${false}                    | ${'opencti_integration'}      | ${false}       | ${IntegrationType.CsvFeed}
     ${true}                     | ${'openaev_scenario'}         | ${true}        | ${false}
     ${false}                    | ${'openaev_scenario'}         | ${false}       | ${false}
   `(

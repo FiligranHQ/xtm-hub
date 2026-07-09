@@ -3,9 +3,9 @@ import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
   DocumentConnection,
   DocumentMetadataKeyCode,
+  IntegrationType,
   Organization,
   QueryDocumentsArgs,
-  ServiceDefinitionIdentifier,
   UpdateDocumentInput,
 } from '../../../__generated__/resolvers-types';
 import {
@@ -18,28 +18,44 @@ import User, { UserId } from '../../../model/kanel/public/User';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
 import { omit } from '../../../utils/utils';
-import { Document, WithDocumentId } from '../document.helper';
+import { isLtsVersion } from '../../../utils/versioning';
+import { formatConnectorVersion } from '../../shareable-resource/manifest-fragment/manifest-fragment.utils';
+import {
+  ConnectorV2,
+  INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
+} from '../../shareable-resource/opencti/integration/integration.model';
+import { Document, DOCUMENT_TYPE, WithDocumentId } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
-import { UseCaseId } from '../../../model/kanel/public/UseCase';
+import type { UseCaseId } from '../../../model/kanel/public/UseCase';
 import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
 } from '../../../security/restriction/document';
 import { MinioFile } from '../../../thirdparty/minio/types';
 import { stripNulls } from '../../../utils/typescript';
+import { TAG_DECOUPLING } from '../../shareable-resource/manifest-fragment/manifest-fragment.utils';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
   DocumentMetadataDomain,
   DocumentMetadataKeys,
 } from './document.metadata.domain';
 
-export type DocumentData<T extends DocumentModel> = Omit<
-  Partial<T>,
-  'use_cases'
-> & {
-  use_cases?: UseCaseId[];
+type UseCaseValue = UseCaseId | string;
+
+// Excludes documents tagged with TAG_DECOUPLING (case-insensitive), regardless of casing.
+const excludeDecouplingTag = (query: Knex.QueryBuilder) =>
+  query.whereRaw(
+    `NOT (? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[])))`,
+    [TAG_DECOUPLING]
+  );
+
+export type DocumentData<
+  T extends DocumentModel,
+  TUseCase extends UseCaseValue = UseCaseId,
+> = Omit<Partial<T>, 'use_cases'> & {
+  use_cases?: TUseCase[];
   parent_document_id?: DocumentId;
 };
 
@@ -52,8 +68,11 @@ export const DocumentDomain = {
       .update({ active: false, remover_id: user.id });
   },
 
-  createDocument: async <T extends DocumentModel>(
-    documentData: DocumentData<T>,
+  createDocument: async <
+    T extends DocumentModel,
+    TUseCase extends UseCaseValue = UseCaseId,
+  >(
+    documentData: DocumentData<T, TUseCase>,
     metadataKeys: DocumentMetadataKeys<T>
   ): Promise<DocumentModel> => {
     const user = requestContext.requireUser();
@@ -119,8 +138,11 @@ export const DocumentDomain = {
   loadDocumentsByMetadata: async (
     key: string,
     value: string,
-    include_metadata: DocumentMetadataKeyCode[] = []
+    include_metadata: DocumentMetadataKeyCode[] = [],
+    documentFilters: DocumentMutator = {}
   ): Promise<DocumentModel[]> => {
+    const { tags, ...scalarFilters } = documentFilters;
+
     const docQuery = db<DocumentModel>('Document')
       .leftJoin(
         'Document_Metadata',
@@ -129,8 +151,17 @@ export const DocumentDomain = {
       )
       .where('Document_Metadata.key', key)
       .andWhere('Document_Metadata.value', value)
+      .andWhere(scalarFilters)
       .select('Document.*')
       .groupBy('Document.id');
+
+    if (tags && tags.length > 0) {
+      const placeholders = tags.map(() => '?').join(',');
+      docQuery.whereRaw(
+        `"Document"."tags"::text[] @> array[${placeholders}]`,
+        tags
+      );
+    }
 
     DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
 
@@ -200,7 +231,8 @@ export const DocumentDomain = {
     const loadDocumentQuery = db<Document>('Document')
       .select(['Document.*'])
       .tap(restrictDocumentToUserOrganization)
-      .where(field);
+      .where(field)
+      .modify(excludeDecouplingTag);
 
     if (
       field['Document.service_instance_id'] &&
@@ -281,6 +313,7 @@ export const DocumentDomain = {
       .where('Document.slug', '=', slug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
+      .modify(excludeDecouplingTag)
       .whereNotExists(function () {
         this.select('*')
           .from('Document_Children')
@@ -340,6 +373,7 @@ export const DocumentDomain = {
       .where('ServiceInstance.slug', '=', serviceSlug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
+      .modify(excludeDecouplingTag)
       .modify((qb) => {
         if (orderResults) {
           qb.orderBy([
@@ -399,11 +433,11 @@ export const DocumentDomain = {
     return updatedDocument;
   },
 
-  upsertOnSlug: async <T extends DocumentModel>(
-    documentData: Omit<Partial<T>, 'use_cases'> & {
-      use_cases?: string[];
-      parent_document_id?: string;
-    },
+  upsertOnSlug: async <
+    T extends DocumentModel,
+    TUseCase extends string = UseCaseValue,
+  >(
+    documentData: DocumentData<T, TUseCase>,
     metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<DocumentModel> => {
     const user = requestContext.requireUser();
@@ -417,14 +451,34 @@ export const DocumentDomain = {
       uploader_organization_id: user.selected_organization_id,
     };
 
+    const slug = (documentData as { slug?: string }).slug;
+
+    const existingDocument = slug
+      ? await db<DocumentModel>('Document')
+          .where('slug', '=', slug)
+          .modify(excludeDecouplingTag)
+          .orderBy('created_at', 'desc')
+          .first()
+      : undefined;
+
+    if (existingDocument) {
+      const [updatedDocument] = await db<DocumentModel>('Document')
+        .where('id', '=', existingDocument.id)
+        .update({
+          ...omit(insertData, ['uploader_id']),
+          updated_at: new Date(),
+          updater_id: insertData.uploader_id,
+        })
+        .returning('*');
+
+      if (!updatedDocument) {
+        throw new Error(UnknownErrorCode.DocumentUpdateError);
+      }
+      return updatedDocument;
+    }
+
     const [document] = await db<DocumentModel>('Document')
       .insert(insertData)
-      .onConflict('slug')
-      .merge({
-        ...omit(insertData, ['uploader_id']),
-        updated_at: new Date(),
-        updater_id: insertData.uploader_id,
-      })
       .returning('*');
 
     if (!document) {
@@ -440,20 +494,10 @@ export const DocumentDomain = {
   loadNewestDocuments: async (
     limit: number,
     include_metadata: DocumentMetadataKeyCode[] = [],
-    serviceDefinitionIdentifiers?: ServiceDefinitionIdentifier[]
+    documentTypes?: DOCUMENT_TYPE[]
   ): Promise<Document[]> => {
     const query = db<Document>('Document')
       .select('Document.*')
-      .join(
-        'ServiceInstance',
-        'Document.service_instance_id',
-        'ServiceInstance.id'
-      )
-      .join(
-        'ServiceDefinition',
-        'ServiceInstance.service_definition_id',
-        'ServiceDefinition.id'
-      )
       .where('Document.active', true)
       .whereNotExists(function () {
         this.select(dbRaw('1'))
@@ -463,11 +507,8 @@ export const DocumentDomain = {
           );
       })
       .modify((qb) => {
-        if (serviceDefinitionIdentifiers?.length) {
-          qb.whereIn(
-            'ServiceDefinition.identifier',
-            serviceDefinitionIdentifiers
-          );
+        if (documentTypes?.length) {
+          qb.whereIn('Document.type', documentTypes);
         }
       })
       .orderBy('Document.created_at', 'desc')
@@ -477,5 +518,62 @@ export const DocumentDomain = {
     DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
 
     return query;
+  },
+
+  /**
+   * For each manifest_fragment_id in the provided list, returns the connector
+   * with the highest product_version that is still compatible with manifestVersion
+   * (i.e. minimum_deployable_version_padded is absent or <= manifestVersion, padded).
+   * Exactly one row per manifest_fragment_id is returned (or none if no compatible version exists).
+   */
+  loadBestCompatibleConnectorsByManifestFragmentIds: async (
+    manifestFragmentIds: string[],
+    version: string
+  ): Promise<ConnectorV2[]> => {
+    if (manifestFragmentIds.length === 0) return [];
+
+    const paddedVersion = formatConnectorVersion(version);
+    const isLts = isLtsVersion(version);
+    const metadataKeys =
+      INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[];
+
+    const query = db<DocumentModel>('Document')
+      .distinctOn('dm_fragment.value')
+      .join(
+        'Document_Metadata as dm_type',
+        'Document.id',
+        'dm_type.document_id'
+      )
+      .join(
+        'Document_Metadata as dm_fragment',
+        'Document.id',
+        'dm_fragment.document_id'
+      )
+      .where('dm_type.key', DocumentMetadataKeyCode.IntegrationType)
+      .andWhere('dm_type.value', IntegrationType.Connector)
+      .andWhere('dm_fragment.key', DocumentMetadataKeyCode.ManifestFragmentId)
+      .whereIn('dm_fragment.value', manifestFragmentIds)
+      .where('Document.active', true)
+      .where('Document.is_decommissioned', false)
+      .select('Document.*')
+      .groupBy('Document.id', 'dm_fragment.value')
+      // dm_pivot comes from addIncludeMetadataQuery
+      .havingRaw(
+        `(MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) IS NULL
+          OR MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) <= ?)
+         AND "Document"."version" ${isLts ? 'LIKE' : 'NOT LIKE'} '%.LTS.%'`,
+        [
+          DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+          DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+          paddedVersion,
+        ]
+      )
+      .orderByRaw(
+        `"dm_fragment"."value" ASC, "Document"."version" DESC NULLS LAST`
+      );
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(query, metadataKeys);
+
+    return query as unknown as Promise<ConnectorV2[]>;
   },
 };

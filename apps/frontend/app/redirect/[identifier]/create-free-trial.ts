@@ -1,17 +1,19 @@
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import type { createFreeTrialAvailableTrialsQuery } from '@generated/createFreeTrialAvailableTrialsQuery.graphql';
 import CreateFreeTrialAvailableTrials from '@generated/createFreeTrialAvailableTrialsQuery.graphql';
-import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import {
+  DeploymentRequestSource,
+  OrganizationCapability,
+  PlatformIdentifier,
+  PortalCapability,
+} from '@graphql/generated';
 import { NextRequest, NextResponse } from 'next/server';
 import { loadBaseUrlFront, loadMeUser } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
 
 export const redirectToCreateFreeTrial = async (
   request: NextRequest,
-  platformIdentifier: PlatformIdentifierEnum = PlatformIdentifierEnum.OPENCTI
+  platformIdentifier: PlatformIdentifier = PlatformIdentifier.Opencti
 ) => {
   const baseUrlFront = await loadBaseUrlFront();
   const redirectionUrl = getLoginRedirectionURL(baseUrlFront, request);
@@ -21,24 +23,22 @@ export const redirectToCreateFreeTrial = async (
       return NextResponse.redirect(redirectionUrl);
     }
     const pathKey =
-      platformIdentifier === PlatformIdentifierEnum.OPENCTI
-        ? 'opencti'
-        : 'openaev';
+      platformIdentifier === PlatformIdentifier.Opencti ? 'opencti' : 'openaev';
     const source =
-      platformIdentifier === PlatformIdentifierEnum.OPENCTI
-        ? DeploymentRequestSourceEnum.OPENCTI_DEMO
-        : DeploymentRequestSourceEnum.OPENAEV_DEMO;
+      platformIdentifier === PlatformIdentifier.Opencti
+        ? DeploymentRequestSource.OpenctiDemo
+        : DeploymentRequestSource.OpenaevDemo;
     const freeTrialUrl = new URL(
       `/app/service/${pathKey}-free-trial?source=${source}`,
       baseUrlFront
     );
 
     const isAdmin = user.capabilities.some(
-      ({ name }) => name === PortalCapabilityEnum.BYPASS
+      ({ name }) => name === PortalCapability.Bypass
     );
-    const requiredCapabilities: OrganizationCapabilityEnum[] = [
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-      OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+    const requiredCapabilities: OrganizationCapability[] = [
+      OrganizationCapability.AdministrateOrganization,
+      OrganizationCapability.ManagePlatformRegistration,
     ];
     const userIsAllowed = requiredCapabilities.some((cap) =>
       user.selected_org_capabilities.includes(cap)

@@ -23,10 +23,12 @@ export const ServiceListFilterLabel = ({
     removeFilter(ServiceListFilterKey.Label);
   };
 
-  const labelOptions = getUseCases(type).map(({ name, id }) => ({
-    label: name,
-    value: id,
-  }));
+  const labelOptions = getUseCases({ documentType: type }).map(
+    ({ name, id }) => ({
+      label: name,
+      value: id,
+    })
+  );
 
   return (
     <LogicalMultiSelectFormField

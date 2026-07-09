@@ -2,6 +2,7 @@
 import { i18nKey } from '@/utils/datatable';
 import { DeleteIcon, EditIcon } from '@filigran/icon';
 import { Button, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
+import { CompetitorTier } from '@graphql/generated';
 import {
   ColumnDef,
   PaginationState,
@@ -42,7 +43,6 @@ import {
   competitor_fragment$key,
 } from '@generated/competitor_fragment.graphql';
 import { competitor_list_fragment$key } from '@generated/competitor_list_fragment.graphql';
-import { CompetitorTierEnum } from '@generated/models/CompetitorTier.enum';
 
 const CompetitorList = () => {
   const t = useTranslations();
@@ -107,7 +107,7 @@ const CompetitorList = () => {
         header: t('CompetitorListPage.Tier'),
         cell: ({ row }) => (
           <span className="truncate">
-            {formatTier(row.original.tier as CompetitorTierEnum)}
+            {formatTier(row.original.tier as CompetitorTier)}
           </span>
         ),
       },

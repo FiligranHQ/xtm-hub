@@ -5,7 +5,7 @@ const isSemanticVersion = (version: string): boolean => {
   return semanticVersionRegex.test(version);
 };
 
-const isLtsVersion = (version: string): boolean => {
+export const isLtsVersion = (version: string): boolean => {
   return validLtsVersionRegex.test(version);
 };
 

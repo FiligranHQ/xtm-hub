@@ -13,8 +13,11 @@ import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { filterDocumentImages } from '@/utils/documents';
 import { FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import {
+  DocumentMetadataKeyCode,
+  FiligranProduct,
+  IntegrationType,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
@@ -33,21 +36,26 @@ type DocumentType =
 
 const integrationTypeMappedByDocumentType: Record<
   DocumentType,
-  IntegrationTypeEnum | null
+  IntegrationType | null
 > = {
   'Custom Dashboard': null,
   'Custom View': null,
   Scenario: null,
   Playbook: null,
-  'CSV Feed': IntegrationTypeEnum.CSV_FEED,
-  'TAXII Feed': IntegrationTypeEnum.TAXII_FEED,
-  'RSS Feed': IntegrationTypeEnum.RSS_FEED,
-  Stream: IntegrationTypeEnum.STREAM,
-  'Third Party Integration': IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
-  Connector: IntegrationTypeEnum.CONNECTOR,
+  'CSV Feed': IntegrationType.CsvFeed,
+  'TAXII Feed': IntegrationType.TaxiiFeed,
+  'RSS Feed': IntegrationType.RssFeed,
+  Stream: IntegrationType.Stream,
+  'Third Party Integration': IntegrationType.ThirdPartyIntegration,
+  Connector: IntegrationType.Connector,
 };
 
 type Platform = 'OpenCTI' | 'OpenAEV';
+
+const productTagByPlatform: Record<Platform, FiligranProduct> = {
+  OpenCTI: FiligranProduct.Opencti,
+  OpenAEV: FiligranProduct.Openaev,
+};
 
 type AvailableFields =
   | 'description'
@@ -157,6 +165,7 @@ export const useServiceFormFields = ({
           <ServiceFormUseCasesField
             field={field}
             disabled={disabledFields.includes('use_cases')}
+            product={productTagByPlatform[platform]}
           />
         ),
       },
@@ -185,7 +194,7 @@ export const useServiceFormFields = ({
                   integrationType={integrationType}
                   document={document}
                   disabled={disabledFields.includes(
-                    DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE
+                    DocumentMetadataKeyCode.IntegrationSubtype
                   )}
                 />
               ),
@@ -257,18 +266,14 @@ export const useServiceFormFields = ({
         label: t('Service.Form.VendorUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.VENDOR_URL
-          ),
+          disabled: disabledFields.includes(DocumentMetadataKeyCode.VendorUrl),
         },
       },
       github_url: {
         label: t('Service.Form.GithubUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.GITHUB_URL
-          ),
+          disabled: disabledFields.includes(DocumentMetadataKeyCode.GithubUrl),
         },
       },
       datasheet_url: {
@@ -276,7 +281,7 @@ export const useServiceFormFields = ({
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
           disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.DATASHEET_URL
+            DocumentMetadataKeyCode.DatasheetUrl
           ),
         },
       },
@@ -285,7 +290,7 @@ export const useServiceFormFields = ({
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
           disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.BLOGPOST_URL
+            DocumentMetadataKeyCode.BlogpostUrl
           ),
         },
       },
@@ -293,9 +298,7 @@ export const useServiceFormFields = ({
         label: t('Service.Form.DemoUrlLabel'),
         inputProps: {
           placeholder: t('Service.Form.UrlPlaceholder'),
-          disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.DEMO_URL
-          ),
+          disabled: disabledFields.includes(DocumentMetadataKeyCode.DemoUrl),
         },
       },
       product_version: {
@@ -303,7 +306,7 @@ export const useServiceFormFields = ({
         inputProps: {
           placeholder: t('Service.Form.ProductVersionPlaceholder'),
           disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.PRODUCT_VERSION
+            DocumentMetadataKeyCode.ProductVersion
           ),
         },
       },
@@ -312,7 +315,7 @@ export const useServiceFormFields = ({
         inputProps: {
           placeholder: t('Service.Form.MinimumDeployableVersionPlaceholder'),
           disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.MINIMUM_DEPLOYABLE_VERSION
+            DocumentMetadataKeyCode.MinimumDeployableVersion
           ),
         },
       },
@@ -320,39 +323,35 @@ export const useServiceFormFields = ({
         label: t('Service.Form.ContainerImageLabel'),
         inputProps: {
           disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.CONTAINER_IMAGE
+            DocumentMetadataKeyCode.ContainerImage
           ),
         },
       },
       source_code: {
         label: t('Service.Form.SourceCodeLabel'),
         inputProps: {
-          disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.SOURCE_CODE
-          ),
+          disabled: disabledFields.includes(DocumentMetadataKeyCode.SourceCode),
         },
       },
       subscription_link: {
         label: t('Service.Form.SubscriptionLinkLabel'),
         inputProps: {
           disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.SUBSCRIPTION_LINK
+            DocumentMetadataKeyCode.SubscriptionLink
           ),
         },
       },
       verified: {
         label: t('Service.Form.VerifiedLabel'),
         inputProps: {
-          disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.VERIFIED
-          ),
+          disabled: disabledFields.includes(DocumentMetadataKeyCode.Verified),
         },
       },
       manager_supported: {
         label: t('Service.Form.ManagerSupportedLabel'),
         inputProps: {
           disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.MANAGER_SUPPORTED
+            DocumentMetadataKeyCode.ManagerSupported
           ),
         },
       },
@@ -360,7 +359,7 @@ export const useServiceFormFields = ({
         label: t('Service.Form.PlaybookSupportedLabel'),
         inputProps: {
           disabled: disabledFields.includes(
-            DocumentMetadataKeyCodeEnum.PLAYBOOK_SUPPORTED
+            DocumentMetadataKeyCode.PlaybookSupported
           ),
         },
       },

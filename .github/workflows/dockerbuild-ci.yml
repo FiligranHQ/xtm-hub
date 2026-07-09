@@ -399,7 +399,7 @@ jobs:
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
               --inventory eu-west-staging \
-              --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"; then
+              --extra-vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"; then
               echo "✅ Deployment successful"
               exit 0
             fi
@@ -563,7 +563,7 @@ jobs:
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-production \
-              --extra_vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}"; then
+              --extra-vars "{\"env\":\"Production\",\"xtmhub_version\":\"$VERSION\"}"; then
               echo "✅ Deployment successful"
               exit 0
             fi
@@ -669,7 +669,7 @@ jobs:
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-staging \
-              --extra_vars '{"env":"Development"}'; then
+              --extra-vars '{"env":"Development"}'; then
               echo "✅ Deployment successful"
               exit 0
             fi
@@ -691,7 +691,7 @@ jobs:
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub' \
               --inventory eu-west-staging \
-              --extra_vars '{"env":"Prerelease"}'; then
+              --extra-vars '{"env":"Prerelease"}'; then
               echo "✅ Deployment successful"
               exit 0
             fi

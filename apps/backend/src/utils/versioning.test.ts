@@ -2,10 +2,29 @@ import { describe, expect, it } from 'vitest';
 import {
   compareVersions,
   doesVersionSatisfy,
+  isLtsVersion,
   isValidVersion,
 } from './versioning';
 
 describe('versioning', () => {
+  describe('isLtsVersion', () => {
+    it.each`
+      version               | expected | description
+      ${'6.4.0'}            | ${false} | ${'plain semantic version'}
+      ${'6.4.0-lts'}        | ${true}  | ${'lts without patch'}
+      ${'7.260801.0-lts'}   | ${true}  | ${'lts with date-based minor'}
+      ${'7.260801.0-lts.1'} | ${true}  | ${'lts with dot patch'}
+      ${'7.260309.0-lts1'}  | ${true}  | ${'lts with inline patch'}
+      ${'notaversion'}      | ${false} | ${'invalid string'}
+      ${'7.260201-lts'}     | ${false} | ${'invalid lts — missing patch segment'}
+    `(
+      'should return $expected for "$version" ($description)',
+      ({ version, expected }: { version: string; expected: boolean }) => {
+        expect(isLtsVersion(version)).toBe(expected);
+      }
+    );
+  });
+
   describe('isValidVersion', () => {
     it.each`
       version               | expected

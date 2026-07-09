@@ -4,7 +4,7 @@ import {
   OpenAevIconIcon,
   OpenCtiIconIcon,
 } from '@filigran/icon';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { FiligranProduct } from '@graphql/generated';
 import { ReactNode } from 'react';
 
 export interface FiligranProductMetadata {
@@ -14,25 +14,25 @@ export interface FiligranProductMetadata {
 }
 
 export const FiligranProductMapping: Record<
-  FiligranProductEnum,
+  FiligranProduct,
   FiligranProductMetadata
 > = {
-  [FiligranProductEnum.OPENCTI]: {
+  [FiligranProduct.Opencti]: {
     name: 'OpenCTI',
     logo: <OpenCtiIconIcon className="w-5 h-5" />,
     link: 'https://filigran-community.slack.com/archives/CHZC2D38C',
   },
-  [FiligranProductEnum.OPENAEV]: {
+  [FiligranProduct.Openaev]: {
     name: 'OpenAEV',
     logo: <OpenAevIconIcon className="w-5 h-5" />,
     link: 'https://filigran-community.slack.com/archives/CJ1PHBHF1',
   },
-  [FiligranProductEnum.XTMHUB]: {
+  [FiligranProduct.Xtmhub]: {
     name: 'XTM Hub',
     logo: <LogoFiligranIcon className="w-5 h-5" />,
     link: 'https://filigran-community.slack.com/archives/C08HU35NPD4',
   },
-  [FiligranProductEnum.XTMONE]: {
+  [FiligranProduct.Xtmone]: {
     name: 'XTM One',
     logo: <LogoXtmOneIcon className="w-5 h-5" />,
     link: 'https://filigran-community.slack.com/archives/CHNEM9NUT',

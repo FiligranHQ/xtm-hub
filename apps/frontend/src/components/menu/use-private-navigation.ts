@@ -23,11 +23,11 @@ import {
   SettingsIcon,
   SlackIcon,
 } from '@filigran/icon';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
   OrderingMode,
+  OrganizationCapability,
   PlatformIdentifier,
+  PortalCapability,
   ServiceDefinitionIdentifier,
   ServiceInstanceOrdering,
   ServiceInstancesListQueryVariables,
@@ -52,7 +52,7 @@ const PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES: ServiceInstancesListQueryV
     orderMode: OrderingMode.Asc,
   };
 interface SettingsLinkConfig extends SectionLink {
-  restriction?: PortalCapabilityEnum[];
+  restriction?: PortalCapability[];
   isVisible?: boolean;
   skipPortalCapabilityCheck?: boolean;
 }
@@ -71,10 +71,10 @@ export const usePrivateNavigation = (): NavigationConfig => {
     !!hasOrganizationCapability &&
     !currentOrganization?.personal_space &&
     (hasOrganizationCapability(
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      OrganizationCapability.AdministrateOrganization
     ) ||
-      hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
-  const isBypass = hasCapability?.(PortalCapabilityEnum.BYPASS) ?? false;
+      hasOrganizationCapability(OrganizationCapability.ManageAccess));
+  const isBypass = hasCapability?.(PortalCapability.Bypass) ?? false;
   const settingsLinksConfig: SettingsLinkConfig[] = [
     {
       href: `/${APP_PATH}/admin/parameters`,
@@ -99,22 +99,22 @@ export const usePrivateNavigation = (): NavigationConfig => {
     {
       href: `/${APP_PATH}/admin/opencti-trials`,
       label: tMenuLinks('OpenCTITrial'),
-      restriction: [PortalCapabilityEnum.READ_TRIALS],
+      restriction: [PortalCapability.ReadTrials],
     },
     {
       href: `/${APP_PATH}/admin/openaev-trials`,
       label: tMenuLinks('OpenAEVTrial'),
-      restriction: [PortalCapabilityEnum.READ_TRIALS],
+      restriction: [PortalCapability.ReadTrials],
     },
     {
       href: `/${APP_PATH}/admin/competitors`,
       label: tMenuLinks('Competitor'),
-      restriction: [PortalCapabilityEnum.MODIFY_COMPETITORS],
+      restriction: [PortalCapability.ModifyCompetitors],
     },
     {
       href: `/${APP_PATH}/admin/news-feed`,
       label: tMenuLinks('NewsFeed'),
-      restriction: [PortalCapabilityEnum.BYPASS],
+      restriction: [PortalCapability.Bypass],
     },
   ];
   const settingsLinks = settingsLinksConfig

@@ -4,6 +4,7 @@ type UseCase implements Node {
   id: ID!
   name: String!
   color: String!
+  product: [FiligranProduct!]!
 }
 
 enum UseCaseOrdering {
@@ -25,11 +26,13 @@ type UseCaseConnection {
 input AddUseCaseInput {
   name: String!
   color: String!
+  product: [FiligranProduct!]
 }
 
 input EditUseCaseInput {
   name: String
   color: String
+  product: [FiligranProduct!]
 }
 
 type Query {
@@ -40,6 +43,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     documentType: String
+    product: FiligranProduct
   ): UseCaseConnection
 }
 

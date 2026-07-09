@@ -1,6 +1,5 @@
 import { generateRegistrationContext } from '@/components/registration/Context';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { OrganizationCapability, PlatformIdentifier } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 
 describe('generateRegistrationContext', () => {
@@ -10,16 +9,16 @@ describe('generateRegistrationContext', () => {
   });
 
   it.each`
-    identifier                        | expectedName | description
-    ${PlatformIdentifierEnum.OPENCTI} | ${'OpenCTI'} | ${'OPENCTI maps to OpenCTI'}
-    ${PlatformIdentifierEnum.OPENAEV} | ${'OpenAEV'} | ${'OPENAEV maps to OpenAEV'}
+    identifier                    | expectedName | description
+    ${PlatformIdentifier.Opencti} | ${'OpenCTI'} | ${'OPENCTI maps to OpenCTI'}
+    ${PlatformIdentifier.Openaev} | ${'OpenAEV'} | ${'OPENAEV maps to OpenAEV'}
   `(
     'returns the correct displayedIdentifier for $description',
     ({
       identifier,
       expectedName,
     }: {
-      identifier: PlatformIdentifierEnum;
+      identifier: PlatformIdentifier;
       expectedName: string;
     }) => {
       const result = generateRegistrationContext(identifier);
@@ -28,16 +27,16 @@ describe('generateRegistrationContext', () => {
   );
 
   it.each`
-    identifier                        | description
-    ${PlatformIdentifierEnum.OPENCTI} | ${'OPENCTI'}
-    ${PlatformIdentifierEnum.OPENAEV} | ${'OPENAEV'}
+    identifier                    | description
+    ${PlatformIdentifier.Opencti} | ${'OPENCTI'}
+    ${PlatformIdentifier.Openaev} | ${'OPENAEV'}
   `(
     'sets identifier and MANAGE_PLATFORM_REGISTRATION capability for $description',
-    ({ identifier }: { identifier: PlatformIdentifierEnum }) => {
+    ({ identifier }: { identifier: PlatformIdentifier }) => {
       const result = generateRegistrationContext(identifier);
       expect(result.identifier).toBe(identifier);
       expect(result.capability).toBe(
-        OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION
+        OrganizationCapability.ManagePlatformRegistration
       );
     }
   );

@@ -1,0 +1,203 @@
+import {
+  DocumentMetadataKeyCode,
+  IntegrationType,
+  ManifestType,
+} from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
+import type { DocumentId } from '../../../model/kanel/public/Document';
+import { logApp } from '../../../utils/app-logger.util';
+import { isLtsVersion } from '../../../utils/versioning';
+import { DocumentDomain } from '../../document/domain/document.domain';
+import { useCaseDomain } from '../../use-case/use-case.domain';
+import {
+  TAG_DECOUPLING,
+  TAG_LATEST,
+  TAG_LATEST_LTS,
+} from '../manifest-fragment/manifest-fragment.utils';
+import {
+  ConnectorV2,
+  INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
+} from '../opencti/integration/integration.model';
+import { ManifestKey } from './manifest.consts';
+import { ManifestDomain } from './manifest.domain';
+import { ManifestHelper } from './manifest.helper';
+import { ManifestOutput } from './manifest.types';
+
+const saveManifestToDatabase = async (
+  key: ManifestKey,
+  documentIds: DocumentId[],
+  manifestName: string
+): Promise<void> => {
+  await withTransaction(async () => {
+    const savedManifest = await ManifestDomain.insertManifest({
+      product: key.platformIdentifier,
+      version: key.version,
+      type: key.type,
+      name: manifestName,
+    });
+
+    await ManifestDomain.insertManifestDocumentLinks(
+      savedManifest.id,
+      documentIds
+    );
+
+    const deletedCount = await ManifestDomain.deleteFromRebuildQueue(key);
+    if (deletedCount === 0) {
+      logApp.error('No processing queue entry found to delete', { key });
+    }
+  });
+};
+
+const fetchConnectors = async (
+  version: string,
+  tag: string
+): Promise<ConnectorV2[]> => {
+  logApp.info('Fetching connectors', { tag, version });
+
+  const connectors = (await DocumentDomain.loadDocumentsByMetadata(
+    DocumentMetadataKeyCode.IntegrationType,
+    IntegrationType.Connector,
+    INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[],
+    { active: true, is_decommissioned: false, tags: [tag, TAG_DECOUPLING] }
+  )) as ConnectorV2[];
+  logApp.info(
+    `Found ${connectors.length} connector(s) v2 with tag "${tag}" for version ${version}`
+  );
+
+  const { compatible, incompatible } =
+    ManifestHelper.partitionConnectorsByVersionCompatibility(
+      connectors,
+      version
+    );
+
+  if (incompatible.length === 0) {
+    return compatible;
+  }
+
+  const incompatibleFragmentIds = incompatible
+    .map((c) => c.manifest_fragment_id)
+    .filter((id): id is string => id !== null && id !== undefined);
+
+  logApp.info('Incompatible connectors found, searching for fallbacks', {
+    count: incompatible.length,
+    version,
+    manifestFragmentIds: incompatibleFragmentIds,
+  });
+
+  const fallbacks =
+    await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
+      incompatibleFragmentIds,
+      version
+    );
+
+  const fallbackFragmentIds = new Set(
+    fallbacks.map((c) => c.manifest_fragment_id)
+  );
+  const notFound = incompatibleFragmentIds.filter(
+    (id) => !fallbackFragmentIds.has(id)
+  );
+  if (notFound.length > 0) {
+    logApp.info(
+      'No compatible fallback found for some connectors, they will be excluded from the manifest',
+      {
+        manifestFragmentIds: notFound,
+      }
+    );
+  }
+  logApp.info('Fallback connectors found', { count: fallbacks.length });
+
+  return [...compatible, ...fallbacks];
+};
+
+export const ManifestApp = {
+  processManifestQueue: async (manifest?: ManifestKey) => {
+    const recovered = await ManifestDomain.recoverStuckProcessingEntries();
+    if (recovered.length > 0) {
+      logApp.error(
+        'Manifest queue recovery: resetting stuck processing entries',
+        {
+          count: recovered.length,
+          entries: recovered.map((row) => ({
+            product: row.product,
+            version: row.version,
+            type: row.type,
+            created_at: row.created_at,
+          })),
+        }
+      );
+    }
+
+    logApp.info('Processing manifest queue');
+    const rows =
+      await ManifestDomain.loadPendingManifestsForProcessing(manifest);
+    logApp.info('Manifests locked for processing', { count: rows.length });
+
+    for (const row of rows) {
+      try {
+        await ManifestApp.generateManifest({
+          platformIdentifier: row.product,
+          version: row.version,
+          type: row.type,
+        });
+      } catch (error) {
+        logApp.error('Unable to process manifest', { error, manifest: row });
+      }
+    }
+  },
+
+  generateManifest: async (
+    key: ManifestKey
+  ): Promise<ManifestOutput | null> => {
+    if (key.type != ManifestType.Connector) {
+      logApp.error('UnsupportedManifestType', { type: key.type });
+      return null;
+    }
+    const tag = isLtsVersion(key.version) ? TAG_LATEST_LTS : TAG_LATEST;
+    const connectors = await fetchConnectors(key.version, tag);
+
+    if (connectors.length === 0) {
+      logApp.error('No connectors found for manifest', { key });
+      return null;
+    }
+
+    const now = new Date();
+
+    const useCaseRows = await useCaseDomain.buildUseCasesByDocumentIdQuery(
+      connectors.map((c) => c.id as string)
+    );
+    const useCasesByConnectorId = new Map<string, string[]>();
+    for (const row of useCaseRows) {
+      const existing = useCasesByConnectorId.get(row._document_id) ?? [];
+      existing.push(row.name);
+      useCasesByConnectorId.set(row._document_id, existing);
+    }
+
+    const logoByConnectorId = await ManifestHelper.loadConnectorLogosBase64(
+      connectors.map((c) => c.id)
+    );
+
+    const manifest = ManifestHelper.buildConnectorManifestOutput(
+      key.version,
+      connectors as ConnectorV2[],
+      now,
+      useCasesByConnectorId,
+      logoByConnectorId
+    );
+
+    const minioFileName = ManifestHelper.buildManifestFileNameWithPath(
+      key.platformIdentifier,
+      key.version,
+      now
+    );
+    await ManifestHelper.uploadManifest(manifest, minioFileName);
+
+    await saveManifestToDatabase(
+      key,
+      connectors.map((c) => c.id),
+      manifest.manifest_version
+    );
+
+    logApp.info('Manifest uploaded to MinIO', { minioFileName });
+    return manifest;
+  },
+};

@@ -377,11 +377,14 @@
   },
   "UseCaseForm": {
     "Color": "Color",
-    "Name": "Name"
+    "Name": "Name",
+    "Product": "Product"
   },
   "UseCaseListPage": {
+    "AllProducts": "All products",
     "Color": "Color",
-    "Name": "Name"
+    "Name": "Name",
+    "Product": "Product"
   },
   "LocaleSwitcher": {
     "Label": "Language",

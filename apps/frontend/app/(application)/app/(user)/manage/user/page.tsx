@@ -1,5 +1,5 @@
 import GuardCapacityComponent from '@/components/AdminGuard';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { OrganizationCapability } from '@graphql/generated';
 import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
@@ -11,8 +11,8 @@ const Page = async () => {
       displayError
       shouldNotBePersonalSpace
       capacityRestriction={[
-        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-        OrganizationCapabilityEnum.MANAGE_ACCESS,
+        OrganizationCapability.AdministrateOrganization,
+        OrganizationCapability.ManageAccess,
       ]}>
       <PageLoader />
     </GuardCapacityComponent>

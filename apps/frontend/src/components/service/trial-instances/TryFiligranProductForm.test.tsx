@@ -1,8 +1,10 @@
 import { USE_CASES_BY_PLATFORM_IDENTIFIER } from '@/components/service/trial-instances/form-constants';
 import testRender from '@/utils/test/test-render';
-import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
+import {
+  DeploymentRequestUseCase,
+  PlatformIdentifier,
+} from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { PreloadedQuery } from 'react-relay';
@@ -88,15 +90,15 @@ const mockQueryRef =
   {} as PreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>;
 
 const openaevUseCases =
-  USE_CASES_BY_PLATFORM_IDENTIFIER[PlatformIdentifierEnum.OPENAEV];
+  USE_CASES_BY_PLATFORM_IDENTIFIER[PlatformIdentifier.Openaev];
 const openctiUseCases =
-  USE_CASES_BY_PLATFORM_IDENTIFIER[PlatformIdentifierEnum.OPENCTI];
+  USE_CASES_BY_PLATFORM_IDENTIFIER[PlatformIdentifier.Opencti];
 
 describe('TryFiligranProductForm', () => {
   it.each`
-    platformIdentifier                | expectedUseCases   | unexpectedUseCases | description
-    ${PlatformIdentifierEnum.OPENAEV} | ${openaevUseCases} | ${openctiUseCases} | ${'OpenAEV'}
-    ${PlatformIdentifierEnum.OPENCTI} | ${openctiUseCases} | ${openaevUseCases} | ${'OpenCTI'}
+    platformIdentifier            | expectedUseCases   | unexpectedUseCases | description
+    ${PlatformIdentifier.Openaev} | ${openaevUseCases} | ${openctiUseCases} | ${'OpenAEV'}
+    ${PlatformIdentifier.Opencti} | ${openctiUseCases} | ${openaevUseCases} | ${'OpenCTI'}
   `(
     'should show only $description use cases when platformIdentifier is $description',
     ({
@@ -104,9 +106,9 @@ describe('TryFiligranProductForm', () => {
       expectedUseCases,
       unexpectedUseCases,
     }: {
-      platformIdentifier: PlatformIdentifierEnum;
-      expectedUseCases: DeploymentRequestUseCaseEnum[];
-      unexpectedUseCases: DeploymentRequestUseCaseEnum[];
+      platformIdentifier: PlatformIdentifier;
+      expectedUseCases: DeploymentRequestUseCase[];
+      unexpectedUseCases: DeploymentRequestUseCase[];
       description: string;
     }) => {
       testRender(

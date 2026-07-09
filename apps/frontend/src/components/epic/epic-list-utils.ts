@@ -1,9 +1,8 @@
 import { isWithinLastMonths } from '@/utils/date';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
-import { TimelineEnum } from '@generated/models/Timeline.enum';
+import { FiligranProduct, Timeline } from '@graphql/generated';
 import { useMemo } from 'react';
-type Categories = 'draft' | TimelineEnum;
+type Categories = 'draft' | Timeline;
 
 const isRecentlyFinished = (epic: epic_fragment$data): boolean => {
   const referenceDate = epic.updated_at ?? epic.created_at;
@@ -26,14 +25,11 @@ export function useDraftAndTimelineEpics(epics: epic_fragment$data[]) {
 
     return epics.reduce((acc, item: epic_fragment$data) => {
       if (!item.active) acc.draft.push(item);
-      else if (item.timeline === TimelineEnum.NOW) acc.now.push(item);
-      else if (item.timeline === TimelineEnum.NEXT) acc.next.push(item);
-      else if (item.timeline === TimelineEnum.UNDER_CONSIDERATION)
+      else if (item.timeline === Timeline.Now) acc.now.push(item);
+      else if (item.timeline === Timeline.Next) acc.next.push(item);
+      else if (item.timeline === Timeline.UnderConsideration)
         acc.under_consideration.push(item);
-      else if (
-        item.timeline === TimelineEnum.FINISHED &&
-        isRecentlyFinished(item)
-      )
+      else if (item.timeline === Timeline.Finished && isRecentlyFinished(item))
         acc.finished.push(item);
 
       return acc;
@@ -44,21 +40,21 @@ export function useCountEpicsByProduct(
   epics: epic_fragment$data[],
   userCanUpdate: boolean,
   showFinished: boolean
-): Record<FiligranProductEnum, number> {
+): Record<FiligranProduct, number> {
   return useMemo(() => {
-    const initial = Object.values(FiligranProductEnum).reduce(
+    const initial = Object.values(FiligranProduct).reduce(
       (acc, product) => {
         acc[product] = 0;
         return acc;
       },
-      {} as Record<FiligranProductEnum, number>
+      {} as Record<FiligranProduct, number>
     );
 
     if (!epics) return initial;
 
     const filteredEpics = epics.filter((epic) => {
       if (!userCanUpdate && !epic.active) return false;
-      if (epic.timeline === TimelineEnum.FINISHED) {
+      if (epic.timeline === Timeline.Finished) {
         return showFinished && isRecentlyFinished(epic);
       }
       return true;

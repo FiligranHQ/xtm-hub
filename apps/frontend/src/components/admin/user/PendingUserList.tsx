@@ -32,12 +32,12 @@ import {
   UserList_fragment$data,
   UserList_fragment$key,
 } from '@generated/UserList_fragment.graphql';
-import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
 import {
   userPendingListQuery,
   userPendingListQuery$variables,
 } from '@generated/userPendingListQuery.graphql';
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
+import { FilterKey } from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -156,7 +156,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
       orderBy: orderBy,
       searchTerm: filter.search,
       filters: filter.organization
-        ? [{ key: FilterKeyEnum.ORGANIZATION_ID, value: [filter.organization] }]
+        ? [{ key: FilterKey.OrganizationId, value: [filter.organization] }]
         : undefined,
     }
   );
@@ -346,7 +346,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
           searchTerm: filter.search,
           filters: [
             {
-              key: FilterKeyEnum.ORGANIZATION_ID,
+              key: FilterKey.OrganizationId,
               value: [organization],
             },
           ],

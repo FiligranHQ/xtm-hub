@@ -4,7 +4,6 @@ import {
   organizationQuery,
   organizationsFragment,
 } from '@/components/organization/organization.graphql';
-import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
 import { organizationItem_fragment$key } from '@generated/organizationItem_fragment.graphql';
 import {
   organizationList_organizations$data,
@@ -16,6 +15,7 @@ import {
   organizationSelectQuery,
 } from '@generated/organizationSelectQuery.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
+import { OrganizationOrdering } from '@graphql/generated';
 import { useMemo } from 'react';
 import {
   useFragment,
@@ -25,7 +25,7 @@ import {
 
 interface OrganizationParamsQuery {
   count: number;
-  orderBy: OrganizationOrderingEnum;
+  orderBy: OrganizationOrdering;
   orderMode: OrderingMode;
   searchTerm?: string;
 }
@@ -45,7 +45,7 @@ export const getOrganization = (organizationId: string) => {
 export const getOrganizations = ({
   searchTerm = '',
   count = 50,
-  orderBy = OrganizationOrderingEnum.NAME,
+  orderBy = OrganizationOrdering.Name,
   orderMode = 'asc',
 }: Partial<OrganizationParamsQuery> = {}) => {
   const organizationData = useLazyLoadQuery<organizationSelectQuery>(

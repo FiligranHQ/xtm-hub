@@ -1,6 +1,6 @@
 import { isValueInEnum } from '@/utils/is-value-in-enum';
-import { OrganizationOrderingEnum } from '@generated/models/OrganizationOrdering.enum';
 import { OrderingMode } from '@generated/organizationSelectQuery.graphql';
+import { OrganizationOrdering } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -12,12 +12,12 @@ export const useOrganizationListLocalstorage = <U>(columns: ColumnDef<U>[]) => {
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>('orderModeOrganizationList', 'asc');
   const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<OrganizationOrderingEnum>(
+    useLocalStorage<OrganizationOrdering>(
       'orderByOrganizationList',
-      OrganizationOrderingEnum.NAME
+      OrganizationOrdering.Name
     );
-  if (!isValueInEnum(orderBy, OrganizationOrderingEnum)) {
-    setOrderBy(OrganizationOrderingEnum.NAME);
+  if (!isValueInEnum(orderBy, OrganizationOrdering)) {
+    setOrderBy(OrganizationOrdering.Name);
   }
   const [pageSize, setPageSize, removePageSize] = useLocalStorage(
     'countOrganizationList',

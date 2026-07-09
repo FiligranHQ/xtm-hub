@@ -13,11 +13,16 @@
   "scripts": {
     "dev:api": "yarn workspace  @xtm-hub/backend dev",
     "dev:front": "yarn workspace  @xtm-hub/frontend dev",
-    "check:dependencies": "node scripts/check-dependencies.mjs"
+    "check:dependencies": "node scripts/check-dependencies.mjs",
+    "prepare": "husky ./.husky",
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {

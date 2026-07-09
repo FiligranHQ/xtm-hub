@@ -14,10 +14,7 @@ import Document, {
   DocumentId,
   default as DocumentModel,
 } from '../../model/kanel/public/Document';
-import {
-  ObjectUseCaseInitializer,
-  ObjectUseCaseObjectId,
-} from '../../model/kanel/public/ObjectUseCase';
+import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
@@ -33,6 +30,7 @@ import {
   BOOLEAN_METADATA,
   DOCUMENT_TYPE,
   DocumentHelper,
+  DocumentTypeMappedByServiceDefinition,
   ManageableServiceDefinitionIdentifier,
   ServiceDefinitionIdentifiersByPlatformIdentifier,
 } from './document.helper';
@@ -413,7 +411,7 @@ export const DocumentApp = {
   },
 
   createDocumentWithChildrenAndMetadata: async <T extends DocumentModel>(
-    documentData: DocumentData<T>,
+    documentData: DocumentData<T, string>,
     metadataKeys: DocumentMetadataKeys<T> = []
   ): Promise<T> => {
     return await withTransaction(async () => {
@@ -427,6 +425,13 @@ export const DocumentApp = {
           parentDocumentId: documentData.parent_document_id,
           childDocumentId: document.id,
         });
+      }
+
+      if (documentData.use_cases?.length) {
+        await useCaseApp.linkUseCasesByNameToObject(
+          toObjectUseCaseObjectId(document.id),
+          documentData.use_cases
+        );
       }
 
       if (metadataKeys.length) {
@@ -638,7 +643,8 @@ export const DocumentApp = {
     const NEWEST_DOCUMENTS_MAX_LIMIT = 20;
 
     // Default to all shareable service definitions so that non-shareable
-    // types (e.g. vault) are never exposed when no platform filter is provided.
+    // types (e.g. vault, service_picture) are never exposed when no platform
+    // filter is provided.
     const allShareableIdentifiers = [
       ...ServiceDefinitionIdentifiersByPlatformIdentifier.values(),
     ].flat();
@@ -649,10 +655,14 @@ export const DocumentApp = {
         )
       : allShareableIdentifiers;
 
+    const documentTypes = serviceDefinitionIdentifiers.map(
+      (identifier) => DocumentTypeMappedByServiceDefinition[identifier]
+    );
+
     return DocumentDomain.loadNewestDocuments(
       Math.min(limit, NEWEST_DOCUMENTS_MAX_LIMIT),
       ALL_METADATA_KEYS,
-      serviceDefinitionIdentifiers
+      documentTypes
     );
   },
 
@@ -665,7 +675,7 @@ export const DocumentApp = {
 };
 
 const upsertDocument = async <T extends DocumentModel>(
-  documentData: DocumentData<T>,
+  documentData: DocumentData<T, string>,
   metadataKeys: DocumentMetadataKeys<T> = []
 ): Promise<T> => {
   return await withTransaction(async () => {
@@ -697,18 +707,10 @@ const upsertDocument = async <T extends DocumentModel>(
           object_id: toObjectUseCaseObjectId(document.id),
         });
       }
-      const insertObjectUseCase: ObjectUseCaseInitializer[] = [];
-      for (const name of documentData.use_cases) {
-        const useCase = await useCaseApp.loadOrCreateUseCase({
-          name,
-          color: '#0099cc',
-        });
-        insertObjectUseCase.push({
-          object_id: toObjectUseCaseObjectId(document.id),
-          use_case_id: useCase.id,
-        });
-      }
-      await objectUseCaseDomain.insertObjectUseCase(insertObjectUseCase);
+      await useCaseApp.linkUseCasesByNameToObject(
+        toObjectUseCaseObjectId(document.id),
+        documentData.use_cases
+      );
     }
 
     if (metadataKeys.length > 0) {

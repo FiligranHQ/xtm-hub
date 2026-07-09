@@ -1,6 +1,6 @@
 import UseCaseForm from '@/components/admin/use-case/UseCaseForm';
 import testRender from '@/utils/test/test-render';
-import { UseCaseRowFragment } from '@graphql/generated';
+import { FiligranProduct, UseCaseRowFragment } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 
 describe('UseCaseForm', () => {
@@ -26,9 +26,10 @@ describe('UseCaseForm', () => {
         />
       );
 
-      const [, colorInput] = screen.getAllByRole('textbox');
+      const colorInput = screen.getByDisplayValue('#FFFFFF');
 
       await user.type(screen.getByLabelText(/Name/i), name);
+      await user.clear(colorInput);
       await user.type(colorInput, color);
       await user.click(screen.getByRole('button', { name: 'Utils.Validate' }));
     };
@@ -70,6 +71,7 @@ describe('UseCaseForm', () => {
       id: 'use-case-id',
       name: 'Threat hunting',
       color: '#123456',
+      product: [FiligranProduct.Opencti],
       ' $fragmentType': 'useCase_fragment',
     };
 

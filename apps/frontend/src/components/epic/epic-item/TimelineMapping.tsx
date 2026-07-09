@@ -1,23 +1,23 @@
-import { TimelineEnum } from '@generated/models/Timeline.enum';
+import { Timeline } from '@graphql/generated';
 
 export interface FiligranTimelineMetadata {
   color: string;
 }
 
 export const FiligranTimelineMapping: Record<
-  TimelineEnum,
+  Timeline,
   FiligranTimelineMetadata
 > = {
-  [TimelineEnum.NOW]: {
+  [Timeline.Now]: {
     color: 'orange',
   },
-  [TimelineEnum.NEXT]: {
+  [Timeline.Next]: {
     color: 'primary',
   },
-  [TimelineEnum.UNDER_CONSIDERATION]: {
+  [Timeline.UnderConsideration]: {
     color: 'green',
   },
-  [TimelineEnum.FINISHED]: {
+  [Timeline.Finished]: {
     color: 'white',
   },
 };
