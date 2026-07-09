@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -26,7 +26,7 @@ export const PublicTryFiligranProductsBanner = () => {
     </span>
   );
 
-  const getLink = (product: PlatformIdentifierEnum) => {
+  const getLink = (product: PlatformIdentifier) => {
     return (
       <Link
         onClick={() => setMenuOpen(false)}
@@ -77,8 +77,7 @@ export const PublicTryFiligranProductsBanner = () => {
           align="end"
           className="w-full flex flex-col">
           <IconActionContext.Provider value={{ setMenuOpen }}>
-            {getLink(PlatformIdentifierEnum.OPENCTI)}
-            {getLink(PlatformIdentifierEnum.OPENAEV)}
+            {getLink(PlatformIdentifier.Opencti)}
           </IconActionContext.Provider>
         </DropdownMenuContent>
       </DropdownMenu>

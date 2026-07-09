@@ -22,8 +22,7 @@ import { LogoFiligranIcon } from '@filigran/icon';
 import { Avatar } from '@filigran/ui/clients';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
@@ -39,10 +38,10 @@ const STREAM_DOCUMENTATION =
 const TAXII_FEED_DOCUMENTATION =
   'https://docs.opencti.io/latest/usage/import/taxii-feed/';
 
-const DOCUMENTATION_URLS: Partial<Record<IntegrationTypeEnum, string>> = {
-  [IntegrationTypeEnum.CSV_FEED]: CSV_FEED_DOCUMENTATION,
-  [IntegrationTypeEnum.STREAM]: STREAM_DOCUMENTATION,
-  [IntegrationTypeEnum.TAXII_FEED]: TAXII_FEED_DOCUMENTATION,
+const DOCUMENTATION_URLS: Partial<Record<IntegrationType, string>> = {
+  [IntegrationType.CsvFeed]: CSV_FEED_DOCUMENTATION,
+  [IntegrationType.Stream]: STREAM_DOCUMENTATION,
+  [IntegrationType.TaxiiFeed]: TAXII_FEED_DOCUMENTATION,
 };
 
 const ShareableResourceDetails = ({
@@ -129,7 +128,7 @@ const ShareableResourceDetails = ({
       )}
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={DocumentMetadataKeyCodeEnum.FEED_URL}
+        metadataKey={DocumentMetadataKeyCode.FeedUrl}
         translationKey="FeedURL"
         variant="link"
       />
@@ -144,13 +143,13 @@ const ShareableResourceDetails = ({
       </ShareableResourceDetailItem>
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={DocumentMetadataKeyCodeEnum.VENDOR_URL}
+        metadataKey={DocumentMetadataKeyCode.VendorUrl}
         translationKey="VendorURL"
         variant="link"
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={DocumentMetadataKeyCodeEnum.GITHUB_URL}
+        metadataKey={DocumentMetadataKeyCode.GithubUrl}
         translationKey="GithubURL"
         variant="link"
       />
@@ -169,19 +168,19 @@ const ShareableResourceDetails = ({
       )}
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={DocumentMetadataKeyCodeEnum.DATASHEET_URL}
+        metadataKey={DocumentMetadataKeyCode.DatasheetUrl}
         translationKey="DatasheetURL"
         variant="link"
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={DocumentMetadataKeyCodeEnum.BLOGPOST_URL}
+        metadataKey={DocumentMetadataKeyCode.BlogpostUrl}
         translationKey="BlogpostURL"
         variant="link"
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
-        metadataKey={DocumentMetadataKeyCodeEnum.DEMO_URL}
+        metadataKey={DocumentMetadataKeyCode.DemoUrl}
         translationKey="DemoURL"
         variant="link"
       />

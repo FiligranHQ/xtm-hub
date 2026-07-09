@@ -1,6 +1,6 @@
 import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 import testRender from '@/utils/test/test-render';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
@@ -49,8 +49,8 @@ describe('Start trial button in the banner', () => {
             return {
               trialDeployments: {
                 availableTrials: [
-                  PlatformIdentifierEnum.OPENCTI,
-                  PlatformIdentifierEnum.OPENAEV,
+                  PlatformIdentifier.Opencti,
+                  PlatformIdentifier.Openaev,
                 ],
                 deployed: [],
                 isBlacklisted: false,
@@ -93,8 +93,8 @@ describe('Start trial button in the banner', () => {
             return {
               trialDeployments: {
                 availableTrials: [
-                  PlatformIdentifierEnum.OPENCTI,
-                  PlatformIdentifierEnum.OPENAEV,
+                  PlatformIdentifier.Opencti,
+                  PlatformIdentifier.Openaev,
                 ],
                 deployed: [],
                 isBlacklisted: true,
@@ -128,11 +128,11 @@ describe('Start trial button in the banner', () => {
           Query() {
             return {
               trialDeployments: {
-                availableTrials: [PlatformIdentifierEnum.OPENAEV],
+                availableTrials: [PlatformIdentifier.Openaev],
                 deployed: [
                   {
                     serviceInstanceId: 'id',
-                    platformIdentifier: PlatformIdentifierEnum.OPENCTI,
+                    platformIdentifier: PlatformIdentifier.Opencti,
                   },
                 ],
                 isBlacklisted: false,
@@ -171,11 +171,11 @@ describe('Start trial button in the banner', () => {
           Query() {
             return {
               trialDeployments: {
-                availableTrials: [PlatformIdentifierEnum.OPENAEV],
+                availableTrials: [PlatformIdentifier.Openaev],
                 deployed: [
                   {
                     serviceInstanceId: 'id',
-                    platformIdentifier: PlatformIdentifierEnum.OPENCTI,
+                    platformIdentifier: PlatformIdentifier.Opencti,
                   },
                 ],
                 isBlacklisted: false,

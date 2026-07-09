@@ -1,6 +1,5 @@
 import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
-import { IntegrationSubTypeEnum } from '@generated/models/IntegrationSubType.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { IntegrationSubType, IntegrationType } from '@graphql/generated';
 
 export const INTEGRATION_TYPE_PARAM = 'integrationType';
 export const LABEL_PARAM = 'label';
@@ -18,8 +17,8 @@ export const ALL_FILTER_PARAMS = [
 
 export type FilterParamName = (typeof ALL_FILTER_PARAMS)[number];
 
-const validIntegrationTypes = new Set(Object.values(IntegrationTypeEnum));
-const validIntegrationSubTypes = new Set(Object.values(IntegrationSubTypeEnum));
+const validIntegrationTypes = new Set(Object.values(IntegrationType));
+const validIntegrationSubTypes = new Set(Object.values(IntegrationSubType));
 
 /**
  * Serializes a LogicalMultiSelectSelection to a compact string.
@@ -58,13 +57,9 @@ export const parseSelection = (
     const subtypesRaw = colonIndex === -1 ? '' : entry.slice(colonIndex + 1);
 
     if (paramName === INTEGRATION_TYPE_PARAM) {
-      if (!validIntegrationTypes.has(key as IntegrationTypeEnum)) continue;
+      if (!validIntegrationTypes.has(key)) continue;
       result[key] = subtypesRaw
-        ? subtypesRaw
-            .split('|')
-            .filter((s) =>
-              validIntegrationSubTypes.has(s as IntegrationSubTypeEnum)
-            )
+        ? subtypesRaw.split('|').filter((s) => validIntegrationSubTypes.has(s))
         : [];
     } else {
       if (!key) continue;

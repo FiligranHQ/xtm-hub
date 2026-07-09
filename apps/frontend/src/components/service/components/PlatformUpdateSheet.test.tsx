@@ -1,6 +1,6 @@
 import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
 import testRender from '@/utils/test/test-render';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceDefinitionIdentifier } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { createMockEnvironment } from 'relay-test-utils';
@@ -37,7 +37,7 @@ describe('PlatformUpdateSheet', () => {
     serviceInstanceName: 'OpenCTI Platform',
     platformUrl: 'https://platform.example.com',
     serviceDefinitionIdentifier:
-      ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
+      ServiceDefinitionIdentifier.OpenctiRegistration,
     open: true,
     setOpen: vi.fn(),
   };

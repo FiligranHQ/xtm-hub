@@ -1,6 +1,6 @@
 import testRender from '@/utils/test/test-render';
 import * as FiligranUI from '@filigran/ui';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { createMockEnvironment } from 'relay-test-utils';
@@ -70,7 +70,7 @@ describe('TrialCancelSheet', () => {
         isCancellationDefinitive={false}
         open
         setOpen={setOpen}
-        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+        platformIdentifier={PlatformIdentifier.Opencti}
       />,
       { relayConfig: environment }
     );
@@ -92,7 +92,7 @@ describe('TrialCancelSheet', () => {
         isCancellationDefinitive
         open
         setOpen={vi.fn()}
-        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+        platformIdentifier={PlatformIdentifier.Opencti}
       />,
       { relayConfig: createMockEnvironment() }
     );
@@ -111,7 +111,7 @@ describe('TrialCancelSheet', () => {
         isCancellationDefinitive={false}
         open
         setOpen={setOpen}
-        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+        platformIdentifier={PlatformIdentifier.Opencti}
       />,
       { relayConfig: createMockEnvironment() }
     );
@@ -127,7 +127,7 @@ describe('TrialCancelSheet', () => {
         isCancellationDefinitive={false}
         open
         setOpen={vi.fn()}
-        platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+        platformIdentifier={PlatformIdentifier.Opencti}
       />,
       { relayConfig: createMockEnvironment() }
     );

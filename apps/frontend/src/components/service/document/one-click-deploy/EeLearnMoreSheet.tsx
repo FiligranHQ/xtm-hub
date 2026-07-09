@@ -16,8 +16,8 @@ import {
 } from '@filigran/ui';
 import { Separator } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { reachSalesMutation as ReachSalesMutationType } from '@generated/reachSalesMutation.graphql';
+import { PlatformIdentifier } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -30,7 +30,7 @@ interface EeLearnMoreSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   serviceInstanceId: string;
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 
 const EE_OPENCTI_LEARN_MORE_URL =

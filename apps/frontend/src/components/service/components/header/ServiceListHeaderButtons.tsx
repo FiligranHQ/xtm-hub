@@ -7,8 +7,7 @@ import useServiceCapability from '@/hooks/use-service-capability';
 import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { Button } from '@filigran/ui';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
+import { OrganizationCapability, ServiceRestriction } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useContext, useState } from 'react';
@@ -28,18 +27,14 @@ const ServiceListHeaderButtons = ({}) => {
   const isBypass = useAdminByPass();
 
   const canManageService =
-    serviceInstance.capabilities.includes(
-      ServiceRestrictionEnum.MANAGE_ACCESS
-    ) ||
+    serviceInstance.capabilities.includes(ServiceRestriction.ManageAccess) ||
     (hasOrganizationCapability &&
       (hasOrganizationCapability(
-        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+        OrganizationCapability.AdministrateOrganization
       ) ||
-        hasOrganizationCapability(
-          OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION
-        )));
+        hasOrganizationCapability(OrganizationCapability.ManageSubscription)));
   const userCanUpdate = useServiceCapability(
-    ServiceRestrictionEnum.UPLOAD,
+    ServiceRestriction.Upload,
     serviceInstance
   );
   const isIntegration = type === ShareableResourceType.OPENCTI_INTEGRATION;

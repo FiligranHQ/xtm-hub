@@ -1,4 +1,5 @@
 'use client';
+import { PlatformIdentifier } from '@graphql/generated';
 
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
 import PrivateServiceInstanceCard from '@/components/service/PrivateServiceInstanceCard';
@@ -8,7 +9,6 @@ import {
   publicServiceInstanceToInstanceCardData,
   registeredPlatformToServiceInstanceCardData,
 } from '@/utils/services';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import registerRegisteredPlatformListFragmentGraphql, {
   registerRegisteredPlatformListFragment$key,
 } from '@generated/registerRegisteredPlatformListFragment.graphql';
@@ -47,7 +47,7 @@ const ServiceList = ({
   const freeTrialsSkeletonDataCards = availableTrials.map(
     (platformIdentifier) =>
       freeTrialSkeletonToServiceInstanceCardData(
-        platformIdentifier as PlatformIdentifierEnum,
+        platformIdentifier as PlatformIdentifier,
         t
       )
   );

@@ -1,4 +1,5 @@
 import { useServiceContext } from '@/components/service/components/ServiceContext';
+import { ServiceRestriction } from '@graphql/generated';
 
 import {
   APP_PATH,
@@ -18,7 +19,6 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
@@ -40,7 +40,7 @@ const DeleteShareableResourceSlug = ({
     type: ShareableResourceType.OPENCTI_INTEGRATION,
   });
   const userCanDelete = useServiceCapability(
-    ServiceRestrictionEnum.DELETE,
+    ServiceRestriction.Delete,
     serviceContext.serviceInstance
   );
 

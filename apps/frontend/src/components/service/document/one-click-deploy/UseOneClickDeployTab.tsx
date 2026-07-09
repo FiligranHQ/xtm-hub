@@ -7,11 +7,11 @@ import {
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import {
   registerRefreshUserPlatformTokenMutation,
   registerRefreshUserPlatformTokenMutation$data,
 } from '@generated/registerRefreshUserPlatformTokenMutation.graphql';
+import { IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
@@ -23,12 +23,12 @@ const OPENCTI_URL_CONFIGS = {
 };
 
 export const OPENCTI_INTEGRATION_URL_CONFIGS: Partial<
-  Record<IntegrationTypeEnum, string>
+  Record<IntegrationType, string>
 > = {
-  [IntegrationTypeEnum.TAXII_FEED]: 'deploy-taxii-feed',
-  [IntegrationTypeEnum.CSV_FEED]: 'deploy-csv-feed',
-  [IntegrationTypeEnum.STREAM]: 'deploy-sync',
-  [IntegrationTypeEnum.RSS_FEED]: 'deploy-rss-feed',
+  [IntegrationType.TaxiiFeed]: 'deploy-taxii-feed',
+  [IntegrationType.CsvFeed]: 'deploy-csv-feed',
+  [IntegrationType.Stream]: 'deploy-sync',
+  [IntegrationType.RssFeed]: 'deploy-rss-feed',
 };
 
 interface Props {

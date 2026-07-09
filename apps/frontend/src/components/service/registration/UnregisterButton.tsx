@@ -7,12 +7,14 @@ import { UnregisterPlatform } from '@/components/registration/register/register.
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { toast } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { registerUnregisterPlatformMutation } from '@generated/registerUnregisterPlatformMutation.graphql';
+import {
+  OrganizationCapability,
+  PlatformContract,
+  PlatformIdentifier,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMutation } from 'react-relay';
@@ -25,7 +27,7 @@ export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
   const t = useTranslations();
   const router = useRouter();
 
-  const isTrial = platform.contract === PlatformContractEnum.TRIAL;
+  const isTrial = platform.contract === PlatformContract.Trial;
 
   const [commitUnregisterPlatform] =
     useMutation<registerUnregisterPlatformMutation>(UnregisterPlatform);
@@ -33,7 +35,7 @@ export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
   const unregisterPlatform = () => {
     const identifier =
       ServiceDefinitionIdentifierToPlatformIdentifier[
-        platform.identifier as ServiceDefinitionIdentifierEnum
+        platform.identifier as ServiceDefinitionIdentifier
       ];
     if (!identifier || !platform.platform_id) {
       toast({
@@ -74,8 +76,8 @@ export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
     !isTrial && (
       <GuardCapacityComponent
         capacityRestriction={[
-          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-          OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+          OrganizationCapability.AdministrateOrganization,
+          OrganizationCapability.ManagePlatformRegistration,
         ]}>
         <AlertDialogComponent
           variantName={'destructive'}
@@ -91,8 +93,8 @@ export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
               productName:
                 PlatformMetadataMapping[
                   ServiceDefinitionIdentifierToPlatformIdentifier[
-                    platform.identifier as ServiceDefinitionIdentifierEnum
-                  ] ?? PlatformIdentifierEnum.OPENCTI
+                    platform.identifier as ServiceDefinitionIdentifier
+                  ] ?? PlatformIdentifier.Opencti
                 ].name,
             })}
           </p>

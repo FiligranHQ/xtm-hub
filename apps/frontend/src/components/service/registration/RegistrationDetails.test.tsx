@@ -1,12 +1,14 @@
 import { RegistrationDetails } from '@/components/service/registration/RegistrationDetails';
 import testRender from '@/utils/test/test-render';
-import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import {
+  DeploymentRequestHubStatus,
+  OrganizationCapability,
+  PlatformContract,
+  PlatformIdentifier,
+  PortalCapability,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
 import { useSearchParams } from 'next/navigation';
 import { createMockEnvironment } from 'relay-test-utils';
@@ -67,8 +69,8 @@ const basePlatform: registeredPlatformByServiceInstanceId_fragment$data = {
   tenant_id: null,
   title: 'My Platform',
   url: 'https://platform.example.com',
-  identifier: ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-  contract: PlatformContractEnum.EE,
+  identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+  contract: PlatformContract.Ee,
   deployment_request: null,
   subscription: {
     start_date: '2025-01-01',
@@ -80,12 +82,12 @@ const basePlatform: registeredPlatformByServiceInstanceId_fragment$data = {
 
 const trialPlatform: registeredPlatformByServiceInstanceId_fragment$data = {
   ...basePlatform,
-  contract: PlatformContractEnum.TRIAL,
+  contract: PlatformContract.Trial,
   deployment_request: {
     id: 'dr-id',
-    hub_status: DeploymentRequestHubStatusEnum.ACTIVE,
+    hub_status: DeploymentRequestHubStatus.Active,
     region: 'eu_west',
-    platform_identifier: PlatformIdentifierEnum.OPENCTI,
+    platform_identifier: PlatformIdentifier.Opencti,
     counts_in_orga_quota: true,
     requester_email: 'trial-admin@filigran.io',
   },
@@ -117,12 +119,12 @@ const renderDetails = (
 describe('RegistrationDetails', () => {
   describe('Access button', () => {
     it.each`
-      label                                             | platform                                                                                                                                                     | shouldShow
-      ${'trial, ACTIVE status, with url, no myGroups'}  | ${trialPlatform}                                                                                                                                             | ${false}
-      ${'trial, ACTIVE status, with url and myGroups'}  | ${trialPlatformWithAccess}                                                                                                                                   | ${true}
-      ${'trial, PENDING status, with url and myGroups'} | ${{ ...trialPlatformWithAccess, deployment_request: { ...trialPlatformWithAccess.deployment_request, hub_status: DeploymentRequestHubStatusEnum.PENDING } }} | ${false}
-      ${'trial, ACTIVE status, no url'}                 | ${{ ...trialPlatformWithAccess, url: '' }}                                                                                                                   | ${false}
-      ${'non-trial with url'}                           | ${basePlatform}                                                                                                                                              | ${true}
+      label                                             | platform                                                                                                                                                 | shouldShow
+      ${'trial, ACTIVE status, with url, no myGroups'}  | ${trialPlatform}                                                                                                                                         | ${false}
+      ${'trial, ACTIVE status, with url and myGroups'}  | ${trialPlatformWithAccess}                                                                                                                               | ${true}
+      ${'trial, PENDING status, with url and myGroups'} | ${{ ...trialPlatformWithAccess, deployment_request: { ...trialPlatformWithAccess.deployment_request, hub_status: DeploymentRequestHubStatus.Pending } }} | ${false}
+      ${'trial, ACTIVE status, no url'}                 | ${{ ...trialPlatformWithAccess, url: '' }}                                                                                                               | ${false}
+      ${'non-trial with url'}                           | ${basePlatform}                                                                                                                                          | ${true}
     `('should show=$shouldShow for $label', ({ platform, shouldShow }) => {
       renderDetails(platform);
       const accessLink = screen.queryByRole('link', { name: /Access/i });
@@ -136,13 +138,13 @@ describe('RegistrationDetails', () => {
 
   describe('Cancel button in status row', () => {
     it.each`
-      hubStatus                                      | shouldShow
-      ${DeploymentRequestHubStatusEnum.PENDING}      | ${true}
-      ${DeploymentRequestHubStatusEnum.ACTIVE}       | ${true}
-      ${DeploymentRequestHubStatusEnum.PROVISIONING} | ${true}
-      ${DeploymentRequestHubStatusEnum.QUEUED}       | ${true}
-      ${DeploymentRequestHubStatusEnum.EXPIRED}      | ${false}
-      ${DeploymentRequestHubStatusEnum.CANCELLED}    | ${false}
+      hubStatus                                  | shouldShow
+      ${DeploymentRequestHubStatus.Pending}      | ${true}
+      ${DeploymentRequestHubStatus.Active}       | ${true}
+      ${DeploymentRequestHubStatus.Provisioning} | ${true}
+      ${DeploymentRequestHubStatus.Queued}       | ${true}
+      ${DeploymentRequestHubStatus.Expired}      | ${false}
+      ${DeploymentRequestHubStatus.Cancelled}    | ${false}
     `(
       'should show Cancel=$shouldShow for status $hubStatus',
       ({ hubStatus, shouldShow }) => {
@@ -239,7 +241,7 @@ describe('RegistrationDetails', () => {
         last_connectivity_check: '2025-03-10T12:00:00.000Z',
         deployment_request: {
           ...trialPlatform.deployment_request!,
-          hub_status: DeploymentRequestHubStatusEnum.PENDING,
+          hub_status: DeploymentRequestHubStatus.Pending,
         },
       });
 
@@ -348,7 +350,7 @@ describe('RegistrationDetails', () => {
         myGroups: [{ name: 'Admin' }],
         deployment_request: {
           ...trialPlatform.deployment_request!,
-          hub_status: DeploymentRequestHubStatusEnum.PENDING,
+          hub_status: DeploymentRequestHubStatus.Pending,
         },
       });
 
@@ -358,10 +360,10 @@ describe('RegistrationDetails', () => {
 
   describe('TrialsManageUsersDialog visibility', () => {
     it.each`
-      label                             | capabilities                                                 | shouldShow
-      ${'ADMINISTRATE_ORGANIZATION'}    | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}    | ${true}
-      ${'MANAGE_PLATFORM_REGISTRATION'} | ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]} | ${true}
-      ${'no capability'}                | ${[]}                                                        | ${false}
+      label                             | capabilities                                           | shouldShow
+      ${'ADMINISTRATE_ORGANIZATION'}    | ${[OrganizationCapability.AdministrateOrganization]}   | ${true}
+      ${'MANAGE_PLATFORM_REGISTRATION'} | ${[OrganizationCapability.ManagePlatformRegistration]} | ${true}
+      ${'no capability'}                | ${[]}                                                  | ${false}
     `(
       'should show=$shouldShow on trial + ACTIVE + myGroups when user has $label',
       ({ capabilities, shouldShow }) => {
@@ -384,12 +386,12 @@ describe('RegistrationDetails', () => {
           ...trialPlatformWithAccess,
           deployment_request: {
             ...trialPlatformWithAccess.deployment_request!,
-            hub_status: DeploymentRequestHubStatusEnum.PENDING,
+            hub_status: DeploymentRequestHubStatus.Pending,
           },
         },
         {
           selected_org_capabilities: [
-            OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+            OrganizationCapability.AdministrateOrganization,
           ],
         }
       );
@@ -401,7 +403,7 @@ describe('RegistrationDetails', () => {
     it('should not show when trial + ACTIVE + capability but no myGroups', () => {
       renderDetails(trialPlatform, {
         selected_org_capabilities: [
-          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+          OrganizationCapability.AdministrateOrganization,
         ],
       });
       expect(
@@ -412,7 +414,7 @@ describe('RegistrationDetails', () => {
     it('should not show for non-trial even with capability', () => {
       renderDetails(basePlatform, {
         selected_org_capabilities: [
-          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+          OrganizationCapability.AdministrateOrganization,
         ],
       });
       expect(
@@ -431,7 +433,7 @@ describe('RegistrationDetails', () => {
         },
         {
           selected_org_capabilities: [
-            OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+            OrganizationCapability.AdministrateOrganization,
           ],
         }
       );
@@ -443,16 +445,16 @@ describe('RegistrationDetails', () => {
 
   describe('Update Platform button', () => {
     const updateCapabilities = [
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-      OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+      OrganizationCapability.AdministrateOrganization,
+      OrganizationCapability.ManagePlatformRegistration,
     ];
 
     it.each`
-      label                                             | platform         | capabilities                                                 | shouldShow
-      ${'trial, with update capabilities'}              | ${trialPlatform} | ${updateCapabilities}                                        | ${false}
-      ${'non-trial, only ADMINISTRATE_ORGANIZATION'}    | ${basePlatform}  | ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}    | ${true}
-      ${'non-trial, only MANAGE_PLATFORM_REGISTRATION'} | ${basePlatform}  | ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]} | ${true}
-      ${'non-trial, no capabilities'}                   | ${basePlatform}  | ${[]}                                                        | ${false}
+      label                                             | platform         | capabilities                                           | shouldShow
+      ${'trial, with update capabilities'}              | ${trialPlatform} | ${updateCapabilities}                                  | ${false}
+      ${'non-trial, only ADMINISTRATE_ORGANIZATION'}    | ${basePlatform}  | ${[OrganizationCapability.AdministrateOrganization]}   | ${true}
+      ${'non-trial, only MANAGE_PLATFORM_REGISTRATION'} | ${basePlatform}  | ${[OrganizationCapability.ManagePlatformRegistration]} | ${true}
+      ${'non-trial, no capabilities'}                   | ${basePlatform}  | ${[]}                                                  | ${false}
     `(
       'should show=$shouldShow for $label',
       ({ platform, capabilities, shouldShow }) => {
@@ -470,7 +472,7 @@ describe('RegistrationDetails', () => {
 
     it('should show for BYPASS user on non-trial with serviceInstanceId', () => {
       renderDetails(basePlatform, {
-        capabilities: [{ name: PortalCapabilityEnum.BYPASS }],
+        capabilities: [{ name: PortalCapability.Bypass }],
       });
       expect(
         screen.getByRole('button', { name: /Platform.Update/i })
@@ -496,7 +498,7 @@ describe('RegistrationDetails', () => {
     it('should pass platform URL to PlatformUpdateSheet', () => {
       renderDetails(basePlatform, {
         selected_org_capabilities: [
-          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+          OrganizationCapability.AdministrateOrganization,
         ],
       });
 
@@ -516,7 +518,7 @@ describe('RegistrationDetails', () => {
       );
       renderDetails(trialPlatformWithAccess, {
         selected_org_capabilities: [
-          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+          OrganizationCapability.AdministrateOrganization,
         ],
       });
       const dialog = screen.getByTestId('manage-users-dialog');
@@ -530,7 +532,7 @@ describe('RegistrationDetails', () => {
       );
       renderDetails(trialPlatformWithAccess, {
         selected_org_capabilities: [
-          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+          OrganizationCapability.AdministrateOrganization,
         ],
       });
       expect(screen.getByTestId('manage-users-dialog')).toHaveAttribute(

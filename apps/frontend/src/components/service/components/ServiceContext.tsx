@@ -4,8 +4,8 @@ import {
 } from '@/components/service/components/subscribable-services.types';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { IntegrationType } from '@graphql/generated';
 import React, { createContext, useContext } from 'react';
 
 export interface ServiceContextProps {
@@ -29,7 +29,7 @@ export interface ServiceContextProps {
   ) => Promise<void>;
   ServiceForm: ServiceForm;
   type: ShareableResourceType;
-  setIntegrationType: (integrationType: IntegrationTypeEnum) => void;
+  setIntegrationType: (integrationType: IntegrationType) => void;
 }
 
 const ServiceContext = createContext<ServiceContextProps | undefined>(

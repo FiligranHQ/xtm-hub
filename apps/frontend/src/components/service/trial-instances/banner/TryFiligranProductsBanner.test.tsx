@@ -1,25 +1,25 @@
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import testRender from '@/utils/test/test-render';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMockEnvironment, MockPayloadGenerator } from 'relay-test-utils';
 
 const OpenCTITrial = {
   serviceInstanceId: 'id',
-  platformIdentifier: PlatformIdentifierEnum.OPENCTI,
+  platformIdentifier: PlatformIdentifier.Opencti,
 };
 const OpenAEVTrial = {
   serviceInstanceId: 'id2',
-  platformIdentifier: PlatformIdentifierEnum.OPENAEV,
+  platformIdentifier: PlatformIdentifier.Openaev,
 };
 
 describe('Filigran product banner text', () => {
   it.each`
-    availableTrials                                                     | registeredPlatforms | expectedText                        | nonExpectedText
-    ${[PlatformIdentifierEnum.OPENAEV]}                                 | ${[OpenCTITrial]}   | ${'Service.Trials.ExplorePlatform'} | ${'Service.Trials.ExploreProducts'}
-    ${[PlatformIdentifierEnum.OPENCTI]}                                 | ${[OpenAEVTrial]}   | ${'Service.Trials.ExplorePlatform'} | ${'Service.Trials.ExploreProducts'}
-    ${[PlatformIdentifierEnum.OPENCTI, PlatformIdentifierEnum.OPENAEV]} | ${[]}               | ${'Service.Trials.ExploreProducts'} | ${null}
+    availableTrials                                             | registeredPlatforms | expectedText                        | nonExpectedText
+    ${[PlatformIdentifier.Openaev]}                             | ${[OpenCTITrial]}   | ${'Service.Trials.ExplorePlatform'} | ${'Service.Trials.ExploreProducts'}
+    ${[PlatformIdentifier.Opencti]}                             | ${[OpenAEVTrial]}   | ${'Service.Trials.ExplorePlatform'} | ${'Service.Trials.ExploreProducts'}
+    ${[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]} | ${[]}               | ${'Service.Trials.ExploreProducts'} | ${null}
   `(
     'should render the correct text depending the registration',
     async ({
@@ -109,8 +109,8 @@ describe('Filigran product banner text', () => {
             return {
               trialDeployments: {
                 availableTrials: [
-                  PlatformIdentifierEnum.OPENAEV,
-                  PlatformIdentifierEnum.OPENCTI,
+                  PlatformIdentifier.Openaev,
+                  PlatformIdentifier.Opencti,
                 ],
                 deployed: [],
                 isBlacklisted: false,
@@ -141,9 +141,9 @@ describe('Filigran product banner text', () => {
   });
 
   it.each`
-    productRegistered | productAvailable                    | platformRegistered | linkToLearnMore
-    ${'OpenAEV'}      | ${[PlatformIdentifierEnum.OPENCTI]} | ${[OpenAEVTrial]}  | ${'opencti-free-trial'}
-    ${'OpenCTI'}      | ${[PlatformIdentifierEnum.OPENAEV]} | ${[OpenCTITrial]}  | ${'openaev-free-trial'}
+    productRegistered | productAvailable                | platformRegistered | linkToLearnMore
+    ${'OpenAEV'}      | ${[PlatformIdentifier.Opencti]} | ${[OpenAEVTrial]}  | ${'opencti-free-trial'}
+    ${'OpenCTI'}      | ${[PlatformIdentifier.Openaev]} | ${[OpenCTITrial]}  | ${'openaev-free-trial'}
   `(
     'should learn more redirects to correct page when platform registered is $productRegistered',
     async ({ productAvailable, platformRegistered, linkToLearnMore }) => {
@@ -206,8 +206,8 @@ describe('Filigran product banner text', () => {
               return {
                 trialDeployments: {
                   availableTrials: [
-                    PlatformIdentifierEnum.OPENCTI,
-                    PlatformIdentifierEnum.OPENAEV,
+                    PlatformIdentifier.Opencti,
+                    PlatformIdentifier.Openaev,
                   ],
                   deployed: [],
                   isBlacklisted: true,
