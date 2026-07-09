@@ -1,4 +1,5 @@
 import { db } from '../../../../knexfile';
+import { ManifestType } from '../../../__generated__/resolvers-types';
 import type { DocumentId } from '../../../model/kanel/public/Document';
 import type Manifest from '../../../model/kanel/public/Manifest';
 import type {
@@ -13,21 +14,36 @@ import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { ManifestKey, ManifestRebuildQueueStatus } from './manifest.consts';
 
 export const ManifestDomain = {
-  insertIfNotPending: async ({
-    platformIdentifier,
-    version,
-    type,
-  }: ManifestKey): Promise<void> => {
-    const row: ManifestRebuildQueueInitializer = {
-      product: platformIdentifier,
-      version,
-      type,
-      status: ManifestRebuildQueueStatus.Pending,
-    };
+  insertIfNotPending: async (
+    keys: ManifestKey | ManifestKey[]
+  ): Promise<void> => {
+    const keyList = Array.isArray(keys) ? keys : [keys];
+    if (keyList.length === 0) return;
+
+    const rows: ManifestRebuildQueueInitializer[] = keyList.map(
+      ({ platformIdentifier, version, type }) => ({
+        product: platformIdentifier,
+        version,
+        type,
+        status: ManifestRebuildQueueStatus.Pending,
+      })
+    );
     await db<ManifestRebuildQueue>('ManifestRebuildQueue')
-      .insert(row)
+      .insert(rows)
       .onConflict(['product', 'version', 'type', 'status'])
       .ignore();
+  },
+
+  loadDistinctManifestsAboveVersion: async (
+    minVersionPadded: string,
+    isLts: boolean,
+    type: ManifestType
+  ): Promise<Pick<Manifest, 'product' | 'version'>[]> => {
+    return db<Manifest>('Manifest')
+      .distinct('product', 'version')
+      .where('type', type)
+      .andWhere('version_padded', '>=', minVersionPadded)
+      .andWhere('version_padded', isLts ? 'like' : 'not like', '%.LTS.%');
   },
 
   loadPendingManifestsForProcessing: async (

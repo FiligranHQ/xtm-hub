@@ -2,18 +2,22 @@ import {
   DocumentMetadataKeyCode,
   IntegrationType,
   ManifestType,
+  PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import type { DocumentId } from '../../../model/kanel/public/Document';
 import { logApp } from '../../../utils/app-logger.util';
+import { BadRequestErrorCode } from '../../../utils/error/error.code';
+import { BadRequestError } from '../../../utils/error/error.util';
 import { isLtsVersion } from '../../../utils/versioning';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import { useCaseDomain } from '../../use-case/use-case.domain';
 import {
+  ManifestFragmentHelper,
   TAG_DECOUPLING,
   TAG_LATEST,
   TAG_LATEST_LTS,
-} from '../manifest-fragment/manifest-fragment.utils';
+} from '../manifest-fragment/manifest-fragment.helper';
 import {
   ConnectorV2,
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
@@ -32,6 +36,9 @@ const saveManifestToDatabase = async (
     const savedManifest = await ManifestDomain.insertManifest({
       product: key.platformIdentifier,
       version: key.version,
+      version_padded: ManifestFragmentHelper.validateAndFormatManifestVersion(
+        key.version
+      ),
       type: key.type,
       name: manifestName,
     });
@@ -110,6 +117,33 @@ const fetchConnectors = async (
 };
 
 export const ManifestApp = {
+  requestManifestGeneration: async ({
+    product,
+    version,
+    type,
+  }: {
+    product: PlatformIdentifier;
+    version: string;
+    type: ManifestType;
+  }): Promise<void> => {
+    try {
+      ManifestFragmentHelper.validateAndFormatManifestVersion(version);
+    } catch {
+      throw BadRequestError(BadRequestErrorCode.InvalidPlatformVersion, {
+        detail: `Invalid version format: ${version}`,
+      });
+    }
+
+    const key: ManifestKey = {
+      platformIdentifier: product,
+      version,
+      type,
+    };
+
+    await ManifestDomain.insertIfNotPending(key);
+    await ManifestApp.processManifestQueue(key);
+  },
+
   processManifestQueue: async (manifest?: ManifestKey) => {
     const recovered = await ManifestDomain.recoverStuckProcessingEntries();
     if (recovered.length > 0) {

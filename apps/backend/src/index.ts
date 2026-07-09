@@ -87,7 +87,11 @@ const sessionMiddleware = expressSession({
     maxAge: SESSION_MAX_AGE,
   },
 });
-app.use(express.json());
+// Default express.json() limit (100kb) is too small for GraphQL mutations
+// carrying an inline base64 payload (e.g. a single connector logo ingested
+// via ingestManifestFragments - some logos alone are several MB), so it is
+// raised here for the whole API.
+app.use(express.json({ limit: '7mb' }));
 app.use(sessionMiddleware);
 // Force maxAge on every request so that sessions created before the maxAge
 // configuration (stored with originalMaxAge: null / expires: null) also

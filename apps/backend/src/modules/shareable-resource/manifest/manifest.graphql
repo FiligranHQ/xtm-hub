@@ -1,3 +1,11 @@
 enum ManifestType {
   connector
 }
+
+type Mutation {
+  generateManifest(
+    product: PlatformIdentifier!
+    version: String!
+    type: ManifestType!
+  ): Success! @auth(portalCapa: BYPASS)
+}

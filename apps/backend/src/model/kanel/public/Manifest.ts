@@ -19,6 +19,8 @@ export default interface Manifest {
   name: string;
 
   created_at: Date;
+
+  version_padded: string;
 }
 
 /** Represents the initializer for the table public.Manifest */
@@ -36,6 +38,8 @@ export interface ManifestInitializer {
 
   /** Default value: CURRENT_TIMESTAMP */
   created_at?: Date;
+
+  version_padded: string;
 }
 
 /** Represents the mutator for the table public.Manifest */
@@ -51,4 +55,6 @@ export interface ManifestMutator {
   name?: string;
 
   created_at?: Date;
+
+  version_padded?: string;
 }
