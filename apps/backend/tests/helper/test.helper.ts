@@ -27,6 +27,9 @@ import ObjectUseCase, {
   ObjectUseCaseInitializer,
   ObjectUseCaseMutator,
 } from '../../src/model/kanel/public/ObjectUseCase';
+import OneClickDeployment, {
+  OneClickDeploymentMutator,
+} from '../../src/model/kanel/public/OneClickDeployment';
 import Organization, {
   OrganizationMutator,
 } from '../../src/model/kanel/public/Organization';
@@ -95,6 +98,16 @@ export const TestHelper = {
     },
     delete: async (field: OrganizationMutator) => {
       await db<Organization>('Organization').where(field).del();
+    },
+  },
+  oneClickDeployment: {
+    loadAll: async (
+      field: OneClickDeploymentMutator = {}
+    ): Promise<OneClickDeployment[]> => {
+      return db<OneClickDeployment[]>('OneClickDeployment')
+        .where(field)
+        .select('*')
+        .orderBy('deployed_at', 'desc');
     },
   },
   competitor: {

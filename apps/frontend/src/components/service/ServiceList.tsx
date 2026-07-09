@@ -1,4 +1,5 @@
 'use client';
+import { PlatformIdentifier } from '@graphql/generated';
 
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
 import PrivateServiceInstanceCard from '@/components/service/PrivateServiceInstanceCard';
@@ -13,7 +14,6 @@ import registerRegisteredPlatformListFragmentGraphql, {
 } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { registerRegisteredPlatformsQuery } from '@generated/registerRegisteredPlatformsQuery.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import {
