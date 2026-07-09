@@ -1,0 +1,4 @@
+type Mutation {
+  newProductVersion(product: PlatformIdentifier!, version: String!): Success!
+    @system_token(portalCapa: [GENERATE_MANIFEST])
+}

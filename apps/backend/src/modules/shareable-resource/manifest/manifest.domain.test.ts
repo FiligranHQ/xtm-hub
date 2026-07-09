@@ -175,6 +175,258 @@ describe('manifestDomain', () => {
         }
       );
     });
+
+    describe('when called with an array of keys', () => {
+      it('should do nothing when the array is empty', async () => {
+        await ManifestDomain.insertIfNotPending([]);
+
+        const rows = await TestHelper.manifestRebuildQueue.loadAll({});
+        expect(rows).toHaveLength(0);
+      });
+
+      it('should insert one pending row per distinct key in a single call', async () => {
+        await ManifestDomain.insertIfNotPending([
+          MANIFEST_KEY,
+          {
+            platformIdentifier: PlatformIdentifier.Openaev,
+            version: '1.0.0',
+            type: ManifestType.Connector,
+          },
+        ]);
+
+        const rows = await TestHelper.manifestRebuildQueue.loadAll({});
+        expect(rows).toHaveLength(2);
+        expect(
+          rows.every((r) => r.status === ManifestRebuildQueueStatus.Pending)
+        ).toBe(true);
+      });
+
+      it('should skip keys already pending while still inserting the others', async () => {
+        await TestHelper.manifestRebuildQueue.create({
+          product: PlatformIdentifier.Opencti,
+          version: '6.4.0',
+          type: ManifestType.Connector,
+          status: ManifestRebuildQueueStatus.Pending,
+        });
+
+        await ManifestDomain.insertIfNotPending([
+          MANIFEST_KEY,
+          {
+            platformIdentifier: PlatformIdentifier.Openaev,
+            version: '1.0.0',
+            type: ManifestType.Connector,
+          },
+        ]);
+
+        const rows = await TestHelper.manifestRebuildQueue.loadAll({});
+        expect(rows).toHaveLength(2);
+      });
+
+      it('should not throw and insert a single row when the array contains duplicate keys', async () => {
+        await expect(
+          ManifestDomain.insertIfNotPending([MANIFEST_KEY, MANIFEST_KEY])
+        ).resolves.not.toThrow();
+
+        const rows = await TestHelper.manifestRebuildQueue.loadAll({});
+        expect(rows).toHaveLength(1);
+        expect(rows[0]!.status).toBe(ManifestRebuildQueueStatus.Pending);
+      });
+    });
+  });
+
+  describe('loadDistinctManifestsAboveVersion', () => {
+    afterEach(async () => {
+      await TestHelper.manifest.delete({});
+    });
+
+    it('should return an empty array when no manifest exists', async () => {
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        false,
+        ManifestType.Connector
+      );
+      expect(result).toEqual([]);
+    });
+
+    it('should include manifests whose version_padded is equal to the threshold', async () => {
+      await TestHelper.manifest.create({
+        version: '6.4.0',
+        version_padded: '006.000004.000',
+      });
+
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        false,
+        ManifestType.Connector
+      );
+
+      expect(result).toEqual([
+        expect.objectContaining({
+          product: PlatformIdentifier.Opencti,
+          version: '6.4.0',
+        }),
+      ]);
+    });
+
+    it('should include manifests whose version_padded is above the threshold', async () => {
+      await TestHelper.manifest.create({
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+      });
+
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        false,
+        ManifestType.Connector
+      );
+
+      expect(result).toEqual([
+        expect.objectContaining({
+          product: PlatformIdentifier.Opencti,
+          version: '7.0.0',
+        }),
+      ]);
+    });
+
+    it('should exclude manifests whose version_padded is below the threshold', async () => {
+      await TestHelper.manifest.create({
+        version: '6.0.0',
+        version_padded: '006.000000.000',
+      });
+
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        false,
+        ManifestType.Connector
+      );
+
+      expect(result).toEqual([]);
+    });
+
+    it('should exclude manifests of a different type', async () => {
+      await TestHelper.manifest.create({
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+        // ManifestType currently only exposes Connector; cast a distinct
+        // raw value to exercise the type filter against a non-connector row.
+        type: 'other_type' as ManifestType,
+      });
+
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        false,
+        ManifestType.Connector
+      );
+
+      expect(result).toEqual([]);
+    });
+
+    it('should deduplicate multiple manifest rows sharing the same (product, version)', async () => {
+      await TestHelper.manifest.create({
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+        name: 'manifest-1',
+      });
+      await TestHelper.manifest.create({
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+        name: 'manifest-2',
+      });
+
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        false,
+        ManifestType.Connector
+      );
+
+      expect(result).toEqual([
+        expect.objectContaining({
+          product: PlatformIdentifier.Opencti,
+          version: '7.0.0',
+        }),
+      ]);
+    });
+
+    it('should return distinct entries for different products', async () => {
+      await TestHelper.manifest.create({
+        product: PlatformIdentifier.Opencti,
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+      });
+      await TestHelper.manifest.create({
+        product: PlatformIdentifier.Openaev,
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+      });
+
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        false,
+        ManifestType.Connector
+      );
+
+      expect(result).toHaveLength(2);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            product: PlatformIdentifier.Opencti,
+            version: '7.0.0',
+          }),
+          expect.objectContaining({
+            product: PlatformIdentifier.Openaev,
+            version: '7.0.0',
+          }),
+        ])
+      );
+    });
+
+    it('should only include LTS-tagged manifests when isLts is true', async () => {
+      await TestHelper.manifest.create({
+        version: '7.260309.0-lts.5',
+        version_padded: '007.260309.000.LTS.005',
+      });
+      await TestHelper.manifest.create({
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+      });
+
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        true,
+        ManifestType.Connector
+      );
+
+      expect(result).toEqual([
+        expect.objectContaining({
+          product: PlatformIdentifier.Opencti,
+          version: '7.260309.0-lts.5',
+        }),
+      ]);
+    });
+
+    it('should only include non-LTS manifests when isLts is false', async () => {
+      await TestHelper.manifest.create({
+        version: '7.260309.0-lts.5',
+        version_padded: '007.260309.000.LTS.005',
+      });
+      await TestHelper.manifest.create({
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+      });
+
+      const result = await ManifestDomain.loadDistinctManifestsAboveVersion(
+        '006.000004.000',
+        false,
+        ManifestType.Connector
+      );
+
+      expect(result).toEqual([
+        expect.objectContaining({
+          product: PlatformIdentifier.Opencti,
+          version: '7.0.0',
+        }),
+      ]);
+    });
   });
 
   describe('recoverStuckProcessingEntries', () => {

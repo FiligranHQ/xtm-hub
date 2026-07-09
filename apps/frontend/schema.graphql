@@ -164,6 +164,7 @@ type Mutation {
   deleteDocument(documentId: DocumentId!, service_instance_id: ServiceInstanceId!, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: DocumentId!): Document!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
+  newProductVersion(product: PlatformIdentifier!, version: String!): Success!
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
   deleteNewsFeedItem(id: NewsFeedItemId!): Boolean!
   addOrganization(input: OrganizationInput!): Organization
@@ -199,6 +200,7 @@ type Mutation {
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean!): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   ingestManifestFragments(manifestFragments: [ManifestFragmentInput!]!): Success!
+  generateManifest(product: PlatformIdentifier!, version: String!, type: ManifestType!): Success!
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
   createSubscriptions(input: CreateSubscriptionsInput!): [SubscriptionModel!]!
   updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
@@ -1934,6 +1936,7 @@ enum PortalCapability {
   MANAGE_DEPLOYMENT
   MANAGE_CONNECTORS_INGESTIONS
   MANAGE_MANIFEST_INGESTIONS
+  GENERATE_MANIFEST
 }
 
 enum OrganizationCapability {
