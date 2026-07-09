@@ -1,6 +1,6 @@
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useRegisteredPlatformsFragment$key } from '@generated/useRegisteredPlatformsFragment.graphql';
 import { useRegisteredPlatformsFragmentQuery } from '@generated/useRegisteredPlatformsFragmentQuery.graphql';
+import { PlatformIdentifier } from '@graphql/generated';
 import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
 
 export const UseRegisteredPlatformsFragment = graphql`
@@ -26,7 +26,7 @@ interface UseRegisteredPlatformsOptions {
 }
 
 export const useRegisteredPlatforms = (
-  platformIdentifier: PlatformIdentifierEnum,
+  platformIdentifier: PlatformIdentifier,
   options: UseRegisteredPlatformsOptions = {}
 ) => {
   const { onlyActive = false } = options;

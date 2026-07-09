@@ -1,9 +1,11 @@
 import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/Integration.utils';
 import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
-import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
+import {
+  DocumentMetadataKeyCode,
+  FilterKey,
+  LogicalOperator,
+} from '@graphql/generated';
 import { useMemo } from 'react';
 
 type SimpleFiltersParams = {
@@ -33,9 +35,7 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
   const entityTypes = 'entityTypes' in params ? params.entityTypes : undefined;
   const deployable = 'deployable' in params ? params.deployable : undefined;
   const verified =
-    DocumentMetadataKeyCodeEnum.VERIFIED in params
-      ? params.verified
-      : undefined;
+    DocumentMetadataKeyCode.Verified in params ? params.verified : undefined;
   const integrationTypes =
     'integrationTypes' in params ? params.integrationTypes : undefined;
   const productVersions =
@@ -47,25 +47,25 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
         integrationTypes!
       );
       return {
-        operator: LogicalOperatorEnum.AND,
+        operator: LogicalOperator.And,
         children: [
-          { leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) } },
+          { leaf: { key: FilterKey.Label, value: Object.keys(labels) } },
           ...(typeSubtypeFilter ? [typeSubtypeFilter] : []),
           {
             leaf: {
-              key: FilterKeyEnum.MANAGER_SUPPORTED,
+              key: FilterKey.ManagerSupported,
               value: Object.keys(deployable!),
             },
           },
           {
             leaf: {
-              key: FilterKeyEnum.VERIFIED,
+              key: FilterKey.Verified,
               value: Object.keys(verified!),
             },
           },
           {
             leaf: {
-              key: FilterKeyEnum.PRODUCT_VERSION,
+              key: FilterKey.ProductVersion,
               value: Object.keys(productVersions!),
             },
           },
@@ -73,16 +73,16 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
       };
     }
     return {
-      operator: LogicalOperatorEnum.AND,
+      operator: LogicalOperator.And,
       children: [
         {
-          leaf: { key: FilterKeyEnum.LABEL, value: Object.keys(labels) },
+          leaf: { key: FilterKey.Label, value: Object.keys(labels) },
         },
         ...(entityTypes
           ? [
               {
                 leaf: {
-                  key: FilterKeyEnum.ENTITY_TYPE,
+                  key: FilterKey.EntityType,
                   value: Object.keys(entityTypes),
                 },
               },

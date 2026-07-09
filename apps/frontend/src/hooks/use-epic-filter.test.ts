@@ -1,4 +1,4 @@
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
+import { FiligranProduct } from '@graphql/generated';
 import { renderHook } from '@testing-library/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -18,12 +18,12 @@ describe('useEpicFilter', () => {
 
   describe('selectedProduct', () => {
     it.each`
-      searchQuery                                 | expectedSelectedProduct        | description
-      ${''}                                       | ${undefined}                   | ${'no param → undefined'}
-      ${'product=all'}                            | ${'all'}                       | ${'explicit "all" → "all"'}
-      ${`product=${FiligranProductEnum.OPENCTI}`} | ${FiligranProductEnum.OPENCTI} | ${'valid enum value → enum'}
-      ${'product=unknown'}                        | ${undefined}                   | ${'unknown value → undefined'}
-      ${'product='}                               | ${undefined}                   | ${'empty value → undefined'}
+      searchQuery                             | expectedSelectedProduct    | description
+      ${''}                                   | ${undefined}               | ${'no param → undefined'}
+      ${'product=all'}                        | ${'all'}                   | ${'explicit "all" → "all"'}
+      ${`product=${FiligranProduct.Opencti}`} | ${FiligranProduct.Opencti} | ${'valid enum value → enum'}
+      ${'product=unknown'}                    | ${undefined}               | ${'unknown value → undefined'}
+      ${'product='}                           | ${undefined}               | ${'empty value → undefined'}
     `(
       'should expose "$expectedSelectedProduct" from "$searchQuery" ($description)',
       ({ searchQuery, expectedSelectedProduct }) => {
@@ -40,11 +40,11 @@ describe('useEpicFilter', () => {
 
   describe('setSelectedProduct', () => {
     it.each`
-      initialSearch                                                                      | filter                         | expectedUrl                                        | description
-      ${''}                                                                              | ${'all'}                       | ${'/epics?product=all'}                            | ${'sets "all" on empty params'}
-      ${''}                                                                              | ${FiligranProductEnum.OPENCTI} | ${`/epics?product=${FiligranProductEnum.OPENCTI}`} | ${'sets a product on empty params'}
-      ${`product=${FiligranProductEnum.OPENCTI}`}                                        | ${FiligranProductEnum.XTMHUB}  | ${`/epics?product=${FiligranProductEnum.XTMHUB}`}  | ${'replaces existing product'}
-      ${`product=${FiligranProductEnum.OPENCTI}&product=${FiligranProductEnum.OPENAEV}`} | ${FiligranProductEnum.OPENCTI} | ${`/epics?product=${FiligranProductEnum.OPENCTI}`} | ${'get first product if user plays with URL'}
+      initialSearch                                                              | filter                     | expectedUrl                                    | description
+      ${''}                                                                      | ${'all'}                   | ${'/epics?product=all'}                        | ${'sets "all" on empty params'}
+      ${''}                                                                      | ${FiligranProduct.Opencti} | ${`/epics?product=${FiligranProduct.Opencti}`} | ${'sets a product on empty params'}
+      ${`product=${FiligranProduct.Opencti}`}                                    | ${FiligranProduct.Xtmhub}  | ${`/epics?product=${FiligranProduct.Xtmhub}`}  | ${'replaces existing product'}
+      ${`product=${FiligranProduct.Opencti}&product=${FiligranProduct.Openaev}`} | ${FiligranProduct.Opencti} | ${`/epics?product=${FiligranProduct.Opencti}`} | ${'get first product if user plays with URL'}
     `(
       'should call router.replace with "$expectedUrl" ($description)',
       ({ initialSearch, filter, expectedUrl }) => {

@@ -1,5 +1,5 @@
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
+import { OrganizationCapability } from '@graphql/generated';
 
 export const useOrganizationCapabilities = () => {
-  return Object.values(OrganizationCapabilityEnum);
+  return Object.values(OrganizationCapability);
 };
