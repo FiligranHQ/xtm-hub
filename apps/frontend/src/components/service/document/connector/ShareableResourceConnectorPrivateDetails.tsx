@@ -6,7 +6,7 @@ import {
 import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { CheckIndeterminateIcon } from '@filigran/icon';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
 interface ShareableResourceConnectorPrivateDetailsProps {
@@ -17,7 +17,7 @@ export const ShareableResourceConnectorPrivateDetails = ({
   connectorDetails,
 }: ShareableResourceConnectorPrivateDetailsProps) => {
   const t = useTranslations();
-  const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI, {
+  const { platforms } = useRegisteredPlatforms(PlatformIdentifier.Opencti, {
     onlyActive: true,
   });
   const { platformToBeUpdated, incompatiblePlatformsCount } =

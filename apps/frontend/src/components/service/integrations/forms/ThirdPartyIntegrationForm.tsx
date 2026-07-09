@@ -9,9 +9,11 @@ import {
 } from '@/utils/documents';
 import { AutoForm, FormItem } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import {
+  DocumentImageType,
+  DocumentMetadataKeyCode,
+  IntegrationType,
+} from '@graphql/generated';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
@@ -81,15 +83,15 @@ export const ThirdPartyIntegrationForm = ({
     () =>
       ({
         ...document,
-        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
-        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
+        images: transformToFileList(DocumentImageType.Image, document),
+        logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
             ? me?.selected_organization_id
             : document?.uploader_organization?.id) ?? '',
-        integration_type: IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
+        integration_type: IntegrationType.ThirdPartyIntegration,
         integration_subtype: document?.integration_subtype ?? '',
         github_url: document?.github_url,
         product_version: document?.product_version,
@@ -108,7 +110,7 @@ export const ThirdPartyIntegrationForm = ({
     return extendedSchema.superRefine((data, ctx) => {
       if (data.github_url && !data.product_version) {
         ctx.addIssue({
-          path: [DocumentMetadataKeyCodeEnum.PRODUCT_VERSION],
+          path: [DocumentMetadataKeyCode.ProductVersion],
           code: 'custom',
           message: 'Github URL and product version must be filled together',
         });
@@ -116,7 +118,7 @@ export const ThirdPartyIntegrationForm = ({
 
       if (!data.github_url && data.product_version) {
         ctx.addIssue({
-          path: [DocumentMetadataKeyCodeEnum.GITHUB_URL],
+          path: [DocumentMetadataKeyCode.GithubUrl],
           code: 'custom',
           message: 'Github URL and product version must be filled together',
         });
@@ -169,13 +171,10 @@ export const ThirdPartyIntegrationForm = ({
             }
           }
           if (values.product_version === '') {
-            form.setValue(
-              DocumentMetadataKeyCodeEnum.PRODUCT_VERSION,
-              undefined
-            );
+            form.setValue(DocumentMetadataKeyCode.ProductVersion, undefined);
           }
           if (values.github_url === '') {
-            form.setValue(DocumentMetadataKeyCodeEnum.GITHUB_URL, undefined);
+            form.setValue(DocumentMetadataKeyCode.GithubUrl, undefined);
           }
         }}
         values={values}

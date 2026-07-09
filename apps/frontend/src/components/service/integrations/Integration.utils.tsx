@@ -1,21 +1,23 @@
 import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 import { LogicalFilterInput } from '@generated/documentsQuery.graphql';
-import { FilterKeyEnum } from '@generated/models/FilterKey.enum';
-import { IntegrationSubTypeEnum } from '@generated/models/IntegrationSubType.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { LogicalOperatorEnum } from '@generated/models/LogicalOperator.enum';
+import {
+  FilterKey,
+  IntegrationSubType,
+  IntegrationType,
+  LogicalOperator,
+} from '@graphql/generated';
 
-export const availableIntegrationTypes: IntegrationTypeEnum[] = [
-  IntegrationTypeEnum.TAXII_FEED,
-  IntegrationTypeEnum.RSS_FEED,
-  IntegrationTypeEnum.CONNECTOR,
-  IntegrationTypeEnum.CSV_FEED,
-  IntegrationTypeEnum.STREAM,
-  IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
+export const availableIntegrationTypes: IntegrationType[] = [
+  IntegrationType.TaxiiFeed,
+  IntegrationType.RssFeed,
+  IntegrationType.Connector,
+  IntegrationType.CsvFeed,
+  IntegrationType.Stream,
+  IntegrationType.ThirdPartyIntegration,
 ];
 
 export const integrationSubTypeMetadata: Record<
-  IntegrationSubTypeEnum,
+  IntegrationSubType,
   { label: string; color: string }
 > = {
   EXTERNAL_IMPORT: {
@@ -101,51 +103,51 @@ export const integrationSubTypeMetadata: Record<
 };
 
 export const SubTypesPerIntegrationType = new Map<
-  IntegrationTypeEnum,
-  IntegrationSubTypeEnum[]
+  IntegrationType,
+  IntegrationSubType[]
 >([
   [
-    IntegrationTypeEnum.CONNECTOR,
+    IntegrationType.Connector,
     [
-      IntegrationSubTypeEnum.EXTERNAL_IMPORT,
-      IntegrationSubTypeEnum.INTERNAL_ENRICHMENT,
-      IntegrationSubTypeEnum.INTERNAL_EXPORT_FILE,
-      IntegrationSubTypeEnum.INTERNAL_IMPORT_FILE,
-      IntegrationSubTypeEnum.STREAM,
+      IntegrationSubType.ExternalImport,
+      IntegrationSubType.InternalEnrichment,
+      IntegrationSubType.InternalExportFile,
+      IntegrationSubType.InternalImportFile,
+      IntegrationSubType.Stream,
     ],
   ],
-  [IntegrationTypeEnum.TAXII_FEED, [IntegrationSubTypeEnum.NATIVE]],
+  [IntegrationType.TaxiiFeed, [IntegrationSubType.Native]],
   [
-    IntegrationTypeEnum.RSS_FEED,
+    IntegrationType.RssFeed,
     [
-      IntegrationSubTypeEnum.THREAT_ACTORS,
-      IntegrationSubTypeEnum.MALWARE,
-      IntegrationSubTypeEnum.CYBER_INDUSTRY,
-      IntegrationSubTypeEnum.PERIODIC_BRIEFING,
-      IntegrationSubTypeEnum.SECURITY_RESEARCHER,
-      IntegrationSubTypeEnum.VENDORS,
-      IntegrationSubTypeEnum.FEDERAL_ORGANIZATION,
-      IntegrationSubTypeEnum.JOURNALISTS,
-      IntegrationSubTypeEnum.NOT_FOR_PROFIT_ORGANIZATION,
-      IntegrationSubTypeEnum.SOCIAL_MEDIA,
-      IntegrationSubTypeEnum.DARKWEB,
+      IntegrationSubType.ThreatActors,
+      IntegrationSubType.Malware,
+      IntegrationSubType.CyberIndustry,
+      IntegrationSubType.PeriodicBriefing,
+      IntegrationSubType.SecurityResearcher,
+      IntegrationSubType.Vendors,
+      IntegrationSubType.FederalOrganization,
+      IntegrationSubType.Journalists,
+      IntegrationSubType.NotForProfitOrganization,
+      IntegrationSubType.SocialMedia,
+      IntegrationSubType.Darkweb,
     ],
   ],
-  [IntegrationTypeEnum.CSV_FEED, []],
-  [IntegrationTypeEnum.STREAM, [IntegrationSubTypeEnum.NATIVE]],
+  [IntegrationType.CsvFeed, []],
+  [IntegrationType.Stream, [IntegrationSubType.Native]],
   [
-    IntegrationTypeEnum.THIRD_PARTY_INTEGRATION,
+    IntegrationType.ThirdPartyIntegration,
     [
-      IntegrationSubTypeEnum.ORCHESTRATION,
-      IntegrationSubTypeEnum.DETECTION,
-      IntegrationSubTypeEnum.CASE_MANAGEMENT,
+      IntegrationSubType.Orchestration,
+      IntegrationSubType.Detection,
+      IntegrationSubType.CaseManagement,
     ],
   ],
 ]);
 
 export const getIntegrationSubTypeMetadata = (integration_subtype?: string) => {
   return (
-    integrationSubTypeMetadata[integration_subtype as IntegrationSubTypeEnum] ??
+    integrationSubTypeMetadata[integration_subtype as IntegrationSubType] ??
     undefined
   );
 };
@@ -172,18 +174,18 @@ export const buildTypeSubtypeFilterExpression = (
     } else {
       const typeFilter: LogicalFilterInput = {
         leaf: {
-          key: FilterKeyEnum.INTEGRATION_TYPE,
+          key: FilterKey.IntegrationType,
           value: [type],
         },
       };
       const subtypeFilter: LogicalFilterInput = {
         leaf: {
-          key: FilterKeyEnum.INTEGRATION_SUBTYPE,
+          key: FilterKey.IntegrationSubtype,
           value: subtypes,
         },
       };
       const andExpression: LogicalFilterInput = {
-        operator: LogicalOperatorEnum.AND,
+        operator: LogicalOperator.And,
         children: [typeFilter, subtypeFilter],
       };
       typeExpressions.push(andExpression);
@@ -193,7 +195,7 @@ export const buildTypeSubtypeFilterExpression = (
   if (typesWithoutSubtypes.length > 0) {
     const groupedTypeFilter: LogicalFilterInput = {
       leaf: {
-        key: FilterKeyEnum.INTEGRATION_TYPE,
+        key: FilterKey.IntegrationType,
         value: typesWithoutSubtypes,
       },
     };
@@ -205,7 +207,7 @@ export const buildTypeSubtypeFilterExpression = (
   }
 
   return {
-    operator: LogicalOperatorEnum.OR,
+    operator: LogicalOperator.Or,
     children: typeExpressions,
   };
 };

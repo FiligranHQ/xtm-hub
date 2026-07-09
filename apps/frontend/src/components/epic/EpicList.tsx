@@ -2,7 +2,6 @@
 import { EpicFilter, EpicFilterType } from '@/components/epic/EpicFilter';
 import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
 import { EpicItem } from '@/components/epic/epic-item/EpicItem';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 
 import { FiligranTimelineMapping } from '@/components/epic/epic-item/TimelineMapping';
 import {
@@ -23,10 +22,13 @@ import {
 } from '@filigran/ui';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { TimelineEnum } from '@generated/models/Timeline.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import {
+  OrganizationCapability,
+  ServiceRestriction,
+  Timeline,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useCallback, useContext, useMemo, useState } from 'react';
@@ -62,27 +64,25 @@ export const EpicList = ({
     : undefined;
 
   const userCanUpdate = useServiceCapability(
-    ServiceRestrictionEnum.UPSERT,
+    ServiceRestriction.Upsert,
     detailedServiceInstance
   );
   const userCanDelete = useServiceCapability(
-    ServiceRestrictionEnum.DELETE,
+    ServiceRestriction.Delete,
     detailedServiceInstance
   );
   const { me, hasOrganizationCapability } = useContext(PortalContext);
 
   const canManageService =
     useServiceCapability(
-      ServiceRestrictionEnum.MANAGE_ACCESS,
+      ServiceRestriction.ManageAccess,
       detailedServiceInstance
     ) ||
     (hasOrganizationCapability &&
       (hasOrganizationCapability(
-        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+        OrganizationCapability.AdministrateOrganization
       ) ||
-        hasOrganizationCapability(
-          OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION
-        )));
+        hasOrganizationCapability(OrganizationCapability.ManageSubscription)));
 
   const isBypass = useAdminByPass();
 
@@ -102,12 +102,10 @@ export const EpicList = ({
   const sections = useMemo(
     () => [
       { title: 'draft', epics: draft },
-      ...(showFinished
-        ? [{ title: TimelineEnum.FINISHED, epics: finished }]
-        : []),
-      { title: TimelineEnum.NOW, epics: now },
-      { title: TimelineEnum.NEXT, epics: next },
-      { title: TimelineEnum.UNDER_CONSIDERATION, epics: under_consideration },
+      ...(showFinished ? [{ title: Timeline.Finished, epics: finished }] : []),
+      { title: Timeline.Now, epics: now },
+      { title: Timeline.Next, epics: next },
+      { title: Timeline.UnderConsideration, epics: under_consideration },
     ],
     [draft, now, next, under_consideration, finished, showFinished]
   );
@@ -181,8 +179,7 @@ export const EpicList = ({
           return null;
         }
         const timelineColor =
-          FiligranTimelineMapping[timeline.title as TimelineEnum]?.color ??
-          'white';
+          FiligranTimelineMapping[timeline.title as Timeline]?.color ?? 'white';
 
         return (
           <div

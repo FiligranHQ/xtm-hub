@@ -1,41 +1,41 @@
 import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
 import testRender from '@/utils/test/test-render';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import {
+  OrganizationCapability,
+  PlatformContract,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
 import { createMockEnvironment } from 'relay-test-utils';
 
 describe('Display unregister button', () => {
   const registeredPlatform = {
     id: 'test-platform-id',
-    identifier: ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+    identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
     platform_id: 'id',
     tenant_id: null,
     title: 'title',
     url: 'url',
   };
   it.each`
-    capabilities                                                                                                       | isTrial  | shouldDisplay
-    ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}                                                          | ${true}  | ${false}
-    ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]}                                                       | ${true}  | ${false}
-    ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION, OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]} | ${true}  | ${false}
-    ${[OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION]}                                                                | ${true}  | ${false}
-    ${[]}                                                                                                              | ${true}  | ${false}
-    ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}                                                          | ${false} | ${true}
-    ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION]}                                                       | ${false} | ${true}
-    ${[OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION, OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]} | ${false} | ${true}
-    ${[OrganizationCapabilityEnum.MANAGE_SUBSCRIPTION]}                                                                | ${false} | ${false}
-    ${[]}                                                                                                              | ${false} | ${false}
+    capabilities                                                                                            | isTrial  | shouldDisplay
+    ${[OrganizationCapability.AdministrateOrganization]}                                                    | ${true}  | ${false}
+    ${[OrganizationCapability.ManagePlatformRegistration]}                                                  | ${true}  | ${false}
+    ${[OrganizationCapability.ManagePlatformRegistration, OrganizationCapability.AdministrateOrganization]} | ${true}  | ${false}
+    ${[OrganizationCapability.ManageSubscription]}                                                          | ${true}  | ${false}
+    ${[]}                                                                                                   | ${true}  | ${false}
+    ${[OrganizationCapability.AdministrateOrganization]}                                                    | ${false} | ${true}
+    ${[OrganizationCapability.ManagePlatformRegistration]}                                                  | ${false} | ${true}
+    ${[OrganizationCapability.ManagePlatformRegistration, OrganizationCapability.AdministrateOrganization]} | ${false} | ${true}
+    ${[OrganizationCapability.ManageSubscription]}                                                          | ${false} | ${false}
+    ${[]}                                                                                                   | ${false} | ${false}
   `(
     'Should display unregister button if user has capability $capabilities and is trial $isTrial',
     async ({ capabilities, isTrial, shouldDisplay }) => {
       // Given
       const environment = createMockEnvironment();
       const platformInput = {
-        contract: isTrial
-          ? PlatformContractEnum.TRIAL
-          : PlatformContractEnum.CE,
+        contract: isTrial ? PlatformContract.Trial : PlatformContract.Ce,
         ...registeredPlatform,
       } as registeredPlatformByServiceInstanceId_fragment$data;
       const { queryByRole } = testRender(

@@ -1,6 +1,6 @@
 import { ServiceListIntegrationDropdown } from '@/components/service/components/header/ServiceListIntegrationDropdown';
 import testRender from '@/utils/test/test-render';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { IntegrationType } from '@graphql/generated';
 import { screen, waitFor } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
@@ -55,11 +55,11 @@ describe('Button with dropdown to add any kind of integration in the lib', () =>
 
   it.each`
     label                                                         | expectedEnum
-    ${'Service.OpenctiIntegrations.Type.csv_feed'}                | ${IntegrationTypeEnum.CSV_FEED}
-    ${'Service.OpenctiIntegrations.Type.taxii_feed'}              | ${IntegrationTypeEnum.TAXII_FEED}
-    ${'Service.OpenctiIntegrations.Type.stream'}                  | ${IntegrationTypeEnum.STREAM}
-    ${'Service.OpenctiIntegrations.Type.third_party_integration'} | ${IntegrationTypeEnum.THIRD_PARTY_INTEGRATION}
-    ${'Service.OpenctiIntegrations.Type.rss_feed'}                | ${IntegrationTypeEnum.RSS_FEED}
+    ${'Service.OpenctiIntegrations.Type.csv_feed'}                | ${IntegrationType.CsvFeed}
+    ${'Service.OpenctiIntegrations.Type.taxii_feed'}              | ${IntegrationType.TaxiiFeed}
+    ${'Service.OpenctiIntegrations.Type.stream'}                  | ${IntegrationType.Stream}
+    ${'Service.OpenctiIntegrations.Type.third_party_integration'} | ${IntegrationType.ThirdPartyIntegration}
+    ${'Service.OpenctiIntegrations.Type.rss_feed'}                | ${IntegrationType.RssFeed}
   `(
     'clicking "$label" calls onIntegrationTypeSelect with $expectedEnum',
     async ({ label, expectedEnum }) => {

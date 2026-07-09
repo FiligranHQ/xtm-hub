@@ -8665,7 +8665,7 @@ __metadata:
     kanel: "npm:4.0.2"
     knex: "catalog:"
     migrate: "npm:^2.1.0"
-    node-cron: "npm:4.5.0"
+    node-cron: "npm:4.6.0"
     nodemailer: "npm:9.0.3"
     openid-client: "npm:6.8.4"
     passport: "npm:0.7.0"
@@ -8741,7 +8741,7 @@ __metadata:
     prettier-plugin-tailwindcss: "npm:0.8.0"
     react: "catalog:"
     react-dom: "catalog:"
-    react-hook-form: "npm:7.80.0"
+    react-hook-form: "npm:7.81.0"
     react-relay: "npm:20.1.1"
     rehype-sanitize: "npm:6.0.0"
     relay-compiler: "npm:21.0.1"
@@ -16389,10 +16389,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-cron@npm:4.5.0":
-  version: 4.5.0
-  resolution: "node-cron@npm:4.5.0"
-  checksum: 10/3ee23107eb584448fe829fd6567902ee10a5da29777dd2425e9fbd85c5642bc57b22d742745d4a7d1534c7e6bfc288764887c608fa5d48f750e2e84c66ad5358
+"node-cron@npm:4.6.0":
+  version: 4.6.0
+  resolution: "node-cron@npm:4.6.0"
+  checksum: 10/87a996b7aa69886bc2e5e9b922ab5edb195b7e21808a22b65cf8c268c90f9002038b74ffef9372ac4f0d499991e0180a887a92444310c3e9d0498c277daa5b89
   languageName: node
   linkType: hard
 
@@ -17760,12 +17760,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:7.80.0":
-  version: 7.80.0
-  resolution: "react-hook-form@npm:7.80.0"
+"react-hook-form@npm:7.81.0":
+  version: 7.81.0
+  resolution: "react-hook-form@npm:7.81.0"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18 || ^19
-  checksum: 10/7c679662a90a6630a796f5afa9ecc084b62eb1495ee00bebf61bc6291935fac60c500ebc115d34f0b36dfc46e5bb96166145975c25975bbcf2690cfa6c698e75
+  checksum: 10/e230964e4f77ca4342ac4d2b7b5abab0628481fc2892f056388eb38056a5996a89cfce81579334d988b07850eee7dfc081a21d6c81afaac0bc09cd5283865bf0
   languageName: node
   linkType: hard
 

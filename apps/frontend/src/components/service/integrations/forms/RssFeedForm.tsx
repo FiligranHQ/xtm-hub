@@ -10,8 +10,7 @@ import {
 } from '@/utils/documents';
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { DocumentImageType, IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
@@ -69,15 +68,15 @@ export const RssFeedForm = ({ handleSubmit, document }: RssFeedFormProps) => {
     () =>
       ({
         ...document,
-        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
-        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
+        images: transformToFileList(DocumentImageType.Image, document),
+        logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
             ? me?.selected_organization_id
             : document?.uploader_organization?.id) ?? '',
-        integration_type: IntegrationTypeEnum.RSS_FEED,
+        integration_type: IntegrationType.RssFeed,
         integration_subtype: document?.integration_subtype ?? '',
         active: document?.active ?? true,
       }) as RssFeedFormValues,

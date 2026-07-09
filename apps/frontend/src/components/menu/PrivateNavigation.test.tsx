@@ -2,10 +2,10 @@ import PrivateNavigation from '@/components/menu/PrivateNavigation';
 import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
 import { APP_PATH } from '@/utils/path/constant';
 import testRender, { testRenderHook } from '@/utils/test/test-render';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
+  OrganizationCapability,
   PlatformIdentifier,
+  PortalCapability,
   RegisteredPlatformsListQuery,
   ServiceDefinitionIdentifier,
   ServiceInstancesListQuery,
@@ -189,9 +189,9 @@ describe('PrivateNavigation component — open={true}', () => {
 
     const { container } = testRender(<PrivateNavigation open={true} />, {
       me: {
-        capabilities: [{ name: PortalCapabilityEnum.BYPASS } as never],
+        capabilities: [{ name: PortalCapability.Bypass } as never],
         selected_org_capabilities: [
-          OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+          OrganizationCapability.AdministrateOrganization,
         ],
       },
     });
@@ -326,7 +326,7 @@ describe('PrivateNavigation component — open={false}', () => {
     const user = userEvent.setup();
     testRender(<PrivateNavigation open={false} />, {
       me: {
-        capabilities: [{ name: PortalCapabilityEnum.BYPASS } as never],
+        capabilities: [{ name: PortalCapability.Bypass } as never],
       },
     });
 

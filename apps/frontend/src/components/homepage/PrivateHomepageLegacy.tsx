@@ -1,4 +1,5 @@
 'use client';
+import { ServiceInstanceFilterKey } from '@graphql/generated';
 
 import Loader from '@/components/Loader';
 import ServiceList from '@/components/service/ServiceList';
@@ -14,7 +15,6 @@ import {
   ServiceListQuery,
   servicesListFragment,
 } from '@/components/service/service.graphql';
-import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
 import RegisterRegisteredPlatformsQueryGraphql, {
   registerRegisteredPlatformsQuery,
 } from '@generated/registerRegisteredPlatformsQuery.graphql';
@@ -32,7 +32,7 @@ export const PrivateHomepageLegacy = () => {
       searchTerm: '',
       filters: [
         {
-          key: ServiceInstanceFilterKeyEnum.PUBLIC,
+          key: ServiceInstanceFilterKey.Public,
           value: ['true'],
         },
       ],

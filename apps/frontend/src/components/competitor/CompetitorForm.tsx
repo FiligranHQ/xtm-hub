@@ -16,12 +16,12 @@ import {
   SheetFooter,
 } from '@filigran/ui';
 import { competitor_fragment$data } from '@generated/competitor_fragment.graphql';
-import { CompetitorTierEnum } from '@generated/models/CompetitorTier.enum';
+import { CompetitorTier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
-export const TIER_VALUES = Object.values(CompetitorTierEnum);
-export const TIERS = Object.values(CompetitorTierEnum).map((tier) => ({
+export const TIER_VALUES = Object.values(CompetitorTier);
+export const TIERS = Object.values(CompetitorTier).map((tier) => ({
   value: tier,
   label: formatTier(tier),
 }));
@@ -55,8 +55,7 @@ const CompetitorForm = ({
       values={{
         name: competitor?.name ?? '',
         domain: competitor?.domain ?? '',
-        tier:
-          (competitor?.tier as CompetitorTierEnum) ?? CompetitorTierEnum.TIER1,
+        tier: (competitor?.tier as CompetitorTier) ?? CompetitorTier.Tier1,
       }}
       onSubmit={(values) => handleSubmit(values)}
       fieldConfig={{
@@ -83,7 +82,7 @@ const CompetitorForm = ({
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
-                  defaultValue={competitor?.tier ?? CompetitorTierEnum.TIER1}>
+                  defaultValue={competitor?.tier ?? CompetitorTier.Tier1}>
                   <SelectTrigger>
                     <SelectValue placeholder={t('CompetitorForm.Tier')} />
                   </SelectTrigger>

@@ -1,6 +1,7 @@
-import { FiligranProductEnum } from '@generated/models/FiligranProduct.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceDefinitionIdentifier } from '@graphql/generated';
+import {
+  FiligranProduct,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -46,7 +47,7 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
-        seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-1?product=${FiligranProductEnum.OPENCTI}`,
+        seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-1?product=${FiligranProduct.Opencti}`,
         titleProduct: 'opencti',
       }),
       undefined
@@ -73,7 +74,7 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
-        seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-2?product=${FiligranProductEnum.OPENAEV}`,
+        seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-2?product=${FiligranProduct.Openaev}`,
         titleProduct: 'openaev',
       }),
       undefined
@@ -172,7 +173,7 @@ describe('PrivateHomepageRoadmapSection', () => {
         filters: [
           {
             key: 'service_definition_identifier',
-            value: [ServiceDefinitionIdentifierEnum.XTM_PLATFORM_ROADMAP],
+            value: [ServiceDefinitionIdentifier.XtmPlatformRoadmap],
           },
         ],
       })

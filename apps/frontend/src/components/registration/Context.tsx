@@ -1,17 +1,16 @@
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { OrganizationCapability, PlatformIdentifier } from '@graphql/generated';
 import * as React from 'react';
 import { createContext } from 'react';
 
 export interface RegistrationState {
-  identifier?: PlatformIdentifierEnum;
+  identifier?: PlatformIdentifier;
   displayedIdentifier: string;
-  capability?: OrganizationCapabilityEnum;
+  capability?: OrganizationCapability;
 }
 
 export interface RegistrationProps {
-  identifier?: PlatformIdentifierEnum;
+  identifier?: PlatformIdentifier;
   children: React.ReactNode;
 }
 
@@ -20,7 +19,7 @@ export const RegistrationContext = createContext<RegistrationState>({
 });
 
 export const generateRegistrationContext = (
-  identifier?: PlatformIdentifierEnum
+  identifier?: PlatformIdentifier
 ): RegistrationState => {
   if (!identifier) {
     return { displayedIdentifier: '' };
@@ -31,7 +30,7 @@ export const generateRegistrationContext = (
   return {
     identifier,
     displayedIdentifier,
-    capability: OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+    capability: OrganizationCapability.ManagePlatformRegistration,
   };
 };
 

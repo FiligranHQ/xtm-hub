@@ -1,5 +1,5 @@
 import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
+import { ServiceDefinitionIdentifier } from '@graphql/generated';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { redirectToResource } from './resource';
@@ -16,7 +16,7 @@ vi.mock('../../../src/relay/server-portal-api-fetch', () => ({
 vi.mock('./utils/load');
 
 const BASE_URL = 'http://localhost:3002';
-const IDENTIFIER = ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS;
+const IDENTIFIER = ServiceDefinitionIdentifier.OpenaevScenarios;
 
 type LoadServiceInstancesResult = Awaited<
   ReturnType<typeof loadServiceInstances>
@@ -152,11 +152,11 @@ describe('redirectToResource', () => {
         {
           id: 'instance-target',
           service_definition: {
-            identifier: ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS,
+            identifier: ServiceDefinitionIdentifier.OpenaevScenarios,
           },
         },
       ],
-      expectedLocation: `${BASE_URL}/app/service/${ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS}/instance-target`,
+      expectedLocation: `${BASE_URL}/app/service/${ServiceDefinitionIdentifier.OpenaevScenarios}/instance-target`,
     },
   ];
 
@@ -198,7 +198,7 @@ describe('redirectToResource', () => {
         {
           id: 'instance-target',
           service_definition: {
-            identifier: ServiceDefinitionIdentifierEnum.OPENAEV_SCENARIOS,
+            identifier: ServiceDefinitionIdentifier.OpenaevScenarios,
           },
         },
       ] as LoadServiceInstancesResult);

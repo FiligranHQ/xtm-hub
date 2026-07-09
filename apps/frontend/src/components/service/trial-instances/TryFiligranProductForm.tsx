@@ -21,11 +21,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@filigran/ui';
-import { DeploymentRequestActivitySectorEnum } from '@generated/models/DeploymentRequestActivitySector.enum';
-import { DeploymentRequestJobTitleEnum } from '@generated/models/DeploymentRequestJobTitle.enum';
-import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesDeploymentRequestsAvailableQuery } from '@generated/trialInstancesDeploymentRequestsAvailableQuery.graphql';
+import {
+  DeploymentRequestActivitySector,
+  DeploymentRequestJobTitle,
+  DeploymentRequestUseCase,
+  PlatformIdentifier,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useContext, useState } from 'react';
@@ -34,9 +36,9 @@ import { z } from 'zod';
 
 export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
-  job_title: z.enum(DeploymentRequestJobTitleEnum),
-  activity_sector: z.enum(DeploymentRequestActivitySectorEnum),
-  use_case: z.enum(DeploymentRequestUseCaseEnum),
+  job_title: z.enum(DeploymentRequestJobTitle),
+  activity_sector: z.enum(DeploymentRequestActivitySector),
+  use_case: z.enum(DeploymentRequestUseCase),
   acceptTerms: z
     .boolean()
     .default(false)
@@ -49,7 +51,7 @@ interface TryFiligranProductFormProps {
   handleSubmit: (values: z.infer<typeof tryFiligranProductFormSchema>) => void;
   handleCloseSheet: (e: React.MouseEvent<HTMLButtonElement>) => void;
   deploymentRequestsAvailabilityQueryRef: PreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>;
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 export const TryFiligranProductForm = ({
   handleSubmit,
@@ -142,7 +144,7 @@ export const TryFiligranProductForm = ({
                   field={field}
                   label={t('Service.Trials.Form.JobTitle')}
                   placeholder={t('Service.Trials.Form.JobTitlePlaceholder')}
-                  values={Object.values(DeploymentRequestJobTitleEnum)}
+                  values={Object.values(DeploymentRequestJobTitle)}
                   translationNamespace="DeploymentRequestJobTitle"
                 />
               ),
@@ -156,7 +158,7 @@ export const TryFiligranProductForm = ({
                   placeholder={t(
                     'Service.Trials.Form.ActivitySectorPlaceholder'
                   )}
-                  values={Object.values(DeploymentRequestActivitySectorEnum)}
+                  values={Object.values(DeploymentRequestActivitySector)}
                   translationNamespace="DeploymentRequestActivitySector"
                 />
               ),

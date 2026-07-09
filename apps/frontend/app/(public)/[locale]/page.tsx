@@ -4,11 +4,11 @@ import type { PublicLocale } from '@/i18n/config';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
 import { isFeatureEnabled } from '@/utils/settings.service';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
 } from '@generated/seoServiceInstancesQuery.graphql';
+import { FeatureFlag } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 
 const Page = async ({
@@ -17,7 +17,7 @@ const Page = async ({
   params: Promise<{ locale: PublicLocale }>;
 }) => {
   const { locale } = await params;
-  const showHomepageV2 = await isFeatureEnabled(FeatureFlagEnum.HOME_PAGE_V2);
+  const showHomepageV2 = await isFeatureEnabled(FeatureFlag.HomePageV2);
 
   if (showHomepageV2) {
     return <Homepage locale={locale} />;

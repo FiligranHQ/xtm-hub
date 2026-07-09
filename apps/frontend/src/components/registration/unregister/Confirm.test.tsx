@@ -2,7 +2,7 @@ import { RegistrationContext } from '@/components/registration/Context';
 import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
 import { UnregisterConfirm } from '@/components/registration/unregister/Confirm';
 import testRender from '@/utils/test/test-render';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -17,7 +17,7 @@ const renderConfirm = (
     <RegistrationContext.Provider
       value={{
         displayedIdentifier:
-          PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
+          PlatformMetadataMapping[PlatformIdentifier.Opencti].name,
       }}>
       <UnregisterConfirm
         organizationId="org-id"

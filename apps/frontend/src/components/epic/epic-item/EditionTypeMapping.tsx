@@ -1,18 +1,17 @@
-import { EditionTypeEnum } from '@generated/models/EditionType.enum';
+import { EditionType } from '@graphql/generated';
 
 export interface EditionTypeMetadata {
   label: string;
 }
 
-export const EditionTypeMapping: Record<EditionTypeEnum, EditionTypeMetadata> =
-  {
-    [EditionTypeEnum.COMMUNITY_EDITION]: {
-      label: 'CE',
-    },
-    [EditionTypeEnum.ENTERPRISE_EDITION]: {
-      label: 'EE',
-    },
-    [EditionTypeEnum.PARTIAL_EE]: {
-      label: 'Partial EE',
-    },
-  };
+export const EditionTypeMapping: Record<EditionType, EditionTypeMetadata> = {
+  [EditionType.CommunityEdition]: {
+    label: 'CE',
+  },
+  [EditionType.EnterpriseEdition]: {
+    label: 'EE',
+  },
+  [EditionType.PartialEe]: {
+    label: 'Partial EE',
+  },
+};

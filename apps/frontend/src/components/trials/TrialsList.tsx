@@ -1,14 +1,14 @@
 'use client';
+import { PlatformIdentifier } from '@graphql/generated';
 
 import { TrialsTabQuotasPlatform } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatform';
 import TrialsTab from '@/components/trials/tab/TrialsTab';
 import { TrialsTabType } from '@/components/trials/trials.const';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 
 interface TrialsListProps {
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 
 const TrialsList = ({ platformIdentifier }: TrialsListProps) => {

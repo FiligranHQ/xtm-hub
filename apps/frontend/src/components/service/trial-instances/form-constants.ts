@@ -1,11 +1,11 @@
-import { DeploymentRequestPlatformRegionEnum } from '@generated/models/DeploymentRequestPlatformRegion.enum';
-import { DeploymentRequestUseCaseEnum } from '@generated/models/DeploymentRequestUseCase.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import {
+  DeploymentRequestPlatformRegion,
+  DeploymentRequestUseCase,
+  PlatformIdentifier,
+} from '@graphql/generated';
 
-export const REGIONS_VALUES = Object.values(
-  DeploymentRequestPlatformRegionEnum
-);
-export const REGIONS = Object.values(DeploymentRequestPlatformRegionEnum).map(
+export const REGIONS_VALUES = Object.values(DeploymentRequestPlatformRegion);
+export const REGIONS = Object.values(DeploymentRequestPlatformRegion).map(
   (region) => ({
     value: region,
     label: region.toUpperCase(),
@@ -13,17 +13,13 @@ export const REGIONS = Object.values(DeploymentRequestPlatformRegionEnum).map(
 );
 
 export const USE_CASES_BY_PLATFORM_IDENTIFIER: Record<
-  PlatformIdentifierEnum,
-  DeploymentRequestUseCaseEnum[]
+  PlatformIdentifier,
+  DeploymentRequestUseCase[]
 > = {
-  [PlatformIdentifierEnum.OPENAEV]: (
-    Object.values(
-      DeploymentRequestUseCaseEnum
-    ) as DeploymentRequestUseCaseEnum[]
-  ).filter((v) => v.startsWith('oaev_')),
-  [PlatformIdentifierEnum.OPENCTI]: (
-    Object.values(
-      DeploymentRequestUseCaseEnum
-    ) as DeploymentRequestUseCaseEnum[]
-  ).filter((v) => !v.startsWith('oaev_')),
+  [PlatformIdentifier.Openaev]: Object.values(DeploymentRequestUseCase).filter(
+    (v) => v.startsWith('oaev_')
+  ),
+  [PlatformIdentifier.Opencti]: Object.values(DeploymentRequestUseCase).filter(
+    (v) => !v.startsWith('oaev_')
+  ),
 };

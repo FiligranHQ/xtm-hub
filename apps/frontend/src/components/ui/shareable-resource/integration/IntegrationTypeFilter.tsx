@@ -10,7 +10,7 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
@@ -23,7 +23,7 @@ export const IntegrationTypeFilter = () => {
   const t = useTranslations();
 
   const options = useMemo(() => {
-    const allOptions = Object.values(IntegrationTypeEnum).map((feedType) => ({
+    const allOptions = Object.values(IntegrationType).map((feedType) => ({
       label: t(`Service.OpenctiIntegrations.Type.${feedType}`),
       value: feedType.toString(),
       children:
@@ -34,15 +34,13 @@ export const IntegrationTypeFilter = () => {
     }));
     const availableOption = allOptions
       .filter((option) =>
-        availableIntegrationTypes.includes(option.value as IntegrationTypeEnum)
+        availableIntegrationTypes.includes(option.value as IntegrationType)
       )
       .sort((a, b) => a.label.localeCompare(b.label));
     const comingSoonOption = allOptions
       .filter(
         (option) =>
-          !availableIntegrationTypes.includes(
-            option.value as IntegrationTypeEnum
-          )
+          !availableIntegrationTypes.includes(option.value as IntegrationType)
       )
       .sort((a, b) => a.label.localeCompare(b.label));
     return [...availableOption, ...comingSoonOption];

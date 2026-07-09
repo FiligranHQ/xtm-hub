@@ -3,11 +3,11 @@ import PublicServiceInstanceCard from '@/components/service/PublicServiceInstanc
 import { cn } from '@/lib/utils';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
-import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import ServiceLinksByTagsQueryGraphql, {
   serviceLinksByTagsQuery,
 } from '@generated/serviceLinksByTagsQuery.graphql';
+import { ServiceInstanceTag } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import React from 'react';
@@ -37,7 +37,7 @@ const Section = ({
 );
 
 interface RegistrationLearnMoreProps {
-  serviceInstanceTag: ServiceInstanceTagEnum;
+  serviceInstanceTag: ServiceInstanceTag;
 }
 
 export const RegistrationLearnMore = async ({
@@ -46,7 +46,7 @@ export const RegistrationLearnMore = async ({
   const response = await serverFetchGraphQL<serviceLinksByTagsQuery>(
     ServiceLinksByTagsQueryGraphql,
     {
-      tags: [ServiceInstanceTagEnum.TRIAL, serviceInstanceTag],
+      tags: [ServiceInstanceTag.Trial, serviceInstanceTag],
     },
     { cache: undefined, next: { revalidate: 3600 } }
   );
@@ -55,9 +55,7 @@ export const RegistrationLearnMore = async ({
     .serviceInstanceLinksByTags as unknown as seoServiceInstanceFragment$data[];
   const t = await getTranslations();
   const platformName =
-    serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
-      ? 'OpenCTI'
-      : 'OpenAEV';
+    serviceInstanceTag === ServiceInstanceTag.OpenCti ? 'OpenCTI' : 'OpenAEV';
 
   return (
     <>
@@ -112,7 +110,7 @@ export const RegistrationLearnMore = async ({
               width="1232"
               height="692"
               src={
-                serviceInstanceTag === ServiceInstanceTagEnum.OPENCTI
+                serviceInstanceTag === ServiceInstanceTag.OpenCti
                   ? `/opencti_ecosystem.png`
                   : '/openaev_ecosystem.png'
               }

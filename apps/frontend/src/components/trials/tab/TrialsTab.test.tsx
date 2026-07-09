@@ -1,7 +1,7 @@
 import TrialsTab from '@/components/trials/tab/TrialsTab';
 import { TrialsTabType } from '@/components/trials/trials.const';
 import testRender from '@/utils/test/test-render';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { act, fireEvent, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -56,7 +56,7 @@ vi.mock('@filigran/ui', () => ({
 }));
 
 const defaultProps = {
-  platformIdentifier: PlatformIdentifierEnum.OPENCTI,
+  platformIdentifier: PlatformIdentifier.Opencti,
 };
 
 describe('TrialsTab', () => {

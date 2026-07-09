@@ -8,15 +8,15 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
+import { OrderingMode } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
 interface SortControlsProps {
   orderByOptions: { label: string; value: string }[];
   onOrderByChange: (value: string) => void;
-  onOrderModeChange: (value: OrderingModeEnum) => void;
+  onOrderModeChange: (value: OrderingMode) => void;
   selectedOrderBy: string;
-  selectedOrderMode: OrderingModeEnum;
+  selectedOrderMode: OrderingMode;
   className?: string;
 }
 
@@ -58,12 +58,12 @@ export const SortControls = ({
         aria-label={`${t('SortControls.SortBy')} ${selectedOrderMode}`}
         onClick={() =>
           onOrderModeChange(
-            selectedOrderMode === OrderingModeEnum.ASC
-              ? OrderingModeEnum.DESC
-              : OrderingModeEnum.ASC
+            selectedOrderMode === OrderingMode.Asc
+              ? OrderingMode.Desc
+              : OrderingMode.Asc
           )
         }>
-        {selectedOrderMode === OrderingModeEnum.DESC ? (
+        {selectedOrderMode === OrderingMode.Desc ? (
           <ArrowUpwardIcon className="h-4 w-4" />
         ) : (
           <ArrowDownwardIcon className="h-4 w-4" />

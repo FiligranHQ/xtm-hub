@@ -311,6 +311,16 @@ describe('telemetryApp', () => {
         target_product: TelemetryTargetProduct.OPEN_CTI,
         tenant_id: 'c4a88438-abf8-4a76-8594-6df800434865',
       });
+
+      const [deployment] = await TestHelper.oneClickDeployment.loadAll({
+        resource_id: documentId,
+      });
+      expect(deployment).toBeDefined();
+      expect(deployment.platform_id).toBe(platform_id);
+      expect(deployment.tenant_id).toBe('c4a88438-abf8-4a76-8594-6df800434865');
+      expect(deployment.user_id).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
+      );
     });
     it('should send a OneClickDeployEvent without version and without tenant_id', async () => {
       vi.useFakeTimers();

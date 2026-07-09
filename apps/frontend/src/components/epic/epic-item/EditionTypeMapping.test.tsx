@@ -1,20 +1,20 @@
-import { EditionTypeEnum } from '@generated/models/EditionType.enum';
+import { EditionType } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 import { EditionTypeMapping } from './EditionTypeMapping';
 
 describe('EditionTypeMapping', () => {
   it.each`
-    editionType                           | expectedLabel
-    ${EditionTypeEnum.COMMUNITY_EDITION}  | ${'CE'}
-    ${EditionTypeEnum.ENTERPRISE_EDITION} | ${'EE'}
-    ${EditionTypeEnum.PARTIAL_EE}         | ${'Partial EE'}
+    editionType                      | expectedLabel
+    ${EditionType.CommunityEdition}  | ${'CE'}
+    ${EditionType.EnterpriseEdition} | ${'EE'}
+    ${EditionType.PartialEe}         | ${'Partial EE'}
   `(
     'maps $editionType with expected label',
     ({
       editionType,
       expectedLabel,
     }: {
-      editionType: EditionTypeEnum;
+      editionType: EditionType;
       expectedLabel: string;
     }) => {
       const metadata = EditionTypeMapping[editionType];
