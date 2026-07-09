@@ -70,13 +70,24 @@ describe('EpicItemFooter', () => {
     }
   );
 
-  it.each`
-    epicType                | documentId            | documentIdLabel       | shouldRenderIntegration
-    ${EpicType.Integration} | ${'document-image-1'} | ${'document-image-1'} | ${true}
-    ${EpicType.Integration} | ${null}               | ${'null'}             | ${false}
-    ${EpicType.Other}       | ${'document-image-1'} | ${'document-image-1'} | ${false}
-  `(
-    'renders integration block according to type and document id (epicType=$epicType, documentId=$documentIdLabel)',
+  it.each([
+    {
+      epicType: EpicType.Integration,
+      documentId: 'document-image-1',
+      shouldRenderIntegration: true,
+    },
+    {
+      epicType: EpicType.Integration,
+      documentId: null,
+      shouldRenderIntegration: false,
+    },
+    {
+      epicType: EpicType.Other,
+      documentId: 'document-image-1',
+      shouldRenderIntegration: false,
+    },
+  ])(
+    'renders integration block according to type and document id (epicType=$epicType, documentId=$documentId)',
     ({ epicType, documentId, shouldRenderIntegration }) => {
       // Given
       const environment = createMockEnvironment();
