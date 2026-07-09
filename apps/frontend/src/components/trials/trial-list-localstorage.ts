@@ -1,13 +1,13 @@
 import { TrialsTabType } from '@/components/trials/trials.const';
-import { DeploymentRequestOrderingEnum } from '@generated/models/DeploymentRequestOrdering.enum';
 import { OrderingMode } from '@generated/trialsListQuery.graphql';
+import { DeploymentRequestOrdering } from '@graphql/generated';
 import { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 
 export const useTrialsListLocalstorage = <U>(
   columns: ColumnDef<U>[],
   type: TrialsTabType,
-  defaultOrder: DeploymentRequestOrderingEnum,
+  defaultOrder: DeploymentRequestOrdering,
   defaultOrderMode: OrderingMode
 ) => {
   const [count, setCount, removeCount] = useLocalStorage(
@@ -20,7 +20,7 @@ export const useTrialsListLocalstorage = <U>(
       defaultOrderMode
     );
   const [orderBy, setOrderBy, removeOrderBy] =
-    useLocalStorage<DeploymentRequestOrderingEnum>(
+    useLocalStorage<DeploymentRequestOrdering>(
       `orderByTrialsList_${type}`,
       defaultOrder
     );

@@ -1,11 +1,10 @@
 import { OpenAevIconIcon, OpenCtiIconIcon } from '@filigran/icon';
-import { PlatformContractEnum } from '@generated/models/PlatformContract.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
 import { ServiceDefinitionIdentifier as ServiceDefinitionIdentifierFragment } from '@generated/serviceInstance_fragment.graphql';
 import {
+  PlatformContract,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
+  ServiceInstanceTag,
 } from '@graphql/generated';
 import { JSX } from 'react';
 
@@ -19,10 +18,10 @@ export interface PlatformMetadata {
 }
 
 export const PlatformMetadataMapping: Record<
-  PlatformIdentifierEnum,
+  PlatformIdentifier,
   PlatformMetadata
 > = {
-  [PlatformIdentifierEnum.OPENCTI]: {
+  [PlatformIdentifier.Opencti]: {
     name: 'OpenCTI',
     learnMorePublicUrl: '/cybersecurity-solutions/opencti-free-trial',
     learnMorePrivateUrl: '/app/service/opencti-free-trial',
@@ -30,7 +29,7 @@ export const PlatformMetadataMapping: Record<
     docUrl: 'https://docs.opencti.io/latest/administration/hub/',
     Icon: ({ className }) => <OpenCtiIconIcon className={className} />,
   },
-  [PlatformIdentifierEnum.OPENAEV]: {
+  [PlatformIdentifier.Openaev]: {
     name: 'OpenAEV',
     learnMorePublicUrl: '/cybersecurity-solutions/openaev-free-trial',
     learnMorePrivateUrl: '/app/service/openaev-free-trial',
@@ -40,22 +39,21 @@ export const PlatformMetadataMapping: Record<
   },
 };
 
-export const CONTRACT_LABEL_BY_CONTRACT: Record<PlatformContractEnum, string> =
-  {
-    [PlatformContractEnum.CE]: 'Contracts.CE',
-    [PlatformContractEnum.EE]: 'Contracts.EE',
-    [PlatformContractEnum.TRIAL]: 'Contracts.TRIAL',
-  };
+export const CONTRACT_LABEL_BY_CONTRACT: Record<PlatformContract, string> = {
+  [PlatformContract.Ce]: 'Contracts.CE',
+  [PlatformContract.Ee]: 'Contracts.EE',
+  [PlatformContract.Trial]: 'Contracts.TRIAL',
+};
 
 export const translateServiceDefinitionIdentifier = (
   serviceDefinitionIdentifier: ServiceDefinitionIdentifierFragment
 ): string => {
-  const platformIdentifierEnum =
+  const platformIdentifier =
     ServiceDefinitionIdentifierToPlatformIdentifier[
       serviceDefinitionIdentifier
-    ] ?? PlatformIdentifierEnum.OPENAEV;
+    ] ?? PlatformIdentifier.Openaev;
 
-  return PlatformMetadataMapping[platformIdentifierEnum].name;
+  return PlatformMetadataMapping[platformIdentifier].name;
 };
 
 export const ServiceDefinitionIdentifierToPlatformIdentifier: Partial<
@@ -66,11 +64,11 @@ export const ServiceDefinitionIdentifierToPlatformIdentifier: Partial<
 };
 
 export const serviceInstanceTagByPlatformIdentifier: Record<
-  PlatformIdentifierEnum,
-  ServiceInstanceTagEnum
+  PlatformIdentifier,
+  ServiceInstanceTag
 > = {
-  [PlatformIdentifierEnum.OPENCTI]: ServiceInstanceTagEnum.OPENCTI,
-  [PlatformIdentifierEnum.OPENAEV]: ServiceInstanceTagEnum.OPENAEV,
+  [PlatformIdentifier.Opencti]: ServiceInstanceTag.OpenCti,
+  [PlatformIdentifier.Openaev]: ServiceInstanceTag.OpenAev,
 };
 
 export const getRegisteredPlatformServiceIdentifier = (

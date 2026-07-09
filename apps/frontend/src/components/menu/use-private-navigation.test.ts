@@ -8,11 +8,11 @@ import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
 import {
   OrderingMode,
+  OrganizationCapability,
   PlatformIdentifier,
+  PortalCapability,
   ServiceDefinitionIdentifier,
   ServiceInstanceOrdering,
 } from '@graphql/generated';
@@ -70,21 +70,21 @@ vi.mock('@/lib/graphql-client', () => ({
 
 type RenderOptions = {
   selectedOrganizationId?: string;
-  capabilities?: PortalCapabilityEnum[];
-  organizationCapabilities?: OrganizationCapabilityEnum[];
+  capabilities?: PortalCapability[];
+  organizationCapabilities?: OrganizationCapability[];
   selectedOrganizationPersonalSpace?: boolean;
 };
 
-const buildHasCapability = (capabilities: PortalCapabilityEnum[]) => {
-  return (capability: PortalCapabilityEnum) =>
-    capabilities.includes(PortalCapabilityEnum.BYPASS) ||
+const buildHasCapability = (capabilities: PortalCapability[]) => {
+  return (capability: PortalCapability) =>
+    capabilities.includes(PortalCapability.Bypass) ||
     capabilities.includes(capability);
 };
 
 const buildHasOrganizationCapability = (
-  capabilities: OrganizationCapabilityEnum[]
+  capabilities: OrganizationCapability[]
 ) => {
-  return (capability: OrganizationCapabilityEnum) =>
+  return (capability: OrganizationCapability) =>
     capabilities.includes(capability);
 };
 
@@ -209,7 +209,7 @@ describe('usePrivateNavigation', () => {
   it('adds settings as a footer section when user is authorized', () => {
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
-      capabilities: [PortalCapabilityEnum.BYPASS],
+      capabilities: [PortalCapability.Bypass],
     });
 
     expect(result.current.sections.map((section) => section.key)).toEqual([
@@ -235,11 +235,11 @@ describe('usePrivateNavigation', () => {
   });
 
   it.each`
-    capabilities                                                                   | expectedSettingsLabels
-    ${[PortalCapabilityEnum.BYPASS]}                                               | ${['Parameter', 'Security', 'UseCase', 'Organization', 'Service', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor', 'NewsFeed']}
-    ${[PortalCapabilityEnum.READ_TRIALS]}                                          | ${['OpenCTITrial', 'OpenAEVTrial']}
-    ${[PortalCapabilityEnum.MODIFY_COMPETITORS]}                                   | ${['Competitor']}
-    ${[PortalCapabilityEnum.READ_TRIALS, PortalCapabilityEnum.MODIFY_COMPETITORS]} | ${['OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
+    capabilities                                                         | expectedSettingsLabels
+    ${[PortalCapability.Bypass]}                                         | ${['Parameter', 'Security', 'UseCase', 'Organization', 'Service', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor', 'NewsFeed']}
+    ${[PortalCapability.ReadTrials]}                                     | ${['OpenCTITrial', 'OpenAEVTrial']}
+    ${[PortalCapability.ModifyCompetitors]}                              | ${['Competitor']}
+    ${[PortalCapability.ReadTrials, PortalCapability.ModifyCompetitors]} | ${['OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
   `(
     'filters settings links according to portal capabilities $capabilities',
     ({ capabilities, expectedSettingsLabels }) => {
@@ -646,14 +646,14 @@ describe('usePrivateNavigation', () => {
 
   it.each`
     organizationCapabilities
-    ${[OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION]}
-    ${[OrganizationCapabilityEnum.MANAGE_ACCESS]}
+    ${[OrganizationCapability.AdministrateOrganization]}
+    ${[OrganizationCapability.ManageAccess]}
   `(
     'shows Users and Settings as footer sections when org capability allows it',
     ({ organizationCapabilities }) => {
       const { result } = renderUsePrivateNavigation({
         selectedOrganizationId: 'org-1',
-        capabilities: [PortalCapabilityEnum.BYPASS],
+        capabilities: [PortalCapability.Bypass],
         organizationCapabilities,
         selectedOrganizationPersonalSpace: false,
       });
@@ -694,10 +694,10 @@ describe('usePrivateNavigation', () => {
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
       organizationCapabilities: [
-        OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
+        OrganizationCapability.AdministrateOrganization,
       ],
       selectedOrganizationPersonalSpace: true,
-      capabilities: [PortalCapabilityEnum.BYPASS],
+      capabilities: [PortalCapability.Bypass],
     });
 
     expect(
@@ -710,7 +710,7 @@ describe('usePrivateNavigation', () => {
       selectedOrganizationId: 'org-1',
       organizationCapabilities: [],
       selectedOrganizationPersonalSpace: false,
-      capabilities: [PortalCapabilityEnum.BYPASS],
+      capabilities: [PortalCapability.Bypass],
     });
 
     expect(

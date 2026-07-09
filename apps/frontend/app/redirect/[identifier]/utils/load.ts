@@ -1,11 +1,6 @@
 import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 import { SettingsResponse } from '@/utils/settings.service';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
-import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
-import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
-import { ServiceInstanceOrderingEnum } from '@generated/models/ServiceInstanceOrdering.enum';
 import PlatformAssociatedOrganizationQueryGraphql, {
   platformAssociatedOrganizationQuery,
   platformAssociatedOrganizationQuery$data,
@@ -15,6 +10,13 @@ import ServiceInstancesListQueryGraphql, {
   serviceInstancesListQuery$data,
 } from '@generated/serviceInstancesListQuery.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
+import {
+  OrderingMode,
+  OrganizationCapability,
+  PortalCapability,
+  ServiceInstanceFilterKey,
+  ServiceInstanceOrdering,
+} from '@graphql/generated';
 
 interface MeResponse {
   data: {
@@ -26,8 +28,8 @@ interface MeResponse {
         name: string;
         personal_space: boolean;
       }[];
-      capabilities: { name: PortalCapabilityEnum }[];
-      selected_org_capabilities: OrganizationCapabilityEnum[];
+      capabilities: { name: PortalCapability }[];
+      selected_org_capabilities: OrganizationCapability[];
     };
   };
 }
@@ -81,11 +83,11 @@ export const loadServiceInstances = async (identifier: string) => {
     serviceInstancesListQuery
   >(ServiceInstancesListQueryGraphql, {
     count: 50,
-    orderBy: ServiceInstanceOrderingEnum.ORDERING,
-    orderMode: OrderingModeEnum.ASC,
+    orderBy: ServiceInstanceOrdering.Ordering,
+    orderMode: OrderingMode.Asc,
     filters: [
       {
-        key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
+        key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
         value: [identifier],
       },
     ],

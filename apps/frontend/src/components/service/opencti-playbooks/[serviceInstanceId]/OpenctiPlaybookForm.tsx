@@ -10,7 +10,7 @@ import {
 } from '@/utils/documents';
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentImageTypeEnum } from '@generated/models/DocumentImageType.enum';
+import { DocumentImageType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
@@ -83,8 +83,8 @@ export const OpenctiPlaybookForm = ({
       ({
         ...document,
         description: document?.description ?? descriptionValue,
-        images: transformToFileList(DocumentImageTypeEnum.IMAGE, document),
-        logo: transformToFileList(DocumentImageTypeEnum.LOGO, document),
+        images: transformToFileList(DocumentImageType.Image, document),
+        logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
         uploader_id: document?.uploader?.id ?? me?.id,
         uploader_organization_id:

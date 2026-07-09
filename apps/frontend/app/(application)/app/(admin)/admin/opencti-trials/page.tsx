@@ -1,13 +1,13 @@
 'use client';
 import GuardCapacityComponent from '@/components/AdminGuard';
-import { PortalCapabilityEnum } from '@generated/models/PortalCapability.enum';
+import { PortalCapability } from '@graphql/generated';
 import PageLoader from './page-loader';
 
 // Component
 const Page = () => {
   return (
     <GuardCapacityComponent
-      portalCapabilityRestriction={[PortalCapabilityEnum.READ_TRIALS]}
+      portalCapabilityRestriction={[PortalCapability.ReadTrials]}
       displayError>
       <PageLoader />
     </GuardCapacityComponent>

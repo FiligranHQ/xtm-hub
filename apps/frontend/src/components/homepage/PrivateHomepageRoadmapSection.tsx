@@ -1,13 +1,15 @@
 import XtmRoadmap from '@/components/homepage/XtmRoadmap';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
-import { OrderingModeEnum } from '@generated/models/OrderingMode.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceInstanceFilterKeyEnum } from '@generated/models/ServiceInstanceFilterKey.enum';
-import { ServiceInstanceOrderingEnum } from '@generated/models/ServiceInstanceOrdering.enum';
 import ServiceInstancesListQuery, {
   serviceInstancesListQuery,
 } from '@generated/serviceInstancesListQuery.graphql';
-import { PlatformIdentifier } from '@graphql/generated';
+import {
+  OrderingMode,
+  PlatformIdentifier,
+  ServiceDefinitionIdentifier,
+  ServiceInstanceFilterKey,
+  ServiceInstanceOrdering,
+} from '@graphql/generated';
 
 const PRIVATE_ROADMAP_BASE_PATH = '/app/service/xtm_platform_roadmap';
 
@@ -23,12 +25,12 @@ const PrivateHomepageRoadmapSection = async ({
     {
       count: 1,
       cursor: null,
-      orderBy: ServiceInstanceOrderingEnum.NAME,
-      orderMode: OrderingModeEnum.ASC,
+      orderBy: ServiceInstanceOrdering.Name,
+      orderMode: OrderingMode.Asc,
       filters: [
         {
-          key: ServiceInstanceFilterKeyEnum.SERVICE_DEFINITION_IDENTIFIER,
-          value: [ServiceDefinitionIdentifierEnum.XTM_PLATFORM_ROADMAP],
+          key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
+          value: [ServiceDefinitionIdentifier.XtmPlatformRoadmap],
         },
       ],
       searchTerm: null,

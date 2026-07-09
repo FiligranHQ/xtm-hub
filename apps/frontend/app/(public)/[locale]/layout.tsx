@@ -9,7 +9,7 @@ import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import { Button } from '@filigran/ui/servers';
 import '@filigran/ui/theme.css';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
+import { FeatureFlag } from '@graphql/generated';
 import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import '@styles/globals.css';
 import { Metadata } from 'next';
@@ -44,9 +44,7 @@ const RootLayout = async ({
   }
   setRequestLocale(locale);
   const t = await getTranslations();
-  const isHomePageV2Enabled = await isFeatureEnabled(
-    FeatureFlagEnum.HOME_PAGE_V2
-  );
+  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
 
   return (
     <ReactQueryProvider>

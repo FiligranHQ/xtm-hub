@@ -7,11 +7,11 @@ import {
 import { UseTranslationsProps } from '@/i18n/config';
 import { AddIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import Link from 'next/link';
 
 interface ConnectPlatformButtonProps {
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
   t: UseTranslationsProps;
 }
 

@@ -6,7 +6,7 @@ import { SortControls } from '@/components/ui/SortControls';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { cn } from '@/lib/utils';
 import { debounceHandleInput } from '@/utils/debounce';
-import { DocumentOrderingEnum } from '@generated/models/DocumentOrdering.enum';
+import { DocumentOrdering } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
@@ -53,9 +53,9 @@ export const ServiceListHeader = ({
     useServiceListLocalStorage(localStorageKey);
 
   const sortOptions = [
-    DocumentOrderingEnum.NAME,
-    DocumentOrderingEnum.CREATED_AT,
-    DocumentOrderingEnum.UPDATED_AT,
+    DocumentOrdering.Name,
+    DocumentOrdering.CreatedAt,
+    DocumentOrdering.UpdatedAt,
   ].map((value) => ({
     value,
     label: t(`DocumentOrdering.${value}`),
@@ -84,9 +84,7 @@ export const ServiceListHeader = ({
 
           <SortControls
             orderByOptions={sortOptions}
-            onOrderByChange={(value) =>
-              setOrderBy(value as DocumentOrderingEnum)
-            }
+            onOrderByChange={(value) => setOrderBy(value as DocumentOrdering)}
             onOrderModeChange={setOrderMode}
             selectedOrderMode={orderMode}
             selectedOrderBy={orderBy}

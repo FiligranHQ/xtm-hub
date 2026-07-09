@@ -2,8 +2,8 @@ import { RegistrationContext } from '@/components/registration/Context';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 import testRender from '@/utils/test/test-render';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
+import { PlatformIdentifier } from '@graphql/generated';
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -31,7 +31,7 @@ const renderForm = (
     <RegistrationContext.Provider
       value={{
         displayedIdentifier:
-          PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name,
+          PlatformMetadataMapping[PlatformIdentifier.Opencti].name,
       }}>
       <RegisterOrganizationForm
         userOrganizationsQueryData={orgs}

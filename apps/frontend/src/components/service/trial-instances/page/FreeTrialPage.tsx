@@ -12,14 +12,16 @@ import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader'
 import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { APP_PATH } from '@/utils/path/constant';
-import { DeploymentRequestSourceEnum } from '@generated/models/DeploymentRequestSource.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import {
+  DeploymentRequestSource,
+  OrganizationCapability,
+  PlatformIdentifier,
+} from '@graphql/generated';
 
 interface FreeTrialPageProps {
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
   openTrialForm: boolean;
-  source: DeploymentRequestSourceEnum;
+  source: DeploymentRequestSource;
 }
 
 const FreeTrialPage = ({
@@ -57,8 +59,8 @@ const FreeTrialPage = ({
             <GuardCapacityComponent
               shouldNotBePersonalSpace
               capacityRestriction={[
-                OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION,
-                OrganizationCapabilityEnum.MANAGE_PLATFORM_REGISTRATION,
+                OrganizationCapability.AdministrateOrganization,
+                OrganizationCapability.ManagePlatformRegistration,
               ]}>
               <StartTrialButton
                 openForm={openTrialForm}

@@ -21,8 +21,7 @@ import {
 import { MoreVertIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
+import { IntegrationType, ServiceRestriction } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -55,20 +54,20 @@ const ServiceCard = ({
   });
 
   const userCanUpdate = useServiceCapability(
-    ServiceRestrictionEnum.UPLOAD,
+    ServiceRestriction.Upload,
     serviceInstance
   );
 
   const userCanDelete = useServiceCapability(
-    ServiceRestrictionEnum.DELETE,
+    ServiceRestriction.Delete,
     serviceInstance
   );
 
   const onClickOnUpdate = () => {
     if (document && isIntegrationItem(document)) {
       setIntegrationType(
-        (document.integration_type as IntegrationTypeEnum) ??
-          IntegrationTypeEnum.CSV_FEED
+        (document.integration_type as IntegrationType) ??
+          IntegrationType.CsvFeed
       );
     }
 

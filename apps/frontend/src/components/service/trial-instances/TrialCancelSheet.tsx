@@ -13,8 +13,8 @@ import {
   FormMessage,
   toast,
 } from '@filigran/ui';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMutation } from 'react-relay';
@@ -29,7 +29,7 @@ interface TrialCancelSheetProps {
   isCancellationDefinitive: boolean;
   open: boolean;
   setOpen: (open: boolean) => void;
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 
 const REASONS = [

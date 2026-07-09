@@ -1,9 +1,9 @@
 import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import SettingsQuery, {
   settingsQuery,
   settingsQuery$data,
 } from '@generated/settingsQuery.graphql';
+import { FeatureFlag } from '@graphql/generated';
 
 let cachedFeatureFlags: string[];
 
@@ -12,7 +12,7 @@ export interface SettingsResponse {
 }
 
 export async function isFeatureEnabled(
-  flagName: FeatureFlagEnum
+  flagName: FeatureFlag
 ): Promise<boolean> {
   if (cachedFeatureFlags === undefined) {
     try {

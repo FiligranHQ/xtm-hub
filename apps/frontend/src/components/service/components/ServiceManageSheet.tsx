@@ -1,10 +1,10 @@
 'use client';
 import { Button, toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { ServiceRestriction } from '@graphql/generated';
 
 import { useServiceContext } from '@/components/service/components/ServiceContext';
 import { ServiceFormValues } from '@/components/service/components/subscribable-services.types';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import useServiceCapability from '@/hooks/use-service-capability';
@@ -44,7 +44,7 @@ export const ServiceManageSheet = ({
   } = useServiceContext();
 
   const userCanUpdate = useServiceCapability(
-    ServiceRestrictionEnum.UPLOAD,
+    ServiceRestriction.Upload,
     serviceInstance
   );
 

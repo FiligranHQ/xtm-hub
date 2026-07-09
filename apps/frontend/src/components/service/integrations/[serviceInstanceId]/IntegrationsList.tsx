@@ -11,6 +11,7 @@ import { PaginationControls } from '@/components/ui/pagination/PaginationControl
 import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
 import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/IntegrationFilters';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
+import { PlatformIdentifier } from '@graphql/generated';
 
 import {
   documentItem,
@@ -29,7 +30,6 @@ import {
   documentsQuery,
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { PaginationState } from '@tanstack/react-table';
 import { useState } from 'react';
@@ -94,9 +94,7 @@ const IntegrationsList = ({
     },
     [ServiceListFilterKey.ProductVersion]: {
       node: (
-        <ProductVersionFilter
-          platformIdentifier={PlatformIdentifierEnum.OPENCTI}
-        />
+        <ProductVersionFilter platformIdentifier={PlatformIdentifier.Opencti} />
       ),
       reset: removeProductVersions,
     },

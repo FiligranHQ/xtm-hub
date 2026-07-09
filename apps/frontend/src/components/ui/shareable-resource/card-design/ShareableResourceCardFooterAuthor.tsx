@@ -6,7 +6,7 @@ import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-reso
 import { Avatar } from '@filigran/ui/clients';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentMetadataKeyCodeEnum } from '@generated/models/DocumentMetadataKeyCode.enum';
+import { DocumentMetadataKeyCode } from '@graphql/generated';
 import { ReactNode } from 'react';
 
 interface ShareableResourceCardFooterAuthorProps {
@@ -22,9 +22,7 @@ export const ShareableResourceCardFooterAuthor = ({
   extraContent,
 }: ShareableResourceCardFooterAuthorProps) => {
   let documentMetadata;
-  if (
-    docHasMetadata(document, DocumentMetadataKeyCodeEnum.INTEGRATION_SUBTYPE)
-  ) {
+  if (docHasMetadata(document, DocumentMetadataKeyCode.IntegrationSubtype)) {
     documentMetadata = getIntegrationSubTypeMetadata(
       document.integration_subtype
     );

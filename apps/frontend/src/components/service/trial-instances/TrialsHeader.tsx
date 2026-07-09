@@ -1,18 +1,18 @@
 'use client';
+import { PlatformIdentifier } from '@graphql/generated';
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
 interface TrialsHeaderProps {
   actions?: React.ReactNode;
-  platformIdentifier?: PlatformIdentifierEnum;
+  platformIdentifier?: PlatformIdentifier;
 }
 
 export const TrialsHeader = ({
   actions,
-  platformIdentifier = PlatformIdentifierEnum.OPENCTI,
+  platformIdentifier = PlatformIdentifier.Opencti,
 }: TrialsHeaderProps) => {
   const t = useTranslations();
   const platformName = PlatformMetadataMapping[platformIdentifier].name;

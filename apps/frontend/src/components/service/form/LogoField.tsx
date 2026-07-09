@@ -11,7 +11,7 @@ import {
 import { TooltipProvider } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { DocumentSourceTypeEnum } from '@generated/models/DocumentSourceType.enum';
+import { DocumentSourceType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
@@ -49,9 +49,7 @@ export const ServiceFormLogoField = ({
                   {(logo as ExistingFile)?.file_name ?? (logo as NewFile)?.name}
                 </div>
                 <Button
-                  disabled={
-                    logo.source_type === DocumentSourceTypeEnum.EXTERNAL
-                  }
+                  disabled={logo.source_type === DocumentSourceType.External}
                   variant="outline-destructive"
                   size="icon"
                   type="button"
@@ -80,18 +78,18 @@ export const ServiceFormLogoField = ({
             if (e.target?.files) {
               for (const image of Array.from(e.target.files)) {
                 const extendedImage = image as NewFile & {
-                  source_type: DocumentSourceTypeEnum;
+                  source_type: DocumentSourceType;
                 };
                 extendedImage.preview = await fileToBase64(image as File);
                 extendedImage.id = new Date().getTime().toString();
-                extendedImage.source_type = DocumentSourceTypeEnum.INTERNAL;
+                extendedImage.source_type = DocumentSourceType.Internal;
                 localImages.push(extendedImage);
               }
             }
             field.onChange(localImages);
             return false;
           }}
-          disabled={logo?.source_type === DocumentSourceTypeEnum.EXTERNAL}
+          disabled={logo?.source_type === DocumentSourceType.External}
           texts={{
             selectFile: t('Service.Form.UploadLogo'),
             noFile: t('Service.Vault.FileForm.NoDocument'),

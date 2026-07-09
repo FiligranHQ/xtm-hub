@@ -24,11 +24,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@filigran/ui/clients';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
-import { OrganizationCapabilityEnum } from '@generated/models/OrganizationCapability.enum';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
+import { FeatureFlag, OrganizationCapability } from '@graphql/generated';
 import Logo from '@public/logo.svg';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
@@ -46,7 +45,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
   const router = useRouter();
   const t = useTranslations();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlagEnum.HOME_PAGE_V2);
+  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
 
   // Legitimate effect: close the menu on route change.
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -54,9 +53,9 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
   const canManageUser =
     hasOrganizationCapability &&
     (hasOrganizationCapability(
-      OrganizationCapabilityEnum.ADMINISTRATE_ORGANIZATION
+      OrganizationCapability.AdministrateOrganization
     ) ||
-      hasOrganizationCapability(OrganizationCapabilityEnum.MANAGE_ACCESS));
+      hasOrganizationCapability(OrganizationCapability.ManageAccess));
 
   return (
     <header

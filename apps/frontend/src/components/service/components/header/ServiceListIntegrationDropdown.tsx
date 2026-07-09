@@ -7,11 +7,11 @@ import {
   DropdownMenuTrigger,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { IntegrationTypeEnum } from '@generated/models/IntegrationType.enum';
+import { IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
 interface ServiceListIntegrationDropdownProps {
-  onIntegrationTypeSelect: (integrationType: IntegrationTypeEnum) => void;
+  onIntegrationTypeSelect: (integrationType: IntegrationType) => void;
 }
 
 export const ServiceListIntegrationDropdown = ({
@@ -31,28 +31,26 @@ export const ServiceListIntegrationDropdown = ({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={() => onIntegrationTypeSelect(IntegrationTypeEnum.CSV_FEED)}>
+          onClick={() => onIntegrationTypeSelect(IntegrationType.CsvFeed)}>
           {t(`Service.OpenctiIntegrations.Type.csv_feed`)}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() =>
-            onIntegrationTypeSelect(IntegrationTypeEnum.TAXII_FEED)
-          }>
+          onClick={() => onIntegrationTypeSelect(IntegrationType.TaxiiFeed)}>
           {t(`Service.OpenctiIntegrations.Type.taxii_feed`)}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => onIntegrationTypeSelect(IntegrationTypeEnum.STREAM)}>
+          onClick={() => onIntegrationTypeSelect(IntegrationType.Stream)}>
           {t(`Service.OpenctiIntegrations.Type.stream`)}
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={() =>
-            onIntegrationTypeSelect(IntegrationTypeEnum.THIRD_PARTY_INTEGRATION)
+            onIntegrationTypeSelect(IntegrationType.ThirdPartyIntegration)
           }>
           {t(`Service.OpenctiIntegrations.Type.third_party_integration`)}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => onIntegrationTypeSelect(IntegrationTypeEnum.RSS_FEED)}>
+          onClick={() => onIntegrationTypeSelect(IntegrationType.RssFeed)}>
           {t(`Service.OpenctiIntegrations.Type.rss_feed`)}
         </DropdownMenuItem>
       </DropdownMenuContent>

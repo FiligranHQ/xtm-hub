@@ -8,7 +8,7 @@ import {
   FormMessage,
   Textarea,
 } from '@filigran/ui';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
@@ -18,7 +18,7 @@ interface ReachSalesDialogFormProps {
   isDialogOpen: boolean;
   setIsDialogOpen: (isOpen: boolean) => void;
   onSubmit: (message: string) => void;
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
 }
 
 const reachSalesSchema = z.object({

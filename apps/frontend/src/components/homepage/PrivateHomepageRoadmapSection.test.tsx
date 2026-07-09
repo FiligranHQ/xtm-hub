@@ -1,5 +1,7 @@
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { PlatformIdentifier } from '@graphql/generated';
+import {
+  PlatformIdentifier,
+  ServiceDefinitionIdentifier,
+} from '@graphql/generated';
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -163,7 +165,7 @@ describe('PrivateHomepageRoadmapSection', () => {
         filters: [
           {
             key: 'service_definition_identifier',
-            value: [ServiceDefinitionIdentifierEnum.XTM_PLATFORM_ROADMAP],
+            value: [ServiceDefinitionIdentifier.XtmPlatformRoadmap],
           },
         ],
       })

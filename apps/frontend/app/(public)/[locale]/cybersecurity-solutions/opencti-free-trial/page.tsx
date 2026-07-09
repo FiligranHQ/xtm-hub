@@ -5,8 +5,7 @@ import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
 import { GradientButton } from '@filigran/ui/servers';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceInstanceTagEnum } from '@generated/models/ServiceInstanceTag.enum';
+import { PlatformIdentifier, ServiceInstanceTag } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
@@ -31,7 +30,7 @@ const Page = async ({
       <BreadcrumbNav value={breadcrumbs} />
       <RelayProvider>
         <TrialsHeader
-          platformIdentifier={PlatformIdentifierEnum.OPENCTI}
+          platformIdentifier={PlatformIdentifier.Opencti}
           actions={
             <GradientButton className="bg-white dark:bg-none">
               <Link href="/redirect/create-free-trial">
@@ -40,9 +39,9 @@ const Page = async ({
             </GradientButton>
           }
         />
-        <TrialsLearnMore platformIdentifier={PlatformIdentifierEnum.OPENCTI} />
+        <TrialsLearnMore platformIdentifier={PlatformIdentifier.Opencti} />
         <RegistrationLearnMore
-          serviceInstanceTag={ServiceInstanceTagEnum.OPENCTI}
+          serviceInstanceTag={ServiceInstanceTag.OpenCti}
         />
       </RelayProvider>
     </>

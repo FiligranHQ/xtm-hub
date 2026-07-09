@@ -7,36 +7,35 @@ import {
 } from '@/utils/path/constant';
 import { buildPlatformHoverLinks, isTrial } from '@/utils/platform';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
-import { DeploymentRequestHubStatusEnum } from '@generated/models/DeploymentRequestHubStatus.enum';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
-import { ServiceDefinitionIdentifierEnum } from '@generated/models/ServiceDefinitionIdentifier.enum';
-import { ServiceInstanceCreationStatusEnum } from '@generated/models/ServiceInstanceCreationStatus.enum';
 import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { PlatformIdentifier } from '@graphql/generated';
+import {
+  DeploymentRequestHubStatus,
+  PlatformIdentifier,
+  ServiceDefinitionIdentifier,
+  ServiceInstanceCreationStatus,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
 export const isExternalService = (
-  service_definition_identifier: ServiceDefinitionIdentifierEnum
+  service_definition_identifier: ServiceDefinitionIdentifier
 ) =>
   [
-    ServiceDefinitionIdentifierEnum.LINK,
-    ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION,
-    ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION,
+    ServiceDefinitionIdentifier.Link,
+    ServiceDefinitionIdentifier.OpenctiRegistration,
+    ServiceDefinitionIdentifier.OpenaevRegistration,
   ].includes(service_definition_identifier);
 
 export const platformIdentifierMappedByShareableResourceType: Record<
   ShareableResourceType,
-  PlatformIdentifierEnum
+  PlatformIdentifier
 > = {
-  [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]:
-    PlatformIdentifierEnum.OPENCTI,
-  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: PlatformIdentifierEnum.OPENCTI,
-  [ShareableResourceType.OPENCTI_INTEGRATION]: PlatformIdentifierEnum.OPENCTI,
-  [ShareableResourceType.OPENAEV_SCENARIO]: PlatformIdentifierEnum.OPENAEV,
-  [ShareableResourceType.OPENCTI_PLAYBOOK]: PlatformIdentifierEnum.OPENCTI,
+  [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: PlatformIdentifier.Opencti,
+  [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: PlatformIdentifier.Opencti,
+  [ShareableResourceType.OPENCTI_INTEGRATION]: PlatformIdentifier.Opencti,
+  [ShareableResourceType.OPENAEV_SCENARIO]: PlatformIdentifier.Openaev,
+  [ShareableResourceType.OPENCTI_PLAYBOOK]: PlatformIdentifier.Opencti,
 };
 
 export const isExpired = (endDate: Date | undefined | null): boolean => {
@@ -53,10 +52,10 @@ export const getDisplayDays = (
   if (
     !platform.subscription?.end_date ||
     [
-      DeploymentRequestHubStatusEnum.EXPIRED,
-      DeploymentRequestHubStatusEnum.CANCELLED,
+      DeploymentRequestHubStatus.Expired,
+      DeploymentRequestHubStatus.Cancelled,
     ].includes(
-      platform.deployment_request?.hub_status as DeploymentRequestHubStatusEnum
+      platform.deployment_request?.hub_status as DeploymentRequestHubStatus
     )
   ) {
     return platform.deployment_request?.hub_status;
@@ -64,13 +63,13 @@ export const getDisplayDays = (
 
   if (
     platform.deployment_request?.hub_status ===
-    DeploymentRequestHubStatusEnum.QUEUED
+    DeploymentRequestHubStatus.Queued
   ) {
     return 'Requested';
   }
   if (
     platform.subscription?.service_instance?.creation_status ===
-    ServiceInstanceCreationStatusEnum.PENDING
+    ServiceInstanceCreationStatus.Pending
   ) {
     return 'Provisioning';
   }
@@ -130,11 +129,11 @@ export const registeredPlatformToServiceInstanceCardData = (
   t: ReturnType<typeof useTranslations>
 ): ServiceInstanceCardData => {
   const cardBackgroundByServiceMap: Partial<
-    Record<ServiceDefinitionIdentifierEnum, string>
+    Record<ServiceDefinitionIdentifier, string>
   > = {
-    [ServiceDefinitionIdentifierEnum.OPENCTI_REGISTRATION]:
+    [ServiceDefinitionIdentifier.OpenctiRegistration]:
       'bg-gradient-to-br from-[#05105A] via-[#095298] to-[#05105A]',
-    [ServiceDefinitionIdentifierEnum.OPENAEV_REGISTRATION]:
+    [ServiceDefinitionIdentifier.OpenaevRegistration]:
       'bg-gradient-to-br from-[#0F1E38] via-[#0A6D6A] to-[#0F1E38]',
   };
   const platformIdentifier = platform.identifier as ServiceDefinitionIdentifier;
@@ -143,11 +142,10 @@ export const registeredPlatformToServiceInstanceCardData = (
     url: platform.url,
     disableCard:
       [
-        DeploymentRequestHubStatusEnum.EXPIRED,
-        DeploymentRequestHubStatusEnum.CANCELLED,
+        DeploymentRequestHubStatus.Expired,
+        DeploymentRequestHubStatus.Cancelled,
       ].includes(
-        platform.deployment_request
-          ?.hub_status as DeploymentRequestHubStatusEnum
+        platform.deployment_request?.hub_status as DeploymentRequestHubStatus
       ) || isExpired(platform.subscription?.end_date),
     hoverLinks: buildPlatformHoverLinks(platform, t),
   };
@@ -187,7 +185,7 @@ const computeUrl = (
 ) => {
   const instanceLink = instance.links?.[0]?.url;
   const serviceDefinitionIdentifier = instance.service_definition!
-    .identifier as ServiceDefinitionIdentifierEnum;
+    .identifier as ServiceDefinitionIdentifier;
   if (isExternalService(serviceDefinitionIdentifier) && instanceLink)
     return instanceLink as string;
   if (seo) {
@@ -228,11 +226,11 @@ export const publicServiceInstanceToInstanceCardData = (
   return {
     id: instance.id,
     isLinkDisabled:
-      instance.creation_status === ServiceInstanceCreationStatusEnum.PENDING,
+      instance.creation_status === ServiceInstanceCreationStatus.Pending,
     name: localizedCardName(instance, t),
     description: localizedCardDescription(instance, t),
     displayLinkArrow: isExternalService(
-      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
+      instance.service_definition!.identifier as ServiceDefinitionIdentifier
     ),
     illustrationDocumentUrl: computeIllustrationDocumentUrl(
       instance.id,
@@ -257,7 +255,7 @@ export const seoServiceInstanceToInstanceCardData = (
     slug: instance.slug as string,
     description: localizedCardDescription(instance, t),
     displayLinkArrow: isExternalService(
-      instance.service_definition!.identifier as ServiceDefinitionIdentifierEnum
+      instance.service_definition!.identifier as ServiceDefinitionIdentifier
     ),
     illustrationDocumentUrl: computeIllustrationDocumentUrl(
       instance.id,

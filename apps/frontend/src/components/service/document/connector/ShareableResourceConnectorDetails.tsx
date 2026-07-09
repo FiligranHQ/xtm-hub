@@ -6,7 +6,7 @@ import { getIntegrationSubTypeMetadata } from '@/components/service/integrations
 import { roundToNearest } from '@/lib/utils';
 import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
 import { Badge, Button } from '@filigran/ui/servers';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as React from 'react';
@@ -36,8 +36,7 @@ export const ShareableResourceConnectorDetails = ({
   compatibilityItem,
 }: ShareableResourceConnectorDetailsProps) => {
   const t = useTranslations();
-  const platformName =
-    PlatformMetadataMapping[PlatformIdentifierEnum.OPENCTI].name;
+  const platformName = PlatformMetadataMapping[PlatformIdentifier.Opencti].name;
   const connectorMetadata = getIntegrationSubTypeMetadata(
     connectorDetails?.integration_subtype ?? undefined
   );

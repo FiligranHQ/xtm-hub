@@ -6,16 +6,16 @@ import { RegistrationContextProvider } from '@/components/registration/Context';
 import { Unregister } from '@/components/registration/unregister/Index';
 import useDecodedQuery from '@/hooks/use-decoded-query';
 import useMountingLoader from '@/hooks/use-mounting-loader';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
 import RegisterCanUnregisterPlatformQueryGraphql, {
   registerCanUnregisterPlatformQuery,
 } from '@generated/registerCanUnregisterPlatformQuery.graphql';
+import { PlatformIdentifier } from '@graphql/generated';
 import { redirect, useParams } from 'next/navigation';
 import { useQueryLoader } from 'react-relay';
 
 export const PageLoader = () => {
-  const { identifier } = useParams<{ identifier: PlatformIdentifierEnum }>();
-  if (!Object.values(PlatformIdentifierEnum).includes(identifier)) {
+  const { identifier } = useParams<{ identifier: PlatformIdentifier }>();
+  if (!Object.values(PlatformIdentifier).includes(identifier)) {
     return (
       <PublicPathError
         error={{

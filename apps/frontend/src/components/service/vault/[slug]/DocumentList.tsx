@@ -39,13 +39,15 @@ import {
 } from '@generated/documentItem_fragment.graphql';
 import { documentsList$key } from '@generated/documentsList.graphql';
 import {
-  DocumentOrdering,
-  OrderingMode,
   documentsQuery,
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
-import { ServiceRestrictionEnum } from '@generated/models/ServiceRestriction.enum';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import {
+  DocumentOrdering,
+  OrderingMode,
+  ServiceRestriction,
+} from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -81,7 +83,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
   >(documentsFragment, queryData);
 
   const canManageService = serviceInstance?.capabilities.includes(
-    ServiceRestrictionEnum.MANAGE_ACCESS
+    ServiceRestriction.ManageAccess
   );
 
   const documentData: documentItem_fragment$data[] = data.documents.edges.map(
@@ -151,7 +153,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
               </IconActionsItem>
             </GuardCapacityComponent>
             {serviceInstance?.capabilities.some(
-              (capa) => capa?.toUpperCase() === ServiceRestrictionEnum.UPLOAD
+              (capa) => capa?.toUpperCase() === ServiceRestriction.Upload
             ) && (
               <IconActionsItem onClick={() => setEditDocument(row.original)}>
                 {t('Utils.Update')}
@@ -169,7 +171,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
               </IconActionsItem>
             </GuardCapacityComponent>
             {serviceInstance?.capabilities.some(
-              (capa) => capa?.toUpperCase() === ServiceRestrictionEnum.DELETE
+              (capa) => capa?.toUpperCase() === ServiceRestriction.Delete
             ) && (
               <IconActionsItem onClick={() => setDeleteDocument(row.original)}>
                 {t('Utils.Delete')}
@@ -262,7 +264,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
     },
   ];
   const userCanUpdate = useServiceCapability(
-    ServiceRestrictionEnum.UPLOAD,
+    ServiceRestriction.Upload,
     serviceInstance
   );
   return (

@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/ui/clients';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
 interface ShareableResourceCardVersionProps {
@@ -23,7 +23,7 @@ export const ShareableResourceCardVersion = ({
   className,
 }: ShareableResourceCardVersionProps) => {
   const t = useTranslations();
-  const { platforms } = useRegisteredPlatforms(PlatformIdentifierEnum.OPENCTI, {
+  const { platforms } = useRegisteredPlatforms(PlatformIdentifier.Opencti, {
     onlyActive: true,
   });
   const { platformToBeUpdated, incompatiblePlatformsCount } =

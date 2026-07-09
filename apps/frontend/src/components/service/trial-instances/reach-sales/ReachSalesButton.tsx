@@ -5,14 +5,14 @@ import { DialogInformative } from '@/components/ui/Dialog';
 import { ArrowRightAltIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { Button, GradientButton } from '@filigran/ui/servers';
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 interface ReachSalesButtonProps {
   variant: 'default' | 'gradient' | 'outline-primary';
-  platformIdentifier: PlatformIdentifierEnum;
+  platformIdentifier: PlatformIdentifier;
   platformId?: string;
 }
 

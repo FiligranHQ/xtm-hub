@@ -1,4 +1,4 @@
-import { PlatformIdentifierEnum } from '@generated/models/PlatformIdentifier.enum';
+import { PlatformIdentifier } from '@graphql/generated';
 import { NextRequest } from 'next/server';
 import { redirectToCreateFreeTrial } from './create-free-trial';
 import { redirectToFreeTrial } from './free-trial';
@@ -22,34 +22,34 @@ export async function GET(
       return redirectToRegistration(
         request,
         'register',
-        PlatformIdentifierEnum.OPENCTI
+        PlatformIdentifier.Opencti
       );
     case 'unregister-opencti':
       return redirectToRegistration(
         request,
         'unregister',
-        PlatformIdentifierEnum.OPENCTI
+        PlatformIdentifier.Opencti
       );
     case 'register-openaev':
       return redirectToRegistration(
         request,
         'register',
-        PlatformIdentifierEnum.OPENAEV
+        PlatformIdentifier.Openaev
       );
     case 'unregister-openaev':
       return redirectToRegistration(
         request,
         'unregister',
-        PlatformIdentifierEnum.OPENAEV
+        PlatformIdentifier.Openaev
       );
     case 'transfer-personal-space':
       return redirectToTransferPersoSpace(request);
     case 'free-trial':
       return redirectToFreeTrial(request);
     case 'create-free-trial':
-      return redirectToCreateFreeTrial(request, PlatformIdentifierEnum.OPENCTI);
+      return redirectToCreateFreeTrial(request, PlatformIdentifier.Opencti);
     case 'create-openaev-free-trial':
-      return redirectToCreateFreeTrial(request, PlatformIdentifierEnum.OPENAEV);
+      return redirectToCreateFreeTrial(request, PlatformIdentifier.Openaev);
   }
   return redirectToResource(awaitedParams, request);
 }

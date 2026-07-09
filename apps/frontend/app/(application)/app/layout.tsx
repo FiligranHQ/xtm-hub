@@ -1,3 +1,4 @@
+import { FeatureFlag } from '@graphql/generated';
 import * as React from 'react';
 
 import '@styles/globals.css';
@@ -22,7 +23,6 @@ import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
-import { FeatureFlagEnum } from '@generated/models/FeatureFlag.enum';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -60,9 +60,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     redirect(buildLoginRedirect(pathname));
   }
 
-  const isHomePageV2Enabled = await isFeatureEnabled(
-    FeatureFlagEnum.HOME_PAGE_V2
-  );
+  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
 
   return (
     <RelayProvider>
