@@ -4,6 +4,7 @@ import {
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { OneClickDeploymentInitializer } from '../../model/kanel/public/OneClickDeployment';
 import { UserId } from '../../model/kanel/public/User';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
@@ -13,13 +14,28 @@ import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
+import { OneClickDeploymentDomain } from './one-click-deployment.domain';
 import {
   TelemetryHelper,
   TelemetryTargetProductMappedByPlatformIdentifier,
 } from './telemetry.helper';
-import { TelemetryEvent, TelemetryEventType } from './telemetry.types';
+import {
+  OneClickDeployEvent,
+  TelemetryEvent,
+  TelemetryEventType,
+} from './telemetry.types';
 
 const TELEMETRY_INDEX = 'telemetry';
+
+const toOneClickDeploymentInitializer = (
+  event: OneClickDeployEvent
+): OneClickDeploymentInitializer => ({
+  resource_id: event.resource_id,
+  platform_id: event.platform_id,
+  tenant_id: event.tenant_id ?? null,
+  user_id: event.user_id ?? null,
+  deployed_at: new Date(event['@timestamp']),
+});
 
 const useQueueProcessing = (): boolean =>
   config.get<boolean>('telemetry_use_queue_processing');
@@ -170,5 +186,16 @@ export const TelemetryApp = {
       platformConfiguration?.tenant_id ?? undefined
     );
     await TelemetryApp.sendTelemetryEvent(event);
+
+    try {
+      await OneClickDeploymentDomain.insert(
+        toOneClickDeploymentInitializer(event)
+      );
+    } catch (error) {
+      logApp.error('Failed to persist one-click deployment to Postgres', {
+        resource_id: event.resource_id,
+        error,
+      });
+    }
   },
 };
