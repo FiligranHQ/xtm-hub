@@ -3,6 +3,12 @@ import { DocumentImageType } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { MinIOClient } from '../../../thirdparty/minio/client';
+import {
+  buildManifestRebuildSingletonKey,
+  MANIFEST_QUEUES,
+  MANIFEST_REBUILD_DEBOUNCE_SECONDS,
+} from '../../../thirdparty/pgboss/manifest.jobs';
+import { PgBossProducer } from '../../../thirdparty/pgboss/producer';
 import { logApp } from '../../../utils/app-logger.util';
 import { getErrorMessage } from '../../../utils/error/error-guard.util';
 import { formatDateCompact } from '../../../utils/format';
@@ -14,6 +20,7 @@ import { DocumentChildrenDomain } from '../../document/domain/document.children.
 import { ManifestFragmentHelper } from '../manifest-fragment/manifest-fragment.helper';
 import { ConnectorV2 } from '../opencti/integration/integration.model';
 import { ManifestContract, ManifestOutput } from './manifest.types';
+import { ManifestKey } from './manifest.consts';
 
 export const MANIFEST_CATALOG_ID = 'filigran-catalog-id';
 export const MANIFEST_CATALOG_NAME = 'OpenCTI Connectors contracts';
@@ -73,6 +80,13 @@ const safeParseJson = (
 };
 
 export const ManifestHelper = {
+  scheduleDebouncedRebuild: async (key: ManifestKey): Promise<void> => {
+    await PgBossProducer.debounce(MANIFEST_QUEUES.REBUILD, key, {
+      singletonKey: buildManifestRebuildSingletonKey(key),
+      debounceSeconds: MANIFEST_REBUILD_DEBOUNCE_SECONDS,
+    });
+  },
+
   loadConnectorLogosBase64: async (
     connectorIds: DocumentId[]
   ): Promise<Map<DocumentId, string | null>> => {

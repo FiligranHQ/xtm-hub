@@ -1,7 +1,11 @@
 import { Readable } from 'stream';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
-import { DocumentImageType } from '../../../__generated__/resolvers-types';
+import {
+  DocumentImageType,
+  ManifestType,
+  PlatformIdentifier,
+} from '../../../__generated__/resolvers-types';
 import { DocumentId } from '../../../model/kanel/public/Document';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
@@ -9,6 +13,7 @@ import { WithParentId } from '../../document/document.helper';
 import { DocumentImage } from '../../document/document.model';
 import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { ConnectorV2 } from '../opencti/integration/integration.model';
+import { ManifestKey } from './manifest.consts';
 import {
   MANIFEST_CATALOG_DESCRIPTION,
   MANIFEST_CATALOG_ID,
@@ -17,8 +22,25 @@ import {
   ManifestHelper,
 } from './manifest.helper';
 import { ManifestContract } from './manifest.types';
+import { PgBossProducer } from '../../../thirdparty/pgboss/producer';
+import {
+  buildManifestRebuildSingletonKey,
+  MANIFEST_QUEUES,
+} from '../../../thirdparty/pgboss/manifest.jobs';
 
 const FIXED_DATE = new Date('2026-07-01T12:00:00Z');
+
+const MANIFEST_KEY: ManifestKey = {
+  platformIdentifier: PlatformIdentifier.Opencti,
+  version: '7.260309.0',
+  type: ManifestType.Connector,
+};
+
+const LTS_KEY: ManifestKey = {
+  platformIdentifier: PlatformIdentifier.Opencti,
+  version: '7.260309.0-lts.5',
+  type: ManifestType.Connector,
+};
 
 const buildConnector = (overrides: Partial<ConnectorV2> = {}): ConnectorV2 =>
   ({
@@ -46,6 +68,39 @@ const buildConnector = (overrides: Partial<ConnectorV2> = {}): ConnectorV2 =>
   }) as unknown as ConnectorV2;
 
 describe('manifestHelper', () => {
+  describe('scheduleDebouncedRebuild', () => {
+    it('delegates to PgBossProducer.debounce with the manifest key, singletonKey, and configured debounce window', async () => {
+      const debounceSpy = vi
+        .spyOn(PgBossProducer, 'debounce')
+        .mockResolvedValue({ jobs: ['job-1'], updated: 1, inserted: 0 });
+
+      await ManifestHelper.scheduleDebouncedRebuild(MANIFEST_KEY);
+
+      expect(debounceSpy).toHaveBeenCalledExactlyOnceWith(
+        MANIFEST_QUEUES.REBUILD,
+        MANIFEST_KEY,
+        {
+          singletonKey: buildManifestRebuildSingletonKey(MANIFEST_KEY),
+          debounceSeconds: 10 * 60,
+        }
+      );
+    });
+
+    it('uses a distinct singletonKey per manifest key so unrelated manifests never collide', async () => {
+      const debounceSpy = vi
+        .spyOn(PgBossProducer, 'debounce')
+        .mockResolvedValue({ jobs: ['job-1'], updated: 0, inserted: 1 });
+
+      await ManifestHelper.scheduleDebouncedRebuild(MANIFEST_KEY);
+      await ManifestHelper.scheduleDebouncedRebuild(LTS_KEY);
+
+      expect(debounceSpy).toHaveBeenCalledTimes(2);
+      const firstKey = debounceSpy.mock.calls[0]![2].singletonKey;
+      const secondKey = debounceSpy.mock.calls[1]![2].singletonKey;
+      expect(firstKey).not.toBe(secondKey);
+    });
+  });
+
   describe('partitionConnectorsByVersionCompatibility', () => {
     it.each([
       {

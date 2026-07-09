@@ -8,6 +8,7 @@ import { requestContext } from '../../../context/request.context';
 import { securityGuard } from '../../../security/guard';
 import { ManifestKey } from '../manifest/manifest.consts';
 import { ManifestDomain } from '../manifest/manifest.domain';
+import { ManifestHelper } from '../manifest/manifest.helper';
 import { ManifestFragmentDomain } from './manifest-fragment.domain';
 import { ManifestFragmentHelper } from './manifest-fragment.helper';
 
@@ -54,5 +55,9 @@ export const ManifestFragmentApp = {
     );
 
     await ManifestDomain.insertIfNotPending(impactedKeys);
+
+    for (const key of impactedKeys) {
+      await ManifestHelper.scheduleDebouncedRebuild(key);
+    }
   },
 };
