@@ -1,4 +1,4 @@
-import { getRegisteredPlatformServiceIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { getRegisteredPlatformServiceIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { APP_PATH } from '@/utils/path/constant';
 import {
   PlatformIdentifier,

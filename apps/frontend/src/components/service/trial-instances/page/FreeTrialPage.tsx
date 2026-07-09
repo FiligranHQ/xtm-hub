@@ -2,7 +2,7 @@ import GuardCapacityComponent from '@/components/AdminGuard';
 import {
   PlatformMetadataMapping,
   serviceInstanceTagByPlatformIdentifier,
-} from '@/components/registration/platform-identifier-mapping';
+} from '@/components/registration/PlatformIdentifierMapping';
 import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
 import PersonalSpaceInfo from '@/components/service/trial-instances/page/PersonalSpaceInfo';
 import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/ReachSalesButton';

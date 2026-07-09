@@ -1,5 +1,5 @@
 import { RegistrationContext } from '@/components/registration/Context';
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { UnregisterConfirm } from '@/components/registration/unregister/Confirm';
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifier } from '@graphql/generated';

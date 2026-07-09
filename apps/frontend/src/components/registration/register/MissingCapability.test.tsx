@@ -1,5 +1,5 @@
 import { RegistrationContext } from '@/components/registration/Context';
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { RegisterStateMissingCapability } from '@/components/registration/register/MissingCapability';
 import testRender from '@/utils/test/test-render';
 import { OrganizationCapability, PlatformIdentifier } from '@graphql/generated';

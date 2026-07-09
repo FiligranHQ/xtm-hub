@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/BreadcrumbNav';
 import { useTranslations } from 'next-intl';
 
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
 import { ShareableResourceConnectorPrivateDetails } from '@/components/service/document/connector/ShareableResourceConnectorPrivateDetails';
 import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';

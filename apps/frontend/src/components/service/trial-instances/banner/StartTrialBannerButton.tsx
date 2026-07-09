@@ -29,7 +29,7 @@ import {
   useRelayEnvironment,
 } from 'react-relay';
 
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { PRODUCTS_AVAILABLE_ON_TRIAL } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { IconActionContext } from '@/components/ui/IconActions';
