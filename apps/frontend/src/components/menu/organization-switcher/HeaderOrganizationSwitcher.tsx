@@ -80,7 +80,7 @@ const HeaderOrganizationSwitcher = () => {
 
   return (
     <div className="flex flex-col gap-xs sm:flex-row sm:items-center sm:gap-m">
-      <span className="txt-sub-content sm:whitespace-nowrap">
+      <span className="content-body-base sm:whitespace-nowrap">
         {t('OrganizationSwitcher.Workspace')}
       </span>
       <Popover

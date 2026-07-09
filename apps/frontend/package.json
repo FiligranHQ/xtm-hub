@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@filigran/icon": "0.24.1",
-    "@filigran/ui": "1.4.0",
+    "@filigran/ui": "1.5.1",
     "@hookform/resolvers": "5.4.0",
     "@svgr/webpack": "8.1.0",
     "@tailwindcss/postcss": "4.3.2",

@@ -13,7 +13,7 @@ export const ContentLayout = ({ children }: ContentLayoutProps) => {
     <div className="flex-1 min-h-0">
       <main
         className={`h-full w-full overflow-y-auto bg-background ${
-          isHomePageV2Enabled ? 'p-3 sm:p-6' : 'p-6'
+          isHomePageV2Enabled ? 'relative p-3 sm:p-6' : 'p-6'
         }`}>
         {children}
       </main>

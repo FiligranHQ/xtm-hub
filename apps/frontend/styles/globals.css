@@ -2,7 +2,7 @@
 @import 'tw-animate-css';
 @import 'tailwindcss';
 
-@reference '@filigran/ui/index.css';
+@reference '@filigran/ui/theme.css';
 :root {
   --hover-background: hsl(var(--gray-150));
 }
@@ -40,7 +40,7 @@ body[data-theme='Dark'] {
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-background text-foreground;
   }
 
   ol {
