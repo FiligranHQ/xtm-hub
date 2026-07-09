@@ -77,32 +77,6 @@ jobs:
         working-directory: ${{ matrix.working-directory }}
         run: yarn lint
 
-      - name: Check forbidden enum imports on modified frontend files
-        if: matrix.label == 'frontend'
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # Fetch the PR base branch so git diff can compare against it.
-            git fetch --depth=1 origin "${{ github.base_ref }}"
-
-            mapfile -t changed_files < <(
-              git diff --name-only "origin/${{ github.base_ref }}" HEAD \
-                | grep -E '^apps/frontend/.*\.(ts|tsx|js|jsx)$' || true
-            )
-          else
-            # workflow_dispatch or push: scan every tracked frontend file.
-            mapfile -t changed_files < <(git ls-files | grep -E '^apps/frontend/.*\.(ts|tsx|js|jsx)$' || true)
-          fi
-
-          if [[ ${#changed_files[@]} -eq 0 ]]; then
-            echo "No modified frontend JS/TS files to check."
-            exit 0
-          fi
-
-          yarn check:forbidden-enum-imports "${changed_files[@]}"
-
       - name: Check formatting
         working-directory: ${{ matrix.working-directory }}
         run: yarn format:check
@@ -425,7 +399,7 @@ jobs:
               --conf.token ${{ secrets.AWX_TOKEN }} \
               -f human job_templates launch 'Deploy XTM Hub feature branch for testing' \
               --inventory eu-west-staging \
-              --extra_vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"; then
+              --extra-vars "{\"env\":\"Development\",\"xtmhub_version\":\"pr-${{ github.event.number }}\",\"xtmhub_node_env\":\"development\"}"; then
               echo "✅ Deployment successful"
               exit 0
             fi

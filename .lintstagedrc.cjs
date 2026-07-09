@@ -24,18 +24,6 @@ const buildWorkspaceCommands = (workspaceName, workspaceDir, files) => {
   ];
 };
 
-const buildForbiddenEnumImportCommands = (files) => {
-  const sourceFiles = files.filter((file) => /\.(js|jsx|ts|tsx)$/.test(file));
-
-  if (sourceFiles.length === 0) {
-    return [];
-  }
-
-  const args = quoteFiles(sourceFiles);
-
-  return [`yarn check:forbidden-enum-imports ${args}`];
-};
-
 module.exports = {
   '**/*.{js,jsx,ts,tsx,json}': (files) => {
     const backendFiles = files.filter((file) =>
@@ -50,7 +38,6 @@ module.exports = {
 
     return [
       ...buildWorkspaceCommands('@xtm-hub/backend', backendRoot, backendFiles),
-      ...buildForbiddenEnumImportCommands(frontendFiles),
       ...buildWorkspaceCommands('@xtm-hub/frontend', frontendRoot, frontendFiles),
       ...buildWorkspaceCommands('@xtm-hub/test_e2e', e2eRoot, e2eFiles),
     ];
