@@ -465,6 +465,8 @@ describe('usePrivateNavigation', () => {
         count: 50,
         orderBy: ServiceInstanceOrdering.Ordering,
         orderMode: OrderingMode.Asc,
+        filters: null,
+        searchTerm: null,
       };
       const expectedTrialVariables = {
         input: {

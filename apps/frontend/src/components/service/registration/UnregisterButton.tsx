@@ -2,7 +2,7 @@ import GuardCapacityComponent from '@/components/AdminGuard';
 import {
   PlatformMetadataMapping,
   ServiceDefinitionIdentifierToPlatformIdentifier,
-} from '@/components/registration/platform-identifier-mapping';
+} from '@/components/registration/PlatformIdentifierMapping';
 import { UnregisterPlatform } from '@/components/registration/register/register.graphql';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { toast } from '@filigran/ui';

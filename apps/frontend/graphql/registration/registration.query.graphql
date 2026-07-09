@@ -2,5 +2,11 @@ query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
   registeredPlatforms(input: $input) {
     id
     identifier
+    title
+    contract
+    subscription {
+      start_date
+      end_date
+    }
   }
 }

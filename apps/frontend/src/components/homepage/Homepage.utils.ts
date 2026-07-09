@@ -1,24 +1,105 @@
-import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
+import { daysUntil } from '@/utils/date';
 import {
   DocumentImageType,
-  FiligranProduct,
   HomepageDocumentFragment,
+  PlatformContract,
   PlatformIdentifier,
-  ServiceDefinitionIdentifier,
+  RegisteredPlatformsQuery,
+  TrialsDeployments,
 } from '@graphql/generated';
 
-export const resolveHomepagePlatformIdentifiers = (
-  registeredIdentifiers: ServiceDefinitionIdentifier[]
-): PlatformIdentifier[] | undefined => {
+type RegisteredPlatformForHomepage =
+  RegisteredPlatformsQuery['registeredPlatforms'][number];
+
+export type HomepageRoadmapTitleProduct = PlatformIdentifier | 'default';
+
+export interface HomepageRegisteredPlatformCardViewModel {
+  id: string;
+  platformIdentifier: PlatformIdentifier;
+  title: string;
+  registrationDate: string | null | undefined;
+  contract: PlatformContract;
+  remainingTrialDays: number | undefined;
+}
+
+export const buildDistinctPlatformIdentifiersFromServiceDefinition = (
+  registeredPlatforms: RegisteredPlatformsQuery['registeredPlatforms']
+): PlatformIdentifier[] => {
   const platformSet = new Set<PlatformIdentifier>();
-  for (const identifier of registeredIdentifiers) {
+  for (const registeredPlatform of registeredPlatforms) {
     const platform =
-      ServiceDefinitionIdentifierToPlatformIdentifier[identifier];
+      ServiceDefinitionIdentifierToPlatformIdentifier[
+        registeredPlatform.identifier
+      ];
     if (platform) {
       platformSet.add(platform);
     }
   }
-  return platformSet.size === 1 ? [...platformSet] : undefined;
+
+  return Array.from(platformSet) ?? [];
+};
+
+export const resolveRemainingTrialDays = (
+  endDate: string | null | undefined
+): number | undefined => {
+  if (!endDate) {
+    return undefined;
+  }
+
+  const remainingDays = daysUntil(new Date(endDate));
+
+  return remainingDays < 0 ? 0 : remainingDays;
+};
+
+export const mapRegisteredPlatformsToHomepageCards = (
+  registeredPlatforms: RegisteredPlatformForHomepage[]
+): HomepageRegisteredPlatformCardViewModel[] => {
+  return registeredPlatforms.flatMap((platform) => {
+    const platformIdentifier: PlatformIdentifier | undefined =
+      ServiceDefinitionIdentifierToPlatformIdentifier[platform.identifier];
+    if (!platformIdentifier) {
+      return [];
+    }
+
+    return [
+      {
+        id: platform.id,
+        platformIdentifier,
+        title: platform.title,
+        registrationDate: platform.subscription?.start_date,
+        contract: platform.contract,
+        remainingTrialDays:
+          platform.contract === PlatformContract.Trial
+            ? resolveRemainingTrialDays(platform.subscription?.end_date)
+            : undefined,
+      },
+    ];
+  });
+};
+
+export const resolveHomepageCrossSellProduct = (
+  trialDeploymentsEligibility:
+    Pick<TrialsDeployments, 'availableTrials' | 'isBlacklisted'> | undefined
+): PlatformIdentifier | undefined => {
+  if (
+    !trialDeploymentsEligibility ||
+    trialDeploymentsEligibility.isBlacklisted
+  ) {
+    return undefined;
+  }
+
+  const { availableTrials } = trialDeploymentsEligibility;
+
+  if (availableTrials.includes(PlatformIdentifier.Opencti)) {
+    return PlatformIdentifier.Opencti;
+  }
+
+  if (availableTrials.includes(PlatformIdentifier.Openaev)) {
+    return PlatformIdentifier.Openaev;
+  }
+
+  return undefined;
 };
 
 export const findLogoUrl = (
@@ -30,37 +111,4 @@ export const findLogoUrl = (
   return logo && resource.service_instance_id
     ? `/document/images/${String(resource.service_instance_id)}/${logo.id}`
     : undefined;
-};
-
-export type HomepageRoadmapTitleProduct = 'opencti' | 'openaev' | 'default';
-
-export type HomepageRoadmapResolution = {
-  productFilter: FiligranProduct | undefined;
-  titleProduct: HomepageRoadmapTitleProduct;
-};
-
-export const resolveHomepageRoadmapResolution = (
-  registeredIdentifiers: ServiceDefinitionIdentifier[]
-): HomepageRoadmapResolution => {
-  const [platformIdentifier] =
-    resolveHomepagePlatformIdentifiers(registeredIdentifiers) ?? [];
-
-  if (platformIdentifier === PlatformIdentifier.Openaev) {
-    return {
-      productFilter: FiligranProduct.Openaev,
-      titleProduct: 'openaev',
-    };
-  }
-
-  if (platformIdentifier === PlatformIdentifier.Opencti) {
-    return {
-      productFilter: FiligranProduct.Opencti,
-      titleProduct: 'opencti',
-    };
-  }
-
-  return {
-    productFilter: undefined,
-    titleProduct: 'default',
-  };
 };

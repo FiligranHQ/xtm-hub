@@ -1,5 +1,5 @@
 import { RegistrationContext } from '@/components/registration/Context';
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 import testRender from '@/utils/test/test-render';
 import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';

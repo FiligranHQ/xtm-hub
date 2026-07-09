@@ -2751,12 +2751,14 @@ export type RegisteredPlatformsQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier }> };
+export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null } | null }> };
 
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
+  filters: InputMaybe<Array<ServiceInstanceFilter> | ServiceInstanceFilter>;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -3160,6 +3162,12 @@ export const RegisteredPlatformsDocument = `
   registeredPlatforms(input: $input) {
     id
     identifier
+    title
+    contract
+    subscription {
+      start_date
+      end_date
+    }
   }
 }
     `;
@@ -3210,8 +3218,14 @@ useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.inf
 useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
 
 export const ServiceInstancesListDocument = `
-    query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!) {
-  serviceInstances(first: $count, orderBy: $orderBy, orderMode: $orderMode) {
+    query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!, $filters: [ServiceInstanceFilter!], $searchTerm: String) {
+  serviceInstances(
+    first: $count
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+    searchTerm: $searchTerm
+  ) {
     edges {
       node {
         id

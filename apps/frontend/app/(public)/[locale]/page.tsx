@@ -20,7 +20,7 @@ const Page = async ({
   const showHomepageV2 = await isFeatureEnabled(FeatureFlag.HomePageV2);
 
   if (showHomepageV2) {
-    return <Homepage locale={locale} />;
+    return <Homepage paramsLocale={locale} />;
   }
 
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(

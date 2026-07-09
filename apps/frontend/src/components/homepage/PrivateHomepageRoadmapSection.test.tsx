@@ -1,5 +1,5 @@
 import {
-  FiligranProduct,
+  PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 import { render } from '@testing-library/react';
@@ -38,16 +38,14 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     render(
       await PrivateHomepageRoadmapSection({
-        locale: 'en',
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenctiRegistration,
-        ],
+        platformIdentifiers: [PlatformIdentifier.Opencti],
       })
     );
 
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
-        seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-1?product=${FiligranProduct.Opencti}`,
+        seeMoreHref:
+          '/app/service/xtm_platform_roadmap/roadmap-1?product=opencti',
         titleProduct: 'opencti',
       }),
       undefined
@@ -65,16 +63,14 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     render(
       await PrivateHomepageRoadmapSection({
-        locale: 'en',
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenaevRegistration,
-        ],
+        platformIdentifiers: [PlatformIdentifier.Openaev],
       })
     );
 
     expect(mockXtmRoadmap).toHaveBeenCalledWith(
       expect.objectContaining({
-        seeMoreHref: `/app/service/xtm_platform_roadmap/roadmap-2?product=${FiligranProduct.Openaev}`,
+        seeMoreHref:
+          '/app/service/xtm_platform_roadmap/roadmap-2?product=openaev',
         titleProduct: 'openaev',
       }),
       undefined
@@ -92,10 +88,9 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     render(
       await PrivateHomepageRoadmapSection({
-        locale: 'en',
-        registeredIdentifiers: [
-          ServiceDefinitionIdentifier.OpenctiRegistration,
-          ServiceDefinitionIdentifier.OpenaevRegistration,
+        platformIdentifiers: [
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
         ],
       })
     );
@@ -120,8 +115,7 @@ describe('PrivateHomepageRoadmapSection', () => {
 
     render(
       await PrivateHomepageRoadmapSection({
-        locale: 'en',
-        registeredIdentifiers: [],
+        platformIdentifiers: [],
       })
     );
 
@@ -144,8 +138,7 @@ describe('PrivateHomepageRoadmapSection', () => {
     });
 
     const result = await PrivateHomepageRoadmapSection({
-      locale: 'en',
-      registeredIdentifiers: [],
+      platformIdentifiers: [],
     });
 
     expect(result).toBeNull();
@@ -162,8 +155,7 @@ describe('PrivateHomepageRoadmapSection', () => {
     });
 
     await PrivateHomepageRoadmapSection({
-      locale: 'en',
-      registeredIdentifiers: [],
+      platformIdentifiers: [],
     });
 
     expect(mockServerFetchGraphQL).toHaveBeenCalledWith(
