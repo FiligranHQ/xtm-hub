@@ -2,6 +2,7 @@ import type { ManifestKey } from '../../modules/shareable-resource/manifest/mani
 
 export const MANIFEST_QUEUES = {
   REBUILD: 'manifest.rebuild',
+  IMMEDIATE: 'manifest.immediate',
   DEAD_LETTER: 'manifest.deadletter',
 } as const;
 

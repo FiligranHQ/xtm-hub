@@ -141,7 +141,7 @@ export const ManifestApp = {
     };
 
     await ManifestDomain.insertIfNotPending(key);
-    await ManifestApp.processManifestQueue(key);
+    await ManifestHelper.enqueueImmediateRebuild(key);
   },
 
   processManifestQueue: async (manifest?: ManifestKey) => {

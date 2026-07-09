@@ -19,8 +19,8 @@ import { DocumentImage } from '../../document/document.model';
 import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { ManifestFragmentHelper } from '../manifest-fragment/manifest-fragment.helper';
 import { ConnectorV2 } from '../opencti/integration/integration.model';
-import { ManifestContract, ManifestOutput } from './manifest.types';
 import { ManifestKey } from './manifest.consts';
+import { ManifestContract, ManifestOutput } from './manifest.types';
 
 export const MANIFEST_CATALOG_ID = 'filigran-catalog-id';
 export const MANIFEST_CATALOG_NAME = 'OpenCTI Connectors contracts';
@@ -80,6 +80,12 @@ const safeParseJson = (
 };
 
 export const ManifestHelper = {
+  enqueueImmediateRebuild: async (key: ManifestKey): Promise<void> => {
+    await PgBossProducer.send(MANIFEST_QUEUES.IMMEDIATE, key, {
+      singletonKey: buildManifestRebuildSingletonKey(key),
+    });
+  },
+
   scheduleDebouncedRebuild: async (key: ManifestKey): Promise<void> => {
     await PgBossProducer.debounce(MANIFEST_QUEUES.REBUILD, key, {
       singletonKey: buildManifestRebuildSingletonKey(key),

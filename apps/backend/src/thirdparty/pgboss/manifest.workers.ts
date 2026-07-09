@@ -26,8 +26,20 @@ export const ManifestWorkers = {
       deadLetter: MANIFEST_QUEUES.DEAD_LETTER,
     });
 
+    await boss.createQueue(MANIFEST_QUEUES.IMMEDIATE, {
+      ...RETRY_STRATEGIES.standard,
+      policy: 'stately',
+      deadLetter: MANIFEST_QUEUES.DEAD_LETTER,
+    });
+
     await boss.work<ManifestRebuildJobData>(
       MANIFEST_QUEUES.REBUILD,
+      { batchSize: 1 },
+      handleManifestRebuildJob
+    );
+
+    await boss.work<ManifestRebuildJobData>(
+      MANIFEST_QUEUES.IMMEDIATE,
       { batchSize: 1 },
       handleManifestRebuildJob
     );
