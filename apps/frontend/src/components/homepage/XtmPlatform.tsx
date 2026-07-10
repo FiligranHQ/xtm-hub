@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
-import ConnectProductButton from './ConnectProductButton';
+import ConnectProductsButton from './ConnectProductsButton';
 
 type XtmPlatformProps = {
   welcomeName?: string;
@@ -20,7 +20,7 @@ const XtmPlatform = async ({ welcomeName }: XtmPlatformProps = {}) => {
           {t('Description')}
         </p>
         <div>
-          <ConnectProductButton />
+          <ConnectProductsButton />
         </div>
       </div>
 

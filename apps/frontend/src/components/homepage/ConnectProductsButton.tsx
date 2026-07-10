@@ -1,23 +1,13 @@
 'use client';
 
+import { ConnectProductButton } from '@/components/connected-products/ConnectProductButton';
+import { CONNECTABLE_PLATFORMS } from '@/components/connected-products/ConnectedProductsDropdown';
 import { AddIcon, CloseIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useState } from 'react';
 
-const PRODUCTS = [
-  {
-    label: 'OpenCTI',
-    href: 'https://docs.opencti.io/latest/administration/hub/',
-  },
-  {
-    label: 'OpenAEV',
-    href: 'https://docs.openaev.io/latest/administration/hub/',
-  },
-];
-
-const ConnectProductButton = () => {
+const ConnectProductsButton = () => {
   const t = useTranslations('PublicHomePage.XtmPlatform');
   const [open, setOpen] = useState(false);
 
@@ -40,18 +30,12 @@ const ConnectProductButton = () => {
               <CloseIcon className="size-3" />
             </Button>
           </div>
-          {PRODUCTS.map((product) => (
-            <Button
-              key={product.label}
-              asChild
-              className="w-full border-0 font-semibold">
-              <Link
-                href={product.href}
-                target="_blank"
-                rel="noopener noreferrer">
-                {product.label}
-              </Link>
-            </Button>
+          {CONNECTABLE_PLATFORMS.map((platformId) => (
+            <ConnectProductButton
+              key={platformId}
+              platformIdentifier={platformId}
+              onCloseDropdown={() => setOpen(false)}
+            />
           ))}
         </div>
       )}
@@ -59,4 +43,4 @@ const ConnectProductButton = () => {
   );
 };
 
-export default ConnectProductButton;
+export default ConnectProductsButton;

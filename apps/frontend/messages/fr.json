@@ -702,6 +702,13 @@
         "Title": "Le produit est connecté dans une autre organisation"
       }
     },
+    "ConnectFromHub": {
+      "PermissionRequired": "Autorisation requise",
+      "ConnectedProductSentence": "Pour déployer une ressource, vous devez disposer d'un produit {product} connecté",
+      "NotAllowedMessage": "Vous ne disposez pas des autorisations nécessaires pour connecter ce produit. \nVeuillez contacter votre {count, plural, =1 {administrateur} other {administrateurs}} afin qu'il se charge de connecter le produit en votre nom.",
+      "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
+      "ReachAdmin": "Contactez votre administrateur"
+    },
     "Back": "Retour à {platformIdentifier}",
     "Confirm": "Connecter",
     "Details": {
