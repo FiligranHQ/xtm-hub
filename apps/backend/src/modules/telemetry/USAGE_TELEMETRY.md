@@ -2,7 +2,7 @@
 
 The hub has two complementary telemetry pipelines:
 
-1. **Events** (existing) — user/business events (`login`, `register`, `unregister`, `create_deployment`, `download`, ...) indexed into the hub's Elasticsearch (`telemetry` alias) via the pg-boss queue, replicated to the Filigran data warehouse. Events answer _"what happened"_ (funnels, activity).
+1. **Events** (existing) — user/business events (`login`, `register`, `unregister`, `create_deployment`, `download`, ...) indexed into the hub's Elasticsearch (`telemetry` alias) via the pg-boss queue, replicated to the Filigran data warehouse. Events answer _"what happened"_ (funnels, activity). Every event is stamped by `TelemetryApp.sendTelemetryEvent` with `hub_instance_id` (the same durable PlatformMetadata identity the gauges export as `service.instance.id`) and `hub_environment` (`production` / `staging` / ...), so the warehouse can attribute events to the production hub vs staging/dev deployments. Note the pre-existing `platform_id` event field identifies the _registered OpenCTI/OpenAEV platform_, not the hub instance.
 2. **Gauges** (this document) — periodic snapshots of aggregate counts exported over OTLP/HTTP to the dedicated Filigran collector, exactly like OpenCTI / OpenAEV / XTM One / OpenGRC. Gauges answer _"what is the current state"_, which the event stream fundamentally cannot (e.g. a platform that unregisters and re-registers inflates event counts forever, while the registered-platforms gauge always reports the truth from the database).
 
 ## Transport

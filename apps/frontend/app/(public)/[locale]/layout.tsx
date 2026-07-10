@@ -66,7 +66,7 @@ const RootLayout = async ({
                     asChild
                     variant="outline"
                     className="whitespace-nowrap border-primary text-primary bg-primary/10">
-                    <Link href={`/login`}>{t('PublicLayout.Login')}</Link>
+                    <Link href="/auth/oidc">{t('PublicLayout.Login')}</Link>
                   </Button>
                   <Button
                     asChild

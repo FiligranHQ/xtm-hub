@@ -1,18 +1,16 @@
 import '@/components/signup/SignUp.css';
 import '@filigran/ui/theme.css';
-import { FeatureFlag } from '@graphql/generated';
 import '@styles/globals.css';
 
 import SignUp from '@/components/signup/SignUp';
-import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
+import {
+  getAuthenticatedGraphqlClient,
+  UnauthenticatedError,
+} from '@/lib/graphql-client';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
-import { isFeatureEnabled } from '@/utils/settings.service';
-import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
-import meLoaderQueryNode, {
-  meLoaderQuery,
-  meLoaderQuery$data,
-} from '@generated/meLoaderQuery.graphql';
+import { hasLocalProvider, isFeatureEnabled } from '@/utils/settings.service';
+import { FeatureFlag, useMeCheckQuery } from '@graphql/generated';
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 
@@ -32,24 +30,24 @@ const Page = async () => {
   if (!isHomePageV2Enabled) {
     notFound();
   }
-
   try {
-    // @ts-expect-error
-    const { data: meData }: { data: meLoaderQuery$data } =
-      await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
-        meLoaderQueryNode,
-        {}
-      );
+    const client = await getAuthenticatedGraphqlClient();
+    const data = await useMeCheckQuery.fetcher(client)();
 
-    const me = meData.me as unknown as meContext_fragment$data;
-    if (me) {
+    if (data.me) {
       redirect(`/${APP_PATH}`);
     }
   } catch (_error) {
-    // If user is not authenticated or API is unreachable, show signup form
+    if (_error instanceof UnauthenticatedError) {
+      // User is not authenticated — show signup form
+    } else {
+      throw _error;
+    }
   }
 
-  return <SignUp />;
+  const showLocalLogin = await hasLocalProvider();
+
+  return <SignUp showLocalLogin={showLocalLogin} />;
 };
 
 export default Page;

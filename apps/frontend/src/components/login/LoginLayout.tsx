@@ -5,18 +5,34 @@ import LoginTitleForm from '@/components/login/LoginTitle';
 import { PlatformProviderButton } from '@/components/login/PlatformProviderButton';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import useDecodedQuery from '@/hooks/use-decoded-query';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useToast } from '@filigran/ui/clients';
+import { FeatureFlag } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
 export const LoginLayout = ({}) => {
   const { settings } = useContext(SettingsContext);
+  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
+  const router = useRouter();
 
-  const { error } = useDecodedQuery();
+  const { error, redirect } = useDecodedQuery();
   const currentPath = usePathname();
   const { toast } = useToast();
   const t = useTranslations();
+
+  const localProvider = settings?.platform_providers?.find(
+    (p) => p.provider === 'local'
+  );
+
+  useEffect(() => {
+    if (isHomePageV2Enabled && !localProvider) {
+      const target = redirect ? `/sign-up?redirect=${redirect}` : '/sign-up';
+      router.replace(target);
+    }
+  }, [isHomePageV2Enabled, localProvider, redirect, router]);
+
   useEffect(() => {
     if (error) {
       toast({
@@ -26,6 +42,11 @@ export const LoginLayout = ({}) => {
       });
     }
   }, [currentPath, error, t, toast]);
+
+  if (isHomePageV2Enabled && !localProvider) {
+    return null;
+  }
+
   return (
     <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
       <TestEnvBanner />
@@ -33,16 +54,18 @@ export const LoginLayout = ({}) => {
         <LoginTitleForm />
         <div className="space-y-l mt-l w-full flex flex-col items-center">
           <LoginMessage />
-          {settings?.platform_providers?.map((platformProvider) =>
-            platformProvider.provider === 'local' ? (
-              <LoginForm key={platformProvider.provider} />
-            ) : (
-              <PlatformProviderButton
-                key={platformProvider.provider}
-                platformProvider={platformProvider}
-              />
-            )
-          )}
+          {isHomePageV2Enabled
+            ? localProvider && <LoginForm />
+            : settings?.platform_providers?.map((platformProvider) =>
+                platformProvider.provider === 'local' ? (
+                  <LoginForm key={platformProvider.provider} />
+                ) : (
+                  <PlatformProviderButton
+                    key={platformProvider.provider}
+                    platformProvider={platformProvider}
+                  />
+                )
+              )}
         </div>
       </div>
     </main>
