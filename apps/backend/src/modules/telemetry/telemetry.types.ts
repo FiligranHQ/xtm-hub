@@ -37,6 +37,16 @@ export interface BaseTelemetryEvent {
   user_id?: string;
   '@timestamp': string;
   source: TelemetrySource;
+  /**
+   * Durable anonymous id of the hub instance that emitted the event (same
+   * PlatformMetadata identity as the gauge telemetry's service.instance.id).
+   * Set centrally by TelemetryApp.sendTelemetryEvent, never by builders:
+   * it lets the warehouse attribute events to the production hub vs
+   * staging/dev deployments, which the event payload otherwise cannot.
+   */
+  hub_instance_id?: string;
+  /** Hub environment (production / staging / ...), set with hub_instance_id. */
+  hub_environment?: string;
 }
 
 export interface LoginEvent extends BaseTelemetryEvent {

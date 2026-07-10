@@ -5,14 +5,23 @@ import FiligranLogoDark from '@public/filigran_logo_dark.svg';
 import SchemeXtmHub from '@public/scheme_xtm_hub_account_creation.svg';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
 const HUBSPOT_PORTAL_ID = '26791207';
 const HUBSPOT_FORM_ID = '25cf9561-13c0-4eda-bde2-be099e38438b';
 const HUBSPOT_REGION = 'eu1';
 
-const SignUp = () => {
+const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
   const t = useTranslations('SignUpPage');
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect');
+  const oidcHref = redirect
+    ? `/auth/oidc?redirect=${encodeURIComponent(redirect)}`
+    : '/auth/oidc';
+  const loginHref = redirect
+    ? `/login?redirect=${encodeURIComponent(redirect)}`
+    : '/login';
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -92,11 +101,18 @@ const SignUp = () => {
           <p className="text-muted-foreground flex items-center gap-2">
             {t('AlreadyHaveAccount')}
             <Link
-              href="/auth/oidc"
+              href={oidcHref}
               className="text-primary underline">
               {t('LogIn')}
             </Link>
           </p>
+          {showLocalLogin && (
+            <Link
+              href={loginHref}
+              className="text-primary underline">
+              {t('LoginWithLocal')}
+            </Link>
+          )}
           <div className="flex items-center gap-1 text-muted-foreground/20 text-xs">
             {t('MadeBy')}
             <FiligranLogo className="h-4 w-auto" />

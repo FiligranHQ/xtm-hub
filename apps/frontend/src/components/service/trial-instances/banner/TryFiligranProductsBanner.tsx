@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import GuardCapacityComponent from '@/components/AdminGuard';
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';

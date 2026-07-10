@@ -1,7 +1,7 @@
 'use client';
 import { PlatformIdentifier } from '@graphql/generated';
 
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 

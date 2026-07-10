@@ -1,16 +1,16 @@
-import type { PublicLocale } from '@/i18n/config';
+import { PublicLocale } from '@/i18n/config';
 import MostDeployedResources from './MostDeployedResources';
 import XtmPlatform from './XtmPlatform';
 import XtmRoadmap from './XtmRoadmap';
 
-type HomepageProps = { locale: PublicLocale };
+type HomepageProps = { paramsLocale: PublicLocale };
 
-const Homepage = ({ locale }: HomepageProps) => {
+const Homepage = ({ paramsLocale }: HomepageProps) => {
   return (
     <div className="flex flex-col gap-12">
       <XtmPlatform />
-      <XtmRoadmap locale={locale} />
-      <MostDeployedResources locale={locale} />
+      <XtmRoadmap paramsLocale={paramsLocale} />
+      <MostDeployedResources paramsLocale={paramsLocale} />
     </div>
   );
 };

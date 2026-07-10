@@ -3,7 +3,9 @@ import {
   networkFetch,
   UnauthenticatedError,
 } from '@/relay/environment/fetch-fn';
-import { buildLoginRedirect } from '@/utils/redirect';
+import { buildLoginRedirect, buildSignupRedirect } from '@/utils/redirect';
+import { isFeatureEnabled } from '@/utils/settings.service';
+import { FeatureFlag } from '@graphql/generated';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { GraphQLResponse, OperationType, VariablesOf } from 'relay-runtime';
@@ -32,9 +34,14 @@ export default async function serverPortalApiFetch<
     cookieList,
     cache: 'force-cache', //force cache on server-side, can be override by adding options
     options,
-  }).catch((e: unknown) => {
+  }).catch(async (e: unknown) => {
     if (e instanceof UnauthenticatedError) {
-      redirect(buildLoginRedirect(pathname));
+      const homePageV2 = await isFeatureEnabled(FeatureFlag.HomePageV2);
+      redirect(
+        homePageV2
+          ? buildSignupRedirect(pathname)
+          : buildLoginRedirect(pathname)
+      );
     }
     throw e;
   });

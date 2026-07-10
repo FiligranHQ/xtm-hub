@@ -122,6 +122,7 @@ const config: Knex.Config = {
     extension: 'js',
     tableName: 'migrations',
     directory: 'src/migrations',
+    stub: 'src/migrations/migration.stub',
   },
   seeds: {
     extension: 'js',

@@ -1,4 +1,4 @@
-import { PlatformMetadataMapping } from '@/components/registration/platform-identifier-mapping';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { OrganizationCapability, PlatformIdentifier } from '@graphql/generated';
 import * as React from 'react';
 import { createContext } from 'react';

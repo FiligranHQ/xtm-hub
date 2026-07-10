@@ -1,6 +1,6 @@
 'use client';
 
-import { translateServiceDefinitionIdentifier } from '@/components/registration/platform-identifier-mapping';
+import { translateServiceDefinitionIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';

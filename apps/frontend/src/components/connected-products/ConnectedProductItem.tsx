@@ -4,7 +4,7 @@ import { ConnectedPlatform } from '@/components/connected-products/useConnectedP
 import {
   PlatformMetadataMapping,
   ServiceDefinitionIdentifierToPlatformIdentifier,
-} from '@/components/registration/platform-identifier-mapping';
+} from '@/components/registration/PlatformIdentifierMapping';
 import { UseTranslationsProps } from '@/i18n/config';
 import { APP_PATH } from '@/utils/path/constant';
 import { OpenInNewIcon, TextSnippetIcon } from '@filigran/icon';

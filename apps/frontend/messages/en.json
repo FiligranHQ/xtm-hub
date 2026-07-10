@@ -57,6 +57,11 @@
       }
     }
   },
+  "Contracts": {
+    "CE": "Community Edition",
+    "EE": "Enterprise Edition",
+    "TRIAL": "Free trial"
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Columns",
@@ -319,12 +324,24 @@
     },
     "XtmMostDeployedResources": {
       "Title": "Most deployed resources"
+    },
+    "RegisteredPlatformsCard": {
+      "RegisteredOn": "on",
+      "Contract": "Contract",
+      "Remaining": "remaining",
+      "DaysRemaining": "{days, plural, =1 {# day} other {# days}}"
+    },
+    "TryOtherPlatform": {
+      "Title": "Extend and scale your XTM Platform",
+      "Cta": "Try {productName}"
     }
   },
   "PublicHomePage": {
     "Title": "Discover resources and expertise",
     "XtmPlatform": {
       "Label": "Welcome to XTM Hub",
+      "LabelWithName": "Welcome {name}",
+      "ConnectedProducts": "{count, plural, one {Connected product} other {Connected products}}",
       "Title": "Extend and scale your XTM Platform",
       "Description": "Register your OpenCTI or OpenAEV platform to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM platform experience.",
       "Cta": "Connect your product",
@@ -408,6 +425,7 @@
     "Subtitle": "XTM Hub, Filigran Academy and Live Demo.",
     "AlreadyHaveAccount": "Already have an account?",
     "LogIn": "Log in",
+    "LoginWithLocal": "Login with local",
     "MadeBy": "Made by",
     "WelcomeTitle": "Welcome to XTM Hub",
     "WelcomeSubtitle": "Extend and scale your XTM Platform"
@@ -688,10 +706,6 @@
     "Confirm": "Register",
     "Details": {
       "Contract": "Contract",
-      "Contracts": {
-        "CE": "Community Edition",
-        "EE": "Enterprise Edition"
-      },
       "ConnectionStatus": {
         "Title": "Connection status",
         "Connected": "Connected",

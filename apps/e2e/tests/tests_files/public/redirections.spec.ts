@@ -20,15 +20,18 @@ test.describe('Public redirections', () => {
   test('should redirect user between public pages and login page', async ({
     page,
   }) => {
-    await test.step('should redirect user to login page if unlogged', async () => {
+    await test.step('should redirect user to sign up page if unlogged', async () => {
       await homePage.navigateTo();
-      await loginPage.assertCurrentPage();
+      await page.waitForURL('**/sign-up**');
+      await expect(page.locator('#hubspot-form')).toBeAttached();
     });
 
-    await test.step('should navigate user to login page from a public page', async () => {
+    await test.step('should navigate user to auth provider from a public page', async () => {
       await cyberSecurityPage.navigateTo();
       await cyberSecurityPage.clickOnSignIn();
-      await loginPage.assertCurrentPage();
+      await page.waitForURL((url) => !url.pathname.startsWith('/en'), {
+        timeout: 5000,
+      });
     });
 
     await test.step('should navigate user to sign up page from a public page', async () => {
@@ -36,6 +39,12 @@ test.describe('Public redirections', () => {
       await cyberSecurityPage.clickOnSignUp();
       await page.waitForURL('**/sign-up**');
       await expect(page.locator('#hubspot-form')).toBeAttached();
+    });
+
+    await test.step('should navigate user to login page from sign up page', async () => {
+      await page.goto('/sign-up');
+      await page.getByRole('link', { name: /login with local/i }).click();
+      await loginPage.assertCurrentPage();
     });
 
     await test.step('should log in user and redirect him to home', async () => {
@@ -48,23 +57,15 @@ test.describe('Public redirections', () => {
       await cyberSecurityPage.assertCurrentPage();
     });
 
-    await test.step('should redirect user on home when user is connected and wants to sign in', async () => {
-      await cyberSecurityPage.clickOnSignIn();
-      await homePage.assertCurrentPage();
-    });
-
     await test.step('should redirect user to public pages when user logs out', async () => {
+      await homePage.navigateTo();
       await loginPage.logout();
       await cyberSecurityPage.assertCurrentPage();
     });
 
-    await test.step('should navigate user to login page when user clicks on sign in', async () => {
-      await cyberSecurityPage.clickOnSignIn();
-      await loginPage.assertCurrentPage();
-    });
-
     await test.step('should redirect to specified page after sign in', async () => {
-      await page.goto('/app/manage/user');
+      const redirectParam = encodeURIComponent(btoa('/app/manage/user'));
+      await page.goto(`/login?redirect=${redirectParam}`);
       await loginPage.login();
       await userPage.assertCurrentPage();
     });
