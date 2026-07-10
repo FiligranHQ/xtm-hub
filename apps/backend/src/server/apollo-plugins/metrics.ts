@@ -56,8 +56,14 @@ export const operationMetricsPlugin: ApolloServerPlugin = {
     } as const;
 
     return {
-      async didResolveOperation({ request, document }) {
-        const { operationName } = request;
+      async didResolveOperation({
+        request,
+        document,
+        operationName: operationNameFromParameters,
+      }) {
+        const { operationName: operationNameFromRequest } = request;
+        const operationName =
+          operationNameFromRequest ?? operationNameFromParameters;
         if (!operationName) return;
 
         for (const def of document.definitions) {
