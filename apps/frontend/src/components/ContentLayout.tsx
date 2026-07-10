@@ -12,8 +12,8 @@ export const ContentLayout = ({ children }: ContentLayoutProps) => {
   return (
     <div className="flex-1 min-h-0">
       <main
-        className={`h-full w-full overflow-y-auto bg-background ${
-          isHomePageV2Enabled ? 'relative p-3 sm:p-6' : 'p-6'
+        className={`h-full w-full overflow-y-auto ${
+          isHomePageV2Enabled ? 'bg-gradient-background p-3 sm:p-6' : 'bg-background p-6'
         }`}>
         {children}
       </main>

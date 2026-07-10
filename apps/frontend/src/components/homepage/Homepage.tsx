@@ -8,7 +8,7 @@ type HomepageProps = { paramsLocale: PublicLocale };
 
 const Homepage = ({ paramsLocale }: HomepageProps) => {
   return (
-    <div className="relative overflow-hidden">
+    <div className="overflow-hidden">
       <BlueBlurDecoration />
       <div className="flex flex-col gap-xxl">
         <XtmPlatform />

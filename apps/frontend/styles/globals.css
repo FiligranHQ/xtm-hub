@@ -4,7 +4,7 @@
 
 @reference '@filigran/ui/theme.css';
 :root {
-  --hover-background: hsl(var(--gray-150));
+  --semantic-filigran-brand-primary-transparency: hsl(var(--darkblue-700) / .3);
 }
 .dark,
 body[data-theme='dark'],

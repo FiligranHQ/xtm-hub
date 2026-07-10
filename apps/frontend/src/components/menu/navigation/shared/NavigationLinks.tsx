@@ -58,7 +58,7 @@ export const PublicSubLink = ({
         </span>
       </span>
       {badge && (
-        <span className="flex align-center shrink-0 text-[0.625rem] font-medium bg-clip-text text-transparent translate-y-[2px] bg-gradient-focus">
+        <span className="inline-flex items-center shrink-0 text-content-caption bg-clip-text text-transparent bg-gradient-focus">
           {badge}
         </span>
       )}
