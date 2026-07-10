@@ -329,7 +329,7 @@
       "Title": "最近デプロイされたリソース",
       "ProductPlaceholder": "製品を選択",
       "ProductName": "製品名",
-      "On": "",
+      "On": "デプロイ日",
       "By": "による"
     },
     "RegisteredPlatformsCard": {
