@@ -3,6 +3,7 @@ import {
   OneClickDeployInput,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
+import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import { OneClickDeploymentInitializer } from '../../model/kanel/public/OneClickDeployment';
 import { UserId } from '../../model/kanel/public/User';
@@ -15,6 +16,7 @@ import { extractId } from '../../utils/utils';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { OneClickDeploymentDomain } from './one-click-deployment.domain';
+import { loadInstanceIdentity } from './telemetry-snapshot.domain';
 import {
   TelemetryHelper,
   TelemetryTargetProductMappedByPlatformIdentifier,
@@ -43,6 +45,63 @@ const useQueueProcessing = (): boolean =>
 const getQueuedEventTypes = (): string[] =>
   config.get<string[]>('telemetry_queued_event_types');
 
+// The durable instance identity is loaded once and cached for the process
+// lifetime (it is seeded by the add_platform_metadata migration and never
+// changes). A failed load resolves to 'unknown' for the in-flight events and
+// only retries after a backoff window, so a persistent database outage does
+// not trigger one identity query + one error log per emitted event.
+const UNKNOWN_HUB_INSTANCE_ID = 'unknown';
+const FAILED_IDENTITY_LOAD_BACKOFF_MS = 60_000;
+
+let hubInstanceIdPromise: Promise<string> | undefined;
+let lastFailedIdentityLoadAtMs: number | undefined;
+
+const getHubInstanceId = (): Promise<string> => {
+  if (hubInstanceIdPromise === undefined) {
+    if (
+      lastFailedIdentityLoadAtMs !== undefined &&
+      Date.now() - lastFailedIdentityLoadAtMs < FAILED_IDENTITY_LOAD_BACKOFF_MS
+    ) {
+      return Promise.resolve(UNKNOWN_HUB_INSTANCE_ID);
+    }
+    hubInstanceIdPromise = loadInstanceIdentity().then(
+      ({ instanceId }) => {
+        lastFailedIdentityLoadAtMs = undefined;
+        return instanceId;
+      },
+      (error) => {
+        hubInstanceIdPromise = undefined;
+        lastFailedIdentityLoadAtMs = Date.now();
+        logApp.error('Failed to load hub instance identity for telemetry', {
+          error,
+        });
+        return UNKNOWN_HUB_INSTANCE_ID;
+      }
+    );
+  }
+  return hubInstanceIdPromise;
+};
+
+/** Test-only: reset the memoized hub identity between test cases. */
+export const resetHubIdentityCacheForTests = (): void => {
+  hubInstanceIdPromise = undefined;
+  lastFailedIdentityLoadAtMs = undefined;
+};
+
+/**
+ * Stamp the emitting hub instance on the event before it leaves the process
+ * (both the pg-boss and the synchronous ES paths go through this). Without
+ * it the warehouse cannot tell production events apart from staging/dev
+ * hubs replicating into the same pipeline.
+ */
+const withHubIdentity = async (
+  event: TelemetryEvent
+): Promise<TelemetryEvent> => ({
+  ...event,
+  hub_instance_id: await getHubInstanceId(),
+  hub_environment: portalConfig.environment,
+});
+
 export const TelemetryApp = {
   async indexTelemetryEvent(event: TelemetryEvent) {
     await esDbClient.index({
@@ -51,8 +110,9 @@ export const TelemetryApp = {
     });
   },
 
-  async sendTelemetryEvent(event: TelemetryEvent) {
+  async sendTelemetryEvent(rawEvent: TelemetryEvent) {
     try {
+      const event = await withHubIdentity(rawEvent);
       if (useQueueProcessing()) {
         const queuedTypes = getQueuedEventTypes();
         if (
@@ -74,7 +134,10 @@ export const TelemetryApp = {
         });
       });
     } catch (error) {
-      logApp.error('Error sending telemetry event ', { event, error });
+      logApp.error('Error sending telemetry event ', {
+        event: rawEvent,
+        error,
+      });
     }
   },
 

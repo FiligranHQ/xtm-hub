@@ -9,11 +9,13 @@ import {
   it,
   vi,
 } from 'vitest';
+import portalConfig from '../../config';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
-import { TelemetryApp } from './telemetry.app';
+import { loadInstanceIdentity } from './telemetry-snapshot.domain';
+import { resetHubIdentityCacheForTests, TelemetryApp } from './telemetry.app';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
@@ -51,6 +53,20 @@ vi.mock('config', async (importOriginal) => {
       get: vi.fn(mod.default.get.bind(mod.default)),
       has: mod.default.has.bind(mod.default),
     },
+  };
+});
+
+// The event pipeline stamps the durable hub instance identity on every
+// event; pin it so assertions do not depend on the test database contents.
+vi.mock('./telemetry-snapshot.domain', async (importOriginal) => {
+  const mod =
+    await importOriginal<typeof import('./telemetry-snapshot.domain')>();
+  return {
+    ...mod,
+    loadInstanceIdentity: vi.fn().mockResolvedValue({
+      instanceId: 'test-hub-instance-id',
+      instanceCreation: '2026-01-01T00:00:00.000Z',
+    }),
   };
 });
 
@@ -527,6 +543,14 @@ describe('telemetryApp', () => {
       service: TelemetryEventService.INTEGRATIONS_LIBRARY,
     };
 
+    // sendTelemetryEvent stamps the hub identity before enqueueing/indexing.
+    const hubIdentity = {
+      hub_instance_id: 'test-hub-instance-id',
+      hub_environment: portalConfig.environment,
+    };
+    const enrichedLoginEvent = { ...loginEvent, ...hubIdentity };
+    const enrichedSubscribeEvent = { ...subscribeEvent, ...hubIdentity };
+
     describe('when queue processing is disabled', () => {
       beforeEach(() => {
         indexSpy = vi
@@ -547,7 +571,7 @@ describe('telemetryApp', () => {
 
         expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
           index: 'telemetry',
-          document: loginEvent,
+          document: enrichedLoginEvent,
         });
         expect(pgBossSendSpy).not.toHaveBeenCalled();
       });
@@ -584,7 +608,7 @@ describe('telemetryApp', () => {
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
-          { event: loginEvent }
+          { event: enrichedLoginEvent }
         );
         expect(indexSpy).not.toHaveBeenCalled();
       });
@@ -594,7 +618,7 @@ describe('telemetryApp', () => {
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
-          { event: subscribeEvent }
+          { event: enrichedSubscribeEvent }
         );
         expect(indexSpy).not.toHaveBeenCalled();
       });
@@ -607,7 +631,7 @@ describe('telemetryApp', () => {
 
         expect(logSpy).toHaveBeenCalledWith(
           'Failed to enqueue telemetry event',
-          { event: loginEvent, error: sendError }
+          { event: enrichedLoginEvent, error: sendError }
         );
         expect(indexSpy).not.toHaveBeenCalled();
       });
@@ -634,7 +658,7 @@ describe('telemetryApp', () => {
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
-          { event: loginEvent }
+          { event: enrichedLoginEvent }
         );
         expect(indexSpy).not.toHaveBeenCalled();
       });
@@ -644,9 +668,100 @@ describe('telemetryApp', () => {
 
         expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
           index: 'telemetry',
-          document: subscribeEvent,
+          document: enrichedSubscribeEvent,
         });
         expect(pgBossSendSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('hub identity stamping', () => {
+      const identityLoadError = new Error('database is down');
+
+      beforeEach(() => {
+        resetHubIdentityCacheForTests();
+        indexSpy = vi
+          .spyOn(esDbClient, 'index')
+          .mockResolvedValue(mockWriteResponse);
+        pgBossSendSpy = vi
+          .spyOn(PgBossProducer, 'send')
+          .mockResolvedValue('job-id');
+        vi.mocked(config.get).mockImplementation((key: string) => {
+          if (key === 'telemetry_use_queue_processing') return false;
+          if (key === 'telemetry_queued_event_types') return [];
+          return realConfigGet(key);
+        });
+      });
+
+      afterEach(() => {
+        vi.mocked(loadInstanceIdentity).mockResolvedValue({
+          instanceId: 'test-hub-instance-id',
+          instanceCreation: '2026-01-01T00:00:00.000Z',
+        });
+        resetHubIdentityCacheForTests();
+      });
+
+      it('should load the identity once and reuse it for subsequent events', async () => {
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
+        await TelemetryApp.sendTelemetryEvent(subscribeEvent);
+
+        expect(loadInstanceIdentity).toHaveBeenCalledOnce();
+        expect(indexSpy).toHaveBeenNthCalledWith(1, {
+          index: 'telemetry',
+          document: enrichedLoginEvent,
+        });
+        expect(indexSpy).toHaveBeenNthCalledWith(2, {
+          index: 'telemetry',
+          document: enrichedSubscribeEvent,
+        });
+      });
+
+      it('should stamp unknown on load failure and not retry within the backoff window', async () => {
+        vi.mocked(loadInstanceIdentity).mockRejectedValue(identityLoadError);
+        const logErrorSpy = vi.spyOn(logApp, 'error');
+
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
+
+        expect(loadInstanceIdentity).toHaveBeenCalledOnce();
+        expect(logErrorSpy).toHaveBeenCalledExactlyOnceWith(
+          'Failed to load hub instance identity for telemetry',
+          { error: identityLoadError }
+        );
+        expect(indexSpy).toHaveBeenCalledTimes(2);
+        expect(indexSpy).toHaveBeenLastCalledWith({
+          index: 'telemetry',
+          document: {
+            ...loginEvent,
+            hub_instance_id: 'unknown',
+            hub_environment: portalConfig.environment,
+          },
+        });
+      });
+
+      it('should retry the identity load after the backoff window', async () => {
+        vi.useFakeTimers();
+        vi.mocked(loadInstanceIdentity).mockRejectedValueOnce(
+          identityLoadError
+        );
+
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
+        expect(indexSpy).toHaveBeenLastCalledWith({
+          index: 'telemetry',
+          document: {
+            ...loginEvent,
+            hub_instance_id: 'unknown',
+            hub_environment: portalConfig.environment,
+          },
+        });
+
+        vi.advanceTimersByTime(61_000);
+        await TelemetryApp.sendTelemetryEvent(loginEvent);
+
+        expect(loadInstanceIdentity).toHaveBeenCalledTimes(2);
+        expect(indexSpy).toHaveBeenLastCalledWith({
+          index: 'telemetry',
+          document: enrichedLoginEvent,
+        });
       });
     });
   });
