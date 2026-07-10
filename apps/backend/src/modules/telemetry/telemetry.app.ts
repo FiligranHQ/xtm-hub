@@ -3,6 +3,7 @@ import {
   OneClickDeployInput,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
+import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import { OneClickDeploymentInitializer } from '../../model/kanel/public/OneClickDeployment';
 import { UserId } from '../../model/kanel/public/User';
@@ -12,7 +13,6 @@ import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
-import portalConfig from '../../config';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { OneClickDeploymentDomain } from './one-click-deployment.domain';
