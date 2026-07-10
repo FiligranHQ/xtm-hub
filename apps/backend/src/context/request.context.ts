@@ -48,8 +48,9 @@ export const requestContext = {
     requestContextStorage.enterWith(context);
   },
 
-  // Run with context (for middleware)
-  run(context: RequestContext, callback: () => void): void {
-    requestContextStorage.run(context, callback);
+  // Run with context (for middleware). Returns the callback's result so
+  // async callbacks can be awaited by the caller once the context is set.
+  run<T>(context: RequestContext, callback: () => T): T {
+    return requestContextStorage.run(context, callback);
   },
 };

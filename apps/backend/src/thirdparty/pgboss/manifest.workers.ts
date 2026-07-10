@@ -9,8 +9,9 @@ import { createBatchHandler } from './workers';
 
 const handleManifestRebuildJob = createBatchHandler<ManifestRebuildJobData>(
   async (job) => {
-    requestContext.set(SYSTEM_USER_CONTEXT);
-    await ManifestApp.processManifestQueue(job.data);
+    await requestContext.run(SYSTEM_USER_CONTEXT, async () => {
+      await ManifestApp.processManifestQueue(job.data);
+    });
   }
 );
 
