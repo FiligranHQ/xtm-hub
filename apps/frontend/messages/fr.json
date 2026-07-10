@@ -710,15 +710,14 @@
         "Title": "Statut de connexion",
         "Connected": "Connecté",
         "NotConnected": "Connexion perdue",
-        "NotConnectedDetails": "Vous devez à nouveau enregistrer votre plateforme."
+        "NotConnectedDetails": "Vous devez à nouveau connecter votre produit."
       },
-      "Description": "Cliquez ici pour accéder à votre plateforme privée.",
-      "PlatformID": "ID de la plateforme",
-      "PlatformName": "Nom de la plateforme",
-      "PlatformURL": "URL de la plateforme",
+      "Description": "Cliquez ici pour accéder à votre produit privé.",
+      "ProductName": "Nom du produit",
+      "ProductURL": "URL du produit",
       "StartDate": "Date de début",
       "EndDate": "Date de fin",
-      "RegisteredOn": "Enregistré le",
+      "ConnectedOn": "Connecté le",
       "Region": "Région",
       "License": "Licence",
       "Status": "Statut",
@@ -1366,10 +1365,10 @@
         "OpenAEVDescription": "L'essai gratuit OpenAEV fournit aux utilisateurs une instance « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec une puissance de calcul réduite et un stockage limité à <strong>16 Go</strong>."
       },
       "XTMPlatform": {
-        "Title": "Votre platform eXtended Threat Management (XTM)",
+        "Title": "Votre produit eXtended Threat Management (XTM)",
         "Description": "{platformName} fait partie de la solution open-source de threat intelligence, de simulation avancée d'adversaires et de gestion stratégique des cyber-risques de Filigran, conçue pour aider votre organisation à anticiper et gérer les menaces de bout en bout.",
         "OpenCTITagline": "Collecter, corréler et exploiter",
-        "OpenCTIDescription": "Une plateforme de threat intelligence open-source construite par des praticiens pour des praticiens — pour briser les silos de données et rendre la threat intelligence réellement actionnable.",
+        "OpenCTIDescription": "Un produit de threat intelligence open-source construit par des praticiens pour des praticiens — pour briser les silos de données et rendre la threat intelligence réellement actionnable.",
         "OpenAEVTagline": "Prioriser, tester et corriger ce qui compte",
         "OpenAEVDescription": "Défendez-vous proactivement contre les menaces avec l'Adversarial Exposure Validation (AEV), en simulant des scénarios d'attaque réels pour optimiser vos défenses.",
         "LogoAlt": "Logo {name}",

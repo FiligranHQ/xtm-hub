@@ -710,15 +710,14 @@
         "Title": "Connection status",
         "Connected": "Connected",
         "NotConnected": "Connection lost",
-        "NotConnectedDetails": "You should register your platform again."
+        "NotConnectedDetails": "You should connect your product again."
       },
-      "Description": "Click here to access your Private Platform.",
-      "PlatformID": "Platform ID",
-      "PlatformName": "Platform name",
-      "PlatformURL": "Platform URL",
+      "Description": "Click here to access your Private Product.",
+      "ProductName": "Product name",
+      "ProductURL": "Product URL",
       "StartDate": "Start date",
       "EndDate": "End date",
-      "RegisteredOn": "Registered on",
+      "ConnectedOn": "Connected on",
       "Region": "Region",
       "License": "License",
       "Status": "Status",
@@ -1366,10 +1365,10 @@
         "OpenAEVDescription": "The OpenAEV free trial provides users with a \"small\" instance, which includes all <link>Enterprise Edition SaaS features</link>, but with a reduced computing power and a limited storage of <strong>16GB</strong>."
       },
       "XTMPlatform": {
-        "Title": "Your eXtended Threat Management (XTM) platform",
+        "Title": "Your eXtended Threat Management (XTM) product",
         "Description": "{platformName} is part of Filigran's open-source threat intelligence, advanced adversary simulation, and strategic cyber risk management solution designed to help your organization anticipate and manage threats end-to-end.",
         "OpenCTITagline": "Collect, correlate and leverage",
-        "OpenCTIDescription": "An open-source threat intelligence platform built by practitioners for practitioners - to break data silos and make threat intelligence truly actionable.",
+        "OpenCTIDescription": "An open-source threat intelligence product built by practitioners for practitioners - to break data silos and make threat intelligence truly actionable.",
         "OpenAEVTagline": "Prioritize, test and fix what matters",
         "OpenAEVDescription": "Proactively defend against threats with Adversarial Exposure Validation (AEV), simulating real-life attack scenarios to optimize security defenses.",
         "LogoAlt": "{name} Logo",

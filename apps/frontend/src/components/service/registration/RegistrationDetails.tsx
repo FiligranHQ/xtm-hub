@@ -108,14 +108,14 @@ export const RegistrationDetails = ({
         {platform.title && (
           <li>
             <span className="text-gray/60 mr-1">
-              {t('Register.Details.PlatformName')}:
+              {t('Register.Details.ProductName')}:
             </span>
             {platform.title}
           </li>
         )}
         <li>
           <span className="text-gray/60 mr-1">
-            {t('Register.Details.PlatformURL')}:
+            {t('Register.Details.ProductURL')}:
           </span>
           <span>{platform.url ? platform.url : '-'}</span>
         </li>
@@ -159,7 +159,7 @@ export const RegistrationDetails = ({
           <>
             <li>
               <span className="text-gray/60 mr-1">
-                {t('Register.Details.RegisteredOn')}:
+                {t('Register.Details.ConnectedOn')}:
               </span>
               {platform.subscription?.start_date
                 ? formatDate(platform.subscription.start_date)
