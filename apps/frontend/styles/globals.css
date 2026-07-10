@@ -4,7 +4,9 @@
 
 @reference '@filigran/ui/theme.css';
 :root {
-  --semantic-filigran-brand-primary-transparency: hsl(var(--darkblue-700) / .3);
+  --semantic-filigran-brand-primary-transparency: hsl(
+    var(--darkblue-700) / 0.3
+  );
 }
 .dark,
 body[data-theme='dark'],
@@ -40,7 +42,7 @@ body[data-theme='Dark'] {
   }
 
   body {
-    @apply bg-gradient-background text-foreground;
+    @apply bg-background text-foreground;
   }
 
   ol {
