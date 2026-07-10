@@ -1754,7 +1754,7 @@ export type QueryIsPlatformRegisteredArgs = {
 
 export type QueryLastDeployedOverviewArgs = {
   limit: Scalars['Int']['input'];
-  platformIdentifiers: InputMaybe<Array<PlatformIdentifier>>;
+  platformId: Scalars['String']['input'];
 };
 
 
@@ -2739,7 +2739,7 @@ export type NewestDocumentsQueryQuery = { __typename?: 'Query', newestDocuments:
 
 export type LastDeployedOverviewQueryQueryVariables = Exact<{
   limit: Scalars['Int']['input'];
-  platformIdentifiers: InputMaybe<Array<PlatformIdentifier> | PlatformIdentifier>;
+  platformId: Scalars['String']['input'];
 }>;
 
 
@@ -2778,7 +2778,7 @@ export type RegisteredPlatformsQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null } | null }> };
+export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, platform_id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null } | null }> };
 
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
@@ -2994,8 +2994,8 @@ useInfiniteNewestDocumentsQueryQuery.getRootKey = () => ['NewestDocumentsQuery.i
 useNewestDocumentsQueryQuery.fetcher = (client: GraphQLClient, variables: NewestDocumentsQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<NewestDocumentsQueryQuery, NewestDocumentsQueryQueryVariables>(client, NewestDocumentsQueryDocument, variables, headers);
 
 export const LastDeployedOverviewQueryDocument = `
-    query LastDeployedOverviewQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
-  lastDeployedOverview(limit: $limit, platformIdentifiers: $platformIdentifiers) {
+    query LastDeployedOverviewQuery($limit: Int!, $platformId: String!) {
+  lastDeployedOverview(limit: $limit, platformId: $platformId) {
     resources {
       document {
         ...HomepageDocument
@@ -3253,6 +3253,7 @@ export const RegisteredPlatformsDocument = `
     query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
   registeredPlatforms(input: $input) {
     id
+    platform_id
     identifier
     title
     contract

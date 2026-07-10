@@ -1,22 +1,36 @@
-import { buildDistinctPlatformIdentifiersFromServiceDefinition } from '@/components/homepage/Homepage.utils';
 import LastDeployedResourcesClient from '@/components/homepage/LastDeployedResourcesClient';
+import {
+  PlatformMetadataMapping,
+  ServiceDefinitionIdentifierToPlatformIdentifier,
+} from '@/components/registration/PlatformIdentifierMapping';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import {
   LastDeployedOverviewQueryQuery,
-  PlatformIdentifier,
   RegisteredPlatformsQuery,
   useLastDeployedOverviewQueryQuery,
 } from '@graphql/generated';
 
 const LAST_DEPLOYED_LIMIT = 4;
 
-const SUPPORTED_PRODUCTS: PlatformIdentifier[] = [
-  PlatformIdentifier.Opencti,
-  PlatformIdentifier.Openaev,
-];
-
 export type LastDeployedOverview =
   LastDeployedOverviewQueryQuery['lastDeployedOverview'];
+
+export type LastDeployedPlatform = {
+  id: string;
+  title: string;
+  productName: string;
+  overview: LastDeployedOverview;
+};
+
+const resolveProductName = (
+  identifier: RegisteredPlatformsQuery['registeredPlatforms'][number]['identifier']
+): string => {
+  const platformIdentifier =
+    ServiceDefinitionIdentifierToPlatformIdentifier[identifier];
+  return platformIdentifier
+    ? PlatformMetadataMapping[platformIdentifier].name
+    : '';
+};
 
 type LastDeployedResourcesSectionProps = {
   registeredPlatformsData: RegisteredPlatformsQuery;
@@ -25,36 +39,33 @@ type LastDeployedResourcesSectionProps = {
 export const LastDeployedResourcesSection = async ({
   registeredPlatformsData,
 }: LastDeployedResourcesSectionProps) => {
-  const products = buildDistinctPlatformIdentifiersFromServiceDefinition(
-    registeredPlatformsData.registeredPlatforms
-  ).filter((product) => SUPPORTED_PRODUCTS.includes(product));
+  const platforms = registeredPlatformsData.registeredPlatforms.filter(
+    (platform): platform is typeof platform & { platform_id: string } =>
+      Boolean(platform.platform_id)
+  );
 
-  if (products.length === 0) {
+  if (platforms.length === 0) {
     return null;
   }
 
   const client = await getAuthenticatedGraphqlClient();
 
-  const entries = await Promise.all(
-    products.map(async (product) => {
+  const platformsWithOverview = await Promise.all(
+    platforms.map(async (platform) => {
       const data = await useLastDeployedOverviewQueryQuery.fetcher(client, {
         limit: LAST_DEPLOYED_LIMIT,
-        platformIdentifiers: [product],
+        platformId: platform.platform_id,
       })();
-      return [product, data.lastDeployedOverview] as const;
+      return {
+        id: platform.id,
+        title: platform.title,
+        productName: resolveProductName(platform.identifier),
+        overview: data.lastDeployedOverview,
+      };
     })
   );
 
-  const overviewByProduct = Object.fromEntries(entries) as Partial<
-    Record<PlatformIdentifier, LastDeployedOverview>
-  >;
-
-  return (
-    <LastDeployedResourcesClient
-      products={products}
-      overviewByProduct={overviewByProduct}
-    />
-  );
+  return <LastDeployedResourcesClient platforms={platformsWithOverview} />;
 };
 
 export default LastDeployedResourcesSection;

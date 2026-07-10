@@ -258,12 +258,9 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    lastDeployedOverview: async (_, { limit, platformIdentifiers }) => {
+    lastDeployedOverview: async (_, { limit, platformId }) => {
       try {
-        return await DocumentApp.loadLastDeployedOverview(
-          limit,
-          platformIdentifiers ?? undefined
-        );
+        return await DocumentApp.loadLastDeployedOverview(limit, platformId);
       } catch (error) {
         throw mapToGraphQLError(error);
       }

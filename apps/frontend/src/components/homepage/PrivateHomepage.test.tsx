@@ -15,6 +15,7 @@ const {
   mockPrivateHomepageRoadmapSection,
   mockXtmPlatform,
   mockRegisteredPlatformsSection,
+  mockLastDeployedResourcesSection,
 } = vi.hoisted(() => ({
   mockRegisteredPlatformsFetcher: vi.fn(),
   mockServiceInstancesFetcher: vi.fn(),
@@ -29,6 +30,9 @@ const {
   mockXtmPlatform: vi.fn(() => <div data-testid="xtm-platform" />),
   mockRegisteredPlatformsSection: vi.fn(() => (
     <div data-testid="registered-platforms-section" />
+  )),
+  mockLastDeployedResourcesSection: vi.fn(() => (
+    <div data-testid="last-deployed-resources-section" />
   )),
 }));
 
@@ -77,6 +81,10 @@ vi.mock('@/components/homepage/RegisteredPlatformsSection', () => ({
   RegisteredPlatformsSection: mockRegisteredPlatformsSection,
 }));
 
+vi.mock('@/components/homepage/LastDeployedResourcesSection', () => ({
+  default: mockLastDeployedResourcesSection,
+}));
+
 import { PrivateHomepage } from './PrivateHomepage';
 
 const mockRegisteredPlatformsResponses = (registeredPlatforms: unknown[]) => {
@@ -98,6 +106,7 @@ describe('PrivateHomepage', () => {
     mockPrivateHomepageRoadmapSection.mockClear();
     mockXtmPlatform.mockClear();
     mockRegisteredPlatformsSection.mockClear();
+    mockLastDeployedResourcesSection.mockClear();
 
     mockServiceInstancesFetcher.mockReturnValue(() =>
       Promise.resolve({

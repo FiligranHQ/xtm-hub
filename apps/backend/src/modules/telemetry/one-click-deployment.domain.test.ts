@@ -2,16 +2,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
-import { PlatformIdentifier } from '../../__generated__/resolvers-types';
 import { OneClickDeploymentInitializer } from '../../model/kanel/public/OneClickDeployment';
 import { OneClickDeploymentDomain } from './one-click-deployment.domain';
 import { TelemetryTargetProduct } from './telemetry.const';
+
+const PLATFORM_A = 'platform-a';
+const PLATFORM_B = 'platform-b';
 
 const buildRow = (
   overrides: Partial<OneClickDeploymentInitializer> = {}
 ): OneClickDeploymentInitializer => ({
   resource_id: uuidv4(),
-  platform_id: uuidv4(),
+  platform_id: PLATFORM_A,
   tenant_id: null,
   user_id: null,
   organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
@@ -41,48 +43,35 @@ describe('oneClickDeploymentDomain', () => {
   });
 
   describe('loadLastDeployed', () => {
-    it('returns deployments scoped to the organization', async () => {
-      const row = buildRow({ organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID });
-      await OneClickDeploymentDomain.insert(row);
-      await OneClickDeploymentDomain.insert(
-        buildRow({
-          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        })
-      );
-
-      const rows = await OneClickDeploymentDomain.loadLastDeployed(
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
-        50
-      );
-      expect(rows.map((r) => r.resource_id)).toEqual([row.resource_id]);
-    });
-
-    it('filters by product (platform identifier)', async () => {
-      const openctiRow = buildRow({
-        target_product: TelemetryTargetProduct.OPEN_CTI,
+    it('filters by platform_id across organizations', async () => {
+      const platformARow = buildRow({
+        platform_id: PLATFORM_A,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
-      const openaevRow = buildRow({
-        target_product: TelemetryTargetProduct.OPEN_AEV,
+      // Same platform, different triggering org: still belongs to the platform.
+      const platformASecondOrgRow = buildRow({
+        platform_id: PLATFORM_A,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       });
-      await OneClickDeploymentDomain.insert(openctiRow);
-      await OneClickDeploymentDomain.insert(openaevRow);
+      const platformBRow = buildRow({ platform_id: PLATFORM_B });
+      await OneClickDeploymentDomain.insert(platformARow);
+      await OneClickDeploymentDomain.insert(platformASecondOrgRow);
+      await OneClickDeploymentDomain.insert(platformBRow);
 
-      const openctiRows = await OneClickDeploymentDomain.loadLastDeployed(
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
+      const platformARows = await OneClickDeploymentDomain.loadLastDeployed(
         50,
-        [PlatformIdentifier.Opencti]
+        PLATFORM_A
       );
-      expect(openctiRows.map((r) => r.resource_id)).toEqual([
-        openctiRow.resource_id,
-      ]);
+      expect(platformARows.map((r) => r.resource_id).sort()).toEqual(
+        [platformARow.resource_id, platformASecondOrgRow.resource_id].sort()
+      );
 
-      const openaevRows = await OneClickDeploymentDomain.loadLastDeployed(
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
+      const platformBRows = await OneClickDeploymentDomain.loadLastDeployed(
         50,
-        [PlatformIdentifier.Openaev]
+        PLATFORM_B
       );
-      expect(openaevRows.map((r) => r.resource_id)).toEqual([
-        openaevRow.resource_id,
+      expect(platformBRows.map((r) => r.resource_id)).toEqual([
+        platformBRow.resource_id,
       ]);
     });
 
@@ -97,8 +86,8 @@ describe('oneClickDeploymentDomain', () => {
       await OneClickDeploymentDomain.insert(newerRow);
 
       const rows = await OneClickDeploymentDomain.loadLastDeployed(
-        TEST_ORGANIZATIONS.FILIGRAN.ID,
-        1
+        1,
+        PLATFORM_A
       );
       expect(rows).toHaveLength(1);
       expect(rows[0].resource_id).toBe(newerRow.resource_id);

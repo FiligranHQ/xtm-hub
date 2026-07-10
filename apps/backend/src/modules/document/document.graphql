@@ -218,7 +218,7 @@ type Query {
   ): [Document!]!
   lastDeployedOverview(
     limit: Int!
-    platformIdentifiers: [PlatformIdentifier!]
+    platformId: String!
   ): LastDeployedOverview! @auth
 }
 

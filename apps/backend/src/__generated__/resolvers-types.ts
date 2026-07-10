@@ -1746,7 +1746,7 @@ export type QueryIsPlatformRegisteredArgs = {
 
 export type QueryLastDeployedOverviewArgs = {
   limit: Scalars['Int']['input'];
-  platformIdentifiers?: InputMaybe<Array<PlatformIdentifier>>;
+  platformId: Scalars['String']['input'];
 };
 
 
@@ -3896,7 +3896,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId'>>;
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
-  lastDeployedOverview?: Resolver<ResolversTypes['LastDeployedOverview'], ParentType, ContextType, RequireFields<QueryLastDeployedOverviewArgs, 'limit'>>;
+  lastDeployedOverview?: Resolver<ResolversTypes['LastDeployedOverview'], ParentType, ContextType, RequireFields<QueryLastDeployedOverviewArgs, 'limit' | 'platformId'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   mostDeployedDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryMostDeployedDocumentsArgs, 'limit'>>;
   newestDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryNewestDocumentsArgs, 'limit'>>;

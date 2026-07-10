@@ -328,7 +328,6 @@
     "LastDeployedResources": {
       "Title": "Les dernières ressources déployées",
       "ProductPlaceholder": "Sélectionner un produit",
-      "ProductName": "nom du produit",
       "On": "le",
       "By": "par"
     },

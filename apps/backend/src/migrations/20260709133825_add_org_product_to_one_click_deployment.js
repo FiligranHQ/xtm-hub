@@ -7,7 +7,7 @@ export async function up(knex) {
     table.uuid('organization_id').nullable();
     table.text('target_product').nullable();
 
-    table.index(['organization_id', 'target_product', 'deployed_at']);
+    table.index(['organization_id', 'platform_id', 'deployed_at']);
   });
 }
 

@@ -1,14 +1,11 @@
-import { LastDeployedOverview } from '@/components/homepage/LastDeployedResourcesSection';
+import {
+  LastDeployedOverview,
+  LastDeployedPlatform,
+} from '@/components/homepage/LastDeployedResourcesSection';
 import testRender from '@/utils/test/test-render';
-import { PlatformIdentifier } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import LastDeployedResourcesClient from './LastDeployedResourcesClient';
-
-const buildOverview = (resources: unknown[]): LastDeployedOverview =>
-  ({
-    resources,
-  }) as unknown as LastDeployedOverview;
 
 const buildResource = () => ({
   document: {
@@ -37,22 +34,29 @@ const buildResource = () => ({
   },
 });
 
-const renderClient = (
-  overview: LastDeployedOverview,
-  products: PlatformIdentifier[] = [PlatformIdentifier.Opencti]
-) =>
-  testRender(
-    <LastDeployedResourcesClient
-      products={products}
-      overviewByProduct={{ [PlatformIdentifier.Opencti]: overview }}
-    />
-  );
+const buildPlatform = (
+  id: string,
+  title: string,
+  resources: unknown[],
+  productName = 'OpenCTI'
+): LastDeployedPlatform => ({
+  id,
+  title,
+  productName,
+  overview: { resources } as unknown as LastDeployedOverview,
+});
+
+const renderClient = (platforms: LastDeployedPlatform[]) =>
+  testRender(<LastDeployedResourcesClient platforms={platforms} />);
 
 describe('LastDeployedResourcesClient', () => {
   it('renders the title and deployed resource rows', () => {
-    renderClient(buildOverview([buildResource()]));
+    renderClient([
+      buildPlatform('platform-1', 'OpenCTI Platform', [buildResource()]),
+    ]);
 
     expect(screen.getByText('Title')).toBeInTheDocument();
+    expect(screen.getByText('OpenCTI - OpenCTI Platform')).toBeInTheDocument();
     expect(screen.getByText('My Custom View')).toBeInTheDocument();
     expect(screen.getByText('Malware Analysis')).toBeInTheDocument();
     expect(screen.queryByText('Threat Hunting')).toBeNull();
@@ -63,23 +67,23 @@ describe('LastDeployedResourcesClient', () => {
   });
 
   it('renders the empty state image when there are no deployed resources', () => {
-    renderClient(buildOverview([]));
+    renderClient([buildPlatform('platform-1', 'OpenCTI Platform', [])]);
 
+    // In the test harness next-intl returns the message key as the alt text
     expect(screen.getByRole('img', { name: 'ImageAlt' })).toBeInTheDocument();
+    // Empty state hides the title and the product select
     expect(screen.queryByText('Title')).toBeNull();
     expect(screen.queryByText('By')).toBeNull();
   });
 
-  it('does not crash when a product has no overview entry', () => {
-    testRender(
-      <LastDeployedResourcesClient
-        products={[PlatformIdentifier.Openaev, PlatformIdentifier.Opencti]}
-        overviewByProduct={{
-          [PlatformIdentifier.Opencti]: buildOverview([buildResource()]),
-        }}
-      />
-    );
+  it('only lists platforms that have deployed resources', () => {
+    renderClient([
+      buildPlatform('platform-empty', 'OpenAEV Platform', [], 'OpenAEV'),
+      buildPlatform('platform-1', 'OpenCTI Platform', [buildResource()]),
+    ]);
 
     expect(screen.getByText('My Custom View')).toBeInTheDocument();
+    expect(screen.getByText('OpenCTI - OpenCTI Platform')).toBeInTheDocument();
+    expect(screen.queryByText('OpenAEV - OpenAEV Platform')).toBeNull();
   });
 });

@@ -669,17 +669,10 @@ export const DocumentApp = {
     );
   },
 
-  loadLastDeployedOverview: async (
-    limit: number,
-    platformIdentifiers?: PlatformIdentifier[]
-  ) => {
-    const organizationId =
-      requestContext.requireUser().selected_organization_id;
-
+  loadLastDeployedOverview: async (limit: number, platformId: string) => {
     const events = await OneClickDeploymentDomain.loadLastDeployed(
-      organizationId,
       limit,
-      platformIdentifiers
+      platformId
     );
 
     if (events.length === 0) {

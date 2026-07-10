@@ -41,14 +41,8 @@ query NewestDocumentsQuery(
   }
 }
 
-query LastDeployedOverviewQuery(
-  $limit: Int!
-  $platformIdentifiers: [PlatformIdentifier!]
-) {
-  lastDeployedOverview(
-    limit: $limit
-    platformIdentifiers: $platformIdentifiers
-  ) {
+query LastDeployedOverviewQuery($limit: Int!, $platformId: String!) {
+  lastDeployedOverview(limit: $limit, platformId: $platformId) {
     resources {
       document {
         ...HomepageDocument

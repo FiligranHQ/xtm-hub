@@ -1,7 +1,4 @@
-import {
-  PlatformMetadataMapping,
-  ServiceDefinitionIdentifierToPlatformIdentifier,
-} from '@/components/registration/PlatformIdentifierMapping';
+import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { daysUntil } from '@/utils/date';
 import {
   DocumentImageType,
@@ -104,10 +101,6 @@ export const resolveHomepageCrossSellProduct = (
 
   return undefined;
 };
-
-export const resolveHomepageProductLabel = (
-  product: PlatformIdentifier
-): string => PlatformMetadataMapping[product].name;
 
 export const findLogoUrl = (
   resource: HomepageDocumentFragment

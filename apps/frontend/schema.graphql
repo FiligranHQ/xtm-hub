@@ -116,7 +116,7 @@ type Query {
   document(documentId: DocumentId!, serviceInstanceId: ServiceInstanceId!): Document
   mostDeployedDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   newestDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
-  lastDeployedOverview(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): LastDeployedOverview!
+  lastDeployedOverview(limit: Int!, platformId: String!): LastDeployedOverview!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!

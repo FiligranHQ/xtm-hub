@@ -1,8 +1,7 @@
 'use client';
 
-import { resolveHomepageProductLabel } from '@/components/homepage/Homepage.utils';
 import LastDeployedResourceRow from '@/components/homepage/LastDeployedResourceRow';
-import { LastDeployedOverview } from '@/components/homepage/LastDeployedResourcesSection';
+import { LastDeployedPlatform } from '@/components/homepage/LastDeployedResourcesSection';
 import {
   Select,
   SelectContent,
@@ -11,32 +10,29 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { Separator } from '@filigran/ui/clients';
-import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Fragment, useState } from 'react';
 
 type LastDeployedResourcesClientProps = {
-  products: PlatformIdentifier[];
-  overviewByProduct: Partial<Record<PlatformIdentifier, LastDeployedOverview>>;
+  platforms: LastDeployedPlatform[];
 };
 
 const LastDeployedResourcesClient = ({
-  products,
-  overviewByProduct,
+  platforms,
 }: LastDeployedResourcesClientProps) => {
   const t = useTranslations('HomePage.LastDeployedResources');
   const tPlatform = useTranslations('PublicHomePage.XtmPlatform');
 
-  const productsWithResources = products.filter(
-    (product) => (overviewByProduct[product]?.resources.length ?? 0) > 0
+  const platformsWithResources = platforms.filter(
+    (platform) => platform.overview.resources.length > 0
   );
 
-  const [selectedProduct, setSelectedProduct] = useState<PlatformIdentifier>(
-    productsWithResources[0] as PlatformIdentifier
+  const [selectedPlatformId, setSelectedPlatformId] = useState<string>(
+    platformsWithResources[0]?.id ?? ''
   );
 
-  if (productsWithResources.length === 0) {
+  if (platformsWithResources.length === 0) {
     return (
       <section className="flex-1 min-w-0 flex flex-col gap-l">
         <div className="flex items-center justify-center">
@@ -53,13 +49,12 @@ const LastDeployedResourcesClient = ({
     );
   }
 
-  const effectiveProduct = (
-    productsWithResources.includes(selectedProduct)
-      ? selectedProduct
-      : productsWithResources[0]
-  ) as PlatformIdentifier;
+  const effectivePlatform =
+    platformsWithResources.find(
+      (platform) => platform.id === selectedPlatformId
+    ) ?? platformsWithResources[0]!;
 
-  const resources = overviewByProduct[effectiveProduct]?.resources ?? [];
+  const resources = effectivePlatform.overview.resources;
 
   return (
     <section className="flex-1 min-w-0 flex flex-col gap-l">
@@ -68,19 +63,19 @@ const LastDeployedResourcesClient = ({
           {t('Title')}
         </h2>
         <Select
-          value={effectiveProduct}
-          onValueChange={(value) =>
-            setSelectedProduct(value as PlatformIdentifier)
-          }>
+          value={effectivePlatform.id}
+          onValueChange={setSelectedPlatformId}>
           <SelectTrigger className="w-56">
             <SelectValue placeholder={t('ProductPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
-            {productsWithResources.map((product) => (
+            {platformsWithResources.map((platform) => (
               <SelectItem
-                key={product}
-                value={product}>
-                {resolveHomepageProductLabel(product)} {t('ProductName')}
+                key={platform.id}
+                value={platform.id}>
+                {platform.productName
+                  ? `${platform.productName} - ${platform.title}`
+                  : platform.title}
               </SelectItem>
             ))}
           </SelectContent>
