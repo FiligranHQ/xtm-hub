@@ -51,6 +51,10 @@ import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 
+interface WelcomeEmailOptions {
+  sendWelcomeEmail?: boolean;
+}
+
 export const createUserWithPersonalSpace = async (
   data: Pick<
     UserInitializer,
@@ -58,7 +62,8 @@ export const createUserWithPersonalSpace = async (
   > & {
     password?: string | null;
     selected_organization_id?: OrganizationId;
-  }
+  },
+  { sendWelcomeEmail = true }: WelcomeEmailOptions = {}
 ): Promise<User> => {
   const { salt, hash } = hashPassword(data.password ?? '');
   const uuid = uuidv4();
@@ -98,16 +103,21 @@ export const createUserWithPersonalSpace = async (
     capabilities_name: [OrganizationCapability.AdministrateOrganization],
   });
 
-  await sendMail({
-    to: addedUser.email,
-    template: 'welcome',
-    params: {},
-  });
+  if (sendWelcomeEmail) {
+    await sendMail({
+      to: addedUser.email,
+      template: 'welcome',
+      params: {},
+    });
+  }
 
   return addedUser;
 };
 
-async function createOrganisationWithAdminUser(email: string) {
+async function createOrganisationWithAdminUser(
+  email: string,
+  { sendWelcomeEmail = true }: WelcomeEmailOptions = {}
+) {
   const extractedDomain = extractDomain(email);
 
   if (!extractedDomain) {
@@ -119,9 +129,12 @@ async function createOrganisationWithAdminUser(email: string) {
     name: extractedDomain,
     domains: [extractedDomain],
   });
-  const addedUser = await createUserWithPersonalSpace({
-    email,
-  });
+  const addedUser = await createUserWithPersonalSpace(
+    {
+      email,
+    },
+    { sendWelcomeEmail }
+  );
 
   try {
     const createOrgaEvent = TelemetryHelper.buildCreateOrganizationEvent(
@@ -161,20 +174,28 @@ export const createNewUserWithPendingOrga = async (
     last_name,
     picture,
   }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
-  organization: Organization
+  organization: Organization,
+  { sendWelcomeEmail = true }: WelcomeEmailOptions = {}
 ) => {
-  const addedUser = await createUserWithPersonalSpace({
-    email,
-    last_name,
-    first_name,
-    picture,
-  });
+  const addedUser = await createUserWithPersonalSpace(
+    {
+      email,
+      last_name,
+      first_name,
+      picture,
+    },
+    { sendWelcomeEmail }
+  );
   await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
     user_id: addedUser.id,
     organization_id: organization.id,
   });
   return addedUser;
 };
+
+interface CreateNewUserOptions extends WelcomeEmailOptions {
+  isFiligranUser?: boolean;
+}
 
 export const createNewUserFromInvitation = async (
   {
@@ -183,20 +204,25 @@ export const createNewUserFromInvitation = async (
     last_name,
     picture,
   }: Pick<UserInitializer, 'email' | 'first_name' | 'last_name' | 'picture'>,
-  isFiligranUser: boolean = false
+  { isFiligranUser = false, sendWelcomeEmail = true }: CreateNewUserOptions = {}
 ): Promise<User> => {
   const [organization] =
     await OrganizationDomain.loadOrganizationsFromEmail(email);
   let userWithRoles: User;
   if (!organization) {
-    userWithRoles = await createOrganisationWithAdminUser(email);
-  } else if (isFiligranUser) {
-    userWithRoles = await createUserWithPersonalSpace({
-      email,
-      last_name,
-      first_name,
-      picture,
+    userWithRoles = await createOrganisationWithAdminUser(email, {
+      sendWelcomeEmail,
     });
+  } else if (isFiligranUser) {
+    userWithRoles = await createUserWithPersonalSpace(
+      {
+        email,
+        last_name,
+        first_name,
+        picture,
+      },
+      { sendWelcomeEmail }
+    );
   } else {
     userWithRoles = await createNewUserWithPendingOrga(
       {
@@ -205,7 +231,8 @@ export const createNewUserFromInvitation = async (
         first_name,
         picture,
       },
-      organization
+      organization,
+      { sendWelcomeEmail }
     );
   }
 
@@ -216,13 +243,20 @@ export const createNewUserFromInvitation = async (
   return user;
 };
 
+interface GetOrCreateUserOptions extends CreateNewUserOptions {
+  upsert?: boolean;
+}
+
 export const getOrCreateUser = async (
   userInfo: Pick<
     UserInitializer,
     'email' | 'first_name' | 'last_name' | 'picture'
   >,
-  upsert = false,
-  isFiligranUser = false
+  {
+    upsert = false,
+    isFiligranUser = false,
+    sendWelcomeEmail = true,
+  }: GetOrCreateUserOptions = {}
 ): Promise<User> => {
   const user = await UserDomain.loadUserBy({ email: userInfo.email });
   if (user && upsert) {
@@ -241,7 +275,10 @@ export const getOrCreateUser = async (
   }
   return user
     ? user
-    : await createNewUserFromInvitation(userInfo, isFiligranUser);
+    : await createNewUserFromInvitation(userInfo, {
+        isFiligranUser,
+        sendWelcomeEmail,
+      });
 };
 
 export const insertUserIntoOrganization = async (

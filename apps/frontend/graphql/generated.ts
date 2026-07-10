@@ -2718,6 +2718,11 @@ export type NewestDocumentsQueryQueryVariables = Exact<{
 
 export type NewestDocumentsQueryQuery = { __typename?: 'Query', newestDocuments: Array<{ __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomDashboard', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomView', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'DefaultDocument', id: string, name: string | null, short_description: string | null, type: string, active: boolean, slug: string | null, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'IntegrationHack', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenAEVScenario', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenCTIPlaybook', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'RssFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'Stream', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'TaxiiFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'ThirdPartyIntegration', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null }> };
 
+export type MeCheckQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeCheckQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string } | null };
+
 export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -2965,6 +2970,59 @@ export const useInfiniteNewestDocumentsQueryQuery = <
 useInfiniteNewestDocumentsQueryQuery.getKey = (variables: NewestDocumentsQueryQueryVariables) => ['NewestDocumentsQuery.infinite', variables];
 useInfiniteNewestDocumentsQueryQuery.getRootKey = () => ['NewestDocumentsQuery.infinite'] as const;
 useNewestDocumentsQueryQuery.fetcher = (client: GraphQLClient, variables: NewestDocumentsQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<NewestDocumentsQueryQuery, NewestDocumentsQueryQueryVariables>(client, NewestDocumentsQueryDocument, variables, headers);
+
+export const MeCheckDocument = `
+    query meCheck {
+  me {
+    id
+  }
+}
+    `;
+
+export const useMeCheckQuery = <
+      TData = MeCheckQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: MeCheckQueryVariables,
+      options?: Omit<UseQueryOptions<MeCheckQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<MeCheckQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<MeCheckQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['meCheck'] : ['meCheck', variables],
+    queryFn: fetcher<MeCheckQuery, MeCheckQueryVariables>(client, MeCheckDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useMeCheckQuery.getKey = (variables?: MeCheckQueryVariables) => variables === undefined ? ['meCheck'] : ['meCheck', variables];
+useMeCheckQuery.getRootKey = () => ['meCheck'] as const;
+export const useInfiniteMeCheckQuery = <
+      TData = InfiniteData<MeCheckQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: MeCheckQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<MeCheckQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<MeCheckQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<MeCheckQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['meCheck.infinite'] : ['meCheck.infinite', variables],
+      queryFn: (metaData) => fetcher<MeCheckQuery, MeCheckQueryVariables>(client, MeCheckDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteMeCheckQuery.getKey = (variables?: MeCheckQueryVariables) => variables === undefined ? ['meCheck.infinite'] : ['meCheck.infinite', variables];
+useInfiniteMeCheckQuery.getRootKey = () => ['meCheck.infinite'] as const;
+useMeCheckQuery.fetcher = (client: GraphQLClient, variables?: MeCheckQueryVariables, headers?: RequestInit['headers']) => fetcher<MeCheckQuery, MeCheckQueryVariables>(client, MeCheckDocument, variables, headers);
 
 export const OrganizationSubscribedServicesBreadcrumbDocument = `
     query OrganizationSubscribedServicesBreadcrumb($id: ID!) {

@@ -1,4 +1,3 @@
-import { FeatureFlag } from '@graphql/generated';
 import * as React from 'react';
 
 import '@styles/globals.css';
@@ -16,13 +15,14 @@ import { TryFiligranProductsBanner } from '@/components/service/trial-instances/
 import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
-import { buildLoginRedirect } from '@/utils/redirect';
+import { buildLoginRedirect, buildSignupRedirect } from '@/utils/redirect';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
+import { FeatureFlag } from '@graphql/generated';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -55,12 +55,16 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       {}
     );
 
+  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
+
   const me = meData.me as unknown as meContext_fragment$data;
   if (!me) {
-    redirect(buildLoginRedirect(pathname));
+    redirect(
+      isHomePageV2Enabled
+        ? buildSignupRedirect(pathname)
+        : buildLoginRedirect(pathname)
+    );
   }
-
-  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
 
   return (
     <RelayProvider>
