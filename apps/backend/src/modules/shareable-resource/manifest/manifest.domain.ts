@@ -10,7 +10,7 @@ import type ManifestDocument from '../../../model/kanel/public/ManifestDocument'
 import type { ManifestDocumentInitializer } from '../../../model/kanel/public/ManifestDocument';
 import type ManifestRebuildQueue from '../../../model/kanel/public/ManifestRebuildQueue';
 import type { ManifestRebuildQueueInitializer } from '../../../model/kanel/public/ManifestRebuildQueue';
-import { getErrorMessage } from '../../../utils/error/error-guard.util';
+import { isUniqueConstraintViolation } from '../../../utils/error/error-guard.util';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { ManifestKey, ManifestRebuildQueueStatus } from './manifest.consts';
 
@@ -146,7 +146,8 @@ export const ManifestDomain = {
       } catch (error) {
         // A pending sibling already covers this rebuild; drop the stale row.
         if (
-          !getErrorMessage(error).includes(
+          !isUniqueConstraintViolation(
+            error,
             'manifestrebuildqueue_product_version_type_status_unique'
           )
         ) {

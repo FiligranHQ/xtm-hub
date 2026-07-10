@@ -6,6 +6,8 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { securityGuard } from '../../../security/guard';
+import { logApp } from '../../../utils/app-logger.util';
+import { getErrorMessage } from '../../../utils/error/error-guard.util';
 import { ManifestKey } from '../manifest/manifest.consts';
 import { ManifestDomain } from '../manifest/manifest.domain';
 import { ManifestHelper } from '../manifest/manifest.helper';
@@ -56,8 +58,16 @@ export const ManifestFragmentApp = {
 
     await ManifestDomain.insertIfNotPending(impactedKeys);
 
-    for (const key of impactedKeys) {
-      await ManifestHelper.scheduleDebouncedRebuild(key);
-    }
+    const results = await Promise.allSettled(
+      impactedKeys.map((key) => ManifestHelper.scheduleDebouncedRebuild(key))
+    );
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        logApp.error('[MANIFEST] Failed to schedule debounced rebuild', {
+          key: impactedKeys[index],
+          error: getErrorMessage(result.reason),
+        });
+      }
+    });
   },
 };

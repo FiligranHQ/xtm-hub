@@ -9,7 +9,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import Document from '../../../model/kanel/public/Document';
-import { getErrorMessage } from '../../../utils/error/error-guard.util';
+import { isUniqueConstraintViolation } from '../../../utils/error/error-guard.util';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
 import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
@@ -225,7 +225,10 @@ export const ManifestFragmentDomain = {
       } catch (error) {
         // Backstop for brand-new connectors: no existing rows for the lock above.
         if (
-          getErrorMessage(error).includes('document_type_slug_version_unique')
+          isUniqueConstraintViolation(
+            error,
+            'document_type_slug_version_unique'
+          )
         ) {
           throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists, {
             cause: error,
