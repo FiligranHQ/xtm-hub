@@ -37,6 +37,7 @@ describe('oneClickDeploymentDomain', () => {
     expect(stored.platform_id).toBe(row.platform_id);
     expect(stored.organization_id).toBe(TEST_ORGANIZATIONS.FILIGRAN.ID);
     expect(stored.target_product).toBe(TelemetryTargetProduct.OPEN_CTI);
+    expect(stored.deployed_at).toEqual(row.deployed_at);
   });
 
   describe('loadLastDeployed', () => {

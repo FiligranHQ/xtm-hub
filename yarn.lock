@@ -2853,10 +2853,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/icon@npm:0.24.0":
-  version: 0.24.0
-  resolution: "@filigran/icon@npm:0.24.0"
-  checksum: 10/db06627dd0516c507c31fac87b5899104790d2248b90928768bf0308c4547088f5408ae14ee2c2253fa9ca3533912676cda379ef0cf8e55357700c9c432ed8cf
+"@filigran/icon@npm:0.24.1":
+  version: 0.24.1
+  resolution: "@filigran/icon@npm:0.24.1"
+  checksum: 10/64a1fab4891daf4590d1192c73dbc3113c50fb445e2a778633f7ad735f6dddcd2267eec8bf53e250e5593866574e1a409efaa8f3b05635c318ca36280a549363
   languageName: node
   linkType: hard
 
@@ -8689,7 +8689,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@xtm-hub/frontend@workspace:apps/frontend"
   dependencies:
-    "@filigran/icon": "npm:0.24.0"
+    "@filigran/icon": "npm:0.24.1"
     "@filigran/ui": "npm:1.4.0"
     "@graphql-codegen/cli": "catalog:"
     "@graphql-codegen/typescript": "catalog:"

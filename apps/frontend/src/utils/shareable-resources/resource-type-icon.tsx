@@ -1,11 +1,11 @@
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
-  AttackPatternIcon,
   ExtensionIcon,
   InsertChartIcon,
   InsightsIcon,
   LibraryBooksIcon,
   LogoFiligranIcon,
+  MovieFilterIcon,
 } from '@filigran/icon';
 import { FunctionComponent, SVGProps } from 'react';
 
@@ -16,7 +16,7 @@ const RESOURCE_TYPE_ICON: Record<ShareableResourceType, IconComponent> = {
   [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: InsightsIcon,
   [ShareableResourceType.OPENCTI_PLAYBOOK]: LibraryBooksIcon,
   [ShareableResourceType.OPENCTI_INTEGRATION]: ExtensionIcon,
-  [ShareableResourceType.OPENAEV_SCENARIO]: AttackPatternIcon,
+  [ShareableResourceType.OPENAEV_SCENARIO]: MovieFilterIcon,
 };
 
 interface ResourceTypeIconProps extends SVGProps<SVGSVGElement> {
