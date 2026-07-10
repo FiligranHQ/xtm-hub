@@ -12,9 +12,11 @@ import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import { extractId } from '../../utils/utils';
+import portalConfig from '../../config';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { OneClickDeploymentDomain } from './one-click-deployment.domain';
+import { loadInstanceIdentity } from './telemetry-snapshot.domain';
 import {
   TelemetryHelper,
   TelemetryTargetProductMappedByPlatformIdentifier,
@@ -43,6 +45,41 @@ const useQueueProcessing = (): boolean =>
 const getQueuedEventTypes = (): string[] =>
   config.get<string[]>('telemetry_queued_event_types');
 
+// The durable instance identity is loaded once and cached for the process
+// lifetime (it is seeded by the add_platform_metadata migration and never
+// changes). A failed load resolves to 'unknown' for the in-flight event but
+// resets the cache so later events retry instead of being tagged 'unknown'
+// forever.
+let hubInstanceIdPromise: Promise<string> | undefined;
+
+const getHubInstanceId = (): Promise<string> => {
+  hubInstanceIdPromise ??= loadInstanceIdentity().then(
+    ({ instanceId }) => instanceId,
+    (error) => {
+      hubInstanceIdPromise = undefined;
+      logApp.error('Failed to load hub instance identity for telemetry', {
+        error,
+      });
+      return 'unknown';
+    }
+  );
+  return hubInstanceIdPromise;
+};
+
+/**
+ * Stamp the emitting hub instance on the event before it leaves the process
+ * (both the pg-boss and the synchronous ES paths go through this). Without
+ * it the warehouse cannot tell production events apart from staging/dev
+ * hubs replicating into the same pipeline.
+ */
+const withHubIdentity = async (
+  event: TelemetryEvent
+): Promise<TelemetryEvent> => ({
+  ...event,
+  hub_instance_id: await getHubInstanceId(),
+  hub_environment: portalConfig.environment,
+});
+
 export const TelemetryApp = {
   async indexTelemetryEvent(event: TelemetryEvent) {
     await esDbClient.index({
@@ -51,8 +88,9 @@ export const TelemetryApp = {
     });
   },
 
-  async sendTelemetryEvent(event: TelemetryEvent) {
+  async sendTelemetryEvent(rawEvent: TelemetryEvent) {
     try {
+      const event = await withHubIdentity(rawEvent);
       if (useQueueProcessing()) {
         const queuedTypes = getQueuedEventTypes();
         if (
@@ -74,7 +112,10 @@ export const TelemetryApp = {
         });
       });
     } catch (error) {
-      logApp.error('Error sending telemetry event ', { event, error });
+      logApp.error('Error sending telemetry event ', {
+        event: rawEvent,
+        error,
+      });
     }
   },
 

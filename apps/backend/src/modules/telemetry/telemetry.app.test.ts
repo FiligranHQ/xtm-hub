@@ -9,6 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
+import portalConfig from '../../config';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
@@ -51,6 +52,20 @@ vi.mock('config', async (importOriginal) => {
       get: vi.fn(mod.default.get.bind(mod.default)),
       has: mod.default.has.bind(mod.default),
     },
+  };
+});
+
+// The event pipeline stamps the durable hub instance identity on every
+// event; pin it so assertions do not depend on the test database contents.
+vi.mock('./telemetry-snapshot.domain', async (importOriginal) => {
+  const mod =
+    await importOriginal<typeof import('./telemetry-snapshot.domain')>();
+  return {
+    ...mod,
+    loadInstanceIdentity: vi.fn().mockResolvedValue({
+      instanceId: 'test-hub-instance-id',
+      instanceCreation: '2026-01-01T00:00:00.000Z',
+    }),
   };
 });
 
@@ -527,6 +542,14 @@ describe('telemetryApp', () => {
       service: TelemetryEventService.INTEGRATIONS_LIBRARY,
     };
 
+    // sendTelemetryEvent stamps the hub identity before enqueueing/indexing.
+    const hubIdentity = {
+      hub_instance_id: 'test-hub-instance-id',
+      hub_environment: portalConfig.environment,
+    };
+    const enrichedLoginEvent = { ...loginEvent, ...hubIdentity };
+    const enrichedSubscribeEvent = { ...subscribeEvent, ...hubIdentity };
+
     describe('when queue processing is disabled', () => {
       beforeEach(() => {
         indexSpy = vi
@@ -547,7 +570,7 @@ describe('telemetryApp', () => {
 
         expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
           index: 'telemetry',
-          document: loginEvent,
+          document: enrichedLoginEvent,
         });
         expect(pgBossSendSpy).not.toHaveBeenCalled();
       });
@@ -584,7 +607,7 @@ describe('telemetryApp', () => {
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
-          { event: loginEvent }
+          { event: enrichedLoginEvent }
         );
         expect(indexSpy).not.toHaveBeenCalled();
       });
@@ -594,7 +617,7 @@ describe('telemetryApp', () => {
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
-          { event: subscribeEvent }
+          { event: enrichedSubscribeEvent }
         );
         expect(indexSpy).not.toHaveBeenCalled();
       });
@@ -607,7 +630,7 @@ describe('telemetryApp', () => {
 
         expect(logSpy).toHaveBeenCalledWith(
           'Failed to enqueue telemetry event',
-          { event: loginEvent, error: sendError }
+          { event: enrichedLoginEvent, error: sendError }
         );
         expect(indexSpy).not.toHaveBeenCalled();
       });
@@ -634,7 +657,7 @@ describe('telemetryApp', () => {
 
         expect(pgBossSendSpy).toHaveBeenCalledExactlyOnceWith(
           TELEMETRY_QUEUES.EVENTS,
-          { event: loginEvent }
+          { event: enrichedLoginEvent }
         );
         expect(indexSpy).not.toHaveBeenCalled();
       });
@@ -644,7 +667,7 @@ describe('telemetryApp', () => {
 
         expect(indexSpy).toHaveBeenCalledExactlyOnceWith({
           index: 'telemetry',
-          document: subscribeEvent,
+          document: enrichedSubscribeEvent,
         });
         expect(pgBossSendSpy).not.toHaveBeenCalled();
       });
