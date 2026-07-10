@@ -40,3 +40,27 @@ query NewestDocumentsQuery(
     ...HomepageDocument
   }
 }
+
+query LastDeployedOverviewQuery(
+  $limit: Int!
+  $platformIdentifiers: [PlatformIdentifier!]
+) {
+  lastDeployedOverview(
+    limit: $limit
+    platformIdentifiers: $platformIdentifiers
+  ) {
+    resources {
+      document {
+        ...HomepageDocument
+      }
+      deployedAt
+      deployedBy {
+        id
+        first_name
+        last_name
+        email
+        picture
+      }
+    }
+  }
+}

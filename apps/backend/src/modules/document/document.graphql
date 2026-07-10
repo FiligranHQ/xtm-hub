@@ -216,4 +216,18 @@ type Query {
     limit: Int!
     platformIdentifiers: [PlatformIdentifier!]
   ): [Document!]!
+  lastDeployedOverview(
+    limit: Int!
+    platformIdentifiers: [PlatformIdentifier!]
+  ): LastDeployedOverview! @auth
+}
+
+type DeployedResource {
+  document: Document!
+  deployedAt: Date!
+  deployedBy: User
+}
+
+type LastDeployedOverview {
+  resources: [DeployedResource!]!
 }

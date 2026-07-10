@@ -35,6 +35,9 @@ const COLUMN_ENUM_MAP = {
     epic_type: 'EpicType',
     edition_type: 'EditionType',
   },
+  UseCase: {
+    product: 'FiligranProduct',
+  },
   ServiceDefinition: {
     identifier: 'ServiceDefinitionIdentifier',
   },

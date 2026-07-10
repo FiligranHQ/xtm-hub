@@ -1,4 +1,5 @@
 import { buildDistinctPlatformIdentifiersFromServiceDefinition } from '@/components/homepage/Homepage.utils';
+import LastDeployedResourcesSection from '@/components/homepage/LastDeployedResourcesSection';
 import MostDeployedResources from '@/components/homepage/MostDeployedResources';
 import NewestResources from '@/components/homepage/NewestResources';
 import PrivateHomepageRoadmapSection from '@/components/homepage/PrivateHomepageRoadmapSection';
@@ -53,10 +54,15 @@ export const PrivateHomepage = async () => {
         {platformIdentifiers.length === 0 && (
           <XtmPlatform welcomeName={welcomeName} />
         )}
-        <RegisteredPlatformsSection
-          welcomeName={welcomeName}
-          registeredPlatformsData={registeredPlatformsData}
-        />
+        <div className="flex flex-col md:flex-row gap-xl items-start">
+          <RegisteredPlatformsSection
+            welcomeName={welcomeName}
+            registeredPlatformsData={registeredPlatformsData}
+          />
+          <LastDeployedResourcesSection
+            registeredPlatformsData={registeredPlatformsData}
+          />
+        </div>
         <PrivateHomepageRoadmapSection
           platformIdentifiers={platformIdentifiers}
         />

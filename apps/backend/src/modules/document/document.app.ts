@@ -17,10 +17,13 @@ import Document, {
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
+import { OneClickDeploymentDomain } from '../telemetry/one-click-deployment.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
@@ -664,6 +667,60 @@ export const DocumentApp = {
       ALL_METADATA_KEYS,
       documentTypes
     );
+  },
+
+  loadLastDeployedOverview: async (
+    limit: number,
+    platformIdentifiers?: PlatformIdentifier[]
+  ) => {
+    const organizationId =
+      requestContext.requireUser().selected_organization_id;
+
+    const events = await OneClickDeploymentDomain.loadLastDeployed(
+      organizationId,
+      limit,
+      platformIdentifiers
+    );
+
+    if (events.length === 0) {
+      return { resources: [] };
+    }
+
+    const uniqueResourceIds = [...new Set(events.map((e) => e.resource_id))];
+    const uniqueUserIds = [
+      ...new Set(events.flatMap((e) => (e.user_id ? [e.user_id] : []))),
+    ] as UserId[];
+
+    const [documents, users] = await Promise.all([
+      DocumentDomain.loadDocumentsWithMetadataByIds(
+        uniqueResourceIds,
+        ALL_METADATA_KEYS
+      ),
+      uniqueUserIds.length > 0
+        ? UserDomain.loadUsers(uniqueUserIds)
+        : Promise.resolve([]),
+    ]);
+
+    const documentById = new Map(documents.map((d) => [d.id as string, d]));
+    const userById = new Map(users.map((u) => [u.id as string, u]));
+
+    const resources = events.flatMap((event) => {
+      const document = documentById.get(event.resource_id);
+      if (!document) {
+        return [];
+      }
+      return [
+        {
+          document,
+          deployedAt: event.deployedAt,
+          deployedBy: event.user_id
+            ? (userById.get(event.user_id) ?? null)
+            : null,
+        },
+      ];
+    });
+
+    return { resources };
   },
 
   loadDocument: async (documentId: DocumentId) => {

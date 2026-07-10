@@ -325,6 +325,13 @@
     "XtmMostDeployedResources": {
       "Title": "Ressources les plus utilisées"
     },
+    "LastDeployedResources": {
+      "Title": "Les dernières ressources déployées",
+      "ProductPlaceholder": "Sélectionner un produit",
+      "ProductName": "nom du produit",
+      "On": "le",
+      "By": "par"
+    },
     "RegisteredPlatformsCard": {
       "RegisteredOn": "le",
       "Contract": "Contrat",

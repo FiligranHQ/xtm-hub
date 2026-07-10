@@ -325,6 +325,13 @@
     "XtmMostDeployedResources": {
       "Title": "最も多くデプロイされているリソース"
     },
+    "LastDeployedResources": {
+      "Title": "最近デプロイされたリソース",
+      "ProductPlaceholder": "製品を選択",
+      "ProductName": "製品名",
+      "On": "",
+      "By": "による"
+    },
     "RegisteredPlatformsCard": {
       "RegisteredOn": "on",
       "Contract": "契約",
