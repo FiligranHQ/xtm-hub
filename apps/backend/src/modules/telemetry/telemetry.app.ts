@@ -47,23 +47,45 @@ const getQueuedEventTypes = (): string[] =>
 
 // The durable instance identity is loaded once and cached for the process
 // lifetime (it is seeded by the add_platform_metadata migration and never
-// changes). A failed load resolves to 'unknown' for the in-flight event but
-// resets the cache so later events retry instead of being tagged 'unknown'
-// forever.
+// changes). A failed load resolves to 'unknown' for the in-flight events and
+// only retries after a backoff window, so a persistent database outage does
+// not trigger one identity query + one error log per emitted event.
+const UNKNOWN_HUB_INSTANCE_ID = 'unknown';
+const FAILED_IDENTITY_LOAD_BACKOFF_MS = 60_000;
+
 let hubInstanceIdPromise: Promise<string> | undefined;
+let lastFailedIdentityLoadAtMs: number | undefined;
 
 const getHubInstanceId = (): Promise<string> => {
-  hubInstanceIdPromise ??= loadInstanceIdentity().then(
-    ({ instanceId }) => instanceId,
-    (error) => {
-      hubInstanceIdPromise = undefined;
-      logApp.error('Failed to load hub instance identity for telemetry', {
-        error,
-      });
-      return 'unknown';
+  if (hubInstanceIdPromise === undefined) {
+    if (
+      lastFailedIdentityLoadAtMs !== undefined &&
+      Date.now() - lastFailedIdentityLoadAtMs < FAILED_IDENTITY_LOAD_BACKOFF_MS
+    ) {
+      return Promise.resolve(UNKNOWN_HUB_INSTANCE_ID);
     }
-  );
+    hubInstanceIdPromise = loadInstanceIdentity().then(
+      ({ instanceId }) => {
+        lastFailedIdentityLoadAtMs = undefined;
+        return instanceId;
+      },
+      (error) => {
+        hubInstanceIdPromise = undefined;
+        lastFailedIdentityLoadAtMs = Date.now();
+        logApp.error('Failed to load hub instance identity for telemetry', {
+          error,
+        });
+        return UNKNOWN_HUB_INSTANCE_ID;
+      }
+    );
+  }
   return hubInstanceIdPromise;
+};
+
+/** Test-only: reset the memoized hub identity between test cases. */
+export const resetHubIdentityCacheForTests = (): void => {
+  hubInstanceIdPromise = undefined;
+  lastFailedIdentityLoadAtMs = undefined;
 };
 
 /**
