@@ -49,3 +49,25 @@ export const getErrorNumberProperty = (
   const value = error[key];
   return typeof value === 'number' ? value : undefined;
 };
+
+const POSTGRES_UNIQUE_VIOLATION_CODE = '23505';
+
+export const isUniqueConstraintViolation = (
+  error: unknown,
+  constraintName: string
+): boolean => {
+  const code = getErrorStringProperty(error, 'code');
+  const constraint = getErrorStringProperty(error, 'constraint');
+
+  if (code === POSTGRES_UNIQUE_VIOLATION_CODE) {
+    return constraint
+      ? constraint === constraintName
+      : getErrorMessage(error).includes(constraintName);
+  }
+
+  if (constraint) {
+    return constraint === constraintName;
+  }
+
+  return getErrorMessage(error).includes(constraintName);
+};

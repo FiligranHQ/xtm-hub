@@ -91,6 +91,35 @@ describe('manifestDomain', () => {
       });
       expect(untouched!.status).toBe(ManifestRebuildQueueStatus.Pending);
     });
+    it('should skip a pending row when a processing row already exists for the same key', async () => {
+      await TestHelper.manifestRebuildQueue.create({
+        product: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+        status: ManifestRebuildQueueStatus.Processing,
+      });
+      await TestHelper.manifestRebuildQueue.create({
+        product: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+        status: ManifestRebuildQueueStatus.Pending,
+      });
+
+      const result =
+        await ManifestDomain.loadPendingManifestsForProcessing(MANIFEST_KEY);
+
+      expect(result).toHaveLength(0);
+      const rows = await TestHelper.manifestRebuildQueue.loadAll({
+        product: PlatformIdentifier.Opencti,
+      });
+      expect(rows).toHaveLength(2);
+      expect(rows.map((r) => r.status).sort()).toEqual(
+        [
+          ManifestRebuildQueueStatus.Pending,
+          ManifestRebuildQueueStatus.Processing,
+        ].sort()
+      );
+    });
   });
 
   describe('insertIfNotPending', () => {
@@ -520,6 +549,37 @@ describe('manifestDomain', () => {
         product: PlatformIdentifier.Openaev,
       });
       expect(recentRow!.status).toBe(ManifestRebuildQueueStatus.Processing);
+    });
+
+    it('should delete a stuck processing row instead of resetting it when a fresher pending row for the same key already exists', async () => {
+      const fortyMinutesAgo = new Date(Date.now() - 40 * 60 * 1000);
+      await TestHelper.manifestRebuildQueue.create({
+        product: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+        status: ManifestRebuildQueueStatus.Processing,
+        created_at: fortyMinutesAgo,
+      });
+      await TestHelper.manifestRebuildQueue.create({
+        product: PlatformIdentifier.Opencti,
+        version: '6.4.0',
+        type: ManifestType.Connector,
+        status: ManifestRebuildQueueStatus.Pending,
+      });
+
+      const result = await ManifestDomain.recoverStuckProcessingEntries();
+
+      expect(result).toEqual([]);
+      const processingRow = await TestHelper.manifestRebuildQueue.load({
+        product: PlatformIdentifier.Opencti,
+        status: ManifestRebuildQueueStatus.Processing,
+      });
+      expect(processingRow).toBeUndefined();
+      const pendingRow = await TestHelper.manifestRebuildQueue.load({
+        product: PlatformIdentifier.Opencti,
+        status: ManifestRebuildQueueStatus.Pending,
+      });
+      expect(pendingRow).toBeDefined();
     });
   });
 });
