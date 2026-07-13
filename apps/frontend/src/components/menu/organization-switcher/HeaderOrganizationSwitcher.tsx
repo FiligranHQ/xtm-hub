@@ -3,7 +3,7 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation/private/private-navigation-query-invalidation';
 import { APP_PATH } from '@/utils/path/constant';
-import { UnfoldMoreIcon } from '@filigran/icon';
+import { ArrowDropDownIcon } from '@filigran/icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
 import organizationSwitcherMutation, {
   OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
@@ -96,7 +96,7 @@ const HeaderOrganizationSwitcher = () => {
             aria-haspopup="listbox"
             className="w-full justify-between sm:w-55">
             <span className="truncate">{selectedOrganization?.label}</span>
-            <UnfoldMoreIcon
+            <ArrowDropDownIcon
               aria-hidden={true}
               focusable={false}
               className="ml-s h-4 w-4 shrink-0 opacity-70"
