@@ -21,7 +21,7 @@ body[data-theme='Dark'] {
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border content-body-base;
     font-family: var(--font-ibm-plex-sans), system-ui, sans-serif;
   }
 
