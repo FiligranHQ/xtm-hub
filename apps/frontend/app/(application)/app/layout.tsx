@@ -12,6 +12,7 @@ import Menu from '@/components/menu/Menu';
 import PrivateMenu from '@/components/menu/PrivateMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
+import { cn } from '@/lib/utils';
 import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
@@ -73,7 +74,10 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
           <PageLoader>
             <div
               id="app-shell"
-              className="flex flex-col w-full h-screen min-h-0">
+              className={cn(
+                'flex flex-col w-full h-screen min-h-0',
+                isHomePageV2Enabled && 'overflow-y-auto'
+              )}>
               <TestEnvBanner />
               <AdminBanner />
               <TryFiligranProductsBanner />
