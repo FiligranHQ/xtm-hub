@@ -49,7 +49,7 @@ export const PrivateHomepage = async () => {
       {platformIdentifiers.length !== 0 && (
         <BreadcrumbNav value={breadcrumbValue} />
       )}
-      <div className="p-xl flex flex-col gap-xl">
+      <div className="p-0 sm:p-xl flex flex-col gap-xl">
         {platformIdentifiers.length === 0 && (
           <XtmPlatform welcomeName={welcomeName} />
         )}

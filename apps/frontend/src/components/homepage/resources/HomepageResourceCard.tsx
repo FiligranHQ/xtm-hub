@@ -44,8 +44,23 @@ const HomepageResourceCard = ({
   const iconCount = [active, verified, deployable].filter(Boolean).length;
   const titlePaddingRight = computeTitlePaddingRight(iconCount);
 
+  const description = shortDescription ? (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <p className="text-muted-foreground text-xs line-clamp-2">
+            {shortDescription}
+          </p>
+        </TooltipTrigger>
+        <TooltipContent className="bg-gray-50 max-w-sm whitespace-normal">
+          {shortDescription}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  ) : null;
+
   return (
-    <div className="overflow-hidden flex flex-col relative rounded bg-page-background hover:bg-hover max-w-75">
+    <div className="overflow-hidden flex flex-col relative rounded bg-page-background hover:bg-hover max-sm:max-w-none max-w-75">
       <div className="absolute top-m right-m flex gap-xs z-10">
         <ResourceStatusIcons
           active={active}
@@ -57,7 +72,7 @@ const HomepageResourceCard = ({
         className="flex flex-col flex-1 min-h-0 overflow-hidden p-m gap-s"
         href={url}>
         <div
-          className="flex items-center gap-m min-w-0"
+          className="flex items-start sm:items-center gap-m min-w-0"
           style={{ paddingRight: titlePaddingRight }}>
           <div className="shrink-0">
             {logoUrl ? (
@@ -87,7 +102,7 @@ const HomepageResourceCard = ({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <div className="h-8">
+            <div className="h-8 max-sm:hidden">
               {useCases.length > 0 && (
                 <BadgeOverflowCounter
                   badges={useCases}
@@ -95,24 +110,10 @@ const HomepageResourceCard = ({
                 />
               )}
             </div>
+            <div className="sm:hidden">{description}</div>
           </div>
         </div>
-        <div className="min-h-10 my-s">
-          {shortDescription && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="text-muted-foreground text-xs line-clamp-2">
-                    {shortDescription}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent className="bg-gray-50 max-w-sm whitespace-normal">
-                  {shortDescription}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
+        <div className="min-h-10 my-s max-sm:hidden">{description}</div>
       </Link>
       <div className="flex items-center gap-s flex-wrap pl-m pb-m">
         {footerTags.map((tag) => (
