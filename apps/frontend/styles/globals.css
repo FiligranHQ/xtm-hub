@@ -21,8 +21,10 @@ body[data-theme='Dark'] {
 
 @layer base {
   * {
-    @apply border-border content-body-base;
+    @apply border-border;
     font-family: var(--font-ibm-plex-sans), system-ui, sans-serif;
+    font-size: var(--text-content-body-base);
+    font-weight: var(--font-weight-content-body-base);
   }
 
   h1,
