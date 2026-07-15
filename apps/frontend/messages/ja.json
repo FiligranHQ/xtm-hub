@@ -16,7 +16,7 @@
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "組織内のすべての能力アクションを許可する",
       "MANAGE_ACCESS": "この組織に他のユーザーを招待できる",
-      "MANAGE_PLATFORM_REGISTRATION": "プラットフォームの登録と解除",
+      "MANAGE_PLATFORM_REGISTRATION": "製品の接続と切断を行う機能",
       "MANAGE_SUBSCRIPTION": "組織を管理し、サービスに登録する機能"
     },
     "Description": "フィリグランのユーザーに特定の機能を追加できる",
@@ -197,7 +197,7 @@
       "ADD_USER_SERVICE_ERROR": "ユーザーへのアクセス許可中にエラーが発生した",
       "ADDING_USER_ERROR": "ユーザーの作成中にエラーが発生した",
       "ALREADY_SUBSCRIBED": "あなたは既にこのサービスに加入しています",
-      "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "プラットフォーム登録解除中に不明なエラーが発生しました。",
+      "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "製品の切断中に不明なエラーが発生しました。",
       "CANT_ADD_DISABLED_USER": "プラットフォームで無効になっているユーザーを追加できない",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "パーソナルスペースにユーザーを追加することはできません",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "組織の最後の管理者を削除することはできない",
@@ -245,8 +245,8 @@
       "INVALID_PLATFORM_ID": "不明なエラーが発生した",
       "INVALID_PLATFORM_IDENTIFIER": "プラットフォーム識別子が無効",
       "INVALID_PLATFORM_VERSION": "プラットフォームのバージョンが無効です",
-      "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "プラットフォーム登録時に不明なエラーが発生した",
-      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "自動登録プラットフォームの引数が見つからない",
+      "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "製品の接続中に不明なエラーが発生しました",
+      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "製品の自動接続引数がありません",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "権限がない",
       "MISSING_CAPABILITY_ON_SERVICE": "パーミッションが見つからない",
       "MISSING_METADATA_MAPPING": "メタデータのマッピングの欠落",
@@ -260,7 +260,7 @@
       "ORGANIZATION_SAME_NAME_EXISTS": "同じ名前の組織がすでに存在する",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "こんなことは許されない",
       "PLATFORM_CONFIGURATION_NOT_FOUND": "プラットフォーム設定が見つかりません",
-      "PLATFORM_NOT_REGISTERED": "プラットフォームが登録されていない",
+      "PLATFORM_NOT_REGISTERED": "製品が接続されていません",
       "PLATFORM_TYPE_NOT_SUPPORTED": "プラットフォームがサポートされていない",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "ユーザープラットフォームトークンの更新中に不明なエラーが発生した",
       "REGISTER_PLATFORM_UNKNOWN_ERROR": "プラットフォーム登録時に不明なエラーが発生した",
@@ -343,7 +343,7 @@
       "LabelWithName": "ようこそ {name}",
       "ConnectedProducts": "{count, plural, one {コネクテッド製品} other {コネクテッド製品}}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
-      "Description": "OpenCTIまたはOpenAEVプラットフォームを登録すると、ワンクリックで事前構築済みのコンテンツを展開したり、製品ニュースフィードで最新情報を入手したり、無料トライアルを開始したり、XTM Platformをさらに活用したりすることができます。",
+      "Description": "OpenCTIまたはOpenAEV製品を接続すると、ワンクリックで事前構築済みのコンテンツを展開したり、製品ニュースフィードで最新情報を入手したり、無料トライアルを開始したり、XTM Platformをさらに活用したりすることができます。",
       "Cta": "製品を連携する",
       "ImageAlt": "XTM Platformの図解"
     },
@@ -624,8 +624,8 @@
       }
     },
     "WarningCancellation": "キャンセルすると、その組織は新しいトライアルを要求できなくなります。",
-    "Registered": "登録済み",
-    "NotRegistered": "未登録"
+    "Registered": "接続済み",
+    "NotRegistered": "未接続"
   },
   "Parameters": {
     "Version": "バージョン"
@@ -689,21 +689,21 @@
     "AnotherOrganization": {
       "Allowed": {
         "Registered": {
-          "Description": "あなたの {platformIdentifier} プラットフォームはすでに他の組織に登録されています。プラットフォームを移管しますか？",
-          "Title": "既に登録済みのプラットフォーム"
+          "Description": "あなたの {platformIdentifier} 製品はすでに別の組織で接続されています。製品を移行しますか？",
+          "Title": "製品はすでに接続されています"
         },
         "Unregistered": {
-          "Description": "あなたの {platformIdentifier} プラットフォームは以前別の組織に登録されていました。プラットフォームを再登録しますか？",
-          "Title": "プラットフォームは登録済みです"
+          "Description": "あなたの {platformIdentifier} 製品は以前別の組織で接続されていました。製品を再接続しますか？",
+          "Title": "製品は接続されていました"
         }
       },
       "NotAllowed": {
-        "Description": "あなたの {platformIdentifier} プラットフォームは既に別の組織に登録されており、あなたはそれを転送するために必要な権限を持っていません。",
-        "Title": "プラットフォームが別の組織に登録されている"
+        "Description": "あなたの {platformIdentifier} 製品はすでに別の組織で接続されており、移行に必要な権限がありません。",
+        "Title": "製品が別の組織に接続されています"
       }
     },
     "Back": "{platformIdentifier} に戻る",
-    "Confirm": "登録する",
+    "Confirm": "接続する",
     "Details": {
       "Contract": "契約",
       "ConnectionStatus": {
@@ -713,12 +713,11 @@
         "NotConnectedDetails": "プラットフォームを再登録してください。"
       },
       "Description": "プライベート・プラットフォームへのアクセスはこちらをクリックしてください。",
-      "PlatformID": "プラットフォームID",
-      "PlatformName": "プラットフォーム名",
-      "PlatformURL": "プラットフォームURL",
+      "ProductName": "製品名",
+      "ProductURL": "商品URL",
       "StartDate": "開始日",
       "EndDate": "終了日",
-      "RegisteredOn": "登録日",
+      "ConnectedOn": "ログイン日時",
       "Region": "地域",
       "License": "ライセンス",
       "Status": "ステータス",
@@ -741,17 +740,17 @@
       "AnotherOrganization": {
         "Allowed": {
           "Registered": {
-            "Description": "あなたのOpenCTIプラットフォームはすでに他の組織に登録されています。プラットフォームを移行しますか？",
-            "Title": "プラットフォームは既に登録されています"
+            "Description": "お使いのOpenCTI製品は、すでに別の組織で接続されています。この製品を移行しますか？",
+            "Title": "製品はすでに接続されています"
           },
           "Unregistered": {
-            "Description": "あなたのOpenCTIプラットフォームは、以前別の組織に登録されていました。プラットフォームを再登録しますか？",
-            "Title": "プラットフォームは登録済みです"
+            "Description": "お使いのOpenCTI製品は、以前別の組織で接続されていました。この製品を再接続しますか？",
+            "Title": "製品は接続されていました"
           }
         },
         "NotAllowed": {
-          "Description": "あなたのOpenCTIプラットフォームは既に別の組織に登録されており、それを移行するのに必要な権限がありません。",
-          "Title": "プラットフォームが別の組織に登録されている"
+          "Description": "あなたのOpenCTI製品はすでに別の組織で接続されており、移行に必要な権限がありません。",
+          "Title": "製品が別の組織に接続されています"
         }
       },
       "Back": "OpenCTI に戻る",
@@ -767,27 +766,27 @@
         "Title": "登録に失敗しました"
       },
       "OrganizationForm": {
-        "Description": "登録する組織スペースを選択してください",
-        "Title": "OpenCTI プラットフォームを XTM Hub に登録しようとしています。"
+        "Description": "接続する組織スペースを選択してください",
+        "Title": "OpenCTI プラットフォームを XTM Hub に接続しようとしています。"
       },
       "SameOrganization": {
         "Registered": {
-          "Description": "OpenCTI プラットフォームはすでに登録されています。プラットフォームを再登録しますか？",
-          "Title": "プラットフォームはすでに登録されています。"
+          "Description": "OpenCTI 製品はすでに接続されています。製品を再接続しますか？",
+          "Title": "製品はすでに接続されています"
         },
         "Unregistered": {
-          "Description": "OpenCTIプラットフォームは既に登録されています。プラットフォームを再登録しますか？",
-          "Title": "プラットフォームは登録済みです"
+          "Description": "OpenCTI 製品は以前接続されていました。製品を再接続しますか？",
+          "Title": "製品は接続されていました"
         }
       },
       "Succeeded": {
         "Description": "このタブはすぐに閉じられます",
-        "Title": "OpenCTIプラットフォームが正常に登録されました"
+        "Title": "OpenCTI製品が正常に接続されました"
       },
       "TooMuchOrganization": {
-        "Description1": "OpenCTI プラットフォーム {platformTitle} は機能制限のため、同じ組織で再登録されます。",
+        "Description1": "OpenCTI 製品 {platformTitle} は権限制限のため、同じ組織で再接続されます。",
         "Description2": "変更を希望する場合は、組織の管理者に連絡してください。",
-        "Title": "プラットフォーム再登録通知"
+        "Title": "製品再接続のお知らせ"
       }
     },
     "OrganizationForm": {
@@ -797,26 +796,26 @@
       "PersonalDescription": "リソースやアクティビティを自分のアカウントに非公開にする",
       "PersonalWorkspace": "個人用ワークスペース",
       "Recommended": "推奨",
-      "Title": "あなたの {platformIdentifier} プラットフォームを XTM Hub に登録しようとしています。"
+      "Title": "あなたの {platformIdentifier} 製品を XTM Hub に接続しようとしています。"
     },
     "SameOrganization": {
       "Registered": {
-        "Description": "あなたの {platformIdentifier} プラットフォームはすでに登録されています。プラットフォームを再登録しますか？",
-        "Title": "プラットフォームは既に登録されています"
+        "Description": "あなたの {platformIdentifier} 製品はすでに接続されています。製品を再接続しますか？",
+        "Title": "製品はすでに接続されています"
       },
       "Unregistered": {
-        "Description": "あなたの {platformIdentifier} プラットフォームは既に登録されています。プラットフォームを再登録しますか？",
-        "Title": "プラットフォームは登録済みです"
+        "Description": "あなたの {platformIdentifier} 製品は以前接続されていました。製品を再接続しますか？",
+        "Title": "製品は接続されていました"
       }
     },
     "Succeeded": {
       "Description": "このタブはすぐに閉じられます",
-      "Title": "{platformIdentifier} プラットフォームが正常に登録されました"
+      "Title": "{platformIdentifier} 製品が正常に接続されました"
     },
     "TooMuchOrganization": {
-      "Description1": "あなたの {platformIdentifier} プラットフォーム {platformTitle} は、機能制限のため同じ組織で再登録されます。",
+      "Description1": "あなたの {platformIdentifier} 製品 {platformTitle} は、権限制限のため同じ組織で再接続されます。",
       "Description2": "変更を希望する場合は、組織の管理者に連絡してください。",
-      "Title": "プラットフォーム再登録通知"
+      "Title": "製品再接続のお知らせ"
     }
   },
   "RemoveUserOrgDialog": {
@@ -901,7 +900,7 @@
     },
     "LibraryHero": {
       "Eyebrow": "Filigran のリソース",
-      "DefaultDescription": "OpenCTI または OpenAEV プラットフォームを登録すると、ワンクリックで事前構築済みコンテンツをデプロイでき、製品ニュースを常に把握し、無料トライアルを開始して、XTM プラットフォーム体験をさらに最大化できます。"
+      "DefaultDescription": "OpenCTI または OpenAEV 製品を接続すると、ワンクリックで事前構築済みコンテンツをデプロイでき、製品ニュースを常に把握し、無料トライアルを開始して、XTM プラットフォーム体験をさらに最大化できます。"
     },
     "ComingSoon": "近日公開予定",
     "Connectors": {
@@ -987,8 +986,8 @@
           "Placeholder": "統合タイプ..."
         },
         "ProductVersion": {
-          "Label": "登録プラットフォーム",
-          "Placeholder": "登録プラットフォーム..."
+          "Label": "接続済み製品",
+          "Placeholder": "接続済み製品..."
         },
         "ManagerSupported": {
           "Label": "配備タイプ",
@@ -1157,7 +1156,7 @@
         "Key": {
           "label": "使用例",
           "integration_type": "統合タイプ",
-          "product_version": "登録プラットフォーム",
+          "product_version": "接続済み製品",
           "manager_supported": "配備タイプ",
           "verified": "検証状況",
           "entity_type": "エンティティタイプ"
@@ -1213,18 +1212,18 @@
     },
     "Organizations": "組織",
     "RegisteredPlatforms": {
-      "PlatformDetails": "プラットフォームの詳細",
-      "GoToMyPlatform": "私のプラットフォームへ"
+      "PlatformDetails": "製品の詳細",
+      "GoToMyPlatform": "私の製品へ"
     },
     "SearchServices": "検索サービス...",
     "ServiceName": "サービス名",
     "ShareableResources": {
       "Copied": "URLをコピーしました！貼り付けて共有できます。",
       "Deploy": {
-        "DeployDescriptionNoPlatform": "登録されている {platformIdentifier} プラットフォームがありません。",
-        "DeployDescriptionNoPlatformIllustration": "XTMハブのイラストに登録する",
-        "DeployDescriptionNoPlatformThen": "リソースを配置するには、まず {platformIdentifier} プラットフォームを登録する必要があります。\n\n登録ステップ\n1. {platformIdentifier} 管理者であることを確認するか、管理者にお問い合わせください。\n2. {platformIdentifier} プラットフォームにログインし、設定 > フィリグラン・エクスペリエンスに移動します。\n3. 以下のスクリーンショットのように、\"Register\" ボタンをクリックして登録を完了します。",
-        "DeployDescriptionOnePlatform": "{platformName} プラットフォームに配置しますか？",
+        "DeployDescriptionNoPlatform": "接続済みの {platformIdentifier} 製品がありません。",
+        "DeployDescriptionNoPlatformIllustration": "XTMハブ接続のイラスト",
+        "DeployDescriptionNoPlatformThen": "リソースを配置するには、まず {platformIdentifier} 製品を接続する必要があります。\n\n接続手順\n1. {platformIdentifier} の管理者であることを確認するか、管理者にお問い合わせください。\n2. {platformIdentifier} 製品にログインし、設定 > Filigran Experience に移動します。\n3. 以下のスクリーンショットのように、\"Register\" ボタンをクリックして接続を完了します。",
+        "DeployDescriptionOnePlatform": "{platformName} 製品に配置しますか？",
         "DeployPlatform": "{platformName} にデプロイしますか？",
         "DeployQuestionTag": "どの {platformType} プラットフォームに配置しますか？",
         "DeployResourceDescription": "あなたは {resourceName} {resourceType} をデプロイしようとしています。",
@@ -1377,7 +1376,7 @@
       },
       "QuickStart": {
         "Title": "クイックスタートガイド",
-        "Subtitle": "{platformName} プラットフォームをもっと活用しましょう!",
+        "Subtitle": "{platformName} 製品を最大限に活用しましょう",
         "Description": "ステップバイステップのガイド、エキスパートのコース、コミュニティのフィードバックを活用して、実際のユースケースを解決し、Filigran チャンピオンになりましょう!"
       },
       "GoToMyTrial": "私のトライアルへ",
@@ -1534,61 +1533,61 @@
     "Title": "予期せぬことが起こりました。"
   },
   "Unregister": {
-    "Unregister": "登録解除",
-    "Description": "本当に {platformName} プラットフォームの登録を解除しますか？もしそうなら、もう一度 {productName} で登録プロセスを行う必要があります。",
+    "Unregister": "切断する",
+    "Description": "本当に {platformName} 製品を切断しますか？切断すると、{productName} で再度接続プロセスを行う必要があります。",
     "Confirm": {
-      "Description": "登録を解除しますか？",
-      "Title": "ハブ上の {name} 組織から {platformIdentifier} プラットフォームの登録を解除しようとしています。"
+      "Description": "切断を続行しますか？",
+      "Title": "ハブ上の {name} 組織から {platformIdentifier} 製品を切断しようとしています。"
     },
     "Error": {
       "Capability": {
         "AdminListTitle": "あなたの組織の管理者は以下の通りです：",
-        "Description": "XTM Hub で {platformIdentifier} プラットフォームの登録解除を行うには、XTM Hub 上で適切な権限を持つ組織の管理者に連絡する必要があります。",
+        "Description": "XTM Hub で {platformIdentifier} 製品の切断を行うには、XTM Hub 上で適切な権限を持つ組織の管理者に連絡する必要があります。",
         "Title": "XTM Hub に必要な {capability} アクセス権がありません。"
       },
       "NotInOrganization": {
-        "Title": "このプラットフォームが登録されている組織に必要な権限がない。"
+        "Title": "この製品が接続されている組織に必要な権限がありません。"
       },
       "PlatformNotRegistered": {
         "Description": "このタブはまもなく閉じられます。",
-        "Title": "登録解除しようとしているプラットフォームは登録されていません。"
+        "Title": "切断しようとしている製品は接続されていません。"
       }
     },
     "Failed": {
-      "Description": "プラットフォームの登録解除中にエラーが発生しました。",
-      "Title": "登録解除に失敗しました。"
+      "Description": "製品の切断中にエラーが発生しました。",
+      "Title": "切断に失敗しました。"
     },
     "OpenCTI": {
       "Confirm": {
-        "Description": "登録解除を続けますか？",
-        "Title": "ハブ上の {name} 組織から OpenCTI プラットフォームの登録を解除しようとしています。"
+        "Description": "切断を続行しますか？",
+        "Title": "ハブ上の {name} 組織から OpenCTI 製品を切断しようとしています。"
       },
       "Error": {
         "Capability": {
           "AdminListTitle": "組織の管理者は以下のとおりです：",
-          "Description": "XTM Hub で OpenCTI プラットフォームの登録を解除するには、XTM Hub 上で適切な権限を持つ組織の管理者に連絡する必要があります。",
+          "Description": "XTM Hub で OpenCTI 製品の切断を行うには、XTM Hub 上で適切な権限を持つ組織の管理者に連絡する必要があります。",
           "Title": "XTM Hub で必要な {capability} アクセス権を持っていない。"
         },
         "NotInOrganization": {
-          "Title": "このプラットフォームが登録されている組織に必要な権限がない。"
+          "Title": "この製品が接続されている組織に必要な権限がありません。"
         },
         "PlatformNotRegistered": {
           "Description": "このタブはまもなく閉じられます。",
-          "Title": "登録解除しようとしているプラットフォームは登録されていません。"
+          "Title": "切断しようとしている製品は接続されていません。"
         }
       },
       "Failed": {
-        "Description": "プラットフォームの登録解除中にエラーが発生しました。",
-        "Title": "登録解除に失敗しました。"
+        "Description": "製品の切断中にエラーが発生しました。",
+        "Title": "切断に失敗しました。"
       },
       "Succeeded": {
         "Description": "このタブはまもなく閉じられます。",
-        "Title": "OpenCTI プラットフォームの登録解除に成功"
+        "Title": "OpenCTI 製品の切断に成功"
       }
     },
     "Succeeded": {
       "Description": "このタブはまもなく閉じられます。",
-      "Title": "{platformIdentifier} プラットフォームは正常に登録解除されました。"
+      "Title": "{platformIdentifier} 製品の切断に成功しました。"
     }
   },
   "UpdateUserDialog": {

@@ -35,7 +35,7 @@ test.describe('Registration', () => {
       await registerPage.navigateTo('register-openaev', OPENAEV_PLATFORM_URL);
       await expect(
         page.getByRole('heading', {
-          name: "You're about to register your OpenAEV platform into XTM Hub",
+          name: "You're about to connect your OpenAEV product into XTM Hub",
         })
       ).toBeVisible();
       await expect(
@@ -53,10 +53,10 @@ test.describe('Registration', () => {
       await expect(page).toHaveScreenshot();
     });
     await test.step('register platform', async () => {
-      await page.getByRole('button', { name: 'Register' }).click();
+      await page.getByRole('button', { name: 'Connect' }).click();
       await expect(
         page.getByRole('heading', {
-          name: 'OpenAEV platform registered successfully',
+          name: 'OpenAEV product connected successfully',
         })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();
@@ -81,7 +81,7 @@ test.describe('Registration', () => {
       await registerPage.navigateTo('register-opencti', OPENCTI_PLATFORM_URL);
       await expect(
         page.getByRole('heading', {
-          name: "You're about to register your OpenCTI platform into XTM Hub",
+          name: "You're about to connect your OpenCTI product into XTM Hub",
         })
       ).toBeVisible();
       await expect(
@@ -98,10 +98,10 @@ test.describe('Registration', () => {
       ).toBeVisible();
     });
     await test.step('register platform', async () => {
-      await page.getByRole('button', { name: 'Register' }).click();
+      await page.getByRole('button', { name: 'Connect' }).click();
       await expect(
         page.getByRole('heading', {
-          name: 'OpenCTI platform registered successfully',
+          name: 'OpenCTI product connected successfully',
         })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();

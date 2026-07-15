@@ -16,7 +16,7 @@
     "Capabilities": {
       "ADMINISTRATE_ORGANIZATION": "Possibilités de toutes les capacités au sein d'une organisation",
       "MANAGE_ACCESS": "Possibilité d'inviter d'autres utilisateurs dans cette organisation",
-      "MANAGE_PLATFORM_REGISTRATION": "Possibilité d'inscrire et de désinscrire les plateformes",
+      "MANAGE_PLATFORM_REGISTRATION": "Possibilité de connecter et de déconnecter les produits",
       "MANAGE_SUBSCRIPTION": "Possibilité de gérer et d'abonner l'organisation à des services"
     },
     "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
@@ -197,7 +197,7 @@
       "ADD_USER_SERVICE_ERROR": "Erreur lors de l'attribution de l'accès à l'utilisateur",
       "ADDING_USER_ERROR": "Erreur lors de la création de l'utilisateur",
       "ALREADY_SUBSCRIBED": "Vous êtes déjà abonné à ce service",
-      "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors du désenregistrement de la plateforme",
+      "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la déconnexion du produit",
       "CANT_ADD_DISABLED_USER": "Vous ne pouvez pas ajouter un utilisateur qui est désactivé sur la plateforme",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "Vous ne pouvez pas ajouter un utilisateur à votre espace personnel",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "Vous ne pouvez pas supprimer le dernier administrateur d'une organisation",
@@ -245,8 +245,8 @@
       "INVALID_PLATFORM_ID": "Une erreur inconnue s'est produite",
       "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
-      "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
-      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Argument d'enregistrement automatique de la plateforme manquant",
+      "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la connexion avec le produit",
+      "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Argument de connexion automatique du produit manquant",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Permissions manquantes",
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
@@ -260,7 +260,7 @@
       "ORGANIZATION_SAME_NAME_EXISTS": "Une organisation portant le même nom existe déjà",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "Vous n'êtes pas autorisé à faire ceci",
       "PLATFORM_CONFIGURATION_NOT_FOUND": "La configuration de la plateforme n'a pas été trouvée",
-      "PLATFORM_NOT_REGISTERED": "La plateforme n'est pas enregistrée",
+      "PLATFORM_NOT_REGISTERED": "Le produit n'est pas connecté",
       "PLATFORM_TYPE_NOT_SUPPORTED": "Le type de plateforme n'est pas pris en charge",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'actualisation du jeton de la plateforme de l'utilisateur",
       "REGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'enregistrement de la plateforme",
@@ -343,7 +343,7 @@
       "LabelWithName": "Bienvenue {name}",
       "ConnectedProducts": "{count, plural, one {Produit connecté} other {Produits connectés}}",
       "Title": "Développez et faites évoluer votre plateforme XTM",
-      "Description": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
+      "Description": "Connectez votre produit OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
       "Cta": "Connectez votre produit",
       "ImageAlt": "Illustration de la plateforme XTM"
     },
@@ -624,8 +624,8 @@
       }
     },
     "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai",
-    "Registered": "Enregistré",
-    "NotRegistered": "Non enregistré"
+    "Registered": "Connecté",
+    "NotRegistered": "Déconnecté"
   },
   "Parameters": {
     "Version": "Version"
@@ -689,36 +689,35 @@
     "AnotherOrganization": {
       "Allowed": {
         "Registered": {
-          "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation. Voulez-vous transférer votre plateforme ?",
-          "Title": "Plateforme déjà enregistrée"
+          "Description": "Votre produit {platformIdentifier} est déjà connecté dans une autre organisation. Voulez-vous transférer votre produit ?",
+          "Title": "Produit déjà connecté"
         },
         "Unregistered": {
-          "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée dans une autre organisation. Souhaitez-vous réenregistrer votre plateforme ?",
-          "Title": "La plateforme a été enregistrée"
+          "Description": "Votre produit {platformIdentifier} a déjà été connecté dans une autre organisation. Souhaitez-vous reconnecter votre produit ?",
+          "Title": "Le produit a été connecté"
         }
       },
       "NotAllowed": {
-        "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer.",
-        "Title": "La plateforme est enregistrée dans une autre organisation"
+        "Description": "Votre produit {platformIdentifier} est déjà connecté dans une autre organisation et vous n'avez pas les permissions nécessaires pour le transférer.",
+        "Title": "Le produit est connecté dans une autre organisation"
       }
     },
     "Back": "Retour à {platformIdentifier}",
-    "Confirm": "Inscrire",
+    "Confirm": "Connecter",
     "Details": {
       "Contract": "Contrat",
       "ConnectionStatus": {
         "Title": "Statut de connexion",
         "Connected": "Connecté",
         "NotConnected": "Connexion perdue",
-        "NotConnectedDetails": "Vous devez à nouveau enregistrer votre plateforme."
+        "NotConnectedDetails": "Vous devez à nouveau connecter votre produit."
       },
-      "Description": "Cliquez ici pour accéder à votre plateforme privée.",
-      "PlatformID": "ID de la plateforme",
-      "PlatformName": "Nom de la plateforme",
-      "PlatformURL": "URL de la plateforme",
+      "Description": "Cliquez ici pour accéder à votre produit privé.",
+      "ProductName": "Nom du produit",
+      "ProductURL": "URL du produit",
       "StartDate": "Date de début",
       "EndDate": "Date de fin",
-      "RegisteredOn": "Enregistré le",
+      "ConnectedOn": "Connecté le",
       "Region": "Région",
       "License": "Licence",
       "Status": "Statut",
@@ -741,17 +740,17 @@
       "AnotherOrganization": {
         "Allowed": {
           "Registered": {
-            "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation. Voulez-vous transférer votre plateforme ?",
-            "Title": "Plateforme déjà inscrite"
+            "Description": "Votre produit OpenCTI est déjà connecté dans une autre organisation. Souhaitez-vous transférer votre produit ?",
+            "Title": "Produit déjà connecté"
           },
           "Unregistered": {
-            "Description": "Votre plateforme OpenCTI a déjà été inscrite dans une autre organisation. Souhaitez-vous inscrire votre plateforme à nouveau ?",
-            "Title": "La plateforme était inscrite"
+            "Description": "Votre produit OpenCTI était auparavant connecté dans une autre organisation. Souhaitez-vous reconnecter votre produit ?",
+            "Title": "Le produit était connecté"
           }
         },
         "NotAllowed": {
-          "Description": "Votre plateforme OpenCTI est déjà inscrite dans une autre organisation et vous n'avez pas les permissions nécessaires pour la transférer.",
-          "Title": "La plateforme est inscrite dans une autre organisation"
+          "Description": "Votre produit OpenCTI est déjà connecté dans une autre organisation et vous n'avez pas les permissions nécessaires pour le transférer.",
+          "Title": "Le produit est connecté dans une autre organisation"
         }
       },
       "Back": "Retour à OpenCTI",
@@ -767,27 +766,27 @@
         "Title": "L'inscription a échoué"
       },
       "OrganizationForm": {
-        "Description": "Dans quel espace souhaitez-vous inscrire votre plateforme OpenCTI ?",
-        "Title": "Vous êtes sur le point d'inscrire votre plateforme OpenCTI dans XTM Hub"
+        "Description": "Dans quel espace souhaitez-vous connecter votre produit OpenCTI ?",
+        "Title": "Vous êtes sur le point de connecter votre plateforme OpenCTI dans XTM Hub"
       },
       "SameOrganization": {
         "Registered": {
-          "Description": "Votre plateforme OpenCTI est déjà inscrite. Voulez-vous inscrire votre plateforme à nouveau ?",
-          "Title": "Plateforme déjà inscrite"
+          "Description": "Votre produit OpenCTI est déjà connecté. Voulez-vous reconnecter votre produit ?",
+          "Title": "Produit déjà connecté"
         },
         "Unregistered": {
-          "Description": "Votre plateforme OpenCTI a déjà été inscrite. Voulez-vous inscrire votre plateforme à nouveau  ?",
-          "Title": "La plateforme était inscrite"
+          "Description": "Votre produit OpenCTI a déjà été connecté. Voulez-vous reconnecter votre produit ?",
+          "Title": "Le produit était connecté"
         }
       },
       "Succeeded": {
         "Description": "Cet onglet sera bientôt fermé.",
-        "Title": "La plateforme OpenCTI a été inscrite avec succès"
+        "Title": "Le produit OpenCTI a été connecté avec succès"
       },
       "TooMuchOrganization": {
-        "Description1": "Votre plateforme OpenCTI {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+        "Description1": "Votre produit OpenCTI {platformTitle} sera reconnecté sous la même organisation en raison de restrictions de capacité.",
         "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
-        "Title": "Avis de réenregistrement de la plateforme"
+        "Title": "Avis de reconnexion du produit"
       }
     },
     "OrganizationForm": {
@@ -797,26 +796,26 @@
       "PersonalDescription": "Gardez les ressources et l'activité privées à votre compte.",
       "PersonalWorkspace": "Espace de travail personnel",
       "Recommended": "Recommandé",
-      "Title": "Vous êtes sur le point d'enregistrer votre plateforme {platformIdentifier} dans XTM Hub"
+      "Title": "Vous êtes sur le point de connecter votre produit {platformIdentifier} dans XTM Hub"
     },
     "SameOrganization": {
       "Registered": {
-        "Description": "Votre plateforme {platformIdentifier} est déjà enregistrée. Voulez-vous réenregistrer votre plateforme ?",
-        "Title": "Plateforme déjà enregistrée"
+        "Description": "Votre produit {platformIdentifier} est déjà connecté. Voulez-vous reconnecter votre produit ?",
+        "Title": "Produit déjà connecté"
       },
       "Unregistered": {
-        "Description": "Votre plateforme {platformIdentifier} a déjà été enregistrée. Souhaitez-vous réenregistrer votre plateforme ?",
-        "Title": "La plateforme a été enregistrée"
+        "Description": "Votre produit {platformIdentifier} a déjà été connecté. Souhaitez-vous reconnecter votre produit ?",
+        "Title": "Le produit a été connecté"
       }
     },
     "Succeeded": {
       "Description": "Cet onglet sera bientôt fermé",
-      "Title": "La plateforme {platformIdentifier} a été enregistrée avec succès"
+      "Title": "Le produit {platformIdentifier} a été connecté avec succès"
     },
     "TooMuchOrganization": {
-      "Description1": "Votre plateforme {platformIdentifier} {platformTitle} sera réenregistrée sous la même organisation en raison de restrictions de capacité.",
+      "Description1": "Votre produit {platformIdentifier} {platformTitle} sera reconnecté sous la même organisation en raison de restrictions de capacité.",
       "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
-      "Title": "Avis de réenregistrement de la plateforme"
+      "Title": "Avis de reconnexion du produit"
     }
   },
   "RemoveUserOrgDialog": {
@@ -901,7 +900,7 @@
     },
     "LibraryHero": {
       "Eyebrow": "Les ressources de Filigran",
-      "DefaultDescription": "Enregistrez votre plateforme OpenCTI ou OpenAEV pour déployer du contenu préconstruit en un clic, rester à jour avec les actualités produit, démarrer des essais gratuits et tirer simplement le meilleur de votre expérience sur la plateforme XTM."
+      "DefaultDescription": "Connectez votre produit OpenCTI ou OpenAEV pour déployer du contenu préconstruit en un clic, rester à jour avec les actualités produit, démarrer des essais gratuits et tirer simplement le meilleur de votre expérience sur la plateforme XTM."
     },
     "ComingSoon": "Bientôt disponible",
     "Connectors": {
@@ -987,8 +986,8 @@
           "Placeholder": "Type d'intégration..."
         },
         "ProductVersion": {
-          "Label": "Plateformes enregistrées",
-          "Placeholder": "Plateformes enregistrées..."
+          "Label": "Produits connectés",
+          "Placeholder": "Produits connectés..."
         },
         "ManagerSupported": {
           "Label": "Type de déploiement",
@@ -1157,7 +1156,7 @@
         "Key": {
           "label": "Cas d'utilisation",
           "integration_type": "Type d'intégration",
-          "product_version": "Plateformes enregistrées",
+          "product_version": "Produits connectés",
           "manager_supported": "Type de déploiement",
           "verified": "Statut de vérification",
           "entity_type": "Type d'entité"
@@ -1213,18 +1212,18 @@
     },
     "Organizations": "Organisations",
     "RegisteredPlatforms": {
-      "PlatformDetails": "Détails de la plateforme",
-      "GoToMyPlatform": "Accéder à ma plateforme"
+      "PlatformDetails": "Détails du produit",
+      "GoToMyPlatform": "Accéder à mon produit"
     },
     "SearchServices": "Service de recherche...",
     "ServiceName": "Nom du service",
     "ShareableResources": {
       "Copied": "URL copiée ! Vous pouvez maintenant la coller et la partager.",
       "Deploy": {
-        "DeployDescriptionNoPlatform": "Vous n'avez pas de plateforme {platformIdentifier} enregistrée.",
-        "DeployDescriptionNoPlatformIllustration": "Illustration de l'enregistrement XTM Hub",
-        "DeployDescriptionNoPlatformThen": "Pour déployer une ressource, vous devez d'abord enregistrer votre plateforme {platformIdentifier}.\n\nÉtapes d'enregistrement :\n1. Assurez-vous d'être administrateur {platformIdentifier}, ou contactez votre administrateur pour obtenir de l'aide.\n2. Connectez-vous à votre plateforme {platformIdentifier} et accédez aux paramètres &gt; Expérience Filigran.\n3. Cliquez sur le bouton &quot;Enregistrer&quot; pour terminer l'enregistrement comme dans l'image ci-dessous",
-        "DeployDescriptionOnePlatform": "Voulez-vous le déployer sur la plateforme {platformName} ?",
+        "DeployDescriptionNoPlatform": "Vous n'avez pas de produit {platformIdentifier} connecté.",
+        "DeployDescriptionNoPlatformIllustration": "Illustration de la connexion XTM Hub",
+        "DeployDescriptionNoPlatformThen": "Pour déployer une ressource, vous devez d'abord connecter votre produit {platformIdentifier}.\n\nÉtapes de connexion :\n1. Assurez-vous d'être administrateur {platformIdentifier}, ou contactez votre administrateur pour obtenir de l'aide.\n2. Connectez-vous à votre produit {platformIdentifier} et accédez aux paramètres &gt; Expérience Filigran.\n3. Cliquez sur le bouton &quot;Connecter&quot; pour terminer la connexion comme dans l'image ci-dessous",
+        "DeployDescriptionOnePlatform": "Voulez-vous le déployer sur le produit {platformName} ?",
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
         "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
@@ -1366,10 +1365,10 @@
         "OpenAEVDescription": "L'essai gratuit OpenAEV fournit aux utilisateurs une instance « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec une puissance de calcul réduite et un stockage limité à <strong>16 Go</strong>."
       },
       "XTMPlatform": {
-        "Title": "Votre platform eXtended Threat Management (XTM)",
+        "Title": "Votre produit eXtended Threat Management (XTM)",
         "Description": "{platformName} fait partie de la solution open-source de threat intelligence, de simulation avancée d'adversaires et de gestion stratégique des cyber-risques de Filigran, conçue pour aider votre organisation à anticiper et gérer les menaces de bout en bout.",
         "OpenCTITagline": "Collecter, corréler et exploiter",
-        "OpenCTIDescription": "Une plateforme de threat intelligence open-source construite par des praticiens pour des praticiens — pour briser les silos de données et rendre la threat intelligence réellement actionnable.",
+        "OpenCTIDescription": "Un produit de threat intelligence open-source construit par des praticiens pour des praticiens — pour briser les silos de données et rendre la threat intelligence réellement actionnable.",
         "OpenAEVTagline": "Prioriser, tester et corriger ce qui compte",
         "OpenAEVDescription": "Défendez-vous proactivement contre les menaces avec l'Adversarial Exposure Validation (AEV), en simulant des scénarios d'attaque réels pour optimiser vos défenses.",
         "LogoAlt": "Logo {name}",
@@ -1377,7 +1376,7 @@
       },
       "QuickStart": {
         "Title": "Guide de démarrage rapide",
-        "Subtitle": "Tirez le meilleur de votre plateforme {platformName} !",
+        "Subtitle": "Tirez le meilleur de votre produit {platformName} !",
         "Description": "Explorez des guides pas-à-pas, des cours d'experts et les retours de la communauté pour résoudre des cas d'usage concrets et devenir un champion Filigran !"
       },
       "GoToMyTrial": "Accéder à ma version d'évaluation",
@@ -1534,61 +1533,61 @@
     "Title": "Un événement inattendu s'est produit."
   },
   "Unregister": {
-    "Unregister": "Désenregistrer",
-    "Description": "Êtes-vous sûr de vouloir désenregistrer la plateforme {platformName} ? Si vous le faites, vous devrez refaire le processus d'enregistrement de {productName}.",
+    "Unregister": "Déconnecter",
+    "Description": "Êtes-vous sûr de vouloir déconnecter le produit {platformName} ? Si vous le faites, vous devrez refaire le processus de connexion de {productName}.",
     "Confirm": {
-      "Description": "Voulez-vous procéder à la désinscription ?",
-      "Title": "Vous êtes sur le point de désenregistrer votre plateforme {platformIdentifier} de l'organisation {name} sur le Hub."
+      "Description": "Voulez-vous procéder à la déconnexion ?",
+      "Title": "Vous êtes sur le point de déconnecter votre produit {platformIdentifier} de l'organisation {name} sur le Hub."
     },
     "Error": {
       "Capability": {
         "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
-        "Description": "Si vous souhaitez procéder à la désinscription de votre plateforme {platformIdentifier} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui dispose des autorisations appropriées pour procéder.",
+        "Description": "Si vous souhaitez procéder à la déconnexion de votre produit {platformIdentifier} dans XTM Hub, vous devez contacter un administrateur de votre organisation sur XTM Hub qui dispose des autorisations appropriées pour procéder.",
         "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub."
       },
       "NotInOrganization": {
-        "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+        "Title": "Vous n'avez pas les permissions requises pour l'organisation où ce produit est connecté"
       },
       "PlatformNotRegistered": {
         "Description": "Cet onglet sera bientôt fermé.",
-        "Title": "La plateforme que vous essayez de désenregistrer n'est pas enregistrée"
+        "Title": "Le produit que vous essayez de déconnecter n'est pas connecté"
       }
     },
     "Failed": {
-      "Description": "Une erreur s'est produite lors de la désinscription de la plateforme.",
-      "Title": "La désinscription a échoué"
+      "Description": "Une erreur s'est produite lors de la déconnexion du produit.",
+      "Title": "La déconnexion a échoué"
     },
     "OpenCTI": {
       "Confirm": {
-        "Description": "Voulez-vous procéder à la désinscription ?",
-        "Title": "Vous êtes sur le point de désenregistrer votre plateforme OpenCTI de l'organisation {name} sur le Hub."
+        "Description": "Voulez-vous procéder à la déconnexion ?",
+        "Title": "Vous êtes sur le point de déconnecter votre produit OpenCTI de l'organisation {name} sur le Hub."
       },
       "Error": {
         "Capability": {
           "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
-          "Description": "Si vous voulez procéder à la désinscription de votre plateforme OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
+          "Description": "Si vous voulez procéder à la déconnexion de votre produit OpenCTI dans XTM Hub, vous devez contacter un administrateur de votre organisation sur le XTM Hub qui a les permissions appropriées pour procéder.",
           "Title": "Vous n'avez pas l'accès {capability} nécessaire sur le XTM Hub."
         },
         "NotInOrganization": {
-          "Title": "Vous n'avez pas les permissions requises pour l'organisation où cette plateforme est enregistrée"
+          "Title": "Vous n'avez pas les permissions requises pour l'organisation où ce produit est connecté"
         },
         "PlatformNotRegistered": {
           "Description": "Cet onglet sera bientôt fermé.",
-          "Title": "La plateforme que vous essayez de désinscrire n'est pas inscrite"
+          "Title": "Le produit que vous essayez de déconnecter n'est pas connecté"
         }
       },
       "Failed": {
-        "Description": "Une erreur s'est produite lors de la désinscription de la plateforme.",
-        "Title": "La désinscription a échoué"
+        "Description": "Une erreur s'est produite lors de la déconnexion du produit.",
+        "Title": "La déconnexion a échoué"
       },
       "Succeeded": {
         "Description": "Cet onglet sera bientôt fermé.",
-        "Title": "La plateforme OpenCTI a été désinscrite avec succès"
+        "Title": "Le produit OpenCTI a été déconnecté avec succès"
       }
     },
     "Succeeded": {
       "Description": "Cet onglet sera bientôt fermé.",
-      "Title": "la plateforme {platformIdentifier} s'est désinscrite avec succès"
+      "Title": "Le produit {platformIdentifier} a été déconnecté avec succès"
     }
   },
   "UpdateUserDialog": {

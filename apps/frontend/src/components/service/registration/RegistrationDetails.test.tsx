@@ -179,7 +179,7 @@ describe('RegistrationDetails', () => {
       renderDetails(basePlatform);
 
       const platformUrlLabel = screen.getByText(
-        /Register\.Details\.PlatformURL/i
+        /Register\.Details\.ProductURL/i
       );
       const platformUrlRow = platformUrlLabel.closest('li');
 
@@ -199,7 +199,7 @@ describe('RegistrationDetails', () => {
       });
 
       const platformUrlLabel = screen.getByText(
-        /Register\.Details\.PlatformURL/i
+        /Register\.Details\.ProductURL/i
       );
       const platformUrlRow = platformUrlLabel.closest('li');
 
@@ -209,7 +209,7 @@ describe('RegistrationDetails', () => {
       ).toBeInTheDocument();
     });
 
-    it('should show "Start date" and "End date" for trial, not "Registered on"', () => {
+    it('should show "Start date" and "End date" for trial, not "Connected on"', () => {
       renderDetails(trialPlatform);
       expect(
         screen.getByText(/Register\.Details\.StartDate/i)
@@ -218,14 +218,14 @@ describe('RegistrationDetails', () => {
         screen.getByText(/Register\.Details\.EndDate/i)
       ).toBeInTheDocument();
       expect(
-        screen.queryByText(/Register\.Details\.RegisteredOn/i)
+        screen.queryByText(/Register\.Details\.ConnectedOn/i)
       ).not.toBeInTheDocument();
     });
 
-    it('should show "Registered on" for non-trial, not "Start date" or "End date"', () => {
+    it('should show "Connected on" for non-trial, not "Start date" or "End date"', () => {
       renderDetails(basePlatform);
       expect(
-        screen.getByText(/Register\.Details\.RegisteredOn/i)
+        screen.getByText(/Register\.Details\.ConnectedOn/i)
       ).toBeInTheDocument();
       expect(
         screen.queryByText(/Register\.Details\.StartDate/i)

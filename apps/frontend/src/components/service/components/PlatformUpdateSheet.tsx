@@ -135,7 +135,7 @@ export const PlatformUpdateSheet = ({
           />
 
           <FormItem>
-            <FormLabel>{t('Register.Details.PlatformURL')}</FormLabel>
+            <FormLabel>{t('Register.Details.ProductURL')}</FormLabel>
             <FormControl>
               <Input
                 value={platformUrl}
