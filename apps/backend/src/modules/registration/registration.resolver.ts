@@ -94,10 +94,23 @@ const resolvers: Resolvers = {
   Mutation: {
     registerPlatform: async (_, { input }) => {
       try {
+        const { id: decodedId, type: decodedType } = fromGlobalId(
+          input.organizationId
+        );
+
+        const ALLOWED_TYPES = [
+          'Organization',
+          'IsPlatformRegisteredOrganization',
+        ];
+
+        const organizationId = ALLOWED_TYPES.includes(decodedType)
+          ? decodedId
+          : input.organizationId;
+
         const payload = {
           ...input,
           // type may not be an OrganizationId, but can be a IsPlatformRegisteredOrganization
-          organizationId: fromGlobalId(input.organizationId).id,
+          organizationId,
         };
         const token = await RegistrationApp.registerPlatform(payload);
         return { token };
