@@ -148,7 +148,7 @@ export const NotificationButton = () => {
                   <span className="block text-xs">
                     {t.rich('Notifications.UserNotification.Text', {
                       nameFormat: (chunk) => (
-                        <span className="text-blue">{chunk}</span>
+                        <span className="text-primary">{chunk}</span>
                       ),
                       name: `${user.first_name} ${user.last_name}`,
                     })}

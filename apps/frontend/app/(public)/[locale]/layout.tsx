@@ -77,8 +77,8 @@ const RootLayout = async ({
                 <div className="flex items-center gap-s ml-auto">
                   <Button
                     asChild
-                    variant="outline"
-                    className="whitespace-nowrap border-primary text-primary bg-primary/10">
+                    variant="outline-primary"
+                    className="whitespace-nowrap border-elevation-border-strong">
                     <Link href="/auth/oidc">{t('PublicLayout.Login')}</Link>
                   </Button>
                   <Button

@@ -28,7 +28,7 @@ export const TrialsStorageLimitation = ({
 
   return (
     <div className="p-6 rounded bg-white/[0.08]">
-      <h2 className="text-blue text-2xl mb-l">
+      <h2 className="text-primary text-2xl mb-l">
         {t('Service.Trials.Storage.Title')}
       </h2>
       <p className="text-sm mb-l">
