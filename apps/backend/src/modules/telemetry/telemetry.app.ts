@@ -36,8 +36,6 @@ const toOneClickDeploymentInitializer = (
   platform_id: event.platform_id,
   tenant_id: event.tenant_id ?? null,
   user_id: event.user_id ?? null,
-  organization_id: event.organization_id ?? null,
-  target_product: event.target_product,
   deployed_at: new Date(event['@timestamp']),
 });
 

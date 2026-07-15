@@ -20,8 +20,10 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { ForbiddenAccess } from '../../utils/error/error.util';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { OneClickDeploymentDomain } from '../telemetry/one-click-deployment.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
@@ -670,18 +672,33 @@ export const DocumentApp = {
   },
 
   loadLastDeployedOverview: async (limit: number, platformId: string) => {
-    const events = await OneClickDeploymentDomain.loadLastDeployed(
-      limit,
-      platformId
+    const registeredPlatforms =
+      await RegistrationDomain.loadRegisteredPlatforms({});
+    const isPlatformInOrganization = registeredPlatforms.some(
+      (platform) => platform.platform_id === platformId
     );
+    if (!isPlatformInOrganization) {
+      throw ForbiddenAccess(ErrorCode.PlatformNotInOrganization);
+    }
 
-    if (events.length === 0) {
+    const deployments = await OneClickDeploymentDomain.loadOneClickDeployments({
+      filter: { platform_id: platformId },
+      limit,
+    });
+
+    if (deployments.length === 0) {
       return { resources: [] };
     }
 
-    const uniqueResourceIds = [...new Set(events.map((e) => e.resource_id))];
+    const uniqueResourceIds = [
+      ...new Set(deployments.map((deployment) => deployment.resource_id)),
+    ];
     const uniqueUserIds = [
-      ...new Set(events.flatMap((e) => (e.user_id ? [e.user_id] : []))),
+      ...new Set(
+        deployments.flatMap((deployment) =>
+          deployment.user_id ? [deployment.user_id] : []
+        )
+      ),
     ] as UserId[];
 
     const [documents, users] = await Promise.all([
@@ -697,17 +714,17 @@ export const DocumentApp = {
     const documentById = new Map(documents.map((d) => [d.id as string, d]));
     const userById = new Map(users.map((u) => [u.id as string, u]));
 
-    const resources = events.flatMap((event) => {
-      const document = documentById.get(event.resource_id);
+    const resources = deployments.flatMap((deployment) => {
+      const document = documentById.get(deployment.resource_id);
       if (!document) {
         return [];
       }
       return [
         {
           document,
-          deployedAt: event.deployedAt,
-          deployedBy: event.user_id
-            ? (userById.get(event.user_id) ?? null)
+          deployedAt: deployment.deployed_at,
+          deployedBy: deployment.user_id
+            ? (userById.get(deployment.user_id) ?? null)
             : null,
         },
       ];

@@ -2,6 +2,7 @@
 
 import LastDeployedResourceRow from '@/components/homepage/LastDeployedResourceRow';
 import { LastDeployedPlatform } from '@/components/homepage/LastDeployedResourcesSection';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
   Select,
   SelectContent,
@@ -10,9 +11,12 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { Separator } from '@filigran/ui/clients';
+import { useLastDeployedOverviewQueryQuery } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Fragment, useState } from 'react';
+
+const LAST_DEPLOYED_LIMIT = 4;
 
 type LastDeployedResourcesClientProps = {
   platforms: LastDeployedPlatform[];
@@ -24,17 +28,44 @@ const LastDeployedResourcesClient = ({
   const t = useTranslations('HomePage.LastDeployedResources');
   const tPlatform = useTranslations('PublicHomePage.XtmPlatform');
 
-  const platformsWithResources = platforms.filter(
-    (platform) => platform.overview.resources.length > 0
-  );
-
   const [selectedPlatformId, setSelectedPlatformId] = useState<string>(
-    platformsWithResources[0]?.id ?? ''
+    platforms[0]?.platformId ?? ''
   );
 
-  if (platformsWithResources.length === 0) {
-    return (
-      <section className="flex-1 min-w-0 flex flex-col gap-l">
+  const { data, isLoading } = useLastDeployedOverviewQueryQuery(
+    portalGraphqlClient,
+    { limit: LAST_DEPLOYED_LIMIT, platformId: selectedPlatformId }
+  );
+
+  const resources = data?.lastDeployedOverview.resources ?? [];
+
+  return (
+    <section className="flex-1 min-w-0 flex flex-col gap-l">
+      <div className="flex items-center gap-m">
+        <h2 className="content-body-base text-text-default-primary">
+          {t('Title')}
+        </h2>
+        <Select
+          value={selectedPlatformId}
+          onValueChange={setSelectedPlatformId}>
+          <SelectTrigger className="w-56">
+            <SelectValue placeholder={t('ProductPlaceholder')} />
+          </SelectTrigger>
+          <SelectContent>
+            {platforms.map((platform) => (
+              <SelectItem
+                key={platform.platformId}
+                value={platform.platformId}>
+                {platform.productName
+                  ? `${platform.productName} - ${platform.title}`
+                  : platform.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {!isLoading && resources.length === 0 ? (
         <div className="flex items-center justify-center">
           <Image
             src="/xtm_platform.png"
@@ -45,59 +76,24 @@ const LastDeployedResourcesClient = ({
             className="w-auto max-h-70"
           />
         </div>
-      </section>
-    );
-  }
-
-  const effectivePlatform =
-    platformsWithResources.find(
-      (platform) => platform.id === selectedPlatformId
-    ) ?? platformsWithResources[0]!;
-
-  const resources = effectivePlatform.overview.resources;
-
-  return (
-    <section className="flex-1 min-w-0 flex flex-col gap-l">
-      <div className="flex items-center gap-m">
-        <h2 className="content-body-base text-text-default-primary">
-          {t('Title')}
-        </h2>
-        <Select
-          value={effectivePlatform.id}
-          onValueChange={setSelectedPlatformId}>
-          <SelectTrigger className="w-56">
-            <SelectValue placeholder={t('ProductPlaceholder')} />
-          </SelectTrigger>
-          <SelectContent>
-            {platformsWithResources.map((platform) => (
-              <SelectItem
-                key={platform.id}
-                value={platform.id}>
-                {platform.productName
-                  ? `${platform.productName} - ${platform.title}`
-                  : platform.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <ul className="flex flex-col gap-l">
-        {resources.map((resource, index) => (
-          <Fragment key={`${resource.document.id}-${index}`}>
-            {index > 0 && (
-              <li
-                aria-hidden="true"
-                className="shrink-0">
-                <Separator className="bg-elevation-border-subtle" />
+      ) : (
+        <ul className="flex flex-col gap-l">
+          {resources.map((resource, index) => (
+            <Fragment key={`${resource.document.id}-${index}`}>
+              {index > 0 && (
+                <li
+                  aria-hidden="true"
+                  className="shrink-0">
+                  <Separator className="bg-elevation-border-subtle" />
+                </li>
+              )}
+              <li>
+                <LastDeployedResourceRow resource={resource} />
               </li>
-            )}
-            <li>
-              <LastDeployedResourceRow resource={resource} />
-            </li>
-          </Fragment>
-        ))}
-      </ul>
+            </Fragment>
+          ))}
+        </ul>
+      )}
     </section>
   );
 };

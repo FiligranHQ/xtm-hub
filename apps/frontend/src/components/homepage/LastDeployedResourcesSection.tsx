@@ -3,23 +3,18 @@ import {
   PlatformMetadataMapping,
   ServiceDefinitionIdentifierToPlatformIdentifier,
 } from '@/components/registration/PlatformIdentifierMapping';
-import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import {
   LastDeployedOverviewQueryQuery,
   RegisteredPlatformsQuery,
-  useLastDeployedOverviewQueryQuery,
 } from '@graphql/generated';
-
-const LAST_DEPLOYED_LIMIT = 4;
 
 export type LastDeployedOverview =
   LastDeployedOverviewQueryQuery['lastDeployedOverview'];
 
 export type LastDeployedPlatform = {
-  id: string;
+  platformId: string;
   title: string;
   productName: string;
-  overview: LastDeployedOverview;
 };
 
 const resolveProductName = (
@@ -36,36 +31,27 @@ type LastDeployedResourcesSectionProps = {
   registeredPlatformsData: RegisteredPlatformsQuery;
 };
 
-export const LastDeployedResourcesSection = async ({
+export const LastDeployedResourcesSection = ({
   registeredPlatformsData,
 }: LastDeployedResourcesSectionProps) => {
-  const platforms = registeredPlatformsData.registeredPlatforms.filter(
-    (platform): platform is typeof platform & { platform_id: string } =>
-      Boolean(platform.platform_id)
-  );
+  const platforms: LastDeployedPlatform[] =
+    registeredPlatformsData.registeredPlatforms.flatMap((platform) =>
+      platform.platform_id
+        ? [
+            {
+              platformId: platform.platform_id,
+              title: platform.title,
+              productName: resolveProductName(platform.identifier),
+            },
+          ]
+        : []
+    );
 
   if (platforms.length === 0) {
     return null;
   }
 
-  const client = await getAuthenticatedGraphqlClient();
-
-  const platformsWithOverview = await Promise.all(
-    platforms.map(async (platform) => {
-      const data = await useLastDeployedOverviewQueryQuery.fetcher(client, {
-        limit: LAST_DEPLOYED_LIMIT,
-        platformId: platform.platform_id,
-      })();
-      return {
-        id: platform.id,
-        title: platform.title,
-        productName: resolveProductName(platform.identifier),
-        overview: data.lastDeployedOverview,
-      };
-    })
-  );
-
-  return <LastDeployedResourcesClient platforms={platformsWithOverview} />;
+  return <LastDeployedResourcesClient platforms={platforms} />;
 };
 
 export default LastDeployedResourcesSection;

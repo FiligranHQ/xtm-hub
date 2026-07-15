@@ -260,6 +260,7 @@
       "ORGANIZATION_SAME_NAME_EXISTS": "An organization with the same name already exists",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "You are not allowed to do this",
       "PLATFORM_CONFIGURATION_NOT_FOUND": "Platform configuration was not found",
+      "PLATFORM_NOT_IN_ORGANIZATION": "This platform is not registered in your organization",
       "PLATFORM_NOT_REGISTERED": "The platform is not registered",
       "PLATFORM_TYPE_NOT_SUPPORTED": "The platform type is not supported",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "An unknown error occurred while refreshing user platform token",

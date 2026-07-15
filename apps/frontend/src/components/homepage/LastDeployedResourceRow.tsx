@@ -1,7 +1,9 @@
 'use client';
 
 import { LastDeployedOverview } from '@/components/homepage/LastDeployedResourcesSection';
+import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/utils/date';
 import { ResourceTypeIcon } from '@/utils/shareable-resources/resource-type-icon';
 import {
   SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING,
@@ -11,7 +13,7 @@ import {
 import { CalendarMonthIcon } from '@filigran/icon';
 import { Avatar } from '@filigran/ui';
 import { Badge } from '@filigran/ui/servers';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 const BADGE_CLASS = 'border-0 bg-primary/20 p-l';
@@ -38,7 +40,7 @@ const LastDeployedResourceRow = ({
   resource,
 }: LastDeployedResourceRowProps) => {
   const t = useTranslations('HomePage.LastDeployedResources');
-  const format = useFormatter();
+  const deployedAt = formatDate(resource.deployedAt, 'DATE_MEDIUM');
 
   const { document } = resource;
   const resourceType = document.type as ShareableResourceType;
@@ -51,16 +53,7 @@ const LastDeployedResourceRow = ({
   const url = `/app/service/${SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING[resourceType]}/${document.service_instance_id}/${document.id}`;
 
   const deployedByName = resolveDeployedByName(resource.deployedBy);
-  const deployedAt = format.dateTime(new Date(resource.deployedAt), {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  });
-
   const useCases = document.use_cases ?? [];
-  const firstUseCase = useCases[0];
-  const extraUseCasesCount = useCases.length - 1;
 
   return (
     <Link
@@ -77,15 +70,11 @@ const LastDeployedResourceRow = ({
           <span className="content-body-base font-bold truncate">
             {document.name}
           </span>
-          {firstUseCase && (
-            <Badge className={cn('shrink-0', BADGE_CLASS)}>
-              {firstUseCase.name}
-            </Badge>
-          )}
-          {extraUseCasesCount > 0 && (
-            <Badge className={cn('shrink-0', BADGE_CLASS)}>
-              +{extraUseCasesCount}
-            </Badge>
+          {useCases.length > 0 && (
+            <BadgeOverflowCounter
+              badges={useCases}
+              badgeClassName={BADGE_CLASS}
+            />
           )}
         </div>
       </div>
@@ -94,7 +83,9 @@ const LastDeployedResourceRow = ({
           <CalendarMonthIcon className="size-4" />
         </Badge>
         <span>{t('On')}</span>
-        <span className="text-text-default-primary">{deployedAt}</span>
+        <span className="content-body-base text-text-default-primary">
+          {deployedAt}
+        </span>
         {deployedByName && (
           <>
             <span>{t('By')}</span>

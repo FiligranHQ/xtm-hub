@@ -27,6 +27,7 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import {
@@ -37,6 +38,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
 } from '../shareable-resource/opencti/integration/integration.model';
+import { OneClickDeploymentDomain } from '../telemetry/one-click-deployment.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
@@ -1386,5 +1388,34 @@ describe('loadMostDeployedDocuments', () => {
     const result = await DocumentApp.loadMostDeployedDocuments(3);
 
     expect(result.map((d) => d.id)).toEqual([id1, id3]);
+  });
+
+  describe('loadLastDeployedOverview', () => {
+    it('throws when the platform is not registered in the organization', async () => {
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue(
+        []
+      );
+
+      await expect(
+        DocumentApp.loadLastDeployedOverview(4, 'unknown-platform')
+      ).rejects.toThrow(ErrorCode.PlatformNotInOrganization);
+    });
+
+    it('returns an empty overview when the registered platform has no deployments', async () => {
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue(
+        [{ platform_id: 'platform-1' }] as never
+      );
+      vi.spyOn(
+        OneClickDeploymentDomain,
+        'loadOneClickDeployments'
+      ).mockResolvedValue([]);
+
+      const result = await DocumentApp.loadLastDeployedOverview(
+        4,
+        'platform-1'
+      );
+
+      expect(result).toEqual({ resources: [] });
+    });
   });
 });

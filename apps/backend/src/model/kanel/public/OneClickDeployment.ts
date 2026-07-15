@@ -17,10 +17,6 @@ export default interface OneClickDeployment {
   user_id: string | null;
 
   deployed_at: Date;
-
-  organization_id: string | null;
-
-  target_product: string | null;
 }
 
 /** Represents the initializer for the table public.OneClickDeployment */
@@ -37,10 +33,6 @@ export interface OneClickDeploymentInitializer {
   user_id?: string | null;
 
   deployed_at: Date;
-
-  organization_id?: string | null;
-
-  target_product?: string | null;
 }
 
 /** Represents the mutator for the table public.OneClickDeployment */
@@ -56,8 +48,4 @@ export interface OneClickDeploymentMutator {
   user_id?: string | null;
 
   deployed_at?: Date;
-
-  organization_id?: string | null;
-
-  target_product?: string | null;
 }

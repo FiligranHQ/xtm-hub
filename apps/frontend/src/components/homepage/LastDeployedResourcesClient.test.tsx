@@ -1,11 +1,19 @@
-import {
-  LastDeployedOverview,
-  LastDeployedPlatform,
-} from '@/components/homepage/LastDeployedResourcesSection';
+import { LastDeployedPlatform } from '@/components/homepage/LastDeployedResourcesSection';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import LastDeployedResourcesClient from './LastDeployedResourcesClient';
+
+const { mockUseLastDeployedOverviewQueryQuery } = vi.hoisted(() => ({
+  mockUseLastDeployedOverviewQueryQuery: vi.fn(),
+}));
+
+vi.mock('@graphql/generated', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@graphql/generated')>()),
+  useLastDeployedOverviewQueryQuery: mockUseLastDeployedOverviewQueryQuery,
+}));
+
+vi.mock('@/lib/graphql-client', () => ({ portalGraphqlClient: {} }));
 
 const buildResource = () => ({
   document: {
@@ -35,55 +43,67 @@ const buildResource = () => ({
 });
 
 const buildPlatform = (
-  id: string,
+  platformId: string,
   title: string,
-  resources: unknown[],
   productName = 'OpenCTI'
-): LastDeployedPlatform => ({
-  id,
-  title,
-  productName,
-  overview: { resources } as unknown as LastDeployedOverview,
-});
+): LastDeployedPlatform => ({ platformId, title, productName });
 
-const renderClient = (platforms: LastDeployedPlatform[]) =>
-  testRender(<LastDeployedResourcesClient platforms={platforms} />);
+const mockOverview = (resources: unknown[], isLoading = false) =>
+  mockUseLastDeployedOverviewQueryQuery.mockReturnValue({
+    data: { lastDeployedOverview: { resources } },
+    isLoading,
+  });
 
 describe('LastDeployedResourcesClient', () => {
-  it('renders the title and deployed resource rows', () => {
-    renderClient([
-      buildPlatform('platform-1', 'OpenCTI Platform', [buildResource()]),
-    ]);
+  beforeEach(() => {
+    mockUseLastDeployedOverviewQueryQuery.mockReset();
+  });
+
+  it('renders the title, the selected switcher label and the deployed rows', () => {
+    mockOverview([buildResource()]);
+
+    testRender(
+      <LastDeployedResourcesClient
+        platforms={[buildPlatform('platform-1', 'OpenCTI Platform')]}
+      />
+    );
 
     expect(screen.getByText('Title')).toBeInTheDocument();
     expect(screen.getByText('OpenCTI - OpenCTI Platform')).toBeInTheDocument();
     expect(screen.getByText('My Custom View')).toBeInTheDocument();
-    expect(screen.getByText('Malware Analysis')).toBeInTheDocument();
-    expect(screen.queryByText('Threat Hunting')).toBeNull();
-    expect(screen.getByText('+2')).toBeInTheDocument();
     expect(screen.getByText('On')).toBeInTheDocument();
     expect(screen.getByText('By')).toBeInTheDocument();
     expect(screen.getByText('John Doe')).toBeInTheDocument();
   });
 
-  it('renders the empty state image when there are no deployed resources', () => {
-    renderClient([buildPlatform('platform-1', 'OpenCTI Platform', [])]);
+  it('renders the empty state image when the selected platform has no resources', () => {
+    mockOverview([]);
 
-    // In the test harness next-intl returns the message key as the alt text
+    testRender(
+      <LastDeployedResourcesClient
+        platforms={[buildPlatform('platform-1', 'OpenCTI Platform')]}
+      />
+    );
+
     expect(screen.getByRole('img', { name: 'ImageAlt' })).toBeInTheDocument();
-    // Empty state hides the title and the product select
-    expect(screen.queryByText('Title')).toBeNull();
-    expect(screen.queryByText('By')).toBeNull();
+    expect(screen.getByText('Title')).toBeInTheDocument();
   });
 
-  it('only lists platforms that have deployed resources', () => {
-    renderClient([
-      buildPlatform('platform-empty', 'OpenAEV Platform', [], 'OpenAEV'),
-      buildPlatform('platform-1', 'OpenCTI Platform', [buildResource()]),
-    ]);
+  it('fetches the overview for the first platform by default', () => {
+    mockOverview([buildResource()]);
 
-    expect(screen.getByText('My Custom View')).toBeInTheDocument();
-    expect(screen.getByText('OpenCTI - OpenCTI Platform')).toBeInTheDocument();
-    expect(screen.queryByText('OpenAEV - OpenAEV Platform')).toBeNull();
+    testRender(
+      <LastDeployedResourcesClient
+        platforms={[
+          buildPlatform('platform-1', 'OpenCTI Platform'),
+          buildPlatform('platform-2', 'OpenAEV Platform', 'OpenAEV'),
+        ]}
+      />
+    );
+
+    expect(mockUseLastDeployedOverviewQueryQuery).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ platformId: 'platform-1' })
+    );
   });
 });

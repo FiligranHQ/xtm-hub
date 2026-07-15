@@ -260,6 +260,7 @@
       "ORGANIZATION_SAME_NAME_EXISTS": "同じ名前の組織がすでに存在する",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "こんなことは許されない",
       "PLATFORM_CONFIGURATION_NOT_FOUND": "プラットフォーム設定が見つかりません",
+      "PLATFORM_NOT_IN_ORGANIZATION": "このプラットフォームは組織に登録されていません",
       "PLATFORM_NOT_REGISTERED": "プラットフォームが登録されていない",
       "PLATFORM_TYPE_NOT_SUPPORTED": "プラットフォームがサポートされていない",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "ユーザープラットフォームトークンの更新中に不明なエラーが発生した",

@@ -3,10 +3,13 @@ import OneClickDeployment, {
   OneClickDeploymentInitializer,
 } from '../../model/kanel/public/OneClickDeployment';
 
-export interface LastDeployedRow {
-  resource_id: string;
-  user_id: string | null;
-  deployedAt: Date;
+interface LoadOneClickDeploymentsOptions {
+  filter: Partial<OneClickDeployment>;
+  orderBy?: {
+    column: keyof OneClickDeployment & string;
+    order: 'asc' | 'desc';
+  };
+  limit?: number;
 }
 
 export const OneClickDeploymentDomain = {
@@ -14,14 +17,18 @@ export const OneClickDeploymentDomain = {
     await db<OneClickDeployment>('OneClickDeployment').insert(init);
   },
 
-  loadLastDeployed: async (
-    limit: number,
-    platformId: string
-  ): Promise<LastDeployedRow[]> => {
+  loadOneClickDeployments: async ({
+    filter,
+    orderBy = { column: 'deployed_at', order: 'desc' },
+    limit,
+  }: LoadOneClickDeploymentsOptions): Promise<OneClickDeployment[]> => {
     return db<OneClickDeployment>('OneClickDeployment')
-      .where('platform_id', platformId)
-      .orderBy('deployed_at', 'desc')
-      .limit(limit)
-      .select('resource_id', 'user_id', 'deployed_at as deployedAt');
+      .where(filter)
+      .orderBy(orderBy.column, orderBy.order)
+      .modify((query) => {
+        if (limit !== undefined) {
+          query.limit(limit);
+        }
+      });
   },
 };

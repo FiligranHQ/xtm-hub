@@ -1,7 +1,8 @@
 import { DateTimeFormatOptions, useFormatter } from 'next-intl';
 
 // Define FormatDateStyle as a type instead of an enum
-export type FormatDateStyle = 'DATE_NUMERIC' | 'DATETIME_NUMERIC' | 'DATE_FULL';
+export type FormatDateStyle =
+  'DATE_NUMERIC' | 'DATETIME_NUMERIC' | 'DATE_FULL' | 'DATE_MEDIUM';
 
 // Map each variant to its respective DateTime format options
 export type DateStyleFunctionMap = {
@@ -25,6 +26,11 @@ const DATE_STYLE_FORMAT: DateStyleFunctionMap = {
     year: 'numeric',
     month: 'long',
     day: '2-digit',
+  },
+  DATE_MEDIUM: {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   },
 };
 
