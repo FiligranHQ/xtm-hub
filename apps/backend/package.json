@@ -62,7 +62,7 @@
     "@opentelemetry/resources": "2.9.0",
     "@opentelemetry/sdk-metrics": "2.9.0",
     "@opentelemetry/semantic-conventions": "1.43.0",
-    "@vitest/eslint-plugin": "1.6.20",
+    "@vitest/eslint-plugin": "1.6.23",
     "apollo-errors": "1.9.0",
     "auth0": "5.13.0",
     "body-parser": "2.3.0",
