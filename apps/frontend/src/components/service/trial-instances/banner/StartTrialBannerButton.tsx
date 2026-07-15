@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
-import { invalidatePrivateNavigationQueries } from '@/components/menu/private-navigation-query-invalidation';
+import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation/private/private-navigation-query-invalidation';
 import { RegisterRegisteredPlatformsQuery } from '@/components/registration/register/register.graphql';
 
 import {

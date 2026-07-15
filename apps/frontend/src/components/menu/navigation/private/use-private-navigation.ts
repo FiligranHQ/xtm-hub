@@ -1,14 +1,14 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
+  getPrivateNavigationRegisteredPlatformsByIdentifier,
+  getPrivateNavigationServiceHrefs,
+} from '@/components/menu/navigation/private/private-navigation.utils';
+import {
   BottomLink,
   NavigationConfig,
   SectionConfig,
   SectionLink,
-} from '@/components/menu/navigation.type';
-import {
-  getPrivateNavigationRegisteredPlatformsByIdentifier,
-  getPrivateNavigationServiceHrefs,
-} from '@/components/menu/private-navigation.utils';
+} from '@/components/menu/navigation/shared/navigation.type';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import {

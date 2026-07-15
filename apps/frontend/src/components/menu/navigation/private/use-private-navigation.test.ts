@@ -2,8 +2,8 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   getPrivateNavigationRegisteredPlatformsByIdentifier,
   getPrivateNavigationServiceHrefs,
-} from '@/components/menu/private-navigation.utils';
-import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
+} from '@/components/menu/navigation/private/private-navigation.utils';
+import { usePrivateNavigation } from '@/components/menu/navigation/private/use-private-navigation';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
@@ -60,10 +60,13 @@ vi.mock('@/hooks/use-is-feature-enabled', () => ({
   useIsFeatureEnabled: vi.fn(),
 }));
 
-vi.mock('@/components/menu/private-navigation.utils', () => ({
-  getPrivateNavigationServiceHrefs: vi.fn(),
-  getPrivateNavigationRegisteredPlatformsByIdentifier: vi.fn(),
-}));
+vi.mock(
+  '@/components/menu/navigation/private/private-navigation.utils',
+  () => ({
+    getPrivateNavigationServiceHrefs: vi.fn(),
+    getPrivateNavigationRegisteredPlatformsByIdentifier: vi.fn(),
+  })
+);
 
 vi.mock('@/lib/graphql-client', () => ({
   portalGraphqlClient: { _mock: 'portalGraphqlClient' },

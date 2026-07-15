@@ -1,4 +1,4 @@
-import HeaderOrganizationSwitcher from '@/components/menu/HeaderOrganizationSwitcher';
+import HeaderOrganizationSwitcher from '@/components/menu/organization-switcher/HeaderOrganizationSwitcher';
 import { APP_PATH } from '@/utils/path/constant';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';

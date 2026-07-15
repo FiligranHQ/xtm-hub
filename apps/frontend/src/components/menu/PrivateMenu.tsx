@@ -2,7 +2,7 @@
 
 import { MenuFooter } from '@/components/menu/MenuFooter';
 import { MenuLogo } from '@/components/menu/MenuLogo';
-import PrivateNavigation from '@/components/menu/PrivateNavigation';
+import PrivateNavigation from '@/components/menu/navigation/private/PrivateNavigation';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 import { useCallback } from 'react';

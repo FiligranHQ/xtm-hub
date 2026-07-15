@@ -1,7 +1,7 @@
 'use client';
 
-import { SharedNavigation } from '@/components/menu/SharedNavigation';
-import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
+import { usePrivateNavigation } from '@/components/menu/navigation/private/use-private-navigation';
+import { SharedNavigation } from '@/components/menu/navigation/shared/SharedNavigation';
 
 interface PrivateNavigationProps {
   open: boolean;

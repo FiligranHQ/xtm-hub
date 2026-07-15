@@ -1,6 +1,6 @@
 'use client';
 
-import { SharedNavigation } from '@/components/menu/SharedNavigation';
+import { SharedNavigation } from '@/components/menu/navigation/shared/SharedNavigation';
 import { usePublicNavigation } from './use-public-navigation';
 
 interface PublicNavigationProps {

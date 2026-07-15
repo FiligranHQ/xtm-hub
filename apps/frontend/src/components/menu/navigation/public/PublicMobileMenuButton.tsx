@@ -1,6 +1,6 @@
 'use client';
 
-import PublicNavigation from '@/components/menu/PublicNavigation';
+import PublicNavigation from '@/components/menu/navigation/public/PublicNavigation';
 import { CloseIcon, MenuIcon } from '@filigran/icon';
 import {
   Sheet,
