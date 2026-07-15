@@ -1,4 +1,4 @@
-import HomepageResourceList from '@/components/homepage/HomepageResourceList';
+import HomepageResourceList from '@/components/homepage/resources/HomepageResourceList';
 import { portalGraphqlClientCached } from '@/lib/graphql-client';
 import {
   PlatformIdentifier,

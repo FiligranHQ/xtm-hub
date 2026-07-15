@@ -1,9 +1,9 @@
 import { buildDistinctPlatformIdentifiersFromServiceDefinition } from '@/components/homepage/Homepage.utils';
-import MostDeployedResources from '@/components/homepage/MostDeployedResources';
-import NewestResources from '@/components/homepage/NewestResources';
-import PrivateHomepageRoadmapSection from '@/components/homepage/PrivateHomepageRoadmapSection';
-import { RegisteredPlatformsSection } from '@/components/homepage/RegisteredPlatformsSection';
-import XtmPlatform from '@/components/homepage/XtmPlatform';
+import { RegisteredPlatformsSection } from '@/components/homepage/registered-platforms/RegisteredPlatformsSection';
+import MostDeployedResources from '@/components/homepage/resources/MostDeployedResources';
+import NewestResources from '@/components/homepage/resources/NewestResources';
+import PrivateHomepageRoadmapSection from '@/components/homepage/roadmap/PrivateHomepageRoadmapSection';
+import XtmPlatform from '@/components/homepage/xtm-platform/XtmPlatform';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';

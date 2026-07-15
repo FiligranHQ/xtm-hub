@@ -1,7 +1,7 @@
 import { PublicLocale } from '@/i18n/config';
-import MostDeployedResources from './MostDeployedResources';
-import XtmPlatform from './XtmPlatform';
-import XtmRoadmap from './XtmRoadmap';
+import MostDeployedResources from './resources/MostDeployedResources';
+import XtmRoadmap from './roadmap/XtmRoadmap';
+import XtmPlatform from './xtm-platform/XtmPlatform';
 
 type HomepageProps = { paramsLocale: PublicLocale };
 
