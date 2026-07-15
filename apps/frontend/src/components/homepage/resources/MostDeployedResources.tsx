@@ -1,4 +1,4 @@
-import HomepageResourceList from '@/components/homepage/HomepageResourceList';
+import HomepageResourceList from '@/components/homepage/resources/HomepageResourceList';
 import { PublicLocale } from '@/i18n/config';
 import { portalGraphqlClientCached } from '@/lib/graphql-client';
 import {

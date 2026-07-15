@@ -2,8 +2,8 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   getPrivateNavigationRegisteredPlatformsByIdentifier,
   getPrivateNavigationServiceHrefs,
-} from '@/components/menu/private-navigation.utils';
-import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
+} from '@/components/menu/navigation/private/private-navigation.utils';
+import { usePrivateNavigation } from '@/components/menu/navigation/private/use-private-navigation';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
@@ -14,6 +14,7 @@ import {
   PlatformIdentifier,
   PortalCapability,
   ServiceDefinitionIdentifier,
+  ServiceInstanceFilterKey,
   ServiceInstanceOrdering,
 } from '@graphql/generated';
 import { renderHook } from '@testing-library/react';
@@ -59,10 +60,13 @@ vi.mock('@/hooks/use-is-feature-enabled', () => ({
   useIsFeatureEnabled: vi.fn(),
 }));
 
-vi.mock('@/components/menu/private-navigation.utils', () => ({
-  getPrivateNavigationServiceHrefs: vi.fn(),
-  getPrivateNavigationRegisteredPlatformsByIdentifier: vi.fn(),
-}));
+vi.mock(
+  '@/components/menu/navigation/private/private-navigation.utils',
+  () => ({
+    getPrivateNavigationServiceHrefs: vi.fn(),
+    getPrivateNavigationRegisteredPlatformsByIdentifier: vi.fn(),
+  })
+);
 
 vi.mock('@/lib/graphql-client', () => ({
   portalGraphqlClient: { _mock: 'portalGraphqlClient' },
@@ -465,7 +469,19 @@ describe('usePrivateNavigation', () => {
         count: 50,
         orderBy: ServiceInstanceOrdering.Ordering,
         orderMode: OrderingMode.Asc,
-        filters: null,
+        filters: [
+          {
+            key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
+            value: [
+              ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+              ServiceDefinitionIdentifier.OpenctiCustomViews,
+              ServiceDefinitionIdentifier.OpenctiIntegrations,
+              ServiceDefinitionIdentifier.OpenctiPlaybooks,
+              ServiceDefinitionIdentifier.OpenaevScenarios,
+              ServiceDefinitionIdentifier.XtmPlatformRoadmap,
+            ],
+          },
+        ],
         searchTerm: null,
       };
       const expectedTrialVariables = {

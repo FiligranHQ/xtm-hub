@@ -1,7 +1,7 @@
 'use client';
 import { MenuFooter } from '@/components/menu/MenuFooter';
 import { MenuLogo } from '@/components/menu/MenuLogo';
-import PublicNavigation from '@/components/menu/PublicNavigation';
+import PublicNavigation from '@/components/menu/navigation/public/PublicNavigation';
 import { cn } from '@/lib/utils';
 import { useLocale } from 'next-intl';
 import { useCallback } from 'react';

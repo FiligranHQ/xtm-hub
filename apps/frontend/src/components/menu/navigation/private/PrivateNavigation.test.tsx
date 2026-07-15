@@ -1,5 +1,5 @@
-import PrivateNavigation from '@/components/menu/PrivateNavigation';
-import { usePrivateNavigation } from '@/components/menu/use-private-navigation';
+import PrivateNavigation from '@/components/menu/navigation/private/PrivateNavigation';
+import { usePrivateNavigation } from '@/components/menu/navigation/private/use-private-navigation';
 import { APP_PATH } from '@/utils/path/constant';
 import testRender, { testRenderHook } from '@/utils/test/test-render';
 import {

@@ -10,7 +10,7 @@ vi.mock('@public/logo.svg', () => ({
   default: () => <svg data-testid="logo" />,
 }));
 
-vi.mock('@/components/menu/PublicNavigation', () => ({
+vi.mock('@/components/menu/navigation/public/PublicNavigation', () => ({
   default: () => (
     <div data-testid="public-navigation">
       <Link href="/en/some-page">Some page</Link>

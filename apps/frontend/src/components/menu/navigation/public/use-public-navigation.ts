@@ -2,7 +2,7 @@ import {
   BottomLink,
   NavigationConfig,
   SectionConfig,
-} from '@/components/menu/navigation.type';
+} from '@/components/menu/navigation/shared/navigation.type';
 import {
   HomeIcon,
   LogoXtmOneIcon,

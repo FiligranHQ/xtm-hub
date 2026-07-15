@@ -1,8 +1,8 @@
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { LinkMenu } from '@/components/menu/Menu';
-import MenuAdmin from '@/components/menu/MenuAdmin';
-import { OrganizationSwitcher } from '@/components/menu/OrganizationSwitcher';
+import MenuAdmin from '@/components/menu/admin/MenuAdmin';
+import { OrganizationSwitcher } from '@/components/menu/organization-switcher/OrganizationSwitcher';
 import { APP_PATH } from '@/utils/path/constant';
 import { HomeIcon, IndividualIcon } from '@filigran/icon';
 import { OrganizationCapability, PortalCapability } from '@graphql/generated';

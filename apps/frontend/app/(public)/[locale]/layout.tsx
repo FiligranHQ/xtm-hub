@@ -1,7 +1,7 @@
 import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
 import Copilot from '@/components/external/Copilot';
+import { PublicMobileMenuButton } from '@/components/menu/navigation/public/PublicMobileMenuButton';
 import PublicMenu from '@/components/menu/PublicMenu';
-import { PublicMobileMenuButton } from '@/components/menu/PublicMobileMenuButton';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 import { publicLocales, type PublicLocale } from '@/i18n/config';

@@ -1,10 +1,13 @@
-import { NavigationLinkMenu } from '@/components/menu/NavigationLinks';
+import { NavigationLinkMenu } from '@/components/menu/navigation/shared/NavigationLinks';
 import {
   ClosedSection,
   LinkedSection,
   OpenedSection,
-} from '@/components/menu/NavigationSections';
-import { BottomLink, SectionConfig } from '@/components/menu/navigation.type';
+} from '@/components/menu/navigation/shared/NavigationSections';
+import {
+  BottomLink,
+  SectionConfig,
+} from '@/components/menu/navigation/shared/navigation.type';
 import { Accordion, Separator } from '@filigran/ui';
 
 interface SharedNavigationProps {

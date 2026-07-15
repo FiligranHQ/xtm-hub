@@ -1,6 +1,6 @@
 'use client';
 
-import { computeTitlePaddingRight } from '@/components/homepage/HomepageResourceCard.utils';
+import { computeTitlePaddingRight } from '@/components/homepage/resources/HomepageResourceCard.utils';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';

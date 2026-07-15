@@ -3,8 +3,8 @@
 import { ConnectedProductsDropdown } from '@/components/connected-products/ConnectedProductsDropdown';
 import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/AppPortalContext';
-import HeaderOrganizationSwitcher from '@/components/menu/HeaderOrganizationSwitcher';
-import PrivateNavigation from '@/components/menu/PrivateNavigation';
+import PrivateNavigation from '@/components/menu/navigation/private/PrivateNavigation';
+import HeaderOrganizationSwitcher from '@/components/menu/organization-switcher/HeaderOrganizationSwitcher';
 import { NavigationApp } from '@/components/Navigation';
 import { NotificationButton } from '@/components/notification/NotificationButton';
 import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';

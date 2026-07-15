@@ -6,7 +6,7 @@ import HomepageResourceList from './HomepageResourceList';
 
 const { mockCard } = vi.hoisted(() => ({ mockCard: vi.fn(() => null) }));
 
-vi.mock('@/components/homepage/HomepageResourceCard', () => ({
+vi.mock('@/components/homepage/resources/HomepageResourceCard', () => ({
   default: mockCard,
 }));
 
