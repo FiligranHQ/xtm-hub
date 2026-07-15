@@ -21,7 +21,7 @@ export const PaginationArrowButtons = ({
   const pageCount = Math.ceil(totalCount / safePageSize);
   const rangeStart = totalCount > 0 ? pageIndex * safePageSize + 1 : 0;
   const rangeEnd = Math.min((pageIndex + 1) * safePageSize, totalCount);
-  const counterWidth = `${3 * String(totalCount).length + 6}ch`;
+  const counterWidth = `${3 * String(totalCount).length + 4}ch`;
 
   const canGoToPreviousPage = (): boolean => {
     return pageIndex > 0;
