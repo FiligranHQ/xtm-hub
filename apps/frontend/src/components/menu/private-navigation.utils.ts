@@ -13,10 +13,6 @@ export interface PrivateNavigationRegisteredPlatformLink {
   url?: string;
 }
 
-const getFirstNonEmptyServiceUrl = (
-  links: Array<{ url: string | null } | null> | null | undefined
-): string | undefined => links?.find((link) => !!link?.url)?.url ?? undefined;
-
 export const getPrivateNavigationServiceHrefs = (
   queryData: ServiceInstancesListQuery | undefined
 ) => {
@@ -35,16 +31,10 @@ export const getPrivateNavigationServiceHrefs = (
       continue;
     }
 
-    const externalServiceLink =
-      serviceIdentifier === ServiceDefinitionIdentifier.Link
-        ? getFirstNonEmptyServiceUrl(serviceInstance.links)
-        : undefined;
-
-    const href =
-      externalServiceLink ??
-      `/${APP_PATH}/service/${serviceIdentifier}/${serviceInstance.id}`;
-
-    serviceHrefs.set(serviceIdentifier, href);
+    serviceHrefs.set(
+      serviceIdentifier,
+      `/${APP_PATH}/service/${serviceIdentifier}/${serviceInstance.id}`
+    );
   }
 
   return serviceHrefs;

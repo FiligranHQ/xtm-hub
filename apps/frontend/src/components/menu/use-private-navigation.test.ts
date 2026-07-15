@@ -14,6 +14,7 @@ import {
   PlatformIdentifier,
   PortalCapability,
   ServiceDefinitionIdentifier,
+  ServiceInstanceFilterKey,
   ServiceInstanceOrdering,
 } from '@graphql/generated';
 import { renderHook } from '@testing-library/react';
@@ -465,7 +466,19 @@ describe('usePrivateNavigation', () => {
         count: 50,
         orderBy: ServiceInstanceOrdering.Ordering,
         orderMode: OrderingMode.Asc,
-        filters: null,
+        filters: [
+          {
+            key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
+            value: [
+              ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+              ServiceDefinitionIdentifier.OpenctiCustomViews,
+              ServiceDefinitionIdentifier.OpenctiIntegrations,
+              ServiceDefinitionIdentifier.OpenctiPlaybooks,
+              ServiceDefinitionIdentifier.OpenaevScenarios,
+              ServiceDefinitionIdentifier.XtmPlatformRoadmap,
+            ],
+          },
+        ],
         searchTerm: null,
       };
       const expectedTrialVariables = {

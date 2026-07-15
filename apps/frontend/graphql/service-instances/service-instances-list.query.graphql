@@ -19,9 +19,6 @@ query ServiceInstancesList(
         service_definition {
           identifier
         }
-        links {
-          url
-        }
       }
     }
   }

@@ -29,6 +29,7 @@ import {
   PlatformIdentifier,
   PortalCapability,
   ServiceDefinitionIdentifier,
+  ServiceInstanceFilterKey,
   ServiceInstanceOrdering,
   ServiceInstancesListQueryVariables,
   TrialDeploymentsEligibilityQueryVariables,
@@ -45,12 +46,32 @@ const PRIVATE_NAVIGATION_REGISTERED_PLATFORMS_VARIABLES = {
   input: { identifier: null, onlyActive: null, onlyTrial: null },
 };
 
+const SERVICE_LINKS = [
+  [ServiceDefinitionIdentifier.OpenctiCustomDashboards, 'CustomDashboards'],
+  [ServiceDefinitionIdentifier.OpenctiCustomViews, 'CustomViews'],
+  [ServiceDefinitionIdentifier.OpenctiIntegrations, 'Integrations'],
+  [ServiceDefinitionIdentifier.OpenctiPlaybooks, 'Playbooks'],
+  [ServiceDefinitionIdentifier.OpenaevScenarios, 'Scenarios'],
+  [ServiceDefinitionIdentifier.XtmPlatformRoadmap, 'XTMRoadmap'],
+] as const;
+
+const SERVICE_LINK_LABEL_KEYS = Object.fromEntries(SERVICE_LINKS);
+
+const PRIVATE_NAVIGATION_SERVICE_IDENTIFIERS = SERVICE_LINKS.map(
+  ([identifier]) => identifier
+);
+
 const PRIVATE_NAVIGATION_SERVICE_INSTANCES_VARIABLES: ServiceInstancesListQueryVariables =
   {
     count: 50,
     orderBy: ServiceInstanceOrdering.Ordering,
     orderMode: OrderingMode.Asc,
-    filters: null,
+    filters: [
+      {
+        key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
+        value: PRIVATE_NAVIGATION_SERVICE_IDENTIFIERS,
+      },
+    ],
     searchTerm: null,
   };
 interface SettingsLinkConfig extends SectionLink {
@@ -252,21 +273,12 @@ export const usePrivateNavigation = (): NavigationConfig => {
     }
     return [];
   };
-  const openctiCustomDashboardsHref = serviceHrefs.get(
-    ServiceDefinitionIdentifier.OpenctiCustomDashboards
-  );
-  const openctiCustomViewsHref = serviceHrefs.get(
-    ServiceDefinitionIdentifier.OpenctiCustomViews
-  );
-  const openctiIntegrationsHref = serviceHrefs.get(
-    ServiceDefinitionIdentifier.OpenctiIntegrations
-  );
-  const openctiPlaybooksHref = serviceHrefs.get(
-    ServiceDefinitionIdentifier.OpenctiPlaybooks
-  );
-  const openaevScenariosHref = serviceHrefs.get(
-    ServiceDefinitionIdentifier.OpenaevScenarios
-  );
+  const buildServiceLink = (
+    identifier: ServiceDefinitionIdentifier
+  ): SectionLink => ({
+    href: serviceHrefs.get(identifier),
+    label: tMenu(SERVICE_LINK_LABEL_KEYS[identifier] ?? identifier),
+  });
   const xtmPlatformRoadmapHref = serviceHrefs.get(
     ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
@@ -320,22 +332,10 @@ export const usePrivateNavigation = (): NavigationConfig => {
           `/${APP_PATH}/service/opencti-free-trial`
         ),
         ...openctiMyProductLinks,
-        {
-          href: openctiCustomDashboardsHref,
-          label: tMenu('CustomDashboards'),
-        },
-        {
-          href: openctiCustomViewsHref,
-          label: tMenu('CustomViews'),
-        },
-        {
-          href: openctiIntegrationsHref,
-          label: tMenu('Integrations'),
-        },
-        {
-          href: openctiPlaybooksHref,
-          label: tMenu('Playbooks'),
-        },
+        buildServiceLink(ServiceDefinitionIdentifier.OpenctiCustomDashboards),
+        buildServiceLink(ServiceDefinitionIdentifier.OpenctiCustomViews),
+        buildServiceLink(ServiceDefinitionIdentifier.OpenctiIntegrations),
+        buildServiceLink(ServiceDefinitionIdentifier.OpenctiPlaybooks),
         {
           href: 'https://demo.opencti.io',
           label: tMenu('LiveDemo'),
@@ -359,10 +359,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
           `/${APP_PATH}/service/openaev-free-trial`
         ),
         ...openaevMyProductLinks,
-        {
-          href: openaevScenariosHref,
-          label: tMenu('Scenarios'),
-        },
+        buildServiceLink(ServiceDefinitionIdentifier.OpenaevScenarios),
         {
           href: 'https://demo.openaev.io',
           label: tMenu('LiveDemo'),
