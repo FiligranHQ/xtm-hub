@@ -83,7 +83,11 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
               <TryFiligranProductsBanner />
               <div className="flex flex-row grow min-h-0">
                 {isHomePageV2Enabled ? <PrivateMenu /> : <Menu />}
-                <div className="flex flex-col w-full h-full min-h-0 min-w-0">
+                <div
+                  className={cn(
+                    'flex flex-col w-full h-full min-h-0 min-w-0',
+                    isHomePageV2Enabled && 'overflow-y-auto'
+                  )}>
                   <HeaderComponent />
                   <ContentLayout>{children}</ContentLayout>
                 </div>

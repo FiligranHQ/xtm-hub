@@ -56,13 +56,16 @@ const RootLayout = async ({
           <div
             className={cn(
               'flex flex-col flex-1 min-h-0 min-w-0',
-              isHomePageV2Enabled && 'bg-gradient-background'
+              !isHomePageV2Enabled && 'bg-gradient-background',
+              isHomePageV2Enabled && 'md:overflow-y-auto'
             )}>
             <header
               className={cn(
-                'sticky max-md:top-0 max-md:z-20 flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong bg-gradient-background px-4 justify-between',
+                'sticky flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong px-4 justify-between',
                 isHomePageV2Enabled &&
-                  'bg-gradient-background/80 backdrop-blur-sm'
+                  "backdrop-blur-sm top-0 z-20 before:content-[''] before:absolute before:inset-0 before:bg-gradient-background before:opacity-50 before:-z-1",
+                !isHomePageV2Enabled &&
+                  'bg-gradient-background max-md:top-0 max-md:z-20'
               )}>
               <Link
                 href={`/${locale}`}
@@ -95,7 +98,8 @@ const RootLayout = async ({
                 </Button>
               )}
             </header>
-            <main className="grow overflow-auto">
+            <main
+              className={cn('grow', !isHomePageV2Enabled && 'overflow-y-auto')}>
               <div className="container pt-l">{children}</div>
             </main>
             <footer className="container text-muted-foreground max-md:mt-xxl">
