@@ -137,6 +137,18 @@ export const DocumentDomain = {
     return docQuery;
   },
 
+  lockDocumentsByMetadata: async (
+    key: string,
+    value: string
+  ): Promise<void> => {
+    await db<DocumentModel>('Document')
+      .whereIn(
+        'Document.id',
+        db('Document_Metadata').select('document_id').where({ key, value })
+      )
+      .forUpdate();
+  },
+
   loadDocumentsByMetadata: async (
     key: string,
     value: string,

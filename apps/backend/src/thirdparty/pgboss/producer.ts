@@ -1,5 +1,5 @@
 import type { Knex } from 'knex';
-import type { SendOptions } from 'pg-boss';
+import type { SendOptions, UpsertResponse } from 'pg-boss';
 import { databaseContext } from '../../context/database.context';
 import { logApp } from '../../utils/app-logger.util';
 import { PgBossApp } from './pgboss';
@@ -26,6 +26,12 @@ const knexTransactionToPgBossDb = (
   },
 });
 
+const getTransactionDbAdapter = ():
+  NonNullable<SendOptions['db']> | undefined => {
+  const trx = databaseContext.getTransaction();
+  return trx && !trx.isCompleted() ? knexTransactionToPgBossDb(trx) : undefined;
+};
+
 export const PgBossProducer = {
   send: async <T extends object>(
     queueName: string,
@@ -35,9 +41,7 @@ export const PgBossProducer = {
     const boss = PgBossApp.get();
     const { retryStrategy, ...sendOpts } = options ?? {};
     const strategyDefaults = RETRY_STRATEGIES[retryStrategy ?? 'standard'];
-    const trx = databaseContext.getTransaction();
-    const dbAdapter =
-      trx && !trx.isCompleted() ? knexTransactionToPgBossDb(trx) : undefined;
+    const dbAdapter = getTransactionDbAdapter();
 
     const mergedOptions: SendOptions = {
       ...strategyDefaults,
@@ -50,5 +54,36 @@ export const PgBossProducer = {
       queueName,
     });
     return jobId;
+  },
+
+  /**
+   * Trailing-edge debounce: pushes `startAfter` out on each call, so the
+   * job only fires `debounceSeconds` after the last call for a given
+   * `singletonKey`. Requires a queue policy allowing at most one
+   * queued/active job per key (e.g. `stately`).
+   */
+  debounce: async <T extends object>(
+    queueName: string,
+    data: T,
+    {
+      singletonKey,
+      debounceSeconds,
+    }: { singletonKey: string; debounceSeconds: number }
+  ): Promise<UpsertResponse> => {
+    const boss = PgBossApp.get();
+    const dbAdapter = getTransactionDbAdapter();
+    const startAfter = new Date(Date.now() + debounceSeconds * 1000);
+
+    const result = await boss.upsert(queueName, data, {
+      singletonKey,
+      startAfter,
+      ...(dbAdapter ? { db: dbAdapter } : {}),
+    });
+    logApp.debug(`[PgBoss] Job debounced on "${queueName}"`, {
+      queueName,
+      singletonKey,
+      startAfter,
+    });
+    return result;
   },
 };

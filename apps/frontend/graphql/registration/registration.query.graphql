@@ -8,6 +8,7 @@ query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
     subscription {
       start_date
       end_date
+      service_instance_id
     }
   }
 }

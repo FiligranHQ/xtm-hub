@@ -471,12 +471,12 @@ describe('manifestApp', () => {
   });
 
   describe('requestManifestGeneration', () => {
-    it('should queue and process the manifest when the version is valid', async () => {
+    it('should queue the manifest and enqueue an immediate rebuild when the version is valid', async () => {
       const insertIfNotPendingSpy = vi
         .spyOn(ManifestDomain, 'insertIfNotPending')
         .mockResolvedValue(undefined);
-      const processManifestQueueSpy = vi
-        .spyOn(ManifestApp, 'processManifestQueue')
+      const enqueueImmediateRebuildSpy = vi
+        .spyOn(ManifestHelper, 'enqueueImmediateRebuild')
         .mockResolvedValue(undefined);
 
       await ManifestApp.requestManifestGeneration({
@@ -491,7 +491,7 @@ describe('manifestApp', () => {
         type: ManifestType.Connector,
       };
       expect(insertIfNotPendingSpy).toHaveBeenCalledWith(expectedKey);
-      expect(processManifestQueueSpy).toHaveBeenCalledWith(expectedKey);
+      expect(enqueueImmediateRebuildSpy).toHaveBeenCalledWith(expectedKey);
     });
 
     it.each`
@@ -502,13 +502,13 @@ describe('manifestApp', () => {
       ${'7.20260703.0'}
       ${'7.260309.0-lts'}
     `(
-      'should throw and not queue nor process when the version "$version" is invalid',
+      'should throw and not queue nor enqueue when the version "$version" is invalid',
       async ({ version }: { version: string }) => {
         const insertIfNotPendingSpy = vi
           .spyOn(ManifestDomain, 'insertIfNotPending')
           .mockResolvedValue(undefined);
-        const processManifestQueueSpy = vi
-          .spyOn(ManifestApp, 'processManifestQueue')
+        const enqueueImmediateRebuildSpy = vi
+          .spyOn(ManifestHelper, 'enqueueImmediateRebuild')
           .mockResolvedValue(undefined);
 
         await expect(
@@ -520,7 +520,7 @@ describe('manifestApp', () => {
         ).rejects.toThrow(BadRequestErrorCode.InvalidPlatformVersion);
 
         expect(insertIfNotPendingSpy).not.toHaveBeenCalled();
-        expect(processManifestQueueSpy).not.toHaveBeenCalled();
+        expect(enqueueImmediateRebuildSpy).not.toHaveBeenCalled();
       }
     );
   });

@@ -12,6 +12,7 @@ import type { DocumentId } from '../../../model/kanel/public/Document';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
 import { minioInit } from '../../../server/initialize';
 import { ManifestRebuildQueueStatus } from '../manifest/manifest.consts';
+import { ManifestHelper } from '../manifest/manifest.helper';
 import { ManifestFragmentApp } from './manifest-fragment.app';
 
 describe('manifestFragmentApp', () => {
@@ -108,6 +109,11 @@ describe('manifestFragmentApp', () => {
   describe('orchestration', () => {
     beforeEach(() => {
       requestContext.set({ user: manifestIngestionUser });
+      // These DB-integration tests only assert on ManifestRebuildQueue rows;
+      // the pg-boss debounce trigger itself is covered in manifest.helper.test.ts.
+      vi.spyOn(ManifestHelper, 'scheduleDebouncedRebuild').mockResolvedValue(
+        undefined
+      );
     });
 
     it('enqueues manifests whose version is at or above the ingested fragment min_version', async () => {
@@ -145,6 +151,18 @@ describe('manifestFragmentApp', () => {
         '7.260507.0',
         '7.260600.0',
       ]);
+
+      expect(ManifestHelper.scheduleDebouncedRebuild).toHaveBeenCalledTimes(2);
+      expect(ManifestHelper.scheduleDebouncedRebuild).toHaveBeenCalledWith({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        version: '7.260507.0',
+        type: ManifestType.Connector,
+      });
+      expect(ManifestHelper.scheduleDebouncedRebuild).toHaveBeenCalledWith({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        version: '7.260600.0',
+        type: ManifestType.Connector,
+      });
     });
 
     it.each`
@@ -177,6 +195,7 @@ describe('manifestFragmentApp', () => {
 
         const queuedRows = await TestHelper.manifestRebuildQueue.loadAll({});
         expect(queuedRows).toHaveLength(0);
+        expect(ManifestHelper.scheduleDebouncedRebuild).not.toHaveBeenCalled();
       }
     );
 
@@ -207,6 +226,16 @@ describe('manifestFragmentApp', () => {
 
       const queuedRows = await TestHelper.manifestRebuildQueue.loadAll({});
       expect(queuedRows).toHaveLength(1);
+
+      // Still debounce-scheduled even though the DB row already existed:
+      // the DB row is the durable "needs rebuild" marker, the pg-boss job
+      // is what actually triggers/refreshes the debounce timer.
+      expect(ManifestHelper.scheduleDebouncedRebuild).toHaveBeenCalledTimes(1);
+      expect(ManifestHelper.scheduleDebouncedRebuild).toHaveBeenCalledWith({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        version: '7.260507.0',
+        type: ManifestType.Connector,
+      });
     });
 
     it('only enqueues LTS manifests when the ingested fragment is an LTS version', async () => {
@@ -237,6 +266,13 @@ describe('manifestFragmentApp', () => {
       const queuedRows = await TestHelper.manifestRebuildQueue.loadAll({});
       expect(queuedRows).toHaveLength(1);
       expect(queuedRows[0]!.version).toBe('7.260507.0-lts.1');
+
+      expect(ManifestHelper.scheduleDebouncedRebuild).toHaveBeenCalledTimes(1);
+      expect(ManifestHelper.scheduleDebouncedRebuild).toHaveBeenCalledWith({
+        platformIdentifier: PlatformIdentifier.Opencti,
+        version: '7.260507.0-lts.1',
+        type: ManifestType.Connector,
+      });
     });
 
     it('rejects the call when the batch mixes LTS and non-LTS fragments', async () => {

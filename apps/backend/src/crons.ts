@@ -12,52 +12,57 @@ const scheduledTasks: ScheduledTask[] = [];
 
 const expireTrials = async (): Promise<void> => {
   logApp.info('Running expireTrials job');
-  requestContext.set(CRONS_USER_CONTEXT);
-  try {
-    await DeploymentApp.expireTrials();
-  } catch (error) {
-    logApp.error('ExpireTrials job failed:', { error });
-  }
+  await requestContext.run(CRONS_USER_CONTEXT, async () => {
+    try {
+      await DeploymentApp.expireTrials();
+    } catch (error) {
+      logApp.error('ExpireTrials job failed:', { error });
+    }
+  });
 };
 
 const sendPendingUserDigest = async (): Promise<void> => {
   logApp.info('Running sendPendingUserDigest job');
-  requestContext.set(CRONS_USER_CONTEXT);
-  try {
-    await UserOrganizationApp.sendPendingUsersDigest();
-  } catch (error) {
-    logApp.error('SendPendingUserDigest job failed:', { error });
-  }
+  await requestContext.run(CRONS_USER_CONTEXT, async () => {
+    try {
+      await UserOrganizationApp.sendPendingUsersDigest();
+    } catch (error) {
+      logApp.error('SendPendingUserDigest job failed:', { error });
+    }
+  });
 };
 
 const sendPublicRoadmapMonthlyReminder = async (): Promise<void> => {
   logApp.info('Running sendPublicRoadmapMonthlyReminder job');
-  requestContext.set(CRONS_USER_CONTEXT);
-  try {
-    await EpicApp.sendPublicRoadmapMonthlyReminder();
-  } catch (error) {
-    logApp.error('sendPublicRoadmapMonthlyReminder job failed:', { error });
-  }
+  await requestContext.run(CRONS_USER_CONTEXT, async () => {
+    try {
+      await EpicApp.sendPublicRoadmapMonthlyReminder();
+    } catch (error) {
+      logApp.error('sendPublicRoadmapMonthlyReminder job failed:', { error });
+    }
+  });
 };
 
 const cleanExpiredTrialGroups = async (): Promise<void> => {
   logApp.info('Running cleanExpiredTrialGroups job');
-  requestContext.set(CRONS_USER_CONTEXT);
-  try {
-    await ServiceGroupApp.removeExpiredGroups();
-  } catch (error) {
-    logApp.error('cleanExpiredTrialGroups job failed:', { error });
-  }
+  await requestContext.run(CRONS_USER_CONTEXT, async () => {
+    try {
+      await ServiceGroupApp.removeExpiredGroups();
+    } catch (error) {
+      logApp.error('cleanExpiredTrialGroups job failed:', { error });
+    }
+  });
 };
 
 const cleanExpiredNewsFeedItems = async (): Promise<void> => {
   logApp.info('Running cleanExpiredNewsFeedItems job');
-  requestContext.set(CRONS_USER_CONTEXT);
-  try {
-    await NewsFeedApp.cleanExpiredNewsFeedItems();
-  } catch (error) {
-    logApp.error('cleanExpiredNewsFeedItems job failed:', { error });
-  }
+  await requestContext.run(CRONS_USER_CONTEXT, async () => {
+    try {
+      await NewsFeedApp.cleanExpiredNewsFeedItems();
+    } catch (error) {
+      logApp.error('cleanExpiredNewsFeedItems job failed:', { error });
+    }
+  });
 };
 
 export const initCronJobs = () => {

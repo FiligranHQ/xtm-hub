@@ -32,6 +32,6 @@ export default class RegisterPage {
 
   async navigateToAndRegister(redirectionKey: string) {
     await this.navigateTo(redirectionKey, OPENCTI_PLATFORM_URL);
-    await this.page.getByRole('button', { name: 'Register' }).click();
+    await this.page.getByRole('button', { name: 'Connect' }).click();
   }
 }

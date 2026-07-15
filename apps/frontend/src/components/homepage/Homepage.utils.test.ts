@@ -93,6 +93,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         subscription: {
           start_date: '2025-12-01T00:00:00.000Z',
           end_date: null,
+          service_instance_id: 'instance-1',
         },
       },
       {
@@ -103,6 +104,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         subscription: {
           start_date: '2025-12-15T00:00:00.000Z',
           end_date: '2026-01-03T00:00:00.000Z',
+          service_instance_id: 'instance-2',
         },
       },
     ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0]);
@@ -115,6 +117,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         registrationDate: '2025-12-01T00:00:00.000Z',
         contract: PlatformContract.Ce,
         remainingTrialDays: undefined,
+        href: '/app/service/opencti_registration/instance-1',
       },
       {
         id: 'rp-2',
@@ -123,6 +126,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         registrationDate: '2025-12-15T00:00:00.000Z',
         contract: PlatformContract.Trial,
         remainingTrialDays: 2,
+        href: '/app/service/openaev_registration/instance-2',
       },
     ]);
   });
@@ -137,6 +141,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         subscription: {
           start_date: '2025-12-01T00:00:00.000Z',
           end_date: null,
+          service_instance_id: 'instance-vault',
         },
       },
     ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0]);
@@ -154,6 +159,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         subscription: {
           start_date: '2025-12-01T00:00:00.000Z',
           end_date: null,
+          service_instance_id: 'instance-opencti-1',
         },
       },
       {
@@ -164,6 +170,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         subscription: {
           start_date: '2025-12-02T00:00:00.000Z',
           end_date: null,
+          service_instance_id: 'instance-opencti-2',
         },
       },
     ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0]);
@@ -176,6 +183,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         registrationDate: '2025-12-01T00:00:00.000Z',
         contract: PlatformContract.Ce,
         remainingTrialDays: undefined,
+        href: '/app/service/opencti_registration/instance-opencti-1',
       },
       {
         id: 'rp-opencti-2',
@@ -184,6 +192,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         registrationDate: '2025-12-02T00:00:00.000Z',
         contract: PlatformContract.Ee,
         remainingTrialDays: undefined,
+        href: '/app/service/opencti_registration/instance-opencti-2',
       },
     ]);
   });

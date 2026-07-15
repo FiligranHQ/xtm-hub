@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const cronMocks = vi.hoisted(() => ({
   scheduledCallbacks: [] as Array<() => Promise<void> | void>,
   scheduledTaskStops: [] as Array<ReturnType<typeof vi.fn>>,
-  requestContextSetMock: vi.fn(),
+  requestContextRunMock: vi.fn(
+    async (_context: unknown, callback: () => Promise<void> | void) =>
+      callback()
+  ),
   expireTrialsMock: vi.fn(async () => undefined),
   sendPendingUsersDigestMock: vi.fn(async () => undefined),
   sendPublicRoadmapMonthlyReminderMock: vi.fn(async () => undefined),
@@ -26,7 +29,7 @@ vi.mock('node-cron', () => ({
 
 vi.mock('./context/request.context', () => ({
   requestContext: {
-    set: cronMocks.requestContextSetMock,
+    run: cronMocks.requestContextRunMock,
   },
 }));
 
@@ -92,26 +95,31 @@ describe('crons', () => {
       await callback();
     }
 
-    expect(cronMocks.requestContextSetMock).toHaveBeenCalledTimes(5);
-    expect(cronMocks.requestContextSetMock).toHaveBeenNthCalledWith(
+    expect(cronMocks.requestContextRunMock).toHaveBeenCalledTimes(5);
+    expect(cronMocks.requestContextRunMock).toHaveBeenNthCalledWith(
       1,
-      CRONS_USER_CONTEXT
+      CRONS_USER_CONTEXT,
+      expect.any(Function)
     );
-    expect(cronMocks.requestContextSetMock).toHaveBeenNthCalledWith(
+    expect(cronMocks.requestContextRunMock).toHaveBeenNthCalledWith(
       2,
-      CRONS_USER_CONTEXT
+      CRONS_USER_CONTEXT,
+      expect.any(Function)
     );
-    expect(cronMocks.requestContextSetMock).toHaveBeenNthCalledWith(
+    expect(cronMocks.requestContextRunMock).toHaveBeenNthCalledWith(
       3,
-      CRONS_USER_CONTEXT
+      CRONS_USER_CONTEXT,
+      expect.any(Function)
     );
-    expect(cronMocks.requestContextSetMock).toHaveBeenNthCalledWith(
+    expect(cronMocks.requestContextRunMock).toHaveBeenNthCalledWith(
       4,
-      CRONS_USER_CONTEXT
+      CRONS_USER_CONTEXT,
+      expect.any(Function)
     );
-    expect(cronMocks.requestContextSetMock).toHaveBeenNthCalledWith(
+    expect(cronMocks.requestContextRunMock).toHaveBeenNthCalledWith(
       5,
-      CRONS_USER_CONTEXT
+      CRONS_USER_CONTEXT,
+      expect.any(Function)
     );
 
     expect(cronMocks.expireTrialsMock).toHaveBeenCalledTimes(1);

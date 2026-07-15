@@ -49,7 +49,7 @@ test.describe('Organization switcher', async () => {
       await page.getByRole('button', { name: 'OpenCTI' }).click();
       await page.getByRole('button', { name: 'My products' }).click();
       await expect(
-        page.getByRole('link', { name: 'Open CTI Instance' })
+        page.getByRole('link', { name: 'Open CTI Instance', exact: true })
       ).toBeVisible();
       await expect(page.getByText('2 connected products')).toBeVisible();
     });
@@ -79,7 +79,7 @@ test.describe('Organization switcher', async () => {
       await page.getByRole('button', { name: 'OpenCTI' }).click();
       await page.getByRole('button', { name: 'My products' }).click();
       await expect(
-        page.getByRole('link', { name: 'Open CTI Instance' })
+        page.getByRole('link', { name: 'Open CTI Instance', exact: true })
       ).toBeVisible();
 
       await expect(page.getByText('2 connected products')).toBeVisible();

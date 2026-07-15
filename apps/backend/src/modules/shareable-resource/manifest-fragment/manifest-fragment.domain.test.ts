@@ -464,4 +464,108 @@ describe('manifestFragmentDomain', () => {
       expect(newDocument!.tags).not.toContain('latest-lts');
     });
   });
+
+  describe('ingestManifestFragment concurrency', () => {
+    it('rejects one of two concurrent ingestions of the very first version of a brand-new connector', async () => {
+      // Given: no existing rows to lock, so the DB unique constraint is the backstop
+      const slug = 'misp-concurrent-first-insert';
+      const manifestId = 'concurrent-first-insert-id';
+      const fragmentA = buildManifestFragment(ManifestType.Connector, {
+        slug,
+        id: manifestId,
+      });
+      const fragmentB = buildManifestFragment(ManifestType.Connector, {
+        slug,
+        id: manifestId,
+      });
+
+      // When
+      const results = await Promise.allSettled([
+        ManifestFragmentDomain.ingestManifestFragment(fragmentA),
+        ManifestFragmentDomain.ingestManifestFragment(fragmentB),
+      ]);
+
+      // Then: only one succeeds
+      const fulfilled = results.filter((r) => r.status === 'fulfilled');
+      const rejected = results.filter((r) => r.status === 'rejected');
+      expect(fulfilled).toHaveLength(1);
+      expect(rejected).toHaveLength(1);
+      expect((rejected[0] as PromiseRejectedResult).reason.message).toBe(
+        BadRequestErrorCode.ConnectorVersionAlreadyExists
+      );
+
+      const createdDocument = await TestHelper.document.load({ slug });
+      expect(createdDocument).toBeDefined();
+      _createdDocumentIds.push(createdDocument!.id);
+    });
+
+    it('promotes exactly one connector as latest when two new versions are ingested concurrently for the same connector family', async () => {
+      // Given: existing connector tagged latest, so the lock has a row to serialize on
+      const manifestId = 'concurrent-promote-id';
+      const existingDocument = await TestHelper.document.create({
+        slug: 'misp-concurrent-existing',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
+        source_type: DocumentSourceType.External,
+        version: '7.260305.0',
+        tags: ['decoupling', 'latest'],
+      });
+      _createdDocumentIds.push(existingDocument.id);
+
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.ManifestFragmentId as DocumentMetadataKey,
+        value: manifestId,
+      });
+      await TestHelper.documentMetadata.create({
+        document_id: existingDocument.id,
+        key: DocumentMetadataKeyCode.VersionPadded as DocumentMetadataKey,
+        value: '007.260305.000',
+      });
+
+      const slugLower = 'misp-concurrent-lower';
+      const slugHigher = 'misp-concurrent-higher';
+      const fragmentLower = buildManifestFragment(ManifestType.Connector, {
+        slug: slugLower,
+        id: manifestId,
+        version: '7.260308.0',
+      });
+      const fragmentHigher = buildManifestFragment(ManifestType.Connector, {
+        slug: slugHigher,
+        id: manifestId,
+        version: '7.260309.0',
+      });
+
+      // When
+      await Promise.all([
+        ManifestFragmentDomain.ingestManifestFragment(fragmentLower),
+        ManifestFragmentDomain.ingestManifestFragment(fragmentHigher),
+      ]);
+
+      // Then: only one connector carries "latest", and it's the highest version
+      const documentLower = await TestHelper.document.load({
+        slug: slugLower,
+      });
+      const documentHigher = await TestHelper.document.load({
+        slug: slugHigher,
+      });
+      expect(documentLower).toBeDefined();
+      expect(documentHigher).toBeDefined();
+      _createdDocumentIds.push(documentLower!.id, documentHigher!.id);
+
+      const updatedExisting = await TestHelper.document.load({
+        id: existingDocument.id,
+      });
+
+      const latestCount = [
+        updatedExisting,
+        documentLower,
+        documentHigher,
+      ].filter((doc) => doc!.tags?.includes('latest')).length;
+      expect(latestCount).toBe(1);
+      expect(documentHigher!.tags).toContain('latest');
+      expect(documentLower!.tags).not.toContain('latest');
+      expect(updatedExisting!.tags).not.toContain('latest');
+    });
+  });
 });

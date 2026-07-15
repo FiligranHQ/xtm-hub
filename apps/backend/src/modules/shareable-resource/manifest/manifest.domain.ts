@@ -10,6 +10,7 @@ import type ManifestDocument from '../../../model/kanel/public/ManifestDocument'
 import type { ManifestDocumentInitializer } from '../../../model/kanel/public/ManifestDocument';
 import type ManifestRebuildQueue from '../../../model/kanel/public/ManifestRebuildQueue';
 import type { ManifestRebuildQueueInitializer } from '../../../model/kanel/public/ManifestRebuildQueue';
+import { isUniqueConstraintViolation } from '../../../utils/error/error-guard.util';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
 import { ManifestKey, ManifestRebuildQueueStatus } from './manifest.consts';
 
@@ -62,6 +63,18 @@ export const ManifestDomain = {
             }
           : {}),
       })
+      // Skips keys already Processing: promoting this row too would violate
+      // the (product, version, type, status) unique constraint.
+      .whereRaw(
+        `NOT EXISTS (
+          SELECT 1 FROM "ManifestRebuildQueue" AS processing_check
+          WHERE processing_check.status = ?
+            AND processing_check.product = "ManifestRebuildQueue".product
+            AND processing_check.version = "ManifestRebuildQueue".version
+            AND processing_check.type = "ManifestRebuildQueue".type
+        )`,
+        [ManifestRebuildQueueStatus.Processing]
+      )
       .forUpdate()
       .skipLocked();
 
@@ -118,10 +131,33 @@ export const ManifestDomain = {
 
   recoverStuckProcessingEntries: async (): Promise<ManifestRebuildQueue[]> => {
     const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
-    return db<ManifestRebuildQueue>('ManifestRebuildQueue')
+    const stuckRows = await db<ManifestRebuildQueue>('ManifestRebuildQueue')
       .where({ status: ManifestRebuildQueueStatus.Processing })
-      .where('created_at', '<', thirtyMinutesAgo)
-      .update({ status: ManifestRebuildQueueStatus.Pending })
-      .returning('*');
+      .where('created_at', '<', thirtyMinutesAgo);
+
+    const recovered: ManifestRebuildQueue[] = [];
+    for (const row of stuckRows) {
+      try {
+        const [updated] = await db<ManifestRebuildQueue>('ManifestRebuildQueue')
+          .where({ id: row.id })
+          .update({ status: ManifestRebuildQueueStatus.Pending })
+          .returning('*');
+        if (updated) recovered.push(updated);
+      } catch (error) {
+        // A pending sibling already covers this rebuild; drop the stale row.
+        if (
+          !isUniqueConstraintViolation(
+            error,
+            'manifestrebuildqueue_product_version_type_status_unique'
+          )
+        ) {
+          throw error;
+        }
+        await db<ManifestRebuildQueue>('ManifestRebuildQueue')
+          .where({ id: row.id })
+          .delete();
+      }
+    }
+    return recovered;
   },
 };
