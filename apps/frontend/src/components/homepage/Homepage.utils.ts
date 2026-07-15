@@ -1,5 +1,6 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { daysUntil } from '@/utils/date';
+import { APP_PATH } from '@/utils/path/constant';
 import {
   DocumentImageType,
   HomepageDocumentFragment,
@@ -21,6 +22,7 @@ export interface HomepageRegisteredPlatformCardViewModel {
   registrationDate: string | null | undefined;
   contract: PlatformContract;
   remainingTrialDays: number | undefined;
+  href: string | undefined;
 }
 
 export const buildDistinctPlatformIdentifiersFromServiceDefinition = (
@@ -62,6 +64,8 @@ export const mapRegisteredPlatformsToHomepageCards = (
       return [];
     }
 
+    const serviceInstanceId = platform.subscription?.service_instance_id;
+
     return [
       {
         id: platform.id,
@@ -73,6 +77,9 @@ export const mapRegisteredPlatformsToHomepageCards = (
           platform.contract === PlatformContract.Trial
             ? resolveRemainingTrialDays(platform.subscription?.end_date)
             : undefined,
+        href: serviceInstanceId
+          ? `/${APP_PATH}/service/${platform.identifier}/${serviceInstanceId}`
+          : undefined,
       },
     ];
   });

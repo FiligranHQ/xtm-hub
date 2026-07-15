@@ -2756,7 +2756,7 @@ export type RegisteredPlatformsQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null } | null }> };
+export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
 
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
@@ -3225,6 +3225,7 @@ export const RegisteredPlatformsDocument = `
     subscription {
       start_date
       end_date
+      service_instance_id
     }
   }
 }

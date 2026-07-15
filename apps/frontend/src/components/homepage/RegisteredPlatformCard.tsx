@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Badge, Card, CardContent } from '@filigran/ui';
 import { PlatformContract } from '@graphql/generated';
 import { useFormatter, useTranslations } from 'next-intl';
+import Link from 'next/link';
 import React from 'react';
 
 type RegisteredPlatformCardProps = {
@@ -66,8 +67,13 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
 
   const { Icon } = PlatformMetadataMapping[platform.platformIdentifier];
   const contractLabel = CONTRACT_LABEL_BY_CONTRACT[platform.contract];
-  return (
-    <Card className="border pt-s my-xs bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1">
+
+  const cardContent = (
+    <Card
+      className={cn(
+        'border pt-s my-xs bg-elevation-background-layer-1 border-elevation-border-subtle-layer-1',
+        platform.href && 'cursor-pointer hover:bg-hover'
+      )}>
       <CardContent className="p-s flex flex-col gap-m">
         <div className="flex gap-s items-center justify-between">
           <div className="flex gap-s items-center">
@@ -123,6 +129,16 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
         </div>
       </CardContent>
     </Card>
+  );
+
+  return platform.href ? (
+    <Link
+      href={platform.href}
+      className="block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      {cardContent}
+    </Link>
+  ) : (
+    cardContent
   );
 };
 

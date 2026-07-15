@@ -69,7 +69,7 @@ test.describe('Registration', () => {
       await page.getByRole('button', { name: 'OpenAEV' }).click();
       await page.getByRole('button', { name: 'My product' }).click();
       await expect(
-        page.getByRole('link', { name: 'Open AEV Instance' })
+        page.getByRole('link', { name: 'Open AEV Instance', exact: true })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();
     });
@@ -114,7 +114,7 @@ test.describe('Registration', () => {
       await page.getByRole('button', { name: 'OpenCTI' }).click();
       await page.getByRole('button', { name: 'My product' }).click();
       await expect(
-        page.getByRole('link', { name: 'Open CTI Instance' })
+        page.getByRole('link', { name: 'Open CTI Instance', exact: true })
       ).toBeVisible();
       await expect(page).toHaveScreenshot();
     });
