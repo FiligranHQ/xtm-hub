@@ -1,0 +1,99 @@
+meta {
+  name: IngestManifestFragments
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+headers {
+  x-xtm-hub-token: {{xtm-hub-token}}
+}
+
+body:graphql {
+  mutation IngestManifestFragments(
+    $manifestFragments: [ManifestFragmentInput!]!
+  ) {
+    ingestManifestFragments(manifestFragments: $manifestFragments) {
+      success
+    }
+  }
+  
+}
+
+body:graphql:vars {
+  {
+    "manifestFragments": [
+      {
+    "id": "abc123",
+    "title": "MISP",
+    "slug": "misp",
+    "description": "The MISP connector imports threat intelligence from MISP instances into OpenCTI.",
+    "short_description": "Import threat intelligence events, indicators, and observables from MISP instances.",
+    "logo": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASoAAAEqCAYAAACiOh0vAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TpVoqDu0g0iFDdb…QUVExKAiIgYVERGDioiIQUVEDCoiIgYVERGDiogYVEREDCoiYlARETGoiIgYVETEoCIiYlARETGoiIhBRUTEoCIiBhURkQX6fyA0PWflJC+MAAAAAElFTkSuQmCC",
+    "use_cases": ["Open Source Threat Intel"],
+    "verified": true,
+    "last_verified_date": "2025-01-01",
+    "subscription_link": "https://www.misp-project.org",
+    "source_code": "https://github.com/OpenCTI-Platform/connectors/tree/master/external-import/misp",
+    "manager_supported": true,
+    "min_version": "7.260507.0",
+    "version": "7.260309.0-lts.5",
+    "image_name": "opencti/connector-misp",
+    "image_type": "EXTERNAL_IMPORT",
+    "platform": "OpenCTI",
+    "integration_type": "connector",
+    "additional_properties": {
+      "max_confidence_level": 50
+    },
+    "config_schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://www.filigran.io/connectors/misp_config.schema.json",
+      "type": "object",
+      "required": ["OPENCTI_URL", "OPENCTI_TOKEN"],
+      "properties": {
+        "OPENCTI_URL": {
+          "type": "string",
+          "format": "uri",
+          "description": "The base URL of the OpenCTI instance."
+        },
+        "OPENCTI_TOKEN": {
+          "type": "string",
+          "description": "The API token to connect to OpenCTI."
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Ensure xtm-hub-token is defined in environment (requires MANAGE_MANIFEST_INGESTIONS capability)
+
+  Upserts connector manifest fragments as Integration documents, then schedules a
+  rebuild for any impacted Manifest (version >= batch minimum).
+
+  Fill variables:
+  manifestFragments: array of ManifestFragmentInput (see manifest-fragment.graphql)
+  platform: PlatformIdentifier value, e.g. opencti, openaev
+  integration_type: must be "connector"
+  version / min_version: format major.date.patch[-lts.N], e.g. 7.260309.0-lts.5
+  last_verified_date: ISO date string
+  logo: base64 image, with "data:image/...;base64," prefix
+
+  Notes:
+  - All fragments in one batch must be homogeneous (all LTS or all non-LTS).
+  - Re-ingesting the same id+version throws CONNECTOR_VERSION_ALREADY_EXISTS.
+  - short_description must be <= 250 chars.
+}

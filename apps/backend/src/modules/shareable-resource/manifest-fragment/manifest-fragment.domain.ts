@@ -7,7 +7,9 @@ import {
   ManifestType,
   type ManifestFragmentInput,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import Document from '../../../model/kanel/public/Document';
+import { isUniqueConstraintViolation } from '../../../utils/error/error-guard.util';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
 import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
@@ -158,59 +160,82 @@ export const ManifestFragmentDomain = {
     const latestTag =
       ManifestFragmentHelper.getLatestTagForConnectorVersion(formattedVersion);
 
-    const existingBatchConnectors =
-      (await DocumentDomain.loadDocumentsByMetadata(
+    await withTransaction(async () => {
+      // Serializes concurrent ingestions for the same manifest_fragment_id.
+      await DocumentDomain.lockDocumentsByMetadata(
         DocumentMetadataKeyCode.ManifestFragmentId,
-        fragment.id,
-        [
-          DocumentMetadataKeyCode.VersionPadded,
-          DocumentMetadataKeyCode.DatasheetUrl,
-          DocumentMetadataKeyCode.BlogpostUrl,
-          DocumentMetadataKeyCode.DemoUrl,
-        ]
-      )) as ConnectorWithMetadata[];
+        fragment.id
+      );
 
-    const hasSameVersion = existingBatchConnectors.some(
-      (connector) => connector.version === fragment.version
-    );
-    if (hasSameVersion) {
-      throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists);
-    }
+      const existingBatchConnectors =
+        (await DocumentDomain.loadDocumentsByMetadata(
+          DocumentMetadataKeyCode.ManifestFragmentId,
+          fragment.id,
+          [
+            DocumentMetadataKeyCode.VersionPadded,
+            DocumentMetadataKeyCode.DatasheetUrl,
+            DocumentMetadataKeyCode.BlogpostUrl,
+            DocumentMetadataKeyCode.DemoUrl,
+          ]
+        )) as ConnectorWithMetadata[];
 
-    const currentLatestConnector = existingBatchConnectors.find((connector) =>
-      (connector.tags ?? []).includes(latestTag)
-    );
+      const hasSameVersion = existingBatchConnectors.some(
+        (connector) => connector.version === fragment.version
+      );
+      if (hasSameVersion) {
+        throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists);
+      }
 
-    const metadataFromExisting =
-      ManifestFragmentHelper.getConnectorMetadataFromExisting({
-        currentLatestConnector,
-        existingBatchConnectors,
-      });
+      const currentLatestConnector = existingBatchConnectors.find((connector) =>
+        (connector.tags ?? []).includes(latestTag)
+      );
 
-    const shouldPromoteAsLatest =
-      !currentLatestConnector ||
-      ManifestFragmentHelper.isStrictlyGreaterConnectorVersion({
-        candidate: formattedVersion,
-        current: currentLatestConnector.version_padded ?? '',
-      });
+      const metadataFromExisting =
+        ManifestFragmentHelper.getConnectorMetadataFromExisting({
+          currentLatestConnector,
+          existingBatchConnectors,
+        });
 
-    if (existingBatchConnectors.length > 0 && shouldPromoteAsLatest) {
-      await removeLatestTagFromExistingBatchConnectors({
-        connectors: existingBatchConnectors,
-        latestTag,
-      });
-    }
+      const shouldPromoteAsLatest =
+        !currentLatestConnector ||
+        ManifestFragmentHelper.isStrictlyGreaterConnectorVersion({
+          candidate: formattedVersion,
+          current: currentLatestConnector.version_padded ?? '',
+        });
 
-    const newDocumentTags = ManifestFragmentHelper.getConnectorDocumentTags(
-      shouldPromoteAsLatest,
-      latestTag
-    );
+      if (existingBatchConnectors.length > 0 && shouldPromoteAsLatest) {
+        await removeLatestTagFromExistingBatchConnectors({
+          connectors: existingBatchConnectors,
+          latestTag,
+        });
+      }
 
-    await createConnectorDocument({
-      fragment,
-      formattedVersion,
-      tags: newDocumentTags,
-      metadataFromExisting,
+      const newDocumentTags = ManifestFragmentHelper.getConnectorDocumentTags(
+        shouldPromoteAsLatest,
+        latestTag
+      );
+
+      try {
+        await createConnectorDocument({
+          fragment,
+          formattedVersion,
+          tags: newDocumentTags,
+          metadataFromExisting,
+        });
+      } catch (error) {
+        // Backstop for brand-new connectors: no existing rows for the lock above.
+        if (
+          isUniqueConstraintViolation(
+            error,
+            'document_type_slug_version_unique'
+          )
+        ) {
+          throw new Error(BadRequestErrorCode.ConnectorVersionAlreadyExists, {
+            cause: error,
+          });
+        }
+        throw error;
+      }
     });
   },
 };

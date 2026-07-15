@@ -92,4 +92,73 @@ describe('pgBossProducer – transactional enqueue (integration)', () => {
     const jobs = await boss.findJobs(TEST_QUEUE, { id: jobId! });
     expect(jobs).toHaveLength(0);
   }, 5_000);
+
+  describe('debounce', () => {
+    const DEBOUNCE_QUEUE = 'producer_debounce_test';
+
+    beforeEach(async () => {
+      await boss.createQueue(DEBOUNCE_QUEUE, { policy: 'stately' });
+    });
+
+    afterEach(async () => {
+      await boss.deleteQueue(DEBOUNCE_QUEUE);
+    });
+
+    it('inserts a delayed job on the first call for a given singletonKey', async () => {
+      const before = Date.now();
+      const result = await PgBossProducer.debounce(
+        DEBOUNCE_QUEUE,
+        { action: 'first' },
+        { singletonKey: 'debounce-key-1', debounceSeconds: 60 }
+      );
+      const after = Date.now();
+
+      expect(result.inserted).toBe(1);
+      expect(result.updated).toBe(0);
+
+      const [job] = await boss.findJobs(DEBOUNCE_QUEUE, {
+        id: result.jobs[0]!,
+      });
+      expect(job.data).toEqual({ action: 'first' });
+      const startAfter = new Date(job.startAfter).getTime();
+      expect(startAfter).toBeGreaterThanOrEqual(before + 60_000);
+      expect(startAfter).toBeLessThanOrEqual(after + 60_000);
+    }, 5_000);
+
+    it('resets startAfter instead of inserting a duplicate on a later call with the same singletonKey', async () => {
+      const first = await PgBossProducer.debounce(
+        DEBOUNCE_QUEUE,
+        { action: 'first' },
+        { singletonKey: 'debounce-key-2', debounceSeconds: 60 }
+      );
+
+      const second = await PgBossProducer.debounce(
+        DEBOUNCE_QUEUE,
+        { action: 'second' },
+        { singletonKey: 'debounce-key-2', debounceSeconds: 60 }
+      );
+
+      expect(second.inserted).toBe(0);
+      expect(second.updated).toBe(1);
+      expect(second.jobs[0]).toBe(first.jobs[0]);
+
+      const [job] = await boss.findJobs(DEBOUNCE_QUEUE, { id: first.jobs[0]! });
+      expect(job.data).toEqual({ action: 'second' });
+    }, 5_000);
+
+    it('inserts a separate job for a different singletonKey', async () => {
+      const first = await PgBossProducer.debounce(
+        DEBOUNCE_QUEUE,
+        { action: 'a' },
+        { singletonKey: 'debounce-key-a', debounceSeconds: 60 }
+      );
+      const second = await PgBossProducer.debounce(
+        DEBOUNCE_QUEUE,
+        { action: 'b' },
+        { singletonKey: 'debounce-key-b', debounceSeconds: 60 }
+      );
+
+      expect(first.jobs[0]).not.toBe(second.jobs[0]);
+    }, 5_000);
+  });
 });

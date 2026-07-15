@@ -6,6 +6,7 @@ import {
   getErrorNumberProperty,
   getErrorStringProperty,
   isErrorLikeRecord,
+  isUniqueConstraintViolation,
   toError,
 } from './error-guard.util';
 import { UnknownErrorCode } from './error.code';
@@ -139,6 +140,32 @@ describe('error guard util', () => {
 
         // When
         const result = getErrorNumberProperty(input, key);
+
+        // Then
+        expect(result).toBe(expected);
+      }
+    );
+  });
+
+  describe('isUniqueConstraintViolation', () => {
+    it.each`
+      input                                                                    | constraintName  | expected | description
+      ${{ code: '23505', constraint: 'foo_unique' }}                           | ${'foo_unique'} | ${true}  | ${'code + matching constraint'}
+      ${{ code: '23505', constraint: 'bar_unique' }}                           | ${'foo_unique'} | ${false} | ${'code + non-matching constraint'}
+      ${{ code: '23505', message: 'duplicate key value violates foo_unique' }} | ${'foo_unique'} | ${true}  | ${'code, no constraint, message fallback matches'}
+      ${{ code: '23505', message: 'duplicate key value violates bar_unique' }} | ${'foo_unique'} | ${false} | ${'code, no constraint, message fallback mismatches'}
+      ${{ constraint: 'foo_unique' }}                                          | ${'foo_unique'} | ${true}  | ${'no code, matching constraint'}
+      ${{ constraint: 'bar_unique' }}                                          | ${'foo_unique'} | ${false} | ${'no code, non-matching constraint'}
+      ${new Error('foo_unique constraint violated')}                           | ${'foo_unique'} | ${true}  | ${'no code/constraint, message fallback matches'}
+      ${new Error('unrelated error')}                                          | ${'foo_unique'} | ${false} | ${'no code/constraint, message fallback mismatches'}
+      ${{ code: '42P01', constraint: 'foo_unique' }}                           | ${'foo_unique'} | ${true}  | ${'different code but matching constraint still matches'}
+    `(
+      'should return $expected for $description',
+      ({ constraintName, expected, input }) => {
+        // Given
+
+        // When
+        const result = isUniqueConstraintViolation(input, constraintName);
 
         // Then
         expect(result).toBe(expected);

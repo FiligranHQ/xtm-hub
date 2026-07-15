@@ -385,6 +385,11 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
 
   await platformInit();
 
+  // Must run before any seeding step that uploads files (e.g. connector logos),
+  // otherwise uploads fail with "NoSuchBucket".
+  await minioInit();
+  logApp.debug('[MinIO] Bucket ready');
+
   const baseURLFront: string = config.get('base_url_front');
   if (
     process.env.DATA_SEEDING ||
@@ -401,8 +406,6 @@ if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   logApp.info(
     '[Migration] Database version is now ' + (await dbMigration.version())
   );
-  await minioInit();
-  logApp.debug('[MinIO] Bucket ready');
 
   await PgBossApp.start();
 

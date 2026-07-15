@@ -430,7 +430,7 @@ export const seedDevelopmentConnectors = async () => {
     );
     return;
   }
-  requestContext.run({ user }, async () => {
+  await requestContext.run({ user }, async () => {
     await IngestManifestApp.updateOpenCTIManifest('6.8.3');
   });
   logApp.info('[SEEDING] OpenCTI connectors seeding completed');

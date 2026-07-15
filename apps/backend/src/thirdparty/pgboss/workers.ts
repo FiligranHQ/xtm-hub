@@ -3,6 +3,7 @@ import { logApp } from '../../utils/app-logger.util';
 import { DeadLetterWorkers } from './deadletter.workers';
 import { HubspotWorkers } from './hubspot.workers';
 import { MailWorkers } from './mail.workers';
+import { ManifestWorkers } from './manifest.workers';
 import { PgBossMetrics } from './pgboss.metrics';
 import { TelemetryWorkers } from './telemetry.workers';
 
@@ -45,6 +46,7 @@ export const PgBossWorkers = {
     await HubspotWorkers.start(boss);
     await TelemetryWorkers.start(boss);
     await MailWorkers.start(boss);
+    await ManifestWorkers.start(boss);
     await DeadLetterWorkers.start(boss);
     logApp.info('[PgBoss] All workers started');
   },
