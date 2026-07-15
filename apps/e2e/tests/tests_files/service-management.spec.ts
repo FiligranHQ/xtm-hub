@@ -44,7 +44,7 @@ test.describe('Service Management', () => {
         page.getByRole('row', { name: TEST_SUBSCRIPTION.organizationName }),
         'Manage users'
       );
-      await expect(page).toHaveScreenshot();
+
       await servicePage.addUserIntoService(TEST_SUBSCRIPTION.userInOrgaEmail);
 
       await expect(

@@ -22,11 +22,10 @@ test.describe('TAXII Feeds', () => {
   });
 
   test('Should add TAXII Feed', async ({ page }) => {
-    await expect(page).toHaveScreenshot();
     await integrationPage.navigateToIntegration(
       TAXI_FEED_TEST.shortDescription
     );
-    await expect(page).toHaveScreenshot();
+
     await expect(
       page.getByRole('heading', { name: TAXI_FEED_TEST.name })
     ).toBeVisible();

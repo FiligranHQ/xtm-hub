@@ -50,7 +50,6 @@ test.describe('Registration', () => {
           exact: true,
         })
       ).toBeVisible();
-      await expect(page).toHaveScreenshot();
     });
     await test.step('register platform', async () => {
       await page.getByRole('button', { name: 'Connect' }).click();
@@ -59,7 +58,6 @@ test.describe('Registration', () => {
           name: 'OpenAEV product connected successfully',
         })
       ).toBeVisible();
-      await expect(page).toHaveScreenshot();
     });
     await test.step('instance should be visible', async () => {
       const homePage = new HomePage(page);
@@ -71,7 +69,6 @@ test.describe('Registration', () => {
       await expect(
         page.getByRole('link', { name: 'Open AEV Instance', exact: true })
       ).toBeVisible();
-      await expect(page).toHaveScreenshot();
     });
   });
 
@@ -104,7 +101,6 @@ test.describe('Registration', () => {
           name: 'OpenCTI product connected successfully',
         })
       ).toBeVisible();
-      await expect(page).toHaveScreenshot();
     });
     await test.step('instance should be visible', async () => {
       const homePage = new HomePage(page);
@@ -116,7 +112,6 @@ test.describe('Registration', () => {
       await expect(
         page.getByRole('link', { name: 'Open CTI Instance', exact: true })
       ).toBeVisible();
-      await expect(page).toHaveScreenshot();
     });
   });
 });

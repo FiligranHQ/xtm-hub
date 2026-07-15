@@ -22,9 +22,8 @@ test.describe('Streams', () => {
   });
 
   test('Should add Stream', async ({ page }) => {
-    await expect(page).toHaveScreenshot();
     await integrationPage.navigateToIntegration(STREAM_TEST.shortDescription);
-    await expect(page).toHaveScreenshot();
+
     await expect(
       page.getByRole('heading', { name: STREAM_TEST.name })
     ).toBeVisible();

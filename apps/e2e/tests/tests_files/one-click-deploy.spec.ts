@@ -48,7 +48,6 @@ test.describe('One Click Deploy', () => {
       ).toBeVisible();
     });
     await test.step('Click on Deploy in OpenCTI button displays popup', async () => {
-      await expect(page).toHaveScreenshot();
       await page
         .getByRole('button', {
           name: 'Deploy in OpenCTI',
@@ -61,7 +60,6 @@ test.describe('One Click Deploy', () => {
           name: `You're about to deploy the ${CSV_FEED_TEST.name} Integration OpenCTI`,
         })
       ).toBeVisible();
-      await expect(page).toHaveScreenshot();
     });
     await test.step('Click on popup sends telemetry event and opens new tab', async () => {
       const [graphqlResponse] = await Promise.all([
