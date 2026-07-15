@@ -94,7 +94,7 @@ const HeaderOrganizationSwitcher = () => {
             aria-controls={listboxId}
             aria-expanded={openPopover}
             aria-haspopup="listbox"
-            className="w-full justify-between sm:w-55">
+            className="w-full justify-between border-none dark:bg-grayblue-800 bg-gray-150 sm:w-55">
             <span className="truncate">{selectedOrganization?.label}</span>
             <ArrowDropDownIcon
               aria-hidden={true}

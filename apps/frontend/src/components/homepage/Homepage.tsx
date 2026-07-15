@@ -1,8 +1,8 @@
+import BlueBlurDecoration from '@/components/homepage/BlueBlurDecoration';
 import { PublicLocale } from '@/i18n/config';
 import MostDeployedResources from './resources/MostDeployedResources';
 import XtmRoadmap from './roadmap/XtmRoadmap';
 import XtmPlatform from './xtm-platform/XtmPlatform';
-import BlueBlurDecoration from '@/components/homepage/BlueBlurDecoration';
 
 type HomepageProps = { paramsLocale: PublicLocale };
 
