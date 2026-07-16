@@ -20,6 +20,7 @@ interface DialogInformativeProps {
   children: ReactNode;
   variant?: 'default' | 'secondary';
   buttonText?: string;
+  showFooter?: boolean;
 }
 
 export const DialogInformative = ({
@@ -31,6 +32,7 @@ export const DialogInformative = ({
   children,
   variant = 'secondary',
   buttonText = 'Utils.Close',
+  showFooter = true,
 }: DialogInformativeProps) => {
   const t = useTranslations();
 
@@ -52,17 +54,19 @@ export const DialogInformative = ({
           )}
         </DialogHeader>
         {children}
-        <DialogFooter className="justify-end">
-          <DialogClose asChild>
-            <Button
-              className="mt-2 hover:cursor-pointer"
-              type="button"
-              variant={variant}
-              onClick={onButtonClick ?? onClose}>
-              {t(buttonText)}
-            </Button>
-          </DialogClose>
-        </DialogFooter>
+        {showFooter && (
+          <DialogFooter className="justify-end">
+            <DialogClose asChild>
+              <Button
+                className="mt-2 hover:cursor-pointer"
+                type="button"
+                variant={variant}
+                onClick={onButtonClick ?? onClose}>
+                {t(buttonText)}
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

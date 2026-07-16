@@ -1,5 +1,7 @@
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
-import ConnectProductFromHubModal from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
+import ConnectProductFromHubModal, {
+  ConnectProductOriginEnum,
+} from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
 import ChoosePlatformForm from '@/components/service/document/one-click-deploy/ChoosePlatformForm';
 import EeBadge from '@/components/service/document/one-click-deploy/EeBadge';
 import EeLearnMoreSheet from '@/components/service/document/one-click-deploy/EeLearnMoreSheet';
@@ -27,24 +29,24 @@ interface OneClickDeployProps {
 }
 
 const OneClickDeploy = ({
-                          documentData,
-                          requiredProductVersion,
-                        }: OneClickDeployProps) => {
+  documentData,
+  requiredProductVersion,
+}: OneClickDeployProps) => {
   const t = useTranslations();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
-  const {platforms} = useRegisteredPlatforms(platformIdentifier, {
+  const { platforms } = useRegisteredPlatforms(platformIdentifier, {
     onlyActive: true,
   });
 
   const SendOneClickDeployTelemetryMutation = graphql`
-      mutation OneClickDeployMutation($input: OneClickDeployInput!) {
-          sendTelemetryEvent {
-              oneClickDeploy(input: $input) {
-                  result
-                  message
-              }
-          }
+    mutation OneClickDeployMutation($input: OneClickDeployInput!) {
+      sendTelemetryEvent {
+        oneClickDeploy(input: $input) {
+          result
+          message
+        }
       }
+    }
   `;
 
   const [sendOneClickDeployEvent] = useMutation<OneClickDeployMutationType>(
@@ -55,8 +57,8 @@ const OneClickDeploy = ({
   const [isEeSheetOpen, setIsEeSheetOpen] = useState(false);
   const [platformBasePath, setPlatformBasePath] = useState('');
   const [shouldOpenTab, setShouldOpenTab] = useState(false);
-  const {openTab} = useOneClickDeployTab({platformBasePath, documentData});
-  const {platformToBeUpdated, incompatiblePlatformsCount} =
+  const { openTab } = useOneClickDeployTab({ platformBasePath, documentData });
+  const { platformToBeUpdated, incompatiblePlatformsCount } =
     useBuildCompatibilityTranslationKey({
       platforms,
       requiredProductVersion,
@@ -169,13 +171,13 @@ const OneClickDeploy = ({
         {isFeatureEnabled ? (
           <ConnectProductFromHubModal
             isOpen={isOpen}
-            displayConnectedProductSentence
             onOpenChange={(isOpen) => {
               setIsOpen(isOpen);
             }}
             product={
               PlatformMetadataMapping[platformIdentifier]?.name ?? 'OpenCTI'
             }
+            origin={ConnectProductOriginEnum.library}
           />
         ) : (
           <NoPlatformDisplay
@@ -203,7 +205,7 @@ const OneClickDeploy = ({
     <div className="relative inline-flex items-center mr-6">
       {button}
       <div className="absolute inset-y-0 right-0 flex items-center translate-x-1/2 z-10">
-        <EeBadge onClick={openEeSheet}/>
+        <EeBadge onClick={openEeSheet} />
       </div>
     </div>
   ) : (

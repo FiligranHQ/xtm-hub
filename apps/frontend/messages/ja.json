@@ -707,7 +707,9 @@
       "ConnectedProductSentence": "リソースをデプロイするには、接続済みの {product} 製品が必要です",
       "NotAllowedMessage": "この製品を接続する権限がありません。\n製品 {count, plural, =1 {管理者} other {管理者}} に連絡し、代わりに接続してもらうよう依頼してください。",
       "Administrators": "{count, plural, =1 {管理者} other {管理者}}",
-      "ReachAdmin": "管理者にお問い合わせください"
+      "ReachAdmin": "管理者にお問い合わせください",
+      "ConnectProduct": "製品を接続する",
+      "RedirectionMessage": "XTM Hub との接続を承認するため、新しいタブで製品ページにリダイレクトされます。"
     },
     "Back": "{platformIdentifier} に戻る",
     "Confirm": "接続する",

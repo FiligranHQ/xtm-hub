@@ -9,7 +9,9 @@ import { Button } from '@filigran/ui';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useState } from 'react';
 
-import ConnectProductFromHubModal from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
+import ConnectProductFromHubModal, {
+  ConnectProductOriginEnum,
+} from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
 import { useTranslations } from 'next-intl';
 
 interface ConnectProductButtonProps {
@@ -50,6 +52,7 @@ export const ConnectProductButton = ({
           }
         }}
         product={meta.name}
+        origin={ConnectProductOriginEnum.homepage}
       />
     </>
   );
