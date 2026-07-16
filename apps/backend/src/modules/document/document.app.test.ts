@@ -1424,11 +1424,13 @@ describe('loadMostDeployedDocuments', () => {
 
   describe('loadDeployedServiceInstanceIds', () => {
     it('returns only the service instances whose platform/tenant has deployments', async () => {
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue([
-        { id: 'si-1', platform_id: 'platform-1', tenant_id: null },
-        { id: 'si-2', platform_id: 'platform-2', tenant_id: 'tenant-2' },
-        { id: 'si-3', platform_id: 'platform-3', tenant_id: null },
-      ] as never);
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue(
+        [
+          { id: 'si-1', platform_id: 'platform-1', tenant_id: null },
+          { id: 'si-2', platform_id: 'platform-2', tenant_id: 'tenant-2' },
+          { id: 'si-3', platform_id: 'platform-3', tenant_id: null },
+        ] as never
+      );
       vi.spyOn(
         OneClickDeploymentDomain,
         'loadDeployedPlatformKeys'
@@ -1450,6 +1452,43 @@ describe('loadMostDeployedDocuments', () => {
       const result = await DocumentApp.loadDeployedServiceInstanceIds();
 
       expect(result).toEqual([]);
+    });
+
+    it('returns the deployed overview containing documents when the platform has deployments', async () => {
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue([
+        { platform_id: 'platform-1', tenant_id: null },
+      ] as never);
+
+      vi.spyOn(
+        OneClickDeploymentDomain,
+        'loadOneClickDeployments'
+      ).mockResolvedValue([
+        {
+          resource_id: 'doc-1',
+          deployed_at: '2023-01-01T12:00:00Z',
+          user_id: 'user-1',
+        },
+      ] as never);
+
+      vi.spyOn(
+        DocumentDomain,
+        'loadDocumentsWithMetadataByIds'
+      ).mockResolvedValue([{ id: 'doc-1', name: 'Document A' }] as never);
+
+      const result = await DocumentApp.loadLastDeployedOverview(
+        4,
+        'service-instance-1' as ServiceInstanceId
+      );
+
+      expect(result).toEqual({
+        resources: [
+          {
+            document: { id: 'doc-1', name: 'Document A' },
+            deployedAt: '2023-01-01T12:00:00Z',
+            deployedById: 'user-1',
+          },
+        ],
+      });
     });
   });
 });
