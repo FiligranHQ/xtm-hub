@@ -17,10 +17,53 @@ import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('mutation.registerPlatform', () => {
-  it('should decode organizationId from global ID before calling registrationApp and return the token', async () => {
+  it.each`
+    organizationType                      | description
+    ${'Organization'}                     | ${'standard Organization global id'}
+    ${'IsPlatformRegisteredOrganization'} | ${'isPlatformRegistered organization global id'}
+  `(
+    'should decode $description before calling registrationApp and return the token',
+    async ({ organizationType }) => {
+      // Given
+      const rawOrgId = TEST_ORGANIZATIONS.FILIGRAN.ID;
+      const globalOrgId = toGlobalId(organizationType, rawOrgId);
+      const generatedToken = uuidv4();
+      const platformInput = {
+        id: uuidv4(),
+        url: 'http://example.com',
+        title: 'My Platform',
+        contract: PlatformContract.Ee,
+        version: '1.0.0',
+      };
+      const input: RegisterPlatformInput = {
+        organizationId: globalOrgId,
+        platform: platformInput,
+        identifier: PlatformIdentifier.Opencti,
+      };
+      vi.spyOn(RegistrationApp, 'registerPlatform').mockResolvedValue(
+        generatedToken
+      );
+
+      // When
+      const result = await registrationResolver.Mutation!.registerPlatform!(
+        {},
+        { input },
+        contextSimpleUserFiligran2,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      // Then
+      expect(RegistrationApp.registerPlatform).toHaveBeenCalledWith({
+        ...input,
+        organizationId: rawOrgId,
+      });
+      expect(result).toMatchObject({ token: generatedToken });
+    }
+  );
+
+  it('should keep organizationId unchanged when is not encoded', async () => {
     // Given
     const rawOrgId = TEST_ORGANIZATIONS.FILIGRAN.ID;
-    const globalOrgId = toGlobalId('Organization', rawOrgId);
     const generatedToken = uuidv4();
     const platformInput = {
       id: uuidv4(),
@@ -30,7 +73,7 @@ describe('mutation.registerPlatform', () => {
       version: '1.0.0',
     };
     const input: RegisterPlatformInput = {
-      organizationId: globalOrgId,
+      organizationId: rawOrgId,
       platform: platformInput,
       identifier: PlatformIdentifier.Opencti,
     };
@@ -47,10 +90,7 @@ describe('mutation.registerPlatform', () => {
     );
 
     // Then
-    expect(RegistrationApp.registerPlatform).toHaveBeenCalledWith({
-      ...input,
-      organizationId: rawOrgId,
-    });
+    expect(RegistrationApp.registerPlatform).toHaveBeenCalledWith(input);
     expect(result).toMatchObject({ token: generatedToken });
   });
 

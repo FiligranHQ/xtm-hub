@@ -61,25 +61,28 @@ vi.mock('@/lib/graphql-client', () => ({
   getAuthenticatedGraphqlClient: vi.fn().mockResolvedValue({}),
 }));
 
-vi.mock('@/components/homepage/NewestResources', () => ({
+vi.mock('@/components/homepage/resources/NewestResources', () => ({
   default: mockNewestResources,
 }));
 
-vi.mock('@/components/homepage/MostDeployedResources', () => ({
+vi.mock('@/components/homepage/resources/MostDeployedResources', () => ({
   default: mockMostDeployedResources,
 }));
 
-vi.mock('@/components/homepage/PrivateHomepageRoadmapSection', () => ({
+vi.mock('@/components/homepage/roadmap/PrivateHomepageRoadmapSection', () => ({
   default: mockPrivateHomepageRoadmapSection,
 }));
 
-vi.mock('@/components/homepage/XtmPlatform', () => ({
+vi.mock('@/components/homepage/xtm-platform/XtmPlatform', () => ({
   default: mockXtmPlatform,
 }));
 
-vi.mock('@/components/homepage/RegisteredPlatformsSection', () => ({
-  RegisteredPlatformsSection: mockRegisteredPlatformsSection,
-}));
+vi.mock(
+  '@/components/homepage/registered-platforms/RegisteredPlatformsSection',
+  () => ({
+    RegisteredPlatformsSection: mockRegisteredPlatformsSection,
+  })
+);
 
 vi.mock('@/components/homepage/LastDeployedResourcesSection', () => ({
   default: mockLastDeployedResourcesSection,

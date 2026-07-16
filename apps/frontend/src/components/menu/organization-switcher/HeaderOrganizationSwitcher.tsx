@@ -1,7 +1,7 @@
 'use client';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { invalidatePrivateNavigationQueries } from '@/components/menu/private-navigation-query-invalidation';
+import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation/private/private-navigation-query-invalidation';
 import { APP_PATH } from '@/utils/path/constant';
 import { UnfoldMoreIcon } from '@filigran/icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';

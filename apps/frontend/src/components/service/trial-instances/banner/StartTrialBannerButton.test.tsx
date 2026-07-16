@@ -10,10 +10,13 @@ const testState = vi.hoisted(() => ({
   invalidatePrivateNavigationQueries: vi.fn(),
 }));
 
-vi.mock('@/components/menu/private-navigation-query-invalidation', () => ({
-  invalidatePrivateNavigationQueries:
-    testState.invalidatePrivateNavigationQueries,
-}));
+vi.mock(
+  '@/components/menu/navigation/private/private-navigation-query-invalidation',
+  () => ({
+    invalidatePrivateNavigationQueries:
+      testState.invalidatePrivateNavigationQueries,
+  })
+);
 
 vi.mock('@/components/service/trial-instances/TryFiligranProductForm', () => ({
   TryFiligranProductForm: ({

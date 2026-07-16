@@ -1,4 +1,4 @@
-import XtmRoadmap from '@/components/homepage/XtmRoadmap';
+import XtmRoadmap from '@/components/homepage/roadmap/XtmRoadmap';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import ServiceInstancesListQuery, {
   serviceInstancesListQuery,

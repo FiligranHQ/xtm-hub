@@ -14,7 +14,7 @@ vi.mock('@/relay/server-portal-api-fetch', () => ({
   serverFetchGraphQL: mockServerFetchGraphQL,
 }));
 
-vi.mock('@/components/homepage/XtmRoadmap', () => ({
+vi.mock('@/components/homepage/roadmap/XtmRoadmap', () => ({
   default: mockXtmRoadmap,
 }));
 

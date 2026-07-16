@@ -2,8 +2,11 @@ import {
   NAVIGATION_ACTIVE_CLASSES,
   NAVIGATION_GRADIENT_STYLE,
   NAVIGATION_HOVER_CLASSES,
-} from '@/components/menu/navigation-styles';
-import { SectionLink, SectionSubLink } from '@/components/menu/navigation.type';
+} from '@/components/menu/navigation/shared/navigation-styles';
+import {
+  SectionLink,
+  SectionSubLink,
+} from '@/components/menu/navigation/shared/navigation.type';
 import { cn } from '@/lib/utils';
 import { OpenInNewIcon } from '@filigran/icon';
 import {

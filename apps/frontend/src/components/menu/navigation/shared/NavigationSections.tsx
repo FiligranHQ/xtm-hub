@@ -1,12 +1,15 @@
 import {
   NAVIGATION_ACTIVE_CLASSES,
   NAVIGATION_HOVER_CLASSES,
-} from '@/components/menu/navigation-styles';
+} from '@/components/menu/navigation/shared/navigation-styles';
 import type {
   SectionConfig,
   SectionLink,
-} from '@/components/menu/navigation.type';
-import { MenuItemIcon, PublicSubLink } from '@/components/menu/NavigationLinks';
+} from '@/components/menu/navigation/shared/navigation.type';
+import {
+  MenuItemIcon,
+  PublicSubLink,
+} from '@/components/menu/navigation/shared/NavigationLinks';
 import { cn } from '@/lib/utils';
 import {
   Accordion,
