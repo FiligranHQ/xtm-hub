@@ -867,7 +867,7 @@
       },
       "openaev-scenarios": {
         "Name": "OpenAEV Scenarios Library",
-        "Description": "Explore a range of OpenAEV Scenarios shared by the Filigran team."
+        "Description": "Purpose-built library of simulation scenarios that put your defenses to the test. Ready to launch or adapt to your environment."
       },
       "opencti-101": {
         "Name": "OpenCTI 101",
@@ -875,7 +875,7 @@
       },
       "opencti-custom-dashboards": {
         "Name": "OpenCTI Custom Dashboards Library",
-        "Description": "Explore a range of threat management custom dashboards, helping you make the most effective use of OpenCTI."
+        "Description": "Accelerate threat management with a curated library of custom dashboards to give your team the visibility and context to act with confidence."
       },
       "opencti-demo": {
         "Name": "OpenCTI Demo",
@@ -887,7 +887,15 @@
       },
       "opencti-integrations": {
         "Name": "OpenCTI Integrations Library",
-        "Description": "Explore a range of OpenCTI Integrations shared by the Filigran team."
+        "Description": "From commercial and open-source threat feeds to enrichment tools to internal security systems, OpenCTI integrates across your entire stack to keep your intelligence sharp and actionable."
+      },
+      "opencti-custom-views": {
+        "Name": "OpenCTI Custom Views Library",
+        "Description": "A curated collection of ready-to-use custom views, designed to streamline how your team accesses and interprets threat intelligence across OpenCTI."
+      },
+      "opencti-playbooks": {
+        "Name": "OpenCTI Playbooks Library",
+        "Description": "Automate faster with a curated collection of ready-to-use playbooks. Apply out of the box or customize to fit your workflow. One-click deployment for Enterprise Edition users."
       },
       "slack": {
         "Name": "Slack",

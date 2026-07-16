@@ -36,10 +36,10 @@ export const HeroSectionLibrary = ({
 }: HeroSectionLibraryProps) => {
   return (
     <section className="px-m pt-m pb-xxl text-center">
-      <div className="max-w-lg flex flex-col gap-s mx-auto">
+      <div className="flex flex-col gap-s">
         <p className="text-primary font-bold">{eyebrow}</p>
         <h1 className="text-[2rem] font-semibold text-foreground">{name}</h1>
-        <p className="txt-sub-content">{description}</p>
+        <p className="max-w-lg mx-auto txt-sub-content">{description}</p>
       </div>
     </section>
   );
