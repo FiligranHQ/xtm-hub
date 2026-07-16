@@ -12,6 +12,9 @@
 body[data-theme='dark'],
 body[data-theme='Dark'] {
   --hover-background: hsla(0, 0%, 100%, 0.1);
+  --semantic-filigran-brand-primary-transparency: hsl(
+          var(--blue-500) / 0.3
+  );
 }
 @source '../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
 @source '../../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
@@ -30,6 +33,8 @@ body[data-theme='Dark'] {
     font-family: var(--font-ibm-plex-sans), system-ui, sans-serif;
     font-size: var(--text-content-body-base);
     font-weight: var(--font-weight-content-body-base);
+    background: var(--gradient-background);
+    color: var(--color-text-default-primary);
   }
 
   h1,
@@ -46,10 +51,6 @@ body[data-theme='Dark'] {
   }
   h2 {
     @apply txt-subtitle;
-  }
-
-  body {
-    @apply bg-background text-foreground;
   }
 
   ol {

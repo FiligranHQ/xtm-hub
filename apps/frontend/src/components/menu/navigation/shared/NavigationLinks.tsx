@@ -101,7 +101,7 @@ export const PublicSubLink = ({
 };
 
 export const MenuItemIcon = ({ icon: Icon }: { icon: ElementType }) => (
-  <span className="flex w-4 shrink-0 justify-center text-text-default-primary">
+  <span className="text-text-default-secondary flex w-4 shrink-0 justify-center">
     <Icon
       aria-hidden={true}
       focusable={false}
