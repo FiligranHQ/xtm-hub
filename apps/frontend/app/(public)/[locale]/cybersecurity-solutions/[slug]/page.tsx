@@ -8,18 +8,19 @@ import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { formatPersonNames } from '@/utils/format/name';
 import {
-  buildAlternates,
-  getAlternateLocaleTags,
-  getLocaleTag,
+  buildSeoPageMetadata,
+  FILIGRAN_ORGANIZATION_JSONLD,
+  getBaseUrl,
+  stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { localizedCardDescription, localizedCardName } from '@/utils/services';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
-import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -30,12 +31,7 @@ import { PublicDocumentListPageLoader } from './public-document-list-page-loader
  * Fetch the data for the page with caching to avoid multiple requests
  */
 const getPageData = cache(async (slug: string) => {
-  const settingsResponse = await serverFetchGraphQL<settingsQuery>(
-    SettingsQuery,
-    {},
-    { cache: 'force-cache' }
-  );
-  const baseUrl = settingsResponse.data.settings.base_url_front;
+  const baseUrl = await getBaseUrl();
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
@@ -69,48 +65,23 @@ export async function generateMetadata({
   const { locale } = awaitedParams;
 
   const { baseUrl, serviceInstance } = await getPageData(awaitedParams.slug);
-  const tMeta = await getTranslations({ locale, namespace: 'Metadata' });
+  const t = await getTranslations({ locale });
 
   const pathname = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
+  const name = localizedCardName(serviceInstance, t);
+  const description = localizedCardDescription(serviceInstance, t);
 
-  const metadata: Metadata = {
-    title: `${serviceInstance.name} | XTM Hub by Filigran`,
-    description:
-      serviceInstance.description || tMeta('ServiceFallbackDescription'),
-    metadataBase: new URL(baseUrl),
-    openGraph: {
-      title: serviceInstance.name,
-      description: serviceInstance.description!,
-      url: `${baseUrl}/${locale}${pathname}`,
-      type: 'website',
-      siteName: 'XTM Hub by Filigran',
-      locale: getLocaleTag(locale),
-      alternateLocale: getAlternateLocaleTags(locale),
-    },
-    alternates: buildAlternates(pathname, locale),
-    twitter: {
-      card: 'summary_large_image',
-      title: serviceInstance.name,
-      description: serviceInstance.description!,
-    },
-  };
-
-  if (serviceInstance.illustration_document_id) {
-    metadata.openGraph!.images = [
-      {
-        url: `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
-        alt: serviceInstance.name,
-        width: 1200,
-        height: 630,
-        type: 'image/png',
-      },
-    ];
-    metadata.twitter!.images = [
-      `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
-    ];
-  }
-
-  return metadata;
+  return buildSeoPageMetadata({
+    baseUrl,
+    locale,
+    pathname,
+    title: `${name} | XTM Hub`,
+    description,
+    imageAlt: name,
+    imageUrl: serviceInstance.illustration_document_id
+      ? `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`
+      : undefined,
+  });
 }
 
 /**
@@ -131,11 +102,16 @@ const Page = async ({
 
   const localizedServiceUrl = `${baseUrl}/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
 
+  const t = await getTranslations();
+
+  const name = localizedCardName(serviceInstance, t);
+  const description = localizedCardDescription(serviceInstance, t);
+
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: serviceInstance.name,
-    description: serviceInstance.description,
+    name: `${name} | XTM Hub`,
+    description,
     applicationCategory: 'SecurityApplication',
     operatingSystem: 'Web',
     aggregateRating: {
@@ -147,11 +123,7 @@ const Page = async ({
     },
     // datePublished: serviceInstance.created_at,
     // dateModified: serviceInstance.updated_at,
-    provider: {
-      '@type': 'Organization',
-      name: 'Filigran',
-      url: 'https://filigran.io',
-    },
+    provider: FILIGRAN_ORGANIZATION_JSONLD,
     keywords: documents
       .flatMap(
         (document) => document.use_cases?.map((useCase) => useCase.name) || []
@@ -190,11 +162,11 @@ const Page = async ({
     }),
   };
 
-  if (serviceInstance.illustration_document_id) {
-    jsonLd.image = [
-      `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`,
-    ];
-  }
+  jsonLd.image = [
+    serviceInstance.illustration_document_id
+      ? `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`
+      : `${baseUrl}/seo_default.png`,
+  ];
 
   const breadcrumbValue = [
     {
@@ -207,16 +179,13 @@ const Page = async ({
     },
   ];
 
-  const t = await getTranslations();
   const heroSectionProps = getHeroSectionLibraryProps(serviceInstance, t);
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd),
-        }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
       <BreadcrumbNav value={breadcrumbValue} />
 

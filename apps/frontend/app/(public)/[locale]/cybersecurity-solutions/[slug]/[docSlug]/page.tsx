@@ -12,9 +12,10 @@ import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { formatPersonNames } from '@/utils/format/name';
 import {
-  buildAlternates,
-  getAlternateLocaleTags,
-  getLocaleTag,
+  buildSeoPageMetadata,
+  FILIGRAN_ORGANIZATION_JSONLD,
+  getBaseUrl,
+  stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
@@ -34,7 +35,6 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
-import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
@@ -58,12 +58,7 @@ const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
  */
 
 const getPageData = async (serviceSlug: string, docSlug: string) => {
-  const settingsResponse = await serverFetchGraphQL<settingsQuery>(
-    SettingsQuery,
-    {},
-    { cache: undefined, next: { revalidate: 3600 } }
-  );
-  const baseUrl = settingsResponse.data.settings.base_url_front;
+  const baseUrl = await getBaseUrl();
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
@@ -102,13 +97,6 @@ export async function generateMetadata({
     awaitedParams.docSlug
   );
   const t = await getTranslations({ locale });
-  const serviceInformation = getServiceInfo(
-    {
-      id: serviceInstance.id,
-      slug: serviceInstance.slug as ServiceSlug,
-    },
-    document.id
-  );
 
   const pathname = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`;
 
@@ -117,54 +105,33 @@ export async function generateMetadata({
       'Metadata.DocumentFallbackDescriptionGeneric'
   );
 
-  const metadata: Metadata = {
-    title: `${document.name} | ${serviceInstance.name} | XTM Hub by Filigran`,
-    description: document.short_description
-      ? `${document.short_description}${serviceInformation?.description}`
-      : document.description?.substring(0, 160) || fallbackDescription,
-    metadataBase: new URL(baseUrl),
-    openGraph: {
-      title: document!.name!,
-      description: document.short_description
-        ? `${document.short_description}${serviceInformation?.description}`
-        : document.description?.substring(0, 160),
-      url: `${baseUrl}/${locale}${pathname}`,
-      type: 'article',
-      siteName: 'XTM Hub by Filigran',
-      publishedTime: document.created_at,
-      modifiedTime: document.updated_at,
-      authors: document.uploader
-        ? [formatPersonNames(document.uploader)]
-        : undefined,
-      tags: document.use_cases?.map((useCase) => useCase.name),
-      locale: getLocaleTag(locale),
-      alternateLocale: getAlternateLocaleTags(locale),
-    },
-    alternates: buildAlternates(pathname, locale),
-    twitter: {
-      card: 'summary_large_image',
-      title: document!.name!,
-      description: document.short_description
-        ? `${document.short_description}${serviceInformation?.description}`
-        : document.description?.substring(0, 160),
-      creator: '@FiligranHQ',
-    },
-  };
+  const description = document.short_description || fallbackDescription;
 
-  // Ajouter l'image principale si disponible
-  if (document.children_documents!.length > 0) {
-    const imageUrl = `${baseUrl}/document/images/${serviceInstance.id}/${document.children_documents![0]!.id}`;
-    metadata.openGraph!.images = [
-      {
-        url: imageUrl,
-        alt: t('Metadata.ResourcePreviewAlt', { name: document.name ?? '' }),
-        width: 1200,
-        height: 630,
-        type: 'image/png',
-      },
-    ];
-    metadata.twitter!.images = [imageUrl];
-  }
+  const metadata = buildSeoPageMetadata({
+    baseUrl,
+    locale,
+    pathname,
+    title: `${document.name} | XTM Hub`,
+    description,
+    type: 'article',
+    imageAlt: t('Metadata.ResourcePreviewAlt', { name: document.name ?? '' }),
+    imageUrl:
+      document.children_documents!.length > 0
+        ? `${baseUrl}/document/images/${serviceInstance.id}/${document.children_documents![0]!.id}`
+        : undefined,
+  });
+
+  metadata.openGraph = {
+    ...metadata.openGraph,
+    type: 'article',
+    publishedTime: document.created_at,
+    modifiedTime: document.updated_at,
+    authors: document.uploader
+      ? [formatPersonNames(document.uploader)]
+      : undefined,
+    tags: document.use_cases?.map((useCase) => useCase.name),
+  };
+  metadata.twitter = { ...metadata.twitter, creator: '@FiligranHQ' };
 
   return metadata;
 }
@@ -207,11 +174,16 @@ const Page = async ({
   const localizedServicePath = `/${locale}${servicePath}`;
   const pageUrl = `${baseUrl}${servicePath}/${document.slug}`;
 
+  const fallbackDescription = t(
+    FALLBACK_DESCRIPTION_KEYS[serviceInstance.slug as ServiceSlug] ??
+      'Metadata.DocumentFallbackDescriptionGeneric'
+  );
+
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
-    headline: document.name,
-    description: `${document.short_description}${serviceInformation?.description}`,
+    headline: `${document.name} | XTM Hub`,
+    description: document.short_description || fallbackDescription,
     articleBody: document.description,
     author: document.uploader
       ? {
@@ -223,8 +195,7 @@ const Page = async ({
     datePublished: document.created_at,
     dateModified: document.updated_at,
     publisher: {
-      '@type': 'Organization',
-      name: 'Filigran',
+      ...FILIGRAN_ORGANIZATION_JSONLD,
       logo: {
         '@type': 'ImageObject',
         url: `${baseUrl}/images/filigran-logo.png`,
@@ -251,11 +222,11 @@ const Page = async ({
   };
   const mainChild = document.children_documents?.[0];
   const logo = findDocumentLogo(document);
-  if (document.children_documents!.length > 0) {
-    jsonLd.image = document.children_documents!.map(
-      (doc) => `${baseUrl}/document/images/${serviceInstance.id}/${doc.id}`
-    );
-  }
+  jsonLd.image = [
+    document.children_documents!.length > 0
+      ? `${baseUrl}/document/images/${serviceInstance.id}/${document.children_documents![0]!.id}`
+      : `${baseUrl}/seo_default.png`,
+  ];
   const breadcrumbValue = [
     {
       label: 'MenuLinks.Home',
@@ -277,9 +248,7 @@ const Page = async ({
       <>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd),
-          }}
+          dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
         />
         <BreadcrumbNav value={breadcrumbValue} />
         <ShareableResourceConnectorSlugPublic
@@ -297,9 +266,7 @@ const Page = async ({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd),
-        }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
       <BreadcrumbNav value={breadcrumbValue} />
       <div className="flex gap-s pb-l flex-col md:flex-row">
