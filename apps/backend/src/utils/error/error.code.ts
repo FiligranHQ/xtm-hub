@@ -20,7 +20,6 @@ export enum ForbiddenErrorCode {
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
   IntegrationTypeNotManageable = 'INTEGRATION_TYPE_NOT_MANAGEABLE',
   ServiceNotManageable = 'SERVICE_NOT_MANAGEABLE',
-  PlatformNotInOrganization = 'PLATFORM_NOT_IN_ORGANIZATION',
 }
 
 export enum BadRequestErrorCode {

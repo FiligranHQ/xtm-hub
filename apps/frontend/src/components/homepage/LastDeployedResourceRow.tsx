@@ -53,7 +53,6 @@ const LastDeployedResourceRow = ({
   const url = `/app/service/${SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING[resourceType]}/${document.service_instance_id}/${document.id}`;
 
   const deployedByName = resolveDeployedByName(resource.deployedBy);
-  const useCases = document.use_cases ?? [];
 
   return (
     <Link
@@ -70,12 +69,10 @@ const LastDeployedResourceRow = ({
           <span className="content-body-base font-bold truncate">
             {document.name}
           </span>
-          {useCases.length > 0 && (
-            <BadgeOverflowCounter
-              badges={useCases}
-              badgeClassName={BADGE_CLASS}
-            />
-          )}
+          <BadgeOverflowCounter
+            badges={document.use_cases ?? []}
+            badgeClassName={BADGE_CLASS}
+          />
         </div>
       </div>
       <div className="ml-auto shrink-0 flex items-center gap-s text-text-default-secondary txt-small">

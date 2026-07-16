@@ -28,13 +28,15 @@ const LastDeployedResourcesClient = ({
   const t = useTranslations('HomePage.LastDeployedResources');
   const tPlatform = useTranslations('PublicHomePage.XtmPlatform');
 
-  const [selectedPlatformId, setSelectedPlatformId] = useState<string>(
-    platforms[0]?.platformId ?? ''
-  );
+  const [selectedServiceInstanceId, setSelectedServiceInstanceId] =
+    useState<string>(platforms[0]?.serviceInstanceId ?? '');
 
   const { data, isLoading } = useLastDeployedOverviewQueryQuery(
     portalGraphqlClient,
-    { limit: LAST_DEPLOYED_LIMIT, platformId: selectedPlatformId }
+    {
+      limit: LAST_DEPLOYED_LIMIT,
+      serviceInstanceId: selectedServiceInstanceId,
+    }
   );
 
   const resources = data?.lastDeployedOverview.resources ?? [];
@@ -46,16 +48,16 @@ const LastDeployedResourcesClient = ({
           {t('Title')}
         </h2>
         <Select
-          value={selectedPlatformId}
-          onValueChange={setSelectedPlatformId}>
+          value={selectedServiceInstanceId}
+          onValueChange={setSelectedServiceInstanceId}>
           <SelectTrigger className="w-56">
             <SelectValue placeholder={t('ProductPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
             {platforms.map((platform) => (
               <SelectItem
-                key={platform.platformId}
-                value={platform.platformId}>
+                key={platform.serviceInstanceId}
+                value={platform.serviceInstanceId}>
                 {platform.productName
                   ? `${platform.productName} - ${platform.title}`
                   : platform.title}

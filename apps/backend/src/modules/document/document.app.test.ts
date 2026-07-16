@@ -1392,19 +1392,22 @@ describe('loadMostDeployedDocuments', () => {
 
   describe('loadLastDeployedOverview', () => {
     it('throws when the platform is not registered in the organization', async () => {
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue(
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue(
         []
       );
 
       await expect(
-        DocumentApp.loadLastDeployedOverview(4, 'unknown-platform')
-      ).rejects.toThrow(ErrorCode.PlatformNotInOrganization);
+        DocumentApp.loadLastDeployedOverview(
+          4,
+          'unknown-service-instance' as ServiceInstanceId
+        )
+      ).rejects.toThrow(ErrorCode.PlatformNotRegistered);
     });
 
     it('returns an empty overview when the registered platform has no deployments', async () => {
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue(
-        [{ platform_id: 'platform-1' }] as never
-      );
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue([
+        { platform_id: 'platform-1', tenant_id: null },
+      ] as never);
       vi.spyOn(
         OneClickDeploymentDomain,
         'loadOneClickDeployments'
@@ -1412,10 +1415,41 @@ describe('loadMostDeployedDocuments', () => {
 
       const result = await DocumentApp.loadLastDeployedOverview(
         4,
-        'platform-1'
+        'service-instance-1' as ServiceInstanceId
       );
 
       expect(result).toEqual({ resources: [] });
+    });
+  });
+
+  describe('loadDeployedServiceInstanceIds', () => {
+    it('returns only the service instances whose platform/tenant has deployments', async () => {
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue([
+        { id: 'si-1', platform_id: 'platform-1', tenant_id: null },
+        { id: 'si-2', platform_id: 'platform-2', tenant_id: 'tenant-2' },
+        { id: 'si-3', platform_id: 'platform-3', tenant_id: null },
+      ] as never);
+      vi.spyOn(
+        OneClickDeploymentDomain,
+        'loadDeployedPlatformKeys'
+      ).mockResolvedValue([
+        { platform_id: 'platform-1', tenant_id: null },
+        { platform_id: 'platform-2', tenant_id: 'tenant-2' },
+      ]);
+
+      const result = await DocumentApp.loadDeployedServiceInstanceIds();
+
+      expect(result).toEqual(['si-1', 'si-2']);
+    });
+
+    it('returns an empty list when the user has no registered platforms', async () => {
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue(
+        []
+      );
+
+      const result = await DocumentApp.loadDeployedServiceInstanceIds();
+
+      expect(result).toEqual([]);
     });
   });
 });

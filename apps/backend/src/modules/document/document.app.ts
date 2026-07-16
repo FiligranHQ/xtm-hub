@@ -17,12 +17,10 @@ import Document, {
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { ForbiddenAccess } from '../../utils/error/error.util';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
-import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { OneClickDeploymentDomain } from '../telemetry/one-click-deployment.domain';
@@ -671,18 +669,43 @@ export const DocumentApp = {
     );
   },
 
-  loadLastDeployedOverview: async (limit: number, platformId: string) => {
-    const registeredPlatforms =
-      await RegistrationDomain.loadRegisteredPlatforms({});
-    const isPlatformInOrganization = registeredPlatforms.some(
-      (platform) => platform.platform_id === platformId
-    );
-    if (!isPlatformInOrganization) {
-      throw ForbiddenAccess(ErrorCode.PlatformNotInOrganization);
+  loadDeployedServiceInstanceIds: async (): Promise<ServiceInstanceId[]> => {
+    const platforms = await RegistrationDomain.loadRegisteredPlatforms({});
+    if (platforms.length === 0) {
+      return [];
     }
 
+    const deployedKeys =
+      await OneClickDeploymentDomain.loadDeployedPlatformKeys();
+    const deployedKeySet = new Set(
+      deployedKeys.map((key) => `${key.platform_id}::${key.tenant_id ?? ''}`)
+    );
+
+    return platforms
+      .filter(
+        (platform) =>
+          platform.platform_id &&
+          deployedKeySet.has(
+            `${platform.platform_id}::${platform.tenant_id ?? ''}`
+          )
+      )
+      .map((platform) => platform.id as ServiceInstanceId);
+  },
+
+  loadLastDeployedOverview: async (
+    limit: number,
+    serviceInstanceId: ServiceInstanceId
+  ) => {
+    const [platform] =
+      await RegistrationDomain.loadRegisteredPlatform(serviceInstanceId);
+    if (!platform) {
+      throw ForbiddenAccess(ErrorCode.PlatformNotRegistered);
+    }
     const deployments = await OneClickDeploymentDomain.loadOneClickDeployments({
-      filter: { platform_id: platformId },
+      filter: {
+        platform_id: platform.platform_id,
+        tenant_id: platform.tenant_id ?? null,
+      },
       limit,
     });
 
@@ -693,26 +716,12 @@ export const DocumentApp = {
     const uniqueResourceIds = [
       ...new Set(deployments.map((deployment) => deployment.resource_id)),
     ];
-    const uniqueUserIds = [
-      ...new Set(
-        deployments.flatMap((deployment) =>
-          deployment.user_id ? [deployment.user_id] : []
-        )
-      ),
-    ] as UserId[];
 
-    const [documents, users] = await Promise.all([
-      DocumentDomain.loadDocumentsWithMetadataByIds(
-        uniqueResourceIds,
-        ALL_METADATA_KEYS
-      ),
-      uniqueUserIds.length > 0
-        ? UserDomain.loadUsers(uniqueUserIds)
-        : Promise.resolve([]),
-    ]);
-
+    const documents = await DocumentDomain.loadDocumentsWithMetadataByIds(
+      uniqueResourceIds,
+      ALL_METADATA_KEYS
+    );
     const documentById = new Map(documents.map((d) => [d.id as string, d]));
-    const userById = new Map(users.map((u) => [u.id as string, u]));
 
     const resources = deployments.flatMap((deployment) => {
       const document = documentById.get(deployment.resource_id);
@@ -723,9 +732,7 @@ export const DocumentApp = {
         {
           document,
           deployedAt: deployment.deployed_at,
-          deployedBy: deployment.user_id
-            ? (userById.get(deployment.user_id) ?? null)
-            : null,
+          deployedById: deployment.user_id,
         },
       ];
     });

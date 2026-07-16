@@ -1,7 +1,6 @@
 query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
   registeredPlatforms(input: $input) {
     id
-    platform_id
     identifier
     title
     contract

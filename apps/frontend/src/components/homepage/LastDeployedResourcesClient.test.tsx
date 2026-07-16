@@ -43,10 +43,10 @@ const buildResource = () => ({
 });
 
 const buildPlatform = (
-  platformId: string,
+  serviceInstanceId: string,
   title: string,
   productName = 'OpenCTI'
-): LastDeployedPlatform => ({ platformId, title, productName });
+): LastDeployedPlatform => ({ serviceInstanceId, title, productName });
 
 const mockOverview = (resources: unknown[], isLoading = false) =>
   mockUseLastDeployedOverviewQueryQuery.mockReturnValue({
@@ -103,7 +103,7 @@ describe('LastDeployedResourcesClient', () => {
 
     expect(mockUseLastDeployedOverviewQueryQuery).toHaveBeenCalledWith(
       expect.anything(),
-      expect.objectContaining({ platformId: 'platform-1' })
+      expect.objectContaining({ serviceInstanceId: 'platform-1' })
     );
   });
 });

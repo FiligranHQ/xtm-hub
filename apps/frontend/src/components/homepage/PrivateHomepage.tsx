@@ -10,7 +10,10 @@ import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { APP_PATH } from '@/utils/path/constant';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
-import { useRegisteredPlatformsQuery } from '@graphql/generated';
+import {
+  useDeployedServiceInstanceIdsQueryQuery,
+  useRegisteredPlatformsQuery,
+} from '@graphql/generated';
 
 type MeNameData = {
   first_name?: string | null;
@@ -27,12 +30,14 @@ const breadcrumbValue = [
 export const PrivateHomepage = async () => {
   const authenticatedClient = await getAuthenticatedGraphqlClient();
 
-  const [registeredPlatformsData, meData] = await Promise.all([
-    useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
-      input: { identifier: null, onlyActive: true, onlyTrial: null },
-    })(),
-    serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
-  ]);
+  const [registeredPlatformsData, deployedServiceInstanceIdsData, meData] =
+    await Promise.all([
+      useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
+        input: { identifier: null, onlyActive: true, onlyTrial: null },
+      })(),
+      useDeployedServiceInstanceIdsQueryQuery.fetcher(authenticatedClient)(),
+      serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
+    ]);
 
   const platformIdentifiers =
     buildDistinctPlatformIdentifiersFromServiceDefinition(
@@ -61,6 +66,9 @@ export const PrivateHomepage = async () => {
           />
           <LastDeployedResourcesSection
             registeredPlatformsData={registeredPlatformsData}
+            deployedServiceInstanceIds={
+              deployedServiceInstanceIdsData.deployedServiceInstanceIds
+            }
           />
         </div>
         <PrivateHomepageRoadmapSection

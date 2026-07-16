@@ -1625,6 +1625,7 @@ export type Query = {
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
+  deployedServiceInstanceIds: Array<Scalars['ServiceInstanceId']['output']>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
@@ -1746,7 +1747,7 @@ export type QueryIsPlatformRegisteredArgs = {
 
 export type QueryLastDeployedOverviewArgs = {
   limit: Scalars['Int']['input'];
-  platformId: Scalars['String']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -3888,6 +3889,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   countEpicsPerTimeline?: Resolver<Array<ResolversTypes['EpicCountPerTimeline']>, ParentType, ContextType>;
+  deployedServiceInstanceIds?: Resolver<Array<ResolversTypes['ServiceInstanceId']>, ParentType, ContextType>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, RequireFields<QueryDeploymentRequestsAvailableArgs, 'platformIdentifier'>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -3896,7 +3898,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId'>>;
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
-  lastDeployedOverview?: Resolver<ResolversTypes['LastDeployedOverview'], ParentType, ContextType, RequireFields<QueryLastDeployedOverviewArgs, 'limit' | 'platformId'>>;
+  lastDeployedOverview?: Resolver<ResolversTypes['LastDeployedOverview'], ParentType, ContextType, RequireFields<QueryLastDeployedOverviewArgs, 'limit' | 'serviceInstanceId'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   mostDeployedDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryMostDeployedDocumentsArgs, 'limit'>>;
   newestDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryNewestDocumentsArgs, 'limit'>>;

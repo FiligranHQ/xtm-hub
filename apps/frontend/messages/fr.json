@@ -260,7 +260,6 @@
       "ORGANIZATION_SAME_NAME_EXISTS": "Une organisation portant le même nom existe déjà",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "Vous n'êtes pas autorisé à faire ceci",
       "PLATFORM_CONFIGURATION_NOT_FOUND": "La configuration de la plateforme n'a pas été trouvée",
-      "PLATFORM_NOT_IN_ORGANIZATION": "Cette plateforme n'est pas enregistrée dans votre organisation",
       "PLATFORM_NOT_REGISTERED": "Le produit n'est pas connecté",
       "PLATFORM_TYPE_NOT_SUPPORTED": "Le type de plateforme n'est pas pris en charge",
       "REFRESH_USER_PLATFORM_TOKEN_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de l'actualisation du jeton de la plateforme de l'utilisateur",

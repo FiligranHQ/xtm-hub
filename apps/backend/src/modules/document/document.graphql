@@ -216,8 +216,11 @@ type Query {
     limit: Int!
     platformIdentifiers: [PlatformIdentifier!]
   ): [Document!]!
-  lastDeployedOverview(limit: Int!, platformId: String!): LastDeployedOverview!
-    @auth
+  lastDeployedOverview(
+    limit: Int!
+    serviceInstanceId: ServiceInstanceId!
+  ): LastDeployedOverview! @auth
+  deployedServiceInstanceIds: [ServiceInstanceId!]! @auth
 }
 
 type DeployedResource {

@@ -12,7 +12,7 @@ export type LastDeployedOverview =
   LastDeployedOverviewQueryQuery['lastDeployedOverview'];
 
 export type LastDeployedPlatform = {
-  platformId: string;
+  serviceInstanceId: string;
   title: string;
   productName: string;
 };
@@ -29,23 +29,32 @@ const resolveProductName = (
 
 type LastDeployedResourcesSectionProps = {
   registeredPlatformsData: RegisteredPlatformsQuery;
+  deployedServiceInstanceIds: string[];
 };
 
 export const LastDeployedResourcesSection = ({
   registeredPlatformsData,
+  deployedServiceInstanceIds,
 }: LastDeployedResourcesSectionProps) => {
+  const deployedServiceInstanceIdSet = new Set(deployedServiceInstanceIds);
+
   const platforms: LastDeployedPlatform[] =
-    registeredPlatformsData.registeredPlatforms.flatMap((platform) =>
-      platform.platform_id
-        ? [
-            {
-              platformId: platform.platform_id,
-              title: platform.title,
-              productName: resolveProductName(platform.identifier),
-            },
-          ]
-        : []
-    );
+    registeredPlatformsData.registeredPlatforms.flatMap((platform) => {
+      const serviceInstanceId = platform.subscription?.service_instance_id;
+      if (
+        !serviceInstanceId ||
+        !deployedServiceInstanceIdSet.has(serviceInstanceId)
+      ) {
+        return [];
+      }
+      return [
+        {
+          serviceInstanceId,
+          title: platform.title,
+          productName: resolveProductName(platform.identifier),
+        },
+      ];
+    });
 
   if (platforms.length === 0) {
     return null;
