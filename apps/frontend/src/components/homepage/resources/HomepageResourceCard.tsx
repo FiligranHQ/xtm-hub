@@ -48,11 +48,11 @@ const HomepageResourceCard = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <p className="text-muted-foreground text-xs line-clamp-2">
+          <p className="content-body-compact line-clamp-2">
             {shortDescription}
           </p>
         </TooltipTrigger>
-        <TooltipContent className="bg-gray-50 max-w-sm whitespace-normal">
+        <TooltipContent className="bg-elevation-bg max-w-sm whitespace-normal">
           {shortDescription}
         </TooltipContent>
       </Tooltip>

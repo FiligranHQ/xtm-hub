@@ -81,9 +81,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
                 {isHomePageV2Enabled ? <PrivateMenu /> : <Menu />}
                 <div className="flex flex-col w-full h-full min-h-0 min-w-0">
                   <HeaderComponent />
-                  <ContentLayout mobileResponsive={isHomePageV2Enabled}>
-                    {children}
-                  </ContentLayout>
+                  <ContentLayout>{children}</ContentLayout>
                 </div>
               </div>
             </div>

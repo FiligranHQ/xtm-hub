@@ -2,6 +2,7 @@
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
+import { ShareableResourceCardDescription } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardDescription';
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
@@ -64,9 +65,6 @@ const ShareableResourceCard = ({
   const cardHeightClass = isHomePageV2Enabled
     ? 'h-[300px] sm:h-[348px]'
     : 'h-[348px]';
-  const descriptionClampClass = isHomePageV2Enabled
-    ? '[-webkit-line-clamp:3] sm:[-webkit-line-clamp:5]'
-    : '[-webkit-line-clamp:5]';
 
   return (
     <li
@@ -83,10 +81,9 @@ const ShareableResourceCard = ({
         />
         {isConnector ? (
           <div className="p-m flex flex-col gap-s flex-1 min-h-0">
-            <p
-              className={`text-muted-foreground text-sm overflow-hidden [display:-webkit-box] ${descriptionClampClass} [-webkit-box-orient:vertical]`}>
-              {document.short_description}
-            </p>
+            <ShareableResourceCardDescription
+              description={document.short_description}
+            />
             <BadgeOverflowCounter
               badges={document.use_cases as BadgeOverflow[]}
               className="z-2 shrink-0"
@@ -94,10 +91,9 @@ const ShareableResourceCard = ({
           </div>
         ) : (
           <div className="p-m">
-            <p
-              className={`text-muted-foreground text-sm overflow-hidden [display:-webkit-box] ${descriptionClampClass} [-webkit-box-orient:vertical]`}>
-              {document.short_description}
-            </p>
+            <ShareableResourceCardDescription
+              description={document.short_description}
+            />
           </div>
         )}
       </Link>
