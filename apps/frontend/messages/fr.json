@@ -873,7 +873,7 @@
       },
       "openaev-scenarios": {
         "Name": "Bibliothèque de scénarios OpenAEV",
-        "Description": "Explorez une sélection de scénarios OpenAEV partagés par l'équipe Filigran."
+        "Description": "Une bibliothèque de scénarios de simulation conçus pour mettre vos défenses à l'épreuve. Prêts à être lancés ou adaptés à votre environnement."
       },
       "opencti-101": {
         "Name": "OpenCTI 101",
@@ -881,7 +881,7 @@
       },
       "opencti-custom-dashboards": {
         "Name": "Bibliothèque de tableaux de bord OpenCTI",
-        "Description": "Explorez une sélection de tableaux de bord personnalisés pour la gestion des menaces, conçus pour tirer le meilleur parti d'OpenCTI."
+        "Description": "Accélérez la gestion des menaces avec une bibliothèque organisée de tableaux de bord personnalisés, qui donne à votre équipe la visibilité et le contexte nécessaires pour agir avec confiance."
       },
       "opencti-demo": {
         "Name": "Démo OpenCTI",
@@ -893,7 +893,15 @@
       },
       "opencti-integrations": {
         "Name": "Bibliothèque d'intégrations OpenCTI",
-        "Description": "Explorez une sélection d'intégrations OpenCTI partagées par l'équipe Filigran."
+        "Description": "Des flux de menaces commerciaux et open source aux outils d’enrichissement en passant par vos systèmes de sécurité internes, OpenCTI s’intègre à l’ensemble de votre stack pour rendre votre threat intelligence plus précise et exploitable."
+      },
+      "opencti-custom-views": {
+        "Name": "Bibliothèque de vues personnalisées OpenCTI",
+        "Description": "Une collection sélectionnée de vues personnalisées prêtes à l'emploi, conçues pour simplifier la façon dont votre équipe accède aux renseignements sur les menaces et les interprète dans OpenCTI."
+      },
+      "opencti-playbooks": {
+        "Name": "Bibliothèque de playbooks OpenCTI",
+        "Description": "Accélérez l'automatisation avec une collection sélectionnée de playbooks prêts à l'emploi. Utilisez-les tels quels ou adaptez-les à votre workflow. Déploiement en un clic pour les utilisateurs Enterprise Edition."
       },
       "slack": {
         "Name": "Slack",
