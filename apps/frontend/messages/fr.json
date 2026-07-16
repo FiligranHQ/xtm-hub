@@ -714,7 +714,9 @@
       "ConnectedProductSentence": "Pour déployer une ressource, vous devez disposer d'un produit connecté",
       "NotAllowedMessage": "Vous ne disposez pas des autorisations nécessaires pour connecter un produit. \nVeuillez contacter votre {count, plural, =1 {administrateur} other {administrateurs}} afin qu'il se charge de connecter le produit en votre nom.",
       "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
-      "ReachAdmin": "Contactez votre administrateur"
+      "ReachAdmin": "Contactez votre administrateur",
+      "ConnectProduct": "Connectez votre produit",
+      "RedirectionMessage": "Vous serez redirigé vers votre produit dans un nouvel onglet afin d'autoriser la connexion avec XTM Hub."
     },
     "Back": "Retour à {platformIdentifier}",
     "Confirm": "Connecter",
@@ -728,6 +730,7 @@
       },
       "Description": "Cliquez ici pour accéder à votre produit privé.",
       "ProductName": "Nom du produit",
+      "Product": "Produit",
       "ProductURL": "URL du produit",
       "StartDate": "Date de début",
       "EndDate": "Date de fin",

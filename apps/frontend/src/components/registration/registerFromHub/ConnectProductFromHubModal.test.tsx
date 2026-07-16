@@ -1,8 +1,10 @@
-import ConnectProductFromHubModal from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
+import ConnectProductFromHubModal, {
+  ConnectProductOrigin,
+} from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
 import testRender from '@/utils/test/test-render';
-import { PlatformIdentifier } from '@graphql/generated';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CONNECTABLE_PRODUCTS } from './ConnectFromHubForm';
 
 const { mockUseGranted, mockUseConnectProductOrganizationAdminsQuery } =
   vi.hoisted(() => ({
@@ -21,7 +23,10 @@ vi.mock('@graphql/generated', async (importOriginal) => ({
 }));
 
 describe('ConnectProductFromHubModal', () => {
+  const onOpenChange = vi.fn();
+
   beforeEach(() => {
+    onOpenChange.mockReset();
     mockUseGranted.mockReset();
     mockUseConnectProductOrganizationAdminsQuery.mockReset();
     mockUseConnectProductOrganizationAdminsQuery.mockReturnValue({
@@ -39,8 +44,8 @@ describe('ConnectProductFromHubModal', () => {
     testRender(
       <ConnectProductFromHubModal
         isOpen={true}
-        onOpenChange={vi.fn()}
-        product={PlatformIdentifier.Opencti}
+        onOpenChange={onOpenChange}
+        origin={ConnectProductOrigin.library}
       />
     );
 
@@ -48,7 +53,7 @@ describe('ConnectProductFromHubModal', () => {
       screen.getByText('Register.ConnectFromHub.PermissionRequired')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('Register.ConnectFromHub.NotAllowedMessage')
+      screen.getByText(/Register\.ConnectFromHub\.NotAllowedMessage/)
     ).toBeInTheDocument();
     expect(screen.getByText('admin1@example.com')).toBeInTheDocument();
     expect(screen.getByText('admin2@example.com')).toBeInTheDocument();
@@ -65,20 +70,71 @@ describe('ConnectProductFromHubModal', () => {
     testRender(
       <ConnectProductFromHubModal
         isOpen={true}
-        onOpenChange={vi.fn()}
-        product={PlatformIdentifier.Opencti}
+        onOpenChange={onOpenChange}
+        origin={ConnectProductOrigin.library}
       />
     );
 
-    expect(screen.getAllByText('allowedMessage')).toHaveLength(2);
+    expect(
+      screen.getByText('Register.ConnectFromHub.ConnectProduct')
+    ).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toHaveTextContent(
+      CONNECTABLE_PRODUCTS.OpenCTI
+    );
+    expect(
+      screen.getByPlaceholderText('Register.Details.ProductURL')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Utils.Continue' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', {
+        name: 'Register.ConnectFromHub.ReachAdmin',
+      })
+    ).not.toBeInTheDocument();
+  });
+
+  it('submits form and opens redirect URL when user can manage organization', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    mockUseGranted.mockReturnValueOnce(true).mockReturnValueOnce(false);
+
+    const { user } = testRender(
+      <ConnectProductFromHubModal
+        isOpen={true}
+        onOpenChange={onOpenChange}
+        origin={ConnectProductOrigin.homepage}
+      />
+    );
+
+    const productSelect = document.querySelector(
+      'select[name="product"]'
+    ) as HTMLSelectElement | null;
+    expect(productSelect).not.toBeNull();
+    fireEvent.change(productSelect!, {
+      target: { value: CONNECTABLE_PRODUCTS.OpenCTI },
+    });
+    await user.type(
+      screen.getByPlaceholderText('Register.Details.ProductURL'),
+      'https://opencti.example.com'
+    );
+    await user.click(screen.getByRole('button', { name: 'Utils.Continue' }));
+
+    await waitFor(() => {
+      expect(openSpy).toHaveBeenCalledWith(
+        'https://opencti.example.com/redirect/connect-xtm-hub?from=xtmhub_homepage',
+        '_blank',
+        'noopener,noreferrer'
+      );
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
   });
 
   it('disables administrators query when modal is closed', () => {
     testRender(
       <ConnectProductFromHubModal
         isOpen={false}
-        onOpenChange={vi.fn()}
-        product={PlatformIdentifier.Opencti}
+        onOpenChange={onOpenChange}
+        origin={ConnectProductOrigin.library}
       />
     );
 
