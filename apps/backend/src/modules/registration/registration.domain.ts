@@ -283,10 +283,10 @@ export const RegistrationDomain = {
           this.whereExists(function () {
             this.from('OneClickDeployment')
               .whereRaw(
-                '"OneClickDeployment".platform_id = "PlatformConfiguration".platform_id::text'
+                '"OneClickDeployment".platform_id = "PlatformConfiguration".platform_id'
               )
               .whereRaw(
-                '"OneClickDeployment".tenant_id IS NOT DISTINCT FROM "PlatformConfiguration".tenant_id::text'
+                '"OneClickDeployment".tenant_id IS NOT DISTINCT FROM "PlatformConfiguration".tenant_id'
               );
           });
         }

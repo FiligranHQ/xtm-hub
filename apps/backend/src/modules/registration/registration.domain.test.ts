@@ -639,6 +639,7 @@ describe('registration domain', () => {
       });
     });
     afterEach(async () => {
+      await TestHelper.oneClickDeployment.deleteAll();
       await TestHelper.deploymentRequest.delete({});
       await PlatformConfigurationDomain.deleteConfigurationBy({});
       await ServiceInstanceDomain.deleteServiceInstanceBy({});
@@ -813,6 +814,22 @@ describe('registration domain', () => {
 
       expect(platforms).toHaveLength(1);
       expect(platforms[0]?.platform_id).toBe(platformId);
+    });
+    it('should return only platforms with deployed resources when hasDeployedResources is true', async () => {
+      await TestHelper.oneClickDeployment.insert({
+        resource_id: uuidv4(),
+        platform_id: platformId,
+        tenant_id: null,
+        deployed_at: new Date(),
+      });
+
+      const platforms = await RegistrationDomain.loadRegisteredPlatforms({
+        hasDeployedResources: true,
+      });
+
+      const platformIds = platforms.map((platform) => platform.platform_id);
+      expect(platformIds).toContain(platformId);
+      expect(platformIds).not.toContain(openAEVplatformId);
     });
   });
 });

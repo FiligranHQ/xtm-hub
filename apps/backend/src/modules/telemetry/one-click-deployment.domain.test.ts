@@ -4,8 +4,8 @@ import { TestHelper } from '../../../tests/helper/test.helper';
 import { OneClickDeploymentInitializer } from '../../model/kanel/public/OneClickDeployment';
 import { OneClickDeploymentDomain } from './one-click-deployment.domain';
 
-const PLATFORM_A = 'platform-a';
-const PLATFORM_B = 'platform-b';
+const PLATFORM_A = uuidv4();
+const PLATFORM_B = uuidv4();
 
 const buildRow = (
   overrides: Partial<OneClickDeploymentInitializer> = {}
