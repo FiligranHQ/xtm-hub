@@ -3,6 +3,7 @@ import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { cache } from 'react';
 
 const LOCALE_TAG_MAP: Record<PublicLocale, string> = {
   en: 'en_US',
@@ -19,14 +20,14 @@ export const FILIGRAN_ORGANIZATION_JSONLD = {
 export const stringifyJsonLd = (data: Record<string, unknown>): string =>
   JSON.stringify(data).replace(/</g, '\\u003c');
 
-export const getBaseUrl = async (): Promise<string> => {
+export const getBaseUrl = cache(async (): Promise<string> => {
   const settingsResponse = await serverFetchGraphQL<settingsQuery>(
     SettingsQuery,
     {},
     { cache: 'force-cache' }
   );
   return settingsResponse.data.settings.base_url_front;
-};
+});
 
 const localizedPath = (locale: PublicLocale, pathname: string) => {
   const path = pathname.startsWith('/') ? pathname : `/${pathname}`;

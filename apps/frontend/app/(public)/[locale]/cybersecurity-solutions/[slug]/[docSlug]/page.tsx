@@ -40,6 +40,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
     'Metadata.DocumentFallbackDescriptionIntegration',
@@ -57,7 +58,7 @@ const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
  * Fetch the data for the page with caching to avoid multiple requests
  */
 
-const getPageData = async (serviceSlug: string, docSlug: string) => {
+const getPageData = cache(async (serviceSlug: string, docSlug: string) => {
   const baseUrl = await getBaseUrl();
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
@@ -79,7 +80,7 @@ const getPageData = async (serviceSlug: string, docSlug: string) => {
   }
 
   return { baseUrl, serviceInstance, document };
-};
+});
 
 /**
  * Generate the metadata for the page

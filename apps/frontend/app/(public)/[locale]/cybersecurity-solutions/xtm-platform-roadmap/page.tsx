@@ -15,9 +15,10 @@ import SeoServiceInstanceQuery, {
 } from '@generated/seoServiceInstanceQuery.graphql';
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { cache } from 'react';
 import { PublicEpicListPageLoader } from './public-epic-list-page-loader';
 
-const getPageData = async () => {
+const getPageData = cache(async () => {
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
     { slug: 'xtm-platform-roadmap' },
@@ -27,7 +28,7 @@ const getPageData = async () => {
     .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
   const baseUrl = await getBaseUrl();
   return { baseUrl, serviceInstance };
-};
+});
 
 /**
  * Generate the metadata for the page
