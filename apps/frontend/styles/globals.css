@@ -7,14 +7,13 @@
   --semantic-filigran-brand-primary-transparency: hsl(
     var(--darkblue-700) / 0.3
   );
+  --hover-background: var(--color-gray-150);
 }
 .dark,
 body[data-theme='dark'],
 body[data-theme='Dark'] {
   --hover-background: hsla(0, 0%, 100%, 0.1);
-  --semantic-filigran-brand-primary-transparency: hsl(
-          var(--blue-500) / 0.3
-  );
+  --semantic-filigran-brand-primary-transparency: hsl(var(--blue-500) / 0.3);
 }
 @source '../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
 @source '../../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';

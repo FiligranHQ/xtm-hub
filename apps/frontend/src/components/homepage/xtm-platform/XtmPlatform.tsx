@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import Image from 'next/image';
 import ConnectProductButton from './ConnectProductButton';
+import XtmPlatformImage from './XtmPlatformImage';
 
 type XtmPlatformProps = {
   welcomeName?: string;
@@ -8,7 +8,6 @@ type XtmPlatformProps = {
 
 const XtmPlatform = async ({ welcomeName }: XtmPlatformProps = {}) => {
   const t = await getTranslations('PublicHomePage.XtmPlatform');
-
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-l items-center">
       <div className="flex flex-col gap-l">
@@ -25,20 +24,7 @@ const XtmPlatform = async ({ welcomeName }: XtmPlatformProps = {}) => {
       </div>
 
       <div className="rounded-lg overflow-hidden flex items-center justify-end">
-        <Image
-          src="/xtm_platform.png"
-          alt={t('ImageAlt')}
-          width={1370}
-          height={680}
-          sizes="(max-width: 768px) 100vw, 50vw"
-          style={{
-            width: 'auto',
-            height: '100%',
-            maxHeight: '280px',
-            marginTop: '-10px',
-          }}
-          priority
-        />
+        <XtmPlatformImage />
       </div>
     </section>
   );

@@ -53,10 +53,10 @@ const ShareableResourceCard = ({
   publicPath = false,
 }: ShareableResourceCardProps) => {
   const { save } = useScrollPosition();
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const handleClick = () => {
     save();
   };
+  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const isConnector =
     docHasMetadata(document, DocumentMetadataKeyCode.IntegrationType) &&
     !!document.integration_type &&

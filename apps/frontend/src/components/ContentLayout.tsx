@@ -16,7 +16,9 @@ export const ContentLayout = ({ children }: ContentLayoutProps) => {
       <main
         className={cn(
           'h-full w-full overflow-y-auto ',
-          isHomePageV2Enabled ? 'bg-gradient-background overflow-y-auto p-3 sm:p-6' : 'bg-background p-6'
+          isHomePageV2Enabled
+            ? 'bg-gradient-background overflow-y-auto p-3 sm:p-6'
+            : 'bg-background p-6'
         )}>
         {children}
       </main>
