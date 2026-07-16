@@ -8,7 +8,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
   mockRegisteredPlatformsFetcher,
-  mockDeployedServiceInstanceIdsFetcher,
   mockServiceInstancesFetcher,
   mockServerFetchGraphQL,
   mockNewestResources,
@@ -19,7 +18,6 @@ const {
   mockLastDeployedResourcesSection,
 } = vi.hoisted(() => ({
   mockRegisteredPlatformsFetcher: vi.fn(),
-  mockDeployedServiceInstanceIdsFetcher: vi.fn(),
   mockServiceInstancesFetcher: vi.fn(),
   mockServerFetchGraphQL: vi.fn(),
   mockNewestResources: vi.fn(() => <div data-testid="newest-resources" />),
@@ -44,9 +42,6 @@ vi.mock('@graphql/generated', async (importOriginal) => {
     ...actual,
     useRegisteredPlatformsQuery: {
       fetcher: mockRegisteredPlatformsFetcher,
-    },
-    useDeployedServiceInstanceIdsQueryQuery: {
-      fetcher: mockDeployedServiceInstanceIdsFetcher,
     },
     useServiceInstancesListQuery: {
       fetcher: mockServiceInstancesFetcher,
@@ -106,10 +101,6 @@ const mockRegisteredPlatformsResponses = (registeredPlatforms: unknown[]) => {
 describe('PrivateHomepage', () => {
   beforeEach(() => {
     mockRegisteredPlatformsFetcher.mockClear();
-    mockDeployedServiceInstanceIdsFetcher.mockClear();
-    mockDeployedServiceInstanceIdsFetcher.mockReturnValue(() =>
-      Promise.resolve({ deployedServiceInstanceIds: [] })
-    );
     mockServiceInstancesFetcher.mockClear();
     mockServerFetchGraphQL.mockClear();
     mockServerFetchGraphQL.mockResolvedValue({ data: { me: null } });
@@ -146,13 +137,18 @@ describe('PrivateHomepage', () => {
     const element = await PrivateHomepage();
     render(element);
 
-    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(1);
+    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
     expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsFetcher.mock.calls[0]?.[1]).toEqual({
-      input: { identifier: null, onlyActive: true, onlyTrial: null },
+      input: {
+        identifier: null,
+        onlyActive: true,
+        onlyTrial: null,
+        hasDeployedResources: null,
+      },
     });
 
     expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
@@ -217,7 +213,7 @@ describe('PrivateHomepage', () => {
     const element = await PrivateHomepage();
     render(element);
 
-    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(1);
+    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
     expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
     expect(mockXtmPlatform).not.toHaveBeenCalled();
@@ -265,7 +261,7 @@ describe('PrivateHomepage', () => {
     const element = await PrivateHomepage();
     render(element);
 
-    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(1);
+    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
     expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
     expect(mockXtmPlatform).toHaveBeenCalledWith(

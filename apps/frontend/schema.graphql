@@ -117,7 +117,6 @@ type Query {
   mostDeployedDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   newestDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   lastDeployedOverview(limit: Int!, serviceInstanceId: ServiceInstanceId!): LastDeployedOverview!
-  deployedServiceInstanceIds: [ServiceInstanceId!]!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -1060,6 +1059,7 @@ input RegisteredPlatformsInput {
   identifier: PlatformIdentifier
   onlyActive: Boolean
   onlyTrial: Boolean
+  hasDeployedResources: Boolean
 }
 
 input RegisteredPlatformInput {

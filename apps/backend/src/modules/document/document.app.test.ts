@@ -27,7 +27,7 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
-import { RegistrationDomain } from '../registration/registration.domain';
+import { RegistrationApp } from '../registration/registration.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import {
@@ -38,7 +38,6 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
 } from '../shareable-resource/opencti/integration/integration.model';
-import { OneClickDeploymentDomain } from '../telemetry/one-click-deployment.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
@@ -1392,8 +1391,8 @@ describe('loadMostDeployedDocuments', () => {
 
   describe('loadLastDeployedOverview', () => {
     it('throws when the platform is not registered in the organization', async () => {
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue(
-        []
+      vi.spyOn(RegistrationApp, 'loadRegisteredPlatform').mockResolvedValue(
+        null
       );
 
       await expect(
@@ -1405,13 +1404,11 @@ describe('loadMostDeployedDocuments', () => {
     });
 
     it('returns an empty overview when the registered platform has no deployments', async () => {
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue([
-        { platform_id: 'platform-1', tenant_id: null },
-      ] as never);
-      vi.spyOn(
-        OneClickDeploymentDomain,
-        'loadOneClickDeployments'
-      ).mockResolvedValue([]);
+      vi.spyOn(RegistrationApp, 'loadRegisteredPlatform').mockResolvedValue({
+        platform_id: 'platform-1',
+        tenant_id: null,
+      } as never);
+      vi.spyOn(TelemetryApp, 'getLastDeployments').mockResolvedValue([]);
 
       const result = await DocumentApp.loadLastDeployedOverview(
         4,
@@ -1420,49 +1417,14 @@ describe('loadMostDeployedDocuments', () => {
 
       expect(result).toEqual({ resources: [] });
     });
-  });
-
-  describe('loadDeployedServiceInstanceIds', () => {
-    it('returns only the service instances whose platform/tenant has deployments', async () => {
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue(
-        [
-          { id: 'si-1', platform_id: 'platform-1', tenant_id: null },
-          { id: 'si-2', platform_id: 'platform-2', tenant_id: 'tenant-2' },
-          { id: 'si-3', platform_id: 'platform-3', tenant_id: null },
-        ] as never
-      );
-      vi.spyOn(
-        OneClickDeploymentDomain,
-        'loadDeployedPlatformKeys'
-      ).mockResolvedValue([
-        { platform_id: 'platform-1', tenant_id: null },
-        { platform_id: 'platform-2', tenant_id: 'tenant-2' },
-      ]);
-
-      const result = await DocumentApp.loadDeployedServiceInstanceIds();
-
-      expect(result).toEqual(['si-1', 'si-2']);
-    });
-
-    it('returns an empty list when the user has no registered platforms', async () => {
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatforms').mockResolvedValue(
-        []
-      );
-
-      const result = await DocumentApp.loadDeployedServiceInstanceIds();
-
-      expect(result).toEqual([]);
-    });
 
     it('returns the deployed overview containing documents when the platform has deployments', async () => {
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue([
-        { platform_id: 'platform-1', tenant_id: null },
-      ] as never);
+      vi.spyOn(RegistrationApp, 'loadRegisteredPlatform').mockResolvedValue({
+        platform_id: 'platform-1',
+        tenant_id: null,
+      } as never);
 
-      vi.spyOn(
-        OneClickDeploymentDomain,
-        'loadOneClickDeployments'
-      ).mockResolvedValue([
+      vi.spyOn(TelemetryApp, 'getLastDeployments').mockResolvedValue([
         {
           resource_id: 'doc-1',
           deployed_at: '2023-01-01T12:00:00Z',

@@ -31,13 +31,4 @@ export const OneClickDeploymentDomain = {
         }
       });
   },
-
-  loadDeployedPlatformKeys: async (): Promise<
-    Pick<OneClickDeployment, 'platform_id' | 'tenant_id'>[]
-  > => {
-    return db<OneClickDeployment>('OneClickDeployment').distinct(
-      'platform_id',
-      'tenant_id'
-    );
-  },
 };

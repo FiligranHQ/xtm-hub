@@ -5,7 +5,9 @@ import {
 } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
-import { OneClickDeploymentInitializer } from '../../model/kanel/public/OneClickDeployment';
+import OneClickDeployment, {
+  OneClickDeploymentInitializer,
+} from '../../model/kanel/public/OneClickDeployment';
 import { UserId } from '../../model/kanel/public/User';
 import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
@@ -182,6 +184,17 @@ export const TelemetryApp = {
       { buckets: Array<{ key: string; doc_count: number }> } | undefined;
 
     return agg?.buckets.map((bucket) => bucket.key) ?? [];
+  },
+
+  async getLastDeployments(
+    platformId: string,
+    tenantId: string | null,
+    limit: number
+  ): Promise<OneClickDeployment[]> {
+    return OneClickDeploymentDomain.loadOneClickDeployments({
+      filter: { platform_id: platformId, tenant_id: tenantId },
+      limit,
+    });
   },
 
   async countEventsByDocumentId(

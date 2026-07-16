@@ -220,7 +220,6 @@ type Query {
     limit: Int!
     serviceInstanceId: ServiceInstanceId!
   ): LastDeployedOverview! @auth
-  deployedServiceInstanceIds: [ServiceInstanceId!]! @auth
 }
 
 type DeployedResource {

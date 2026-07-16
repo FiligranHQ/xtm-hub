@@ -21,9 +21,8 @@ import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { ForbiddenAccess } from '../../utils/error/error.util';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
-import { RegistrationDomain } from '../registration/registration.domain';
+import { RegistrationApp } from '../registration/registration.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
-import { OneClickDeploymentDomain } from '../telemetry/one-click-deployment.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
@@ -669,45 +668,20 @@ export const DocumentApp = {
     );
   },
 
-  loadDeployedServiceInstanceIds: async (): Promise<ServiceInstanceId[]> => {
-    const platforms = await RegistrationDomain.loadRegisteredPlatforms({});
-    if (platforms.length === 0) {
-      return [];
-    }
-
-    const deployedKeys =
-      await OneClickDeploymentDomain.loadDeployedPlatformKeys();
-    const deployedKeySet = new Set(
-      deployedKeys.map((key) => `${key.platform_id}::${key.tenant_id ?? ''}`)
-    );
-
-    return platforms
-      .filter(
-        (platform) =>
-          platform.platform_id &&
-          deployedKeySet.has(
-            `${platform.platform_id}::${platform.tenant_id ?? ''}`
-          )
-      )
-      .map((platform) => platform.id as ServiceInstanceId);
-  },
-
   loadLastDeployedOverview: async (
     limit: number,
     serviceInstanceId: ServiceInstanceId
   ) => {
-    const [platform] =
-      await RegistrationDomain.loadRegisteredPlatform(serviceInstanceId);
+    const platform =
+      await RegistrationApp.loadRegisteredPlatform(serviceInstanceId);
     if (!platform) {
       throw ForbiddenAccess(ErrorCode.PlatformNotRegistered);
     }
-    const deployments = await OneClickDeploymentDomain.loadOneClickDeployments({
-      filter: {
-        platform_id: platform.platform_id,
-        tenant_id: platform.tenant_id ?? null,
-      },
-      limit,
-    });
+    const deployments = await TelemetryApp.getLastDeployments(
+      platform.platform_id,
+      platform.tenant_id ?? null,
+      limit
+    );
 
     if (deployments.length === 0) {
       return { resources: [] };

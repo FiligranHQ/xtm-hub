@@ -278,13 +278,6 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
-    deployedServiceInstanceIds: async () => {
-      try {
-        return await DocumentApp.loadDeployedServiceInstanceIds();
-      } catch (error) {
-        throw mapToGraphQLError(error);
-      }
-    },
   },
 };
 

@@ -1633,7 +1633,6 @@ export type Query = {
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
-  deployedServiceInstanceIds: Array<Scalars['ServiceInstanceId']['output']>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
@@ -2012,6 +2011,7 @@ export type RegisteredPlatformInput = {
 };
 
 export type RegisteredPlatformsInput = {
+  hasDeployedResources: InputMaybe<Scalars['Boolean']['input']>;
   identifier: InputMaybe<PlatformIdentifier>;
   onlyActive: InputMaybe<Scalars['Boolean']['input']>;
   onlyTrial: InputMaybe<Scalars['Boolean']['input']>;
@@ -2738,11 +2738,6 @@ export type NewestDocumentsQueryQueryVariables = Exact<{
 
 export type NewestDocumentsQueryQuery = { __typename?: 'Query', newestDocuments: Array<{ __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomDashboard', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomView', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'DefaultDocument', id: string, name: string | null, short_description: string | null, type: string, active: boolean, slug: string | null, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'IntegrationHack', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenAEVScenario', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenCTIPlaybook', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'RssFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'Stream', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'TaxiiFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'ThirdPartyIntegration', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null }> };
 
-export type DeployedServiceInstanceIdsQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type DeployedServiceInstanceIdsQueryQuery = { __typename?: 'Query', deployedServiceInstanceIds: Array<any> };
-
 export type LastDeployedOverviewQueryQueryVariables = Exact<{
   limit: Scalars['Int']['input'];
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
@@ -3003,57 +2998,6 @@ export const useInfiniteNewestDocumentsQueryQuery = <
 useInfiniteNewestDocumentsQueryQuery.getKey = (variables: NewestDocumentsQueryQueryVariables) => ['NewestDocumentsQuery.infinite', variables];
 useInfiniteNewestDocumentsQueryQuery.getRootKey = () => ['NewestDocumentsQuery.infinite'] as const;
 useNewestDocumentsQueryQuery.fetcher = (client: GraphQLClient, variables: NewestDocumentsQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<NewestDocumentsQueryQuery, NewestDocumentsQueryQueryVariables>(client, NewestDocumentsQueryDocument, variables, headers);
-
-export const DeployedServiceInstanceIdsQueryDocument = `
-    query DeployedServiceInstanceIdsQuery {
-  deployedServiceInstanceIds
-}
-    `;
-
-export const useDeployedServiceInstanceIdsQueryQuery = <
-      TData = DeployedServiceInstanceIdsQueryQuery,
-      TError = unknown
-    >(
-      client: GraphQLClient,
-      variables?: DeployedServiceInstanceIdsQueryQueryVariables,
-      options?: Omit<UseQueryOptions<DeployedServiceInstanceIdsQueryQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<DeployedServiceInstanceIdsQueryQuery, TError, TData>['queryKey'] },
-      headers?: RequestInit['headers']
-    ) => {
-    
-    return useQuery<DeployedServiceInstanceIdsQueryQuery, TError, TData>(
-      {
-    queryKey: variables === undefined ? ['DeployedServiceInstanceIdsQuery'] : ['DeployedServiceInstanceIdsQuery', variables],
-    queryFn: fetcher<DeployedServiceInstanceIdsQueryQuery, DeployedServiceInstanceIdsQueryQueryVariables>(client, DeployedServiceInstanceIdsQueryDocument, variables, headers),
-    ...options
-  }
-    )};
-
-useDeployedServiceInstanceIdsQueryQuery.getKey = (variables?: DeployedServiceInstanceIdsQueryQueryVariables) => variables === undefined ? ['DeployedServiceInstanceIdsQuery'] : ['DeployedServiceInstanceIdsQuery', variables];
-useDeployedServiceInstanceIdsQueryQuery.getRootKey = () => ['DeployedServiceInstanceIdsQuery'] as const;
-export const useInfiniteDeployedServiceInstanceIdsQueryQuery = <
-      TData = InfiniteData<DeployedServiceInstanceIdsQueryQuery>,
-      TError = unknown
-    >(
-      client: GraphQLClient,
-      variables: DeployedServiceInstanceIdsQueryQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<DeployedServiceInstanceIdsQueryQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<DeployedServiceInstanceIdsQueryQuery, TError, TData>['queryKey'] },
-      headers?: RequestInit['headers']
-    ) => {
-    
-    return useInfiniteQuery<DeployedServiceInstanceIdsQueryQuery, TError, TData>(
-      (() => {
-    const { queryKey: optionsQueryKey, ...restOptions } = options;
-    return {
-      queryKey: optionsQueryKey ?? variables === undefined ? ['DeployedServiceInstanceIdsQuery.infinite'] : ['DeployedServiceInstanceIdsQuery.infinite', variables],
-      queryFn: (metaData) => fetcher<DeployedServiceInstanceIdsQueryQuery, DeployedServiceInstanceIdsQueryQueryVariables>(client, DeployedServiceInstanceIdsQueryDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
-      ...restOptions
-    }
-  })()
-    )};
-
-useInfiniteDeployedServiceInstanceIdsQueryQuery.getKey = (variables?: DeployedServiceInstanceIdsQueryQueryVariables) => variables === undefined ? ['DeployedServiceInstanceIdsQuery.infinite'] : ['DeployedServiceInstanceIdsQuery.infinite', variables];
-useInfiniteDeployedServiceInstanceIdsQueryQuery.getRootKey = () => ['DeployedServiceInstanceIdsQuery.infinite'] as const;
-useDeployedServiceInstanceIdsQueryQuery.fetcher = (client: GraphQLClient, variables?: DeployedServiceInstanceIdsQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<DeployedServiceInstanceIdsQueryQuery, DeployedServiceInstanceIdsQueryQueryVariables>(client, DeployedServiceInstanceIdsQueryDocument, variables, headers);
 
 export const LastDeployedOverviewQueryDocument = `
     query LastDeployedOverviewQuery($limit: Int!, $serviceInstanceId: ServiceInstanceId!) {

@@ -41,10 +41,6 @@ query NewestDocumentsQuery(
   }
 }
 
-query DeployedServiceInstanceIdsQuery {
-  deployedServiceInstanceIds
-}
-
 query LastDeployedOverviewQuery(
   $limit: Int!
   $serviceInstanceId: ServiceInstanceId!

@@ -10,10 +10,7 @@ import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { APP_PATH } from '@/utils/path/constant';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
-import {
-  useDeployedServiceInstanceIdsQueryQuery,
-  useRegisteredPlatformsQuery,
-} from '@graphql/generated';
+import { useRegisteredPlatformsQuery } from '@graphql/generated';
 
 type MeNameData = {
   first_name?: string | null;
@@ -30,12 +27,24 @@ const breadcrumbValue = [
 export const PrivateHomepage = async () => {
   const authenticatedClient = await getAuthenticatedGraphqlClient();
 
-  const [registeredPlatformsData, deployedServiceInstanceIdsData, meData] =
+  const [registeredPlatformsData, deployedPlatformsData, meData] =
     await Promise.all([
       useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
-        input: { identifier: null, onlyActive: true, onlyTrial: null },
+        input: {
+          identifier: null,
+          onlyActive: true,
+          onlyTrial: null,
+          hasDeployedResources: null,
+        },
       })(),
-      useDeployedServiceInstanceIdsQueryQuery.fetcher(authenticatedClient)(),
+      useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
+        input: {
+          identifier: null,
+          onlyActive: true,
+          onlyTrial: null,
+          hasDeployedResources: true,
+        },
+      })(),
       serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
     ]);
 
@@ -65,10 +74,7 @@ export const PrivateHomepage = async () => {
             registeredPlatformsData={registeredPlatformsData}
           />
           <LastDeployedResourcesSection
-            registeredPlatformsData={registeredPlatformsData}
-            deployedServiceInstanceIds={
-              deployedServiceInstanceIdsData.deployedServiceInstanceIds
-            }
+            registeredPlatformsData={deployedPlatformsData}
           />
         </div>
         <PrivateHomepageRoadmapSection

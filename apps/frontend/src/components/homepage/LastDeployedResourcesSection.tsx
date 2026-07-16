@@ -29,22 +29,15 @@ const resolveProductName = (
 
 type LastDeployedResourcesSectionProps = {
   registeredPlatformsData: RegisteredPlatformsQuery;
-  deployedServiceInstanceIds: string[];
 };
 
 export const LastDeployedResourcesSection = ({
   registeredPlatformsData,
-  deployedServiceInstanceIds,
 }: LastDeployedResourcesSectionProps) => {
-  const deployedServiceInstanceIdSet = new Set(deployedServiceInstanceIds);
-
   const platforms: LastDeployedPlatform[] =
     registeredPlatformsData.registeredPlatforms.flatMap((platform) => {
       const serviceInstanceId = platform.subscription?.service_instance_id;
-      if (
-        !serviceInstanceId ||
-        !deployedServiceInstanceIdSet.has(serviceInstanceId)
-      ) {
+      if (!serviceInstanceId) {
         return [];
       }
       return [

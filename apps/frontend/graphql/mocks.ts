@@ -1213,7 +1213,6 @@ export const mockQuery = (overrides?: Partial<Query>, _relationshipsToOmit: Set<
         canUnregisterPlatform: overrides && overrides.hasOwnProperty('canUnregisterPlatform') ? overrides.canUnregisterPlatform! : relationshipsToOmit.has('CanUnregisterResponse') ? {} as CanUnregisterResponse : mockCanUnregisterResponse({}, relationshipsToOmit),
         competitors: overrides && overrides.hasOwnProperty('competitors') ? overrides.competitors! : relationshipsToOmit.has('CompetitorConnection') ? {} as CompetitorConnection : mockCompetitorConnection({}, relationshipsToOmit),
         countEpicsPerTimeline: overrides && overrides.hasOwnProperty('countEpicsPerTimeline') ? overrides.countEpicsPerTimeline! : [relationshipsToOmit.has('EpicCountPerTimeline') ? {} as EpicCountPerTimeline : mockEpicCountPerTimeline({}, relationshipsToOmit)],
-        deployedServiceInstanceIds: overrides && overrides.hasOwnProperty('deployedServiceInstanceIds') ? overrides.deployedServiceInstanceIds! : ['aurum'],
         deploymentRequests: overrides && overrides.hasOwnProperty('deploymentRequests') ? overrides.deploymentRequests! : relationshipsToOmit.has('PlatformDeploymentRequestConnection') ? {} as PlatformDeploymentRequestConnection : mockPlatformDeploymentRequestConnection({}, relationshipsToOmit),
         deploymentRequestsAvailable: overrides && overrides.hasOwnProperty('deploymentRequestsAvailable') ? overrides.deploymentRequestsAvailable! : [relationshipsToOmit.has('DeploymentAvailability') ? {} as DeploymentAvailability : mockDeploymentAvailability({}, relationshipsToOmit)],
         deploymentRequestsList: overrides && overrides.hasOwnProperty('deploymentRequestsList') ? overrides.deploymentRequestsList! : relationshipsToOmit.has('DeploymentRequestConnection') ? {} as DeploymentRequestConnection : mockDeploymentRequestConnection({}, relationshipsToOmit),
@@ -1366,6 +1365,7 @@ export const mockRegisteredPlatformsInput = (overrides?: Partial<RegisteredPlatf
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('RegisteredPlatformsInput');
     return {
+        hasDeployedResources: overrides && overrides.hasOwnProperty('hasDeployedResources') ? overrides.hasDeployedResources! : true,
         identifier: overrides && overrides.hasOwnProperty('identifier') ? overrides.identifier! : PlatformIdentifier.Openaev,
         onlyActive: overrides && overrides.hasOwnProperty('onlyActive') ? overrides.onlyActive! : false,
         onlyTrial: overrides && overrides.hasOwnProperty('onlyTrial') ? overrides.onlyTrial! : false,
