@@ -505,13 +505,23 @@ describe('usePrivateNavigation', () => {
       expect(graphqlMocks.useRegisteredPlatformsListQuery).toHaveBeenCalledWith(
         portalGraphqlClient,
         {
-          input: { identifier: null, onlyActive: null, onlyTrial: null },
+          input: {
+            identifier: null,
+            onlyActive: null,
+            onlyTrial: null,
+            hasDeployedResources: null,
+          },
         },
         {
           queryKey: [
             'RegisteredPlatformsList',
             {
-              input: { identifier: null, onlyActive: null, onlyTrial: null },
+              input: {
+                identifier: null,
+                onlyActive: null,
+                onlyTrial: null,
+                hasDeployedResources: null,
+              },
             },
           ],
         }

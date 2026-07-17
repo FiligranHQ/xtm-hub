@@ -11,7 +11,12 @@ export type ConnectedPlatform =
   RegisteredPlatformsListQuery['registeredPlatforms'][number];
 
 const CONNECTED_PLATFORMS_VARIABLES = {
-  input: { onlyActive: true, identifier: null, onlyTrial: null },
+  input: {
+    onlyActive: true,
+    identifier: null,
+    onlyTrial: null,
+    hasDeployedResources: null,
+  },
 };
 
 export const useConnectedPlatforms = () => {

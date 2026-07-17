@@ -140,6 +140,7 @@ export const RegistrationApp = {
       platformIdentifier: input?.identifier ?? undefined,
       onlyActive: input?.onlyActive ?? false,
       onlyTrial: input?.onlyTrial ?? false,
+      hasDeployedResources: input?.hasDeployedResources ?? false,
     });
 
     return platforms.map(mapDomainRegisteredPlatformToGraphQL);

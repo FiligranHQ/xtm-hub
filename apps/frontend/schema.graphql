@@ -116,6 +116,7 @@ type Query {
   document(documentId: DocumentId!, serviceInstanceId: ServiceInstanceId!): Document
   mostDeployedDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   newestDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
+  lastDeployedOverview(limit: Int!, serviceInstanceId: ServiceInstanceId!): LastDeployedOverview!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -669,6 +670,16 @@ type DocumentConnection {
   pageInfo: PageInfo!
 }
 
+type DeployedResource {
+  document: Document!
+  deployedAt: Date!
+  deployedBy: User
+}
+
+type LastDeployedOverview {
+  resources: [DeployedResource!]!
+}
+
 """
 A Relay global ID for NewsFeedItem, extracted to a branded NewsFeedItemId string
 """
@@ -1048,6 +1059,7 @@ input RegisteredPlatformsInput {
   identifier: PlatformIdentifier
   onlyActive: Boolean
   onlyTrial: Boolean
+  hasDeployedResources: Boolean
 }
 
 input RegisteredPlatformInput {

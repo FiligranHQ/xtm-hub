@@ -40,3 +40,24 @@ query NewestDocumentsQuery(
     ...HomepageDocument
   }
 }
+
+query LastDeployedOverviewQuery(
+  $limit: Int!
+  $serviceInstanceId: ServiceInstanceId!
+) {
+  lastDeployedOverview(limit: $limit, serviceInstanceId: $serviceInstanceId) {
+    resources {
+      document {
+        ...HomepageDocument
+      }
+      deployedAt
+      deployedBy {
+        id
+        first_name
+        last_name
+        email
+        picture
+      }
+    }
+  }
+}

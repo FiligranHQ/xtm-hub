@@ -356,6 +356,13 @@ export type DeployedPlatform = {
   serviceInstanceId: Scalars['ServiceInstanceId']['output'];
 };
 
+export type DeployedResource = {
+  __typename?: 'DeployedResource';
+  deployedAt: Scalars['Date']['output'];
+  deployedBy?: Maybe<User>;
+  document: Document;
+};
+
 export type DeploymentAvailability = {
   __typename?: 'DeploymentAvailability';
   availableCount: Scalars['Int']['output'];
@@ -851,6 +858,11 @@ export type IsPlatformRegisteredResponse = {
   organization?: Maybe<IsPlatformRegisteredOrganization>;
   platformTitle?: Maybe<Scalars['String']['output']>;
   status: PlatformRegistrationStatus;
+};
+
+export type LastDeployedOverview = {
+  __typename?: 'LastDeployedOverview';
+  resources: Array<DeployedResource>;
 };
 
 export type LogicalFilterInput = {
@@ -1621,6 +1633,7 @@ export type Query = {
   documents: DocumentConnection;
   epics?: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
+  lastDeployedOverview: LastDeployedOverview;
   me?: Maybe<User>;
   mostDeployedDocuments: Array<Document>;
   newestDocuments: Array<Document>;
@@ -1728,6 +1741,12 @@ export type QueryEpicsArgs = {
 
 export type QueryIsPlatformRegisteredArgs = {
   input: IsPlatformRegisteredInput;
+};
+
+
+export type QueryLastDeployedOverviewArgs = {
+  limit: Scalars['Int']['input'];
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1984,6 +2003,7 @@ export type RegisteredPlatformInput = {
 };
 
 export type RegisteredPlatformsInput = {
+  hasDeployedResources?: InputMaybe<Scalars['Boolean']['input']>;
   identifier?: InputMaybe<PlatformIdentifier>;
   onlyActive?: InputMaybe<Scalars['Boolean']['input']>;
   onlyTrial?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2773,6 +2793,7 @@ export type ResolversTypes = ResolversObject<{
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DefaultDocument: ResolverTypeWrapper<DefaultDocument>;
   DeployedPlatform: ResolverTypeWrapper<DeployedPlatform>;
+  DeployedResource: ResolverTypeWrapper<Omit<DeployedResource, 'document'> & { document: ResolversTypes['Document'] }>;
   DeploymentAvailability: ResolverTypeWrapper<DeploymentAvailability>;
   DeploymentRequest: ResolverTypeWrapper<DeploymentRequest>;
   DeploymentRequestActivitySector: DeploymentRequestActivitySector;
@@ -2824,6 +2845,7 @@ export type ResolversTypes = ResolversObject<{
   IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
   IsPlatformRegisteredResponse: ResolverTypeWrapper<IsPlatformRegisteredResponse>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
+  LastDeployedOverview: ResolverTypeWrapper<Omit<LastDeployedOverview, 'resources'> & { resources: Array<ResolversTypes['DeployedResource']> }>;
   LogicalFilterInput: LogicalFilterInput;
   LogicalOperator: LogicalOperator;
   ManifestFragmentInput: ManifestFragmentInput;
@@ -2996,6 +3018,7 @@ export type ResolversParentTypes = ResolversObject<{
   Date: Scalars['Date']['output'];
   DefaultDocument: DefaultDocument;
   DeployedPlatform: DeployedPlatform;
+  DeployedResource: Omit<DeployedResource, 'document'> & { document: ResolversParentTypes['Document'] };
   DeploymentAvailability: DeploymentAvailability;
   DeploymentRequest: DeploymentRequest;
   DeploymentRequestConnection: DeploymentRequestConnection;
@@ -3025,6 +3048,7 @@ export type ResolversParentTypes = ResolversObject<{
   IsPlatformRegisteredOrganization: IsPlatformRegisteredOrganization;
   IsPlatformRegisteredResponse: IsPlatformRegisteredResponse;
   JSON: Scalars['JSON']['output'];
+  LastDeployedOverview: Omit<LastDeployedOverview, 'resources'> & { resources: Array<ResolversParentTypes['DeployedResource']> };
   LogicalFilterInput: LogicalFilterInput;
   ManifestFragmentInput: ManifestFragmentInput;
   MeUserSubscription: MeUserSubscription;
@@ -3361,6 +3385,13 @@ export type DeployedPlatformResolvers<ContextType = PortalContext, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type DeployedResourceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeployedResource'] = ResolversParentTypes['DeployedResource']> = ResolversObject<{
+  deployedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  deployedBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  document?: Resolver<ResolversTypes['Document'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type DeploymentAvailabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['DeploymentAvailability'] = ResolversParentTypes['DeploymentAvailability']> = ResolversObject<{
   availableCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   capacity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -3570,6 +3601,11 @@ export type IsPlatformRegisteredResponseResolvers<ContextType = PortalContext, P
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
+
+export type LastDeployedOverviewResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['LastDeployedOverview'] = ResolversParentTypes['LastDeployedOverview']> = ResolversObject<{
+  resources?: Resolver<Array<ResolversTypes['DeployedResource']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type MeUserSubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['MeUserSubscription'] = ResolversParentTypes['MeUserSubscription']> = ResolversObject<{
   delete?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -3861,6 +3897,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId'>>;
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
+  lastDeployedOverview?: Resolver<ResolversTypes['LastDeployedOverview'], ParentType, ContextType, RequireFields<QueryLastDeployedOverviewArgs, 'limit' | 'serviceInstanceId'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   mostDeployedDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryMostDeployedDocumentsArgs, 'limit'>>;
   newestDocuments?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryNewestDocumentsArgs, 'limit'>>;
@@ -4407,6 +4444,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   Date?: GraphQLScalarType;
   DefaultDocument?: DefaultDocumentResolvers<ContextType>;
   DeployedPlatform?: DeployedPlatformResolvers<ContextType>;
+  DeployedResource?: DeployedResourceResolvers<ContextType>;
   DeploymentAvailability?: DeploymentAvailabilityResolvers<ContextType>;
   DeploymentRequest?: DeploymentRequestResolvers<ContextType>;
   DeploymentRequestConnection?: DeploymentRequestConnectionResolvers<ContextType>;
@@ -4426,6 +4464,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   IsPlatformRegisteredOrganization?: IsPlatformRegisteredOrganizationResolvers<ContextType>;
   IsPlatformRegisteredResponse?: IsPlatformRegisteredResponseResolvers<ContextType>;
   JSON?: GraphQLScalarType;
+  LastDeployedOverview?: LastDeployedOverviewResolvers<ContextType>;
   MeUserSubscription?: MeUserSubscriptionResolvers<ContextType>;
   MergeEvent?: MergeEventResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

@@ -19,7 +19,9 @@ import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { ForbiddenAccess } from '../../utils/error/error.util';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
+import { RegistrationApp } from '../registration/registration.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
@@ -664,6 +666,52 @@ export const DocumentApp = {
       ALL_METADATA_KEYS,
       documentTypes
     );
+  },
+
+  loadLastDeployedOverview: async (
+    limit: number,
+    serviceInstanceId: ServiceInstanceId
+  ) => {
+    const platform =
+      await RegistrationApp.loadRegisteredPlatform(serviceInstanceId);
+    if (!platform) {
+      throw ForbiddenAccess(ErrorCode.PlatformNotRegistered);
+    }
+    const deployments = await TelemetryApp.getLastDeployments(
+      platform.platform_id,
+      platform.tenant_id ?? null,
+      limit
+    );
+
+    if (deployments.length === 0) {
+      return { resources: [] };
+    }
+
+    const uniqueResourceIds = [
+      ...new Set(deployments.map((deployment) => deployment.resource_id)),
+    ];
+
+    const documents = await DocumentDomain.loadDocumentsWithMetadataByIds(
+      uniqueResourceIds,
+      ALL_METADATA_KEYS
+    );
+    const documentById = new Map(documents.map((d) => [d.id as string, d]));
+
+    const resources = deployments.flatMap((deployment) => {
+      const document = documentById.get(deployment.resource_id);
+      if (!document) {
+        return [];
+      }
+      return [
+        {
+          document,
+          deployedAt: deployment.deployed_at,
+          deployedById: deployment.user_id,
+        },
+      ];
+    });
+
+    return { resources };
   },
 
   loadDocument: async (documentId: DocumentId) => {

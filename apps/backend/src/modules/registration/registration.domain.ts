@@ -228,9 +228,11 @@ export const RegistrationDomain = {
       platformIdentifier?: PlatformIdentifier;
       onlyActive?: boolean;
       onlyTrial?: boolean;
+      hasDeployedResources?: boolean;
     } = {}
   ): Promise<DomainRegisteredPlatform[]> => {
-    const { platformIdentifier, onlyActive, onlyTrial } = query;
+    const { platformIdentifier, onlyActive, onlyTrial, hasDeployedResources } =
+      query;
     const serviceDefinitionIdentifiers = platformIdentifier
       ? [
           serviceDefinitionIdentifierMappedByPlatformIdentifier[
@@ -273,6 +275,19 @@ export const RegistrationDomain = {
               '=',
               DeploymentRequestDeploymentType.Trial
             );
+          });
+        }
+      })
+      .where(function () {
+        if (hasDeployedResources) {
+          this.whereExists(function () {
+            this.from('OneClickDeployment')
+              .whereRaw(
+                '"OneClickDeployment".platform_id = "PlatformConfiguration".platform_id'
+              )
+              .whereRaw(
+                '"OneClickDeployment".tenant_id IS NOT DISTINCT FROM "PlatformConfiguration".tenant_id'
+              );
           });
         }
       });
