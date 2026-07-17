@@ -193,6 +193,16 @@ const resolvers: Resolvers = {
       return subscription as unknown as SubscriptionModel;
     },
   },
+  DeployedResource: {
+    deployedBy: (parent, _, context) => {
+      const { deployedById } = parent as unknown as {
+        deployedById: string | null;
+      };
+      return deployedById
+        ? context.dataLoaders.userLoader.load(deployedById)
+        : null;
+    },
+  },
   Query: {
     documentExists: async (_, input) => {
       try {
@@ -253,6 +263,16 @@ const resolvers: Resolvers = {
         return await DocumentApp.loadNewestDocuments(
           limit,
           platformIdentifiers ?? undefined
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
+    lastDeployedOverview: async (_, { limit, serviceInstanceId }) => {
+      try {
+        return await DocumentApp.loadLastDeployedOverview(
+          limit,
+          serviceInstanceId
         );
       } catch (error) {
         throw mapToGraphQLError(error);

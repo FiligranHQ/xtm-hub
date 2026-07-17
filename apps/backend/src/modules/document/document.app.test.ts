@@ -27,6 +27,7 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
+import { RegistrationApp } from '../registration/registration.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import {
@@ -1386,5 +1387,70 @@ describe('loadMostDeployedDocuments', () => {
     const result = await DocumentApp.loadMostDeployedDocuments(3);
 
     expect(result.map((d) => d.id)).toEqual([id1, id3]);
+  });
+
+  describe('loadLastDeployedOverview', () => {
+    it('throws when the platform is not registered in the organization', async () => {
+      vi.spyOn(RegistrationApp, 'loadRegisteredPlatform').mockResolvedValue(
+        null
+      );
+
+      await expect(
+        DocumentApp.loadLastDeployedOverview(
+          4,
+          'unknown-service-instance' as ServiceInstanceId
+        )
+      ).rejects.toThrow(ErrorCode.PlatformNotRegistered);
+    });
+
+    it('returns an empty overview when the registered platform has no deployments', async () => {
+      vi.spyOn(RegistrationApp, 'loadRegisteredPlatform').mockResolvedValue({
+        platform_id: 'platform-1',
+        tenant_id: null,
+      } as never);
+      vi.spyOn(TelemetryApp, 'getLastDeployments').mockResolvedValue([]);
+
+      const result = await DocumentApp.loadLastDeployedOverview(
+        4,
+        'service-instance-1' as ServiceInstanceId
+      );
+
+      expect(result).toEqual({ resources: [] });
+    });
+
+    it('returns the deployed overview containing documents when the platform has deployments', async () => {
+      vi.spyOn(RegistrationApp, 'loadRegisteredPlatform').mockResolvedValue({
+        platform_id: 'platform-1',
+        tenant_id: null,
+      } as never);
+
+      vi.spyOn(TelemetryApp, 'getLastDeployments').mockResolvedValue([
+        {
+          resource_id: 'doc-1',
+          deployed_at: '2023-01-01T12:00:00Z',
+          user_id: 'user-1',
+        },
+      ] as never);
+
+      vi.spyOn(
+        DocumentDomain,
+        'loadDocumentsWithMetadataByIds'
+      ).mockResolvedValue([{ id: 'doc-1', name: 'Document A' }] as never);
+
+      const result = await DocumentApp.loadLastDeployedOverview(
+        4,
+        'service-instance-1' as ServiceInstanceId
+      );
+
+      expect(result).toEqual({
+        resources: [
+          {
+            document: { id: 'doc-1', name: 'Document A' },
+            deployedAt: '2023-01-01T12:00:00Z',
+            deployedById: 'user-1',
+          },
+        ],
+      });
+    });
   });
 });

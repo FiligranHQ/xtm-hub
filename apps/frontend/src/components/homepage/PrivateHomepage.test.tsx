@@ -15,6 +15,7 @@ const {
   mockPrivateHomepageRoadmapSection,
   mockXtmPlatform,
   mockRegisteredPlatformsSection,
+  mockLastDeployedResourcesSection,
 } = vi.hoisted(() => ({
   mockRegisteredPlatformsFetcher: vi.fn(),
   mockServiceInstancesFetcher: vi.fn(),
@@ -29,6 +30,9 @@ const {
   mockXtmPlatform: vi.fn(() => <div data-testid="xtm-platform" />),
   mockRegisteredPlatformsSection: vi.fn(() => (
     <div data-testid="registered-platforms-section" />
+  )),
+  mockLastDeployedResourcesSection: vi.fn(() => (
+    <div data-testid="last-deployed-resources-section" />
   )),
 }));
 
@@ -80,6 +84,10 @@ vi.mock(
   })
 );
 
+vi.mock('@/components/homepage/LastDeployedResourcesSection', () => ({
+  default: mockLastDeployedResourcesSection,
+}));
+
 import { PrivateHomepage } from './PrivateHomepage';
 
 const mockRegisteredPlatformsResponses = (registeredPlatforms: unknown[]) => {
@@ -101,6 +109,7 @@ describe('PrivateHomepage', () => {
     mockPrivateHomepageRoadmapSection.mockClear();
     mockXtmPlatform.mockClear();
     mockRegisteredPlatformsSection.mockClear();
+    mockLastDeployedResourcesSection.mockClear();
 
     mockServiceInstancesFetcher.mockReturnValue(() =>
       Promise.resolve({
@@ -128,13 +137,18 @@ describe('PrivateHomepage', () => {
     const element = await PrivateHomepage();
     render(element);
 
-    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(1);
+    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
     expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsFetcher.mock.calls[0]?.[1]).toEqual({
-      input: { identifier: null, onlyActive: true, onlyTrial: null },
+      input: {
+        identifier: null,
+        onlyActive: true,
+        onlyTrial: null,
+        hasDeployedResources: null,
+      },
     });
 
     expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
@@ -199,7 +213,7 @@ describe('PrivateHomepage', () => {
     const element = await PrivateHomepage();
     render(element);
 
-    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(1);
+    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
     expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
     expect(mockXtmPlatform).not.toHaveBeenCalled();
@@ -247,7 +261,7 @@ describe('PrivateHomepage', () => {
     const element = await PrivateHomepage();
     render(element);
 
-    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(1);
+    expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
     expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
     expect(mockXtmPlatform).toHaveBeenCalledWith(

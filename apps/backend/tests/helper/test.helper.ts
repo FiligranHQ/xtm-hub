@@ -30,6 +30,7 @@ import ObjectUseCase, {
   ObjectUseCaseMutator,
 } from '../../src/model/kanel/public/ObjectUseCase';
 import OneClickDeployment, {
+  OneClickDeploymentInitializer,
   OneClickDeploymentMutator,
 } from '../../src/model/kanel/public/OneClickDeployment';
 import Organization, {
@@ -104,6 +105,14 @@ export const TestHelper = {
     },
   },
   oneClickDeployment: {
+    insert: async (
+      data: OneClickDeploymentInitializer
+    ): Promise<OneClickDeployment> => {
+      const [row] = await db<OneClickDeployment>('OneClickDeployment')
+        .insert(data)
+        .returning('*');
+      return row!;
+    },
     loadAll: async (
       field: OneClickDeploymentMutator = {}
     ): Promise<OneClickDeployment[]> => {
@@ -111,6 +120,9 @@ export const TestHelper = {
         .where(field)
         .select('*')
         .orderBy('deployed_at', 'desc');
+    },
+    deleteAll: async (): Promise<void> => {
+      await db<OneClickDeployment>('OneClickDeployment').del();
     },
   },
   competitor: {

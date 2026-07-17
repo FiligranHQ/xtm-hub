@@ -1,4 +1,5 @@
 import { buildDistinctPlatformIdentifiersFromServiceDefinition } from '@/components/homepage/Homepage.utils';
+import LastDeployedResourcesSection from '@/components/homepage/LastDeployedResourcesSection';
 import { RegisteredPlatformsSection } from '@/components/homepage/registered-platforms/RegisteredPlatformsSection';
 import MostDeployedResources from '@/components/homepage/resources/MostDeployedResources';
 import NewestResources from '@/components/homepage/resources/NewestResources';
@@ -26,12 +27,26 @@ const breadcrumbValue = [
 export const PrivateHomepage = async () => {
   const authenticatedClient = await getAuthenticatedGraphqlClient();
 
-  const [registeredPlatformsData, meData] = await Promise.all([
-    useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
-      input: { identifier: null, onlyActive: true, onlyTrial: null },
-    })(),
-    serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
-  ]);
+  const [registeredPlatformsData, deployedPlatformsData, meData] =
+    await Promise.all([
+      useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
+        input: {
+          identifier: null,
+          onlyActive: true,
+          onlyTrial: null,
+          hasDeployedResources: null,
+        },
+      })(),
+      useRegisteredPlatformsQuery.fetcher(authenticatedClient, {
+        input: {
+          identifier: null,
+          onlyActive: true,
+          onlyTrial: null,
+          hasDeployedResources: true,
+        },
+      })(),
+      serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
+    ]);
 
   const platformIdentifiers =
     buildDistinctPlatformIdentifiersFromServiceDefinition(
@@ -49,14 +64,19 @@ export const PrivateHomepage = async () => {
       {platformIdentifiers.length !== 0 && (
         <BreadcrumbNav value={breadcrumbValue} />
       )}
-      <div className="p-xl flex flex-col gap-xl">
+      <div className="p-0 sm:p-xl flex flex-col gap-xl">
         {platformIdentifiers.length === 0 && (
           <XtmPlatform welcomeName={welcomeName} />
         )}
-        <RegisteredPlatformsSection
-          welcomeName={welcomeName}
-          registeredPlatformsData={registeredPlatformsData}
-        />
+        <div className="flex flex-col md:flex-row gap-xl items-start">
+          <RegisteredPlatformsSection
+            welcomeName={welcomeName}
+            registeredPlatformsData={registeredPlatformsData}
+          />
+          <LastDeployedResourcesSection
+            registeredPlatformsData={deployedPlatformsData}
+          />
+        </div>
         <PrivateHomepageRoadmapSection
           platformIdentifiers={platformIdentifiers}
         />

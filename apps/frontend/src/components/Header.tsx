@@ -145,8 +145,12 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
               {isHomePageV2Enabled && (
-                <div className="pt-m">
+                <div className="pt-m flex flex-col gap-m px-m">
                   <HeaderOrganizationSwitcher />
+                  <div className="flex items-center justify-between">
+                    <ConnectedProductsDropdown />
+                    {canManageUser && <NotificationButton />}
+                  </div>
                 </div>
               )}
               {isHomePageV2Enabled ? (

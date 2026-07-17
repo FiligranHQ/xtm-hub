@@ -143,6 +143,7 @@ input RegisteredPlatformsInput {
   identifier: PlatformIdentifier
   onlyActive: Boolean
   onlyTrial: Boolean
+  hasDeployedResources: Boolean
 }
 
 input RegisteredPlatformInput {

@@ -5,7 +5,8 @@ import {
   Organization,
 } from '../../__generated__/resolvers-types';
 import UseCase from '../../model/kanel/public/UseCase';
-import User from '../../model/kanel/public/User';
+import User, { UserId } from '../../model/kanel/public/User';
+import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { Document, WithDocumentId, WithParentId } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
@@ -14,6 +15,7 @@ import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
 export interface DocumentDataLoaders {
+  userLoader: DataLoader<string, User | null>;
   uploaderLoader: DataLoader<string, User | null>;
   uploaderOrganizationLoader: DataLoader<string, Organization | null>;
   childrenDocumentsLoader: DataLoader<string, Document[]>;
@@ -23,6 +25,12 @@ export interface DocumentDataLoaders {
 }
 
 export const DocumentDataLoader = {
+  batchLoadUsers: async (ids: readonly string[]): Promise<(User | null)[]> => {
+    const users = await UserDomain.loadUsers(ids as UserId[]);
+    const map = new Map<string, User>(users.map((user) => [user.id, user]));
+    return ids.map((id) => map.get(id) ?? null);
+  },
+
   batchLoadUploaders: async (
     ids: readonly string[]
   ): Promise<(User | null)[]> => {
@@ -119,6 +127,7 @@ export const DocumentDataLoader = {
   },
 
   create: (): DocumentDataLoaders => ({
+    userLoader: new DataLoader(DocumentDataLoader.batchLoadUsers),
     uploaderLoader: new DataLoader(DocumentDataLoader.batchLoadUploaders),
     uploaderOrganizationLoader: new DataLoader(
       DocumentDataLoader.batchLoadUploaderOrganizations

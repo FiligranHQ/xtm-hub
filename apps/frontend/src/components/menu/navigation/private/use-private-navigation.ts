@@ -43,7 +43,12 @@ import { trialKeys } from '@graphql/trial/trial.keys';
 import { useLocale, useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 const PRIVATE_NAVIGATION_REGISTERED_PLATFORMS_VARIABLES = {
-  input: { identifier: null, onlyActive: null, onlyTrial: null },
+  input: {
+    identifier: null,
+    onlyActive: null,
+    onlyTrial: null,
+    hasDeployedResources: null,
+  },
 };
 
 const SERVICE_LINKS = [
