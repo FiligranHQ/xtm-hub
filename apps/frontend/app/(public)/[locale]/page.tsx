@@ -2,6 +2,12 @@ import Homepage from '@/components/homepage/Homepage';
 import PublicServiceInstanceCard from '@/components/service/PublicServiceInstanceCard';
 import type { PublicLocale } from '@/i18n/config';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import {
+  buildFiligranOrganizationJsonLd,
+  buildSeoPageMetadata,
+  getBaseUrl,
+  stringifyJsonLd,
+} from '@/utils/generate-metadata';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -9,7 +15,27 @@ import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
 } from '@generated/seoServiceInstancesQuery.graphql';
 import { FeatureFlag } from '@graphql/generated';
+import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: PublicLocale }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const baseUrl = await getBaseUrl();
+  const t = await getTranslations({ locale, namespace: 'Metadata' });
+
+  return buildSeoPageMetadata({
+    baseUrl,
+    locale,
+    pathname: '/',
+    title: t('Title'),
+    description: t('ShortDescription'),
+    imageAlt: t('SiteName'),
+  });
+}
 
 const Page = async ({
   params,
@@ -19,8 +45,33 @@ const Page = async ({
   const { locale } = await params;
   const showHomepageV2 = await isFeatureEnabled(FeatureFlag.HomePageV2);
 
+  const baseUrl = await getBaseUrl();
+  const tMeta = await getTranslations({ locale, namespace: 'Metadata' });
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: tMeta('SiteName'),
+    description: tMeta('ShortDescription'),
+    url: baseUrl,
+    image: `${baseUrl}/seo_default.png`,
+    publisher: buildFiligranOrganizationJsonLd(baseUrl),
+  };
+
+  const jsonLdScript = (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
+    />
+  );
+
   if (showHomepageV2) {
-    return <Homepage paramsLocale={locale} />;
+    return (
+      <>
+        {jsonLdScript}
+        <Homepage paramsLocale={locale} />
+      </>
+    );
   }
 
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
@@ -34,6 +85,7 @@ const Page = async ({
   const t = await getTranslations();
   return (
     <>
+      {jsonLdScript}
       <h1 className="leading-tight my-8 md:my-16 text-center text-[2.5rem] md:text-[3.5rem]">
         {t('PublicHomePage.Title')}
       </h1>
