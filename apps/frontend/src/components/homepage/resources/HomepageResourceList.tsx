@@ -33,9 +33,9 @@ const HomepageResourceList = ({
   }
 
   return (
-    <section className="flex flex-col gap-l">
-      <h2 className="text-xl leading-tight">{title}</h2>
-      <ul className="grid grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] gap-l">
+    <section className="flex flex-col gap-s">
+      <h2 className="heading-md">{title}</h2>
+      <ul className="grid grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] gap-xl">
         {documents.map((resource) => {
           const resourceType = resource.type as ShareableResourceType;
           const serviceSlug =

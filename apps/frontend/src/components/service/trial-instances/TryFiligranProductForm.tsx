@@ -191,7 +191,7 @@ export const TryFiligranProductForm = ({
                       <Link
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline text-blue"
+                        className="underline text-primary"
                         href="https://filigran.io/mssa/">
                         {t('Service.Trials.Form.MSSA')}
                       </Link>

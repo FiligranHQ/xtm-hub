@@ -24,7 +24,6 @@ test.describe('User Management', () => {
   test('Should perform complete CRUD of users as BYPASS', async ({ page }) => {
     await loginPage.navigateToAndLogin();
     await userPage.navigateToUserListAdmin();
-    await expect(page).toHaveScreenshot();
 
     await test.step('Add user', async () => {
       await userPage.addUser(

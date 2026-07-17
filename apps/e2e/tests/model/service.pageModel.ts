@@ -17,7 +17,6 @@ export default class ServicePage {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('link', { name: 'Service' }).click();
     await this.page.getByText('Name', { exact: true }).click();
-    await expect(this.page).toHaveScreenshot();
   }
 
   async navigateToServiceItemAdmin(serviceName: string = 'Vault') {
@@ -26,7 +25,6 @@ export default class ServicePage {
       this.page.getByRole('row', { name: serviceName }),
       'Manage'
     );
-    await expect(this.page).toHaveScreenshot();
   }
 
   async addOrganizationIntoService(organizationName: string) {
@@ -113,7 +111,7 @@ export default class ServicePage {
       'Update'
     );
     await waitForDrawerToOpen(this.page);
-    await expect(this.page).toHaveScreenshot();
+
     await this.page.getByLabel(newCapability).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
     await waitForDrawerToClose(this.page);

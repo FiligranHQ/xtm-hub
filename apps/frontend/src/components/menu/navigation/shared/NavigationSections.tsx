@@ -111,7 +111,7 @@ export const LinkedSection = ({
       aria-label={section.label}>
       <MenuItemIcon icon={Icon} />
       {open && (
-        <span className="flex-1 px-s text-left text-foreground text-sm font-light truncate">
+        <span className="flex-1 px-s text-left text-foreground content-body-base truncate">
           {section.label}
         </span>
       )}
@@ -174,7 +174,7 @@ export const OpenedSection = ({ section }: { section: SectionConfig }) => {
       value={section.key}>
       <AccordionTrigger className="h-9 pl-5 py-xs cursor-pointer hover:bg-hover hover:no-underline font-normal hover:shadow-[inset_2px_0px] hover:shadow-white">
         <MenuItemIcon icon={Icon} />
-        <span className="flex-1 px-s text-left text-foreground text-sm font-light truncate">
+        <span className="flex-1 px-s text-left text-foreground text-sm content-body-base truncate">
           {section.label}
         </span>
       </AccordionTrigger>
