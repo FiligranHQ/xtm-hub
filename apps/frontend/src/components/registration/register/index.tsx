@@ -1,9 +1,11 @@
 import Loader from '@/components/Loader';
 import { RegistrationContext } from '@/components/registration/Context';
-import { RegistrationLayout } from '@/components/registration/Layout';
+import { RegisterStateFailed } from '@/components/registration/register/Failed';
 import { RegisterStateMissingCapability } from '@/components/registration/register/MissingCapability';
 import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 import { RegisterPlatform } from '@/components/registration/register/register.graphql';
+import { RegisterStateSucceeded } from '@/components/registration/register/Succeeded';
+import { RegisterStateTooMuchOrganization } from '@/components/registration/register/TooMuchOrganization';
 import { toast } from '@filigran/ui/clients';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
@@ -192,25 +194,11 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   }
 
   if (state.registrationRequestStatus === 'succeeded') {
-    return (
-      <RegistrationLayout>
-        <h1>
-          {t(`Register.Succeeded.Title`, {
-            platformIdentifier: displayedIdentifier,
-          })}
-        </h1>
-        <p>{t(`Register.Succeeded.Description`)}</p>
-      </RegistrationLayout>
-    );
+    return <RegisterStateSucceeded displayedIdentifier={displayedIdentifier} />;
   }
 
   if (state.registrationRequestStatus === 'failed') {
-    return (
-      <RegistrationLayout cancel={cancel}>
-        <h1>{t(`Register.Failed.Title`)}</h1>
-        <p>{t(`Register.Failed.Description`)}</p>
-      </RegistrationLayout>
-    );
+    return <RegisterStateFailed cancel={cancel} />;
   }
 
   const shouldRegisterOnSameOrganization =
@@ -218,19 +206,12 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
     userOrganizationsQueryData.userOrganizations.length > 2;
   if (shouldRegisterOnSameOrganization) {
     return (
-      <RegistrationLayout
+      <RegisterStateTooMuchOrganization
         cancel={cancel}
-        confirm={() => register(isPlatformRegistered.organization?.id ?? '')}>
-        <h1>{t(`Register.TooMuchOrganization.Title`)}</h1>
-        <p>
-          {t(`Register.TooMuchOrganization.Description1`, {
-            platformIdentifier: displayedIdentifier,
-            platformTitle: isPlatformRegistered.platformTitle ?? '',
-          })}
-          <br />
-          {t(`Register.TooMuchOrganization.Description2`)}
-        </p>
-      </RegistrationLayout>
+        confirm={() => register(isPlatformRegistered.organization?.id ?? '')}
+        displayedIdentifier={displayedIdentifier}
+        platformTitle={isPlatformRegistered.platformTitle ?? ''}
+      />
     );
   }
 
