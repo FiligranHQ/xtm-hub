@@ -867,7 +867,7 @@
       },
       "openaev-scenarios": {
         "Name": "OpenAEV シナリオライブラリ",
-        "Description": "Filigran チームが共有する OpenAEV シナリオの数々をご覧ください。"
+        "Description": "防御の有効性を検証するために設計されたシミュレーションシナリオのライブラリです。すぐに実行でき、環境に合わせて調整することもできます。"
       },
       "opencti-101": {
         "Name": "OpenCTI 101",
@@ -875,7 +875,7 @@
       },
       "opencti-custom-dashboards": {
         "Name": "OpenCTI カスタムダッシュボードライブラリ",
-        "Description": "OpenCTI を最大限に活用するための、脅威管理向けカスタムダッシュボードの数々をご覧ください。"
+        "Description": "厳選されたカスタムダッシュボードのライブラリで脅威管理を加速。チームが自信を持って行動するために必要な可視性と文脈を提供します。"
       },
       "opencti-demo": {
         "Name": "OpenCTI デモ",
@@ -887,7 +887,15 @@
       },
       "opencti-integrations": {
         "Name": "OpenCTI インテグレーションライブラリ",
-        "Description": "Filigran チームが共有する OpenCTI インテグレーションの数々をご覧ください。"
+        "Description": "商用・オープンソースの脅威フィードからエンリッチメントツール、社内のセキュリティシステムまで、OpenCTI はスタック全体と統合し、脅威インテリジェンスを鋭く実用的なものに保ちます。"
+      },
+      "opencti-custom-views": {
+        "Name": "OpenCTI カスタムビューライブラリ",
+        "Description": "OpenCTI 全体で、チームが脅威インテリジェンスへアクセスし解釈する流れを効率化するために設計された、すぐに使えるカスタムビューの厳選コレクションです。"
+      },
+      "opencti-playbooks": {
+        "Name": "OpenCTI プレイブックライブラリ",
+        "Description": "厳選されたすぐに使えるプレイブック集で自動化を加速。すぐに適用することも、ワークフローに合わせてカスタマイズすることもできます。Enterprise Edition ユーザーはワンクリックでデプロイできます。"
       },
       "slack": {
         "Name": "Slack",

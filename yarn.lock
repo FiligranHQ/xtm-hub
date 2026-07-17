@@ -3069,12 +3069,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/icu-messageformat-parser@npm:3.5.13":
-  version: 3.5.13
-  resolution: "@formatjs/icu-messageformat-parser@npm:3.5.13"
+"@formatjs/icu-messageformat-parser@npm:3.5.14":
+  version: 3.5.14
+  resolution: "@formatjs/icu-messageformat-parser@npm:3.5.14"
   dependencies:
-    "@formatjs/icu-skeleton-parser": "npm:2.1.10"
-  checksum: 10/b6451febdcfbe32571af5ae1c94cc560f6b3d815401321849c9dba229c460edf9ee4eca4c2d4da6dedefea416f2e3b10b4aa5507383e12b67042f941157e8045
+    "@formatjs/icu-skeleton-parser": "npm:2.1.11"
+  checksum: 10/e842d8ec0c17c174da0eb562e161f5216b31cb83546bf94fd3dd6e4b6493f8c0c404b9fb47b6b8106a607a83d305386bc1fb44abbc70453cf467d261e39d09c1
   languageName: node
   linkType: hard
 
@@ -3108,10 +3108,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/icu-skeleton-parser@npm:2.1.10":
-  version: 2.1.10
-  resolution: "@formatjs/icu-skeleton-parser@npm:2.1.10"
-  checksum: 10/ec30d106ce38de80f4128d0cdfac15699628652807695843254bf0d31650bd0dc4b57e48691d164556234494d59b2816e710fa12321234c85b803c5cda32bedf
+"@formatjs/icu-skeleton-parser@npm:2.1.11":
+  version: 2.1.11
+  resolution: "@formatjs/icu-skeleton-parser@npm:2.1.11"
+  checksum: 10/492f42bd4ad72b2cdb4fd75a07e3874aa78e88f346027058f74c58e3828378092784176c9f7c77f4b5baf58ffaa1a4e8f5efcb53143552def2990510d0ac3c16
   languageName: node
   linkType: hard
 
@@ -3164,21 +3164,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/ts-transformer@npm:4.4.15":
-  version: 4.4.15
-  resolution: "@formatjs/ts-transformer@npm:4.4.15"
+"@formatjs/ts-transformer@npm:4.4.16":
+  version: 4.4.16
+  resolution: "@formatjs/ts-transformer@npm:4.4.16"
   dependencies:
-    "@formatjs/icu-messageformat-parser": "npm:3.5.13"
-    "@types/babel__core": "npm:^7.20.5"
+    "@formatjs/icu-messageformat-parser": "npm:3.5.14"
+    "@types/babel__core": "npm:7"
     "@types/node": "npm:22 || 24"
-    json-stable-stringify: "npm:^1.3.0"
+    json-stable-stringify: "npm:1"
     typescript: "npm:^5.6 || 6"
   peerDependencies:
-    ts-jest: ^29
+    ts-jest: 29
   peerDependenciesMeta:
     ts-jest:
       optional: true
-  checksum: 10/c7cd34fe24abb35465f35f4d18ea75154c03aca77e1dc42cc89e17bf37dbc00cc9598a6fb6e9605bf575ad173e81031797495b056dee4c8f4dadbd3db3ebcf64
+  checksum: 10/11cf90d50578bfd642d572c3d822a2f0a25fa5179ec45d64b8c702a6433e5775dd066edc3cb8a8e2f01fad1d01e11eb9d1a34c62fbfd2d6ee13ecc89642498a7
   languageName: node
   linkType: hard
 
@@ -7302,7 +7302,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__core@npm:^7.20.5":
+"@types/babel__core@npm:7":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
   dependencies:
@@ -7446,7 +7446,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/estree-jsx@npm:^1.0.0, @types/estree-jsx@npm:^1.0.5":
+"@types/estree-jsx@npm:1, @types/estree-jsx@npm:^1.0.0":
   version: 1.0.5
   resolution: "@types/estree-jsx@npm:1.0.5"
   dependencies:
@@ -7700,7 +7700,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/picomatch@npm:^4.0.0":
+"@types/picomatch@npm:4":
   version: 4.0.3
   resolution: "@types/picomatch@npm:4.0.3"
   checksum: 10/6aa8d30d0c868ad1b09f695ecf9a40025277a2f862cb7e9814c4ea3c36295ec546450726d9862667eb326d927815c90c1168af51b9c0e830e9e5e014c12a45a6
@@ -8274,10 +8274,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@unicode/unicode-17.0.0@npm:^1.6.16":
-  version: 1.6.16
-  resolution: "@unicode/unicode-17.0.0@npm:1.6.16"
-  checksum: 10/0a619c8ca4e2fd90e3aad7e783cf89ce2bc5b1873c90c5a6d6ebf5d0d2c0382a519d855a15daa56a3c214dface795e4e23418ffe0f25b19562454b9c24bb0b77
+"@unicode/unicode-17.0.0@npm:1":
+  version: 1.6.17
+  resolution: "@unicode/unicode-17.0.0@npm:1.6.17"
+  checksum: 10/ca7817c57fdc3f3f791f65c7abd2dfa3105e50e2d8018e0afe20185597abb3e1a96147ea9518c49ecb49482776c16babe81667d2ecac54a4122225cb66aad060
   languageName: node
   linkType: hard
 
@@ -8722,7 +8722,7 @@ __metadata:
     eslint: "catalog:"
     eslint-config-next: "npm:16.2.10"
     eslint-config-prettier: "catalog:"
-    eslint-plugin-formatjs: "npm:6.4.17"
+    eslint-plugin-formatjs: "npm:6.4.18"
     extract-files: "npm:13.0.0"
     graphql: "catalog:"
     graphql-codegen-typescript-mock-data: "npm:5.1.2"
@@ -8735,7 +8735,7 @@ __metadata:
     next: "npm:16.2.10"
     next-intl: "npm:4.13.2"
     next-themes: "npm:0.4.6"
-    postcss: "npm:8.5.16"
+    postcss: "npm:8.5.18"
     prettier: "catalog:"
     prettier-plugin-organize-imports: "catalog:"
     prettier-plugin-tailwindcss: "npm:0.8.0"
@@ -11669,20 +11669,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-formatjs@npm:6.4.17":
-  version: 6.4.17
-  resolution: "eslint-plugin-formatjs@npm:6.4.17"
+"eslint-plugin-formatjs@npm:6.4.18":
+  version: 6.4.18
+  resolution: "eslint-plugin-formatjs@npm:6.4.18"
   dependencies:
-    "@formatjs/icu-messageformat-parser": "npm:3.5.13"
-    "@formatjs/ts-transformer": "npm:4.4.15"
-    "@types/estree-jsx": "npm:^1.0.5"
-    "@types/picomatch": "npm:^4.0.0"
-    "@unicode/unicode-17.0.0": "npm:^1.6.16"
-    magic-string: "npm:^0.30.0"
+    "@formatjs/icu-messageformat-parser": "npm:3.5.14"
+    "@formatjs/ts-transformer": "npm:4.4.16"
+    "@types/estree-jsx": "npm:1"
+    "@types/picomatch": "npm:4"
+    "@unicode/unicode-17.0.0": "npm:1"
+    magic-string: "npm:0"
     picomatch: "npm:2 || 3 || 4"
   peerDependencies:
     eslint: 9 || 10
-  checksum: 10/321be9845b8ca55fbab633a4c3d29cd81d88d67f4df923653adc93e4e37d22b6da214afdb4160b9899098e4eb8000ef116dba50414fb3d0eaa99a168fc5251e9
+  checksum: 10/e52df5dd90fd550128ec69b2b77464b55828fff0a235c7ced26a7e8776f5f76e298d1597a6bcf3a4c9eac9edb9657db3ff0e048c70be5a2ee4d3b27dbde5726b
   languageName: node
   linkType: hard
 
@@ -14475,7 +14475,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-stable-stringify@npm:^1.3.0":
+"json-stable-stringify@npm:1, json-stable-stringify@npm:^1.3.0":
   version: 1.3.0
   resolution: "json-stable-stringify@npm:1.3.0"
   dependencies:
@@ -15206,7 +15206,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.30.0, magic-string@npm:^0.30.21":
+"magic-string@npm:0, magic-string@npm:^0.30.21":
   version: 0.30.21
   resolution: "magic-string@npm:0.30.21"
   dependencies:
@@ -17354,14 +17354,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.5.16":
-  version: 8.5.16
-  resolution: "postcss@npm:8.5.16"
+"postcss@npm:8.5.18":
+  version: 8.5.18
+  resolution: "postcss@npm:8.5.18"
   dependencies:
     nanoid: "npm:^3.3.12"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10/b39408900aa394bce6f567d539b7361e71c07f361313e5b01e40481c5120309a570e7a54c6a0c6ea5f0c0c06ff8c12b560beeebcc29ea173ad42ec74bae86069
+  checksum: 10/b43f2d2493d82dc43fa50d21cf184bf3b66229e7f53fa1dedc7b8a7c4cecd7ac8ee18fad099f47570da7f78bbf46997a4c6e6c87d8d8ece683dc1f32cda6db3b
   languageName: node
   linkType: hard
 
