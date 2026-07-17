@@ -803,7 +803,7 @@
       "PersonalWorkspace": "Personal workspace",
       "PlatformNameLabel": "Name displayed in XTM Hub",
       "Recommended": "Recommended",
-      "Title": "You're about to connect your {platformIdentifier} product into XTM Hub"
+      "Title": "You're about to connect your {platformIdentifier} product to XTM Hub"
     },
     "SameOrganization": {
       "Registered": {

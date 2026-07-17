@@ -59,27 +59,17 @@ export const RegisterOrganizationForm = ({
           }}
           fieldConfig={{
             platformName: {
-              fieldType: ({ field }) => (
-                <FormItem className="gap-m">
-                  <FormLabel>
-                    {t('Register.OrganizationForm.PlatformNameLabel')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="text"
-                      className="bg-grayblue-700 border-none"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              ),
+              label: t('Register.OrganizationForm.PlatformNameLabel'),
+              inputProps: {
+                className: 'bg-grayblue-700 border-none',
+              },
             },
             organizationId: {
               fieldType: ({ field }) => (
                 <div className="flex flex-col gap-m">
                   <p className="text-sm font-medium leading-none">
                     {t(`Register.OrganizationForm.Description`)}
+                    <span className="text-destructive"> *</span>
                   </p>
                   <div className="flex flex-col gap-2">
                     {organizations.map((organization) => {
