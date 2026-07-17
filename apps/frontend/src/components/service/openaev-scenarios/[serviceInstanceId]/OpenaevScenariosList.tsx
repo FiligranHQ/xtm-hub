@@ -9,15 +9,24 @@ import {
   DocumentsListQuery,
 } from '@/components/service/document/document.graphql';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
-import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
+import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/hooks/use-service-list-local-storage';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   documentItem_fragment$data,
   documentItem_fragment$key,
 } from '@generated/documentItem_fragment.graphql';
 import { documentsList$key } from '@generated/documentsList.graphql';
-import { documentsQuery } from '@generated/documentsQuery.graphql';
+import {
+  documentsQuery,
+  documentsQuery$variables,
+} from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { PaginationState } from '@tanstack/react-table';
+import { useState } from 'react';
 import {
   PreloadedQuery,
   usePreloadedQuery,
@@ -42,10 +51,10 @@ const OpenaevScenariosList = ({
     queryRef
   );
 
-  const [data] = useRefetchableFragment<documentsQuery, documentsList$key>(
-    documentsFragment,
-    queryData
-  );
+  const [data, refetch] = useRefetchableFragment<
+    documentsQuery,
+    documentsList$key
+  >(documentsFragment, queryData);
 
   const [active, draft] = useActiveAndDraftSplit<
     documentItem_fragment$data,
@@ -60,6 +69,37 @@ const OpenaevScenariosList = ({
     type: ShareableResourceType.OPENAEV_SCENARIO,
   });
 
+  const { pageSize, setPageSize } = useServiceListLocalStorage(
+    ServiceListLocalStorageKey.OpenAEVScenarios
+  );
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize,
+  });
+
+  const handleRefetchData = (args?: Partial<documentsQuery$variables>) => {
+    refetch({
+      count: pagination.pageSize,
+      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+      ...args,
+    });
+  };
+
+  const onPaginationChange = (newPaginationValue: PaginationState) => {
+    handleRefetchData({
+      count: newPaginationValue.pageSize,
+      cursor: btoa(
+        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
+      ),
+    });
+
+    setPagination(newPaginationValue);
+    if (newPaginationValue.pageSize !== pageSize) {
+      setPageSize(newPaginationValue.pageSize);
+    }
+  };
+
   return (
     <AppServiceContext {...context}>
       <AppServiceListLocalStorageKeyContext
@@ -69,6 +109,15 @@ const OpenaevScenariosList = ({
           draft={draft}
           search={search}
           onSearchChange={onSearchChange}
+          paginationControls={
+            <PaginationControls
+              totalCount={data.documents.totalCount}
+              pageSize={pageSize}
+              pageIndex={pagination.pageIndex}
+              onPaginationChange={onPaginationChange}
+              onSetPageSize={setPageSize}
+            />
+          }
         />
       </AppServiceListLocalStorageKeyContext>
     </AppServiceContext>

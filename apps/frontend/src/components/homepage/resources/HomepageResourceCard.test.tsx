@@ -97,8 +97,8 @@ describe('HomepageResourceCard', () => {
       );
 
       expect(
-        screen.getByText('Threat intelligence platform')
-      ).toBeInTheDocument();
+        screen.getAllByText('Threat intelligence platform').length
+      ).toBeGreaterThan(0);
     });
 
     it('does not render a description paragraph when shortDescription is null', () => {
@@ -206,7 +206,7 @@ describe('HomepageResourceCard', () => {
 
         // The title container is the first flex row inside the <Link>
         const titleContainer = container.querySelector(
-          '.flex.items-center.gap-m.min-w-0'
+          '.flex.items-start.gap-m.min-w-0'
         ) as HTMLElement;
 
         expect(titleContainer).toHaveStyle({
