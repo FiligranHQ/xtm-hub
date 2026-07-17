@@ -32,7 +32,7 @@ export async function generateMetadata({
     locale,
     pathname: '/',
     title: t('Title'),
-    description: t('Description'),
+    description: t('ShortDescription'),
     imageAlt: t('SiteName'),
   });
 }
@@ -52,7 +52,7 @@ const Page = async ({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: tMeta('SiteName'),
-    description: tMeta('Description'),
+    description: tMeta('ShortDescription'),
     url: baseUrl,
     image: `${baseUrl}/seo_default.png`,
     publisher: FILIGRAN_ORGANIZATION_JSONLD,
