@@ -26,9 +26,11 @@ import {
 import { PlatformRegistrationStatus } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import {
+  ReactNode,
   useCallback,
   useContext,
   useLayoutEffect,
+  useMemo,
   useReducer,
   useRef,
 } from 'react';
@@ -182,53 +184,70 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
     }
   }, [isPlatformRegistered, register]);
 
-  if (state.registrationRequestStatus === 'missed-capability') {
-    return state.chosenOrganizationId ? (
-      <RegisterStateMissingCapability
-        organizationId={state.chosenOrganizationId}
-        cancel={cancel}
-      />
-    ) : (
-      <Loader />
-    );
-  }
+  return useMemo(() => {
+    const renderers = new Map<RegistrationRequestStatus, ReactNode>([
+      [
+        'missed-capability',
+        () =>
+          state.chosenOrganizationId ? (
+            <RegisterStateMissingCapability
+              organizationId={state.chosenOrganizationId}
+              cancel={cancel}
+            />
+          ) : (
+            <Loader />
+          ),
+      ],
+      [
+        'succeeded',
+        () => (
+          <RegisterStateSucceeded displayedIdentifier={displayedIdentifier} />
+        ),
+      ],
+      ['failed', () => <RegisterStateFailed cancel={cancel} />],
+    ]);
 
-  if (state.registrationRequestStatus === 'succeeded') {
-    return <RegisterStateSucceeded displayedIdentifier={displayedIdentifier} />;
-  }
+    if (renderers[state.registrationRequestStatus]) {
+      return renderers[state.registrationRequestStatus];
+    }
 
-  if (state.registrationRequestStatus === 'failed') {
-    return <RegisterStateFailed cancel={cancel} />;
-  }
+    const shouldRegisterOnSameOrganization =
+      isPlatformRegistered.status === PlatformRegistrationStatus.Unregistered &&
+      userOrganizationsQueryData.userOrganizations.length > 2;
+    if (shouldRegisterOnSameOrganization) {
+      return (
+        <RegisterStateTooMuchOrganization
+          cancel={cancel}
+          confirm={() => register(isPlatformRegistered.organization?.id ?? '')}
+          displayedIdentifier={displayedIdentifier}
+          platformTitle={isPlatformRegistered.platformTitle ?? ''}
+        />
+      );
+    }
 
-  const shouldRegisterOnSameOrganization =
-    isPlatformRegistered.status === PlatformRegistrationStatus.Unregistered &&
-    userOrganizationsQueryData.userOrganizations.length > 2;
-  if (shouldRegisterOnSameOrganization) {
-    return (
-      <RegisterStateTooMuchOrganization
-        cancel={cancel}
-        confirm={() => register(isPlatformRegistered.organization?.id ?? '')}
-        displayedIdentifier={displayedIdentifier}
-        platformTitle={isPlatformRegistered.platformTitle ?? ''}
-      />
-    );
-  }
+    if (
+      isPlatformRegistered.status ===
+        PlatformRegistrationStatus.NeverRegistered ||
+      isPlatformRegistered.status === PlatformRegistrationStatus.Unregistered
+    ) {
+      return (
+        <RegisterOrganizationForm
+          userOrganizationsQueryData={userOrganizationsQueryData}
+          defaultPlatformName={platform.title}
+          cancel={cancel}
+          confirm={register}
+        />
+      );
+    }
 
-  if (
-    isPlatformRegistered.status ===
-      PlatformRegistrationStatus.NeverRegistered ||
-    isPlatformRegistered.status === PlatformRegistrationStatus.Unregistered
-  ) {
-    return (
-      <RegisterOrganizationForm
-        userOrganizationsQueryData={userOrganizationsQueryData}
-        defaultPlatformName={platform.title}
-        cancel={cancel}
-        confirm={register}
-      />
-    );
-  }
-
-  return <Loader />;
+    return <Loader />;
+  }, [
+    cancel,
+    state.chosenOrganizationId,
+    state.registrationRequestStatus,
+    platform.title,
+    displayedIdentifier,
+    isPlatformRegistered,
+    userOrganizationsQueryData,
+  ]);
 };
