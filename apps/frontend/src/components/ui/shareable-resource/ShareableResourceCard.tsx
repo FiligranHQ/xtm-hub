@@ -2,9 +2,11 @@
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
+import { ShareableResourceCardDescription } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardDescription';
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import {
   PublicDocumentData,
@@ -13,7 +15,11 @@ import {
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
-import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
+import {
+  DocumentMetadataKeyCode,
+  FeatureFlag,
+  IntegrationType,
+} from '@graphql/generated';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
@@ -47,6 +53,7 @@ const ShareableResourceCard = ({
   publicPath = false,
 }: ShareableResourceCardProps) => {
   const { save } = useScrollPosition();
+  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const handleClick = () => {
     save();
   };
@@ -55,8 +62,13 @@ const ShareableResourceCard = ({
     !!document.integration_type &&
     FOOTER_VERSIONS_INTEGRATION_TYPES.includes(document.integration_type);
 
+  const cardHeightClass = isHomePageV2Enabled
+    ? 'h-[300px] sm:h-[348px]'
+    : 'h-[348px]';
+
   return (
-    <li className="overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover h-[348px]">
+    <li
+      className={`overflow-hidden border-light flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover ${cardHeightClass}`}>
       <Link
         className="flex flex-col flex-1 min-h-0 overflow-hidden"
         onClick={handleClick}
@@ -69,9 +81,9 @@ const ShareableResourceCard = ({
         />
         {isConnector ? (
           <div className="p-m flex flex-col gap-s flex-1 min-h-0">
-            <p className="text-muted-foreground text-sm overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
-              {document.short_description}
-            </p>
+            <ShareableResourceCardDescription
+              description={document.short_description}
+            />
             <BadgeOverflowCounter
               badges={document.use_cases as BadgeOverflow[]}
               className="z-2 shrink-0"
@@ -79,9 +91,9 @@ const ShareableResourceCard = ({
           </div>
         ) : (
           <div className="p-m">
-            <p className="text-muted-foreground text-sm overflow-hidden [display:-webkit-box] [-webkit-line-clamp:5] [-webkit-box-orient:vertical]">
-              {document.short_description}
-            </p>
+            <ShareableResourceCardDescription
+              description={document.short_description}
+            />
           </div>
         )}
       </Link>

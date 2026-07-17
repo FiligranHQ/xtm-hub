@@ -11,6 +11,7 @@ import {
   IconActionsLink,
 } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { APP_PATH } from '@/utils/path/constant';
@@ -19,6 +20,7 @@ import { Combobox, DataTable } from '@filigran/ui';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
+import { FeatureFlag } from '@graphql/generated';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -42,6 +44,7 @@ export const ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS = Object.values(
 
 const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
   const t = useTranslations();
+  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const [open, setOpen] = useState(false);
   const [editedService, setEditedService] =
     useState<serviceList_fragment$data>();
@@ -65,6 +68,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
     },
     {
       id: 'actions',
+      ...(isHomePageV2Enabled ? { size: 60 } : {}),
       cell: ({ row }) => {
         return (
           <>
