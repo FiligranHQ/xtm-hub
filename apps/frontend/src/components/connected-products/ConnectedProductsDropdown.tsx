@@ -65,13 +65,10 @@ export const ConnectedProductsDropdown = () => {
           </>
         )}
         <div className="flex flex-col gap-s p-m">
-          {CONNECTABLE_PLATFORMS.map((platformId) => (
-            <ConnectProductButton
-              key={platformId}
-              platformIdentifier={platformId}
-              onCloseDropdown={() => setOpen(false)}
-            />
-          ))}
+          <ConnectProductButton
+            variant="outline-primary"
+            onCloseDropdown={() => setOpen(false)}
+          />
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -16,14 +16,13 @@ interface ConnectProductProps {
   isOpen: boolean;
   displayConnectedProductSentence?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
-  product: string;
 }
 
-const DEFAULT_EMAIL_BODY = (product: string) => `Hello,
+const DEFAULT_EMAIL_BODY = () => `Hello,
 
-I don't have the required permissions to connect our product, ${product}, to XTM Hub.
+I don't have the required permissions to connect our Filigran product to XTM Hub.
 
-Could you please connect it by visiting https://hub.filigran.io/en, clicking "Connect your product", and following the steps?
+Could you please connect it by visiting https://hub.filigran.io/en, clicking "Connect product", and following the steps?
 
 Once it's connected, please let me know.
 
@@ -33,7 +32,6 @@ const ConnectProductFromHubModal = ({
   isOpen,
   displayConnectedProductSentence = false,
   onOpenChange,
-  product,
 }: ConnectProductProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
@@ -70,7 +68,7 @@ const ConnectProductFromHubModal = ({
     count: data?.usersWithCapabilitiesInOrganization?.length ?? 0,
   });
   const deniedMessageDescription = displayConnectedProductSentence
-    ? `${t('Register.ConnectFromHub.ConnectedProductSentence', { product })}. \n\n ${notAllowedMessage}`
+    ? `${t('Register.ConnectFromHub.ConnectedProductSentence')}. \n\n ${notAllowedMessage}`
     : notAllowedMessage;
   const administratorsEmails =
     data?.usersWithCapabilitiesInOrganization?.map((user) => user.email) ?? [];
@@ -83,8 +81,8 @@ const ConnectProductFromHubModal = ({
   const handleReachAdmin = () => {
     const to = mainRecipientEmail;
     const params = [
-      `subject=${encodeURIComponent(`Request to connect ${product} to XTM Hub`)}`,
-      `body=${encodeURIComponent(DEFAULT_EMAIL_BODY(product))}`,
+      `subject=${encodeURIComponent(`Request to connect a product to XTM Hub`)}`,
+      `body=${encodeURIComponent(DEFAULT_EMAIL_BODY())}`,
     ];
     if (ccRecipientsEmails.length > 0) {
       params.push(`cc=${encodeURIComponent(ccRecipientsEmails.join(','))}`);

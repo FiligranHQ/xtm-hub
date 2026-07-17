@@ -711,8 +711,8 @@
     },
     "ConnectFromHub": {
       "PermissionRequired": "Permission required",
-      "ConnectedProductSentence": "To deploy a resource you must have a connected {product} product",
-      "NotAllowedMessage": "You do not have permission to connect this product. \nPlease contact your product {count, plural, =1 {administrator} other {administrators}} to connect the product on your behalf.",
+      "ConnectedProductSentence": "To deploy a resource you must have a connected product",
+      "NotAllowedMessage": "You do not have permission to connect a product. \nPlease contact your product {count, plural, =1 {administrator} other {administrators}} to connect the product on your behalf.",
       "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
       "ReachAdmin": "Reach your admin"
     },

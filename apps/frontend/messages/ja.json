@@ -711,8 +711,8 @@
     },
     "ConnectFromHub": {
       "PermissionRequired": "許可が必要です",
-      "ConnectedProductSentence": "リソースをデプロイするには、接続済みの {product} 製品が必要です",
-      "NotAllowedMessage": "この製品を接続する権限がありません。\n製品 {count, plural, =1 {管理者} other {管理者}} に連絡し、代わりに接続してもらうよう依頼してください。",
+      "ConnectedProductSentence": "リソースをデプロイするには、接続された製品が必要です。",
+      "NotAllowedMessage": "製品を接続するために必要な権限がありません。\n代わりに製品を接続してもらうよう、{count, plural, =1 {管理者} other {管理者}} に連絡してください",
       "Administrators": "{count, plural, =1 {管理者} other {管理者}}",
       "ReachAdmin": "管理者にお問い合わせください"
     },

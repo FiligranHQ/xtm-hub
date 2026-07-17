@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockGetTranslations, mockConnectProductsButton, mockTranslate } =
+const { mockGetTranslations, mockConnectProductButton, mockTranslate } =
   vi.hoisted(() => ({
     mockGetTranslations: vi.fn(),
-    mockConnectProductsButton: vi.fn(() => (
+    mockConnectProductButton: vi.fn(() => (
       <button type="button">Connect products</button>
     )),
     mockTranslate: vi.fn((key: string, values?: { name?: string }) => {
@@ -20,8 +20,8 @@ vi.mock('next-intl/server', () => ({
   getTranslations: mockGetTranslations,
 }));
 
-vi.mock('./ConnectProductsButton', () => ({
-  default: mockConnectProductsButton,
+vi.mock('@/components/connected-products/ConnectProductButton', () => ({
+  ConnectProductButton: mockConnectProductButton,
 }));
 
 import XtmPlatform from './XtmPlatform';
@@ -29,7 +29,7 @@ import XtmPlatform from './XtmPlatform';
 describe('XtmPlatform', () => {
   beforeEach(() => {
     mockGetTranslations.mockReset();
-    mockConnectProductsButton.mockClear();
+    mockConnectProductButton.mockClear();
     mockTranslate.mockClear();
     mockGetTranslations.mockResolvedValue(mockTranslate);
   });

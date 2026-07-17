@@ -153,8 +153,6 @@ const OneClickDeploy = ({
     platformIdentifier,
     requiredProductVersion,
     requiresEe,
-    isOpen,
-    isFeatureEnabled,
   ]);
 
   const isDeploymentDisabled = useMemo(() => {
@@ -173,9 +171,6 @@ const OneClickDeploy = ({
             onOpenChange={(isOpen) => {
               setIsOpen(isOpen);
             }}
-            product={
-              PlatformMetadataMapping[platformIdentifier]?.name ?? 'OpenCTI'
-            }
           />
         ) : (
           <NoPlatformDisplay
