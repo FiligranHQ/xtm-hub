@@ -127,7 +127,7 @@ const ShareableResourceConnectorSlug = ({
       />
       {documentData.verified && (
         <div className="border border-solid border-blue rounded flex items-center gap-xs p-s text-sm mt-4">
-          <InfoIcon className="shrink-0 h-4 w-4 mr-xs text-blue" />
+          <InfoIcon className="shrink-0 h-4 w-4 mr-xs text-primary" />
           {t('Service.Connectors.ImproveIntegrationPrefix')}
           <Link
             href={manifest_url}

@@ -20,7 +20,7 @@ export const TrialsHeader = ({
   return (
     <header className="flex flex-col gap-m md:flex-row md:justify-between md:items-start my-xl">
       <div className="flex flex-col">
-        <h2 className="text-blue text-xl md:text-2xl mb-2">
+        <h2 className="text-primary text-xl md:text-2xl mb-2">
           {t('Service.Trials.PageHeader.Welcome')}
         </h2>
         <h1 className="text-2xl md:text-3xl">

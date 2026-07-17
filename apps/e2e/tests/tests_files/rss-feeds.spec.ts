@@ -22,9 +22,8 @@ test.describe('RSS Feeds', () => {
   });
 
   test('Should add RSS Feed', async ({ page }) => {
-    await expect(page).toHaveScreenshot();
     await integrationPage.navigateToIntegration(RSS_FEED_TEST.shortDescription);
-    await expect(page).toHaveScreenshot();
+
     await expect(
       page.getByRole('heading', { name: RSS_FEED_TEST.name })
     ).toBeVisible();

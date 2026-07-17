@@ -15,7 +15,7 @@ const PublicMenu = () => {
   return (
     <aside
       className={cn(
-        'max-md:hidden z-20 flex h-full flex-col overflow-x-hidden bg-page-background text-muted-foreground duration-300',
+        'max-md:hidden z-20 flex h-full flex-col overflow-x-hidden bg-gradient-layer-0-white duration-300',
         open ? 'w-45' : 'w-14'
       )}>
       <MenuLogo

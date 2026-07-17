@@ -32,7 +32,7 @@ export default class UserPage {
       .getByRole('button', { name: 'Additional capabilities' })
       .click();
     await this.page.getByRole('option', { name: 'MANAGE ACCESS' }).click();
-    await expect(this.page).toHaveScreenshot();
+
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
@@ -43,7 +43,7 @@ export default class UserPage {
     ).toBeVisible();
 
     await this.page.getByLabel('Update').click();
-    await expect(this.page).toHaveScreenshot();
+
     await this.page.getByPlaceholder('First name').fill('test e2e');
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }

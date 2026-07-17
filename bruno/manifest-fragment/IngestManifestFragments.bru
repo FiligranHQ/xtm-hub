@@ -42,7 +42,7 @@ body:graphql:vars {
     "source_code": "https://github.com/OpenCTI-Platform/connectors/tree/master/external-import/misp",
     "manager_supported": true,
     "min_version": "7.260507.0",
-    "version": "7.260309.0-lts.5",
+    "version": "7.260309.0-lts.6",
     "image_name": "opencti/connector-misp",
     "image_type": "EXTERNAL_IMPORT",
     "platform": "OpenCTI",
@@ -80,10 +80,10 @@ settings {
 
 docs {
   Ensure xtm-hub-token is defined in environment (requires MANAGE_MANIFEST_INGESTIONS capability)
-
+  
   Upserts connector manifest fragments as Integration documents, then schedules a
   rebuild for any impacted Manifest (version >= batch minimum).
-
+  
   Fill variables:
   manifestFragments: array of ManifestFragmentInput (see manifest-fragment.graphql)
   platform: PlatformIdentifier value, e.g. opencti, openaev
@@ -91,7 +91,7 @@ docs {
   version / min_version: format major.date.patch[-lts.N], e.g. 7.260309.0-lts.5
   last_verified_date: ISO date string
   logo: base64 image, with "data:image/...;base64," prefix
-
+  
   Notes:
   - All fragments in one batch must be homogeneous (all LTS or all non-LTS).
   - Re-ingesting the same id+version throws CONNECTOR_VERSION_ALREADY_EXISTS.
