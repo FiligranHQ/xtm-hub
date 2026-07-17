@@ -12,8 +12,8 @@ import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { formatPersonNames } from '@/utils/format/name';
 import {
+  buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
-  FILIGRAN_ORGANIZATION_JSONLD,
   getBaseUrl,
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
@@ -195,13 +195,7 @@ const Page = async ({
       : undefined,
     datePublished: document.created_at,
     dateModified: document.updated_at,
-    publisher: {
-      ...FILIGRAN_ORGANIZATION_JSONLD,
-      logo: {
-        '@type': 'ImageObject',
-        url: `${baseUrl}/images/filigran-logo.png`,
-      },
-    },
+    publisher: buildFiligranOrganizationJsonLd(baseUrl),
     isPartOf: {
       '@type': 'SoftwareApplication',
       name: serviceInstance.name,

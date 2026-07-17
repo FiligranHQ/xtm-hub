@@ -8,8 +8,8 @@ import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { formatPersonNames } from '@/utils/format/name';
 import {
+  buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
-  FILIGRAN_ORGANIZATION_JSONLD,
   getBaseUrl,
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
@@ -123,7 +123,7 @@ const Page = async ({
     },
     // datePublished: serviceInstance.created_at,
     // dateModified: serviceInstance.updated_at,
-    provider: FILIGRAN_ORGANIZATION_JSONLD,
+    provider: buildFiligranOrganizationJsonLd(baseUrl),
     keywords: documents
       .flatMap(
         (document) => document.use_cases?.map((useCase) => useCase.name) || []

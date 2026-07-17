@@ -10,11 +10,16 @@ const LOCALE_TAG_MAP: Record<PublicLocale, string> = {
   ja: 'ja_JP',
 };
 
-export const FILIGRAN_ORGANIZATION_JSONLD = {
-  '@type': 'Organization',
-  name: 'Filigran',
-  url: 'https://filigran.io',
-} as const;
+export const buildFiligranOrganizationJsonLd = (baseUrl: string) =>
+  ({
+    '@type': 'Organization',
+    name: 'Filigran',
+    url: 'https://filigran.io',
+    logo: {
+      '@type': 'ImageObject',
+      url: `${baseUrl}/images/filigran-logo.png`,
+    },
+  }) as const;
 
 // Escapes `<` so `</script>` inside free-text JSON-LD fields can't close the tag early.
 export const stringifyJsonLd = (data: Record<string, unknown>): string =>

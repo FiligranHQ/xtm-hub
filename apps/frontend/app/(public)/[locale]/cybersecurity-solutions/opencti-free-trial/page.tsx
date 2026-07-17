@@ -5,8 +5,8 @@ import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
 import {
+  buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
-  FILIGRAN_ORGANIZATION_JSONLD,
   getBaseUrl,
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
@@ -64,7 +64,7 @@ const Page = async ({
     description: t('Service.Trials.Display.opencti.FreeTrialDescription'),
     url: `${baseUrl}${PATHNAME}`,
     image: `${baseUrl}/opencti_ecosystem.png`,
-    publisher: FILIGRAN_ORGANIZATION_JSONLD,
+    publisher: buildFiligranOrganizationJsonLd(baseUrl),
   };
 
   return (

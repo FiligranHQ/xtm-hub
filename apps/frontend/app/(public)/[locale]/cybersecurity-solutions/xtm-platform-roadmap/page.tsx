@@ -3,8 +3,8 @@ import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import {
+  buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
-  FILIGRAN_ORGANIZATION_JSONLD,
   getBaseUrl,
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
@@ -80,7 +80,7 @@ const Page = async ({
       bestRating: '5',
       worstRating: '2',
     },
-    provider: FILIGRAN_ORGANIZATION_JSONLD,
+    provider: buildFiligranOrganizationJsonLd(baseUrl),
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': `${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,

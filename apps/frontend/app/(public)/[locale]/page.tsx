@@ -3,8 +3,8 @@ import PublicServiceInstanceCard from '@/components/service/PublicServiceInstanc
 import type { PublicLocale } from '@/i18n/config';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import {
+  buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
-  FILIGRAN_ORGANIZATION_JSONLD,
   getBaseUrl,
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
@@ -55,7 +55,7 @@ const Page = async ({
     description: tMeta('ShortDescription'),
     url: baseUrl,
     image: `${baseUrl}/seo_default.png`,
-    publisher: FILIGRAN_ORGANIZATION_JSONLD,
+    publisher: buildFiligranOrganizationJsonLd(baseUrl),
   };
 
   const jsonLdScript = (
