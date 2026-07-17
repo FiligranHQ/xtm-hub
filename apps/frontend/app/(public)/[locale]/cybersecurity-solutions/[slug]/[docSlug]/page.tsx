@@ -107,12 +107,15 @@ export async function generateMetadata({
   );
 
   const description = document.short_description || fallbackDescription;
+  const serviceLabel = t(
+    `Service.ServiceDefinitionIdentifier.${serviceInstance.service_definition.identifier}`
+  );
 
   const metadata = buildSeoPageMetadata({
     baseUrl,
     locale,
     pathname,
-    title: `${document.name} | XTM Hub`,
+    title: `${document.name} | ${serviceLabel} | XTM Hub`,
     description,
     type: 'article',
     imageAlt: t('Metadata.ResourcePreviewAlt', { name: document.name ?? '' }),
@@ -183,7 +186,7 @@ const Page = async ({
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
-    headline: `${document.name} | XTM Hub`,
+    headline: `${document.name} | ${t(`Service.ServiceDefinitionIdentifier.${serviceInstance.service_definition.identifier}`)} | XTM Hub`,
     description: document.short_description || fallbackDescription,
     articleBody: document.description,
     author: document.uploader
