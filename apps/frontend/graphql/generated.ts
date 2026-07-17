@@ -1337,6 +1337,7 @@ export type NewsFeedItem = Node & {
   metadata: Array<NewsFeedItemMetadata>;
   tags: Array<Scalars['String']['output']>;
   title: Scalars['String']['output'];
+  type: NewsFeedItemType;
 };
 
 export type NewsFeedItemConnection = {

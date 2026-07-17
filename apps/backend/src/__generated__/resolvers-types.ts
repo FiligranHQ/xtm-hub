@@ -1329,6 +1329,7 @@ export type NewsFeedItem = Node & {
   metadata: Array<NewsFeedItemMetadata>;
   tags: Array<Scalars['String']['output']>;
   title: Scalars['String']['output'];
+  type: NewsFeedItemType;
 };
 
 export type NewsFeedItemConnection = {
@@ -3660,6 +3661,7 @@ export type NewsFeedItemResolvers<ContextType = PortalContext, ParentType extend
   metadata?: Resolver<Array<ResolversTypes['NewsFeedItemMetadata']>, ParentType, ContextType>;
   tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['NewsFeedItemType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -879,6 +879,7 @@ export const mockNewsFeedItem = (overrides?: Partial<NewsFeedItem>, _relationshi
         metadata: overrides && overrides.hasOwnProperty('metadata') ? overrides.metadata! : [relationshipsToOmit.has('NewsFeedItemMetadata') ? {} as NewsFeedItemMetadata : mockNewsFeedItemMetadata({}, relationshipsToOmit)],
         tags: overrides && overrides.hasOwnProperty('tags') ? overrides.tags! : ['depromo'],
         title: overrides && overrides.hasOwnProperty('title') ? overrides.title! : 'ver',
+        type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : NewsFeedItemType.ResourceCustomDashboard,
     };
 };
 

@@ -4,6 +4,7 @@ export const newsFeedItemFragment = graphql`
   fragment newsFeedItem_fragment on NewsFeedItem @inline {
     id
     title
+    type
     creation_date
     tags
     is_deleted

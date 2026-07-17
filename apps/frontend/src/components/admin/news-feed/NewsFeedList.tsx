@@ -10,6 +10,8 @@ import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
+import { localizedCardName } from '@/utils/services';
+import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { MoreVertIcon } from '@filigran/icon';
 import { DataTable, toast } from '@filigran/ui';
 import { Badge } from '@filigran/ui/servers';
@@ -17,12 +19,13 @@ import { newsFeedDeleteMutation } from '@generated/newsFeedDeleteMutation.graphq
 import {
   newsFeedItem_fragment$data,
   newsFeedItem_fragment$key,
+  NewsFeedItemType,
 } from '@generated/newsFeedItem_fragment.graphql';
 import { newsFeedList_fragment$key } from '@generated/newsFeedList_fragment.graphql';
 import { newsFeedListQuery } from '@generated/newsFeedListQuery.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import {
   readInlineData,
@@ -33,8 +36,18 @@ import {
 
 const DEFAULT_PAGE_SIZE = 25;
 
+const getUrlPath = (item: newsFeedItem_fragment$data): string | undefined =>
+  item.metadata.find((m) => m.key === 'url_path')?.value ?? undefined;
+
+const NEWS_FEED_TYPE_TO_SERVICE_SLUG: Record<NewsFeedItemType, ServiceSlug> = {
+  RESOURCE_CUSTOM_DASHBOARD: ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS,
+  RESOURCE_PLAYBOOK: ServiceSlug.OPEN_CTI_PLAYBOOKS,
+  RESOURCE_CUSTOM_VIEW: ServiceSlug.OPEN_CTI_CUSTOM_VIEWS,
+};
+
 const NewsFeedList = () => {
   const t = useTranslations();
+  const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<
     newsFeedItem_fragment$data | undefined
   >(undefined);
@@ -114,20 +127,17 @@ const NewsFeedList = () => {
         accessorKey: 'title',
         id: 'title',
         header: t('NewsFeedAdminPage.Title'),
+        cell: ({ row }) => (
+          <span className="truncate">{row.original.title}</span>
+        ),
+      },
+      {
+        accessorKey: 'type',
+        id: 'library',
+        header: t('NewsFeedAdminPage.Library'),
         cell: ({ row }) => {
-          const urlPath = row.original.metadata.find(
-            (m) => m.key === 'url_path'
-          )?.value;
-          if (!urlPath) {
-            return <span className="truncate">{row.original.title}</span>;
-          }
-          return (
-            <Link
-              href={`/${urlPath}`}
-              className="truncate">
-              {row.original.title}
-            </Link>
-          );
+          const slug = NEWS_FEED_TYPE_TO_SERVICE_SLUG[row.original.type];
+          return <span>{localizedCardName({ slug, name: slug }, t)}</span>;
         },
       },
       {
@@ -170,7 +180,9 @@ const NewsFeedList = () => {
         enableResizing: false,
         cell: ({ row }) =>
           row.original.is_deleted ? null : (
-            <div className="flex items-center justify-end">
+            <div
+              className="flex items-center justify-end"
+              onClick={(e) => e.stopPropagation()}>
               <IconActions
                 icon={
                   <>
@@ -201,6 +213,12 @@ const NewsFeedList = () => {
           rowCount: data.newsFeedItems.totalCount,
         }}
         tableState={{ pagination, columnPinning: { right: ['actions'] } }}
+        onClickRow={(row) => {
+          const urlPath = getUrlPath(row.original);
+          if (urlPath) {
+            router.push(`/${urlPath}`);
+          }
+        }}
       />
       {deleteTarget && (
         <AlertDialogComponent

@@ -478,6 +478,7 @@
   },
   "NewsFeedAdminPage": {
     "Title": "タイトル",
+    "Library": "ライブラリ",
     "CreationDate": "作成日",
     "Tags": "タグ",
     "IsDeleted": "削除",
