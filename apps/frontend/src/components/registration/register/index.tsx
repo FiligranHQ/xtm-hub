@@ -185,7 +185,7 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   }, [isPlatformRegistered, register]);
 
   return useMemo(() => {
-    const renderers = new Map<RegistrationRequestStatus, ReactNode>([
+    const renderers = new Map<RegistrationRequestStatus, () => ReactNode>([
       [
         'missed-capability',
         () =>
@@ -207,8 +207,9 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
       ['failed', () => <RegisterStateFailed cancel={cancel} />],
     ]);
 
-    if (renderers[state.registrationRequestStatus]) {
-      return renderers[state.registrationRequestStatus];
+    const renderer = renderers.get(state.registrationRequestStatus);
+    if (renderer) {
+      return renderer();
     }
 
     const shouldRegisterOnSameOrganization =
@@ -248,6 +249,7 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
     platform.title,
     displayedIdentifier,
     isPlatformRegistered,
+    register,
     userOrganizationsQueryData,
   ]);
 };
