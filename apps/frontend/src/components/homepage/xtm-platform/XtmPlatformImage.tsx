@@ -1,11 +1,6 @@
 import Image from 'next/image';
 
-const imageStyle = {
-  width: 'auto',
-  height: '100%',
-  maxHeight: '280px',
-  objectFit: 'contain' as const,
-};
+const imageClassName = 'h-auto w-full object-contain';
 
 const XtmPlatformImage = () => {
   return (
@@ -16,8 +11,7 @@ const XtmPlatformImage = () => {
         width={1370}
         height={680}
         sizes="(max-width: 768px) 100vw, 50vw"
-        style={imageStyle}
-        className="hidden dark:block"
+        className={`${imageClassName} hidden dark:block`}
         priority
       />
       <Image
@@ -26,8 +20,7 @@ const XtmPlatformImage = () => {
         width={1370}
         height={680}
         sizes="(max-width: 768px) 100vw, 50vw"
-        style={imageStyle}
-        className="block dark:hidden"
+        className={`${imageClassName} block dark:hidden`}
         priority
       />
     </>

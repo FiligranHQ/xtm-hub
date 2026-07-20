@@ -100,7 +100,13 @@ const RootLayout = async ({
             </header>
             <main
               className={cn('grow', !isHomePageV2Enabled && 'overflow-y-auto')}>
-              <div className="container pt-l">{children}</div>
+              <div
+                className={cn(
+                  'container pt-l',
+                  isHomePageV2Enabled && 'pt-xxl'
+                )}>
+                {children}
+              </div>
             </main>
             <footer className="container text-muted-foreground max-md:mt-xxl">
               <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-l text-center">
