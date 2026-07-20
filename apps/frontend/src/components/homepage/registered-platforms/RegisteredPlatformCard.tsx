@@ -64,8 +64,8 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
   const remainingTrialDaysBadgeClassName = resolveTrialDaysBadgeClassName(
     platform.remainingTrialDays
   );
-  const gradientFrom = 'hsl(var(--blue-default))';
-  const gradientTo = 'hsl(var(--turquoise-300))';
+  const gradientFrom = 'var(--color-filigran-brand-primary)';
+  const gradientTo = 'var(--color-filigran-tonic-primary)';
   const gradientBg = 'hsl(var(--background))';
   const customStyle = {
     '--gradient-from': gradientFrom,
@@ -90,7 +90,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
                 <span>
                   <Icon className="w-4 h-4" />
                 </span>
-                <span>
+                <span className="text-content-body-compact-medium">
                   {PlatformMetadataMapping[platform.platformIdentifier].name}
                 </span>
               </div>
@@ -99,20 +99,22 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <p className="text-xs truncate min-w-0">{platform.title}</p>
+                  <p className="text-content-body-compact truncate min-w-0">
+                    {platform.title}
+                  </p>
                 </TooltipTrigger>
                 <TooltipContent>{platform.title}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <p className="text-xs shrink-0">
+          <p className="text-content-body-compact shrink-0">
             <span className="text-muted-foreground">
               {tRegisteredPlatformsCard('RegisteredOn')}
             </span>{' '}
             {registrationDate}
           </p>
         </div>
-        <div className="text-sm flex gap-l items-center">
+        <div className="text-content-body-compact-medium flex gap-l items-center">
           {platform.contract === PlatformContract.Ee ? (
             <Badge
               className={cn(
@@ -120,7 +122,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
                 '[background:linear-gradient(var(--gradient-bg),var(--gradient-bg))_padding-box,linear-gradient(99.95deg,var(--gradient-from)_0%,var(--gradient-to)_100%)_border-box]'
               )}
               style={customStyle}>
-              <span className="bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-(--gradient-from) to-(--gradient-to) bg-clip-text text-transparent">
                 {t(contractLabel)}
               </span>
             </Badge>
@@ -131,10 +133,13 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
           )}
           {platform.contract === PlatformContract.Trial &&
             platform.remainingTrialDays !== undefined && (
-              <div className="flex gap-s items-center">
+              <div className="flex gap-s items-center text-content-body-compact text-text-default-secondary">
                 <p>{tRegisteredPlatformsCard('Remaining')}</p>
                 <Badge
-                  className={`border-none ${remainingTrialDaysBadgeClassName}`}>
+                  className={cn(
+                    'border-none text-content-body-compact-medium text-text-default-primary',
+                    remainingTrialDaysBadgeClassName
+                  )}>
                   {tRegisteredPlatformsCard('DaysRemaining', {
                     days: platform.remainingTrialDays,
                   })}

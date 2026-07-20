@@ -24,16 +24,16 @@ export const RegisteredPlatformsSection = async ({
   }
 
   return (
-    <section className="w-full lg:w-3/8 bg-page-background p-l rounded-lg max-h-96 overflow-scroll small-scroll">
+    <section className="w-full lg:w-3/8 bg-elevation-background-layer-1 p-l rounded-lg max-h-96 overflow-scroll small-scroll">
       <div className="flex flex-col">
-        <span className="text-primary txt-small font-semibold tracking-wide">
+        <span className="heading-xs text-filigran-brand-primary">
           {welcomeName
             ? t('PublicHomePage.XtmPlatform.LabelWithName', {
                 name: welcomeName,
               })
             : t('PublicHomePage.XtmPlatform.Label', {})}
         </span>
-        <span className="mt-l mb-s txt-small">
+        <span className="mt-l mb-s text-content-body-base text-text-default-primary">
           {t('PublicHomePage.XtmPlatform.ConnectedProducts', {
             count: registeredProductsCount,
           })}
