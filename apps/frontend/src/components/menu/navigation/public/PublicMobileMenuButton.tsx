@@ -35,8 +35,10 @@ export const PublicMobileMenuButton = () => {
           className="h-6 w-6"
         />
       </SheetTrigger>
-      <SheetContent side="left">
-        <SheetHeader className="flex flex-row justify-between pl-l">
+      <SheetContent
+        side="left"
+        className="bg-gradient-layer-0-white">
+        <SheetHeader className="flex flex-row justify-between pl-l bg-gradient-layer-0-white border-elevation-border-strong">
           <div className="flex items-center gap-s">
             <Logo
               className="h-8 w-8"

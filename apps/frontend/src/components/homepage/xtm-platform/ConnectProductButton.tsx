@@ -32,7 +32,7 @@ const ConnectProductButton = () => {
       {open && (
         <div className="absolute top-0 left-0 border border-primary rounded-lg p-s flex flex-col gap-s w-53 bg-background z-10">
           <div className="flex items-center justify-between pl-s pr-xs pb-s">
-            <span className="text-sm text-white">{t('Cta')}</span>
+            <span className="text-sm">{t('Cta')}</span>
             <Button
               onClick={() => setOpen(false)}
               variant="ghost"

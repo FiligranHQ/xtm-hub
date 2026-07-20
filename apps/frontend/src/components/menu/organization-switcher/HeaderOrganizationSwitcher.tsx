@@ -3,7 +3,7 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation/private/private-navigation-query-invalidation';
 import { APP_PATH } from '@/utils/path/constant';
-import { UnfoldMoreIcon } from '@filigran/icon';
+import { ArrowDropDownIcon } from '@filigran/icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
 import organizationSwitcherMutation, {
   OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
@@ -80,7 +80,7 @@ const HeaderOrganizationSwitcher = () => {
 
   return (
     <div className="flex flex-col gap-xs sm:flex-row sm:items-center sm:gap-m">
-      <span className="txt-sub-content sm:whitespace-nowrap">
+      <span className="content-body-base sm:whitespace-nowrap">
         {t('OrganizationSwitcher.Workspace')}
       </span>
       <Popover
@@ -94,9 +94,9 @@ const HeaderOrganizationSwitcher = () => {
             aria-controls={listboxId}
             aria-expanded={openPopover}
             aria-haspopup="listbox"
-            className="w-full justify-between sm:w-55">
+            className="w-full justify-between border-none dark:bg-grayblue-800 bg-gray-150 sm:w-55">
             <span className="truncate">{selectedOrganization?.label}</span>
-            <UnfoldMoreIcon
+            <ArrowDropDownIcon
               aria-hidden={true}
               focusable={false}
               className="ml-s h-4 w-4 shrink-0 opacity-70"

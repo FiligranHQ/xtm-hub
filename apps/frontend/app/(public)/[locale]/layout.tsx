@@ -5,6 +5,7 @@ import PublicMenu from '@/components/menu/PublicMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 import { publicLocales, type PublicLocale } from '@/i18n/config';
+import { cn } from '@/lib/utils';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import { Button } from '@filigran/ui/servers';
@@ -52,8 +53,20 @@ const RootLayout = async ({
         <PublicTryFiligranProductsBanner />
         <div className="flex grow min-h-0">
           {isHomePageV2Enabled && <PublicMenu />}
-          <div className="flex flex-col flex-1 min-h-0 min-w-0">
-            <header className="max-md:sticky max-md:top-0 max-md:z-20 flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong bg-page-background dark:bg-background px-4 justify-between">
+          <div
+            className={cn(
+              'flex flex-col flex-1 min-h-0 min-w-0',
+              !isHomePageV2Enabled && 'bg-gradient-background',
+              isHomePageV2Enabled && 'md:overflow-y-auto'
+            )}>
+            <header
+              className={cn(
+                'sticky flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong px-4 justify-between',
+                isHomePageV2Enabled &&
+                  "backdrop-blur-sm top-0 z-20 before:content-[''] before:absolute before:inset-0 before:bg-gradient-background before:opacity-50 before:-z-1",
+                !isHomePageV2Enabled &&
+                  'bg-gradient-background max-md:top-0 max-md:z-20'
+              )}>
               <Link
                 href={`/${locale}`}
                 className={isHomePageV2Enabled ? 'md:hidden' : undefined}>
@@ -64,8 +77,8 @@ const RootLayout = async ({
                 <div className="flex items-center gap-s ml-auto">
                   <Button
                     asChild
-                    variant="outline"
-                    className="whitespace-nowrap border-primary text-primary bg-primary/10">
+                    variant="outline-primary"
+                    className="whitespace-nowrap border-elevation-border-strong">
                     <Link href="/auth/oidc">{t('PublicLayout.Login')}</Link>
                   </Button>
                   <Button
@@ -85,7 +98,8 @@ const RootLayout = async ({
                 </Button>
               )}
             </header>
-            <main className="grow overflow-auto">
+            <main
+              className={cn('grow', !isHomePageV2Enabled && 'overflow-y-auto')}>
               <div className="container pt-l">{children}</div>
             </main>
             <footer className="container text-muted-foreground max-md:mt-xxl">

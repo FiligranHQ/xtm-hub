@@ -1,6 +1,5 @@
 import {
   NAVIGATION_ACTIVE_CLASSES,
-  NAVIGATION_GRADIENT_STYLE,
   NAVIGATION_HOVER_CLASSES,
 } from '@/components/menu/navigation/shared/navigation-styles';
 import {
@@ -37,33 +36,29 @@ export const PublicSubLink = ({
     buttonVariants({
       variant: 'ghost',
       className: cn(
-        'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case txt-sub-content text-xs font-light',
-        highlight && !isActive && 'bg-clip-text text-transparent',
+        'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case content-body-compact text-text-default-secondary text-xs',
+        highlight &&
+          !isActive &&
+          'bg-clip-text text-transparent bg-gradient-focus',
         !href && 'cursor-default pointer-events-none',
         className
       ),
     }),
     isActive ? NAVIGATION_ACTIVE_CLASSES : !!href && NAVIGATION_HOVER_CLASSES
   );
-  const sharedStyle =
-    highlight && !isActive
-      ? { backgroundImage: NAVIGATION_GRADIENT_STYLE }
-      : undefined;
 
   const content = (
     <>
       <span className="flex min-w-0 flex-1 items-center gap-xs">
         {external && <OpenInNewIcon className="h-3 w-3 shrink-0" />}
         <span
-          className="truncate"
+          className={cn('truncate', !href && 'text-text-default-disabled')}
           title={label}>
           {label}
         </span>
       </span>
       {badge && (
-        <span
-          className="shrink-0 text-[10px] font-medium bg-clip-text text-transparent translate-y-[2px]"
-          style={{ backgroundImage: NAVIGATION_GRADIENT_STYLE }}>
+        <span className="inline-flex items-center shrink-0 text-content-caption bg-clip-text text-transparent bg-gradient-focus">
           {badge}
         </span>
       )}
@@ -91,13 +86,7 @@ export const PublicSubLink = ({
   };
 
   if (!href) {
-    return wrapWithTooltip(
-      <span
-        className={sharedClassName}
-        style={sharedStyle}>
-        {content}
-      </span>
-    );
+    return wrapWithTooltip(<span className={sharedClassName}>{content}</span>);
   }
 
   return wrapWithTooltip(
@@ -105,15 +94,14 @@ export const PublicSubLink = ({
       href={href}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
-      className={sharedClassName}
-      style={sharedStyle}>
+      className={sharedClassName}>
       {content}
     </Link>
   );
 };
 
 export const MenuItemIcon = ({ icon: Icon }: { icon: ElementType }) => (
-  <span className="flex w-4 shrink-0 justify-center text-foreground">
+  <span className="text-text-default-secondary flex w-4 shrink-0 justify-center">
     <Icon
       aria-hidden={true}
       focusable={false}
@@ -147,7 +135,7 @@ export const NavigationLinkMenu = ({
         buttonVariants({
           variant: 'ghost',
           className:
-            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-s text-xs font-light',
+            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-s content-body-compact text-text-default-secondary text-xs',
         }),
         currentPath === href
           ? NAVIGATION_ACTIVE_CLASSES
