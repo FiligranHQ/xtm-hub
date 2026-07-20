@@ -484,6 +484,7 @@
   },
   "NewsFeedAdminPage": {
     "Title": "Title",
+    "Library": "Library",
     "CreationDate": "Creation date",
     "Tags": "Tags",
     "IsDeleted": "Deleted",
@@ -498,9 +499,9 @@
     }
   },
   "Metadata": {
-    "Title": "Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation | XTM Hub by Filigran",
-    "Description": "XTM Hub is your gateway to Filigran's cybersecurity solutions: Cyber Threat Intelligence & Breach & Attack Simulation. Uncover Threats. Take Action.",
-    "ShortTitle": "XTM Hub by Filigran - Cyber Threat Intelligence Platform",
+    "Title": "XTM Hub | Your Gateway to Cyber Threat Intelligence & Breach & Attack Simulation",
+    "Description": "XTM Hub is a central forum to access resources, optimize the use of Filigran’s products, and empower the community.",
+    "ShortTitle": "XTM Hub | Cyber Threat Intelligence Platform",
     "ShortDescription": "XTM Hub is your gateway to Filigran's cybersecurity solutions.",
     "SiteName": "XTM Hub by Filigran",
     "ServiceFallbackDescription": "Discover our cybersecurity solution for enhanced threat intelligence and protection.",
@@ -773,7 +774,7 @@
       },
       "OrganizationForm": {
         "Description": "Choose which organization space to connect to",
-        "Title": "You're about to connect your OpenCTI platform into XTM Hub"
+        "Title": "You're about to connect your OpenCTI platform to XTM Hub"
       },
       "SameOrganization": {
         "Registered": {
@@ -801,8 +802,9 @@
       "OrganizationalWorkspace": "Organizational workspace",
       "PersonalDescription": "Keep resources and activity private to your account.",
       "PersonalWorkspace": "Personal workspace",
+      "PlatformNameLabel": "Name displayed in XTM Hub",
       "Recommended": "Recommended",
-      "Title": "You're about to connect your {platformIdentifier} product into XTM Hub"
+      "Title": "You're about to connect your {platformIdentifier} product to XTM Hub"
     },
     "SameOrganization": {
       "Registered": {
