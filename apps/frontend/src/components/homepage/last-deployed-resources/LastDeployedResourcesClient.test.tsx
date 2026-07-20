@@ -1,4 +1,4 @@
-import { LastDeployedPlatform } from '@/components/homepage/LastDeployedResourcesSection';
+import { LastDeployedPlatform } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

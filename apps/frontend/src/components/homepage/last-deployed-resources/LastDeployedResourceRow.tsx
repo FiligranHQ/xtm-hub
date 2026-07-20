@@ -1,6 +1,6 @@
 'use client';
 
-import { LastDeployedOverview } from '@/components/homepage/LastDeployedResourcesSection';
+import { LastDeployedOverview } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';

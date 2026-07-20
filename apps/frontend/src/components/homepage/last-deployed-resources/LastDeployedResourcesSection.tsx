@@ -1,4 +1,4 @@
-import LastDeployedResourcesClient from '@/components/homepage/LastDeployedResourcesClient';
+import LastDeployedResourcesClient from '@/components/homepage/last-deployed-resources/LastDeployedResourcesClient';
 import {
   PlatformMetadataMapping,
   ServiceDefinitionIdentifierToPlatformIdentifier,

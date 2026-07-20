@@ -1,7 +1,7 @@
 'use client';
 
-import LastDeployedResourceRow from '@/components/homepage/LastDeployedResourceRow';
-import { LastDeployedPlatform } from '@/components/homepage/LastDeployedResourcesSection';
+import LastDeployedResourceRow from '@/components/homepage/last-deployed-resources/LastDeployedResourceRow';
+import { LastDeployedPlatform } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
   Select,
