@@ -226,7 +226,7 @@ export type CreateDocumentInput = {
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
   uploader_id: Scalars['UserId']['input'];
-  use_cases: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
+  use_cases: Array<Scalars['UseCaseId']['input']>;
 };
 
 export type CreateEpicInput = {
