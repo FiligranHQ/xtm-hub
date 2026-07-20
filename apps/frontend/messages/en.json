@@ -774,7 +774,7 @@
       },
       "OrganizationForm": {
         "Description": "Choose which organization space to connect to",
-        "Title": "You're about to connect your OpenCTI platform into XTM Hub"
+        "Title": "You're about to connect your OpenCTI platform to XTM Hub"
       },
       "SameOrganization": {
         "Registered": {
@@ -802,8 +802,9 @@
       "OrganizationalWorkspace": "Organizational workspace",
       "PersonalDescription": "Keep resources and activity private to your account.",
       "PersonalWorkspace": "Personal workspace",
+      "PlatformNameLabel": "Name displayed in XTM Hub",
       "Recommended": "Recommended",
-      "Title": "You're about to connect your {platformIdentifier} product into XTM Hub"
+      "Title": "You're about to connect your {platformIdentifier} product to XTM Hub"
     },
     "SameOrganization": {
       "Registered": {
