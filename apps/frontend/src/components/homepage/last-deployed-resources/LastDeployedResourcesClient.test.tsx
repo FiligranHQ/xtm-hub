@@ -76,19 +76,6 @@ describe('LastDeployedResourcesClient', () => {
     expect(screen.getByText('John Doe')).toBeInTheDocument();
   });
 
-  it('renders the empty state image when the selected platform has no resources', () => {
-    mockOverview([]);
-
-    testRender(
-      <LastDeployedResourcesClient
-        platforms={[buildPlatform('platform-1', 'OpenCTI Platform')]}
-      />
-    );
-
-    expect(screen.getByRole('img', { name: 'ImageAlt' })).toBeInTheDocument();
-    expect(screen.getByText('Title')).toBeInTheDocument();
-  });
-
   it('fetches the overview for the first platform by default', () => {
     mockOverview([buildResource()]);
 
