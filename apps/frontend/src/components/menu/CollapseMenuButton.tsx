@@ -26,7 +26,7 @@ export const CollapseMenuButton = ({
           {isHomepageV2 ? (
             <LeftPanelCloseIcon
               className={cn(
-                'h-6 w-6 p-1 duration-300 ease-in-out',
+                'h-6 w-6 p-1 duration-300 ease-in-out text-text-default-secondary',
                 open ? 'rotate-0' : 'rotate-180'
               )}
             />
@@ -39,7 +39,11 @@ export const CollapseMenuButton = ({
             />
           )}
         </span>
-        <span className={cn('normal-case', open ? 'ml-2' : 'sr-only')}>
+        <span
+          className={cn(
+            'normal-case text-text-default-primary',
+            open ? 'ml-2' : 'sr-only'
+          )}>
           {t('App.Collapse')}
         </span>
       </Button>

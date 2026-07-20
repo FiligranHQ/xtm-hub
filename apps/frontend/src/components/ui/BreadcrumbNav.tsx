@@ -40,14 +40,20 @@ export const BreadcrumbNav = ({ value }: BreadcrumbProps) => {
         {value.map((link, index) => {
           const { href } = link;
           const lastIndex = value.length - 1 === index;
+          const firstIndex = 0 === index;
           return (
             <Fragment key={index}>
+              {!firstIndex && (
+                <BreadcrumbSeparator
+                  className={cn(lastIndex && 'text-text-default-primary')}
+                />
+              )}
               {href ? (
                 <>
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
                       <Link
-                        className="hover:underline"
+                        className="hover:underline text-text-default-disabled"
                         href={href}>
                         {renderLabel(link)}
                       </Link>
@@ -57,12 +63,11 @@ export const BreadcrumbNav = ({ value }: BreadcrumbProps) => {
               ) : (
                 <BreadcrumbItem>
                   <BreadcrumbPage
-                    className={cn(!lastIndex && 'text-muted-foreground')}>
+                    className={cn(!lastIndex && 'text-text-default-primary')}>
                     {renderLabel(link)}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               )}
-              {!lastIndex && <BreadcrumbSeparator />}
             </Fragment>
           );
         })}

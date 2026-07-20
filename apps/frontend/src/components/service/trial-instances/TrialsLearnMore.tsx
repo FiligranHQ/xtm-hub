@@ -14,7 +14,7 @@ import Link from 'next/link';
 import React from 'react';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-blue text-2xl mb-l">{children}</h2>
+  <h2 className="text-primary text-2xl mb-l">{children}</h2>
 );
 
 const P = ({
@@ -74,7 +74,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
         </div>
         <div className="flex flex-col md:flex-row justify-between gap-l">
           <article className="border border-solid border-b rounded p-6 basis-full">
-            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+            <h3 className="flex items-center gap-l text-primary mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <ArrowsInputIcon className="size-4" />
               </span>
@@ -83,7 +83,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             <P>{t(`${baseTranslationKey}.Blocks.First.Description`)}</P>
           </article>
           <article className="border border-solid border-b rounded p-6 basis-full">
-            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+            <h3 className="flex items-center gap-l text-primary mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <AnalyticsIcon className="size-4" />
               </span>
@@ -92,7 +92,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             <P>{t(`${baseTranslationKey}.Blocks.Second.Description`)}</P>
           </article>
           <article className="border border-solid border-b rounded p-6 basis-full">
-            <h3 className="flex items-center gap-l text-blue mb-s font-bold">
+            <h3 className="flex items-center gap-l text-primary mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <ArrowsOutputIcon className="size-4" />
               </span>

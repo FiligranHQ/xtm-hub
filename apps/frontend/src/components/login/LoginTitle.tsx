@@ -1,12 +1,12 @@
 'use client';
-import { DisplayLogo } from '@/components/ui/DisplayLogo';
+import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import { useTranslations } from 'next-intl';
 
 const LoginTitleForm = ({}) => {
   const t = useTranslations();
   return (
     <>
-      <DisplayLogo />
+      <LogoXTMDark />
       <h1 className="sr-only">{t('LoginPage.Title')}</h1>
     </>
   );

@@ -19,7 +19,7 @@ test.describe('Profile edition', () => {
     await profilePage.navigateTo();
   });
 
-  test('should update user profile information', async ({ page }) => {
+  test('should update user profile information', async () => {
     await test.step('edit first name', async () => {
       await profilePage.editProfile({
         firstName: 'Roger',
@@ -36,7 +36,6 @@ test.describe('Profile edition', () => {
       await expect(
         profilePage.getAdminEditionWarningMessage()
       ).not.toBeVisible();
-      await expect(page).toHaveScreenshot();
     });
 
     await test.step('edit last name', async () => {

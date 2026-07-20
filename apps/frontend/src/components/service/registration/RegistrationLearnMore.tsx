@@ -13,18 +13,6 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import React from 'react';
 
-const H2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-blue text-2xl mb-l">{children}</h2>
-);
-
-const P = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => <p className={cn('text-sm', className)}>{children}</p>;
-
 const Section = ({
   children,
   className,
@@ -63,12 +51,14 @@ export const RegistrationLearnMore = async ({
     <>
       <Section className="bg-blue-800/5 px-xl">
         <div className="text-center w-[70%] m-auto">
-          <H2>{t('Service.Trials.XTMPlatform.Title')}</H2>
-          <P>{t('Service.Trials.XTMPlatform.Description', { platformName })}</P>
+          <h2 className="text-primary text-2xl mb-l">
+            {t('Service.Trials.XTMPlatform.Title')}
+          </h2>
+          <p>{t('Service.Trials.XTMPlatform.Description', { platformName })}</p>
         </div>
         <div className="flex flex-col lg:flex-row gap-xl">
           <div className="flex flex-col gap-s basis-full">
-            <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
+            <div className="border border-solid border-b rounded p-6 basis-full bg-page-background">
               <h3 className="mb-m flex gap-s">
                 <Image
                   width="25"
@@ -80,14 +70,14 @@ export const RegistrationLearnMore = async ({
                 />
                 {t('PlatformIdentifier.opencti')}
               </h3>
-              <P className="mb-s">
+              <p className="mb-s">
                 <strong>
                   {t('Service.Trials.XTMPlatform.OpenCTITagline')}
                 </strong>
-              </P>
-              <P>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</P>
+              </p>
+              <p>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</p>
             </div>
-            <div className="border border-solid border-b rounded p-6 basis-full bg-[#09111F]">
+            <div className="border border-solid border-b rounded p-6 basis-full bg-page-background">
               <h3 className="mb-m flex gap-s">
                 <Image
                   width="25"
@@ -99,12 +89,12 @@ export const RegistrationLearnMore = async ({
                 />
                 {t('PlatformIdentifier.openaev')}
               </h3>
-              <P className="mb-s">
+              <p className="mb-s">
                 <strong>
                   {t('Service.Trials.XTMPlatform.OpenAEVTagline')}
                 </strong>
-              </P>
-              <P>{t('Service.Trials.XTMPlatform.OpenAEVDescription')}</P>
+              </p>
+              <p>{t('Service.Trials.XTMPlatform.OpenAEVDescription')}</p>
             </div>
           </div>
           <div className="basis-full m-auto">
@@ -145,14 +135,14 @@ export const RegistrationLearnMore = async ({
               />
             ))}
           </div>
-          <div className="order-first lg:order-last basis-full">
-            <H2>{t('Service.Trials.QuickStart.Title')}</H2>
-            <P className="text-gray mb-l">
+          <div className="order-first text-sm lg:order-last basis-full">
+            <h2 className="text-primary text-2xl mb-l">
+              {t('Service.Trials.QuickStart.Title')}
+            </h2>
+            <p className="mb-l">
               {t('Service.Trials.QuickStart.Subtitle', { platformName })}
-            </P>
-            <P className="text-gray">
-              {t('Service.Trials.QuickStart.Description')}
-            </P>
+            </p>
+            <p>{t('Service.Trials.QuickStart.Description')}</p>
           </div>
         </div>
       </Section>

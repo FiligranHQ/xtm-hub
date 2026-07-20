@@ -484,6 +484,7 @@
   },
   "NewsFeedAdminPage": {
     "Title": "タイトル",
+    "Library": "ライブラリ",
     "CreationDate": "作成日",
     "Tags": "タグ",
     "IsDeleted": "削除",
@@ -498,9 +499,9 @@
     }
   },
   "Metadata": {
-    "Title": "サイバー脅威インテリジェンスと侵害・攻撃シミュレーションへのゲートウェイ｜XTM Hub by Filigran",
-    "Description": "XTM HubはFiligranのサイバーセキュリティソリューションへのゲートウェイです：サイバー脅威インテリジェンス、侵害、攻撃シミュレーション。脅威を発見する。行動を起こす。",
-    "ShortTitle": "XTM Hub by Filigran - サイバー脅威インテリジェンスプラットフォーム",
+    "Title": "XTM Hub | サイバー脅威インテリジェンスおよび侵害・攻撃シミュレーションへのゲートウェイ",
+    "Description": "XTM Hubは、リソースへのアクセス、Filigran製品の活用の最適化、そしてコミュニティの活性化を図るための中核となるプラットフォームです。",
+    "ShortTitle": "XTM Hub | サイバー脅威インテリジェンス・プラットフォーム",
     "ShortDescription": "XTM HubはFiligranのサイバーセキュリティ・ソリューションへのゲートウェイです。",
     "SiteName": "XTMハブ by フィリグラン",
     "ServiceFallbackDescription": "脅威インテリジェンスと保護を強化するサイバーセキュリティソリューションをご覧ください。",

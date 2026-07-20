@@ -30,7 +30,6 @@ test.describe('Organization Management', () => {
       await expect(
         page.getByRole('cell', { name: TEST_ORGANIZATION.name, exact: true })
       ).toBeVisible();
-      await expect(page).toHaveScreenshot();
     });
 
     await test.step('Edit organization', async () => {

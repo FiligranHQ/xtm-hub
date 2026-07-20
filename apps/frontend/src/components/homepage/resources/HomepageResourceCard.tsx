@@ -16,7 +16,8 @@ import { Badge } from '@filigran/ui/servers';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const BADGE_CLASS = 'border-0 bg-primary/20';
+const BADGE_CLASS =
+  'border-0 content-body-compact-medium bg-feedback-info-secondary-transparency';
 
 export interface HomepageResourceCardProps {
   name: string;
@@ -48,11 +49,11 @@ const HomepageResourceCard = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <p className="content-body-compact line-clamp-2">
+          <p className="text-text-default-primary text-xs line-clamp-2">
             {shortDescription}
           </p>
         </TooltipTrigger>
-        <TooltipContent className="bg-elevation-bg max-w-sm whitespace-normal">
+        <TooltipContent className="bg-gray-50 max-w-sm whitespace-normal">
           {shortDescription}
         </TooltipContent>
       </Tooltip>
@@ -60,7 +61,7 @@ const HomepageResourceCard = ({
   ) : null;
 
   return (
-    <div className="overflow-hidden flex flex-col relative rounded bg-page-background hover:bg-hover max-sm:max-w-none max-w-75">
+    <div className="overflow-hidden flex flex-col relative rounded bg-page-background hover:bg-hover">
       <div className="absolute top-m right-m flex gap-xs z-10">
         <ResourceStatusIcons
           active={active}

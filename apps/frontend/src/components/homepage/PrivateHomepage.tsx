@@ -1,3 +1,4 @@
+import BlueBlurDecoration from '@/components/homepage/BlueBlurDecoration';
 import { buildDistinctPlatformIdentifiersFromServiceDefinition } from '@/components/homepage/Homepage.utils';
 import LastDeployedResourcesSection from '@/components/homepage/LastDeployedResourcesSection';
 import { RegisteredPlatformsSection } from '@/components/homepage/registered-platforms/RegisteredPlatformsSection';
@@ -61,6 +62,7 @@ export const PrivateHomepage = async () => {
 
   return (
     <>
+      <BlueBlurDecoration />
       {platformIdentifiers.length !== 0 && (
         <BreadcrumbNav value={breadcrumbValue} />
       )}

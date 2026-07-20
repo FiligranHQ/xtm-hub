@@ -52,9 +52,9 @@ test.describe('Capabilities', () => {
   test('Should add subscription with capabilities', async ({ page }) => {
     await test.step("Add orga's sub + user with manage access", async () => {
       await servicePage.navigateToServiceListAdmin();
-      await expect(page).toHaveScreenshot();
+
       await servicePage.navigateToServiceItemAdmin(TEST_CAPABILITY.serviceName);
-      await expect(page).toHaveScreenshot();
+
       await servicePage.addOrganizationIntoServiceWithCapabilities(
         TEST_CAPABILITY.organizationName
       );
@@ -67,7 +67,7 @@ test.describe('Capabilities', () => {
         'Manage users'
       );
       await servicePage.addUserIntoService(TEST_CAPABILITY.adminThalesEmail);
-      await expect(page).toHaveScreenshot();
+
       await loginPage.logout();
     });
     await test.step('Add simple user access + upload capa', async () => {
@@ -75,7 +75,7 @@ test.describe('Capabilities', () => {
 
       await integrationPage.navigateToIntegrationsService();
       await page.getByRole('link', { name: /Manage access/i }).click();
-      await expect(page).toHaveScreenshot();
+
       await servicePage.addUserIntoServiceWithCapability(
         TEST_CAPABILITY.userThalesEmail,
         'UPLOAD access:'

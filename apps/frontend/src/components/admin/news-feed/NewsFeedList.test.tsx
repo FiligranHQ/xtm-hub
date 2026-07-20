@@ -1,12 +1,15 @@
 import NewsFeedList from '@/components/admin/news-feed/NewsFeedList';
 import testRender from '@/utils/test/test-render';
+import type { NewsFeedItemType } from '@generated/newsFeedItem_fragment.graphql';
 import { act, screen, waitFor, within } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 type NewsFeedItem = {
   id: string;
   title: string;
+  type: NewsFeedItemType;
   creation_date: string;
   tags: string[];
   is_deleted: boolean;
@@ -16,11 +19,17 @@ type NewsFeedItem = {
 const mocks = vi.hoisted(() => ({
   refetch: vi.fn(),
   deleteMutation: vi.fn(),
+  push: vi.fn(),
   newsFeedItems: [] as NewsFeedItem[],
 }));
 
 vi.mock('@/utils/date', () => ({
   formatDate: (date: string) => `formatted:${date}`,
+}));
+
+vi.mock('@/utils/services', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/utils/services')>()),
+  localizedCardName: (instance: { name: string }) => instance.name,
 }));
 
 vi.mock('react-relay', async (importOriginal) => ({
@@ -89,10 +98,19 @@ vi.mock('@/components/ui/BadgeOverflowCounter', () => ({
 describe('NewsFeedList', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useRouter).mockReturnValue({
+      push: mocks.push,
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      refresh: vi.fn(),
+    });
     mocks.newsFeedItems = [
       {
         id: 'item-1',
         title: 'Active news',
+        type: 'RESOURCE_PLAYBOOK',
         creation_date: '2025-01-20T08:00:00.000Z',
         tags: ['tag-1', 'tag-2'],
         is_deleted: false,
@@ -101,6 +119,7 @@ describe('NewsFeedList', () => {
       {
         id: 'item-2',
         title: 'Deleted news',
+        type: 'RESOURCE_CUSTOM_DASHBOARD',
         creation_date: '2025-01-21T08:00:00.000Z',
         tags: ['tag-3'],
         is_deleted: true,
@@ -118,14 +137,9 @@ describe('NewsFeedList', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('NewsFeedAdminPage.Tags')).toBeInTheDocument();
     expect(screen.getByText('NewsFeedAdminPage.IsDeleted')).toBeInTheDocument();
+    expect(screen.getByText('NewsFeedAdminPage.Library')).toBeInTheDocument();
 
-    expect(screen.getByRole('link', { name: 'Active news' })).toHaveAttribute(
-      'href',
-      '/news/active-news'
-    );
-    expect(
-      screen.queryByRole('link', { name: 'Deleted news' })
-    ).not.toBeInTheDocument();
+    expect(screen.getByText('Active news')).toBeInTheDocument();
     expect(screen.getByText('Deleted news')).toBeInTheDocument();
     expect(
       screen.getByText('formatted:2025-01-20T08:00:00.000Z')
@@ -139,6 +153,17 @@ describe('NewsFeedList', () => {
     expect(
       screen.getAllByRole('button', { name: 'NewsFeedAdminPage.Delete' })
     ).toHaveLength(1);
+  });
+
+  it('navigates to the item url_path when a row is clicked', async () => {
+    const { user } = testRender(<NewsFeedList />);
+
+    await user.click(screen.getByText('Active news').closest('tr')!);
+    expect(mocks.push).toHaveBeenCalledWith('/news/active-news');
+
+    mocks.push.mockClear();
+    await user.click(screen.getByText('Deleted news').closest('tr')!);
+    expect(mocks.push).not.toHaveBeenCalled();
   });
 
   it('opens delete dialog and confirms deletion with success toast and refetch', async () => {
@@ -215,6 +240,7 @@ describe('NewsFeedList', () => {
     mocks.newsFeedItems = Array.from({ length: 30 }, (_unused, index) => ({
       id: `item-${index + 1}`,
       title: `News ${index + 1}`,
+      type: 'RESOURCE_PLAYBOOK',
       creation_date: '2025-01-20T08:00:00.000Z',
       tags: ['tag'],
       is_deleted: false,
