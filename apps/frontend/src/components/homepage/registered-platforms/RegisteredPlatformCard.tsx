@@ -6,7 +6,15 @@ import {
   PlatformMetadataMapping,
 } from '@/components/registration/PlatformIdentifierMapping';
 import { cn } from '@/lib/utils';
-import { Badge, Card, CardContent } from '@filigran/ui';
+import {
+  Badge,
+  Card,
+  CardContent,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/ui';
 import { PlatformContract } from '@graphql/generated';
 import { useFormatter, useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -76,8 +84,8 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
       )}>
       <CardContent className="p-s flex flex-col gap-m">
         <div className="flex gap-s items-center justify-between">
-          <div className="flex gap-s items-center">
-            <Badge className="border-none font-medium bg-feedback-info-secondary-transparency">
+          <div className="flex gap-s items-center min-w-0 flex-1">
+            <Badge className="border-none font-medium bg-feedback-info-secondary-transparency shrink-0">
               <div className="flex gap-s">
                 <span>
                   <Icon className="w-4 h-4" />
@@ -88,9 +96,16 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
               </div>
             </Badge>
 
-            <p className="text-xs">{platform.title}</p>
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <p className="text-xs truncate min-w-0">{platform.title}</p>
+                </TooltipTrigger>
+                <TooltipContent>{platform.title}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-          <p className="text-xs">
+          <p className="text-xs shrink-0">
             <span className="text-muted-foreground">
               {tRegisteredPlatformsCard('RegisteredOn')}
             </span>{' '}
