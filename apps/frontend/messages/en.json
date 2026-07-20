@@ -484,6 +484,7 @@
   },
   "NewsFeedAdminPage": {
     "Title": "Title",
+    "Library": "Library",
     "CreationDate": "Creation date",
     "Tags": "Tags",
     "IsDeleted": "Deleted",

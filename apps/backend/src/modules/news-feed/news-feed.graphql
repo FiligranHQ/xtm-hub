@@ -35,6 +35,7 @@ type ConsumeProvisionedNewsFeedItemsResponse {
 type NewsFeedItem implements Node {
   id: ID!
   title: String!
+  type: NewsFeedItemType!
   creation_date: Date!
   tags: [String!]!
   is_deleted: Boolean!
