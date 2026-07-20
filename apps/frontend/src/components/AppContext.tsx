@@ -15,7 +15,7 @@ interface AppProps {
   children: React.ReactNode;
 }
 
-const THEME_SWITCHABLE_PATHS = [`/${APP_PATH}`, '/login', '/sign-up'];
+const THEME_SWITCHABLE_PATHS = [`/${APP_PATH}`];
 
 const isThemeSwitchablePath = (pathname: string) => {
   return THEME_SWITCHABLE_PATHS.some(

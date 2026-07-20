@@ -2,14 +2,18 @@
 @import 'tw-animate-css';
 @import 'tailwindcss';
 
-@reference '@filigran/ui/index.css';
+@reference '@filigran/ui/theme.css';
 :root {
-  --hover-background: hsl(var(--gray-150));
+  --semantic-filigran-brand-primary-transparency: hsl(
+    var(--darkblue-700) / 0.3
+  );
+  --hover-background: var(--color-gray-150);
 }
 .dark,
 body[data-theme='dark'],
 body[data-theme='Dark'] {
   --hover-background: hsla(0, 0%, 100%, 0.1);
+  --semantic-filigran-brand-primary-transparency: hsl(var(--blue-500) / 0.3);
 }
 @source '../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
 @source '../../../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';
@@ -18,9 +22,18 @@ body[data-theme='Dark'] {
 @variant mobile (@media screen and (max-width: 40rem));
 
 @layer base {
+  html {
+    font-size: 100%;
+  }
   * {
     @apply border-border;
+  }
+  body {
     font-family: var(--font-ibm-plex-sans), system-ui, sans-serif;
+    font-size: var(--text-content-body-base);
+    font-weight: var(--font-weight-content-body-base);
+    background: var(--gradient-background);
+    color: var(--color-text-default-primary);
   }
 
   h1,
@@ -37,10 +50,6 @@ body[data-theme='Dark'] {
   }
   h2 {
     @apply txt-subtitle;
-  }
-
-  body {
-    @apply bg-background text-foreground;
   }
 
   ol {

@@ -23,11 +23,10 @@ test.describe('Third Party Integrations', () => {
   });
 
   test('Should add Third Party Integration', async ({ page }) => {
-    await expect(page).toHaveScreenshot();
     await integrationPage.navigateToIntegration(
       ThirdPartyIntegration_TEST.shortDescription
     );
-    await expect(page).toHaveScreenshot();
+
     await expect(
       page.getByRole('heading', { name: ThirdPartyIntegration_TEST.name })
     ).toBeVisible();

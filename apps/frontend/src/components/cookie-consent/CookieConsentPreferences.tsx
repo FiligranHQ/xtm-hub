@@ -171,11 +171,7 @@ export const CookieConsentPreferences = () => {
         </div>
 
         <DialogFooter>
-          <Button
-            className="text-white"
-            onClick={() => save(draft)}>
-            {t('Save')}
-          </Button>
+          <Button onClick={() => save(draft)}>{t('Save')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

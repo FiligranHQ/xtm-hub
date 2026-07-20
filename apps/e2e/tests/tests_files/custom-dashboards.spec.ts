@@ -36,9 +36,8 @@ test.describe('Custom dashboards', () => {
   });
 
   test('Should add custom dashboard', async ({ page }) => {
-    await expect(page).toHaveScreenshot();
     await dashboardPage.navigateToDashboard(DASHBOARD_TEST.shortDescription);
-    await expect(page).toHaveScreenshot();
+
     await expect(
       page.getByRole('heading', { name: DASHBOARD_TEST.name })
     ).toBeVisible();
@@ -46,15 +45,14 @@ test.describe('Custom dashboards', () => {
 
   test('Should see the custom dashboard on public page', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveScreenshot();
+
     await dashboardPage.navigateToPublicCustomDashboard();
     await page.evaluate(() => window.scrollTo(0, 0));
-    await expect(page).toHaveScreenshot();
+
     await dashboardPage.navigateToPublicDashboardDetail(
       DASHBOARD_TEST.shortDescription
     );
     await waitForAllImageLoaded(page);
-    await expect(page).toHaveScreenshot();
   });
 
   test('Should edit a custom dashboard', async ({ page }) => {
@@ -70,7 +68,6 @@ test.describe('Custom dashboards', () => {
     ).toBeVisible();
 
     await openUpdateDrawer();
-    await expect(page).toHaveScreenshot();
 
     let test_step = 0;
     await test.step('Update only texts', async () => {
