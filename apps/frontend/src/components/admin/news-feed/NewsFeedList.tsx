@@ -23,6 +23,7 @@ import {
 } from '@generated/newsFeedItem_fragment.graphql';
 import { newsFeedList_fragment$key } from '@generated/newsFeedList_fragment.graphql';
 import { newsFeedListQuery } from '@generated/newsFeedListQuery.graphql';
+import { NewsFeedItemMetadataKey } from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -37,7 +38,8 @@ import {
 const DEFAULT_PAGE_SIZE = 25;
 
 const getUrlPath = (item: newsFeedItem_fragment$data): string | undefined =>
-  item.metadata.find((m) => m.key === 'url_path')?.value ?? undefined;
+  item.metadata.find((m) => m.key === NewsFeedItemMetadataKey.UrlPath)?.value ??
+  undefined;
 
 const NEWS_FEED_TYPE_TO_SERVICE_SLUG: Record<NewsFeedItemType, ServiceSlug> = {
   RESOURCE_CUSTOM_DASHBOARD: ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS,

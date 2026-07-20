@@ -110,7 +110,7 @@ describe('NewsFeedList', () => {
       {
         id: 'item-1',
         title: 'Active news',
-        type: 'RESOURCE_PLAYBOOK',
+        type: NewsFeedItemType.ResourcePlaybook,
         creation_date: '2025-01-20T08:00:00.000Z',
         tags: ['tag-1', 'tag-2'],
         is_deleted: false,
@@ -119,7 +119,7 @@ describe('NewsFeedList', () => {
       {
         id: 'item-2',
         title: 'Deleted news',
-        type: 'RESOURCE_CUSTOM_DASHBOARD',
+        type: NewsFeedItemType.ResourceCustomDashboard,
         creation_date: '2025-01-21T08:00:00.000Z',
         tags: ['tag-3'],
         is_deleted: true,
@@ -240,7 +240,7 @@ describe('NewsFeedList', () => {
     mocks.newsFeedItems = Array.from({ length: 30 }, (_unused, index) => ({
       id: `item-${index + 1}`,
       title: `News ${index + 1}`,
-      type: 'RESOURCE_PLAYBOOK',
+      type: NewsFeedItemType.ResourcePlaybook,
       creation_date: '2025-01-20T08:00:00.000Z',
       tags: ['tag'],
       is_deleted: false,
