@@ -22,10 +22,13 @@ const mixedOrgs: organizationListUserOrganizationsQuery$data = {
   ],
 };
 
+const defaultPlatformName = 'My OpenCTI Platform';
+
 const renderForm = (
   orgs: organizationListUserOrganizationsQuery$data = twoOrgs,
   cancel: () => void = vi.fn(),
-  confirm: (id: string) => void = vi.fn()
+  confirm: (id: string, platformName: string) => void = vi.fn(),
+  platformName: string = defaultPlatformName
 ) =>
   testRender(
     <RegistrationContext.Provider
@@ -35,6 +38,7 @@ const renderForm = (
       }}>
       <RegisterOrganizationForm
         userOrganizationsQueryData={orgs}
+        defaultPlatformName={platformName}
         cancel={cancel}
         confirm={confirm}
       />
@@ -53,6 +57,14 @@ describe('RegisterOrganizationForm', () => {
     expect(
       screen.getByText('Register.OrganizationForm.Description')
     ).toBeInTheDocument();
+    expect(
+      screen.getByText('Register.OrganizationForm.PlatformNameLabel')
+    ).toBeInTheDocument();
+  });
+
+  it('prefills the platform name field with the default platform title', () => {
+    renderForm();
+    expect(screen.getByDisplayValue(defaultPlatformName)).toBeInTheDocument();
   });
 
   it('calls cancel when the cancel button is clicked', async () => {
@@ -62,14 +74,28 @@ describe('RegisterOrganizationForm', () => {
     expect(cancel).toHaveBeenCalledOnce();
   });
 
-  it('calls confirm with the first organization id when the form is submitted', async () => {
+  it('calls confirm with the first organization id and the default platform name when the form is submitted', async () => {
     const confirm = vi.fn();
     const { user } = renderForm(twoOrgs, vi.fn(), confirm);
 
     await user.click(screen.getByRole('button', { name: 'Register.Confirm' }));
 
     await waitFor(() => {
-      expect(confirm).toHaveBeenCalledWith('org-1');
+      expect(confirm).toHaveBeenCalledWith('org-1', defaultPlatformName);
+    });
+  });
+
+  it('calls confirm with the overridden platform name when the field is edited', async () => {
+    const confirm = vi.fn();
+    const { user } = renderForm(twoOrgs, vi.fn(), confirm);
+
+    const nameInput = screen.getByDisplayValue(defaultPlatformName);
+    await user.clear(nameInput);
+    await user.type(nameInput, 'My Custom Name');
+    await user.click(screen.getByRole('button', { name: 'Register.Confirm' }));
+
+    await waitFor(() => {
+      expect(confirm).toHaveBeenCalledWith('org-1', 'My Custom Name');
     });
   });
 
@@ -95,7 +121,7 @@ describe('RegisterOrganizationForm', () => {
     await user.click(screen.getByRole('button', { name: 'Register.Confirm' }));
 
     await waitFor(() => {
-      expect(confirm).toHaveBeenCalledWith('org-pro-1');
+      expect(confirm).toHaveBeenCalledWith('org-pro-1', defaultPlatformName);
     });
   });
 });
