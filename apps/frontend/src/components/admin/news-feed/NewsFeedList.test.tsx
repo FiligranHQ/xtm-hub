@@ -1,6 +1,6 @@
 import NewsFeedList from '@/components/admin/news-feed/NewsFeedList';
 import testRender from '@/utils/test/test-render';
-import { NewsFeedItemType } from '@generated/newsFeedItem_fragment.graphql';
+import type { NewsFeedItemType } from '@generated/newsFeedItem_fragment.graphql';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
@@ -110,7 +110,7 @@ describe('NewsFeedList', () => {
       {
         id: 'item-1',
         title: 'Active news',
-        type: NewsFeedItemType.ResourcePlaybook,
+        type: 'RESOURCE_PLAYBOOK',
         creation_date: '2025-01-20T08:00:00.000Z',
         tags: ['tag-1', 'tag-2'],
         is_deleted: false,
@@ -119,7 +119,7 @@ describe('NewsFeedList', () => {
       {
         id: 'item-2',
         title: 'Deleted news',
-        type: NewsFeedItemType.ResourceCustomDashboard,
+        type: 'RESOURCE_CUSTOM_DASHBOARD',
         creation_date: '2025-01-21T08:00:00.000Z',
         tags: ['tag-3'],
         is_deleted: true,
@@ -240,7 +240,7 @@ describe('NewsFeedList', () => {
     mocks.newsFeedItems = Array.from({ length: 30 }, (_unused, index) => ({
       id: `item-${index + 1}`,
       title: `News ${index + 1}`,
-      type: NewsFeedItemType.ResourcePlaybook,
+      type: 'RESOURCE_PLAYBOOK',
       creation_date: '2025-01-20T08:00:00.000Z',
       tags: ['tag'],
       is_deleted: false,
