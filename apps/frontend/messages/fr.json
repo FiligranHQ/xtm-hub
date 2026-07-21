@@ -484,6 +484,7 @@
   },
   "NewsFeedAdminPage": {
     "Title": "Titre",
+    "Library": "Bibliothèque",
     "CreationDate": "Date de création",
     "Tags": "Tags",
     "IsDeleted": "Supprimé",
@@ -801,6 +802,7 @@
       "OrganizationalWorkspace": "Espace de travail organisationnel",
       "PersonalDescription": "Gardez les ressources et l'activité privées à votre compte.",
       "PersonalWorkspace": "Espace de travail personnel",
+      "PlatformNameLabel": "Nom affiché dans XTM Hub",
       "Recommended": "Recommandé",
       "Title": "Vous êtes sur le point de connecter votre produit {platformIdentifier} dans XTM Hub"
     },

@@ -484,6 +484,7 @@
   },
   "NewsFeedAdminPage": {
     "Title": "タイトル",
+    "Library": "ライブラリ",
     "CreationDate": "作成日",
     "Tags": "タグ",
     "IsDeleted": "削除",
@@ -801,6 +802,7 @@
       "OrganizationalWorkspace": "組織のワークスペース",
       "PersonalDescription": "リソースやアクティビティを自分のアカウントに非公開にする",
       "PersonalWorkspace": "個人用ワークスペース",
+      "PlatformNameLabel": "XTM Hub に表示される名前",
       "Recommended": "推奨",
       "Title": "あなたの {platformIdentifier} 製品を XTM Hub に接続しようとしています。"
     },

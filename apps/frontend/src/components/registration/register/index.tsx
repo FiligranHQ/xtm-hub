@@ -118,14 +118,18 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   }, []);
 
   const register = useCallback(
-    (organizationId: string) => {
+    (organizationId: string, platformName: string = platform.title) => {
       if (!identifier) {
         return;
       }
       dispatch({ type: 'SET_ORGANIZATION_ID', payload: organizationId });
       registerPlatform({
         variables: {
-          input: { organizationId, platform, identifier },
+          input: {
+            organizationId,
+            platform: { ...platform, title: platformName },
+            identifier,
+          },
         },
         onCompleted: (response) => {
           dispatch({
@@ -238,6 +242,7 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
     return (
       <RegisterOrganizationForm
         userOrganizationsQueryData={userOrganizationsQueryData}
+        defaultPlatformName={platform.title}
         cancel={cancel}
         confirm={register}
       />
