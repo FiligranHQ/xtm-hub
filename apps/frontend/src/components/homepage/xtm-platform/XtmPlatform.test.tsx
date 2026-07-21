@@ -5,7 +5,7 @@ const { mockGetTranslations, mockConnectProductButton, mockTranslate } =
   vi.hoisted(() => ({
     mockGetTranslations: vi.fn(),
     mockConnectProductButton: vi.fn(() => (
-      <button type="button">Connect product</button>
+      <button type="button">Connect products</button>
     )),
     mockTranslate: vi.fn((key: string, values?: { name?: string }) => {
       if (key === 'LabelWithName') {
@@ -20,8 +20,8 @@ vi.mock('next-intl/server', () => ({
   getTranslations: mockGetTranslations,
 }));
 
-vi.mock('./ConnectProductButton', () => ({
-  default: mockConnectProductButton,
+vi.mock('@/components/connected-products/ConnectProductButton', () => ({
+  ConnectProductButton: mockConnectProductButton,
 }));
 
 import XtmPlatform from './XtmPlatform';
