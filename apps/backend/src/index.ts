@@ -51,6 +51,7 @@ import {
   stopSessionCleanup,
 } from './utils/session-cleanup';
 import { extractId } from './utils/utils';
+import {manifestEndpoint} from "./server/endpoints/manifest-endpoint";
 const { json } = pkg;
 // region GraphQL server initialization
 
@@ -405,6 +406,7 @@ documentDownloadEndpoint(app);
 documentVisualizeEndpoint(app);
 healthEndpoint(app);
 userPictureEndpoint(app);
+manifestEndpoint(app);
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema
