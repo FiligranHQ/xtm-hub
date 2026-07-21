@@ -24,6 +24,7 @@ body[data-theme='Dark'] {
 @layer base {
   html {
     font-size: 100%;
+    @apply bg-background;
   }
   * {
     @apply border-border;

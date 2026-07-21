@@ -709,6 +709,13 @@
         "Title": "製品が別の組織に接続されています"
       }
     },
+    "ConnectFromHub": {
+      "PermissionRequired": "許可が必要です",
+      "ConnectedProductSentence": "リソースをデプロイするには、接続された製品が必要です。",
+      "NotAllowedMessage": "製品を接続するために必要な権限がありません。\n代わりに製品を接続してもらうよう、{count, plural, =1 {管理者} other {管理者}} に連絡してください",
+      "Administrators": "{count, plural, =1 {管理者} other {管理者}}",
+      "ReachAdmin": "管理者にお問い合わせください"
+    },
     "Back": "{platformIdentifier} に戻る",
     "Confirm": "接続する",
     "Details": {
@@ -790,7 +797,7 @@
         "Description": "このタブはすぐに閉じられます",
         "Title": "OpenCTI製品が正常に接続されました"
       },
-      "TooMuchOrganization": {
+      "TooManyOrganizations": {
         "Description1": "OpenCTI 製品 {platformTitle} は権限制限のため、同じ組織で再接続されます。",
         "Description2": "変更を希望する場合は、組織の管理者に連絡してください。",
         "Title": "製品再接続のお知らせ"
@@ -802,6 +809,7 @@
       "OrganizationalWorkspace": "組織のワークスペース",
       "PersonalDescription": "リソースやアクティビティを自分のアカウントに非公開にする",
       "PersonalWorkspace": "個人用ワークスペース",
+      "PlatformNameLabel": "XTM Hub に表示される名前",
       "Recommended": "推奨",
       "Title": "あなたの {platformIdentifier} 製品を XTM Hub に接続しようとしています。"
     },
@@ -819,7 +827,7 @@
       "Description": "このタブはすぐに閉じられます",
       "Title": "{platformIdentifier} 製品が正常に接続されました"
     },
-    "TooMuchOrganization": {
+    "TooManyOrganizations": {
       "Description1": "あなたの {platformIdentifier} 製品 {platformTitle} は、権限制限のため同じ組織で再接続されます。",
       "Description2": "変更を希望する場合は、組織の管理者に連絡してください。",
       "Title": "製品再接続のお知らせ"

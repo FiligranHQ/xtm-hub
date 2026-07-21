@@ -48,7 +48,6 @@ export const ServiceListHeader = ({
 }: ServiceListHeaderProps) => {
   const t = useTranslations();
   const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
-  const hasMoreThanOneFilter = Object.values(filters).length > 1;
 
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { orderBy, orderMode, setOrderBy, setOrderMode } =
@@ -74,14 +73,10 @@ export const ServiceListHeader = ({
     />
   );
 
-  const filterNode = hasMoreThanOneFilter ? (
+  const filterNode = (
     <ServiceListAddFilterCombobox
       filterKeys={Object.keys(filters) as ServiceListFilterKey[]}
     />
-  ) : (
-    <div className="max-w-full">
-      {filters[ServiceListFilterKey.Label]?.node}
-    </div>
   );
 
   const sortControls = (
@@ -120,7 +115,7 @@ export const ServiceListHeader = ({
             </div>
           )}
         </div>
-        {hasMoreThanOneFilter && <ServiceListFilterSection filters={filters} />}
+        <ServiceListFilterSection filters={filters} />
       </div>
     );
   }
@@ -139,7 +134,7 @@ export const ServiceListHeader = ({
           {actions}
         </div>
       </div>
-      {hasMoreThanOneFilter && <ServiceListFilterSection filters={filters} />}
+      <ServiceListFilterSection filters={filters} />
     </div>
   );
 };

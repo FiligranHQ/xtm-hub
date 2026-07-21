@@ -35,7 +35,7 @@ test.describe('Registration', () => {
       await registerPage.navigateTo('register-openaev', OPENAEV_PLATFORM_URL);
       await expect(
         page.getByRole('heading', {
-          name: "You're about to connect your OpenAEV product into XTM Hub",
+          name: "You're about to connect your OpenAEV product to XTM Hub",
         })
       ).toBeVisible();
       await expect(
@@ -78,7 +78,7 @@ test.describe('Registration', () => {
       await registerPage.navigateTo('register-opencti', OPENCTI_PLATFORM_URL);
       await expect(
         page.getByRole('heading', {
-          name: "You're about to connect your OpenCTI product into XTM Hub",
+          name: "You're about to connect your OpenCTI product to XTM Hub",
         })
       ).toBeVisible();
       await expect(

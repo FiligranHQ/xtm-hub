@@ -1,5 +1,5 @@
+import { ConnectProductButton } from '@/components/connected-products/ConnectProductButton';
 import { getTranslations } from 'next-intl/server';
-import ConnectProductButton from './ConnectProductButton';
 import XtmPlatformImage from './XtmPlatformImage';
 
 type XtmPlatformProps = {
@@ -18,7 +18,7 @@ const XtmPlatform = async ({ welcomeName }: XtmPlatformProps = {}) => {
         <p className="text-muted-foreground text-xs max-w-110">
           {t('Description')}
         </p>
-        <div>
+        <div className="w-53 flex items-center justify-between gap-s">
           <ConnectProductButton />
         </div>
       </div>

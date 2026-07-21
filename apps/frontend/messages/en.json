@@ -709,6 +709,13 @@
         "Title": "The product is connected in another organization"
       }
     },
+    "ConnectFromHub": {
+      "PermissionRequired": "Permission required",
+      "ConnectedProductSentence": "To deploy a resource you must have a connected product",
+      "NotAllowedMessage": "You do not have permission to connect a product. \nPlease contact your product {count, plural, =1 {administrator} other {administrators}} to connect the product on your behalf.",
+      "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
+      "ReachAdmin": "Reach your admin"
+    },
     "Back": "Back to {platformIdentifier}",
     "Confirm": "Connect",
     "Details": {
@@ -774,7 +781,7 @@
       },
       "OrganizationForm": {
         "Description": "Choose which organization space to connect to",
-        "Title": "You're about to connect your OpenCTI platform into XTM Hub"
+        "Title": "You're about to connect your OpenCTI platform to XTM Hub"
       },
       "SameOrganization": {
         "Registered": {
@@ -790,7 +797,7 @@
         "Description": "This tab will be closed soon",
         "Title": "OpenCTI product connected successfully"
       },
-      "TooMuchOrganization": {
+      "TooManyOrganizations": {
         "Description1": "Your OpenCTI product {platformTitle} will be re-connected under the same organization due to capability restrictions.",
         "Description2": "If you wish to request a change, please contact your organization's administrator.",
         "Title": "Product Re-connection Notice"
@@ -802,8 +809,9 @@
       "OrganizationalWorkspace": "Organizational workspace",
       "PersonalDescription": "Keep resources and activity private to your account.",
       "PersonalWorkspace": "Personal workspace",
+      "PlatformNameLabel": "Name displayed in XTM Hub",
       "Recommended": "Recommended",
-      "Title": "You're about to connect your {platformIdentifier} product into XTM Hub"
+      "Title": "You're about to connect your {platformIdentifier} product to XTM Hub"
     },
     "SameOrganization": {
       "Registered": {
@@ -819,7 +827,7 @@
       "Description": "This tab will be closed soon",
       "Title": "{platformIdentifier} product connected successfully"
     },
-    "TooMuchOrganization": {
+    "TooManyOrganizations": {
       "Description1": "Your {platformIdentifier} product {platformTitle} will be re-connected under the same organization due to capability restrictions.",
       "Description2": "If you wish to request a change, please contact your organization's administrator.",
       "Title": "Product Re-connection Notice"
