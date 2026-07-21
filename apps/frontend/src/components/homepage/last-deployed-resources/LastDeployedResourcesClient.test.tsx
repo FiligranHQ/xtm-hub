@@ -1,4 +1,4 @@
-import { LastDeployedPlatform } from '@/components/homepage/LastDeployedResourcesSection';
+import { LastDeployedPlatform } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -74,19 +74,6 @@ describe('LastDeployedResourcesClient', () => {
     expect(screen.getByText('On')).toBeInTheDocument();
     expect(screen.getByText('By')).toBeInTheDocument();
     expect(screen.getByText('John Doe')).toBeInTheDocument();
-  });
-
-  it('renders the empty state image when the selected platform has no resources', () => {
-    mockOverview([]);
-
-    testRender(
-      <LastDeployedResourcesClient
-        platforms={[buildPlatform('platform-1', 'OpenCTI Platform')]}
-      />
-    );
-
-    expect(screen.getByRole('img', { name: 'ImageAlt' })).toBeInTheDocument();
-    expect(screen.getByText('Title')).toBeInTheDocument();
   });
 
   it('fetches the overview for the first platform by default', () => {

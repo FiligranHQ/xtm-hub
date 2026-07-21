@@ -1,4 +1,5 @@
-import LastDeployedResourcesClient from '@/components/homepage/LastDeployedResourcesClient';
+import LastDeployedResourcesClient from '@/components/homepage/last-deployed-resources/LastDeployedResourcesClient';
+import XtmPlatformImage from '@/components/homepage/xtm-platform/XtmPlatformImage';
 import {
   PlatformMetadataMapping,
   ServiceDefinitionIdentifierToPlatformIdentifier,
@@ -31,7 +32,7 @@ type LastDeployedResourcesSectionProps = {
   registeredPlatformsData: RegisteredPlatformsQuery;
 };
 
-export const LastDeployedResourcesSection = ({
+export const LastDeployedResourcesSection = async ({
   registeredPlatformsData,
 }: LastDeployedResourcesSectionProps) => {
   const platforms: LastDeployedPlatform[] =
@@ -50,7 +51,11 @@ export const LastDeployedResourcesSection = ({
     });
 
   if (platforms.length === 0) {
-    return null;
+    return (
+      <div className="flex-1 min-w-0 flex justify-center">
+        <XtmPlatformImage />
+      </div>
+    );
   }
 
   return <LastDeployedResourcesClient platforms={platforms} />;
