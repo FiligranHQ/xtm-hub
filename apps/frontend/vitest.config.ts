@@ -37,6 +37,8 @@ export default defineConfig({
         '**/__generated__/**',
         '*.lintstagedrc.js',
         'middleware.ts',
+        'graphql/mocks.ts',
+        'graphql/generated.ts',
       ],
     },
   },
