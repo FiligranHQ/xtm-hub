@@ -53,7 +53,7 @@ export const LoginLayout = ({}) => {
       <div className="flex flex-col items-center p-xl sm:p-0">
         <LoginTitleForm />
         <div className="space-y-l mt-l w-full flex flex-col items-center">
-          <LoginMessage />
+          <LoginMessage isHomePageV2Enabled={isHomePageV2Enabled} />
           {isHomePageV2Enabled
             ? localProvider && <LoginForm />
             : settings?.platform_providers?.map((platformProvider) =>
