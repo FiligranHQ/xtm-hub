@@ -1,6 +1,6 @@
 import {
-  PlatformIdentifier,
   ManifestType,
+  PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import { MANIFEST_LIST_DEFAULT_COUNT } from '../../modules/shareable-resource/manifest/manifest.consts';
 

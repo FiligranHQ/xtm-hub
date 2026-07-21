@@ -36,6 +36,7 @@ import {
   sseSubscriptionCounter,
 } from './server/apollo-plugins/metrics';
 import { healthEndpoint } from './server/endpoints/health';
+import { manifestEndpoint } from './server/endpoints/manifest-endpoint';
 import { userPictureEndpoint } from './server/endpoints/user-picture-endpoint';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
@@ -51,7 +52,6 @@ import {
   stopSessionCleanup,
 } from './utils/session-cleanup';
 import { extractId } from './utils/utils';
-import {manifestEndpoint} from "./server/endpoints/manifest-endpoint";
 const { json } = pkg;
 // region GraphQL server initialization
 

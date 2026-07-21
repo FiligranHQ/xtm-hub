@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
-  isProduct,
-  isIntegrationType,
-  parseCount,
-  isValidManifestName,
-} from './manifest-endpoint.utils';
-import {
   ManifestType,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import { MANIFEST_LIST_DEFAULT_COUNT } from '../../modules/shareable-resource/manifest/manifest.consts';
+import {
+  isIntegrationType,
+  isProduct,
+  isValidManifestName,
+  parseCount,
+} from './manifest-endpoint.utils';
 
 describe('isValidManifestName', () => {
   it.each`
@@ -60,7 +60,7 @@ describe('isIntegrationType', () => {
   it.each`
     value                     | expected | description
     ${ManifestType.Connector} | ${true}  | ${'valeur enum valide (connector)'}
-    ${'injector'}             | ${false} | ${'type hors enum (contrat le liste, pas l\'enum)'}
+    ${'injector'}             | ${false} | ${"type hors enum (contrat le liste, pas l'enum)"}
     ${'collector'}            | ${false} | ${'type hors enum'}
     ${'nope'}                 | ${false} | ${'string inconnue'}
     ${42}                     | ${false} | ${'nombre'}

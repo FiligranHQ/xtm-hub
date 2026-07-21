@@ -57,7 +57,11 @@ const buildResponse = () => ({
 const buildRequest = (params: Record<string, string>) =>
   ({ params, query: {} }) as unknown as Request;
 
-const VALID = { product: 'opencti', version: '7.260604.0', integrationType: 'connector' };
+const VALID = {
+  product: 'opencti',
+  version: '7.260604.0',
+  integrationType: 'connector',
+};
 const VALID_NAME = 'connector-manifest-7.260604.0-260526113805';
 
 describe('downloadLatestManifest', () => {

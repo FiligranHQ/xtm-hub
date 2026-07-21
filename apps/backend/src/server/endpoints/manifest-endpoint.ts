@@ -1,16 +1,16 @@
 import cors from 'cors';
 import { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
+import { Readable } from 'stream';
 import {
-  PlatformIdentifier,
   ManifestType,
+  PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import { ManifestFragmentHelper } from '../../modules/shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { ManifestDomain } from '../../modules/shareable-resource/manifest/manifest.domain';
+import { ManifestHelper } from '../../modules/shareable-resource/manifest/manifest.helper';
+import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
-import {ManifestHelper} from "../../modules/shareable-resource/manifest/manifest.helper";
-import {Readable} from "stream";
-import {MinIOClient} from "../../thirdparty/minio/client";
 import {
   isIntegrationType,
   isProduct,
@@ -58,9 +58,11 @@ export const listManifests = async (
 const validateManifestParams = (
   req: Request,
   res: Response
-):
-  | { product: PlatformIdentifier; version: string; integrationType: ManifestType }
-  | null => {
+): {
+  product: PlatformIdentifier;
+  version: string;
+  integrationType: ManifestType;
+} | null => {
   const { product, version, integrationType } = req.params;
 
   if (!isProduct(product)) {
