@@ -84,9 +84,12 @@ vi.mock(
   })
 );
 
-vi.mock('@/components/homepage/LastDeployedResourcesSection', () => ({
-  default: mockLastDeployedResourcesSection,
-}));
+vi.mock(
+  '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection',
+  () => ({
+    default: mockLastDeployedResourcesSection,
+  })
+);
 
 import { PrivateHomepage } from './PrivateHomepage';
 

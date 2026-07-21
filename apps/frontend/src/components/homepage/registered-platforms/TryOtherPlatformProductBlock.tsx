@@ -49,14 +49,14 @@ const TryOtherPlatformProductBlock = () => {
   return (
     <Card className="bg-elevation-background-layer-3 pt-l mt-xxl border-none rounded-xl">
       <CardContent className="p-l flex flex-col gap-xl md:justify-between">
-        <h2 className="font-semibold">{t('Title')}</h2>
+        <h2 className="heading-xs">{t('Title')}</h2>
         <Button
           asChild
           variant="outline"
-          className="font-semibold w-full border-elevation-border-strong-layer-3">
+          className="text-content-button font-semibold w-full border-elevation-border-strong-layer-3">
           <Link
             href={learnMorePrivateUrl}
-            className="inline-flex items-center gap-xs text-primary">
+            className="inline-flex items-center gap-xs text-filigran-brand-primary">
             <Icon className="size-4" />
             {t(`Cta`, { productName: name })}
           </Link>
