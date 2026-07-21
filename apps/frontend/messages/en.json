@@ -797,7 +797,7 @@
         "Description": "This tab will be closed soon",
         "Title": "OpenCTI product connected successfully"
       },
-      "TooMuchOrganization": {
+      "TooManyOrganizations": {
         "Description1": "Your OpenCTI product {platformTitle} will be re-connected under the same organization due to capability restrictions.",
         "Description2": "If you wish to request a change, please contact your organization's administrator.",
         "Title": "Product Re-connection Notice"
@@ -827,7 +827,7 @@
       "Description": "This tab will be closed soon",
       "Title": "{platformIdentifier} product connected successfully"
     },
-    "TooMuchOrganization": {
+    "TooManyOrganizations": {
       "Description1": "Your {platformIdentifier} product {platformTitle} will be re-connected under the same organization due to capability restrictions.",
       "Description2": "If you wish to request a change, please contact your organization's administrator.",
       "Title": "Product Re-connection Notice"
