@@ -2,11 +2,13 @@ import type { Request, Response } from 'express';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
+  loadManifestsMock,
   getLatestManifestMock,
   getManifestByNameMock,
   downloadFileMock,
   validateVersionMock,
 } = vi.hoisted(() => ({
+  loadManifestsMock: vi.fn(),
   getLatestManifestMock: vi.fn(),
   getManifestByNameMock: vi.fn(),
   downloadFileMock: vi.fn(),
@@ -17,6 +19,7 @@ vi.mock('../../modules/shareable-resource/manifest/manifest.domain', () => ({
   ManifestDomain: {
     getLatestManifest: getLatestManifestMock,
     getManifestByName: getManifestByNameMock,
+    loadManifests: loadManifestsMock,
   },
 }));
 vi.mock('../../thirdparty/minio/client', () => ({
@@ -43,6 +46,7 @@ vi.mock('../../utils/app-logger.util', () => ({
 import {
   downloadLatestManifest,
   downloadManifestByName,
+  listManifests,
 } from './manifest-endpoint';
 
 const buildResponse = () => ({
@@ -54,8 +58,10 @@ const buildResponse = () => ({
   destroy: vi.fn(),
 });
 
-const buildRequest = (params: Record<string, string>) =>
-  ({ params, query: {} }) as unknown as Request;
+const buildRequest = (
+  params: Record<string, string>,
+  query: Record<string, unknown> = {}
+) => ({ params, query }) as unknown as Request;
 
 const VALID = {
   product: 'opencti',
@@ -157,5 +163,50 @@ describe('downloadManifestByName', () => {
       'public, max-age=31536000, immutable'
     );
     expect(pipe).toHaveBeenCalledWith(res);
+  });
+});
+
+describe('listManifests', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    validateVersionMock.mockReturnValue('padded');
+  });
+
+  it('returns 200 with the manifests from the domain', async () => {
+    const rows = [
+      { name: 'connector-manifest-7.260604.0-260526113805', created_at: new Date() },
+    ];
+    loadManifestsMock.mockResolvedValue(rows);
+
+    const res = buildResponse();
+    await listManifests(buildRequest(VALID), res as unknown as Response);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ manifests: rows });
+  });
+
+  it('caps count and forwards it to the domain', async () => {
+    loadManifestsMock.mockResolvedValue([]);
+
+    const res = buildResponse();
+    await listManifests(
+      buildRequest(VALID, { count: '5' }),
+      res as unknown as Response
+    );
+
+    expect(loadManifestsMock).toHaveBeenCalledWith('opencti', '7.260604.0', 'connector', 5);
+  });
+
+  it.each`
+    params                        | query               | description
+    ${{ ...VALID, product: 'x' }} | ${{}}               | ${'invalid product'}
+    ${{ ...VALID, integrationType: 'x' }} | ${{}}       | ${'invalid integrationType'}
+    ${VALID}                      | ${{ count: '0' }}   | ${'invalid count'}
+  `('returns 400 on $description', async ({ params, query }) => {
+    const res = buildResponse();
+    await listManifests(buildRequest(params, query), res as unknown as Response);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(loadManifestsMock).not.toHaveBeenCalled();
   });
 });
