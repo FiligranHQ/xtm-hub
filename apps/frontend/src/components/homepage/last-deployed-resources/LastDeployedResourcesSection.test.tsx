@@ -6,21 +6,21 @@ import {
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockGetTranslations, mockTranslate, mockLastDeployedResourcesClient } =
-  vi.hoisted(() => ({
-    mockGetTranslations: vi.fn(),
-    mockTranslate: vi.fn((key: string) => `t-${key}`),
+const { mockLastDeployedResourcesClient, mockXtmPlatformImage } = vi.hoisted(
+  () => ({
     mockLastDeployedResourcesClient: vi.fn(() => (
       <div data-testid="last-deployed-resources-client" />
     )),
-  }));
-
-vi.mock('next-intl/server', () => ({
-  getTranslations: mockGetTranslations,
-}));
+    mockXtmPlatformImage: vi.fn(() => <div data-testid="xtm-platform-image" />),
+  })
+);
 
 vi.mock('./LastDeployedResourcesClient', () => ({
   default: mockLastDeployedResourcesClient,
+}));
+
+vi.mock('@/components/homepage/xtm-platform/XtmPlatformImage', () => ({
+  default: mockXtmPlatformImage,
 }));
 
 import LastDeployedResourcesSection from './LastDeployedResourcesSection';
@@ -44,10 +44,8 @@ const buildRegisteredPlatform = (
 
 describe('LastDeployedResourcesSection', () => {
   beforeEach(() => {
-    mockGetTranslations.mockReset();
-    mockTranslate.mockClear();
     mockLastDeployedResourcesClient.mockClear();
-    mockGetTranslations.mockResolvedValue(mockTranslate);
+    mockXtmPlatformImage.mockClear();
   });
 
   it('renders the empty state image when no platform has a deployed resource', async () => {
@@ -57,9 +55,7 @@ describe('LastDeployedResourcesSection', () => {
 
     render(await LastDeployedResourcesSection({ registeredPlatformsData }));
 
-    expect(
-      screen.getByRole('img', { name: 't-PublicHomePage.XtmPlatform.ImageAlt' })
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('xtm-platform-image')).toBeInTheDocument();
     expect(
       screen.queryByTestId('last-deployed-resources-client')
     ).not.toBeInTheDocument();
@@ -75,7 +71,7 @@ describe('LastDeployedResourcesSection', () => {
     expect(
       screen.getByTestId('last-deployed-resources-client')
     ).toBeInTheDocument();
-    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('xtm-platform-image')).not.toBeInTheDocument();
     expect(mockLastDeployedResourcesClient).toHaveBeenCalledWith(
       {
         platforms: [
@@ -97,8 +93,6 @@ describe('LastDeployedResourcesSection', () => {
 
     render(await LastDeployedResourcesSection({ registeredPlatformsData }));
 
-    expect(
-      screen.getByRole('img', { name: 't-PublicHomePage.XtmPlatform.ImageAlt' })
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('xtm-platform-image')).toBeInTheDocument();
   });
 });
