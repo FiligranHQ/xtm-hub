@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { waitForDrawerToClose } from './common';
+import { selectUseCase, waitForDrawerToClose } from './common';
 export const TEST_JSON_FILE = {
   path: './tests/tests_files/assets/octi_dashboard.json',
   name: 'octi_dashboard.json',
@@ -69,6 +69,7 @@ export default class DashboardPage {
     await this.page.getByLabel('Publish').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await selectUseCase(this.page);
     await this.page.getByRole('button', { name: 'Validate' }).click();
     await waitForDrawerToClose(this.page);
   }

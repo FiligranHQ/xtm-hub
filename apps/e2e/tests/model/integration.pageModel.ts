@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import { selectUseCase } from './common';
 
 const TEST_JSON_FILE = {
   path: './tests/tests_files/assets/octi_csv_feed.json',
@@ -57,6 +58,7 @@ export default class IntegrationPage {
     await this.page.getByLabel('Native').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await selectUseCase(this.page);
 
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -85,6 +87,7 @@ export default class IntegrationPage {
     await this.page.getByLabel('Malware').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await selectUseCase(this.page);
 
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -116,6 +119,7 @@ export default class IntegrationPage {
     await this.page.getByLabel('Native').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await selectUseCase(this.page);
 
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -144,6 +148,7 @@ export default class IntegrationPage {
       .click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await selectUseCase(this.page);
 
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -187,6 +192,7 @@ export default class IntegrationPage {
       .getByRole('textbox', { name: 'OpenCTI compatibility version' })
       .fill('1.2.3');
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
+    await selectUseCase(this.page);
 
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
