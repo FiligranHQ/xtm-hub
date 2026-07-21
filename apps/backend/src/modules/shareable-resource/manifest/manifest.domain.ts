@@ -186,21 +186,6 @@ export const ManifestDomain = {
       .limit(safeCount);
   },
 
-  getLatestManifest: async (
-    product: PlatformIdentifier,
-    version: string,
-    type: ManifestType
-  ): Promise<Pick<Manifest, 'name' | 'created_at'> | undefined> => {
-    return db<Manifest>('Manifest')
-      .select('name', 'created_at')
-      .where({ product, version, type })
-      .orderBy([
-        { column: 'created_at', order: 'desc' },
-        { column: 'id', order: 'desc' },
-      ])
-      .first();
-  },
-
   getManifestByName: async (
     product: PlatformIdentifier,
     version: string,

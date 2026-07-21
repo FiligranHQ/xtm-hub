@@ -3,13 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
   loadManifestsMock,
-  getLatestManifestMock,
   getManifestByNameMock,
   downloadFileMock,
   validateVersionMock,
 } = vi.hoisted(() => ({
   loadManifestsMock: vi.fn(),
-  getLatestManifestMock: vi.fn(),
   getManifestByNameMock: vi.fn(),
   downloadFileMock: vi.fn(),
   validateVersionMock: vi.fn(),
@@ -17,7 +15,6 @@ const {
 
 vi.mock('../../modules/shareable-resource/manifest/manifest.domain', () => ({
   ManifestDomain: {
-    getLatestManifest: getLatestManifestMock,
     getManifestByName: getManifestByNameMock,
     loadManifests: loadManifestsMock,
   },
@@ -77,10 +74,9 @@ describe('downloadLatestManifest', () => {
   });
 
   it('streams the latest manifest with a no-cache header', async () => {
-    getLatestManifestMock.mockResolvedValue({
-      name: VALID_NAME,
-      created_at: new Date(),
-    });
+    loadManifestsMock.mockResolvedValue([
+      { name: VALID_NAME, created_at: new Date() },
+    ]);
     const pipe = vi.fn();
     downloadFileMock.mockResolvedValue({ on: vi.fn(), pipe });
 
@@ -102,7 +98,7 @@ describe('downloadLatestManifest', () => {
   });
 
   it('returns 404 when no manifest exists', async () => {
-    getLatestManifestMock.mockResolvedValue(undefined);
+    loadManifestsMock.mockResolvedValue([]);
 
     const res = buildResponse();
     await downloadLatestManifest(
@@ -122,7 +118,7 @@ describe('downloadLatestManifest', () => {
     );
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(getLatestManifestMock).not.toHaveBeenCalled();
+    expect(loadManifestsMock).not.toHaveBeenCalled();
   });
 });
 

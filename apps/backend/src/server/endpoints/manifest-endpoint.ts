@@ -154,10 +154,11 @@ export const downloadLatestManifest = async (
     const params = validateManifestParams(req, res);
     if (!params) return;
 
-    const latest = await ManifestDomain.getLatestManifest(
+    const [latest] = await ManifestDomain.loadManifests(
       params.product,
       params.version,
-      params.integrationType
+      params.integrationType,
+      1
     );
     if (!latest) {
       res.status(404).json({ code: 404, message: 'Manifest not found' });
