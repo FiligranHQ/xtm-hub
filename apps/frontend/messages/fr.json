@@ -709,6 +709,13 @@
         "Title": "Le produit est connecté dans une autre organisation"
       }
     },
+    "ConnectFromHub": {
+      "PermissionRequired": "Autorisation requise",
+      "ConnectedProductSentence": "Pour déployer une ressource, vous devez disposer d'un produit connecté",
+      "NotAllowedMessage": "Vous ne disposez pas des autorisations nécessaires pour connecter un produit. \nVeuillez contacter votre {count, plural, =1 {administrateur} other {administrateurs}} afin qu'il se charge de connecter le produit en votre nom.",
+      "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
+      "ReachAdmin": "Contactez votre administrateur"
+    },
     "Back": "Retour à {platformIdentifier}",
     "Confirm": "Connecter",
     "Details": {
@@ -790,7 +797,7 @@
         "Description": "Cet onglet sera bientôt fermé.",
         "Title": "Le produit OpenCTI a été connecté avec succès"
       },
-      "TooMuchOrganization": {
+      "TooManyOrganizations": {
         "Description1": "Votre produit OpenCTI {platformTitle} sera reconnecté sous la même organisation en raison de restrictions de capacité.",
         "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
         "Title": "Avis de reconnexion du produit"
@@ -820,7 +827,7 @@
       "Description": "Cet onglet sera bientôt fermé",
       "Title": "Le produit {platformIdentifier} a été connecté avec succès"
     },
-    "TooMuchOrganization": {
+    "TooManyOrganizations": {
       "Description1": "Votre produit {platformIdentifier} {platformTitle} sera reconnecté sous la même organisation en raison de restrictions de capacité.",
       "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
       "Title": "Avis de reconnexion du produit"

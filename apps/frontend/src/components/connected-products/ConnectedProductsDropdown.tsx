@@ -1,7 +1,7 @@
 'use client';
 
 import { ConnectedProductItem } from '@/components/connected-products/ConnectedProductItem';
-import { ConnectPlatformButton } from '@/components/connected-products/ConnectPlatformButton';
+import { ConnectProductButton } from '@/components/connected-products/ConnectProductButton';
 import { useConnectedPlatforms } from '@/components/connected-products/useConnectedPlatforms';
 import { ArrowDropDownIcon } from '@filigran/icon';
 import {
@@ -16,7 +16,7 @@ import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-const CONNECTABLE_PLATFORMS = [
+export const CONNECTABLE_PLATFORMS = [
   PlatformIdentifier.Opencti,
   PlatformIdentifier.Openaev,
 ];
@@ -65,13 +65,10 @@ export const ConnectedProductsDropdown = () => {
           </>
         )}
         <div className="flex flex-col gap-s p-m">
-          {CONNECTABLE_PLATFORMS.map((platformId) => (
-            <ConnectPlatformButton
-              key={platformId}
-              platformIdentifier={platformId}
-              t={t}
-            />
-          ))}
+          <ConnectProductButton
+            variant="outline-primary"
+            onCloseDropdown={() => setOpen(false)}
+          />
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

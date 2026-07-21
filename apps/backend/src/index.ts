@@ -69,6 +69,30 @@ if (!portalCookieSecret || portalCookieSecret === 'changeMe') {
 
 const PORTAL_GRAPHQL_PATH = '/graphql-api';
 const PORTAL_WEBSOCKET_PATH = '/graphql-sse';
+const PORTAL_CORS_ALLOWED_ORIGINS: string[] = [
+  'https://hub.prerelease.filigran.io',
+  'https://hub.filigran.io',
+] as const;
+
+const PORTAL_CORS_OPTIONS: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    const isDevelopmentEnvironment = portalConfig.environment === 'development';
+    if (isDevelopmentEnvironment) {
+      callback(null, true);
+      return;
+    }
+
+    const isOriginAllowed =
+      !origin || PORTAL_CORS_ALLOWED_ORIGINS.includes(origin);
+    if (isOriginAllowed) {
+      callback(null, true);
+      return;
+    }
+
+    callback(null, false);
+  },
+  credentials: true,
+};
 
 const app = express();
 const SESSION_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
@@ -357,11 +381,16 @@ const handler = createHandler({
   },
 });
 
-app.use(PORTAL_WEBSOCKET_PATH, cors<cors.CorsRequest>(), json(), handler);
+app.use(
+  PORTAL_WEBSOCKET_PATH,
+  cors<cors.CorsRequest>(PORTAL_CORS_OPTIONS),
+  json(),
+  handler
+);
 app.use(
   PORTAL_GRAPHQL_PATH,
   sessionMiddleware,
-  cors<cors.CorsRequest>(),
+  cors<cors.CorsRequest>(PORTAL_CORS_OPTIONS),
   json(),
   middlewareExpress
 );

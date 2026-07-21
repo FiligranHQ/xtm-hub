@@ -14,38 +14,52 @@ import { ReactNode } from 'react';
 interface DialogInformativeProps {
   isOpen: boolean;
   onClose: () => void;
+  onButtonClick?: () => void;
   title: string;
   description?: string;
   children: ReactNode;
+  variant?: 'default' | 'secondary';
+  buttonText?: string;
 }
 
 export const DialogInformative = ({
   isOpen,
   onClose,
+  onButtonClick,
   title,
   description,
   children,
+  variant = 'secondary',
+  buttonText = 'Utils.Close',
 }: DialogInformativeProps) => {
   const t = useTranslations();
 
   return (
     <Dialog
       open={isOpen}
-      onOpenChange={onClose}>
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose();
+        }
+      }}>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className={'gap-s'}>
           <DialogTitle>{title}</DialogTitle>
-          {description && <DialogDescription>{description}</DialogDescription>}
+          {description && (
+            <DialogDescription className="whitespace-pre-line">
+              {description}
+            </DialogDescription>
+          )}
         </DialogHeader>
         {children}
         <DialogFooter className="justify-end">
           <DialogClose asChild>
             <Button
-              className="mt-2"
+              className="mt-2 hover:cursor-pointer"
               type="button"
-              variant="secondary"
-              onClick={onClose}>
-              {t('Utils.Close')}
+              variant={variant}
+              onClick={onButtonClick ?? onClose}>
+              {t(buttonText)}
             </Button>
           </DialogClose>
         </DialogFooter>

@@ -2787,6 +2787,13 @@ export type RegisteredPlatformsQueryVariables = Exact<{
 
 export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
 
+export type ConnectProductOrganizationAdminsQueryVariables = Exact<{
+  input: UsersWithCapabilitiesInOrganizationInput;
+}>;
+
+
+export type ConnectProductOrganizationAdminsQuery = { __typename?: 'Query', usersWithCapabilitiesInOrganization: Array<{ __typename?: 'User', id: string, email: string, first_name: string | null, last_name: string | null }> };
+
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
@@ -3369,6 +3376,62 @@ export const useInfiniteRegisteredPlatformsQuery = <
 useInfiniteRegisteredPlatformsQuery.getKey = (variables: RegisteredPlatformsQueryVariables) => ['RegisteredPlatforms.infinite', variables];
 useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.infinite'] as const;
 useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
+
+export const ConnectProductOrganizationAdminsDocument = `
+    query ConnectProductOrganizationAdmins($input: UsersWithCapabilitiesInOrganizationInput!) {
+  usersWithCapabilitiesInOrganization(input: $input) {
+    id
+    email
+    first_name
+    last_name
+  }
+}
+    `;
+
+export const useConnectProductOrganizationAdminsQuery = <
+      TData = ConnectProductOrganizationAdminsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ConnectProductOrganizationAdminsQueryVariables,
+      options?: Omit<UseQueryOptions<ConnectProductOrganizationAdminsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ConnectProductOrganizationAdminsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ConnectProductOrganizationAdminsQuery, TError, TData>(
+      {
+    queryKey: ['ConnectProductOrganizationAdmins', variables],
+    queryFn: fetcher<ConnectProductOrganizationAdminsQuery, ConnectProductOrganizationAdminsQueryVariables>(client, ConnectProductOrganizationAdminsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useConnectProductOrganizationAdminsQuery.getKey = (variables: ConnectProductOrganizationAdminsQueryVariables) => ['ConnectProductOrganizationAdmins', variables];
+useConnectProductOrganizationAdminsQuery.getRootKey = () => ['ConnectProductOrganizationAdmins'] as const;
+export const useInfiniteConnectProductOrganizationAdminsQuery = <
+      TData = InfiniteData<ConnectProductOrganizationAdminsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ConnectProductOrganizationAdminsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ConnectProductOrganizationAdminsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ConnectProductOrganizationAdminsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ConnectProductOrganizationAdminsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['ConnectProductOrganizationAdmins.infinite', variables],
+      queryFn: (metaData) => fetcher<ConnectProductOrganizationAdminsQuery, ConnectProductOrganizationAdminsQueryVariables>(client, ConnectProductOrganizationAdminsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteConnectProductOrganizationAdminsQuery.getKey = (variables: ConnectProductOrganizationAdminsQueryVariables) => ['ConnectProductOrganizationAdmins.infinite', variables];
+useInfiniteConnectProductOrganizationAdminsQuery.getRootKey = () => ['ConnectProductOrganizationAdmins.infinite'] as const;
+useConnectProductOrganizationAdminsQuery.fetcher = (client: GraphQLClient, variables: ConnectProductOrganizationAdminsQueryVariables, headers?: RequestInit['headers']) => fetcher<ConnectProductOrganizationAdminsQuery, ConnectProductOrganizationAdminsQueryVariables>(client, ConnectProductOrganizationAdminsDocument, variables, headers);
 
 export const ServiceInstancesListDocument = `
     query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!, $filters: [ServiceInstanceFilter!], $searchTerm: String) {
