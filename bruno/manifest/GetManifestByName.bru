@@ -1,0 +1,15 @@
+meta {
+  name: Get manifest by name
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/opencti/7.260604.0/connector/manifests/connector-manifest-7.260604.0-260526113805
+  body: none
+  auth: none
+}
+
+docs {
+  Télécharge un manifest précis par nom. 400 si le nom est mal formé, 404 si inconnu.
+}

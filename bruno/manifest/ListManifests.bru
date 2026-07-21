@@ -1,0 +1,20 @@
+meta {
+  name: List manifests
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/opencti/7.260604.0/connector/manifests?count=10
+  body: none
+  auth: none
+}
+
+params:query {
+  count: 10
+}
+
+docs {
+  Liste les manifests (métadonnées) d'un {product}/{version}/{integrationType}.
+  Public — identique pour instances registered et unregistered.
+}
