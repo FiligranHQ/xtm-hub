@@ -13,3 +13,6 @@ export type ManifestKey = {
   version: string;
   type: ManifestType;
 };
+
+export const MANIFEST_LIST_DEFAULT_COUNT = 10;
+export const MANIFEST_LIST_MAX_COUNT = 100;

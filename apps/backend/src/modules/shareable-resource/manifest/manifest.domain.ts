@@ -1,5 +1,8 @@
 import { db } from '../../../../knexfile';
-import { ManifestType } from '../../../__generated__/resolvers-types';
+import {
+  ManifestType,
+  PlatformIdentifier,
+} from '../../../__generated__/resolvers-types';
 import type { DocumentId } from '../../../model/kanel/public/Document';
 import type Manifest from '../../../model/kanel/public/Manifest';
 import type {
@@ -12,7 +15,11 @@ import type ManifestRebuildQueue from '../../../model/kanel/public/ManifestRebui
 import type { ManifestRebuildQueueInitializer } from '../../../model/kanel/public/ManifestRebuildQueue';
 import { isUniqueConstraintViolation } from '../../../utils/error/error-guard.util';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
-import { ManifestKey, ManifestRebuildQueueStatus } from './manifest.consts';
+import {
+  MANIFEST_LIST_MAX_COUNT,
+  ManifestKey,
+  ManifestRebuildQueueStatus,
+} from './manifest.consts';
 
 export const ManifestDomain = {
   insertIfNotPending: async (
@@ -159,5 +166,50 @@ export const ManifestDomain = {
       }
     }
     return recovered;
+  },
+
+  loadManifests: async (
+    product: PlatformIdentifier,
+    version: string,
+    type: ManifestType,
+    count: number
+  ): Promise<Pick<Manifest, 'created_at' | 'name'>[]> => {
+    const safeCount = Math.min(Math.max(count, 1), MANIFEST_LIST_MAX_COUNT);
+
+    return db<Manifest>('Manifest')
+      .select('created_at', 'name')
+      .where({ product, version, type })
+      .orderBy([
+        { column: 'created_at', order: 'desc' },
+        { column: 'id', order: 'desc' },
+      ])
+      .limit(safeCount);
+  },
+
+  getLatestManifest: async (
+    product: PlatformIdentifier,
+    version: string,
+    type: ManifestType
+  ): Promise<Pick<Manifest, 'name' | 'created_at'> | undefined> => {
+    return db<Manifest>('Manifest')
+      .select('name', 'created_at')
+      .where({ product, version, type })
+      .orderBy([
+        { column: 'created_at', order: 'desc' },
+        { column: 'id', order: 'desc' },
+      ])
+      .first();
+  },
+
+  getManifestByName: async (
+    product: PlatformIdentifier,
+    version: string,
+    type: ManifestType,
+    name: string
+  ): Promise<Pick<Manifest, 'name' | 'created_at'> | undefined> => {
+    return db<Manifest>('Manifest')
+      .select('name', 'created_at')
+      .where({ product, version, type, name })
+      .first();
   },
 };
