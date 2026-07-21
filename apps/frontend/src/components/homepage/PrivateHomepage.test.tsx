@@ -271,12 +271,7 @@ describe('PrivateHomepage', () => {
       expect.objectContaining({ welcomeName: undefined }),
       undefined
     );
-    expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
-      expect.objectContaining({
-        welcomeName: undefined,
-      }),
-      undefined
-    );
+    expect(mockRegisteredPlatformsSection).not.toHaveBeenCalled();
     expect(mockPrivateHomepageRoadmapSection).toHaveBeenCalledWith(
       expect.objectContaining({
         platformIdentifiers: [],

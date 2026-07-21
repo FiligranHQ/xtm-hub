@@ -24,6 +24,10 @@ vi.mock('@/components/connected-products/ConnectProductButton', () => ({
   ConnectProductButton: mockConnectProductButton,
 }));
 
+vi.mock('./XtmPlatformImage', () => ({
+  default: () => <div data-testid="xtm-platform-image" />,
+}));
+
 import XtmPlatform from './XtmPlatform';
 
 describe('XtmPlatform', () => {
