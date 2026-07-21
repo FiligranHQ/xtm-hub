@@ -22,7 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
@@ -65,7 +65,10 @@ const EeLearnMoreSheet = ({
   const [commitContactUs, isInFlight] =
     useMutation<ReachSalesMutationType>(ReachSalesMutation);
 
-  const message = form.watch('message');
+  const message = useWatch({
+    control: form.control,
+    name: 'message',
+  });
 
   const handleSubmit = (values: z.infer<typeof interestFormSchema>) => {
     commitContactUs({
@@ -178,7 +181,7 @@ const EeLearnMoreSheet = ({
                   <div className="flex justify-end">
                     <Button
                       type="submit"
-                      disabled={isInFlight || !message.trim()}>
+                      disabled={isInFlight || !message?.trim()}>
                       {t(
                         'Service.ShareableResources.Deploy.EELearnMore.SendButton'
                       )}
