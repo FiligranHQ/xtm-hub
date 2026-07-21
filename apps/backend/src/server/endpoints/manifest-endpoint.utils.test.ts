@@ -13,13 +13,13 @@ import {
 
 describe('isValidManifestName', () => {
   it.each`
-    name                                             | expected | description
-    ${'connector-manifest-7.260604.0-260526113805'}  | ${true}  | ${'nom standard valide'}
-    ${'connector-manifest-7.2.0-LTS.1-260526113805'} | ${true}  | ${'variante LTS valide'}
-    ${'connector-manifest-7.260604.0-2605'}          | ${false} | ${'datetime trop court'}
-    ${'collector-manifest-7.260604.0-260526113805'}  | ${false} | ${'mauvais préfixe'}
-    ${'../../secret'}                                | ${false} | ${'tentative path traversal'}
-    ${''}                                            | ${false} | ${'chaîne vide'}
+    name                                                  | expected | description
+    ${'connector-manifest-7.260604.0-260526113805'}       | ${true}  | ${'nom standard valide'}
+    ${'connector-manifest-7.260309.0-lts.5-260526113805'} | ${true}  | ${'variante LTS (minuscule) valide'}
+    ${'connector-manifest-7.260604.0-2605'}               | ${false} | ${'datetime trop court'}
+    ${'collector-manifest-7.260604.0-260526113805'}       | ${false} | ${'mauvais préfixe'}
+    ${'../../secret'}                                     | ${false} | ${'tentative path traversal'}
+    ${''}                                                 | ${false} | ${'chaîne vide'}
   `('renvoie $expected ($description)', ({ name, expected }) => {
     expect(isValidManifestName(name)).toBe(expected);
   });

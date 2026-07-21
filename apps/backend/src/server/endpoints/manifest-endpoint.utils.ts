@@ -4,8 +4,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { MANIFEST_LIST_DEFAULT_COUNT } from '../../modules/shareable-resource/manifest/manifest.consts';
 
-const MANIFEST_NAME_PATTERN =
-  /^connector-manifest-\d+\.\d+(\.\d+)?(-LTS\.\d+)?-\d{12}$/;
+const MANIFEST_NAME_PATTERN = /^connector-manifest-[A-Za-z0-9.-]+-\d{12}$/;
 
 export const isProduct = (value: unknown): value is PlatformIdentifier =>
   typeof value === 'string' &&
