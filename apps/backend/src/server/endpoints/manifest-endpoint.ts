@@ -108,6 +108,42 @@ export const manifestEndpoint = (app: Express) => {
   );
 };
 
+const streamManifestByName = async (
+  res: Response,
+  product: PlatformIdentifier,
+  version: string,
+  name: string
+): Promise<void> => {
+  if (!isValidManifestName(name)) {
+    logApp.error('Manifest name failed validation before MinIO lookup', { name });
+    res.status(404).json({ code: 404, message: 'Manifest not found' });
+    return;
+  }
+
+  const key = ManifestHelper.buildManifestObjectKey(product, version, name);
+  const body = await MinIOClient.downloadFile(key);
+  if (!body) {
+    res.status(404).json({ code: 404, message: 'Manifest file not found' });
+    return;
+  }
+
+  const stream = body as Readable;
+
+  res.setHeader('Content-Type', 'application/json');
+
+  stream.on('error', (error) => {
+    logApp.error('Error while streaming manifest', { error });
+    if (res.headersSent) {
+      res.destroy(error);
+    } else {
+      res.removeHeader('Cache-Control');
+      res.status(404).json({ code: 404, message: 'Manifest file not found' });
+    }
+  });
+
+  stream.pipe(res);
+};
+
 export const downloadLatestManifest = async (
   req: Request,
   res: Response
@@ -126,33 +162,13 @@ export const downloadLatestManifest = async (
       return;
     }
 
-    const key = ManifestHelper.buildManifestObjectKey(
+    res.setHeader('Cache-Control', 'no-cache');
+    await streamManifestByName(
+      res,
       params.product,
       params.version,
       latest.name
     );
-    const body = await MinIOClient.downloadFile(key);
-    if (!body) {
-      res.status(404).json({ code: 404, message: 'Manifest file not found' });
-      return;
-    }
-
-    const stream = body as Readable;
-
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'no-cache');
-
-    stream.on('error', (error) => {
-      logApp.error('Error while streaming manifest', { error });
-      if (res.headersSent) {
-        res.destroy(error);
-      } else {
-        res.removeHeader('Cache-Control');
-        res.status(404).json({ code: 404, message: 'Manifest file not found' });
-      }
-    });
-
-    stream.pipe(res);
   } catch (error) {
     logApp.error('Error while retrieving latest manifest', { error });
     if (res.headersSent) {
@@ -188,33 +204,13 @@ export const downloadManifestByName = async (
       return;
     }
 
-    const key = ManifestHelper.buildManifestObjectKey(
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    await streamManifestByName(
+      res,
       params.product,
       params.version,
       manifest.name
     );
-    const body = await MinIOClient.downloadFile(key);
-    if (!body) {
-      res.status(404).json({ code: 404, message: 'Manifest file not found' });
-      return;
-    }
-
-    const stream = body as Readable;
-
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-
-    stream.on('error', (error) => {
-      logApp.error('Error while streaming manifest', { error });
-      if (res.headersSent) {
-        res.destroy(error);
-      } else {
-        res.removeHeader('Cache-Control');
-        res.status(404).json({ code: 404, message: 'Manifest file not found' });
-      }
-    });
-
-    stream.pipe(res);
   } catch (error) {
     logApp.error('Error while retrieving manifest by name', { error });
     if (res.headersSent) {
