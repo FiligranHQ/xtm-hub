@@ -115,7 +115,9 @@ const streamManifestByName = async (
   name: string
 ): Promise<void> => {
   if (!isValidManifestName(name)) {
-    logApp.error('Manifest name failed validation before MinIO lookup', { name });
+    logApp.error('Manifest name failed validation before MinIO lookup', {
+      name,
+    });
     res.status(404).json({ code: 404, message: 'Manifest not found' });
     return;
   }

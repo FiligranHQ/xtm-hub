@@ -174,7 +174,10 @@ describe('listManifests', () => {
 
   it('returns 200 with the manifests from the domain', async () => {
     const rows = [
-      { name: 'connector-manifest-7.260604.0-260526113805', created_at: new Date() },
+      {
+        name: 'connector-manifest-7.260604.0-260526113805',
+        created_at: new Date(),
+      },
     ];
     loadManifestsMock.mockResolvedValue(rows);
 
@@ -194,17 +197,25 @@ describe('listManifests', () => {
       res as unknown as Response
     );
 
-    expect(loadManifestsMock).toHaveBeenCalledWith('opencti', '7.260604.0', 'connector', 5);
+    expect(loadManifestsMock).toHaveBeenCalledWith(
+      'opencti',
+      '7.260604.0',
+      'connector',
+      5
+    );
   });
 
   it.each`
-    params                        | query               | description
-    ${{ ...VALID, product: 'x' }} | ${{}}               | ${'invalid product'}
-    ${{ ...VALID, integrationType: 'x' }} | ${{}}       | ${'invalid integrationType'}
-    ${VALID}                      | ${{ count: '0' }}   | ${'invalid count'}
+    params                                | query             | description
+    ${{ ...VALID, product: 'x' }}         | ${{}}             | ${'invalid product'}
+    ${{ ...VALID, integrationType: 'x' }} | ${{}}             | ${'invalid integrationType'}
+    ${VALID}                              | ${{ count: '0' }} | ${'invalid count'}
   `('returns 400 on $description', async ({ params, query }) => {
     const res = buildResponse();
-    await listManifests(buildRequest(params, query), res as unknown as Response);
+    await listManifests(
+      buildRequest(params, query),
+      res as unknown as Response
+    );
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(loadManifestsMock).not.toHaveBeenCalled();
