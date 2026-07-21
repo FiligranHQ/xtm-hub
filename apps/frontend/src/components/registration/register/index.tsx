@@ -5,7 +5,7 @@ import { RegisterStateMissingCapability } from '@/components/registration/regist
 import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 import { RegisterPlatform } from '@/components/registration/register/register.graphql';
 import { RegisterStateSucceeded } from '@/components/registration/register/Succeeded';
-import { RegisterStateTooMuchOrganization } from '@/components/registration/register/TooMuchOrganization';
+import { RegisterStateTooManyOrganizations } from '@/components/registration/register/TooManyOrganizations';
 import { toast } from '@filigran/ui/clients';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
@@ -217,7 +217,7 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
       userOrganizationsQueryData.userOrganizations.length > 2;
     if (shouldRegisterOnSameOrganization) {
       return (
-        <RegisterStateTooMuchOrganization
+        <RegisterStateTooManyOrganizations
           cancel={cancel}
           confirm={() => register(isPlatformRegistered.organization?.id ?? '')}
           displayedIdentifier={displayedIdentifier}

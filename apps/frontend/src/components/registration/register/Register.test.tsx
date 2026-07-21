@@ -186,13 +186,13 @@ describe('Register', () => {
     ];
     const { user } = renderRegister();
     expect(
-      screen.getByText('Register.TooMuchOrganization.Title')
+      screen.getByText('Register.TooManyOrganizations.Title')
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Register.TooMuchOrganization.Description1/)
+      screen.getByText(/Register.TooManyOrganizations.Description1/)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Register.TooMuchOrganization.Description2/)
+      screen.getByText(/Register.TooManyOrganizations.Description2/)
     ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Utils.Confirm' }));
