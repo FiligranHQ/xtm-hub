@@ -106,6 +106,7 @@ export function useDocumentContext({
         input: {
           ...input,
           active: input.active ?? false,
+          use_cases: input.use_cases ?? [],
         },
         metadata: Object.keys(metadata)
           .map((key) => ({

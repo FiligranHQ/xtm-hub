@@ -85,4 +85,37 @@ describe('useServiceFormFields', () => {
       }
     );
   });
+
+  describe('use_cases field', () => {
+    it.each`
+      documentType                 | platform     | expectedRequired
+      ${'Connector'}               | ${'OpenCTI'} | ${false}
+      ${'CSV Feed'}                | ${'OpenCTI'} | ${true}
+      ${'TAXII Feed'}              | ${'OpenCTI'} | ${true}
+      ${'RSS Feed'}                | ${'OpenCTI'} | ${true}
+      ${'Stream'}                  | ${'OpenCTI'} | ${true}
+      ${'Third Party Integration'} | ${'OpenCTI'} | ${true}
+      ${'Custom Dashboard'}        | ${'OpenCTI'} | ${true}
+      ${'Custom View'}             | ${'OpenCTI'} | ${true}
+      ${'Playbook'}                | ${'OpenCTI'} | ${true}
+      ${'Scenario'}                | ${'OpenAEV'} | ${true}
+    `(
+      'should have required=$expectedRequired for $documentType',
+      ({ documentType, platform, expectedRequired }) => {
+        const { result } = renderHook(() =>
+          useServiceFormFields({
+            documentType,
+            platform,
+            document: existingDocument,
+          })
+        );
+
+        const element = result.current.use_cases.fieldType({
+          field: {} as never,
+        });
+
+        expect(element.props.required).toBe(expectedRequired);
+      }
+    );
+  });
 });
