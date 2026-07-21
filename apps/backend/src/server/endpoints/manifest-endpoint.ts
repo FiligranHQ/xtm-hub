@@ -28,31 +28,108 @@ const manifestRateLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-export const listManifests = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const params = validateManifestParams(req, res);
-    if (!params) return;
+export const ManifestEndpoint = {
+  listManifests: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const params = validateManifestParams(req, res);
+      if (!params) return;
 
-    const count = parseCount(req.query.count);
-    if (count === undefined) {
-      res.status(400).json({ code: 400, message: 'Invalid count' });
-      return;
+      const count = parseCount(req.query.count);
+      if (count === undefined) {
+        res.status(400).json({ code: 400, message: 'Invalid count' });
+        return;
+      }
+
+      const manifests = await ManifestDomain.loadManifests(
+        params.product,
+        params.version,
+        params.integrationType,
+        count
+      );
+      res.status(200).json({ manifests });
+    } catch (error) {
+      logApp.error('Error while listing manifests', { error });
+      res.status(500).json({ code: 500, message: 'Internal server error' });
     }
+  },
 
-    const manifests = await ManifestDomain.loadManifests(
-      params.product,
-      params.version,
-      params.integrationType,
-      count
-    );
-    res.status(200).json({ manifests });
-  } catch (error) {
-    logApp.error('Error while listing manifests', { error });
-    res.status(500).json({ code: 500, message: 'Internal server error' });
-  }
+  downloadLatestManifest: async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const params = validateManifestParams(req, res);
+      if (!params) return;
+
+      const [latest] = await ManifestDomain.loadManifests(
+        params.product,
+        params.version,
+        params.integrationType,
+        1
+      );
+      if (!latest) {
+        res.status(404).json({ code: 404, message: 'Manifest not found' });
+        return;
+      }
+
+      res.setHeader('Cache-Control', 'no-cache');
+      await streamManifestByName(
+        res,
+        params.product,
+        params.version,
+        latest.name
+      );
+    } catch (error) {
+      logApp.error('Error while retrieving latest manifest', { error });
+      if (res.headersSent) {
+        res.destroy(error as Error);
+        return;
+      }
+      res.status(500).json({ code: 500, message: 'Internal server error' });
+    }
+  },
+
+  downloadManifestByName: async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const params = validateManifestParams(req, res);
+      if (!params) return;
+
+      const { name } = req.params;
+      if (typeof name !== 'string' || !isValidManifestName(name)) {
+        res.status(400).json({ code: 400, message: 'Invalid manifest name' });
+        return;
+      }
+
+      const manifest = await ManifestDomain.getManifestByName(
+        params.product,
+        params.version,
+        params.integrationType,
+        name
+      );
+      if (!manifest) {
+        res.status(404).json({ code: 404, message: 'Manifest not found' });
+        return;
+      }
+
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      await streamManifestByName(
+        res,
+        params.product,
+        params.version,
+        manifest.name
+      );
+    } catch (error) {
+      logApp.error('Error while retrieving manifest by name', { error });
+      if (res.headersSent) {
+        res.destroy(error as Error);
+        return;
+      }
+      res.status(500).json({ code: 500, message: 'Internal server error' });
+    }
+  },
 };
 
 const validateManifestParams = (
@@ -92,19 +169,19 @@ export const manifestEndpoint = (app: Express) => {
     '/:product/:version/:integrationType/manifests',
     manifestRateLimiter,
     cors(),
-    listManifests
+    ManifestEndpoint.listManifests
   );
   app.get(
     '/:product/:version/:integrationType/manifests/latest',
     manifestRateLimiter,
     cors(),
-    downloadLatestManifest
+    ManifestEndpoint.downloadLatestManifest
   );
   app.get(
     '/:product/:version/:integrationType/manifests/:name',
     manifestRateLimiter,
     cors(),
-    downloadManifestByName
+    ManifestEndpoint.downloadManifestByName
   );
 };
 
@@ -144,82 +221,4 @@ const streamManifestByName = async (
   });
 
   stream.pipe(res);
-};
-
-export const downloadLatestManifest = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const params = validateManifestParams(req, res);
-    if (!params) return;
-
-    const [latest] = await ManifestDomain.loadManifests(
-      params.product,
-      params.version,
-      params.integrationType,
-      1
-    );
-    if (!latest) {
-      res.status(404).json({ code: 404, message: 'Manifest not found' });
-      return;
-    }
-
-    res.setHeader('Cache-Control', 'no-cache');
-    await streamManifestByName(
-      res,
-      params.product,
-      params.version,
-      latest.name
-    );
-  } catch (error) {
-    logApp.error('Error while retrieving latest manifest', { error });
-    if (res.headersSent) {
-      res.destroy(error as Error);
-      return;
-    }
-    res.status(500).json({ code: 500, message: 'Internal server error' });
-  }
-};
-
-export const downloadManifestByName = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const params = validateManifestParams(req, res);
-    if (!params) return;
-
-    const { name } = req.params;
-    if (typeof name !== 'string' || !isValidManifestName(name)) {
-      res.status(400).json({ code: 400, message: 'Invalid manifest name' });
-      return;
-    }
-
-    const manifest = await ManifestDomain.getManifestByName(
-      params.product,
-      params.version,
-      params.integrationType,
-      name
-    );
-    if (!manifest) {
-      res.status(404).json({ code: 404, message: 'Manifest not found' });
-      return;
-    }
-
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    await streamManifestByName(
-      res,
-      params.product,
-      params.version,
-      manifest.name
-    );
-  } catch (error) {
-    logApp.error('Error while retrieving manifest by name', { error });
-    if (res.headersSent) {
-      res.destroy(error as Error);
-      return;
-    }
-    res.status(500).json({ code: 500, message: 'Internal server error' });
-  }
 };

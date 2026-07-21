@@ -40,11 +40,7 @@ vi.mock('../../utils/app-logger.util', () => ({
   logApp: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
 }));
 
-import {
-  downloadLatestManifest,
-  downloadManifestByName,
-  listManifests,
-} from './manifest-endpoint';
+import { ManifestEndpoint } from './manifest-endpoint';
 
 const buildResponse = () => ({
   headersSent: false,
@@ -81,7 +77,7 @@ describe('downloadLatestManifest', () => {
     downloadFileMock.mockResolvedValue({ on: vi.fn(), pipe });
 
     const res = buildResponse();
-    await downloadLatestManifest(
+    await ManifestEndpoint.downloadLatestManifest(
       buildRequest(VALID),
       res as unknown as Response
     );
@@ -101,7 +97,7 @@ describe('downloadLatestManifest', () => {
     loadManifestsMock.mockResolvedValue([]);
 
     const res = buildResponse();
-    await downloadLatestManifest(
+    await ManifestEndpoint.downloadLatestManifest(
       buildRequest(VALID),
       res as unknown as Response
     );
@@ -112,7 +108,7 @@ describe('downloadLatestManifest', () => {
 
   it('returns 400 on an invalid product', async () => {
     const res = buildResponse();
-    await downloadLatestManifest(
+    await ManifestEndpoint.downloadLatestManifest(
       buildRequest({ ...VALID, product: 'nope' }),
       res as unknown as Response
     );
@@ -130,7 +126,7 @@ describe('downloadManifestByName', () => {
 
   it('rejects a path-traversal name with 400 before any lookup', async () => {
     const res = buildResponse();
-    await downloadManifestByName(
+    await ManifestEndpoint.downloadManifestByName(
       buildRequest({ ...VALID, name: '../../secret' }),
       res as unknown as Response
     );
@@ -149,7 +145,7 @@ describe('downloadManifestByName', () => {
     downloadFileMock.mockResolvedValue({ on: vi.fn(), pipe });
 
     const res = buildResponse();
-    await downloadManifestByName(
+    await ManifestEndpoint.downloadManifestByName(
       buildRequest({ ...VALID, name: VALID_NAME }),
       res as unknown as Response
     );
@@ -178,7 +174,10 @@ describe('listManifests', () => {
     loadManifestsMock.mockResolvedValue(rows);
 
     const res = buildResponse();
-    await listManifests(buildRequest(VALID), res as unknown as Response);
+    await ManifestEndpoint.listManifests(
+      buildRequest(VALID),
+      res as unknown as Response
+    );
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ manifests: rows });
@@ -188,7 +187,7 @@ describe('listManifests', () => {
     loadManifestsMock.mockResolvedValue([]);
 
     const res = buildResponse();
-    await listManifests(
+    await ManifestEndpoint.listManifests(
       buildRequest(VALID, { count: '5' }),
       res as unknown as Response
     );
@@ -208,7 +207,7 @@ describe('listManifests', () => {
     ${VALID}                              | ${{ count: '0' }} | ${'invalid count'}
   `('returns 400 on $description', async ({ params, query }) => {
     const res = buildResponse();
-    await listManifests(
+    await ManifestEndpoint.listManifests(
       buildRequest(params, query),
       res as unknown as Response
     );
