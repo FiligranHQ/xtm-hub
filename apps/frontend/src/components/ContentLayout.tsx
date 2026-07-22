@@ -8,9 +8,13 @@ import { ReactNode } from 'react';
 
 interface ContentLayoutProps {
   children: ReactNode;
+  showFooter?: boolean;
 }
 
-export const ContentLayout = ({ children }: ContentLayoutProps) => {
+export const ContentLayout = ({
+  children,
+  showFooter = true,
+}: ContentLayoutProps) => {
   const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   return (
     <div className="relative flex-1 min-h-0">
@@ -22,7 +26,7 @@ export const ContentLayout = ({ children }: ContentLayoutProps) => {
             : 'bg-background p-6'
         )}>
         <div className="flex-1">{children}</div>
-        {isHomePageV2Enabled && <AppFooter />}
+        {isHomePageV2Enabled && showFooter && <AppFooter />}
       </main>
     </div>
   );
