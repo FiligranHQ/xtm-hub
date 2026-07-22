@@ -16,12 +16,12 @@ export const ContentLayout = ({ children }: ContentLayoutProps) => {
     <div className="relative flex-1 min-h-0">
       <main
         className={cn(
-          'h-full w-full overflow-y-auto',
+          'h-full w-full overflow-y-auto flex flex-col',
           isHomePageV2Enabled
             ? 'bg-gradient-background px-3 pt-3 sm:px-6 sm:pt-6'
             : 'bg-background p-6'
         )}>
-        {children}
+        <div className="flex-1">{children}</div>
         {isHomePageV2Enabled && <AppFooter />}
       </main>
     </div>
