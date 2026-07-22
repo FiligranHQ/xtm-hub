@@ -30,10 +30,7 @@ export const ShareableResourceCardImage = ({
           />
         ) : (
           <div className="w-24 p-m border border-light flex items-center justify-center">
-            <EntityTypeOrFiligranLogo
-              entityTypes={getEntityTypes(document)}
-              className="size-18"
-            />
+            <EntityTypeOrFiligranLogo entityTypes={getEntityTypes(document)} />
           </div>
         )}
       </div>

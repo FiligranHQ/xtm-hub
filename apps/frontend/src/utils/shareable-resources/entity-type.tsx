@@ -184,7 +184,7 @@ export const EntityTypeIcon = ({
   const color = ENTITY_TYPE_COLOR[entityType];
   return (
     <Icon
-      sx={{ color, ...sx }}
+      sx={[{ color }, ...(Array.isArray(sx) ? sx : [sx])]}
       {...props}
     />
   );
@@ -192,17 +192,14 @@ export const EntityTypeIcon = ({
 
 interface EntityTypeOrFiligranLogoProps {
   entityTypes?: readonly string[] | null;
-  className?: string;
 }
 
 /**
- * Renders the icon of the first entity type as the resource's default logo,
- * falling back to the Filigran logo when no entity type is available. The entity
- * icon is a MUI SvgIcon: it is sized via `fontSize`
+ * Renders the icon of the first entity type as the resource's default logo
+ * falling back to the Filigran logo when no entity type is available
  */
 export const EntityTypeOrFiligranLogo = ({
   entityTypes,
-  className,
 }: EntityTypeOrFiligranLogoProps) => {
   const first = entityTypes?.[0];
   return first ? (
@@ -211,6 +208,6 @@ export const EntityTypeOrFiligranLogo = ({
       sx={{ fontSize: '5.5rem' }}
     />
   ) : (
-    <LogoFiligranIcon className={className} />
+    <LogoFiligranIcon className="size-22" />
   );
 };

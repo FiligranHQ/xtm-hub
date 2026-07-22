@@ -104,7 +104,6 @@ const ShareableResourceSlug = ({
           <div className="w-24 p-m border border-light shrink-0 flex items-center justify-center">
             <EntityTypeOrFiligranLogo
               entityTypes={getEntityTypes(documentData)}
-              className="size-18"
             />
           </div>
         )}

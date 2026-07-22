@@ -68,10 +68,7 @@ export const ServiceFormLogoField = ({
           </TooltipProvider>
         ) : (
           <div className="w-24 p-m border border-light flex items-center justify-center">
-            <EntityTypeOrFiligranLogo
-              entityTypes={entityTypes}
-              className="size-18"
-            />
+            <EntityTypeOrFiligranLogo entityTypes={entityTypes} />
           </div>
         )}
       </div>
