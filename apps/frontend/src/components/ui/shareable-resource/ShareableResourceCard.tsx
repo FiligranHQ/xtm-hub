@@ -66,7 +66,7 @@ const ShareableResourceCard = ({
   return (
     <li
       className={cn(
-        `overflow-hidden flex flex-col relative rounded bg-page-background aria-disabled:opacity-60 hover:bg-hover`,
+        `overflow-hidden flex flex-col relative rounded bg-elevation-background-layer-1 aria-disabled:opacity-60 hover:bg-hover`,
         isHomePageV2Enabled ? 'h-[300px] sm:h-[348px]' : 'h-[348px]',
         !isHomePageV2Enabled && 'border'
       )}>

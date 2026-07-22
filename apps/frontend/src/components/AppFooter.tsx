@@ -26,7 +26,7 @@ export const AppFooter = ({
   return (
     <footer className={cn('container text-muted-foreground pt-6', className)}>
       <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-l text-center">
-        <span className="text-xs">
+        <span className="text-content-body-compact-link">
           <Link
             href="https://filigran.io"
             target="_blank"
@@ -38,7 +38,7 @@ export const AppFooter = ({
           </Link>{' '}
           {t('AllRightsReserved')}
         </span>
-        <ul className="flex flex-col md:flex-row gap-l text-xs">
+        <ul className="flex flex-col md:flex-row gap-l text-content-body-compact-link">
           <li>
             <Link
               target="_blank"

@@ -14,7 +14,7 @@ export const CookieSettingsLink = ({ className }: { className?: string }) => {
       variant="link"
       onClick={openPreferences}
       className={cn(
-        'h-auto p-0 text-xs font-normal text-muted-foreground no-underline hover:no-underline cursor-pointer',
+        'h-auto p-0 no-underline hover:no-underline cursor-pointer text-content-body-compact-link',
         className
       )}>
       {t('CookieSettingsLink')}
