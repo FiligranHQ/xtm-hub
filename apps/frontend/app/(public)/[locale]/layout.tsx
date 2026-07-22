@@ -56,7 +56,8 @@ const RootLayout = async ({
           <div
             className={cn(
               'flex flex-col flex-1 min-h-0 min-w-0',
-              !isHomePageV2Enabled && 'bg-gradient-background'
+              !isHomePageV2Enabled && 'bg-gradient-background',
+              isHomePageV2Enabled && 'md:overflow-y-auto'
             )}>
             <header
               className={cn(
@@ -97,13 +98,20 @@ const RootLayout = async ({
                 </Button>
               )}
             </header>
-            <main className="grow overflow-y-auto flex flex-col">
-              <div className="container pt-l flex-1">{children}</div>
-              <AppFooter
-                className="max-md:mt-xxl px-6"
-                isHomePageV2Enabled={isHomePageV2Enabled}
-              />
+            <main
+              className={cn('grow', !isHomePageV2Enabled && 'overflow-y-auto')}>
+              <div
+                className={cn(
+                  'container pt-l',
+                  isHomePageV2Enabled && 'pt-xxl'
+                )}>
+                {children}
+              </div>
             </main>
+            <AppFooter
+              className="max-md:mt-xxl px-6"
+              isHomePageV2Enabled={isHomePageV2Enabled}
+            />
           </div>
         </div>
         <Copilot />
