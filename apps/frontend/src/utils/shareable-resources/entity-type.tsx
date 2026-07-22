@@ -1,34 +1,42 @@
+import { LogoFiligranIcon } from '@filigran/icon';
 import {
-  AdministrativeAreaIcon,
-  AttackPatternIcon,
-  CampaignIcon,
-  ChannelIcon,
-  CityIcon,
-  CountryIcon,
-  DataSourceIcon,
-  EventIcon,
-  GroupingIcon,
-  IncidentIcon,
-  IndividualIcon,
-  InfrastructureIcon,
-  IntrusionSetIcon,
-  LabelIcon,
-  MalwareAnalysisIcon,
-  MalwareIcon,
-  NarrativeIcon,
-  ObservedDataIcon,
-  OrganizationIcon,
-  ReportIcon,
-  SectorIcon,
-  SystemIcon,
-  ThreatActorGroupIcon,
-  ThreatActorIndividualIcon,
-  ToolIcon,
-  VulnerabilityIcon,
-} from '@filigran/icon';
-import { FunctionComponent, SVGProps } from 'react';
-
-type IconComponent = FunctionComponent<SVGProps<SVGSVGElement>>;
+  AccountBalanceOutlined,
+  BiotechOutlined,
+  BugReportOutlined,
+  DescriptionOutlined,
+  DiamondOutlined,
+  DomainOutlined,
+  EventOutlined,
+  FlagOutlined,
+  HelpOutlined,
+  MapOutlined,
+  PersonOutlined,
+  PlaceOutlined,
+  PublicOutlined,
+  RouterOutlined,
+  SecurityOutlined,
+  SpeakerNotesOutlined,
+  StorageOutlined,
+  StreamOutlined,
+  SurroundSoundOutlined,
+  SvgIconComponent,
+  WebAssetOutlined,
+  WorkspacesOutlined,
+} from '@mui/icons-material';
+import { SvgIconProps } from '@mui/material';
+import {
+  AccountMultipleOutline,
+  ArchiveOutline,
+  Biohazard,
+  BriefcaseEditOutline,
+  BriefcaseRemoveOutline,
+  BriefcaseSearchOutline,
+  ChessKnight,
+  Fire,
+  HexagonOutline,
+  LaptopAccount,
+  LockPattern,
+} from 'mdi-material-ui';
 
 interface EntityTypeOption {
   /** Canonical OpenCTI entity type value, stored in the database. */
@@ -82,49 +90,127 @@ const ENTITY_TYPE_BY_ID: Record<string, EntityTypeOption> = Object.fromEntries(
 );
 
 /**
- * Map each entity type to its OpenCTI icon when available. Entity types without
- * a dedicated icon fall back to a generic one (see {@link EntityTypeIcon}).
+ * Map each entity type to the exact OpenCTI icon, using the same MUI / MDI
+ * components as the platform's `ItemIcon` (`iconSelector`) so the icons match
+ * OpenCTI
  */
-const ENTITY_TYPE_ICON: Record<string, IconComponent> = {
-  'Administrative-Area': AdministrativeAreaIcon,
-  'Attack-Pattern': AttackPatternIcon,
-  Campaign: CampaignIcon,
-  Channel: ChannelIcon,
-  City: CityIcon,
-  Country: CountryIcon,
-  'Data-Source': DataSourceIcon,
-  Event: EventIcon,
-  Grouping: GroupingIcon,
-  Incident: IncidentIcon,
-  Individual: IndividualIcon,
-  Infrastructure: InfrastructureIcon,
-  'Intrusion-Set': IntrusionSetIcon,
-  Malware: MalwareIcon,
-  'Malware-Analysis': MalwareAnalysisIcon,
-  Narrative: NarrativeIcon,
-  'Stix-Cyber-Observable': ObservedDataIcon,
-  Organization: OrganizationIcon,
-  Report: ReportIcon,
-  Sector: SectorIcon,
-  System: SystemIcon,
-  'Threat-Actor-Group': ThreatActorGroupIcon,
-  'Threat-Actor-Individual': ThreatActorIndividualIcon,
-  Tool: ToolIcon,
-  Vulnerability: VulnerabilityIcon,
+const ENTITY_TYPE_ICON: Record<string, SvgIconComponent> = {
+  'Administrative-Area': MapOutlined,
+  Channel: SurroundSoundOutlined,
+  City: PlaceOutlined,
+  Country: FlagOutlined,
+  'Data-Source': StreamOutlined,
+  Event: EventOutlined,
+  Grouping: WorkspacesOutlined,
+  Individual: PersonOutlined,
+  Infrastructure: RouterOutlined,
+  'Intrusion-Set': DiamondOutlined,
+  'Malware-Analysis': BiotechOutlined,
+  Narrative: SpeakerNotesOutlined,
+  Organization: AccountBalanceOutlined,
+  Region: PublicOutlined,
+  Report: DescriptionOutlined,
+  Sector: DomainOutlined,
+  SecurityPlatform: SecurityOutlined,
+  System: StorageOutlined,
+  Tool: WebAssetOutlined,
+  Vulnerability: BugReportOutlined,
+  Artifact: ArchiveOutline,
+  'Attack-Pattern': LockPattern,
+  Campaign: ChessKnight,
+  'Case-Rfi': BriefcaseSearchOutline,
+  'Case-Rft': BriefcaseRemoveOutline,
+  Feedback: BriefcaseEditOutline,
+  Incident: Fire,
+  Malware: Biohazard,
+  'Stix-Cyber-Observable': HexagonOutline,
+  'Threat-Actor-Group': AccountMultipleOutline,
+  'Threat-Actor-Individual': LaptopAccount,
+};
+
+/**
+ * Map each entity type to its OpenCTI color. Values mirror the OpenCTI color
+ * families (see `itemColor` / `COLOR_FAMILIES` in the platform) so icons look
+ * consistent with the platform.
+ */
+const ENTITY_TYPE_COLOR: Record<string, string> = {
+  Report: '#70B23B',
+  Grouping: '#70B23B',
+  'Malware-Analysis': '#70B23B',
+  'Case-Rfi': '#EA80FC',
+  'Case-Rft': '#EA80FC',
+  Feedback: '#EA80FC',
+  Incident: '#F96C9B',
+  Artifact: '#FF6F42',
+  Infrastructure: '#FF6F42',
+  'Threat-Actor-Group': '#FF9800',
+  'Threat-Actor-Individual': '#FF9800',
+  'Intrusion-Set': '#FF9800',
+  Campaign: '#FF9800',
+  Malware: '#F0B60A',
+  Channel: '#F0B60A',
+  Tool: '#F0B60A',
+  Vulnerability: '#F0B60A',
+  SecurityPlatform: '#F0B60A',
+  'Attack-Pattern': '#D3E157',
+  Narrative: '#D3E157',
+  'Data-Source': '#D3E157',
+  Sector: '#BA88FF',
+  Event: '#BA88FF',
+  Organization: '#BA88FF',
+  System: '#BA88FF',
+  Individual: '#BA88FF',
+  Region: '#05ACC1',
+  Country: '#05ACC1',
+  'Administrative-Area': '#05ACC1',
+  City: '#05ACC1',
+  'Stix-Cyber-Observable': '#84ffff',
 };
 
 export const getEntityTypeLabel = (id: string): string =>
   ENTITY_TYPE_BY_ID[id]?.name ?? id;
 
-interface EntityTypeIconProps extends SVGProps<SVGSVGElement> {
+interface EntityTypeIconProps extends SvgIconProps {
   entityType: string;
 }
 
 /** Renders the OpenCTI icon for an entity type, with a generic fallback. */
 export const EntityTypeIcon = ({
   entityType,
+  sx,
   ...props
 }: EntityTypeIconProps) => {
-  const Icon = ENTITY_TYPE_ICON[entityType] ?? LabelIcon;
-  return <Icon {...props} />;
+  const Icon: SvgIconComponent = ENTITY_TYPE_ICON[entityType] ?? HelpOutlined;
+  const color = ENTITY_TYPE_COLOR[entityType];
+  return (
+    <Icon
+      sx={{ color, ...sx }}
+      {...props}
+    />
+  );
+};
+
+interface EntityTypeOrFiligranLogoProps {
+  entityTypes?: readonly string[] | null;
+  className?: string;
+}
+
+/**
+ * Renders the icon of the first entity type as the resource's default logo,
+ * falling back to the Filigran logo when no entity type is available. The entity
+ * icon is a MUI SvgIcon: it is sized via `fontSize`
+ */
+export const EntityTypeOrFiligranLogo = ({
+  entityTypes,
+  className,
+}: EntityTypeOrFiligranLogoProps) => {
+  const first = entityTypes?.[0];
+  return first ? (
+    <EntityTypeIcon
+      entityType={first}
+      sx={{ fontSize: '5.5rem' }}
+    />
+  ) : (
+    <LogoFiligranIcon className={className} />
+  );
 };

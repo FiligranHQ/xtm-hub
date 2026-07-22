@@ -40,7 +40,8 @@ export const ShareableResourceEntityTypes = ({
           className="flex items-center gap-xs">
           <EntityTypeIcon
             entityType={entityType}
-            className="size-4 shrink-0"
+            className="shrink-0"
+            sx={{ fontSize: '1rem' }}
           />
           <span>{getEntityTypeLabel(entityType)}</span>
         </Badge>

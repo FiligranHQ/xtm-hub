@@ -4,7 +4,7 @@ import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/BreadcrumbNav';
-import { DownloadIcon, LogoFiligranIcon } from '@filigran/icon';
+import { DownloadIcon } from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +19,7 @@ import { OPENCTI_INTEGRATION_URL_CONFIGS } from '@/components/service/document/o
 import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
 import ShareableResourceDescription from '@/components/service/document/ShareableResourceDescription';
 import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
+import { getEntityTypes } from '@/components/service/document/ui/ShareableResourceEntityTypes';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import BadgeOverflowCounter, {
   BadgeOverflow,
@@ -27,6 +28,7 @@ import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import useDecodedParams from '@/hooks/use-decoded-params';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { EntityTypeOrFiligranLogo } from '@/utils/shareable-resources/entity-type';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -99,8 +101,11 @@ const ShareableResourceSlug = ({
             />
           </div>
         ) : (
-          <div className="w-24 p-m border border-light shrink-0">
-            <LogoFiligranIcon className="size-18" />
+          <div className="w-24 p-m border border-light shrink-0 flex items-center justify-center">
+            <EntityTypeOrFiligranLogo
+              entityTypes={getEntityTypes(documentData)}
+              className="size-18"
+            />
           </div>
         )}
         <div className="flex flex-col justify-center w-full">
