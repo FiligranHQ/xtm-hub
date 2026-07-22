@@ -23,12 +23,23 @@ integration testing) build on top of these.
 - Naming convention: Use should <expected behavior> when <context> to avoid vague test titles.
 - No implementation-detail assertions: Test observable behavior (UI output, function result, DB side effect), not
   internal details (user facing)
-- Clear mocking policy: Mock only at boundaries (network, clock, UUID, storage); avoid mocking pure business logic.
+- Clear mocking policy: Mock only at boundaries (network, clock, UUID, storage); avoid mocking pure business logic. If a
+  pure utility function (formatting, mapping, computation) produces the correct result when given proper test data,
+  supply that real data instead of mocking the function.
+- **Global infrastructure mocks live in `setup-vitest.ts` — never repeat them per test file.** Mocks for `next/image`,
+  `next/navigation`, and other framework-level modules are already configured globally. Only add mocks in a test file
+  for behavior that is specific to that test (e.g. hooks, service calls, data-fetching).
+- **Never use `as never` in test data.** Cast test fixtures to the actual generated type (e.g.
+  `as publicDocumentListItemFragment$data`) or, better, provide the required fields directly so no cast is needed at
+  all.
+- **Extract repeated fixture values to named constants.** Any primitive value (string, number, boolean) that appears in
+  both the fixture object and in assertions must be declared as a `const` at the top of the test file and reused
+  everywhere. This prevents silent drift between test setup and assertion.
 - Strict determinism: Freeze time, use fixed random seeds, and avoid any dependency on test execution order.
 - High-quality it.each datasets: Always include nominal cases, boundary cases, invalid inputs, and known regressions.
 - Readable fixtures: Prefer builders/factories (makeUser, makeOrg) over large inline objects.
 - Anti-flaky rules: No arbitrary setTimeout, no implicit waits, no sleep.
-- Systematic cleanup: Reset mocks/DB/state between tests using the repository’s standard hooks.
+- Systematic cleanup: Reset mocks/DB/state between tests using the repository's standard hooks.
 
 ## Validating Changes
 
