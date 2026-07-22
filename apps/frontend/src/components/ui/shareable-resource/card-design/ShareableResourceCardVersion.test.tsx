@@ -1,16 +1,17 @@
+import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ShareableResourceCardVersion } from './ShareableResourceCardVersion';
 
-const compatibilityHookMock = vi.fn();
+const PLATFORM_TITLE = 'OpenCTI';
+const PLATFORM_VERSION = '6.7';
+const PRODUCT_VERSION = '6.8';
+const VERSION_CLASS = 'version-class';
+const INCOMPATIBLE_ICON_TEST_ID = 'incompatible-icon';
 
-vi.mock('@/hooks/use-registered-platforms', () => ({
-  useRegisteredPlatforms: () => ({
-    platforms: [{ title: 'OpenCTI', version: '6.7' }],
-  }),
-}));
+const compatibilityHookMock = vi.fn();
 
 vi.mock('@/hooks/use-build-compatibility-translation-key', () => ({
   useBuildCompatibilityTranslationKey: (...args: unknown[]) =>
@@ -18,7 +19,7 @@ vi.mock('@/hooks/use-build-compatibility-translation-key', () => ({
 }));
 
 vi.mock('@filigran/icon', () => ({
-  CheckIndeterminateIcon: () => <svg data-testid="incompatible-icon" />,
+  CheckIndeterminateIcon: () => <svg data-testid={INCOMPATIBLE_ICON_TEST_ID} />,
 }));
 
 vi.mock('@filigran/ui/clients', () => ({
@@ -31,22 +32,28 @@ vi.mock('@filigran/ui/clients', () => ({
 }));
 
 describe('ShareableResourceCardVersion', () => {
+  beforeEach(() => {
+    vi.mocked(useRegisteredPlatforms).mockReturnValue({
+      platforms: [{ title: PLATFORM_TITLE, version: PLATFORM_VERSION }],
+    });
+  });
+
   it('renders incompatibility tooltip when some platforms are incompatible', () => {
     compatibilityHookMock.mockReturnValue({
-      platformToBeUpdated: 'OpenCTI',
+      platformToBeUpdated: PLATFORM_TITLE,
       incompatiblePlatformsCount: 2,
     });
 
     testRender(
       <ShareableResourceCardVersion
-        product_version="6.8"
-        requiredProductVersion="6.8"
-        className="version-class"
+        product_version={PRODUCT_VERSION}
+        requiredProductVersion={PRODUCT_VERSION}
+        className={VERSION_CLASS}
       />
     );
 
-    expect(screen.getByText('6.8')).toBeInTheDocument();
-    expect(screen.getByTestId('incompatible-icon')).toBeInTheDocument();
+    expect(screen.getByText(PRODUCT_VERSION)).toBeInTheDocument();
+    expect(screen.getByTestId(INCOMPATIBLE_ICON_TEST_ID)).toBeInTheDocument();
     expect(
       screen.getByText('Service.Connectors.Incompatible')
     ).toBeInTheDocument();
@@ -60,13 +67,15 @@ describe('ShareableResourceCardVersion', () => {
 
     testRender(
       <ShareableResourceCardVersion
-        product_version="6.8"
-        requiredProductVersion="6.8"
-        className="version-class"
+        product_version={PRODUCT_VERSION}
+        requiredProductVersion={PRODUCT_VERSION}
+        className={VERSION_CLASS}
       />
     );
 
-    expect(screen.getByText('6.8')).toHaveClass('version-class');
-    expect(screen.queryByTestId('incompatible-icon')).not.toBeInTheDocument();
+    expect(screen.getByText(PRODUCT_VERSION)).toHaveClass(VERSION_CLASS);
+    expect(
+      screen.queryByTestId(INCOMPATIBLE_ICON_TEST_ID)
+    ).not.toBeInTheDocument();
   });
 });

@@ -56,10 +56,6 @@ vi.mock('@graphql/generated', async (importOriginal) => {
   };
 });
 
-vi.mock('@/hooks/use-is-feature-enabled', () => ({
-  useIsFeatureEnabled: vi.fn(),
-}));
-
 vi.mock(
   '@/components/menu/navigation/private/private-navigation.utils',
   () => ({

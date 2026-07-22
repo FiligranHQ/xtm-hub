@@ -1,12 +1,8 @@
 import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { ShareableResourceCardFooterVersion } from './ShareableResourceCardFooterVersions';
-
-vi.mock('@/hooks/use-registered-platforms', () => ({
-  useRegisteredPlatforms: () => ({ platforms: [] }),
-}));
 
 const PRODUCT_VERSION = '6.8.3';
 

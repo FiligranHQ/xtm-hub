@@ -1,3 +1,4 @@
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationType } from '@graphql/generated';
@@ -6,30 +7,17 @@ import { describe, expect, it, vi } from 'vitest';
 import ShareableResourceCard from './ShareableResourceCard';
 
 const saveMock = vi.fn();
-const useIsFeatureEnabledMock = vi.fn();
 
 vi.mock('@/hooks/use-scroll-position', () => ({
   __esModule: true,
   default: () => ({ save: saveMock }),
 }));
 
-vi.mock('@/hooks/use-is-feature-enabled', () => ({
-  useIsFeatureEnabled: () => useIsFeatureEnabledMock(),
-}));
-
-vi.mock('@/hooks/use-registered-platforms', () => ({
-  useRegisteredPlatforms: () => ({ platforms: [] }),
-}));
-
-vi.mock('@/utils/documents', () => ({
-  findDocumentLogo: () => null,
-}));
-
 describe('ShareableResourceCard', () => {
   const serviceInstance = { id: 'service-id' };
 
   it('renders connector card with document name and description', () => {
-    useIsFeatureEnabledMock.mockReturnValue(true);
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
 
     testRender(
       <ShareableResourceCard
@@ -54,7 +42,7 @@ describe('ShareableResourceCard', () => {
   });
 
   it('renders non-connector card and applies the correct height class', async () => {
-    useIsFeatureEnabledMock.mockReturnValue(false);
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
     const { container, user } = testRender(
       <ShareableResourceCard
         document={

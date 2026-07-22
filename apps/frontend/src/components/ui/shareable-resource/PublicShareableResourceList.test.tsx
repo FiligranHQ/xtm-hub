@@ -11,18 +11,6 @@ vi.mock('@/hooks/use-scroll-position', () => ({
   default: () => ({ save: vi.fn() }),
 }));
 
-vi.mock('@/hooks/use-is-feature-enabled', () => ({
-  useIsFeatureEnabled: () => false,
-}));
-
-vi.mock('@/hooks/use-registered-platforms', () => ({
-  useRegisteredPlatforms: () => ({ platforms: [] }),
-}));
-
-vi.mock('@/utils/documents', () => ({
-  findDocumentLogo: () => null,
-}));
-
 describe('PublicShareableResourceList', () => {
   const serviceInstance = {
     id: 'service-1',

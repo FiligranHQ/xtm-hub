@@ -8,10 +8,6 @@ vi.mock('@/components/service/integrations/Integration.utils', () => ({
   getIntegrationSubTypeMetadata: () => ({ label: 'Subtype label' }),
 }));
 
-vi.mock('@/utils/documents', () => ({
-  findDocumentLogo: () => null,
-}));
-
 describe('ShareableResourceCardHeader', () => {
   const baseDocument = {
     name: 'Short name',

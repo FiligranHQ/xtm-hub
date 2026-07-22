@@ -8,6 +8,8 @@ const restrictedGlobalTestMocks = new Set([
   'next/navigation',
   '@/relay/environment/registry',
   '@/components/error-frontend-log.graphql',
+  '@/hooks/use-registered-platforms',
+  '@/hooks/use-is-feature-enabled',
 ]);
 
 const getStringLiteralValue = (node) => {

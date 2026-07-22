@@ -1,16 +1,11 @@
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import testRender from '@/utils/test/test-render';
 import { describe, expect, it, vi } from 'vitest';
 import { ShareableResourceCardDescription } from './ShareableResourceCardDescription';
 
-const useIsFeatureEnabledMock = vi.fn();
-
-vi.mock('@/hooks/use-is-feature-enabled', () => ({
-  useIsFeatureEnabled: () => useIsFeatureEnabledMock(),
-}));
-
 describe('ShareableResourceCardDescription', () => {
   it('uses v2 clamp classes when feature flag is enabled', () => {
-    useIsFeatureEnabledMock.mockReturnValue(true);
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
     const { container } = testRender(
       <ShareableResourceCardDescription description="A description" />
     );
@@ -20,7 +15,7 @@ describe('ShareableResourceCardDescription', () => {
   });
 
   it('uses legacy clamp classes when feature flag is disabled', () => {
-    useIsFeatureEnabledMock.mockReturnValue(false);
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
     const { container } = testRender(
       <ShareableResourceCardDescription description="A description" />
     );

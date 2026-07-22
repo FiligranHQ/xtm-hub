@@ -10,6 +10,8 @@ import {
 
 import '@testing-library/jest-dom';
 
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
+import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import {
   useParams,
   usePathname,
@@ -19,6 +21,14 @@ import {
 
 vi.mock('@/components/error-frontend-log.graphql', () => ({
   logFrontendError: vi.fn(),
+}));
+
+vi.mock('@/hooks/use-registered-platforms', () => ({
+  useRegisteredPlatforms: vi.fn(),
+}));
+
+vi.mock('@/hooks/use-is-feature-enabled', () => ({
+  useIsFeatureEnabled: vi.fn(),
 }));
 
 vi.mock('next/image', async () => {
@@ -57,6 +67,8 @@ type RegisterClientEnvironment = Parameters<
 >[0];
 
 const setDefaultGlobalMocks = () => {
+  vi.mocked(useRegisteredPlatforms).mockReturnValue({ platforms: [] });
+  vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
   vi.mocked(usePathname).mockReturnValue('/mock');
   vi.mocked(useRouter).mockReturnValue({
     push: vi.fn(),
