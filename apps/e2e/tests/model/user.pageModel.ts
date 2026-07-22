@@ -5,7 +5,9 @@ export default class UserPage {
   constructor(private page: Page) {}
 
   async navigateToUserListAdmin() {
-    await this.page.getByRole('button', { name: 'Settings' }).click();
+    await this.page
+      .getByRole('button', { name: 'Settings', exact: true })
+      .click();
     await this.page.getByRole('link', { name: 'Security' }).first().click();
 
     await expect(
@@ -14,7 +16,9 @@ export default class UserPage {
   }
 
   async navigateToUserManageAccess() {
-    await this.page.getByRole('button', { name: 'Settings' }).click();
+    await this.page
+      .getByRole('button', { name: 'Settings', exact: true })
+      .click();
     await this.page.getByRole('link', { name: 'Users' }).click();
 
     await expect(

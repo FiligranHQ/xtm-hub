@@ -48,19 +48,21 @@ export const ConnectedProductsDropdown = () => {
       <DropdownMenuContent className="w-80 p-0">
         {connectedPlatforms.length > 0 && (
           <>
-            {connectedPlatforms.map((platform, index) => (
-              <div key={platform.id}>
-                <DropdownMenuItem className="p-0">
-                  <ConnectedProductItem
-                    platform={platform}
-                    t={t}
-                  />
-                </DropdownMenuItem>
-                {index < connectedPlatforms.length - 1 && (
-                  <DropdownMenuSeparator className="bg-foreground/20" />
-                )}
-              </div>
-            ))}
+            <div className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+              {connectedPlatforms.map((platform, index) => (
+                <div key={platform.id}>
+                  <DropdownMenuItem className="p-0">
+                    <ConnectedProductItem
+                      platform={platform}
+                      t={t}
+                    />
+                  </DropdownMenuItem>
+                  {index < connectedPlatforms.length - 1 && (
+                    <DropdownMenuSeparator className="bg-foreground/20" />
+                  )}
+                </div>
+              ))}
+            </div>
             <DropdownMenuSeparator className="bg-foreground/20" />
           </>
         )}

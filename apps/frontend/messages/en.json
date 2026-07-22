@@ -367,17 +367,19 @@
   "PublicPathError": {
     "NotFound": "404 | This page could not be found"
   },
-  "PublicLayout": {
-    "Documentation": "XTM Hub documentation",
-    "SignIn": "Sign In",
-    "Login": "Login",
-    "SignUp": "Sign Up",
+  "AppFooter": {
     "AllRightsReserved": "All rights reserved",
     "FiligranWebsite": "Filigran website",
+    "Documentation": "XTM Hub documentation",
     "PrivacyPolicy": "Privacy Policy",
     "TermsOfServices": "Terms of Services",
     "Licenses": "Licenses",
     "Contact": "Contact"
+  },
+  "PublicLayout": {
+    "SignIn": "Sign In",
+    "Login": "Login",
+    "SignUp": "Sign Up"
   },
   "PublicResourcePage": {
     "Download": "Download",

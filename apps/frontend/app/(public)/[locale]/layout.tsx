@@ -1,4 +1,4 @@
-import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
+import { AppFooter } from '@/components/AppFooter';
 import Copilot from '@/components/external/Copilot';
 import { PublicMobileMenuButton } from '@/components/menu/navigation/public/PublicMobileMenuButton';
 import PublicMenu from '@/components/menu/PublicMenu';
@@ -108,74 +108,10 @@ const RootLayout = async ({
                 {children}
               </div>
             </main>
-            <footer className="container text-muted-foreground max-md:mt-xxl">
-              <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-l text-center">
-                <span className="text-xs">
-                  <Link
-                    href="https://filigran.io"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    © {new Date().getFullYear()} Filigran.
-                  </Link>{' '}
-                  {t('PublicLayout.AllRightsReserved')}
-                </span>
-                <ul className="flex flex-col md:flex-row gap-l text-xs">
-                  <li>
-                    <Link
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://filigran.io/">
-                      {t('PublicLayout.FiligranWebsite')}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://docs.hub.filigran.io/latest/">
-                      {t('PublicLayout.Documentation')}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://filigran.io/privacy-policy/">
-                      {t('PublicLayout.PrivacyPolicy')}
-                    </Link>
-                  </li>
-                  <li>
-                    <CookieSettingsLink />
-                  </li>
-                  <li>
-                    <Link
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://filigran.io/terms-of-services/">
-                      {t('PublicLayout.TermsOfServices')}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://filigran.io/licenses/">
-                      {t('PublicLayout.Licenses')}
-                    </Link>
-                  </li>
-                  {!isHomePageV2Enabled && (
-                    <li>
-                      <Link
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href="https://filigran.io/contact/">
-                        {t('PublicLayout.Contact')}
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            </footer>
+            <AppFooter
+              className="max-md:mt-xxl px-6"
+              isHomePageV2Enabled={isHomePageV2Enabled}
+            />
           </div>
         </div>
         <Copilot />
