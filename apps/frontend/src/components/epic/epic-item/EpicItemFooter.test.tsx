@@ -112,11 +112,7 @@ describe('EpicItemFooter', () => {
           screen.getByRole('img', { name: 'Roadmap epic logo' })
         ).toHaveAttribute(
           'src',
-          expect.stringContaining(
-            encodeURIComponent(
-              '/document/images/service-instance-1/document-image-1'
-            )
-          )
+          '/document/images/service-instance-1/document-image-1'
         );
         return;
       }

@@ -1,4 +1,5 @@
 import testRender from '@/utils/test/test-render';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -18,17 +19,6 @@ vi.mock('@/hooks/use-is-feature-enabled', () => ({
 
 vi.mock('@/hooks/use-registered-platforms', () => ({
   useRegisteredPlatforms: () => ({ platforms: [] }),
-}));
-
-vi.mock('next/image', () => ({
-  __esModule: true,
-  default: ({ src, alt }: { src: string; alt: string }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-    />
-  ),
 }));
 
 vi.mock('@/utils/documents', () => ({
@@ -51,7 +41,7 @@ describe('ShareableResourceCard', () => {
             short_description: 'A connector description',
             integration_type: IntegrationType.Connector,
             use_cases: [],
-          } as never
+          } as documentItem_fragment$data
         }
         detailUrl="/details"
         shareLinkUrl="/share"
@@ -74,7 +64,7 @@ describe('ShareableResourceCard', () => {
             type: 'opencti_integration',
             short_description: 'A third-party description',
             integration_type: IntegrationType.ThirdPartyIntegration,
-          } as never
+          } as documentItem_fragment$data
         }
         detailUrl="/details"
         shareLinkUrl="/share"

@@ -1,21 +1,11 @@
 import testRender from '@/utils/test/test-render';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ShareableResourceCardHeader } from './ShareableResourceCardHeader';
 
 vi.mock('@/components/service/integrations/Integration.utils', () => ({
   getIntegrationSubTypeMetadata: () => ({ label: 'Subtype label' }),
-}));
-
-vi.mock('next/image', () => ({
-  __esModule: true,
-  default: ({ src, alt }: { src: string; alt: string }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-    />
-  ),
 }));
 
 vi.mock('@/utils/documents', () => ({
@@ -32,7 +22,10 @@ describe('ShareableResourceCardHeader', () => {
     const { container } = testRender(
       <ShareableResourceCardHeader
         document={
-          { ...baseDocument, integration_subtype: 'EXTERNAL_IMPORT' } as never
+          {
+            ...baseDocument,
+            integration_subtype: 'EXTERNAL_IMPORT',
+          } as documentItem_fragment$data
         }
         serviceInstanceId="svc-id"
         shouldDisplayBothIcons
@@ -48,7 +41,7 @@ describe('ShareableResourceCardHeader', () => {
   it('renders non-connector branch without subtype metadata', () => {
     testRender(
       <ShareableResourceCardHeader
-        document={baseDocument as never}
+        document={baseDocument as documentItem_fragment$data}
         serviceInstanceId="svc-id"
         shouldDisplayBothIcons={false}
         isConnector={false}

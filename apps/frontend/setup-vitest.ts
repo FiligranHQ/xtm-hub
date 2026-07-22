@@ -21,6 +21,15 @@ vi.mock('@/components/error-frontend-log.graphql', () => ({
   logFrontendError: vi.fn(),
 }));
 
+vi.mock('next/image', async () => {
+  const React = await import('react');
+  return {
+    __esModule: true,
+    default: ({ src, alt }: { src: string; alt: string }) =>
+      React.createElement('img', { src, alt }),
+  };
+});
+
 vi.mock('next/navigation', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/navigation')>()),
   usePathname: vi.fn(),

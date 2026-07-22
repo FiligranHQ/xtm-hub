@@ -1,4 +1,5 @@
 import testRender from '@/utils/test/test-render';
+import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { describe, expect, it } from 'vitest';
 import { ShareableResourceCardIcon } from './ShareableResourceCardIcon';
 
@@ -12,7 +13,7 @@ describe('ShareableResourceCardIcon', () => {
             active: true,
             manager_supported: true,
             verified: true,
-          } as never
+          } as publicDocumentListItemFragment$data
         }
       />
     );
@@ -29,7 +30,7 @@ describe('ShareableResourceCardIcon', () => {
             active: true,
             manager_supported: true,
             verified: true,
-          } as never
+          } as publicDocumentListItemFragment$data
         }
       />
     );

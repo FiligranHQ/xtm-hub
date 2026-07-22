@@ -1,4 +1,5 @@
 import testRender from '@/utils/test/test-render';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ShareableResourceCardImage } from './ShareableResourceCardImage';
@@ -7,17 +8,6 @@ const findDocumentLogoMock = vi.fn();
 
 vi.mock('@/utils/documents', () => ({
   findDocumentLogo: (...args: unknown[]) => findDocumentLogoMock(...args),
-}));
-
-vi.mock('next/image', () => ({
-  __esModule: true,
-  default: ({ src, alt }: { src: string; alt: string }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-    />
-  ),
 }));
 
 vi.mock('@filigran/icon', () => ({
@@ -30,7 +20,7 @@ describe('ShareableResourceCardImage', () => {
 
     testRender(
       <ShareableResourceCardImage
-        document={{ name: 'My resource' } as never}
+        document={{ name: 'My resource' } as documentItem_fragment$data}
         serviceInstanceId="service-1"
       />
     );
@@ -46,7 +36,7 @@ describe('ShareableResourceCardImage', () => {
 
     testRender(
       <ShareableResourceCardImage
-        document={{ name: 'My resource' } as never}
+        document={{ name: 'My resource' } as documentItem_fragment$data}
         serviceInstanceId="service-1"
       />
     );

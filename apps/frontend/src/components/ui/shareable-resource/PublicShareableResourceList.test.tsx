@@ -1,4 +1,6 @@
 import testRender from '@/utils/test/test-render';
+import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -17,17 +19,6 @@ vi.mock('@/hooks/use-registered-platforms', () => ({
   useRegisteredPlatforms: () => ({ platforms: [] }),
 }));
 
-vi.mock('next/image', () => ({
-  __esModule: true,
-  default: ({ src, alt }: { src: string; alt: string }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-    />
-  ),
-}));
-
 vi.mock('@/utils/documents', () => ({
   findDocumentLogo: () => null,
 }));
@@ -42,7 +33,7 @@ describe('PublicShareableResourceList', () => {
     testRender(
       <PublicShareableResourceList
         documents={[]}
-        serviceInstance={serviceInstance as never}
+        serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
         baseUrl="https://xtm.local"
       />
     );
@@ -70,8 +61,8 @@ describe('PublicShareableResourceList', () => {
 
     testRender(
       <PublicShareableResourceList
-        documents={documents as never}
-        serviceInstance={serviceInstance as never}
+        documents={documents as publicDocumentListItemFragment$data[]}
+        serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
         baseUrl="https://xtm.local"
       />
     );

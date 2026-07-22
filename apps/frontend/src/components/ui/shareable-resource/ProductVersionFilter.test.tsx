@@ -1,5 +1,6 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifier } from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ProductVersionFilter } from './ProductVersionFilter';
@@ -43,7 +44,7 @@ vi.mock('@/hooks/use-service-list-filters', () => ({
 describe('ProductVersionFilter', () => {
   it('renders placeholder and sorted options after opening the popover', async () => {
     const { user } = testRender(
-      <ProductVersionFilter platformIdentifier={'x' as never} />
+      <ProductVersionFilter platformIdentifier={PlatformIdentifier.Opencti} />
     );
 
     expect(
@@ -70,7 +71,7 @@ describe('ProductVersionFilter', () => {
 
   it('calls setProductVersions when an option is selected', async () => {
     const { user } = testRender(
-      <ProductVersionFilter platformIdentifier={'x' as never} />
+      <ProductVersionFilter platformIdentifier={PlatformIdentifier.Opencti} />
     );
 
     await user.click(
@@ -85,7 +86,7 @@ describe('ProductVersionFilter', () => {
 
   it('calls remove callbacks when the remove button is clicked', async () => {
     const { user } = testRender(
-      <ProductVersionFilter platformIdentifier={'x' as never} />
+      <ProductVersionFilter platformIdentifier={PlatformIdentifier.Opencti} />
     );
 
     await user.click(screen.getByRole('button', { name: 'Remove filter' }));
