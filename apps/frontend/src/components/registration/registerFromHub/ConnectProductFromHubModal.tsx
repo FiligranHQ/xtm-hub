@@ -1,6 +1,10 @@
 'use client';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
+import { Administratorslist } from '@/components/registration/registerFromHub/Administratorslist';
+import ConnectFromHubForm, {
+  connectFromHubFormSchema,
+} from '@/components/registration/registerFromHub/ConnectFromHubForm';
 import { DialogInformative } from '@/components/ui/Dialog';
 import useGranted from '@/hooks/use-granted';
 import { portalGraphqlClient } from '@/lib/graphql-client';
@@ -9,13 +13,20 @@ import {
   useConnectProductOrganizationAdminsQuery,
 } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
+import { z } from 'zod';
+
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
+export enum ConnectProductOrigin {
+  library = 'library',
+  homepage = 'homepage',
+}
+
 interface ConnectProductProps {
   isOpen: boolean;
-  displayConnectedProductSentence?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
+  origin: ConnectProductOrigin;
 }
 
 const DEFAULT_EMAIL_BODY = () => `Hello,
@@ -30,8 +41,8 @@ Thank you!`;
 
 const ConnectProductFromHubModal = ({
   isOpen,
-  displayConnectedProductSentence = false,
   onOpenChange,
+  origin,
 }: ConnectProductProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
@@ -62,14 +73,20 @@ const ConnectProductFromHubModal = ({
     }
   }, [isOpen, me, router]);
 
-  const allowedMessage = t('allowedMessage'); // TO Be done in the next chunk
+  const allowedMessageTitle = t('Register.ConnectFromHub.ConnectProduct');
+  const allowedMessage = t('Register.ConnectFromHub.RedirectionMessage');
+  const allowedMessageDescription =
+    origin === ConnectProductOrigin.library
+      ? `${t('Register.ConnectFromHub.ConnectedProductSentence')}. \n\n ${allowedMessage}`
+      : allowedMessage;
   const deniedMessage = t('Register.ConnectFromHub.PermissionRequired');
   const notAllowedMessage = t('Register.ConnectFromHub.NotAllowedMessage', {
     count: data?.usersWithCapabilitiesInOrganization?.length ?? 0,
   });
-  const deniedMessageDescription = displayConnectedProductSentence
-    ? `${t('Register.ConnectFromHub.ConnectedProductSentence')}. \n\n ${notAllowedMessage}`
-    : notAllowedMessage;
+  const deniedMessageDescription =
+    origin === ConnectProductOrigin.library
+      ? `${t('Register.ConnectFromHub.ConnectedProductSentence')}. \n\n ${notAllowedMessage}`
+      : notAllowedMessage;
   const administratorsEmails =
     data?.usersWithCapabilitiesInOrganization?.map((user) => user.email) ?? [];
   const [mainRecipientEmail, ...ccRecipientsEmails] = administratorsEmails;
@@ -90,34 +107,36 @@ const ConnectProductFromHubModal = ({
     window.location.href = `mailto:${to}?${params.join('&')}`;
   };
 
+  const handleConnectFromHub = ({
+    productUrl,
+  }: z.infer<typeof connectFromHubFormSchema>) => {
+    window.open(
+      `${productUrl}/redirect/connect-xtm-hub?from=xtmhub_${origin}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    onOpenChange?.(false);
+  };
+
   return (
     <DialogInformative
       isOpen={isOpen}
       onClose={handleClose}
-      onButtonClick={handleReachAdmin}
+      onButtonClick={canManageOrganization ? undefined : handleReachAdmin}
       variant={'default'}
       buttonText={'Register.ConnectFromHub.ReachAdmin'}
-      title={canManageOrganization ? allowedMessage : deniedMessage}
+      title={canManageOrganization ? allowedMessageTitle : deniedMessage}
       description={
-        canManageOrganization ? allowedMessage : deniedMessageDescription
-      }>
-      <div className="space-y-1">
-        <div className="content-body-base">
-          {t('Register.ConnectFromHub.Administrators', {
-            count: data?.usersWithCapabilitiesInOrganization?.length ?? 0,
-          })}
-          :
-        </div>
-        {data?.usersWithCapabilitiesInOrganization?.map((user) => {
-          return (
-            <div
-              className="text-sm text-muted-foreground"
-              key={user.email}>
-              {user.email}
-            </div>
-          );
-        })}
-      </div>
+        canManageOrganization
+          ? allowedMessageDescription
+          : deniedMessageDescription
+      }
+      showFooter={!canManageOrganization}>
+      {canManageOrganization ? (
+        <ConnectFromHubForm onSubmit={handleConnectFromHub} />
+      ) : (
+        <Administratorslist admins={data} />
+      )}
     </DialogInformative>
   );
 };
