@@ -18,18 +18,16 @@ export const TrialsHeader = ({
   const platformName = PlatformMetadataMapping[platformIdentifier].name;
 
   return (
-    <header className="flex flex-col gap-m md:flex-row md:justify-between md:items-start my-xl">
-      <div className="flex flex-col">
-        <h2 className="text-primary text-xl md:text-2xl mb-2">
+    <header className="px-m pt-m pb-xxl text-center">
+      <div className="flex flex-col gap-s">
+        <p className="text-filigran-brand-primary font-bold">
           {t('Service.Trials.PageHeader.Welcome')}
-        </h2>
-        <h1 className="text-2xl md:text-3xl">
+        </p>
+        <h1 className="heading-2xl">
           {t('Service.Trials.PageHeader.Title', { platformName })}
         </h1>
       </div>
-      <div className="flex flex-wrap gap-s md:flex-nowrap md:shrink-0">
-        {actions}
-      </div>
+      <div className="flex flex-wrap justify-center gap-s mt-l">{actions}</div>
     </header>
   );
 };
