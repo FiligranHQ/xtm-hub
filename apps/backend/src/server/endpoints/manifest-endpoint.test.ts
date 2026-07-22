@@ -40,6 +40,10 @@ vi.mock('../../utils/app-logger.util', () => ({
   logApp: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
 }));
 
+import {
+  ManifestType,
+  PlatformIdentifier,
+} from '../../__generated__/resolvers-types';
 import { ManifestEndpoint } from './manifest-endpoint';
 
 const buildResponse = () => ({
@@ -57,9 +61,9 @@ const buildRequest = (
 ) => ({ params, query }) as unknown as Request;
 
 const VALID = {
-  product: 'opencti',
+  product: PlatformIdentifier.Opencti,
   version: '7.260604.0',
-  integrationType: 'connector',
+  integrationType: ManifestType.Connector,
 };
 const VALID_NAME = 'connector-manifest-7.260604.0-260526113805';
 
@@ -193,9 +197,9 @@ describe('listManifests', () => {
     );
 
     expect(loadManifestsMock).toHaveBeenCalledWith(
-      'opencti',
+      PlatformIdentifier.Opencti,
       '7.260604.0',
-      'connector',
+      ManifestType.Connector,
       5
     );
   });

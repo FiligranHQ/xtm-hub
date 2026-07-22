@@ -9,18 +9,21 @@ import {
   isProduct,
   isValidManifestName,
   parseCount,
+  validateManifestParams,
 } from './manifest-endpoint.utils';
 
 describe('isValidManifestName', () => {
   it.each`
     name                                                  | expected | description
-    ${'connector-manifest-7.260604.0-260526113805'}       | ${true}  | ${'nom standard valide'}
-    ${'connector-manifest-7.260309.0-lts.5-260526113805'} | ${true}  | ${'variante LTS (minuscule) valide'}
-    ${'connector-manifest-7.260604.0-2605'}               | ${false} | ${'datetime trop court'}
-    ${'collector-manifest-7.260604.0-260526113805'}       | ${false} | ${'mauvais préfixe'}
-    ${'../../secret'}                                     | ${false} | ${'tentative path traversal'}
-    ${''}                                                 | ${false} | ${'chaîne vide'}
-  `('renvoie $expected ($description)', ({ name, expected }) => {
+    ${'connector-manifest-7.260604.0-260526113805'}       | ${true}  | ${'standard valid name'}
+    ${'connector-manifest-7.260309.0-lts.5-260526113805'} | ${true}  | ${'valid lowercase LTS variant'}
+    ${'connector-manifest-7.260604.0-2605'}               | ${false} | ${'datetime too short'}
+    ${'collector-manifest-7.260604.0-260526113805'}       | ${false} | ${'wrong prefix'}
+    ${'../../secret'}                                     | ${false} | ${'path traversal attempt'}
+    ${''}                                                 | ${false} | ${'empty string'}
+    ${'connector-manifest-abc-260526113805'}              | ${false} | ${'non-numeric version'}
+    ${'connector-manifest-7.2-260526113805'}              | ${false} | ${'missing patch segment'}
+  `('returns $expected ($description)', ({ name, expected }) => {
     expect(isValidManifestName(name)).toBe(expected);
   });
 });
@@ -28,14 +31,14 @@ describe('isValidManifestName', () => {
 describe('parseCount', () => {
   it.each`
     raw          | expected                       | description
-    ${undefined} | ${MANIFEST_LIST_DEFAULT_COUNT} | ${'absent → défaut'}
-    ${'5'}       | ${5}                           | ${'entier valide'}
-    ${'0'}       | ${undefined}                   | ${'zéro rejeté (< 1)'}
-    ${'-3'}      | ${undefined}                   | ${'négatif rejeté'}
-    ${'1.5'}     | ${undefined}                   | ${'non entier rejeté'}
-    ${'abc'}     | ${undefined}                   | ${'non numérique rejeté'}
-    ${''}        | ${undefined}                   | ${'chaîne vide rejetée'}
-    ${['5']}     | ${undefined}                   | ${'tableau rejeté (param dupliqué)'}
+    ${undefined} | ${MANIFEST_LIST_DEFAULT_COUNT} | ${'missing → default'}
+    ${'5'}       | ${5}                           | ${'valid integer'}
+    ${'0'}       | ${undefined}                   | ${'zero rejected (< 1)'}
+    ${'-3'}      | ${undefined}                   | ${'negative rejected'}
+    ${'1.5'}     | ${undefined}                   | ${'non-integer rejected'}
+    ${'abc'}     | ${undefined}                   | ${'non-numeric rejected'}
+    ${''}        | ${undefined}                   | ${'empty string rejected'}
+    ${['5']}     | ${undefined}                   | ${'array rejected (duplicated param)'}
   `('$description', ({ raw, expected }) => {
     expect(parseCount(raw)).toBe(expected);
   });
@@ -44,13 +47,11 @@ describe('parseCount', () => {
 describe('isProduct', () => {
   it.each`
     value                         | expected | description
-    ${PlatformIdentifier.Opencti} | ${true}  | ${'valeur enum valide (opencti)'}
-    ${'openaev'}                  | ${true}  | ${'valeur enum valide (openaev)'}
-    ${'opengrc'}                  | ${false} | ${'produit hors enum'}
-    ${'nope'}                     | ${false} | ${'string inconnue'}
-    ${42}                         | ${false} | ${'nombre'}
+    ${PlatformIdentifier.Opencti} | ${true}  | ${'valid enum value'}
+    ${'opengrc'}                  | ${false} | ${'product listed in the contract but not yet in the enum'}
+    ${42}                         | ${false} | ${'number'}
     ${undefined}                  | ${false} | ${'undefined'}
-    ${['opencti']}                | ${false} | ${'tableau'}
+    ${['opencti']}                | ${false} | ${'array'}
   `('$description → $expected', ({ value, expected }) => {
     expect(isProduct(value)).toBe(expected);
   });
@@ -59,14 +60,38 @@ describe('isProduct', () => {
 describe('isIntegrationType', () => {
   it.each`
     value                     | expected | description
-    ${ManifestType.Connector} | ${true}  | ${'valeur enum valide (connector)'}
-    ${'injector'}             | ${false} | ${"type hors enum (contrat le liste, pas l'enum)"}
-    ${'collector'}            | ${false} | ${'type hors enum'}
-    ${'nope'}                 | ${false} | ${'string inconnue'}
-    ${42}                     | ${false} | ${'nombre'}
+    ${ManifestType.Connector} | ${true}  | ${'valid enum value (connector)'}
+    ${'injector'}             | ${false} | ${'type listed in the contract but not yet in the enum'}
+    ${42}                     | ${false} | ${'number'}
     ${undefined}              | ${false} | ${'undefined'}
-    ${['connector']}          | ${false} | ${'tableau'}
+    ${['connector']}          | ${false} | ${'array'}
   `('$description → $expected', ({ value, expected }) => {
     expect(isIntegrationType(value)).toBe(expected);
+  });
+});
+
+describe('validateManifestParams', () => {
+  const VALID = {
+    product: 'opencti',
+    version: '7.260604.0',
+    integrationType: 'connector',
+  };
+
+  it('returns the typed params when everything is valid', () => {
+    expect(validateManifestParams(VALID)).toEqual({
+      ok: true,
+      product: 'opencti',
+      version: '7.260604.0',
+      integrationType: 'connector',
+    });
+  });
+
+  it.each`
+    params                                    | message                      | description
+    ${{ ...VALID, product: 'x' }}             | ${'Invalid product'}         | ${'unknown product'}
+    ${{ ...VALID, integrationType: 'x' }}     | ${'Invalid integrationType'} | ${'unknown integration type'}
+    ${{ ...VALID, version: 'not-a-version' }} | ${'Invalid version format'}  | ${'malformed version'}
+  `('rejects $description', ({ params, message }) => {
+    expect(validateManifestParams(params)).toEqual({ ok: false, message });
   });
 });
