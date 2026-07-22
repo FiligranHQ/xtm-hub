@@ -726,7 +726,8 @@ export enum EpicType {
 }
 
 export enum FeatureFlag {
-  Dummy = 'DUMMY'
+  Dummy = 'DUMMY',
+  SolutionCategories = 'SOLUTION_CATEGORIES'
 }
 
 export enum FiligranProduct {
