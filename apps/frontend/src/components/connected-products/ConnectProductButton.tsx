@@ -4,7 +4,9 @@ import { AddIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { useState } from 'react';
 
-import ConnectProductFromHubModal from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
+import ConnectProductFromHubModal, {
+  ConnectProductOrigin,
+} from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
 import { useTranslations } from 'next-intl';
 
 interface ConnectProductButtonProps {
@@ -43,6 +45,7 @@ export const ConnectProductButton = ({
             onCloseDropdown?.();
           }
         }}
+        origin={ConnectProductOrigin.homepage}
       />
     </>
   );

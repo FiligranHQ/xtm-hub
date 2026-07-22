@@ -1,5 +1,7 @@
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
-import ConnectProductFromHubModal from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
+import ConnectProductFromHubModal, {
+  ConnectProductOrigin,
+} from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
 import ChoosePlatformForm from '@/components/service/document/one-click-deploy/ChoosePlatformForm';
 import EeBadge from '@/components/service/document/one-click-deploy/EeBadge';
 import EeLearnMoreSheet from '@/components/service/document/one-click-deploy/EeLearnMoreSheet';
@@ -167,10 +169,10 @@ const OneClickDeploy = ({
         {isFeatureEnabled ? (
           <ConnectProductFromHubModal
             isOpen={isOpen}
-            displayConnectedProductSentence
             onOpenChange={(isOpen) => {
               setIsOpen(isOpen);
             }}
+            origin={ConnectProductOrigin.library}
           />
         ) : (
           <NoPlatformDisplay
