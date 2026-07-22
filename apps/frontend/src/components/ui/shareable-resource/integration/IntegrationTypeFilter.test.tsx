@@ -1,48 +1,13 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import testRender from '@/utils/test/test-render';
 import { IntegrationSubType, IntegrationType } from '@graphql/generated';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { IntegrationTypeFilter } from './IntegrationTypeFilter';
 
-const propsMock = vi.fn();
 const removeFilterMock = vi.fn();
 const setIntegrationTypesMock = vi.fn();
 const removeIntegrationTypesMock = vi.fn();
-
-vi.mock(
-  '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField',
-  () => ({
-    LogicalMultiSelectFormField: ({
-      options,
-      onValueChange,
-      onRemove,
-      placeholder,
-      optionLabel,
-    }: {
-      options: Array<{
-        label: string;
-        value: string;
-        children?: Array<{ label: string; value: string }>;
-      }>;
-      onValueChange: (value: Record<string, string[]>) => void;
-      onRemove?: () => void;
-      placeholder: string;
-      optionLabel: string;
-    }) => {
-      propsMock({ options, onValueChange, onRemove, placeholder, optionLabel });
-      return (
-        <div>
-          <button
-            onClick={() => onValueChange({ [IntegrationType.Connector]: [] })}>
-            change
-          </button>
-          <button onClick={onRemove}>remove</button>
-        </div>
-      );
-    },
-  })
-);
 
 vi.mock('@/components/service/integrations/Integration.utils', () => ({
   availableIntegrationTypes: [IntegrationType.Connector],
@@ -57,7 +22,7 @@ vi.mock('@/hooks/use-service-list-local-storage', () => ({
     OpenCTIIntegrationFeeds: 'feeds',
   },
   useServiceListLocalStorage: () => ({
-    integrationTypes: { [IntegrationType.Connector]: [] },
+    integrationTypes: {},
     setIntegrationTypes: setIntegrationTypesMock,
     removeIntegrationTypes: removeIntegrationTypesMock,
   }),
@@ -70,38 +35,46 @@ vi.mock('@/hooks/use-service-list-filters', () => ({
 }));
 
 describe('IntegrationTypeFilter', () => {
-  it('builds options with available first and subtype children + callback wiring', async () => {
+  it('renders placeholder and shows Connector option with its subtype after opening', async () => {
     const { user } = testRender(<IntegrationTypeFilter />);
-    const props = propsMock.mock.calls[0]?.[0] as {
-      options: Array<{
-        label: string;
-        value: string;
-        children?: Array<{ label: string; value: string }>;
-      }>;
-      placeholder: string;
-      optionLabel: string;
-    };
 
-    expect(props.options[0]).toEqual({
-      label: `Service.OpenctiIntegrations.Type.${IntegrationType.Connector}`,
-      value: IntegrationType.Connector,
-      children: [
-        { label: 'External import', value: IntegrationSubType.ExternalImport },
-      ],
-    });
-    expect(props.placeholder).toBe(
+    const placeholder = screen.getByText(
       'Service.OpenctiIntegrations.Filter.Type.Placeholder'
     );
-    expect(props.optionLabel).toBe(
-      'Service.OpenctiIntegrations.Filter.Type.Label'
+    expect(placeholder).toBeInTheDocument();
+
+    await user.click(placeholder);
+    const listbox = screen.getByRole('listbox');
+    expect(
+      within(listbox).getByText(
+        `Service.OpenctiIntegrations.Type.${IntegrationType.Connector}`
+      )
+    ).toBeInTheDocument();
+    expect(within(listbox).getByText('External import')).toBeInTheDocument();
+  });
+
+  it('calls setIntegrationTypes when Connector is selected', async () => {
+    const { user } = testRender(<IntegrationTypeFilter />);
+
+    await user.click(
+      screen.getByText('Service.OpenctiIntegrations.Filter.Type.Placeholder')
+    );
+    await user.click(
+      within(screen.getByRole('listbox')).getByText(
+        `Service.OpenctiIntegrations.Type.${IntegrationType.Connector}`
+      )
     );
 
-    await user.click(screen.getByText('change'));
     expect(setIntegrationTypesMock).toHaveBeenCalledWith({
       [IntegrationType.Connector]: [],
     });
+  });
 
-    await user.click(screen.getByText('remove'));
+  it('calls remove callbacks when the remove button is clicked', async () => {
+    const { user } = testRender(<IntegrationTypeFilter />);
+
+    await user.click(screen.getByRole('button', { name: 'Remove filter' }));
+
     expect(removeIntegrationTypesMock).toHaveBeenCalledTimes(1);
     expect(removeFilterMock).toHaveBeenCalledWith(
       ServiceListFilterKey.IntegrationType

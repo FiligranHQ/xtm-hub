@@ -1,7 +1,6 @@
 import testRender from '@/utils/test/test-render';
 import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
-import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import ShareableResourceCard from './ShareableResourceCard';
 
@@ -17,76 +16,29 @@ vi.mock('@/hooks/use-is-feature-enabled', () => ({
   useIsFeatureEnabled: () => useIsFeatureEnabledMock(),
 }));
 
-vi.mock('next/link', () => ({
+vi.mock('@/hooks/use-registered-platforms', () => ({
+  useRegisteredPlatforms: () => ({ platforms: [] }),
+}));
+
+vi.mock('next/image', () => ({
   __esModule: true,
-  default: ({
-    href,
-    onClick,
-    children,
-  }: {
-    href: string;
-    onClick?: () => void;
-    children: ReactNode;
-  }) => (
-    <a
-      href={href}
-      onClick={onClick}>
-      {children}
-    </a>
+  default: ({ src, alt }: { src: string; alt: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+    />
   ),
 }));
 
-vi.mock(
-  '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader',
-  () => ({
-    ShareableResourceCardHeader: ({
-      shouldDisplayBothIcons,
-    }: {
-      shouldDisplayBothIcons: boolean;
-    }) => <div data-testid="card-header">{String(shouldDisplayBothIcons)}</div>,
-  })
-);
-
-vi.mock(
-  '@/components/ui/shareable-resource/card-design/ShareableResourceCardDescription',
-  () => ({
-    ShareableResourceCardDescription: ({
-      description,
-    }: {
-      description?: string;
-    }) => <div data-testid="card-description">{description}</div>,
-  })
-);
-
-vi.mock('@/components/ui/BadgeOverflowCounter', () => ({
-  __esModule: true,
-  default: () => <div data-testid="badge-overflow">badges</div>,
+vi.mock('@/utils/documents', () => ({
+  findDocumentLogo: () => null,
 }));
-
-vi.mock(
-  '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions',
-  () => ({
-    ShareableResourceCardFooterVersion: () => (
-      <div data-testid="footer-version" />
-    ),
-  })
-);
-
-vi.mock(
-  '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor',
-  () => ({
-    ShareableResourceCardFooterAuthor: ({
-      shouldDisplayAuthor,
-    }: {
-      shouldDisplayAuthor: boolean;
-    }) => <div data-testid="footer-author">{String(shouldDisplayAuthor)}</div>,
-  })
-);
 
 describe('ShareableResourceCard', () => {
   const serviceInstance = { id: 'service-id' };
 
-  it('renders connector card branch and connector footer', () => {
+  it('renders connector card with document name and description', () => {
     useIsFeatureEnabledMock.mockReturnValue(true);
 
     testRender(
@@ -94,9 +46,9 @@ describe('ShareableResourceCard', () => {
         document={
           {
             id: 'doc-1',
-            name: 'Connector',
+            name: 'My Connector',
             type: 'opencti_integration',
-            short_description: 'desc',
+            short_description: 'A connector description',
             integration_type: IntegrationType.Connector,
             use_cases: [],
           } as never
@@ -107,12 +59,11 @@ describe('ShareableResourceCard', () => {
       />
     );
 
-    expect(screen.getByTestId('card-header')).toHaveTextContent('true');
-    expect(screen.getByTestId('badge-overflow')).toBeInTheDocument();
-    expect(screen.getByTestId('footer-version')).toBeInTheDocument();
+    expect(screen.getByText('My Connector')).toBeInTheDocument();
+    expect(screen.getByText('A connector description')).toBeInTheDocument();
   });
 
-  it('renders non-connector branch and computes shouldDisplayAuthor=false for third-party integration', async () => {
+  it('renders non-connector card and applies the correct height class', async () => {
     useIsFeatureEnabledMock.mockReturnValue(false);
     const { container, user } = testRender(
       <ShareableResourceCard
@@ -121,7 +72,7 @@ describe('ShareableResourceCard', () => {
             id: 'doc-2',
             name: 'Third party',
             type: 'opencti_integration',
-            short_description: 'desc',
+            short_description: 'A third-party description',
             integration_type: IntegrationType.ThirdPartyIntegration,
           } as never
         }
@@ -131,8 +82,8 @@ describe('ShareableResourceCard', () => {
       />
     );
 
-    expect(screen.getByTestId('footer-author')).toHaveTextContent('false');
-    expect(screen.queryByTestId('footer-version')).not.toBeInTheDocument();
+    expect(screen.getByText('Third party')).toBeInTheDocument();
+    expect(screen.getByText('A third-party description')).toBeInTheDocument();
     expect(container.firstChild).toHaveClass('h-[348px]');
 
     await user.click(screen.getByRole('link'));

@@ -1,31 +1,7 @@
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
-import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { SelectedValuesDisplay } from './SelectedValuesDisplay';
-
-vi.mock('@filigran/icon', () => ({
-  CancelIcon: () => <svg data-testid="cancel-icon" />,
-}));
-
-vi.mock('@filigran/ui/clients', () => ({
-  TooltipProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
-  Tooltip: ({ children }: { children: ReactNode }) => <>{children}</>,
-  TooltipTrigger: ({ children }: { children: ReactNode }) => <>{children}</>,
-  TooltipContent: ({ children }: { children: ReactNode }) => (
-    <div role="tooltip">{children}</div>
-  ),
-}));
-
-vi.mock('@filigran/ui/servers', () => ({
-  Button: ({
-    children,
-    onClick,
-  }: {
-    children: ReactNode;
-    onClick?: () => void;
-  }) => <button onClick={onClick}>{children}</button>,
-}));
 
 describe('SelectedValuesDisplay', () => {
   it('renders placeholder + remove button when no selection', async () => {
@@ -40,12 +16,12 @@ describe('SelectedValuesDisplay', () => {
     );
 
     expect(screen.getByText('Choose values')).toBeInTheDocument();
-    await user.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button', { name: 'Remove filter' }));
     expect(onRemove).toHaveBeenCalledTimes(1);
   });
 
-  it('renders selected values + tooltip branch', () => {
-    testRender(
+  it('renders selected values in the selection chip', () => {
+    const { container } = testRender(
       <SelectedValuesDisplay
         groupedSelections={[
           {
@@ -60,9 +36,13 @@ describe('SelectedValuesDisplay', () => {
       />
     );
 
-    expect(screen.getAllByText('Type =').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Child 1').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Parent 2').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Utils.Or').length).toBeGreaterThan(0);
+    // "Type =" is rendered in a FilterLabel span — exact element match
+    expect(screen.getByText('Type =')).toBeInTheDocument();
+    // "Utils.Or" is rendered in an OrSeparator span — exact element match
+    expect(screen.getByText('Utils.Or')).toBeInTheDocument();
+    // Child labels and parent labels are bare text nodes; check via container
+    const chip = container.querySelector('[class*="truncate"]');
+    expect(chip).toHaveTextContent('Child 1');
+    expect(chip).toHaveTextContent('Parent 2');
   });
 });

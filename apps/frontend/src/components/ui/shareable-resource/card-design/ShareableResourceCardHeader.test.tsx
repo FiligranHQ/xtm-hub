@@ -7,38 +7,19 @@ vi.mock('@/components/service/integrations/Integration.utils', () => ({
   getIntegrationSubTypeMetadata: () => ({ label: 'Subtype label' }),
 }));
 
-vi.mock(
-  '@/components/ui/shareable-resource/card-design/ShareableResourceCardImage',
-  () => ({
-    ShareableResourceCardImage: ({
-      serviceInstanceId,
-    }: {
-      serviceInstanceId: string;
-    }) => <div data-testid="card-image">{serviceInstanceId}</div>,
-  })
-);
-
-vi.mock(
-  '@/components/ui/shareable-resource/card-design/ShareableResourceCardIcon',
-  () => ({
-    ShareableResourceCardIcon: ({
-      shouldDisplayBothIcons,
-    }: {
-      shouldDisplayBothIcons: boolean;
-    }) => <div data-testid="card-icon">{String(shouldDisplayBothIcons)}</div>,
-  })
-);
-
-vi.mock(
-  '@/components/service/document/ui/ShareableResourceEntityTypes',
-  () => ({
-    ShareableResourceEntityTypes: () => <div data-testid="entity-types" />,
-  })
-);
-
-vi.mock('@/components/ui/BadgeOverflowCounter', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
-  default: () => <div data-testid="use-cases" />,
+  default: ({ src, alt }: { src: string; alt: string }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+    />
+  ),
+}));
+
+vi.mock('@/utils/documents', () => ({
+  findDocumentLogo: () => null,
 }));
 
 describe('ShareableResourceCardHeader', () => {
@@ -47,7 +28,7 @@ describe('ShareableResourceCardHeader', () => {
     use_cases: [],
   };
 
-  it('renders connector branch with subtype metadata and entity types', () => {
+  it('renders connector branch with subtype metadata', () => {
     const { container } = testRender(
       <ShareableResourceCardHeader
         document={
@@ -59,14 +40,12 @@ describe('ShareableResourceCardHeader', () => {
       />
     );
 
-    expect(screen.getByTestId('card-image')).toHaveTextContent('svc-id');
+    expect(screen.getByText('Short name')).toBeInTheDocument();
     expect(screen.getByText('Subtype label')).toBeInTheDocument();
-    expect(screen.getByTestId('entity-types')).toBeInTheDocument();
-    expect(screen.queryByTestId('use-cases')).not.toBeInTheDocument();
     expect(container.querySelector('h2')).toHaveClass('md:text-lg');
   });
 
-  it('renders non connector branch with use-cases badges', () => {
+  it('renders non-connector branch without subtype metadata', () => {
     testRender(
       <ShareableResourceCardHeader
         document={baseDocument as never}
@@ -76,8 +55,7 @@ describe('ShareableResourceCardHeader', () => {
       />
     );
 
+    expect(screen.getByText('Short name')).toBeInTheDocument();
     expect(screen.queryByText('Subtype label')).not.toBeInTheDocument();
-    expect(screen.getByTestId('use-cases')).toBeInTheDocument();
-    expect(screen.queryByTestId('entity-types')).not.toBeInTheDocument();
   });
 });

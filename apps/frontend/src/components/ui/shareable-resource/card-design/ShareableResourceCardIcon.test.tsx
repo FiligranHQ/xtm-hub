@@ -1,19 +1,10 @@
 import testRender from '@/utils/test/test-render';
-import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { ShareableResourceCardIcon } from './ShareableResourceCardIcon';
 
-vi.mock('@/components/ui/ResourceStatusIcons', () => ({
-  ResourceStatusIcons: (props: {
-    deployable?: boolean;
-    verified?: boolean;
-    active?: boolean;
-  }) => <div data-testid="status-icons">{JSON.stringify(props)}</div>,
-}));
-
 describe('ShareableResourceCardIcon', () => {
-  it('for connector-like cards, forwards deployable and verified booleans', () => {
-    testRender(
+  it('for connector-like cards, renders deployable and verified icons', () => {
+    const { container } = testRender(
       <ShareableResourceCardIcon
         shouldDisplayBothIcons
         document={
@@ -26,13 +17,11 @@ describe('ShareableResourceCardIcon', () => {
       />
     );
 
-    expect(screen.getByTestId('status-icons')).toHaveTextContent(
-      '{"deployable":true,"verified":true}'
-    );
+    expect(container.querySelectorAll('svg')).toHaveLength(2);
   });
 
-  it('for non-connector cards, forwards active only', () => {
-    testRender(
+  it('for non-connector cards, renders the active icon only', () => {
+    const { container } = testRender(
       <ShareableResourceCardIcon
         shouldDisplayBothIcons={false}
         document={
@@ -45,8 +34,6 @@ describe('ShareableResourceCardIcon', () => {
       />
     );
 
-    expect(screen.getByTestId('status-icons')).toHaveTextContent(
-      '{"deployable":false,"verified":false,"active":true}'
-    );
+    expect(container.querySelectorAll('svg')).toHaveLength(1);
   });
 });
