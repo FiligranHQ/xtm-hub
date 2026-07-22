@@ -8,6 +8,7 @@ import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-re
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import useScrollPosition from '@/hooks/use-scroll-position';
+import { cn } from '@/lib/utils';
 import {
   PublicDocumentData,
   ShareableResourceType,
@@ -62,13 +63,13 @@ const ShareableResourceCard = ({
     !!document.integration_type &&
     FOOTER_VERSIONS_INTEGRATION_TYPES.includes(document.integration_type);
 
-  const cardHeightClass = isHomePageV2Enabled
-    ? 'h-[300px] sm:h-[348px]'
-    : 'h-[348px]';
-
   return (
     <li
-      className={`overflow-hidden flex flex-col relative rounded border bg-page-background aria-disabled:opacity-60 hover:bg-hover ${cardHeightClass}`}>
+      className={cn(
+        `overflow-hidden flex flex-col relative rounded bg-page-background aria-disabled:opacity-60 hover:bg-hover`,
+        isHomePageV2Enabled ? 'h-[300px] sm:h-[348px]' : 'h-[348px]',
+        !isHomePageV2Enabled && 'border'
+      )}>
       <Link
         className="flex flex-col flex-1 min-h-0 overflow-hidden"
         onClick={handleClick}
