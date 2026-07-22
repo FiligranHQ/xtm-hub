@@ -26,7 +26,7 @@ const customViewFormSchema = z.object({
     error: 'Product version must be X.Y.Z',
   }),
   uploader_organization_id: z.string().min(1, 'Required'),
-  use_cases: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).min(1, 'Required'),
   entity_types: z.array(z.string()).min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),

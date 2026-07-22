@@ -72,6 +72,7 @@ export const TestDocumentHelper = {
           slug,
           active,
           uploader_id,
+          use_cases: [],
         },
         metadata,
         serviceInstanceId,
