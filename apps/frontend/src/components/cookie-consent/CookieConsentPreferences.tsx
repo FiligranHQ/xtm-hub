@@ -75,16 +75,14 @@ export const CookieConsentPreferences = () => {
           closePreferences();
         }
       }}>
-      <DialogContent>
+      <DialogContent className="border-0 bg-elevation-background-layer-2">
         <DialogHeader>
           <DialogTitle>{t('Title')}</DialogTitle>
           <DialogDescription>{t('PreferencesIntro')}</DialogDescription>
         </DialogHeader>
 
         <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
-          <span className="text-sm font-medium text-foreground">
-            {t('PreferenceForAllServices')}
-          </span>
+          <span className="body-compact">{t('PreferenceForAllServices')}</span>
           <Switch
             checked={allGranted}
             onCheckedChange={setAll}
@@ -92,7 +90,7 @@ export const CookieConsentPreferences = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 pl-xl">
           {VISIBLE_CATEGORIES.map((category) => {
             const { required, services } = CONSENT_REGISTRY[category];
             return (
@@ -101,17 +99,17 @@ export const CookieConsentPreferences = () => {
                 className="flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-medium text-foreground">
+                    <span className="body-base-medium">
                       {t(`Categories.${category}.Title`)}
                     </span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="body-base">
                       {t(`Categories.${category}.Description`)}
                     </span>
                     {services.length > 0 ? (
                       <Button
                         variant="link"
                         onClick={() => toggleDrawer(category)}
-                        className="h-auto justify-start p-0 text-sm">
+                        className="h-auto justify-start p-0 body-compact">
                         {t('ManageServices', { count: services.length })}
                       </Button>
                     ) : null}
@@ -131,7 +129,7 @@ export const CookieConsentPreferences = () => {
                         key={service.id}
                         className="flex items-start justify-between gap-4">
                         <div className="flex flex-col gap-1">
-                          <span className="text-sm font-medium text-foreground">
+                          <span className="body-base-medium">
                             {service.name}
                           </span>
                           <div className="flex gap-3">
@@ -140,7 +138,7 @@ export const CookieConsentPreferences = () => {
                                 href={service.readMoreUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-sm text-primary underline-offset-4 hover:underline">
+                                className="body-compact-link">
                                 {t('ReadMore')}
                               </a>
                             ) : null}
@@ -149,7 +147,7 @@ export const CookieConsentPreferences = () => {
                                 href={service.officialWebsiteUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-sm text-primary underline-offset-4 hover:underline">
+                                className="body-compact-link">
                                 {t('ViewOfficialWebsite')}
                               </a>
                             ) : null}
