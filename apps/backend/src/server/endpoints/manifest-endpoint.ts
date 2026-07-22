@@ -2,20 +2,15 @@ import cors from 'cors';
 import { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { Readable } from 'stream';
-import {
-  ManifestType,
-  PlatformIdentifier,
-} from '../../__generated__/resolvers-types';
-import { ManifestFragmentHelper } from '../../modules/shareable-resource/manifest-fragment/manifest-fragment.helper';
+import { PlatformIdentifier } from '../../__generated__/resolvers-types';
 import { ManifestDomain } from '../../modules/shareable-resource/manifest/manifest.domain';
 import { ManifestHelper } from '../../modules/shareable-resource/manifest/manifest.helper';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import {
-  isIntegrationType,
-  isProduct,
   isValidManifestName,
   parseCount,
+  validateManifestParams,
 } from './manifest-endpoint.utils';
 
 const MANIFEST_RATE_WINDOW_MS = 60 * 1000;
@@ -31,8 +26,12 @@ const manifestRateLimiter = rateLimit({
 export const ManifestEndpoint = {
   listManifests: async (req: Request, res: Response): Promise<void> => {
     try {
-      const params = validateManifestParams(req, res);
-      if (!params) return;
+      const validation = validateManifestParams(req.params);
+      if (!validation.ok) {
+        res.status(400).json({ code: 400, message: validation.message });
+        return;
+      }
+      const { product, version, integrationType } = validation;
 
       const count = parseCount(req.query.count);
       if (count === undefined) {
@@ -41,9 +40,9 @@ export const ManifestEndpoint = {
       }
 
       const manifests = await ManifestDomain.loadManifests(
-        params.product,
-        params.version,
-        params.integrationType,
+        product,
+        version,
+        integrationType,
         count
       );
       res.status(200).json({ manifests });
@@ -58,27 +57,31 @@ export const ManifestEndpoint = {
     res: Response
   ): Promise<void> => {
     try {
-      const params = validateManifestParams(req, res);
-      if (!params) return;
+      const validation = validateManifestParams(req.params);
+      if (!validation.ok) {
+        res.status(400).json({ code: 400, message: validation.message });
+        return;
+      }
+      const { product, version, integrationType } = validation;
 
       const [latest] = await ManifestDomain.loadManifests(
-        params.product,
-        params.version,
-        params.integrationType,
+        product,
+        version,
+        integrationType,
         1
       );
       if (!latest) {
+        logApp.info('No manifest found', {
+          product,
+          version,
+          type: integrationType,
+        });
         res.status(404).json({ code: 404, message: 'Manifest not found' });
         return;
       }
 
       res.setHeader('Cache-Control', 'no-cache');
-      await streamManifestByName(
-        res,
-        params.product,
-        params.version,
-        latest.name
-      );
+      await streamManifestByName(res, product, version, latest.name);
     } catch (error) {
       logApp.error('Error while retrieving latest manifest', { error });
       if (res.headersSent) {
@@ -94,8 +97,12 @@ export const ManifestEndpoint = {
     res: Response
   ): Promise<void> => {
     try {
-      const params = validateManifestParams(req, res);
-      if (!params) return;
+      const validation = validateManifestParams(req.params);
+      if (!validation.ok) {
+        res.status(400).json({ code: 400, message: validation.message });
+        return;
+      }
+      const { product, version, integrationType } = validation;
 
       const { name } = req.params;
       if (typeof name !== 'string' || !isValidManifestName(name)) {
@@ -104,23 +111,24 @@ export const ManifestEndpoint = {
       }
 
       const manifest = await ManifestDomain.getManifestByName(
-        params.product,
-        params.version,
-        params.integrationType,
+        product,
+        version,
+        integrationType,
         name
       );
       if (!manifest) {
+        logApp.info('No manifest found for the requested name', {
+          product,
+          version,
+          type: integrationType,
+          name,
+        });
         res.status(404).json({ code: 404, message: 'Manifest not found' });
         return;
       }
 
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-      await streamManifestByName(
-        res,
-        params.product,
-        params.version,
-        manifest.name
-      );
+      await streamManifestByName(res, product, version, manifest.name);
     } catch (error) {
       logApp.error('Error while retrieving manifest by name', { error });
       if (res.headersSent) {
@@ -131,39 +139,6 @@ export const ManifestEndpoint = {
     }
   },
 };
-
-const validateManifestParams = (
-  req: Request,
-  res: Response
-): {
-  product: PlatformIdentifier;
-  version: string;
-  integrationType: ManifestType;
-} | null => {
-  const { product, version, integrationType } = req.params;
-
-  if (!isProduct(product)) {
-    res.status(400).json({ code: 400, message: 'Invalid product' });
-    return null;
-  }
-  if (!isIntegrationType(integrationType)) {
-    res.status(400).json({ code: 400, message: 'Invalid integrationType' });
-    return null;
-  }
-  if (typeof version !== 'string') {
-    res.status(400).json({ code: 400, message: 'Invalid version' });
-    return null;
-  }
-  try {
-    ManifestFragmentHelper.validateAndFormatManifestVersion(version);
-  } catch {
-    res.status(400).json({ code: 400, message: 'Invalid version format' });
-    return null;
-  }
-
-  return { product, version, integrationType };
-};
-
 export const manifestEndpoint = (app: Express) => {
   app.get(
     '/:product/:version/:integrationType/manifests',
@@ -202,6 +177,9 @@ const streamManifestByName = async (
   const key = ManifestHelper.buildManifestObjectKey(product, version, name);
   const body = await MinIOClient.downloadFile(key);
   if (!body) {
+    logApp.error('Manifest row exists but object is missing in storage', {
+      key,
+    });
     res.status(404).json({ code: 404, message: 'Manifest file not found' });
     return;
   }
