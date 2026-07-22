@@ -27,7 +27,7 @@
   },
   "CookieConsent": {
     "Title": "Cookie settings",
-    "BannerText": "We use cookies to make the XTM Hub work, understand how it's used, and improve your experience. Strictly necessary cookies are always on. With your consent, we also use optional cookies for functionality, performance and analytics, and marketing. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy for more information.",
+    "BannerText": "We use cookies to run XTM Hub. Necessary cookies are always on, optional cookies (functionality, analytics, marketing) are used with your consent. Accept all, reject all, or manage your choices anytime in \"Cookie settings\".",
     "AcceptAll": "Accept all",
     "RejectAll": "Reject all",
     "CookieSettings": "Cookie settings",
@@ -714,7 +714,9 @@
       "ConnectedProductSentence": "To deploy a resource you must have a connected product",
       "NotAllowedMessage": "You do not have permission to connect a product. \nPlease contact your product {count, plural, =1 {administrator} other {administrators}} to connect the product on your behalf.",
       "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
-      "ReachAdmin": "Reach your admin"
+      "ReachAdmin": "Reach your admin",
+      "ConnectProduct": "Connect your product",
+      "RedirectionMessage": "You will be redirected to your product in a new tab to authorize the connection with XTM Hub."
     },
     "Back": "Back to {platformIdentifier}",
     "Confirm": "Connect",
@@ -728,6 +730,7 @@
       },
       "Description": "Click here to access your Private Product.",
       "ProductName": "Product name",
+      "Product": "Product",
       "ProductURL": "Product URL",
       "StartDate": "Start date",
       "EndDate": "End date",
