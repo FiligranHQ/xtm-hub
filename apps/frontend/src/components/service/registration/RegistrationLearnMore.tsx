@@ -58,7 +58,7 @@ export const RegistrationLearnMore = async ({
         </div>
         <div className="flex flex-col lg:flex-row gap-xl">
           <div className="flex flex-col gap-s basis-full">
-            <div className="border border-solid border-b rounded p-6 basis-full bg-page-background">
+            <div className="rounded p-6 basis-full bg-page-background">
               <h3 className="mb-m flex gap-s">
                 <Image
                   width="25"
@@ -77,7 +77,7 @@ export const RegistrationLearnMore = async ({
               </p>
               <p>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</p>
             </div>
-            <div className="border border-solid border-b rounded p-6 basis-full bg-page-background">
+            <div className="rounded p-6 basis-full bg-page-background">
               <h3 className="mb-m flex gap-s">
                 <Image
                   width="25"
@@ -125,7 +125,7 @@ export const RegistrationLearnMore = async ({
               <PublicServiceInstanceCard
                 key={service.id}
                 className={cn(
-                  'basis-full max-w-[50%]',
+                  'basis-full max-w-[50%] border-0',
                   isHomePageV2Enabled && 'max-sm:max-w-none'
                 )}
                 serviceInstance={seoServiceInstanceToInstanceCardData(
