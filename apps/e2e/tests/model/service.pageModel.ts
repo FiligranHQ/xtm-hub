@@ -14,7 +14,9 @@ export default class ServicePage {
   }
 
   async navigateToServiceListAdmin() {
-    await this.page.getByRole('button', { name: 'Settings' }).click();
+    await this.page
+      .getByRole('button', { name: 'Settings', exact: true })
+      .click();
     await this.page.getByRole('link', { name: 'Service' }).click();
     await this.page.getByText('Name', { exact: true }).click();
   }
