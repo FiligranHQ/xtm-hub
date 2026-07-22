@@ -19,7 +19,7 @@ const ShareableResourceDescription = ({
       <h2 className="py-s txt-container-title truncate text-muted-foreground">
         {t('Service.ShareableResources.Details.Overview')}
       </h2>
-      <section className="border rounded border-border-light bg-page-background overflow-x-auto">
+      <section className="rounded bg-page-background overflow-x-auto">
         <h3 className="p-l">{shortDescription}</h3>
         <MarkdownRendererWithTheme
           source={longDescription}
