@@ -367,17 +367,19 @@
   "PublicPathError": {
     "NotFound": "404 | このページは見つかりませんでした"
   },
-  "PublicLayout": {
-    "Documentation": "XTM Hubのドキュメント",
-    "SignIn": "サインイン",
-    "Login": "ログイン",
-    "SignUp": "サインアップ",
+  "AppFooter": {
     "AllRightsReserved": "無断複写・転載を禁じます",
     "FiligranWebsite": "Filigranウェブサイト",
+    "Documentation": "XTM Hubのドキュメント",
     "PrivacyPolicy": "プライバシーポリシー",
     "TermsOfServices": "利用規約",
     "Licenses": "ライセンス",
     "Contact": "お問い合わせ"
+  },
+  "PublicLayout": {
+    "SignIn": "サインイン",
+    "Login": "ログイン",
+    "SignUp": "サインアップ"
   },
   "PublicResourcePage": {
     "Download": "ダウンロード",
