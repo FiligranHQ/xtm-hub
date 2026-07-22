@@ -125,7 +125,7 @@ export const RegistrationLearnMore = async ({
               <PublicServiceInstanceCard
                 key={service.id}
                 className={cn(
-                  'basis-full max-w-[50%] border-0',
+                  'basis-full max-w-[50%]',
                   isHomePageV2Enabled && 'max-sm:max-w-none'
                 )}
                 serviceInstance={seoServiceInstanceToInstanceCardData(

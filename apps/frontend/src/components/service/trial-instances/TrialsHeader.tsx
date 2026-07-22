@@ -20,7 +20,7 @@ export const TrialsHeader = ({
   return (
     <header className="px-m pt-m pb-xxl text-center">
       <div className="flex flex-col gap-s">
-        <p className="text-primary font-bold">
+        <p className="text-filigran-brand-primary font-bold">
           {t('Service.Trials.PageHeader.Welcome')}
         </p>
         <h1 className="heading-2xl">

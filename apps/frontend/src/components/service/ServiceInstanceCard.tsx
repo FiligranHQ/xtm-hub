@@ -74,7 +74,7 @@ const ServiceInstanceCard = ({
   }, []);
 
   return (
-    <li className={cn('relative border border-light rounded flex', className)}>
+    <li className={cn('relative rounded flex', className)}>
       {serviceInstance.disableCard && (
         <div className="absolute inset-0  bg-white/50 dark:bg-black/60 z-10 rounded pointer-events-none" />
       )}
