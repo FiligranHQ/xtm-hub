@@ -150,7 +150,7 @@
     "FilterByProduct": "製品で絞り込む",
     "Timeline": {
       "draft": "ドラフト",
-      "now": "今すぐ",
+      "now": "開発中",
       "next": "次",
       "under_consideration": "検討中",
       "finished": "最近3ヶ月以内に終了",
@@ -349,18 +349,18 @@
       "LabelWithName": "ようこそ {name}",
       "ConnectedProducts": "{count, plural, one {コネクテッド製品} other {コネクテッド製品}}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
-      "Description": "OpenCTIまたはOpenAEV製品を接続すると、ワンクリックで事前構築済みのコンテンツを展開したり、製品ニュースフィードで最新情報を入手したり、無料トライアルを開始したり、XTM Platformをさらに活用したりすることができます。",
+      "Description": "OpenCTI または OpenAEV 製品を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM 製品をより一層ご活用いただけます。",
       "Cta": "製品を連携する",
       "ImageAlt": "XTM Platformの図解"
     },
     "XtmRoadmap": {
       "Title": "XTM Platform Roadmap",
       "TitleWithProduct": "{product} Roadmap",
-      "Description": "現在開発中の機能、今後の予定、そしてXTM Platformの将来像をご覧ください。完全な透明性を確保し、予期せぬ事態は発生しません。",
+      "Description": "開発中の機能や今後のリリース予定、XTM プラットフォームの今後の方向性をご紹介します。",
       "SeeMore": "詳細を見る",
       "ImageAlt": "XTM Platformロードマップの宇宙イラスト",
-      "Now": "現在",
-      "Next": "次",
+      "Now": "開発中",
+      "Next": "次のリリース予定",
       "UnderConsideration": "検討中"
     }
   },
@@ -923,7 +923,7 @@
     },
     "LibraryHero": {
       "Eyebrow": "Filigran のリソース",
-      "DefaultDescription": "OpenCTI または OpenAEV 製品を接続すると、ワンクリックで事前構築済みコンテンツをデプロイでき、製品ニュースを常に把握し、無料トライアルを開始して、XTM プラットフォーム体験をさらに最大化できます。"
+      "DefaultDescription": "OpenCTI または OpenAEV 製品を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM 製品をより一層ご活用いただけます。"
     },
     "ComingSoon": "近日公開予定",
     "Connectors": {
