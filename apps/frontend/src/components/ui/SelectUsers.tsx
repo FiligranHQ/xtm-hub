@@ -309,6 +309,7 @@ const SelectUsersFormField = React.forwardRef<
           align="start"
           onEscapeKeyDown={() => setIsPopoverOpen(false)}>
           <Command
+            className="bg-elevation-background-layer-3"
             shouldFilter={false}
             onChange={handleSearchInputChange}>
             <CommandInput
