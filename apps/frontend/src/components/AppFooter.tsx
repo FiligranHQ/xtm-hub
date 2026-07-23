@@ -24,7 +24,11 @@ export const AppFooter = ({
     isHomePageV2EnabledProp ?? isHomePageV2EnabledFromHook;
 
   return (
-    <footer className={cn('text-muted-foreground pt-6 px-0', className)}>
+    <footer
+      className={cn(
+        'text-text-default-primary content-body-compact bg-elevation-bg-layer-0 pt-6 px-0',
+        className
+      )}>
       <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-l text-center">
         <span className="text-content-body-compact-link">
           <Link
