@@ -163,19 +163,3 @@ body[data-theme='Dark'] {
 .w-md-editor-text {
   min-height: 100% !important;
 }
-
-.small-scroll::-webkit-scrollbar {
-  width: 0.4rem;
-}
-.small-scroll::-webkit-scrollbar-thumb {
-  border: none;
-  background: #7a7c85b3;
-}
-.small-scroll::-webkit-scrollbar-thumb:hover {
-  background: #7a7c85;
-}
-:is(.dark, body[data-theme='dark'], body[data-theme='Dark'])
-  .small-scroll::-webkit-scrollbar-thumb {
-  border: none;
-  background: #7a7c85b3;
-}
