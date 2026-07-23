@@ -288,6 +288,7 @@ export const UserServiceForm = ({
                   <FormLabel>{t('InviteUserServiceForm.Email')}</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
+                      popoverContentClassName="bg-elevation-background-layer-3"
                       shouldFilter={false}
                       options={usersOptions}
                       defaultValue={field.value}

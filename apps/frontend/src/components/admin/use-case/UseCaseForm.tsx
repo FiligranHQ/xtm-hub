@@ -96,6 +96,7 @@ const UseCaseForm = ({
               <FormControl>
                 <MultiSelectFormField
                   options={productTagOptions}
+                  popoverContentClassName="bg-elevation-background-layer-3"
                   keyValue="id"
                   keyLabel="label"
                   defaultValue={field.value}

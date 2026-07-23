@@ -195,6 +195,7 @@ export const ServiceSlugOrgaForm = ({
                   </FormLabel>
                   <FormControl>
                     <MultiSelectFormField
+                      popoverContentClassName="bg-elevation-background-layer-3"
                       shouldFilter={false}
                       options={organizations}
                       keyValue="id"
@@ -268,6 +269,7 @@ export const ServiceSlugOrgaForm = ({
                     {t('OrganizationInServiceAction.StartDate')}
                   </FormLabel>
                   <DatePicker
+                    popoverContentClassName="bg-elevation-background-layer-3"
                     date={field.value}
                     setDate={field.onChange}
                   />
@@ -287,6 +289,7 @@ export const ServiceSlugOrgaForm = ({
                     {t('OrganizationInServiceAction.EndDate')}
                   </FormLabel>
                   <DatePicker
+                    popoverContentClassName="bg-elevation-background-layer-3"
                     date={field.value}
                     setDate={field.onChange}
                   />
