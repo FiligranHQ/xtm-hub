@@ -1,6 +1,6 @@
-@import '@filigran/ui/theme.css';
 @import 'tw-animate-css';
 @import 'tailwindcss';
+@import '@filigran/ui/theme.css';
 
 @reference '@filigran/ui/theme.css';
 
