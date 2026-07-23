@@ -228,7 +228,7 @@ const SelectUsersFormField = React.forwardRef<
             {...props}
             disabled={disabled}
             onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-            className="flex h-9 w-full items-center justify-between rounded border border-input bg-inherit p-1 hover:bg-hover">
+            className="flex h-9 w-full items-center justify-between rounded bg-input-bg-default p-1 hover:bg-hover">
             {selectedValues.length > 0 ? (
               <div className="flex w-full items-center">
                 <div
