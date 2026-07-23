@@ -11,7 +11,7 @@ import { useTranslations } from 'next-intl';
 
 interface ConnectProductButtonProps {
   onCloseDropdown?: () => void;
-  variant?: 'default' | 'outline-primary';
+  variant?: 'default' | 'secondary';
 }
 
 export const ConnectProductButton = ({
@@ -26,7 +26,7 @@ export const ConnectProductButton = ({
     <>
       <Button
         variant={variant}
-        className="hover:cursor-pointer gap-s"
+        className="gap-s"
         onClick={() => {
           setIsOpen(true);
         }}>

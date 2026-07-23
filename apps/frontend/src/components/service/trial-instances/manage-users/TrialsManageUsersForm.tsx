@@ -161,7 +161,7 @@ export const TrialsManageUsersForm = ({
         <SheetFooter>
           <div className="flex gap-s">
             <Button
-              variant="outline"
+              variant="secondary"
               type="button"
               onClick={onCancel}>
               {t('Utils.Cancel')}

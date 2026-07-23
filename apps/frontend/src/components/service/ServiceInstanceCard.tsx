@@ -14,7 +14,7 @@ export type PlatformHoverAction = {
   label: string;
   href?: string;
   target?: string;
-  variant?: 'outline-primary';
+  variant?: 'secondary';
 };
 
 export interface ServiceInstanceCardData {

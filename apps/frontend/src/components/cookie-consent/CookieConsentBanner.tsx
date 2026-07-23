@@ -70,13 +70,13 @@ export const CookieConsentBanner = () => {
         <div className="flex flex-col gap-2 sm:shrink-0 sm:flex-row">
           <Button onClick={acceptAll}>{t('AcceptAll')}</Button>
           <Button
-            variant="outline"
+            variant="secondary"
             className="text-primary"
             onClick={rejectAll}>
             {t('RejectAll')}
           </Button>
           <Button
-            variant="ghost"
+            variant="tertiary"
             className="text-primary"
             onClick={openPreferences}>
             {t('CookieSettings')}

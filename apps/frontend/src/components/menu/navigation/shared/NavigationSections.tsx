@@ -138,7 +138,7 @@ export const ClosedSection = ({ section }: { section: SectionConfig }) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         <Button
-          variant="ghost"
+          variant="tertiary"
           className={cn(
             'h-9 w-full justify-start rounded-none pl-5 cursor-pointer',
             currentPath.startsWith(section.pathPrefix)

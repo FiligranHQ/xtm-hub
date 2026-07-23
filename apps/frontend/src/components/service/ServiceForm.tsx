@@ -103,7 +103,7 @@ export const ServiceForm = ({ handleSubmit }: ServiceFormProps) => {
 
           <SheetFooter className="pt-2">
             <Button
-              variant="outline"
+              variant="secondary"
               type="button"
               onClick={(e) => handleCloseSheet(e)}>
               {t('Utils.Cancel')}

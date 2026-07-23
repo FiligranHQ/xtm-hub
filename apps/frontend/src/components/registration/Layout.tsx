@@ -22,7 +22,7 @@ export const RegistrationLayout = ({
       <div className="flex justify-end gap-s">
         {Boolean(cancel) && (
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={cancel}>
             {t(`Register.Back`, {
               platformIdentifier: displayedIdentifier,

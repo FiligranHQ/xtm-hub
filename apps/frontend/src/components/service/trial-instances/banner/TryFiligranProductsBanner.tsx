@@ -74,7 +74,7 @@ export const TryFiligranProductsBanner = () => {
             <div className="ml-xs mr-xs flex flex-row items-center">
               <Button
                 className="ml-s mr-s text-[12px] px-2 py-0.5 min-h-0 h-auto"
-                variant="outline"
+                variant="secondary"
                 onClick={() => setMenuOpen}>
                 {t('Service.Trials.LearnMore.Link')}
                 <div

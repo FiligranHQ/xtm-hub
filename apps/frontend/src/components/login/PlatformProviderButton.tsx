@@ -18,7 +18,7 @@ export const PlatformProviderButton = ({
     <Button
       asChild
       key={platformProvider.provider}
-      variant="outline"
+      variant="secondary"
       className="text-secondary border-secondary fit-content text-xs h-8 px-2 leading-none">
       <a
         href={`/auth/${platformProvider.provider}${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ''}`}>

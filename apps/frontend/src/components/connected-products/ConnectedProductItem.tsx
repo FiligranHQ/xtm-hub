@@ -50,7 +50,7 @@ export const ConnectedProductItem = ({
       <div className="flex items-center gap-xs">
         {detailPath && (
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             className="h-7 w-7"
             asChild>
@@ -63,7 +63,7 @@ export const ConnectedProductItem = ({
         )}
         {platform.url && (
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             className="h-7 w-7"
             asChild>

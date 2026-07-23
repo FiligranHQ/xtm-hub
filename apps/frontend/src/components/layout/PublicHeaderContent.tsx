@@ -26,10 +26,7 @@ export const PublicHeaderContent = async ({
       </Link>
       {isHomePageV2Enabled ? (
         <div className="flex items-center gap-s ml-auto">
-          <Button
-            asChild
-            variant="outline-primary"
-            className="whitespace-nowrap border-elevation-border-strong">
+          <Button variant="secondary">
             <Link href="/auth/oidc">{t('PublicLayout.Login')}</Link>
           </Button>
           <Button

@@ -104,7 +104,7 @@ const RemoveFilterButton = ({ onRemove }: RemoveFilterButtonProps) => {
   return (
     <Button
       type="button"
-      variant="ghost"
+      variant="tertiary"
       size="icon"
       role="button"
       tabIndex={0}

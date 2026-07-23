@@ -88,7 +88,7 @@ const HeaderOrganizationSwitcher = () => {
         onOpenChange={setOpenPopover}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant="secondary"
             role="combobox"
             aria-label={t('OrganizationSwitcher.SelectOrganization')}
             aria-controls={listboxId}
@@ -119,7 +119,7 @@ const HeaderOrganizationSwitcher = () => {
                 <li key={organization.value}>
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="tertiary"
                     role="option"
                     aria-selected={isSelected}
                     onClick={() => handleOnValueChange(organization)}

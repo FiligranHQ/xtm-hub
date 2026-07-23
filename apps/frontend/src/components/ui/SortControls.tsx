@@ -54,7 +54,7 @@ export const SortControls = ({
       <Button
         size="icon"
         className="flex-none basis-9"
-        variant="ghost-primary"
+        variant="tertiary"
         aria-label={`${t('SortControls.SortBy')} ${selectedOrderMode}`}
         onClick={() =>
           onOrderModeChange(

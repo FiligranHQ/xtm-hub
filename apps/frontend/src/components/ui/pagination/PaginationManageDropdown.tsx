@@ -38,7 +38,7 @@ export const PaginationManageDropdown = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
+          variant="tertiary"
           size="icon"
           className="h-9 w-9 rounded-none"
           aria-label={t('GenericActions.Paginate.Manage')}>

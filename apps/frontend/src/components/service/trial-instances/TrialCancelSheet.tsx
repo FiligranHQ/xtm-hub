@@ -142,7 +142,7 @@ export const TrialCancelSheet = ({
         }}>
         <div className="flex justify-end gap-s">
           <Button
-            variant="outline"
+            variant="secondary"
             type="button"
             onClick={() => setOpen(false)}>
             {t('Utils.Cancel')}

@@ -116,7 +116,7 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
           <SheetFooter className="justify-end pb-0">
             <div className="flex gap-s">
               <Button
-                variant="outline"
+                variant="secondary"
                 type="button"
                 onClick={(e) => handleCloseSheet(e)}>
                 {t('Utils.Cancel')}

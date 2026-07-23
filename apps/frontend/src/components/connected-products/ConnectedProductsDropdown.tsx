@@ -33,7 +33,7 @@ export const ConnectedProductsDropdown = () => {
       onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
+          variant="tertiary"
           className="flex flex-row items-center gap-xs text-primary font-medium">
           <span>
             {t('Header.ConnectedProducts.Count', {
@@ -68,7 +68,7 @@ export const ConnectedProductsDropdown = () => {
         )}
         <div className="flex flex-col gap-s p-m">
           <ConnectProductButton
-            variant="outline-primary"
+            variant="secondary"
             onCloseDropdown={() => setOpen(false)}
           />
         </div>

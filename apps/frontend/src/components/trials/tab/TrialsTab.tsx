@@ -411,7 +411,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                       actionButtonText={t('MenuActions.Delete')}
                       triggerElement={
                         <Button
-                          variant="ghost-destructive"
+                          variant="tertiary-destructive"
                           size="icon"
                           className="border m-1">
                           <CloseIcon className="h-4 w-4" />
@@ -434,7 +434,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              variant="ghost-primary"
+                              variant="tertiary"
                               size="icon"
                               className="border m-1"
                               onClick={() =>
@@ -455,7 +455,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              variant="ghost-primary"
+                              variant="tertiary"
                               size="icon"
                               className="border m-1"
                               onClick={() =>
@@ -490,7 +490,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                               }
                               trigger={
                                 <Button
-                                  variant="ghost-primary"
+                                  variant="tertiary"
                                   size="icon"
                                   className="border m-1">
                                   <GroupIcon className="h-4 w-4" />
