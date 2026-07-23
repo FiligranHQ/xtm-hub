@@ -91,7 +91,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       <PageLoader>
         <div className="flex flex-col items-center justify-center min-h-screen">
           <div className="w-1/3">
-            <ContentLayout showFooter={false}>
+            <ContentLayout>
               <LogoXTMDark className="pb-6" />
 
               <Card className="p-l bg-elevation-background-layer-1">

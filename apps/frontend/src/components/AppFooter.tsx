@@ -25,7 +25,10 @@ export const AppFooter = ({
 
   return (
     <footer
-      className={cn('container text-muted-foreground pt-6 px-0', className)}>
+      className={cn(
+        'text-text-default-primary content-body-compact bg-elevation-bg-layer-0 pt-6 px-0',
+        className
+      )}>
       <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-l text-center">
         <span className="text-content-body-compact-link">
           <Link
