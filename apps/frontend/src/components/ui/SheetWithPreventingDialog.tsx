@@ -70,7 +70,7 @@ export const SheetWithPreventingDialog = ({
           side={'right'}
           onPointerDownOutside={(e) => alertDialogSheetClose(e)}
           onOpenAutoFocus={onOpenAutoFocus}>
-          <SheetHeader className="bg-page-background">
+          <SheetHeader>
             <SheetTitle>{title}</SheetTitle>
             <SheetDescription>{description}</SheetDescription>
           </SheetHeader>

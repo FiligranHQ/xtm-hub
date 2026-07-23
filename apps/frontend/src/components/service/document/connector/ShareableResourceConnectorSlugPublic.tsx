@@ -92,7 +92,7 @@ const ShareableResourceConnectorSlugPublic = ({
             <MarkdownRenderer
               source={documentData?.description ?? ''}
               colorMode="dark"
-              className="p-l !bg-page-background markdown-content"
+              className="p-l !bg-elevation-background-layer-1 markdown-content"
             />
           </section>
         </div>

@@ -47,7 +47,7 @@ export const EpicItemCard = ({
     <>
       <div
         onClick={handleOpenDetail}
-        className="flex flex-col flex-1 bg-page-background text-ellipsis overflow-hidden p-m group-hover:bg-hover h-full w-full">
+        className="flex flex-col flex-1 bg-elevation-background-layer-1 text-ellipsis overflow-hidden p-m group-hover:bg-hover h-full w-full">
         <h2 className="text-base font-semibold pr-xxl line-clamp-2">
           {epic.title}
         </h2>

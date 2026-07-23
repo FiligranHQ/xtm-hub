@@ -94,7 +94,9 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
             <ContentLayout showFooter={false}>
               <LogoXTMDark className="pb-6" />
 
-              <Card className="p-l bg-page-background">{children}</Card>
+              <Card className="p-l bg-elevation-background-layer-1">
+                {children}
+              </Card>
             </ContentLayout>
           </div>
         </div>

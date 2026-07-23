@@ -11,7 +11,7 @@ export const ErrorPage = ({ children }: ErrorPageProps) => {
       <div className="max-w-[450px] w-full">
         <DisplayLogo />
       </div>
-      <div className="bg-page-background border border-border-light rounded w-full p-l mb-l mt-xl max-w-[650px]">
+      <div className="bg-elevation-background-layer-1 border border-border-light rounded w-full p-l mb-l mt-xl max-w-[650px]">
         {children}
       </div>
     </main>

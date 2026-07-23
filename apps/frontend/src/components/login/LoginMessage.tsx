@@ -9,7 +9,7 @@ const LoginMessage = ({ isHomePageV2Enabled }: LoginMessageProps) => {
   const t = useTranslations();
 
   return (
-    <div className="bg-page-background border border-border-light rounded w-full p-xl text-sm text-center">
+    <div className="bg-elevation-background-layer-1 border border-border-light rounded w-full p-xl text-sm text-center">
       {t('LoginPage.DontHaveAccount')}{' '}
       <Link
         className="text-primary"
