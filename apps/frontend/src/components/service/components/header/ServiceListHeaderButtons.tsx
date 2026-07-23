@@ -45,7 +45,8 @@ const ServiceListHeaderButtons = ({}) => {
         <>
           <Button
             asChild
-            variant="outline">
+            variant="outline-primary"
+            className="border-elevation-border-strong">
             <Link
               href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentUserSubscriptionId}`}>
               {t('Service.Capabilities.ManageAccessName')}

@@ -99,7 +99,7 @@ const ShareableResourceSlug = ({
             />
           </div>
         ) : (
-          <div className="w-24 p-m border border-light shrink-0">
+          <div className="w-24 p-m shrink-0">
             <LogoFiligranIcon className="size-18" />
           </div>
         )}
