@@ -28,7 +28,7 @@ export const ShareableResourceCardImage = ({
             className="rounded object-contain"
           />
         ) : (
-          <div className="w-24 p-m border border-light">
+          <div className="w-24 p-m">
             <LogoFiligranIcon className="size-18" />
           </div>
         )}
