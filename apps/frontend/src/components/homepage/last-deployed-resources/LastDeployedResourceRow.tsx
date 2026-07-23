@@ -58,7 +58,7 @@ const LastDeployedResourceRow = ({
     <Link
       href={url}
       className="flex items-center">
-      <div className="flex items-center gap-m rounded p-s bg-page-background">
+      <div className="flex items-center gap-m rounded p-s bg-elevation-background-layer-1">
         <div className="shrink-0">
           <ResourceTypeIcon
             resourceType={resourceType}

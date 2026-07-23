@@ -18,7 +18,7 @@ export const EpicItemDetailed = ({
   const t = useTranslations();
 
   return (
-    <div className="p-l bg-page-background markdown-content flex h-full min-h-0 flex-1 flex-col">
+    <div className="p-l bg-elevation-background-layer-1 markdown-content flex h-full min-h-0 flex-1 flex-col">
       <h2>{epic.title}</h2>
       <div className="min-h-0 flex-1 overflow-y-auto">
         <MarkdownRendererWithTheme source={epic.description} />

@@ -23,7 +23,7 @@ const ShareableResourceDescription = ({
         <h3 className="p-l">{shortDescription}</h3>
         <MarkdownRendererWithTheme
           source={longDescription}
-          className="p-l !bg-page-background markdown-content"
+          className="p-l !bg-elevation-background-layer-1 markdown-content"
         />
       </section>
     </div>

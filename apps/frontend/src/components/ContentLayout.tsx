@@ -26,7 +26,7 @@ export const ContentLayout = ({ children }: ContentLayoutProps) => {
 
   return (
     <div className="relative flex-1 min-h-0">
-      <main className="h-full w-full overflow-y-auto flex flex-col bg-background p-6">
+      <main className="h-full w-full overflow-y-auto flex flex-col bg-elevation-background-layer-1 p-6">
         <div className="flex-1">{children}</div>
       </main>
     </div>
