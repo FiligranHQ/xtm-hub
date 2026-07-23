@@ -1,34 +1,21 @@
-import Image from 'next/image';
+import XtmPlatformDark from '@public/xtm_platform.svg';
+import XtmPlatformLight from '@public/xtm_platform_light.svg';
 
-const imageStyle = {
-  width: 'auto',
-  height: '100%',
-  maxHeight: '280px',
-  objectFit: 'contain' as const,
-};
+const imageClassName = 'h-auto w-full max-h-60 object-contain';
+const imageAriaLabel = 'Display Filigran product ecosystem';
 
 const XtmPlatformImage = () => {
   return (
     <>
-      <Image
-        src="/xtm_platform.png"
-        alt="Display Filigran product ecosystem"
-        width={1370}
-        height={680}
-        sizes="(max-width: 768px) 100vw, 50vw"
-        style={imageStyle}
-        className="hidden dark:block"
-        priority
+      <XtmPlatformDark
+        role="img"
+        aria-label={imageAriaLabel}
+        className={`${imageClassName} hidden dark:block`}
       />
-      <Image
-        src="/xtm-platform-light.png"
-        alt="Display Filigran product ecosystem"
-        width={1370}
-        height={680}
-        sizes="(max-width: 768px) 100vw, 50vw"
-        style={imageStyle}
-        className="block dark:hidden"
-        priority
+      <XtmPlatformLight
+        role="img"
+        aria-label={imageAriaLabel}
+        className={`${imageClassName} block dark:hidden`}
       />
     </>
   );

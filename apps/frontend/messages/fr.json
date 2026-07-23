@@ -367,17 +367,19 @@
   "PublicPathError": {
     "NotFound": "404 | Cette page est introuvable"
   },
-  "PublicLayout": {
-    "Documentation": "Documentation du Hub XTM",
-    "SignIn": "Connexion",
-    "Login": "Connexion",
-    "SignUp": "Créer un compte",
+  "AppFooter": {
     "AllRightsReserved": "Tous droits réservés",
     "FiligranWebsite": "Site Filigran",
+    "Documentation": "Documentation du Hub XTM",
     "PrivacyPolicy": "Politique de confidentialité",
     "TermsOfServices": "Conditions d'utilisation",
     "Licenses": "Licences",
     "Contact": "Contact"
+  },
+  "PublicLayout": {
+    "SignIn": "Connexion",
+    "Login": "Connexion",
+    "SignUp": "Créer un compte"
   },
   "PublicResourcePage": {
     "Download": "Télécharger",

@@ -3,12 +3,20 @@
 @import 'tailwindcss';
 
 @reference '@filigran/ui/theme.css';
+
+@theme inline {
+  --color-filigran-decoration: var(--color-filigran-decoration);
+}
+
 :root {
+  --color-filigran-decoration: hsl(var(--darkblue-700) / 0.3);
   --hover-background: var(--color-gray-150);
 }
+
 .dark,
 body[data-theme='dark'],
 body[data-theme='Dark'] {
+  --color-filigran-decoration: hsl(var(--blue-500) / 0.3);
   --hover-background: var(--color-filigran-brand-primary-transparency);
 }
 @source '../node_modules/@filigran/ui/dist/**/*.{js,ts,jsx,tsx}';

@@ -32,7 +32,7 @@ export const ConnectedProductItem = ({
     : undefined;
 
   return (
-    <div className="flex w-full items-center justify-between gap-m px-m py-s">
+    <div className="flex min-h-12 w-full items-center justify-between gap-m px-m py-s">
       <div className="flex items-center gap-s">
         {platformMeta?.logoUrl && (
           <Image
