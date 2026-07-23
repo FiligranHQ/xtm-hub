@@ -87,7 +87,7 @@ const ShareableResourceConnectorSlugPublic = ({
           <h3 className="py-s txt-container-title truncate text-muted-foreground">
             {t('PublicResourcePage.Overview')}
           </h3>
-          <section className="border rounded border-border-light bg-page-background overflow-x-auto">
+          <section className="rounded bg-elevation-background-layer-1 overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>
             <MarkdownRenderer
               source={documentData?.description ?? ''}
