@@ -105,7 +105,7 @@ export const ShareLinkCommonButton = ({
         disableHoverableContent={true}>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
+            variant="tertiary"
             size="icon"
             onClick={handleCopy}
             className="z-[2] text-primary">

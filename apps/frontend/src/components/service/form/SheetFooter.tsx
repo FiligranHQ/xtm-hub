@@ -13,7 +13,7 @@ export const ServiceFormSheetFooter = ({
     <SheetFooter className="sm:justify-between pt-2">
       <div className="ml-auto flex gap-s">
         <Button
-          variant="outline"
+          variant="secondary"
           type="button"
           onClick={(e) => handleCloseSheet(e)}>
           {t('Utils.Cancel')}

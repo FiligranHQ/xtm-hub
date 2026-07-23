@@ -50,7 +50,7 @@ export const ServiceFormLogoField = ({
                 </div>
                 <Button
                   disabled={logo.source_type === DocumentSourceType.External}
-                  variant="outline-destructive"
+                  variant="secondary-destructive"
                   size="icon"
                   type="button"
                   className="ml-auto m-s"

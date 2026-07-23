@@ -274,7 +274,7 @@ export const RegistrationDetails = ({
           )}
         {displayUpdatePlatform && (
           <Button
-            variant="outline-primary"
+            variant="secondary"
             onClick={() => setOpenPlatformSheet(true)}>
             {t('Platform.Update')}
           </Button>

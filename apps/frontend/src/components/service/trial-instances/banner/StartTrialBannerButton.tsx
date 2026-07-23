@@ -142,7 +142,7 @@ export const StartTrialBannerButton = () => {
   const getButton = (product: PlatformIdentifier) => {
     return (
       <Button
-        variant="ghost"
+        variant="tertiary"
         onClick={() => handleProductChosen(product)}>
         <Image
           width="25"

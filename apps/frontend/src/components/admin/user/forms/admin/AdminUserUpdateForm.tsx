@@ -227,7 +227,7 @@ export const AdminUserUpdateForm = ({
                         </FormControl>
                         <Button
                           type="button"
-                          variant="ghost"
+                          variant="tertiary"
                           size="icon"
                           onClick={() => remove(index)}>
                           <DeleteIcon className="h-4 w-4" />
@@ -245,7 +245,7 @@ export const AdminUserUpdateForm = ({
         <SheetFooter className="justify-between sm:justify-between pb-0">
           {user.disabled ? (
             <Button
-              variant="outline-primary"
+              variant="secondary"
               onClick={() => disableUser({ disabled: false })}>
               {t('UserActions.Enable')}
             </Button>
@@ -255,7 +255,7 @@ export const AdminUserUpdateForm = ({
               actionButtonText={t('MenuActions.Disable')}
               variantName={'destructive'}
               triggerElement={
-                <Button variant="outline-destructive">
+                <Button variant="secondary-destructive">
                   {t('UserActions.Disable')}
                 </Button>
               }
@@ -267,7 +267,7 @@ export const AdminUserUpdateForm = ({
           )}
           <div className="flex gap-s">
             <Button
-              variant="outline"
+              variant="secondary"
               type="button"
               onClick={(e) => handleCloseSheet(e)}>
               {t('Utils.Cancel')}

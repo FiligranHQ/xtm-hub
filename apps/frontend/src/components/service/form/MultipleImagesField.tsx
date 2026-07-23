@@ -121,7 +121,7 @@ export const ServiceFormMultipleImagesField = ({
                       : 'bg-black/0 opacity-0'
                   }`}>
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="icon"
                     className="absolute right-2 top-2"
                     type="button"
@@ -153,7 +153,7 @@ export const ServiceFormMultipleImagesField = ({
                     </div>
                     <Button
                       disabled={doc.source_type === DocumentSourceType.External}
-                      variant="outline-destructive"
+                      variant="secondary-destructive"
                       size="icon"
                       type="button"
                       className="ml-auto m-s"

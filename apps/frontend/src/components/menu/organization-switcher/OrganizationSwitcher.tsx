@@ -73,7 +73,7 @@ export const OrganizationSwitcher = ({ open }: TeamSwitcherProps) => {
       <PopoverTrigger asChild>
         <div className=" pb-s ">
           <Button
-            variant="ghost"
+            variant="tertiary"
             role="combobox"
             aria-label={t('OrganizationSwitcher.SelectOrganization')}
             className={cn(
@@ -113,7 +113,7 @@ export const OrganizationSwitcher = ({ open }: TeamSwitcherProps) => {
           {parsedOrganization.map((group) => (
             <li key={group.id}>
               <Button
-                variant="ghost"
+                variant="tertiary"
                 aria-label={t('OrganizationSwitcher.SelectedOrganization')}
                 onClick={() => handleSelectOrganisation(group.id)}
                 className={cn(

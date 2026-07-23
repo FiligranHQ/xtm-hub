@@ -189,7 +189,7 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
                         </FormControl>
                         <Button
                           type="button"
-                          variant="ghost"
+                          variant="tertiary"
                           size="icon"
                           onClick={() => remove(index)}>
                           <DeleteIcon className="h-4 w-4" />
@@ -206,7 +206,7 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
 
         <SheetFooter className="pt-2">
           <Button
-            variant="outline"
+            variant="secondary"
             type="button"
             onClick={(e) => handleCloseSheet(e)}>
             {t('Utils.Cancel')}

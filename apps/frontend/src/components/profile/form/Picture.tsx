@@ -70,7 +70,7 @@ export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
-          variant="ghost-primary"
+          variant="tertiary"
           aria-label={t('Utils.Edit')}
           size="sm"
           className="ml-s gap-s"

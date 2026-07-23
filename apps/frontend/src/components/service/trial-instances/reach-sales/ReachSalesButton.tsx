@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 interface ReachSalesButtonProps {
-  variant: 'default' | 'gradient' | 'outline-primary';
+  variant: 'default' | 'gradient' | 'secondary';
   platformIdentifier: PlatformIdentifier;
   platformId?: string;
 }
@@ -61,11 +61,11 @@ export const ReachSalesButton = ({
       );
     }
 
-    if ('outline-primary' === variant) {
+    if ('secondary' === variant) {
       return (
         <Button
           onClick={() => setIsConfirmationDialogOpen(true)}
-          variant="outline-primary"
+          variant="secondary"
           disabled={isInFlight}>
           {t('Service.Trials.ReachOutToSales')}
         </Button>

@@ -141,7 +141,7 @@ const ChoosePlatformForm = ({
         <div className="flex justify-end gap-s">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={() => {
               setIsOpen(false);
             }}>

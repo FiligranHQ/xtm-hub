@@ -52,7 +52,7 @@ const TryOtherPlatformProductBlock = () => {
         <h2 className="heading-xs">{t('Title')}</h2>
         <Button
           asChild
-          variant="outline"
+          variant="secondary"
           className="text-content-button font-semibold w-full border-elevation-border-strong-layer-3">
           <Link
             href={learnMorePrivateUrl}

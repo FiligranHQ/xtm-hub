@@ -4,7 +4,7 @@ import { PublicHeaderContent } from '@/components/layout/PublicHeaderContent';
 import PublicMenu from '@/components/menu/PublicMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
-import { publicLocales, type PublicLocale } from '@/i18n/config';
+import { type PublicLocale, publicLocales } from '@/i18n/config';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import '@filigran/ui/theme.css';

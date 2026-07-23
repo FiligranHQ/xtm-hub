@@ -124,7 +124,7 @@ export const RegisterOrganizationForm = ({
           }}>
           <div className="flex justify-end gap-s">
             <Button
-              variant="outline-primary"
+              variant="secondary"
               type="button"
               onClick={() => {
                 cancel();

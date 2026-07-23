@@ -25,7 +25,7 @@ export const LinkMenu = ({ href, icon, text, open }: LinkMenuProps) => {
       href={href}
       className={cn(
         buttonVariants({
-          variant: 'ghost',
+          variant: 'tertiary',
           className: 'h-9 w-full justify-start rounded-none normal-case px-m',
         }),
         currentPath === href &&

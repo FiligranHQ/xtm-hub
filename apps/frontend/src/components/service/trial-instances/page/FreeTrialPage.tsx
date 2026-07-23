@@ -53,7 +53,7 @@ const FreeTrialPage = ({
           <>
             <SlackSupportButton />
             <ReachSalesButton
-              variant="outline-primary"
+              variant="secondary"
               platformIdentifier={platformIdentifier}
             />
             <GuardCapacityComponent

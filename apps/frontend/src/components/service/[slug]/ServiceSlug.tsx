@@ -289,7 +289,7 @@ const ServiceSlug = ({
                 actions: () => (
                   <>
                     <Button
-                      variant="ghost-primary"
+                      variant="tertiary"
                       size="sm"
                       className="cursor-pointer"
                       onClick={() => setOpenAddCapabilities(true)}>
@@ -299,7 +299,7 @@ const ServiceSlug = ({
                       )}
                     </Button>
                     <Button
-                      variant="ghost-destructive"
+                      variant="tertiary-destructive"
                       size="sm"
                       className="cursor-pointer"
                       onClick={() =>

@@ -73,7 +73,7 @@ const ClosedMenuAdmin = () => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         <Button
-          variant="ghost"
+          variant="tertiary"
           className={cn(
             'h-9 rounded-none px-m',
             currentPath.startsWith(`/${APP_PATH}/admin/`) &&
@@ -184,7 +184,7 @@ const AdminButton = ({
       href={href}
       className={cn(
         buttonVariants({
-          variant: 'ghost',
+          variant: 'tertiary',
           className: cn(
             'flex items-center w-full justify-between txt-sub-content rounded-none normal-case',
             className

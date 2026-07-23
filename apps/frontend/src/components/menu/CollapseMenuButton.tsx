@@ -22,7 +22,7 @@ export const CollapseMenuButton = ({
   return (
     <div className="shrink-0 pb-s">
       <Button
-        variant="ghost"
+        variant="tertiary"
         aria-label={t('App.CollapseSidebar')}
         className="h-9 px-m w-full justify-start rounded-none text-foreground"
         onClick={handleOpenMenu}>

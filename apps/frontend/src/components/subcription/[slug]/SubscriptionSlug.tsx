@@ -333,7 +333,7 @@ const SubscriptionSlug = ({
                   actions: () => (
                     <>
                       <Button
-                        variant="ghost-primary"
+                        variant="tertiary"
                         size="sm"
                         className="cursor-pointer"
                         onClick={() => setOpenAddCapabilities(true)}>
@@ -343,7 +343,7 @@ const SubscriptionSlug = ({
                         )}
                       </Button>
                       <Button
-                        variant="ghost-destructive"
+                        variant="tertiary-destructive"
                         size="sm"
                         className="cursor-pointer"
                         onClick={() =>

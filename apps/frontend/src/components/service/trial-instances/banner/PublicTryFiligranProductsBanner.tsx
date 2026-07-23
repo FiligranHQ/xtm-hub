@@ -60,7 +60,7 @@ export const PublicTryFiligranProductsBanner = () => {
           <div className="flex flex-row items-center mr-xl">
             <Button
               className="ml-s mr-s text-[12px] px-2 py-0.5 min-h-0 h-auto"
-              variant="outline"
+              variant="secondary"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen}>
               {t('Service.Trials.LearnMore.Link')}

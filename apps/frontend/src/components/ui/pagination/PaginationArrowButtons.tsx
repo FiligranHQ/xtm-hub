@@ -50,7 +50,7 @@ export const PaginationArrowButtons = ({
   return (
     <>
       <Button
-        variant="ghost"
+        variant="tertiary"
         size="icon"
         className="h-9 w-9 rounded-none"
         onClick={() => previousPage()}
@@ -70,7 +70,7 @@ export const PaginationArrowButtons = ({
         {totalCount}
       </div>
       <Button
-        variant="ghost"
+        variant="tertiary"
         size="icon"
         className="h-9 w-9 rounded-none"
         onClick={() => nextPage()}
