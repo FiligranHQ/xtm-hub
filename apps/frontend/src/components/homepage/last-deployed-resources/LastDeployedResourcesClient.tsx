@@ -61,17 +61,17 @@ const LastDeployedResourcesClient = ({
         </Select>
       </div>
 
-      <ul className="flex flex-col gap-l">
+      <ul className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-x-m gap-y-l items-center">
         {resources.map((resource, index) => (
           <Fragment key={`${resource.document.id}-${index}`}>
             {index > 0 && (
               <li
                 aria-hidden="true"
-                className="shrink-0">
+                className="col-span-full shrink-0">
                 <Separator className="bg-elevation-border-subtle" />
               </li>
             )}
-            <li>
+            <li className="grid grid-cols-subgrid col-span-full items-center">
               <LastDeployedResourceRow resource={resource} />
             </li>
           </Fragment>

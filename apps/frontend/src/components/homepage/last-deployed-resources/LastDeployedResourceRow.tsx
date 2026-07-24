@@ -43,36 +43,45 @@ const LastDeployedResourceRow = ({
   return (
     <Link
       href={url}
-      className="flex items-center">
-      <div className="flex items-center gap-m rounded p-s bg-elevation-background-layer-1">
-        <div className="shrink-0">
-          <ResourceTypeIcon
-            resourceType={resourceType}
-            className="size-6"
-          />
-        </div>
-        <div className="flex items-center gap-s">
-          <span className="content-body-base font-bold truncate">
-            {document.name}
-          </span>
-          <BadgeOverflowCounter
-            badges={document.use_cases ?? []}
-            badgeClassName={BADGE_CLASS}
-          />
+      className="group contents">
+      <div className="min-w-0">
+        <div className="min-w-0 max-w-full inline-flex items-center gap-m overflow-hidden rounded p-s bg-elevation-background-layer-1 group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
+          <div className="shrink-0">
+            <ResourceTypeIcon
+              resourceType={resourceType}
+              className="size-6"
+            />
+          </div>
+          <div className="min-w-0 flex-1 flex items-center gap-s">
+            <span className="min-w-0 shrink content-body-base font-bold truncate">
+              {document.name}
+            </span>
+            <div className="min-w-16 shrink">
+              <BadgeOverflowCounter
+                badges={document.use_cases ?? []}
+                badgeClassName={BADGE_CLASS}
+              />
+            </div>
+          </div>
         </div>
       </div>
-      <div className="ml-auto shrink-0 flex items-center gap-s text-text-default-secondary txt-small">
+      <div className="shrink-0 md:max-w-56 lg:max-w-72 xl:max-w-80 2xl:max-w-96 flex items-center gap-s overflow-hidden whitespace-nowrap text-text-default-secondary txt-small rounded group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
         <Badge className={cn('shrink-0', BADGE_CLASS)}>
           <CalendarMonthIcon className="size-4" />
         </Badge>
-        <span>{t('On')}</span>
-        <span className="content-body-base text-text-default-primary">
+        <span className="shrink-0">{t('On')}</span>
+        <span className="shrink-0 content-body-base text-text-default-primary">
           {deployedAt}
         </span>
         {resource.deployedBy && (
           <>
-            <span>{t('By')}</span>
-            <UserDisplay uploader={resource.deployedBy} />
+            <span className="shrink-0">{t('By')}</span>
+            <div className="min-w-0 shrink flex items-center gap-s">
+              <UserDisplay
+                uploader={resource.deployedBy}
+                className="min-w-0 max-w-none"
+              />
+            </div>
           </>
         )}
       </div>
