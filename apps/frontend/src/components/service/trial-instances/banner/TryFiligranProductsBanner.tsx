@@ -4,25 +4,14 @@ import { useTranslations } from 'next-intl';
 
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
-import { BANNER_ACTION_CLASSES } from '@/components/service/trial-instances/banner/banner-styles';
+import { LearnMoreBannerButton } from '@/components/service/trial-instances/banner/LearnMoreBannerButton';
+import { LearnMoreBannerLink } from '@/components/service/trial-instances/banner/LearnMoreBannerLink';
 import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import { IconActionContext } from '@/components/ui/IconActions';
-import { cn } from '@/lib/utils';
-import { KeyboardArrowRightIcon } from '@filigran/icon';
-import {
-  buttonVariants,
-  Callout,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@filigran/ui';
-import { Button } from '@filigran/ui/servers';
+import { Callout } from '@filigran/ui';
 import { OrganizationCapability, PlatformIdentifier } from '@graphql/generated';
-import Image from 'next/image'; // Component
-import Link from 'next/link';
-import { ReactNode, useContext, useState } from 'react';
+import { ReactNode, useContext } from 'react';
 
 export const PRODUCTS_AVAILABLE_ON_TRIAL = 2;
 type BannerConfig = {
@@ -36,30 +25,9 @@ export const TryFiligranProductsBanner = () => {
   const { settings } = useContext(SettingsContext);
   const { availableTrials } = useOrgaFreeTrial();
 
-  const [menuOpen, setMenuOpen] = useState(false);
-
   if (!settings) return null;
 
   if (availableTrials.length === 0) return null; // Dont display the banner if user already has the 2 products in trial
-
-  const getLink = (product: PlatformIdentifier) => {
-    return (
-      <Link
-        onClick={() => setMenuOpen(false)}
-        href={`${settings!.base_url_front}${PlatformMetadataMapping[product].learnMorePrivateUrl}`}>
-        <div className="flex flex-row h-9 px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:bg-hover">
-          <Image
-            width="25"
-            height="25"
-            alt={'Product Logo'}
-            src={PlatformMetadataMapping[product].logoUrl}
-            className="mr-s object-contain"
-          />
-          {PlatformMetadataMapping[product].name}
-        </div>
-      </Link>
-    );
-  };
 
   const BANNER_TEXTS: Record<string, BannerConfig> = {
     default: {
@@ -70,34 +38,11 @@ export const TryFiligranProductsBanner = () => {
         </span>
       ),
       learnMore: (
-        <DropdownMenu
-          open={menuOpen}
-          onOpenChange={setMenuOpen}>
-          <DropdownMenuTrigger asChild>
-            <div className="ml-xs mr-xs flex flex-row items-center">
-              <Button
-                className={BANNER_ACTION_CLASSES}
-                variant="secondary"
-                aria-expanded={menuOpen}>
-                {t('Service.Trials.LearnMore.Link')}
-                <div
-                  className={`ml-s inline-flex transition-transform ${
-                    menuOpen ? 'rotate-90' : 'rotate-0'
-                  }`}>
-                  <KeyboardArrowRightIcon className="h-3 w-3" />
-                </div>
-              </Button>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-full flex flex-col">
-            <IconActionContext.Provider value={{ setMenuOpen }}>
-              {getLink(PlatformIdentifier.Opencti)}
-              {getLink(PlatformIdentifier.Openaev)}
-            </IconActionContext.Provider>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <LearnMoreBannerButton
+          getHref={(product) =>
+            `${settings.base_url_front}${PlatformMetadataMapping[product].learnMorePrivateUrl}`
+          }
+        />
       ),
     },
     openaev: {
@@ -111,14 +56,9 @@ export const TryFiligranProductsBanner = () => {
         </span>
       ),
       learnMore: (
-        <Link
-          href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifier.Openaev].learnMorePrivateUrl}`}
-          className={cn(
-            buttonVariants({ variant: 'secondary' }),
-            BANNER_ACTION_CLASSES
-          )}>
-          {t('Service.Trials.LearnMore.Link')}
-        </Link>
+        <LearnMoreBannerLink
+          href={`${settings.base_url_front}${PlatformMetadataMapping[PlatformIdentifier.Openaev].learnMorePrivateUrl}`}
+        />
       ),
     },
     opencti: {
@@ -132,14 +72,9 @@ export const TryFiligranProductsBanner = () => {
         </span>
       ),
       learnMore: (
-        <Link
-          href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifier.Opencti].learnMorePrivateUrl}`}
-          className={cn(
-            buttonVariants({ variant: 'secondary' }),
-            BANNER_ACTION_CLASSES
-          )}>
-          {t('Service.Trials.LearnMore.Link')}
-        </Link>
+        <LearnMoreBannerLink
+          href={`${settings.base_url_front}${PlatformMetadataMapping[PlatformIdentifier.Opencti].learnMorePrivateUrl}`}
+        />
       ),
     },
   };
