@@ -4,6 +4,7 @@ import { LastDeployedOverview } from '@/components/homepage/last-deployed-resour
 import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
+import { formatPersonNames } from '@/utils/format/name';
 import { ResourceTypeIcon } from '@/utils/shareable-resources/resource-type-icon';
 import {
   SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING,
@@ -30,9 +31,7 @@ const resolveDeployedByName = (
   if (!deployedBy) {
     return undefined;
   }
-  const fullName = `${deployedBy.first_name ?? ''} ${
-    deployedBy.last_name ?? ''
-  }`.trim();
+  const fullName = formatPersonNames(deployedBy);
   return fullName || deployedBy.email;
 };
 
