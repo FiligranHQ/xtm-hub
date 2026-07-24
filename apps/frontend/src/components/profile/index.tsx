@@ -131,7 +131,6 @@ export const Profile = () => {
         isOpen={isDialogOpen}
         AlertTitle={t('DialogActions.ContinueTitle')}
         actionButtonText={t('MenuActions.Continue')}
-        variantName={'destructive'}
         onOpenChange={setIsDialogOpen}
         onClickContinue={confirmEdition}>
         {t('ProfilePage.PlatformsEditionDialog.ConfirmSentence')}
