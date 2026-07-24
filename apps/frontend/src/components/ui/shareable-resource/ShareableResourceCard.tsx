@@ -6,7 +6,6 @@ import { ShareableResourceCardDescription } from '@/components/ui/shareable-reso
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import { cn } from '@/lib/utils';
 import {
@@ -16,11 +15,7 @@ import {
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
-import {
-  DocumentMetadataKeyCode,
-  FeatureFlag,
-  IntegrationType,
-} from '@graphql/generated';
+import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
@@ -57,7 +52,6 @@ const ShareableResourceCard = ({
   const handleClick = () => {
     save();
   };
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const isConnector =
     docHasMetadata(document, DocumentMetadataKeyCode.IntegrationType) &&
     !!document.integration_type &&
@@ -66,9 +60,7 @@ const ShareableResourceCard = ({
   return (
     <li
       className={cn(
-        `overflow-hidden flex flex-col relative rounded bg-elevation-background-layer-1 aria-disabled:opacity-60 hover:bg-hover`,
-        isHomePageV2Enabled ? 'h-[300px] sm:h-[348px]' : 'h-[348px]',
-        !isHomePageV2Enabled && 'border'
+        `overflow-hidden flex flex-col relative rounded bg-elevation-background-layer-1 aria-disabled:opacity-60 hover:bg-hover h-[300px] sm:h-[348px]`
       )}>
       <Link
         className="flex flex-col flex-1 min-h-0 overflow-hidden"
