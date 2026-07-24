@@ -2,6 +2,7 @@
 
 import { LastDeployedOverview } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
+import { UserDisplay } from '@/components/ui/UserDisplay';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
 import { ResourceTypeIcon } from '@/utils/shareable-resources/resource-type-icon';
@@ -11,7 +12,6 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { CalendarMonthIcon } from '@filigran/icon';
-import { Avatar } from '@filigran/ui';
 import { Badge } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -22,18 +22,6 @@ type DeployedResource = LastDeployedOverview['resources'][number];
 
 type LastDeployedResourceRowProps = {
   resource: DeployedResource;
-};
-
-const resolveDeployedByName = (
-  deployedBy: DeployedResource['deployedBy']
-): string | undefined => {
-  if (!deployedBy) {
-    return undefined;
-  }
-  const fullName = `${deployedBy.first_name ?? ''} ${
-    deployedBy.last_name ?? ''
-  }`.trim();
-  return fullName || deployedBy.email;
 };
 
 const LastDeployedResourceRow = ({
@@ -51,8 +39,6 @@ const LastDeployedResourceRow = ({
   }
 
   const url = `/app/service/${SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING[resourceType]}/${document.service_instance_id}/${document.id}`;
-
-  const deployedByName = resolveDeployedByName(resource.deployedBy);
 
   return (
     <Link
@@ -83,15 +69,10 @@ const LastDeployedResourceRow = ({
         <span className="content-body-base text-text-default-primary">
           {deployedAt}
         </span>
-        {deployedByName && (
+        {resource.deployedBy && (
           <>
             <span>{t('By')}</span>
-            <div className="size-8 shrink-0 [&_img]:object-cover">
-              <Avatar src={resource.deployedBy?.picture ?? undefined} />
-            </div>
-            <span className="content-body-base text-text-default-primary">
-              {deployedByName}
-            </span>
+            <UserDisplay uploader={resource.deployedBy} />
           </>
         )}
       </div>
