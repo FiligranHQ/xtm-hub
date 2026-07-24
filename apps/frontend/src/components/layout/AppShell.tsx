@@ -30,7 +30,7 @@ export const AppShell = ({
             {children}
             <AppFooter
               isHomePageV2Enabled
-              className="max-md:mt-xxl mx-0"
+              className="mt-auto max-md:mt-xxl mx-0"
             />
           </SharedContent>
         </div>
