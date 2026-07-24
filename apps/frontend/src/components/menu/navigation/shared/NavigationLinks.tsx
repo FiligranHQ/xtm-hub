@@ -74,10 +74,12 @@ export const PublicSubLink = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>{node}</TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent className="bg-ds-bg-4 dark:bg-ds-bg-4 rounded-sm">
             <div className="flex flex-col gap-0.5">
-              <span className="font-medium">{label}</span>
-              <span className="text-xs text-muted-foreground">{tooltip}</span>
+              <span className="content-body-base text-gray-100">{label}</span>
+              <span className="content-body-base text-muted-foreground">
+                {tooltip}
+              </span>
             </div>
           </TooltipContent>
         </Tooltip>
