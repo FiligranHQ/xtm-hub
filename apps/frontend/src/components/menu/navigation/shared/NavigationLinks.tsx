@@ -53,7 +53,7 @@ export const PublicSubLink = ({
         {external && <OpenInNewIcon className="h-3 w-3 shrink-0" />}
         <span
           className={cn('truncate', !href && 'text-text-default-disabled')}
-          title={label}>
+          title={tooltip ? undefined : label}>
           {label}
         </span>
       </span>
