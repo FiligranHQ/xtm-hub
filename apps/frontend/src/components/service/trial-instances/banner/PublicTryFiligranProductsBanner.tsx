@@ -14,6 +14,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { BANNER_ACTION_CLASSES } from './banner-styles';
 
 export const PublicTryFiligranProductsBanner = () => {
   const t = useTranslations();
@@ -59,9 +60,8 @@ export const PublicTryFiligranProductsBanner = () => {
         <DropdownMenuTrigger asChild>
           <div className="flex flex-row items-center mr-xl">
             <Button
-              className="ml-s mr-s text-inherit border-current hover:bg-current/10 focus-visible:ring-current/70"
+              className={BANNER_ACTION_CLASSES}
               variant="secondary"
-              size="sm"
               aria-expanded={menuOpen}>
               {t('Service.Trials.LearnMore.Link')}
               <div

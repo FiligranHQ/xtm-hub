@@ -4,12 +4,15 @@ import { useTranslations } from 'next-intl';
 
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { BANNER_ACTION_CLASSES } from '@/components/service/trial-instances/banner/banner-styles';
 import { StartTrialBannerButton } from '@/components/service/trial-instances/banner/StartTrialBannerButton';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import { IconActionContext } from '@/components/ui/IconActions';
+import { cn } from '@/lib/utils';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {
+  buttonVariants,
   Callout,
   DropdownMenu,
   DropdownMenuContent,
@@ -73,9 +76,9 @@ export const TryFiligranProductsBanner = () => {
           <DropdownMenuTrigger asChild>
             <div className="ml-xs mr-xs flex flex-row items-center">
               <Button
-                className="ml-s mr-s text-[12px] px-2 py-0.5 min-h-0 h-auto"
+                className={BANNER_ACTION_CLASSES}
                 variant="secondary"
-                onClick={() => setMenuOpen}>
+                aria-expanded={menuOpen}>
                 {t('Service.Trials.LearnMore.Link')}
                 <div
                   className={`ml-s inline-flex transition-transform ${
@@ -110,7 +113,10 @@ export const TryFiligranProductsBanner = () => {
       learnMore: (
         <Link
           href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifier.Openaev].learnMorePrivateUrl}`}
-          className="ml-xs mr-s underline font-bold">
+          className={cn(
+            buttonVariants({ variant: 'secondary' }),
+            BANNER_ACTION_CLASSES
+          )}>
           {t('Service.Trials.LearnMore.Link')}
         </Link>
       ),
@@ -128,7 +134,10 @@ export const TryFiligranProductsBanner = () => {
       learnMore: (
         <Link
           href={`${settings!.base_url_front}${PlatformMetadataMapping[PlatformIdentifier.Opencti].learnMorePrivateUrl}`}
-          className="ml-xs mr-s underline font-bold">
+          className={cn(
+            buttonVariants({ variant: 'secondary' }),
+            BANNER_ACTION_CLASSES
+          )}>
           {t('Service.Trials.LearnMore.Link')}
         </Link>
       ),
