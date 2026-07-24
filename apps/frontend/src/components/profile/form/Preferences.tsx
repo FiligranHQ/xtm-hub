@@ -1,6 +1,7 @@
 'use client';
 
 import { MeEditUserMutation } from '@/components/me/me.graphql';
+import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import { Locale, locales } from '@/i18n/config';
 import { setUserLocale } from '@/i18n/locale';
 import {
@@ -16,10 +17,14 @@ import {
 } from '@filigran/ui';
 import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
+import { useContext } from 'react';
 import { useMutation } from 'react-relay';
 
 export const ProfileFormPreferences = () => {
   const t = useTranslations();
+  const { settings } = useContext(SettingsContext);
+  const isDevelopmentEnvSetting =
+    settings?.environment && settings.environment !== 'production';
   const locale = useLocale();
   const { theme, setTheme } = useTheme();
   const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
@@ -57,27 +62,29 @@ export const ProfileFormPreferences = () => {
           </Select>
         </div>
 
-        <div className="grid gap-s">
-          <span className="txt-default">
-            {t('ProfilePage.Preferences.Language')}
-          </span>
-          <Select
-            value={locale}
-            onValueChange={onLocaleChange}>
-            <SelectTrigger aria-label={t('LocaleSwitcher.Label')}>
-              <SelectValue placeholder={t('LocaleSwitcher.Label')} />
-            </SelectTrigger>
-            <SelectContent>
-              {locales.map((loc) => (
-                <SelectItem
-                  key={loc}
-                  value={loc}>
-                  {t(`LocaleSwitcher.${loc}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {isDevelopmentEnvSetting && (
+          <div className="grid gap-s">
+            <span className="txt-default">
+              {t('ProfilePage.Preferences.Language')}
+            </span>
+            <Select
+              value={locale}
+              onValueChange={onLocaleChange}>
+              <SelectTrigger aria-label={t('LocaleSwitcher.Label')}>
+                <SelectValue placeholder={t('LocaleSwitcher.Label')} />
+              </SelectTrigger>
+              <SelectContent>
+                {locales.map((loc) => (
+                  <SelectItem
+                    key={loc}
+                    value={loc}>
+                    {t(`LocaleSwitcher.${loc}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
