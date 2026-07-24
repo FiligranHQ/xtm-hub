@@ -59,10 +59,10 @@ export const PublicTryFiligranProductsBanner = () => {
         <DropdownMenuTrigger asChild>
           <div className="flex flex-row items-center mr-xl">
             <Button
-              className="ml-s mr-s text-[12px] px-2 py-0.5 min-h-0 h-auto"
+              className="ml-s mr-s text-inherit border-current hover:bg-current/10 focus-visible:ring-current/70"
               variant="secondary"
-              aria-expanded={menuOpen}
-              onClick={() => setMenuOpen}>
+              size="sm"
+              aria-expanded={menuOpen}>
               {t('Service.Trials.LearnMore.Link')}
               <div
                 className={`ml-s inline-flex transition-transform ${
