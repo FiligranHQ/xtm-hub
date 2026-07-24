@@ -2,6 +2,7 @@
 
 import LastDeployedResourceRow from '@/components/homepage/last-deployed-resources/LastDeployedResourceRow';
 import { LastDeployedPlatform } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
   Select,
@@ -48,15 +49,22 @@ const LastDeployedResourcesClient = ({
             <SelectValue placeholder={t('ProductPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
-            {platforms.map((platform) => (
-              <SelectItem
-                key={platform.serviceInstanceId}
-                value={platform.serviceInstanceId}>
-                {platform.productName
-                  ? `${platform.productName} - ${platform.title}`
-                  : platform.title}
-              </SelectItem>
-            ))}
+            {platforms.map((platform) => {
+              const platformMeta = platform.platformIdentifier
+                ? PlatformMetadataMapping[platform.platformIdentifier]
+                : undefined;
+              const Icon = platformMeta?.Icon;
+              return (
+                <SelectItem
+                  key={platform.serviceInstanceId}
+                  value={platform.serviceInstanceId}>
+                  <span className="flex min-w-0 items-center gap-s">
+                    {Icon && <Icon className="size-4 shrink-0" />}
+                    <span className="truncate">{platform.title}</span>
+                  </span>
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
