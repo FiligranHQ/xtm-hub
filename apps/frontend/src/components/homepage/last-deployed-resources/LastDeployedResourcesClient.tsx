@@ -14,7 +14,6 @@ import {
 import { Separator } from '@filigran/ui/clients';
 import { useLastDeployedOverviewQueryQuery } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { Fragment, useState } from 'react';
 
 const LAST_DEPLOYED_LIMIT = 4;
@@ -54,20 +53,13 @@ const LastDeployedResourcesClient = ({
               const platformMeta = platform.platformIdentifier
                 ? PlatformMetadataMapping[platform.platformIdentifier]
                 : undefined;
+              const Icon = platformMeta?.Icon;
               return (
                 <SelectItem
                   key={platform.serviceInstanceId}
                   value={platform.serviceInstanceId}>
                   <span className="flex min-w-0 items-center gap-s">
-                    {platformMeta?.logoUrl && (
-                      <Image
-                        src={platformMeta.logoUrl}
-                        alt={platformMeta.name}
-                        width={20}
-                        height={20}
-                        className="shrink-0"
-                      />
-                    )}
+                    {Icon && <Icon className="size-4 shrink-0" />}
                     <span className="truncate">{platform.title}</span>
                   </span>
                 </SelectItem>
