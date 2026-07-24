@@ -2,6 +2,7 @@
 
 import LastDeployedResourceRow from '@/components/homepage/last-deployed-resources/LastDeployedResourceRow';
 import { LastDeployedPlatform } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
+import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
   Select,
@@ -13,6 +14,7 @@ import {
 import { Separator } from '@filigran/ui/clients';
 import { useLastDeployedOverviewQueryQuery } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Fragment, useState } from 'react';
 
 const LAST_DEPLOYED_LIMIT = 4;
@@ -48,15 +50,29 @@ const LastDeployedResourcesClient = ({
             <SelectValue placeholder={t('ProductPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
-            {platforms.map((platform) => (
-              <SelectItem
-                key={platform.serviceInstanceId}
-                value={platform.serviceInstanceId}>
-                {platform.productName
-                  ? `${platform.productName} - ${platform.title}`
-                  : platform.title}
-              </SelectItem>
-            ))}
+            {platforms.map((platform) => {
+              const platformMeta = platform.platformIdentifier
+                ? PlatformMetadataMapping[platform.platformIdentifier]
+                : undefined;
+              return (
+                <SelectItem
+                  key={platform.serviceInstanceId}
+                  value={platform.serviceInstanceId}>
+                  <span className="flex min-w-0 items-center gap-s">
+                    {platformMeta?.logoUrl && (
+                      <Image
+                        src={platformMeta.logoUrl}
+                        alt={platformMeta.name}
+                        width={20}
+                        height={20}
+                        className="shrink-0"
+                      />
+                    )}
+                    <span className="truncate">{platform.title}</span>
+                  </span>
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
