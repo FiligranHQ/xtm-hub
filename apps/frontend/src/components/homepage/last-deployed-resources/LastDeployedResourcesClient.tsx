@@ -36,7 +36,7 @@ const LastDeployedResourcesClient = ({
 
   const resources = data?.lastDeployedOverview.resources ?? [];
   return (
-    <section className="flex-1 min-w-0 flex flex-col gap-l">
+    <section className="w-full flex-1 min-w-0 flex flex-col gap-l">
       <div className="flex items-center gap-m">
         <h2 className="content-body-base text-text-default-primary">
           {t('Title')}
