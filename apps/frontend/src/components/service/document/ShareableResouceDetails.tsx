@@ -8,9 +8,9 @@ import {
   ShareableResourceEntityTypes,
 } from '@/components/service/document/ui/ShareableResourceEntityTypes';
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
+import { UserDisplay } from '@/components/ui/UserDisplay';
 import { roundToNearest } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
-import { formatPersonNames } from '@/utils/format/name';
 import { platformIdentifierMappedByShareableResourceType } from '@/utils/services';
 import {
   isIntegrationItem,
@@ -19,7 +19,6 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
-import { Avatar } from '@filigran/ui/clients';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
@@ -84,11 +83,8 @@ const ShareableResourceDetails = ({
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Author')}>
-        <div className="flex items-center gap-s">
-          <div className="size-8 [&_img]:object-cover">
-            <Avatar src={documentData.uploader?.picture ?? ''} />
-          </div>
-          <span>{formatPersonNames(documentData.uploader)}</span>
+        <div className="flex items-center gap-s whitespace-nowrap">
+          <UserDisplay uploader={documentData.uploader} />
         </div>
       </ShareableResourceDetailItem>
       {getEntityTypes(documentData).length > 0 && (

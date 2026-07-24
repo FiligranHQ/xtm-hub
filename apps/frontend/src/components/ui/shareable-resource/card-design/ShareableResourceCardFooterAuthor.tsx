@@ -1,9 +1,8 @@
 import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
+import { UserDisplay } from '@/components/ui/UserDisplay';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
-import { formatPersonNames } from '@/utils/format/name';
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { Avatar } from '@filigran/ui/clients';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCode } from '@graphql/generated';
@@ -40,12 +39,7 @@ export const ShareableResourceCardFooterAuthor = ({
         )}
         {shouldDisplayAuthor && (
           <div className="flex items-center gap-s whitespace-nowrap">
-            <div className="size-8 shrink-0 [&_img]:object-cover">
-              <Avatar src={document.uploader?.picture ?? ''} />
-            </div>
-            <span className="truncate max-w-[220px]">
-              {formatPersonNames(document.uploader)}
-            </span>
+            <UserDisplay uploader={document.uploader} />
           </div>
         )}
       </div>
