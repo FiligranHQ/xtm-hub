@@ -15,7 +15,7 @@ export const TestEnvBanner = () => {
     settings.environment !== 'production' && (
       <Callout
         variant="destructive"
-        className="rounded-none text-black justify-center uppercase">
+        className="rounded-none justify-center uppercase">
         <div className="">
           {t('TestEnvBanner', {
             environnement: settings?.environment,

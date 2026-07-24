@@ -178,6 +178,46 @@ const localI18nRulesPlugin = {
   },
 };
 
+const fixedTailwindColorClassPattern =
+  /(?:^|[\s'"`])(?:[a-z-]+:)*(?:text-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|black|white)(?:-\d{1,3})?(?:\/(?:\d{1,3}|\[[^\]]+\]))?|bg-(?:white|gray-500)(?:\/(?:\d{1,3}|\[[^\]]+\]))?)(?=$|[\s'"`])/u;
+
+const localThemeRulesPlugin = {
+  rules: {
+    'no-fixed-tailwind-color': {
+      meta: {
+        type: 'problem',
+        docs: {
+          description:
+            'Disallow fixed Tailwind text colors and fixed bg-white/bg-gray-500 classes.',
+        },
+        schema: [],
+      },
+      create(context) {
+        return {
+          JSXAttribute(node) {
+            if (
+              node.name.type !== 'JSXIdentifier' ||
+              node.name.name !== 'className' ||
+              !node.value
+            ) {
+              return;
+            }
+
+            const classNameValue = context.sourceCode.getText(node.value);
+            if (fixedTailwindColorClassPattern.test(classNameValue)) {
+              context.report({
+                node: node.value,
+                message:
+                  'Use theme color tokens instead of fixed Tailwind text colors or bg-white/bg-gray-500.',
+              });
+            }
+          },
+        };
+      },
+    },
+  },
+};
+
 const eslintConfig = [
   {
     plugins: {
@@ -288,6 +328,20 @@ const eslintConfig = [
           ],
         },
       ],
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    ignores: [
+      '**/*.test.{ts,tsx}',
+      '**/*.spec.{ts,tsx}',
+      '**/__generated__/**',
+    ],
+    plugins: {
+      'xtm-hub-theme-rules': localThemeRulesPlugin,
+    },
+    rules: {
+      'xtm-hub-theme-rules/no-fixed-tailwind-color': 'error',
     },
   },
   {
