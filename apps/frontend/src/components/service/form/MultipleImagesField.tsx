@@ -134,7 +134,7 @@ export const ServiceFormMultipleImagesField = ({
                       <TooltipTrigger asChild>
                         <ReplayIcon className="size-4" />
                       </TooltipTrigger>
-                      <TooltipContent className="bg-gray-50">
+                      <TooltipContent>
                         {t('Service.Form.Restore')}
                       </TooltipContent>
                     </Tooltip>
@@ -165,7 +165,7 @@ export const ServiceFormMultipleImagesField = ({
                         <TooltipTrigger asChild>
                           <DeleteIcon className="size-4" />
                         </TooltipTrigger>
-                        <TooltipContent className="bg-gray-50">
+                        <TooltipContent>
                           {t('Service.Form.DeleteSentence')}
                         </TooltipContent>
                       </Tooltip>

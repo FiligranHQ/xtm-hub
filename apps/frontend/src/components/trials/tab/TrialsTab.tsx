@@ -374,7 +374,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                           {displayReason}
                         </span>
                       </TooltipTrigger>
-                      <TooltipContent className="bg-gray-50 max-w-md">
+                      <TooltipContent className="max-w-md">
                         {displayReason}
                       </TooltipContent>
                     </Tooltip>
@@ -446,7 +446,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                               <ArrowShapeUpStackIcon className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent className="bg-gray-50">
+                          <TooltipContent>
                             {t('TrialsDashboard.Actions.MoveToTop')}
                           </TooltipContent>
                         </Tooltip>
@@ -467,7 +467,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                               <ArrowShapeUpIcon className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent className="bg-gray-50">
+                          <TooltipContent>
                             {t('TrialsDashboard.Actions.MoveUp')}
                           </TooltipContent>
                         </Tooltip>
@@ -498,7 +498,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                               }
                             />
                           </TooltipTrigger>
-                          <TooltipContent className="bg-gray-50">
+                          <TooltipContent>
                             {t('Service.Trials.ManageUsers.Title')}
                           </TooltipContent>
                         </Tooltip>

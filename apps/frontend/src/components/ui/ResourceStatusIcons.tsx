@@ -27,7 +27,7 @@ interface StatusIconProps {
 const StatusIcon = ({ label, icon }: StatusIconProps) => (
   <Tooltip>
     <TooltipTrigger asChild>{icon}</TooltipTrigger>
-    <TooltipContent className="bg-gray-50">{label}</TooltipContent>
+    <TooltipContent>{label}</TooltipContent>
   </Tooltip>
 );
 

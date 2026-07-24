@@ -34,7 +34,7 @@ export const ShareableResourceDetailsLink = ({
             </Link>
           </Button>
         </TooltipTrigger>
-        <TooltipContent className="bg-gray-50">{url}</TooltipContent>
+        <TooltipContent>{url}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
