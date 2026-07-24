@@ -1,5 +1,6 @@
 import {
   PlatformContract,
+  PlatformIdentifier,
   RegisteredPlatformsQuery,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
@@ -78,7 +79,7 @@ describe('LastDeployedResourcesSection', () => {
           {
             serviceInstanceId: 'svc-1',
             title: 'OpenCTI Platform',
-            productName: 'OpenCTI',
+            platformIdentifier: PlatformIdentifier.Opencti,
           },
         ],
       },
