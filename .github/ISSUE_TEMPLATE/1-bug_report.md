@@ -10,7 +10,7 @@ type: bug
 
 ## Description
 
-<!-- Please provide a clear and concise description of the bug. -->
+<!-- Please provide a clear and concise description of the bug and if possible, screenshots. -->
 
 ## Environment
 
@@ -21,6 +21,7 @@ type: bug
 ## Reproducible steps
 
 Steps to create the smallest reproducible scenario:
+
 1. { e.g. Run ... }
 2. { e.g. Click ... }
 3. { e.g. Error ... }

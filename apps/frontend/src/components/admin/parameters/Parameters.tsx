@@ -24,7 +24,7 @@ export const Parameters = () => {
       }>
       <Card className="w-1-3">
         <CardHeader>
-          <CardTitle>{t('App.Title')}</CardTitle>
+          <CardTitle className="heading-lg">{t('App.Title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
