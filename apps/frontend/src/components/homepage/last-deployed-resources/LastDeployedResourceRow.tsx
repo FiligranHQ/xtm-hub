@@ -12,6 +12,12 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { CalendarMonthIcon } from '@filigran/icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/ui';
 import { Badge } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -53,9 +59,16 @@ const LastDeployedResourceRow = ({
             />
           </div>
           <div className="min-w-0 flex-1 flex items-center gap-s">
-            <span className="min-w-0 shrink content-body-base font-bold truncate">
-              {document.name}
-            </span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="min-w-0 shrink content-body-base font-bold truncate">
+                    {document.name}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{document.name}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <div className="min-w-16 shrink">
               <BadgeOverflowCounter
                 badges={document.use_cases ?? []}
@@ -80,6 +93,7 @@ const LastDeployedResourceRow = ({
               <UserDisplay
                 uploader={resource.deployedBy}
                 className="min-w-0 max-w-none"
+                withTooltip
               />
             </div>
           </>
