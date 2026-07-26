@@ -79,7 +79,7 @@ const HeaderOrganizationSwitcher = () => {
   };
 
   return (
-    <div className="flex flex-col gap-xs sm:flex-row sm:items-center sm:gap-m">
+    <div className="flex flex-col gap-xs sm:flex-row sm:items-center sm:gap-m text-text-default-primary">
       <span className="content-body-base sm:whitespace-nowrap">
         {t('OrganizationSwitcher.Workspace')}
       </span>
@@ -94,12 +94,12 @@ const HeaderOrganizationSwitcher = () => {
             aria-controls={listboxId}
             aria-expanded={openPopover}
             aria-haspopup="listbox"
-            className="w-full justify-between border-none dark:bg-grayblue-800 bg-gray-150 sm:w-55">
+            className="w-full justify-between border-none bg-elevation-surface-highlight sm:w-55 text-text-default-primary">
             <span className="truncate">{selectedOrganization?.label}</span>
             <ArrowDropDownIcon
               aria-hidden={true}
               focusable={false}
-              className="ml-s h-4 w-4 shrink-0 opacity-70"
+              className="ml-s h-4 w-4 shrink-0 text-text-default-primary"
             />
           </Button>
         </PopoverTrigger>
@@ -123,7 +123,7 @@ const HeaderOrganizationSwitcher = () => {
                     role="option"
                     aria-selected={isSelected}
                     onClick={() => handleOnValueChange(organization)}
-                    className="w-full justify-start truncate normal-case">
+                    className="w-full justify-start truncate normal-case text-text-default-primary">
                     {organization.label}
                   </Button>
                 </li>
