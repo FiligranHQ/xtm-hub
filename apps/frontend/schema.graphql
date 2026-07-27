@@ -140,6 +140,7 @@ type Query {
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
   updateOpenCTIManifest(tag: String!): Success!
+  solutionCategories(first: Int!, after: ID, orderBy: SolutionCategoryOrdering!, orderMode: OrderingMode!, searchTerm: String, product: FiligranProduct): SolutionCategoryConnection
   subscriptionById(subscription_id: SubscriptionId): SubscriptionModel
   subscriptions(first: Int!, after: ID, orderBy: SubscriptionOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [SubscriptionFilter!]): SubscriptionConnection!
   useCases(first: Int!, after: ID, orderBy: UseCaseOrdering!, orderMode: OrderingMode!, searchTerm: String, documentType: String, product: FiligranProduct): UseCaseConnection
@@ -202,6 +203,9 @@ type Mutation {
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   ingestManifestFragments(manifestFragments: [ManifestFragmentInput!]!): Success!
   generateManifest(product: PlatformIdentifier!, version: String!, type: ManifestType!): Success!
+  addSolutionCategory(input: AddSolutionCategoryInput!): SolutionCategory!
+  editSolutionCategory(id: ID!, input: EditSolutionCategoryInput!): SolutionCategory!
+  deleteSolutionCategory(id: ID!): SolutionCategory!
   addSubscription(service_instance_id: ServiceInstanceId): ServiceInstance
   createSubscriptions(input: CreateSubscriptionsInput!): [SubscriptionModel!]!
   updateSubscription(subscription_id: SubscriptionId!, input: UpdateSubscriptionInput!): SubscriptionModel
@@ -1675,6 +1679,42 @@ type OpenCTIPlaybook implements Document & Node {
   subscription: SubscriptionModel
   children_documents: [ShareableResource!]
   product_version: String
+}
+
+"""
+A Relay global ID for SolutionCategory, extracted to a branded SolutionCategoryId string
+"""
+scalar SolutionCategoryId
+
+type SolutionCategory implements Node {
+  id: ID!
+  name: String!
+  product: [FiligranProduct!]!
+}
+
+enum SolutionCategoryOrdering {
+  name
+}
+
+type SolutionCategoryEdge {
+  cursor: String!
+  node: SolutionCategory!
+}
+
+type SolutionCategoryConnection {
+  totalCount: Int!
+  edges: [SolutionCategoryEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddSolutionCategoryInput {
+  name: String!
+  product: [FiligranProduct!]
+}
+
+input EditSolutionCategoryInput {
+  name: String
+  product: [FiligranProduct!]
 }
 
 """

@@ -1,0 +1,34 @@
+import type { FiligranProduct } from '../../../__generated__/resolvers-types';
+
+/** Identifier type for public.SolutionCategory */
+export type SolutionCategoryId = string & {
+  __brand: 'public.SolutionCategory';
+};
+
+/** Represents the table public.SolutionCategory */
+export default interface SolutionCategory {
+  id: SolutionCategoryId;
+
+  name: string;
+
+  product: FiligranProduct[];
+}
+
+/** Represents the initializer for the table public.SolutionCategory */
+export interface SolutionCategoryInitializer {
+  /** Default value: gen_random_uuid() */
+  id?: SolutionCategoryId;
+
+  name: string;
+
+  product?: FiligranProduct[];
+}
+
+/** Represents the mutator for the table public.SolutionCategory */
+export interface SolutionCategoryMutator {
+  id?: SolutionCategoryId;
+
+  name?: string;
+
+  product?: FiligranProduct[];
+}

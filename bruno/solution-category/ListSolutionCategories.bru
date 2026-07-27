@@ -1,0 +1,55 @@
+meta {
+  name: ListSolutionCategories
+  type: graphql
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+headers {
+  cookie: {{cookie}}
+}
+
+body:graphql {
+  query SolutionCategories(
+    $first: Int!
+    $orderBy: SolutionCategoryOrdering!
+    $orderMode: OrderingMode!
+    $searchTerm: String
+  ) {
+    solutionCategories(
+      first: $first
+      orderBy: $orderBy
+      orderMode: $orderMode
+      searchTerm: $searchTerm
+    ) {
+      totalCount
+      edges {
+        node {
+          id
+          name
+          product
+        }
+      }
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "first": 20,
+    "orderBy": "name",
+    "orderMode": "asc",
+    "searchTerm": "{{solutionCategoryName}}"
+  }
+}
+
+docs {
+  Ensure cookie is defined in environment.
+  This request list the just added solution category (filter in the request).
+}
+

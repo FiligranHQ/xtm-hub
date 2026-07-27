@@ -1,0 +1,40 @@
+meta {
+  name: EditSolutionCategory
+  type: graphql
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+headers {
+  cookie: {{cookie}}
+}
+
+body:graphql {
+  mutation EditSolutionCategory($id: ID!, $input: EditSolutionCategoryInput!) {
+    editSolutionCategory(id: $id, input: $input) {
+      id
+      name
+      product
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "id": "{{solutionCategoryId}}",
+    "input": {
+      "name": "{{solutionCategoryUpdatedName}}",
+      "product": ["openaev"]
+    }
+  }
+}
+
+docs {
+  Ensure cookie is defined in environment.
+  This request edits the given solution category.
+}

@@ -41,6 +41,8 @@ export type Scalars = {
   ServiceInstanceId: { input: any; output: any; }
   /** A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string */
   Service_CapabilityId: { input: any; output: any; }
+  /** A Relay global ID for SolutionCategory, extracted to a branded SolutionCategoryId string */
+  SolutionCategoryId: { input: any; output: any; }
   /** A Relay global ID for Subscription, extracted to a branded SubscriptionId string */
   SubscriptionId: { input: any; output: any; }
   Upload: { input: any; output: any; }
@@ -59,6 +61,11 @@ export type AddServiceInput = {
   service_instance_description: InputMaybe<Scalars['String']['input']>;
   service_instance_name: InputMaybe<Scalars['String']['input']>;
   url: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddSolutionCategoryInput = {
+  name: Scalars['String']['input'];
+  product: InputMaybe<Array<FiligranProduct>>;
 };
 
 export type AddSubscriptionCapabilityInput = {
@@ -662,6 +669,11 @@ export type EditServiceCapabilityInput = {
   user_service_id: InputMaybe<Scalars['User_ServiceId']['input']>;
 };
 
+export type EditSolutionCategoryInput = {
+  name: InputMaybe<Scalars['String']['input']>;
+  product: InputMaybe<Array<FiligranProduct>>;
+};
+
 export type EditUseCaseInput = {
   color: InputMaybe<Scalars['String']['input']>;
   name: InputMaybe<Scalars['String']['input']>;
@@ -929,6 +941,7 @@ export type Mutation = {
   addCapabilitiesToUserServices: Maybe<Array<Maybe<UserService>>>;
   addOrganization: Maybe<Organization>;
   addServicePicture: Maybe<ServiceInstance>;
+  addSolutionCategory: SolutionCategory;
   addSubscription: Maybe<ServiceInstance>;
   addSubscriptionCapability: Array<SubscriptionModel>;
   addUseCase: UseCase;
@@ -954,12 +967,14 @@ export type Mutation = {
   deleteEpic: Maybe<Epic>;
   deleteNewsFeedItem: Scalars['Boolean']['output'];
   deleteOrganization: Maybe<Organization>;
+  deleteSolutionCategory: SolutionCategory;
   deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
   deleteUserServices: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization: Maybe<Organization>;
   editServiceCapability: Maybe<SubscriptionModel>;
+  editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
   editUserCapabilities: User;
   editUserService: Maybe<UserService>;
@@ -1010,6 +1025,11 @@ export type MutationAddServicePictureArgs = {
   document: InputMaybe<Scalars['Upload']['input']>;
   isLogo: Scalars['Boolean']['input'];
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationAddSolutionCategoryArgs = {
+  input: AddSolutionCategoryInput;
 };
 
 
@@ -1147,6 +1167,11 @@ export type MutationDeleteOrganizationArgs = {
 };
 
 
+export type MutationDeleteSolutionCategoryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteSubscriptionsArgs = {
   subscription_ids: Array<Scalars['SubscriptionId']['input']>;
 };
@@ -1177,6 +1202,12 @@ export type MutationEditOrganizationArgs = {
 export type MutationEditServiceCapabilityArgs = {
   input: InputMaybe<EditServiceCapabilityInput>;
   serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type MutationEditSolutionCategoryArgs = {
+  id: Scalars['ID']['input'];
+  input: EditSolutionCategoryInput;
 };
 
 
@@ -1666,6 +1697,7 @@ export type Query = {
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
+  solutionCategories: Maybe<SolutionCategoryConnection>;
   subscriptionById: Maybe<SubscriptionModel>;
   subscriptions: SubscriptionConnection;
   trialDeployments: TrialsDeployments;
@@ -1880,6 +1912,16 @@ export type QueryServiceInstancesArgs = {
   first: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySolutionCategoriesArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: SolutionCategoryOrdering;
+  orderMode: OrderingMode;
+  product: InputMaybe<FiligranProduct>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2240,6 +2282,30 @@ export type ShareableResource = {
   name: Maybe<Scalars['String']['output']>;
   source_type: DocumentSourceType;
 };
+
+export type SolutionCategory = Node & {
+  __typename?: 'SolutionCategory';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  product: Array<FiligranProduct>;
+};
+
+export type SolutionCategoryConnection = {
+  __typename?: 'SolutionCategoryConnection';
+  edges: Array<SolutionCategoryEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type SolutionCategoryEdge = {
+  __typename?: 'SolutionCategoryEdge';
+  cursor: Scalars['String']['output'];
+  node: SolutionCategory;
+};
+
+export enum SolutionCategoryOrdering {
+  Name = 'name'
+}
 
 export type Stream = Document & Integration & Node & {
   __typename?: 'Stream';

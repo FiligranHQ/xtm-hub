@@ -26,6 +26,7 @@ import customViewsResolver from '../modules/shareable-resource/opencti/custom-vi
 import ingestManifestResolver from '../modules/shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.resolver';
 import integrationsResolver from '../modules/shareable-resource/opencti/integration/integration.resolver';
 import openCTIPlaybooksResolver from '../modules/shareable-resource/opencti/playbook/playbook.resolver';
+import solutionCategoryResolver from '../modules/solution-category/solution-category.resolver';
 import subscriptionsResolver from '../modules/subscription/subscription.resolver';
 import telemetryResolver from '../modules/telemetry/telemetry.resolver';
 import useCaseResolver from '../modules/use-case/use-case.resolver';
@@ -43,6 +44,7 @@ const typeDefFiles = await getGlobContent('src/**/*.graphql');
 const typeDefs = mergeTypeDefs(typeDefFiles);
 
 const resolvers = mergeResolvers([
+  solutionCategoryResolver,
   nodesResolver,
   ServiceInstanceResolver,
   ServiceDefinitionResolver,

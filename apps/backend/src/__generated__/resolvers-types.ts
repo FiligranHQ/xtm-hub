@@ -5,6 +5,7 @@ import type { NewsFeedItemId } from '../model/kanel/public/NewsFeedItem.js';
 import type { OrganizationId } from '../model/kanel/public/Organization.js';
 import type { ServiceCapabilityId } from '../model/kanel/public/ServiceCapability.js';
 import type { ServiceInstanceId } from '../model/kanel/public/ServiceInstance.js';
+import type { SolutionCategoryId } from '../model/kanel/public/SolutionCategory.js';
 import type { SubscriptionId } from '../model/kanel/public/Subscription.js';
 import type { UseCaseId } from '../model/kanel/public/UseCase.js';
 import type { UserId } from '../model/kanel/public/User.js';
@@ -37,6 +38,7 @@ export type Scalars = {
   ServiceCapabilityId: { input: ServiceCapabilityId; output: ServiceCapabilityId; }
   ServiceGroupId: { input: any; output: any; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
+  SolutionCategoryId: { input: SolutionCategoryId; output: SolutionCategoryId; }
   SubscriptionId: { input: SubscriptionId; output: SubscriptionId; }
   Upload: { input: any; output: any; }
   UseCaseId: { input: UseCaseId; output: UseCaseId; }
@@ -51,6 +53,11 @@ export type AddServiceInput = {
   service_instance_description?: InputMaybe<Scalars['String']['input']>;
   service_instance_name?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddSolutionCategoryInput = {
+  name: Scalars['String']['input'];
+  product?: InputMaybe<Array<FiligranProduct>>;
 };
 
 export type AddSubscriptionCapabilityInput = {
@@ -654,6 +661,11 @@ export type EditServiceCapabilityInput = {
   user_service_id?: InputMaybe<Scalars['UserServiceId']['input']>;
 };
 
+export type EditSolutionCategoryInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  product?: InputMaybe<Array<FiligranProduct>>;
+};
+
 export type EditUseCaseInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -921,6 +933,7 @@ export type Mutation = {
   addCapabilitiesToUserServices?: Maybe<Array<Maybe<UserService>>>;
   addOrganization?: Maybe<Organization>;
   addServicePicture?: Maybe<ServiceInstance>;
+  addSolutionCategory: SolutionCategory;
   addSubscription?: Maybe<ServiceInstance>;
   addSubscriptionCapability: Array<SubscriptionModel>;
   addUseCase: UseCase;
@@ -946,12 +959,14 @@ export type Mutation = {
   deleteEpic?: Maybe<Epic>;
   deleteNewsFeedItem: Scalars['Boolean']['output'];
   deleteOrganization?: Maybe<Organization>;
+  deleteSolutionCategory: SolutionCategory;
   deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
   deleteUserServices?: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
   editServiceCapability?: Maybe<SubscriptionModel>;
+  editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
   editUserCapabilities: User;
   editUserService?: Maybe<UserService>;
@@ -1002,6 +1017,11 @@ export type MutationAddServicePictureArgs = {
   document?: InputMaybe<Scalars['Upload']['input']>;
   isLogo: Scalars['Boolean']['input'];
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationAddSolutionCategoryArgs = {
+  input: AddSolutionCategoryInput;
 };
 
 
@@ -1139,6 +1159,11 @@ export type MutationDeleteOrganizationArgs = {
 };
 
 
+export type MutationDeleteSolutionCategoryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteSubscriptionsArgs = {
   subscription_ids: Array<Scalars['SubscriptionId']['input']>;
 };
@@ -1169,6 +1194,12 @@ export type MutationEditOrganizationArgs = {
 export type MutationEditServiceCapabilityArgs = {
   input?: InputMaybe<EditServiceCapabilityInput>;
   serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type MutationEditSolutionCategoryArgs = {
+  id: Scalars['ID']['input'];
+  input: EditSolutionCategoryInput;
 };
 
 
@@ -1659,6 +1690,7 @@ export type Query = {
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
+  solutionCategories?: Maybe<SolutionCategoryConnection>;
   subscriptionById?: Maybe<SubscriptionModel>;
   subscriptions: SubscriptionConnection;
   trialDeployments: TrialsDeployments;
@@ -1873,6 +1905,16 @@ export type QueryServiceInstancesArgs = {
   first: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySolutionCategoriesArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: SolutionCategoryOrdering;
+  orderMode: OrderingMode;
+  product?: InputMaybe<FiligranProduct>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2233,6 +2275,30 @@ export type ShareableResource = {
   name?: Maybe<Scalars['String']['output']>;
   source_type: DocumentSourceType;
 };
+
+export type SolutionCategory = Node & {
+  __typename?: 'SolutionCategory';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  product: Array<FiligranProduct>;
+};
+
+export type SolutionCategoryConnection = {
+  __typename?: 'SolutionCategoryConnection';
+  edges: Array<SolutionCategoryEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type SolutionCategoryEdge = {
+  __typename?: 'SolutionCategoryEdge';
+  cursor: Scalars['String']['output'];
+  node: SolutionCategory;
+};
+
+export enum SolutionCategoryOrdering {
+  Name = 'name'
+}
 
 export type Stream = Document & Integration & Node & {
   __typename?: 'Stream';
@@ -2758,12 +2824,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( NewsFeedItem ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( ProvisionedNewsFeedItem ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( NewsFeedItem ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( ProvisionedNewsFeedItem ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SolutionCategory ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   AddServiceInput: AddServiceInput;
+  AddSolutionCategoryInput: AddSolutionCategoryInput;
   AddSubscriptionCapabilityInput: AddSubscriptionCapabilityInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
@@ -2822,6 +2889,7 @@ export type ResolversTypes = ResolversObject<{
   DocumentSourceType: DocumentSourceType;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
+  EditSolutionCategoryInput: EditSolutionCategoryInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   EditionType: EditionType;
@@ -2929,6 +2997,11 @@ export type ResolversTypes = ResolversObject<{
   ServiceRestriction: ServiceRestriction;
   Settings: ResolverTypeWrapper<Settings>;
   ShareableResource: ResolverTypeWrapper<ShareableResource>;
+  SolutionCategory: ResolverTypeWrapper<SolutionCategory>;
+  SolutionCategoryConnection: ResolverTypeWrapper<SolutionCategoryConnection>;
+  SolutionCategoryEdge: ResolverTypeWrapper<SolutionCategoryEdge>;
+  SolutionCategoryId: ResolverTypeWrapper<Scalars['SolutionCategoryId']['output']>;
+  SolutionCategoryOrdering: SolutionCategoryOrdering;
   Stream: ResolverTypeWrapper<Stream>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   SubscribedServiceInstanceConfiguration: ResolverTypeWrapper<SubscribedServiceInstanceConfiguration>;
@@ -2991,6 +3064,7 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   AddServiceInput: AddServiceInput;
+  AddSolutionCategoryInput: AddSolutionCategoryInput;
   AddSubscriptionCapabilityInput: AddSubscriptionCapabilityInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
@@ -3033,6 +3107,7 @@ export type ResolversParentTypes = ResolversObject<{
   DocumentMetadata: DocumentMetadata;
   EditMeUserInput: EditMeUserInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
+  EditSolutionCategoryInput: EditSolutionCategoryInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
   Epic: Omit<Epic, 'document'> & { document?: Maybe<ResolversParentTypes['Document']> };
@@ -3112,6 +3187,10 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceLink: ServiceLink;
   Settings: Settings;
   ShareableResource: ShareableResource;
+  SolutionCategory: SolutionCategory;
+  SolutionCategoryConnection: SolutionCategoryConnection;
+  SolutionCategoryEdge: SolutionCategoryEdge;
+  SolutionCategoryId: Scalars['SolutionCategoryId']['output'];
   Stream: Stream;
   String: Scalars['String']['output'];
   SubscribedServiceInstanceConfiguration: SubscribedServiceInstanceConfiguration;
@@ -3625,6 +3704,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addCapabilitiesToUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddCapabilitiesToUserServicesArgs, 'input' | 'service_instance_id'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'isLogo' | 'serviceInstanceId'>>;
+  addSolutionCategory?: Resolver<ResolversTypes['SolutionCategory'], ParentType, ContextType, RequireFields<MutationAddSolutionCategoryArgs, 'input'>>;
   addSubscription?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, Partial<MutationAddSubscriptionArgs>>;
   addSubscriptionCapability?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationAddSubscriptionCapabilityArgs, 'input'>>;
   addUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationAddUseCaseArgs, 'input'>>;
@@ -3650,12 +3730,14 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteEpic?: Resolver<Maybe<ResolversTypes['Epic']>, ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
   deleteNewsFeedItem?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteNewsFeedItemArgs, 'id'>>;
   deleteOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationDeleteOrganizationArgs, 'id'>>;
+  deleteSolutionCategory?: Resolver<ResolversTypes['SolutionCategory'], ParentType, ContextType, RequireFields<MutationDeleteSolutionCategoryArgs, 'id'>>;
   deleteSubscriptions?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationDeleteSubscriptionsArgs, 'subscription_ids'>>;
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
   deleteUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationDeleteUserServicesArgs, 'input' | 'service_instance_id'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
+  editSolutionCategory?: Resolver<ResolversTypes['SolutionCategory'], ParentType, ContextType, RequireFields<MutationEditSolutionCategoryArgs, 'id' | 'input'>>;
   editUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationEditUseCaseArgs, 'id' | 'input'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
   editUserService?: Resolver<Maybe<ResolversTypes['UserService']>, ParentType, ContextType, RequireFields<MutationEditUserServiceArgs, 'input' | 'service_instance_id'>>;
@@ -3725,7 +3807,7 @@ export type NewsFeedItemMetadataResolvers<ContextType = PortalContext, ParentTyp
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'CustomView' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'NewsFeedItem' | 'OpenAEVScenario' | 'OpenCTIPlaybook' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationRef' | 'ProvisionedNewsFeedItem' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'CustomView' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'NewsFeedItem' | 'OpenAEVScenario' | 'OpenCTIPlaybook' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationRef' | 'ProvisionedNewsFeedItem' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'SolutionCategory' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -3923,6 +4005,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
+  solutionCategories?: Resolver<Maybe<ResolversTypes['SolutionCategoryConnection']>, ParentType, ContextType, RequireFields<QuerySolutionCategoriesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   subscriptionById?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<QuerySubscriptionByIdArgs>>;
   subscriptions?: Resolver<ResolversTypes['SubscriptionConnection'], ParentType, ContextType, RequireFields<QuerySubscriptionsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   trialDeployments?: Resolver<ResolversTypes['TrialsDeployments'], ParentType, ContextType, RequireFields<QueryTrialDeploymentsArgs, 'input'>>;
@@ -4134,6 +4217,30 @@ export type ShareableResourceResolvers<ContextType = PortalContext, ParentType e
   source_type?: Resolver<ResolversTypes['DocumentSourceType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export type SolutionCategoryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SolutionCategory'] = ResolversParentTypes['SolutionCategory']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  product?: Resolver<Array<ResolversTypes['FiligranProduct']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SolutionCategoryConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SolutionCategoryConnection'] = ResolversParentTypes['SolutionCategoryConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['SolutionCategoryEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SolutionCategoryEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SolutionCategoryEdge'] = ResolversParentTypes['SolutionCategoryEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['SolutionCategory'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export interface SolutionCategoryIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['SolutionCategoryId'], any> {
+  name: 'SolutionCategoryId';
+}
 
 export type StreamResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Stream'] = ResolversParentTypes['Stream']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -4514,6 +4621,10 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceLink?: ServiceLinkResolvers<ContextType>;
   Settings?: SettingsResolvers<ContextType>;
   ShareableResource?: ShareableResourceResolvers<ContextType>;
+  SolutionCategory?: SolutionCategoryResolvers<ContextType>;
+  SolutionCategoryConnection?: SolutionCategoryConnectionResolvers<ContextType>;
+  SolutionCategoryEdge?: SolutionCategoryEdgeResolvers<ContextType>;
+  SolutionCategoryId?: GraphQLScalarType;
   Stream?: StreamResolvers<ContextType>;
   SubscribedServiceInstanceConfiguration?: SubscribedServiceInstanceConfigurationResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;

@@ -73,6 +73,7 @@ type BaseDatabaseType =
   | 'User_Organization'
   | 'User_Organization_Pending'
   | 'UseCase'
+  | 'SolutionCategory'
   | 'Object_UseCase'
   | 'UserOrganization_Capability'
   | 'User_TransferRequest'

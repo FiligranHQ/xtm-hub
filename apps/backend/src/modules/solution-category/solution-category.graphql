@@ -1,0 +1,53 @@
+scalar SolutionCategoryId
+
+type SolutionCategory implements Node {
+  id: ID!
+  name: String!
+  product: [FiligranProduct!]!
+}
+
+enum SolutionCategoryOrdering {
+  name
+}
+
+type SolutionCategoryEdge {
+  cursor: String!
+  node: SolutionCategory!
+}
+
+type SolutionCategoryConnection {
+  totalCount: Int!
+  edges: [SolutionCategoryEdge!]!
+  pageInfo: PageInfo!
+}
+
+input AddSolutionCategoryInput {
+  name: String!
+  product: [FiligranProduct!]
+}
+
+input EditSolutionCategoryInput {
+  name: String
+  product: [FiligranProduct!]
+}
+
+type Query {
+  solutionCategories(
+    first: Int!
+    after: ID
+    orderBy: SolutionCategoryOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    product: FiligranProduct
+  ): SolutionCategoryConnection
+}
+
+type Mutation {
+  addSolutionCategory(input: AddSolutionCategoryInput!): SolutionCategory!
+    @auth(portalCapa: [BYPASS])
+  editSolutionCategory(
+    id: ID!
+    input: EditSolutionCategoryInput!
+  ): SolutionCategory! @auth(portalCapa: [BYPASS])
+  deleteSolutionCategory(id: ID!): SolutionCategory! @auth(portalCapa: [BYPASS])
+}

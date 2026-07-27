@@ -14,6 +14,7 @@ generates:
       makeResolverTypeCallable: true
       contextType: "../model/portal-context.js#PortalContext"
       scalars:
+        SolutionCategoryId: "../model/kanel/public/SolutionCategory.js#SolutionCategoryId"
         ServiceInstanceId: "../model/kanel/public/ServiceInstance.js#ServiceInstanceId"
         OrganizationId: "../model/kanel/public/Organization.js#OrganizationId"
         CompetitorId: "../model/kanel/public/Competitor.js#CompetitorId"
