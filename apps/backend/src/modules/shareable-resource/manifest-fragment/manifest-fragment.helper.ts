@@ -1,7 +1,8 @@
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { compareVersions, isLtsVersion } from '../../../utils/versioning';
 
-const manifestVersionRegex = /^(\d+)\.(\d{1,6})\.(\d+)(?:-lts\.(\d+))?$/i;
+export const manifestVersionRegex =
+  /^(\d+)\.(\d{1,6})\.(\d+)(?:-lts\.(\d+))?$/i;
 export const TAG_LATEST = 'latest';
 export const TAG_LATEST_LTS = 'latest-lts';
 export const TAG_DECOUPLING = 'decoupling';

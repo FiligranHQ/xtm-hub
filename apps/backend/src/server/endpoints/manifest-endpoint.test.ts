@@ -1,17 +1,12 @@
 import type { Request, Response } from 'express';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const {
-  loadManifestsMock,
-  getManifestByNameMock,
-  downloadFileMock,
-  validateVersionMock,
-} = vi.hoisted(() => ({
-  loadManifestsMock: vi.fn(),
-  getManifestByNameMock: vi.fn(),
-  downloadFileMock: vi.fn(),
-  validateVersionMock: vi.fn(),
-}));
+const { loadManifestsMock, getManifestByNameMock, downloadFileMock } =
+  vi.hoisted(() => ({
+    loadManifestsMock: vi.fn(),
+    getManifestByNameMock: vi.fn(),
+    downloadFileMock: vi.fn(),
+  }));
 
 vi.mock('../../modules/shareable-resource/manifest/manifest.domain', () => ({
   ManifestDomain: {
@@ -28,14 +23,7 @@ vi.mock('../../modules/shareable-resource/manifest/manifest.helper', () => ({
       `${p}/${v}/connector/manifest/${n}.json`,
   },
 }));
-vi.mock(
-  '../../modules/shareable-resource/manifest-fragment/manifest-fragment.helper',
-  () => ({
-    ManifestFragmentHelper: {
-      validateAndFormatManifestVersion: validateVersionMock,
-    },
-  })
-);
+
 vi.mock('../../utils/app-logger.util', () => ({
   logApp: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
 }));
@@ -70,7 +58,6 @@ const VALID_NAME = 'connector-manifest-7.260604.0-260526113805';
 describe('downloadLatestManifest', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    validateVersionMock.mockReturnValue('padded');
   });
 
   it('streams the latest manifest with a no-cache header', async () => {
@@ -125,7 +112,6 @@ describe('downloadLatestManifest', () => {
 describe('downloadManifestByName', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    validateVersionMock.mockReturnValue('padded');
   });
 
   it('rejects a path-traversal name with 400 before any lookup', async () => {
@@ -165,7 +151,6 @@ describe('downloadManifestByName', () => {
 describe('listManifests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    validateVersionMock.mockReturnValue('padded');
   });
 
   it('returns 200 with the manifests from the domain', async () => {
@@ -205,10 +190,11 @@ describe('listManifests', () => {
   });
 
   it.each`
-    params                                | query             | description
-    ${{ ...VALID, product: 'x' }}         | ${{}}             | ${'invalid product'}
-    ${{ ...VALID, integrationType: 'x' }} | ${{}}             | ${'invalid integrationType'}
-    ${VALID}                              | ${{ count: '0' }} | ${'invalid count'}
+    params                                    | query             | description
+    ${{ ...VALID, product: 'x' }}             | ${{}}             | ${'invalid product'}
+    ${{ ...VALID, integrationType: 'x' }}     | ${{}}             | ${'invalid integrationType'}
+    ${VALID}                                  | ${{ count: '0' }} | ${'invalid count'}
+    ${{ ...VALID, version: 'not-a-version' }} | ${{}}             | ${'invalid version'}
   `('returns 400 on $description', async ({ params, query }) => {
     const res = buildResponse();
     await ManifestEndpoint.listManifests(

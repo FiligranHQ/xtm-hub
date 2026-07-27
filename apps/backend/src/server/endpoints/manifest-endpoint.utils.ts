@@ -3,10 +3,17 @@ import {
   ManifestType,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
-import { ManifestFragmentHelper } from '../../modules/shareable-resource/manifest-fragment/manifest-fragment.helper';
+import {
+  ManifestFragmentHelper,
+  manifestVersionRegex,
+} from '../../modules/shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { MANIFEST_LIST_DEFAULT_COUNT } from '../../modules/shareable-resource/manifest/manifest.consts';
 
-const MANIFEST_NAME_PATTERN = /^connector-manifest-([^/]+)-(\d{12})$/;
+const versionPattern = manifestVersionRegex.source.replace(/^\^|\$$/g, '');
+const MANIFEST_NAME_PATTERN = new RegExp(
+  `^connector-manifest-(?:${versionPattern})-\\d{12}$`,
+  'i'
+);
 
 export const isProduct = (value: unknown): value is PlatformIdentifier =>
   typeof value === 'string' &&
@@ -24,17 +31,8 @@ export const parseCount = (raw: unknown): number | undefined => {
   return parsed;
 };
 
-export const isValidManifestName = (value: string): boolean => {
-  const match = MANIFEST_NAME_PATTERN.exec(value);
-  if (!match) return false;
-
-  try {
-    ManifestFragmentHelper.validateAndFormatManifestVersion(match[1] as string);
-    return true;
-  } catch {
-    return false;
-  }
-};
+export const isValidManifestName = (value: string): boolean =>
+  MANIFEST_NAME_PATTERN.test(value);
 
 export type ManifestParamsResult =
   | {
