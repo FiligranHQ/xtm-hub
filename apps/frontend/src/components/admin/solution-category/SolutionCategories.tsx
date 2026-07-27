@@ -58,7 +58,7 @@ const SolutionCategories = () => {
     [orderBy, orderMode, pagination, selectedProduct]
   );
 
-  const { data: queryData } = useSolutionCategoriesListQuery(
+  const { data: queryData, isLoading } = useSolutionCategoriesListQuery(
     portalGraphqlClient,
     variables,
     {
@@ -159,6 +159,7 @@ const SolutionCategories = () => {
       <DataTable
         columns={columns}
         data={solutionCategories}
+        isLoading={isLoading}
         i18nKey={i18nKey(t)}
         onResetTable={resetAll}
         tableOptions={{
