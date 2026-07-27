@@ -29,7 +29,7 @@ export const ShareableResourceCardImage = ({
             className="rounded object-contain"
           />
         ) : (
-          <div className="w-24 p-m border border-light flex items-center justify-center">
+          <div className="w-24 p-m flex items-center justify-center">
             <EntityTypeOrFiligranLogo entityTypes={getEntityTypes(document)} />
           </div>
         )}
