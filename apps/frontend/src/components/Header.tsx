@@ -14,6 +14,7 @@ import { APP_PATH } from '@/utils/path/constant';
 import { MenuIcon } from '@filigran/icon';
 import {
   Avatar,
+  Separator,
   Sheet,
   SheetContent,
   SheetHeader,
@@ -99,6 +100,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
         </IconActions>
       </div>
       <div className="flex gap-xs items-center sm:hidden">
+        {canManageUser && <NotificationButton />}
         <Sheet
           open={open}
           onOpenChange={setOpen}>
@@ -109,8 +111,10 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
               className="h-6 w-6"
             />
           </SheetTrigger>
-          <SheetContent side="left">
-            <SheetHeader className="flex flex-row justify-between pl-l">
+          <SheetContent
+            side="left"
+            className="bg-gradient-layer-0-white">
+            <SheetHeader className="flex flex-row justify-between pl-l bg-gradient-layer-0-white">
               <div className="flex items-center gap-s">
                 <DisplayLogo className="text-primary h-8" />
                 <SheetTitle className="sr-only">
@@ -118,16 +122,15 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
                 </SheetTitle>
               </div>
             </SheetHeader>
-            <div className="flex flex-1 flex-col h-full justify-between">
-              <div className="pt-m flex flex-col gap-m px-m">
-                <HeaderOrganizationSwitcher />
-                <div className="flex items-center justify-between">
-                  <ConnectedProductsDropdown />
-                  {canManageUser && <NotificationButton />}
+            <div className="flex flex-col h-full">
+              <div>
+                <PrivateNavigation open={true} />
+                <Separator className="my-s" />
+                <div className="flex flex-col gap-m pl-5">
+                  <HeaderOrganizationSwitcher fitContainer />
                 </div>
               </div>
-              <PrivateNavigation open={true} />
-              <div className="pb-xl flex flex-col text-center">
+              <div className="mt-auto pt-l pb-xl flex flex-col text-center">
                 <Link href={`/${APP_PATH}/profile`}>
                   <div className="w-full p-2 hover:bg-hover rounded">
                     {t('MenuUser.Profile')}
