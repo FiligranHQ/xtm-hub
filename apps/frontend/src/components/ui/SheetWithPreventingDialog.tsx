@@ -87,7 +87,6 @@ export const SheetWithPreventingDialog = ({
       <AlertDialogComponent
         AlertTitle={t('DialogActions.PreventSheetTitle')}
         actionButtonText={t('MenuActions.Continue')}
-        variantName={'destructive'}
         isOpen={openDialog}
         onOpenChange={setOpenDialog}
         onClickContinue={() => setOpen(false)}>

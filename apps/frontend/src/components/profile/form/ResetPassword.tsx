@@ -21,7 +21,7 @@ export const ProfileFormResetPassword = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('UserForm.Password')}</CardTitle>
+        <CardTitle className="heading-lg">{t('UserForm.Password')}</CardTitle>
       </CardHeader>
       <CardContent>{t('UserForm.ResetPassword.Sentence')}</CardContent>
       <CardFooter className="flex justify-end">
