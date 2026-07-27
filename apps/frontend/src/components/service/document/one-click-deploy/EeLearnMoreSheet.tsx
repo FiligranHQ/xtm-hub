@@ -96,7 +96,7 @@ const EeLearnMoreSheet = ({
       open={open}
       onOpenChange={setOpen}>
       <SheetContent side="right">
-        <SheetHeader className="bg-page-background pl-xl">
+        <SheetHeader className="pl-xl">
           <div className="flex items-center gap-s">
             <SheetTitle>
               {t('Service.ShareableResources.Deploy.EELearnMore.Title')}

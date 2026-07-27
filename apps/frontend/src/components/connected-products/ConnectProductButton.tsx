@@ -4,12 +4,14 @@ import { AddIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { useState } from 'react';
 
-import ConnectProductFromHubModal from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
+import ConnectProductFromHubModal, {
+  ConnectProductOrigin,
+} from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
 import { useTranslations } from 'next-intl';
 
 interface ConnectProductButtonProps {
   onCloseDropdown?: () => void;
-  variant?: 'default' | 'outline-primary';
+  variant?: 'default' | 'secondary';
 }
 
 export const ConnectProductButton = ({
@@ -24,7 +26,7 @@ export const ConnectProductButton = ({
     <>
       <Button
         variant={variant}
-        className="hover:cursor-pointer gap-s"
+        className="gap-s"
         onClick={() => {
           setIsOpen(true);
         }}>
@@ -43,6 +45,7 @@ export const ConnectProductButton = ({
             onCloseDropdown?.();
           }
         }}
+        origin={ConnectProductOrigin.homepage}
       />
     </>
   );

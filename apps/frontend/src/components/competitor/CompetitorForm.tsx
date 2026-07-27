@@ -105,7 +105,7 @@ const CompetitorForm = ({
       <SheetFooter className={'sm:justify-end pb-0'}>
         <div className="flex gap-s">
           <Button
-            variant="outline"
+            variant="secondary"
             type="button"
             onClick={onClose}>
             {t('Utils.Cancel')}

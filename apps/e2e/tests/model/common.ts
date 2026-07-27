@@ -21,6 +21,12 @@ export async function clickRowAction(
   await button.click({ force: true });
 }
 
+export async function selectUseCase(page: Page, name = 'Global') {
+  await page.getByText('Add use cases').click();
+  await page.getByRole('option', { name, exact: true }).click();
+  await page.keyboard.press('Escape');
+}
+
 export async function waitForDrawerToOpen(page: Page) {
   await page.locator('body > [role="dialog"]').waitFor({ state: 'visible' });
   await page

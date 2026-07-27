@@ -32,7 +32,7 @@ export const ConnectedProductItem = ({
     : undefined;
 
   return (
-    <div className="flex w-full items-center justify-between gap-m px-m py-s">
+    <div className="hover:cursor-default flex min-h-12 w-full items-center justify-between gap-m px-m py-s">
       <div className="flex items-center gap-s">
         {platformMeta?.logoUrl && (
           <Image
@@ -50,7 +50,7 @@ export const ConnectedProductItem = ({
       <div className="flex items-center gap-xs">
         {detailPath && (
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             className="h-7 w-7"
             asChild>
@@ -63,7 +63,7 @@ export const ConnectedProductItem = ({
         )}
         {platform.url && (
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon"
             className="h-7 w-7"
             asChild>

@@ -327,12 +327,12 @@ const Page = async ({
           <h3 className="py-s txt-container-title truncate text-muted-foreground">
             {t('PublicResourcePage.Overview')}
           </h3>
-          <section className="border rounded border-border-light bg-page-background">
+          <section className="rounded bg-elevation-background-layer-1">
             <h2 className="p-l">{document?.short_description}</h2>
             <MarkdownRenderer
               source={document?.description ?? ''}
               colorMode="dark"
-              className="p-l !bg-page-background markdown-content"
+              className="p-l !bg-elevation-background-layer-1 markdown-content"
             />
           </section>
         </div>

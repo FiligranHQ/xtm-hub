@@ -245,7 +245,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                 )}
                 triggerElement={
                   <Button
-                    variant="ghost-destructive"
+                    variant="tertiary-destructive"
                     size="icon"
                     className="border">
                     <CloseIcon className="h-4 w-4" />
@@ -255,7 +255,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                 {t('PendingUserListPage.WarningUserRejection.Description')}
               </AlertDialogComponent>
               <Button
-                variant="ghost-primary"
+                variant="tertiary"
                 size="icon"
                 className="border"
                 onClick={() => setUserEdit(row.original)}>
@@ -398,7 +398,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                   )}
                   triggerElement={
                     <Button
-                      variant="ghost-destructive"
+                      variant="tertiary-destructive"
                       size="icon"
                       className="border">
                       <CloseIcon className="h-4 w-4" />
@@ -416,7 +416,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                   )}
                   triggerElement={
                     <Button
-                      variant="ghost-primary"
+                      variant="tertiary"
                       size="icon"
                       className="border">
                       <CheckIcon className="h-4 w-4" />

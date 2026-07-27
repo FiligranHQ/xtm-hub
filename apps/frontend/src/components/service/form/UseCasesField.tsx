@@ -13,17 +13,22 @@ interface ServiceFormUseCasesFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   disabled?: boolean;
   product?: FiligranProduct;
+  required?: boolean;
 }
 
 export const ServiceFormUseCasesField = ({
   field,
   disabled,
   product,
+  required,
 }: ServiceFormUseCasesFieldProps) => {
   const t = useTranslations();
   return (
     <FormItem>
-      <FormLabel>{t('Service.Form.UseCasesLabel')}</FormLabel>
+      <FormLabel>
+        {t('Service.Form.UseCasesLabel')}
+        {required ? <span className="text-sm text-destructive"> *</span> : null}
+      </FormLabel>
       <FormControl>
         <MultiSelectFormField
           disabled={disabled}
@@ -34,6 +39,7 @@ export const ServiceFormUseCasesField = ({
           defaultValue={field.value}
           value={field.value}
           onValueChange={field.onChange}
+          popoverContentClassName="bg-elevation-background-layer-3"
           placeholder={t('Service.Form.UseCasesPlaceholder')}
           variant="inverted"
         />

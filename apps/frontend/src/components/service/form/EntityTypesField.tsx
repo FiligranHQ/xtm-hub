@@ -34,6 +34,7 @@ export const ServiceFormEntityTypesField = ({
           defaultValue={field.value}
           value={field.value}
           onValueChange={field.onChange}
+          popoverContentClassName="bg-elevation-background-layer-3"
           placeholder={t('Service.Form.EntityTypesPlaceholder')}
           variant="inverted"
         />

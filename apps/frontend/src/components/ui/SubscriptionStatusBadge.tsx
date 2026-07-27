@@ -11,9 +11,9 @@ export const SubscriptionStatusBadge = ({
   type,
 }: SubscriptionStatusBadgeProps) => {
   const badgeColor = {
-    REFUSED: 'text-red',
-    REQUESTED: 'text-orange',
-    ACCEPTED: 'text-green',
+    REFUSED: 'text-destructive',
+    REQUESTED: 'text-feedback-warning-primary',
+    ACCEPTED: 'text-alert-success-primary',
   };
   return (
     <>

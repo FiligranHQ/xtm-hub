@@ -97,7 +97,9 @@ const ChoosePlatformForm = ({
                         />
                         <FormLabel
                           htmlFor={platform.id}
-                          className={cn(isDisabled && 'text-gray/60')}>
+                          className={cn(
+                            isDisabled && 'text-content-body-base'
+                          )}>
                           {platform.title}
                         </FormLabel>
                       </div>
@@ -141,7 +143,7 @@ const ChoosePlatformForm = ({
         <div className="flex justify-end gap-s">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={() => {
               setIsOpen(false);
             }}>

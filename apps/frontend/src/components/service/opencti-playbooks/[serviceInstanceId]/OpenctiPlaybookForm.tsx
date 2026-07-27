@@ -38,7 +38,7 @@ const openCTIPlaybookFormSchema = z.object({
     error: 'Product version must be X.Y.Z',
   }),
   uploader_organization_id: z.string().min(1, 'Required'),
-  use_cases: z.array(z.string()).optional(),
+  use_cases: z.array(z.string()).min(1, 'Required'),
   active: z.boolean().optional(),
   document: z.custom<FileList>(fileListCheck),
   logo: z.custom<FileList>(optionalFileListCheck).optional(),

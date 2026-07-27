@@ -34,7 +34,7 @@ export const PublicSubLink = ({
   const isActive = !!href && currentPath === href;
   const sharedClassName = cn(
     buttonVariants({
-      variant: 'ghost',
+      variant: 'tertiary',
       className: cn(
         'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case content-body-compact text-text-default-secondary text-xs',
         highlight &&

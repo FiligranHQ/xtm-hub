@@ -27,7 +27,7 @@
   },
   "CookieConsent": {
     "Title": "Cookie settings",
-    "BannerText": "We use cookies to make the XTM Hub work, understand how it's used, and improve your experience. Strictly necessary cookies are always on. With your consent, we also use optional cookies for functionality, performance and analytics, and marketing. You can accept all, reject all, or choose which optional cookies to allow. You can change your preferences at any time via \"Cookie settings\". See our Cookie Policy for more information.",
+    "BannerText": "We use cookies to run XTM Hub. Necessary cookies are always on, optional cookies (functionality, analytics, marketing) are used with your consent. Accept all, reject all, or manage your choices anytime in \"Cookie settings\".",
     "AcceptAll": "Accept all",
     "RejectAll": "Reject all",
     "CookieSettings": "Cookie settings",
@@ -323,7 +323,7 @@
       "Title": "New Resources"
     },
     "XtmMostDeployedResources": {
-      "Title": "Most deployed resources"
+      "Title": "Most deployed Resources"
     },
     "LastDeployedResources": {
       "Title": "The last deployed resources",
@@ -349,7 +349,7 @@
       "LabelWithName": "Welcome {name}",
       "ConnectedProducts": "{count, plural, one {Connected product} other {Connected products}}",
       "Title": "Extend and scale your XTM Platform",
-      "Description": "Connect your OpenCTI or OpenAEV product to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM product experience.",
+      "Description": "Connect your OpenCTI or OpenAEV to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM Platform experience.",
       "Cta": "Connect your product",
       "ImageAlt": "XTM Platform illustration"
     },
@@ -367,17 +367,19 @@
   "PublicPathError": {
     "NotFound": "404 | This page could not be found"
   },
-  "PublicLayout": {
-    "Documentation": "XTM Hub documentation",
-    "SignIn": "Sign In",
-    "Login": "Login",
-    "SignUp": "Sign Up",
+  "AppFooter": {
     "AllRightsReserved": "All rights reserved",
     "FiligranWebsite": "Filigran website",
+    "Documentation": "XTM Hub documentation",
     "PrivacyPolicy": "Privacy Policy",
     "TermsOfServices": "Terms of Services",
     "Licenses": "Licenses",
     "Contact": "Contact"
+  },
+  "PublicLayout": {
+    "SignIn": "Sign In",
+    "Login": "Login",
+    "SignUp": "Sign Up"
   },
   "PublicResourcePage": {
     "Download": "Download",
@@ -714,7 +716,9 @@
       "ConnectedProductSentence": "To deploy a resource you must have a connected product",
       "NotAllowedMessage": "You do not have permission to connect a product. \nPlease contact your product {count, plural, =1 {administrator} other {administrators}} to connect the product on your behalf.",
       "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
-      "ReachAdmin": "Reach your admin"
+      "ReachAdmin": "Reach your admin",
+      "ConnectProduct": "Connect your product",
+      "RedirectionMessage": "You will be redirected to your product in a new tab to authorize the connection with XTM Hub."
     },
     "Back": "Back to {platformIdentifier}",
     "Confirm": "Connect",
@@ -728,6 +732,7 @@
       },
       "Description": "Click here to access your Private Product.",
       "ProductName": "Product name",
+      "Product": "Product",
       "ProductURL": "Product URL",
       "StartDate": "Start date",
       "EndDate": "End date",

@@ -272,7 +272,7 @@ const ServiceSlug = ({
 
       <div>
         <ServiceSlugHeader serviceInstance={serviceInstance} />
-        <div className="border rounded bg-page-background p-m">
+        <div className="border rounded bg-elevation-background-layer-1 p-m">
           <h2 className="">{t('Service.Management.Description') + ':'}</h2>
 
           <DataTable
@@ -289,7 +289,7 @@ const ServiceSlug = ({
                 actions: () => (
                   <>
                     <Button
-                      variant="ghost-primary"
+                      variant="tertiary"
                       size="sm"
                       className="cursor-pointer"
                       onClick={() => setOpenAddCapabilities(true)}>
@@ -299,7 +299,7 @@ const ServiceSlug = ({
                       )}
                     </Button>
                     <Button
-                      variant="ghost-destructive"
+                      variant="tertiary-destructive"
                       size="sm"
                       className="cursor-pointer"
                       onClick={() =>

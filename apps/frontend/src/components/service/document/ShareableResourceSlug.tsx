@@ -124,7 +124,7 @@ const ShareableResourceSlug = ({
                         disableHoverableContent={true}>
                         <TooltipTrigger asChild>
                           <Button
-                            variant="ghost"
+                            variant="tertiary"
                             size="icon"
                             onClick={() => {
                               incrementDownloadNumber();

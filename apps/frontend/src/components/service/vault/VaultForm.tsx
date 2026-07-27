@@ -52,6 +52,7 @@ export const VaultForm = ({ connectionId, userCanUpdate }: VaultFormProps) => {
           description: values.description ?? 'Vault Document Description',
           active: true,
           uploader_id: me?.id ?? '',
+          use_cases: [],
         },
         metadata: [],
         serviceInstanceId: slug,

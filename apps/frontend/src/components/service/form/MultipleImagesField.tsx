@@ -121,7 +121,7 @@ export const ServiceFormMultipleImagesField = ({
                       : 'bg-black/0 opacity-0'
                   }`}>
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="icon"
                     className="absolute right-2 top-2"
                     type="button"
@@ -134,7 +134,7 @@ export const ServiceFormMultipleImagesField = ({
                       <TooltipTrigger asChild>
                         <ReplayIcon className="size-4" />
                       </TooltipTrigger>
-                      <TooltipContent className="bg-gray-50">
+                      <TooltipContent>
                         {t('Service.Form.Restore')}
                       </TooltipContent>
                     </Tooltip>
@@ -146,14 +146,14 @@ export const ServiceFormMultipleImagesField = ({
                 </div>
 
                 {!imagesToDelete.includes(doc!.id) && (
-                  <div className="flex flex-row items-center bg-page-background h-12 opacity-90">
+                  <div className="flex flex-row items-center bg-elevation-background-layer-1 h-12 opacity-90">
                     <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-s mr-s flex-1 min-w-0">
                       {(doc as ExistingFile)?.file_name ??
                         (doc as NewFile)?.name}
                     </div>
                     <Button
                       disabled={doc.source_type === DocumentSourceType.External}
-                      variant="outline-destructive"
+                      variant="secondary-destructive"
                       size="icon"
                       type="button"
                       className="ml-auto m-s"
@@ -165,7 +165,7 @@ export const ServiceFormMultipleImagesField = ({
                         <TooltipTrigger asChild>
                           <DeleteIcon className="size-4" />
                         </TooltipTrigger>
-                        <TooltipContent className="bg-gray-50">
+                        <TooltipContent>
                           {t('Service.Form.DeleteSentence')}
                         </TooltipContent>
                       </Tooltip>

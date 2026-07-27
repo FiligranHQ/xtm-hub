@@ -127,7 +127,7 @@ export const SubscriptionSlugAddCapabilities = ({
 
         <DialogFooter>
           <Button
-            variant="ghost"
+            variant="tertiary"
             onClick={() => resetAndClose()}>
             {t('Utils.Cancel')}
           </Button>

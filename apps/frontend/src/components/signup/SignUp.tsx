@@ -74,7 +74,7 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
 
   return (
     <div className="flex flex-col md:flex-row md:h-screen w-screen overflow-y-auto md:overflow-hidden">
-      <div className="bg-page-background flex md:h-full md:w-2/5 flex-col pl-6 pr-0 py-6 md:overflow-hidden order-1">
+      <div className="bg-elevation-background-layer-1 flex md:h-full md:w-2/5 flex-col pl-6 pr-0 py-6 md:overflow-hidden order-1">
         {/* Header */}
         <div className="shrink-0 flex justify-center pr-6">
           <FiligranLogoDark className="h-8.25 w-33" />

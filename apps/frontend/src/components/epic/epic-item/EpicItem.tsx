@@ -41,7 +41,7 @@ export const EpicItem = ({
   );
 
   return (
-    <li className="group overflow-hidden border-light flex flex-col relative rounded border hover:cursor-pointer bg-page-background h-[183px]">
+    <li className="group overflow-hidden flex flex-col relative rounded hover:cursor-pointer bg-elevation-background-layer-1 h-[183px]">
       <EpicItemCard
         epic={epic}
         serviceInstanceId={serviceInstanceId}

@@ -62,7 +62,7 @@ export const RemoveUserFromOrga = ({ user }: RemoveUserFromOrgaProps) => {
   };
 
   const trigger = (
-    <Button variant="outline-destructive">{t('MenuActions.Remove')}</Button>
+    <Button variant="secondary-destructive">{t('MenuActions.Remove')}</Button>
   );
 
   return (

@@ -166,6 +166,7 @@ export const useServiceFormFields = ({
             field={field}
             disabled={disabledFields.includes('use_cases')}
             product={productTagByPlatform[platform]}
+            required={integrationType !== IntegrationType.Connector}
           />
         ),
       },

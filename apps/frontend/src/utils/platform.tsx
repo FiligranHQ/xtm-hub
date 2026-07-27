@@ -43,7 +43,7 @@ export const buildPlatformHoverLinks = (
       id: 'platform-details',
       label: t('Service.RegisteredPlatforms.PlatformDetails'),
       href: `/${APP_PATH}/service/${platform.identifier}/${platform.subscription?.service_instance?.id}`,
-      variant: 'outline-primary',
+      variant: 'secondary',
     },
   ];
   if (shouldDisplayPlatformLink) {

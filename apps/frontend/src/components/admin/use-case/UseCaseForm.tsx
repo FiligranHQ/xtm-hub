@@ -96,6 +96,7 @@ const UseCaseForm = ({
               <FormControl>
                 <MultiSelectFormField
                   options={productTagOptions}
+                  popoverContentClassName="bg-elevation-background-layer-3"
                   keyValue="id"
                   keyLabel="label"
                   defaultValue={field.value}
@@ -131,7 +132,7 @@ const UseCaseForm = ({
               actionButtonText={t('MenuActions.Delete')}
               variantName={'destructive'}
               triggerElement={
-                <Button variant="outline-destructive">
+                <Button variant="secondary-destructive">
                   {t('MenuActions.Delete')}
                 </Button>
               }
@@ -143,7 +144,7 @@ const UseCaseForm = ({
           )}
           <div className="flex gap-s">
             <Button
-              variant="outline"
+              variant="secondary"
               type="button"
               onClick={onClose}>
               {t('Utils.Cancel')}

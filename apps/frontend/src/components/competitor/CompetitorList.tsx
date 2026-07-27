@@ -125,7 +125,7 @@ const CompetitorList = () => {
         cell: ({ row }) => (
           <div className="flex items-center justify-end gap-s">
             <Button
-              variant="ghost-primary"
+              variant="tertiary"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
@@ -141,7 +141,7 @@ const CompetitorList = () => {
               variantName="destructive"
               triggerElement={
                 <Button
-                  variant="ghost-destructive"
+                  variant="tertiary-destructive"
                   size="sm">
                   <DeleteIcon className="h-4 w-4" />
                   <span className="sr-only">

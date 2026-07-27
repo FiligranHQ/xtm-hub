@@ -27,7 +27,7 @@
   },
   "CookieConsent": {
     "Title": "Paramètres des cookies",
-    "BannerText": "Nous utilisons des cookies pour faire fonctionner le XTM Hub, comprendre son utilisation et améliorer votre expérience. Les cookies strictement nécessaires sont toujours actifs. Avec votre consentement, nous utilisons également des cookies optionnels à des fins de fonctionnalité, de performance et d'analyse, et de marketing. Vous pouvez tout accepter, tout refuser, ou choisir quels cookies optionnels autoriser. Vous pouvez modifier vos préférences à tout moment via « Paramètres des cookies ». Consultez notre Politique relative aux cookies pour en savoir plus.",
+    "BannerText": "Nous utilisons des cookies pour assurer le fonctionnement de XTM Hub. Les cookies nécessaires sont toujours activés ; les cookies facultatifs (fonctionnels, d'analyse, de marketing) ne sont utilisés qu'avec votre consentement. Vous pouvez accepter tous les cookies, les refuser tous ou gérer vos préférences à tout moment dans la rubrique « Paramètres des cookies ».",
     "AcceptAll": "Tout accepter",
     "RejectAll": "Tout refuser",
     "CookieSettings": "Paramètres des cookies",
@@ -349,7 +349,7 @@
       "LabelWithName": "Bienvenue {name}",
       "ConnectedProducts": "{count, plural, one {Produit connecté} other {Produits connectés}}",
       "Title": "Développez et faites évoluer votre plateforme XTM",
-      "Description": "Connectez votre produit OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
+      "Description": "Connectez votre OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience de la plateforme XTM.",
       "Cta": "Connectez votre produit",
       "ImageAlt": "Illustration de la plateforme XTM"
     },
@@ -367,17 +367,19 @@
   "PublicPathError": {
     "NotFound": "404 | Cette page est introuvable"
   },
-  "PublicLayout": {
-    "Documentation": "Documentation du Hub XTM",
-    "SignIn": "Connexion",
-    "Login": "Connexion",
-    "SignUp": "Créer un compte",
+  "AppFooter": {
     "AllRightsReserved": "Tous droits réservés",
     "FiligranWebsite": "Site Filigran",
+    "Documentation": "Documentation du Hub XTM",
     "PrivacyPolicy": "Politique de confidentialité",
     "TermsOfServices": "Conditions d'utilisation",
     "Licenses": "Licences",
     "Contact": "Contact"
+  },
+  "PublicLayout": {
+    "SignIn": "Connexion",
+    "Login": "Connexion",
+    "SignUp": "Créer un compte"
   },
   "PublicResourcePage": {
     "Download": "Télécharger",
@@ -714,7 +716,9 @@
       "ConnectedProductSentence": "Pour déployer une ressource, vous devez disposer d'un produit connecté",
       "NotAllowedMessage": "Vous ne disposez pas des autorisations nécessaires pour connecter un produit. \nVeuillez contacter votre {count, plural, =1 {administrateur} other {administrateurs}} afin qu'il se charge de connecter le produit en votre nom.",
       "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
-      "ReachAdmin": "Contactez votre administrateur"
+      "ReachAdmin": "Contactez votre administrateur",
+      "ConnectProduct": "Connectez votre produit",
+      "RedirectionMessage": "Vous serez redirigé vers votre produit dans un nouvel onglet afin d'autoriser la connexion avec XTM Hub."
     },
     "Back": "Retour à {platformIdentifier}",
     "Confirm": "Connecter",
@@ -728,6 +732,7 @@
       },
       "Description": "Cliquez ici pour accéder à votre produit privé.",
       "ProductName": "Nom du produit",
+      "Product": "Produit",
       "ProductURL": "URL du produit",
       "StartDate": "Date de début",
       "EndDate": "Date de fin",

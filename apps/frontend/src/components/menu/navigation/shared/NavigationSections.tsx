@@ -53,7 +53,7 @@ const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
               value={`${key}-accordion`}>
               <AccordionTrigger
                 className={cn(
-                  'h-9 py-xs pl-6 text-xs font-light cursor-pointer hover:bg-hover hover:no-underline',
+                  'h-9 py-xs pl-6 content-body-compact text-text-default-secondary cursor-pointer hover:bg-hover hover:no-underline',
                   NAVIGATION_HOVER_CLASSES
                 )}>
                 <span className="flex flex-1 items-center justify-between gap-xs truncate pr-xs">
@@ -138,7 +138,7 @@ export const ClosedSection = ({ section }: { section: SectionConfig }) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
         <Button
-          variant="ghost"
+          variant="tertiary"
           className={cn(
             'h-9 w-full justify-start rounded-none pl-5 cursor-pointer',
             currentPath.startsWith(section.pathPrefix)
