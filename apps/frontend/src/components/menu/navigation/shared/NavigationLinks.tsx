@@ -51,9 +51,7 @@ export const PublicSubLink = ({
     <>
       <span className="flex min-w-0 flex-1 items-center gap-xs">
         {external && <OpenInNewIcon className="h-3 w-3 shrink-0" />}
-        <span
-          className={cn('truncate', !href && 'text-text-default-disabled')}
-          title={tooltip ? undefined : label}>
+        <span className={cn('truncate', !href && 'text-text-default-disabled')}>
           {label}
         </span>
       </span>
@@ -65,27 +63,25 @@ export const PublicSubLink = ({
     </>
   );
 
-  const wrapWithTooltip = (node: ReactNode) => {
-    if (!tooltip) {
-      return node;
-    }
-
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>{node}</TooltipTrigger>
-          <TooltipContent className="bg-ds-bg-4 dark:bg-ds-bg-4 rounded-sm">
-            <div className="flex flex-col gap-0.5">
-              <span className="content-body-base text-gray-100">{label}</span>
+  const wrapWithTooltip = (node: ReactNode) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{node}</TooltipTrigger>
+        <TooltipContent className="bg-ds-bg-4 dark:bg-ds-bg-4 rounded-lg">
+          <div className="flex flex-col gap-0.5">
+            <span className="content-body-base text-text-default-primary">
+              {label}
+            </span>
+            {tooltip && (
               <span className="content-body-base text-muted-foreground">
                 {tooltip}
               </span>
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  };
+            )}
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 
   if (!href) {
     return wrapWithTooltip(<span className={sharedClassName}>{content}</span>);
