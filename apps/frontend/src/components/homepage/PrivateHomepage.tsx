@@ -70,7 +70,7 @@ export const PrivateHomepage = async () => {
         {platformIdentifiers.length === 0 ? (
           <XtmPlatform welcomeName={welcomeName} />
         ) : (
-          <div className="flex flex-col lg:flex-row gap-xl items-start">
+          <div className="flex flex-col xl:flex-row gap-xl items-start">
             <RegisteredPlatformsSection
               welcomeName={welcomeName}
               registeredPlatformsData={registeredPlatformsData}

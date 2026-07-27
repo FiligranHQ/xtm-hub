@@ -24,7 +24,7 @@ export const RegisteredPlatformsSection = async ({
   }
 
   return (
-    <section className="w-full lg:w-3/8 bg-elevation-background-layer-1 p-l rounded-lg max-h-96 overflow-scroll">
+    <section className="w-full xl:w-3/8 bg-elevation-background-layer-1 p-l rounded-lg xl:max-h-96 xl:overflow-scroll">
       <div className="flex flex-col">
         <span className="heading-xs text-filigran-brand-primary">
           {welcomeName
@@ -39,12 +39,15 @@ export const RegisteredPlatformsSection = async ({
           })}
         </span>
 
-        {homepageRegisteredPlatformCards.map((platformCard) => (
-          <RegisteredPlatformCard
-            key={platformCard.id}
-            platform={platformCard}
-          />
-        ))}
+        <div className="flex flex-row flex-wrap gap-m xl:flex-col xl:flex-nowrap xl:gap-0">
+          {homepageRegisteredPlatformCards.map((platformCard) => (
+            <div
+              key={platformCard.id}
+              className="flex-1 min-w-64 xl:w-full xl:flex-none">
+              <RegisteredPlatformCard platform={platformCard} />
+            </div>
+          ))}
+        </div>
 
         <TryOtherPlatformProductBlock />
       </div>
