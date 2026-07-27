@@ -53,7 +53,7 @@ const HomepageResourceCard = ({
             {shortDescription}
           </p>
         </TooltipTrigger>
-        <TooltipContent className="bg-gray-50 max-w-sm whitespace-normal">
+        <TooltipContent className="max-w-sm whitespace-normal">
           {shortDescription}
         </TooltipContent>
       </Tooltip>
@@ -98,7 +98,7 @@ const HomepageResourceCard = ({
                     {name}
                   </h3>
                 </TooltipTrigger>
-                <TooltipContent className="bg-gray-50 whitespace-nowrap">
+                <TooltipContent className="whitespace-nowrap">
                   {name}
                 </TooltipContent>
               </Tooltip>

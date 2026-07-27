@@ -37,8 +37,7 @@ export const ShareableResourceCardVersion = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span
-              className={cn('text-gray/60 flex items-center gap-s', className)}>
+            <span className={cn('flex items-center gap-s', className)}>
               {product_version}
               <CheckIndeterminateIcon className="h-4 w-4" />
             </span>

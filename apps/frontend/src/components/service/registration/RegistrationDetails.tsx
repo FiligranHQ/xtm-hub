@@ -107,23 +107,17 @@ export const RegistrationDetails = ({
       <ul className="text-sm flex flex-col gap-l">
         {platform.title && (
           <li>
-            <span className="text-gray/60 mr-1">
-              {t('Register.Details.ProductName')}:
-            </span>
+            <span className="mr-xs">{t('Register.Details.ProductName')}:</span>
             {platform.title}
           </li>
         )}
         <li>
-          <span className="text-gray/60 mr-1">
-            {t('Register.Details.ProductURL')}:
-          </span>
+          <span className="mr-xs">{t('Register.Details.ProductURL')}:</span>
           <span>{platform.url ? platform.url : '-'}</span>
         </li>
         {platform.deployment_request?.hub_status && (
           <li>
-            <span className="text-gray/60 mr-1">
-              {t('Register.Details.Status')}:
-            </span>
+            <span className="mr-xs">{t('Register.Details.Status')}:</span>
             {formatTitleCase(platform.deployment_request?.hub_status)}
             {isCancellable && (
               <Button
@@ -138,18 +132,14 @@ export const RegistrationDetails = ({
         {isTrial ? (
           <>
             <li>
-              <span className="text-gray/60 mr-1">
-                {t('Register.Details.StartDate')}:
-              </span>
+              <span className="mr-xs">{t('Register.Details.StartDate')}:</span>
               {platform.subscription?.start_date &&
               platform.subscription.end_date
                 ? formatDate(platform.subscription.start_date)
                 : '-'}
             </li>
             <li>
-              <span className="text-gray/60 mr-1">
-                {t('Register.Details.EndDate')}:
-              </span>
+              <span className="mr-xs">{t('Register.Details.EndDate')}:</span>
               {platform.subscription?.end_date
                 ? formatDate(platform.subscription?.end_date)
                 : '-'}
@@ -158,7 +148,7 @@ export const RegistrationDetails = ({
         ) : (
           <>
             <li>
-              <span className="text-gray/60 mr-1">
+              <span className="mr-xs">
                 {t('Register.Details.ConnectedOn')}:
               </span>
               {platform.subscription?.start_date
@@ -170,27 +160,25 @@ export const RegistrationDetails = ({
 
         {platform.deployment_request?.region && (
           <li>
-            <span className="text-gray/60 mr-1">
-              {t('Register.Details.Region')}:
-            </span>
+            <span className="mr-xs">{t('Register.Details.Region')}:</span>
             {t(`Region.${platform.deployment_request.region.toUpperCase()}`)}
           </li>
         )}
         <li>
-          <span className="text-gray/60 mr-1">
-            {t('Register.Details.License')}:
-          </span>
+          <span className="mr-xs">{t('Register.Details.License')}:</span>
           {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
         </li>
         {isLastConnectivityCheckDisplayed && (
           <>
             <li>
-              <span className="text-gray/60 mr-1">
+              <span className="mr-xs">
                 {t('Register.Details.ConnectionStatus.Title')}:
               </span>
               <span
                 className={
-                  isConnectionStatusOk ? 'text-green-500' : 'text-red-500'
+                  isConnectionStatusOk
+                    ? 'text-alert-success-primary'
+                    : 'text-destructive'
                 }>
                 {isConnectionStatusOk ? (
                   t('Register.Details.ConnectionStatus.Connected')
@@ -208,7 +196,7 @@ export const RegistrationDetails = ({
               )}
             </li>
             <li>
-              <span className="text-gray/60 mr-1">
+              <span className="mr-xs">
                 {t('Register.Details.LastConnectionCheck')}:
               </span>
               {platform.last_connectivity_check
@@ -220,9 +208,7 @@ export const RegistrationDetails = ({
         {isTrialActive && (
           <li>
             <span>
-              <span className="text-gray/60 mr-1">
-                {t('Register.Details.Access')}:
-              </span>
+              <span className="mr-xs">{t('Register.Details.Access')}:</span>
               {userHasTrialAccess ? (
                 <span>
                   {(platform.myGroups ?? [])
@@ -232,7 +218,7 @@ export const RegistrationDetails = ({
                 </span>
               ) : (
                 <span>
-                  <span className="text-red-500 mr-1">
+                  <span className="text-destructive mr-xs">
                     {t('RegistrationDetails.NoAccess')}
                   </span>
                   {t('RegistrationDetails.NoAccessContact', {

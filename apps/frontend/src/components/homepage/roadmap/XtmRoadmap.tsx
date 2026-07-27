@@ -15,8 +15,8 @@ const TIMELINE_CONFIG = [
   {
     timeline: Timeline.Now,
     labelKey: 'Now' as const,
-    bg: 'bg-orange',
-    text: 'text-orange',
+    bg: 'bg-feedback-warning-primary',
+    text: 'text-feedback-warning-primary',
   },
   {
     timeline: Timeline.Next,
@@ -28,7 +28,7 @@ const TIMELINE_CONFIG = [
     timeline: Timeline.UnderConsideration,
     labelKey: 'UnderConsideration' as const,
     bg: 'bg-green',
-    text: 'text-green',
+    text: 'text-alert-success-primary',
   },
 ];
 

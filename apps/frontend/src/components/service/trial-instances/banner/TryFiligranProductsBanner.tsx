@@ -88,7 +88,7 @@ export const TryFiligranProductsBanner = () => {
 
   return (
     <Callout
-      className={`rounded-none from-blue to-turquoise-300 bg-gradient-to-r text-black justify-center`}>
+      className={`rounded-none from-blue to-turquoise-300 bg-gradient-to-r justify-center`}>
       <>{banner.text}</>
       <>{banner.learnMore}</>
       <GuardCapacityComponent

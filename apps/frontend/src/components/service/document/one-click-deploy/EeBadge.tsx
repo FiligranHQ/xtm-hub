@@ -24,12 +24,7 @@ const EeBadgeVisual = ({ interactive }: { interactive: boolean }) => {
         interactive && 'group-hover:bg-transparent',
         'text-[8px] font-bold leading-none'
       )}>
-      <span
-        className={cn(
-          EE_GRADIENT,
-          'bg-clip-text text-transparent',
-          interactive && 'group-hover:text-zinc-900'
-        )}>
+      <span className={cn(EE_GRADIENT, 'bg-clip-text text-transparent')}>
         {t('Service.ShareableResources.Deploy.EE.Tag')}
       </span>
     </span>
@@ -54,7 +49,7 @@ const EeBadge = ({ onClick }: EeBadgeProps) => {
           align="end"
           alignOffset={-9}
           sideOffset={9}
-          className={cn(EE_GRADIENT, 'text-zinc-900')}>
+          className={cn(EE_GRADIENT)}>
           <div className="flex flex-col">
             <span className="font-medium">
               {t('Service.ShareableResources.Deploy.EE.HoverTitle')}

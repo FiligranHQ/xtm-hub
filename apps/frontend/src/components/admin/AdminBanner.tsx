@@ -12,7 +12,7 @@ export const AdminBanner = () => {
     isAdminPath && (
       <Callout
         variant="warning"
-        className="rounded-none text-black justify-center uppercase">
+        className="rounded-none justify-center uppercase">
         {t('AdminBanner')}
       </Callout>
     )

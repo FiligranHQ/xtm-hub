@@ -17,7 +17,7 @@ export const PublicTryFiligranProductsBanner = () => {
   );
   return (
     <Callout
-      className="rounded-none text-black justify-center"
+      className="rounded-none justify-center"
       style={{
         backgroundImage:
           'linear-gradient(to right, hsl(var(--blue-default)), hsl(var(--turquoise-300)))',
