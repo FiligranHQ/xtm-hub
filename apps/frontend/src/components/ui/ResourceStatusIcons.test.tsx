@@ -112,7 +112,7 @@ describe('ResourceStatusIcons', () => {
         />
       );
       const icon = container.querySelector('svg');
-      expect(icon).not.toHaveClass('text-green-500');
+      expect(icon).not.toHaveClass('text-alert-success-primary');
     });
   });
 });

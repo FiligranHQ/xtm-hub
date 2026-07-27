@@ -40,7 +40,7 @@ export const ProfileFormEdit = ({ onSubmit }: ProfileFormEditProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('ProfilePage.Title')}</CardTitle>
+        <CardTitle className="heading-lg">{t('ProfilePage.Title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <AutoForm

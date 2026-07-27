@@ -147,7 +147,7 @@ const BadgeOverflowCounter = ({
                 +{hiddenCount}
               </Badge>
             </TooltipTrigger>
-            <TooltipContent className="bg-gray-50">
+            <TooltipContent>
               <div className="flex flex-wrap gap-s max-w-sm">
                 {badges.slice(visibleTags).map(({ id, name, color }) => (
                   <Badge

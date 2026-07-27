@@ -1,5 +1,6 @@
 import { LastDeployedPlatform } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifier } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import LastDeployedResourcesClient from './LastDeployedResourcesClient';
@@ -45,8 +46,8 @@ const buildResource = () => ({
 const buildPlatform = (
   serviceInstanceId: string,
   title: string,
-  productName = 'OpenCTI'
-): LastDeployedPlatform => ({ serviceInstanceId, title, productName });
+  platformIdentifier: PlatformIdentifier | null = PlatformIdentifier.Opencti
+): LastDeployedPlatform => ({ serviceInstanceId, title, platformIdentifier });
 
 const mockOverview = (resources: unknown[], isLoading = false) =>
   mockUseLastDeployedOverviewQueryQuery.mockReturnValue({
@@ -69,7 +70,7 @@ describe('LastDeployedResourcesClient', () => {
     );
 
     expect(screen.getByText('Title')).toBeInTheDocument();
-    expect(screen.getByText('OpenCTI - OpenCTI Platform')).toBeInTheDocument();
+    expect(screen.getByText('OpenCTI Platform')).toBeInTheDocument();
     expect(screen.getByText('My Custom View')).toBeInTheDocument();
     expect(screen.getByText('On')).toBeInTheDocument();
     expect(screen.getByText('By')).toBeInTheDocument();
@@ -83,7 +84,11 @@ describe('LastDeployedResourcesClient', () => {
       <LastDeployedResourcesClient
         platforms={[
           buildPlatform('platform-1', 'OpenCTI Platform'),
-          buildPlatform('platform-2', 'OpenAEV Platform', 'OpenAEV'),
+          buildPlatform(
+            'platform-2',
+            'OpenAEV Platform',
+            PlatformIdentifier.Openaev
+          ),
         ]}
       />
     );

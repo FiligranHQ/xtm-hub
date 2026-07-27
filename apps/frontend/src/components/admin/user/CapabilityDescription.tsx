@@ -40,7 +40,9 @@ export const CapabilityDescription = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('CapabilityDescription.Title')}</CardTitle>
+        <CardTitle className="heading-lg">
+          {t('CapabilityDescription.Title')}
+        </CardTitle>
         <CardDescription>
           {t('CapabilityDescription.Description')}
         </CardDescription>

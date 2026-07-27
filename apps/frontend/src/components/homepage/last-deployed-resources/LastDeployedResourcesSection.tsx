@@ -1,11 +1,9 @@
 import LastDeployedResourcesClient from '@/components/homepage/last-deployed-resources/LastDeployedResourcesClient';
 import XtmPlatformImage from '@/components/homepage/xtm-platform/XtmPlatformImage';
-import {
-  PlatformMetadataMapping,
-  ServiceDefinitionIdentifierToPlatformIdentifier,
-} from '@/components/registration/PlatformIdentifierMapping';
+import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import {
   LastDeployedOverviewQueryQuery,
+  PlatformIdentifier,
   RegisteredPlatformsQuery,
 } from '@graphql/generated';
 
@@ -15,18 +13,13 @@ export type LastDeployedOverview =
 export type LastDeployedPlatform = {
   serviceInstanceId: string;
   title: string;
-  productName: string;
+  platformIdentifier: PlatformIdentifier | null;
 };
 
-const resolveProductName = (
+const resolvePlatformIdentifier = (
   identifier: RegisteredPlatformsQuery['registeredPlatforms'][number]['identifier']
-): string => {
-  const platformIdentifier =
-    ServiceDefinitionIdentifierToPlatformIdentifier[identifier];
-  return platformIdentifier
-    ? PlatformMetadataMapping[platformIdentifier].name
-    : '';
-};
+): PlatformIdentifier | null =>
+  ServiceDefinitionIdentifierToPlatformIdentifier[identifier] ?? null;
 
 type LastDeployedResourcesSectionProps = {
   registeredPlatformsData: RegisteredPlatformsQuery;
@@ -45,7 +38,7 @@ export const LastDeployedResourcesSection = async ({
         {
           serviceInstanceId,
           title: platform.title,
-          productName: resolveProductName(platform.identifier),
+          platformIdentifier: resolvePlatformIdentifier(platform.identifier),
         },
       ];
     });
