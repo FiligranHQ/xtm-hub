@@ -1,0 +1,22 @@
+meta {
+  name: List manifests - invalid product
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/invalid/7.260604.0/connector/manifests
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 400
+  res.body.code: eq 400
+  res.body.message: eq Invalid product
+}
+
+docs {
+  Validation error case. The product segment must be one of opencti, openaev,
+  opengrc. Returns the {code, message} error contract.
+}

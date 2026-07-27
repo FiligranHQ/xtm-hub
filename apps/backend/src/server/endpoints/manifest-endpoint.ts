@@ -8,34 +8,31 @@ import { ManifestHelper } from '../../modules/shareable-resource/manifest/manife
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { logApp } from '../../utils/app-logger.util';
 import {
+  ManifestErrorMessage,
+  sendManifestError,
+} from './manifest-endpoint.errors';
+import { buildManifestRateLimiterOptions } from './manifest-endpoint.rate-limit';
+import {
   isValidManifestName,
   parseCount,
   validateManifestParams,
 } from './manifest-endpoint.utils';
 
-const MANIFEST_RATE_WINDOW_MS = 60 * 1000;
-const MANIFEST_RATE_MAX = 300;
-
-const manifestRateLimiter = rateLimit({
-  windowMs: MANIFEST_RATE_WINDOW_MS,
-  max: MANIFEST_RATE_MAX,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+const manifestRateLimiter = rateLimit(buildManifestRateLimiterOptions());
 
 export const ManifestEndpoint = {
   listManifests: async (req: Request, res: Response): Promise<void> => {
     try {
       const validation = validateManifestParams(req.params);
       if (!validation.ok) {
-        res.status(400).json({ code: 400, message: validation.message });
+        sendManifestError(res, 400, validation.message);
         return;
       }
       const { product, version, integrationType } = validation;
 
       const count = parseCount(req.query.count);
       if (count === undefined) {
-        res.status(400).json({ code: 400, message: 'Invalid count' });
+        sendManifestError(res, 400, ManifestErrorMessage.InvalidCount);
         return;
       }
 
@@ -48,7 +45,7 @@ export const ManifestEndpoint = {
       res.status(200).json({ manifests });
     } catch (error) {
       logApp.error('Error while listing manifests', { error });
-      res.status(500).json({ code: 500, message: 'Internal server error' });
+      sendManifestError(res, 500, ManifestErrorMessage.InternalServerError);
     }
   },
 
@@ -59,7 +56,7 @@ export const ManifestEndpoint = {
     try {
       const validation = validateManifestParams(req.params);
       if (!validation.ok) {
-        res.status(400).json({ code: 400, message: validation.message });
+        sendManifestError(res, 400, validation.message);
         return;
       }
       const { product, version, integrationType } = validation;
@@ -76,7 +73,7 @@ export const ManifestEndpoint = {
           version,
           type: integrationType,
         });
-        res.status(404).json({ code: 404, message: 'Manifest not found' });
+        sendManifestError(res, 404, ManifestErrorMessage.ManifestNotFound);
         return;
       }
 
@@ -88,7 +85,7 @@ export const ManifestEndpoint = {
         res.destroy(error as Error);
         return;
       }
-      res.status(500).json({ code: 500, message: 'Internal server error' });
+      sendManifestError(res, 500, ManifestErrorMessage.InternalServerError);
     }
   },
 
@@ -99,14 +96,14 @@ export const ManifestEndpoint = {
     try {
       const validation = validateManifestParams(req.params);
       if (!validation.ok) {
-        res.status(400).json({ code: 400, message: validation.message });
+        sendManifestError(res, 400, validation.message);
         return;
       }
       const { product, version, integrationType } = validation;
 
       const { name } = req.params;
       if (typeof name !== 'string' || !isValidManifestName(name)) {
-        res.status(400).json({ code: 400, message: 'Invalid manifest name' });
+        sendManifestError(res, 400, ManifestErrorMessage.InvalidManifestName);
         return;
       }
 
@@ -123,7 +120,7 @@ export const ManifestEndpoint = {
           type: integrationType,
           name,
         });
-        res.status(404).json({ code: 404, message: 'Manifest not found' });
+        sendManifestError(res, 404, ManifestErrorMessage.ManifestNotFound);
         return;
       }
 
@@ -135,7 +132,7 @@ export const ManifestEndpoint = {
         res.destroy(error as Error);
         return;
       }
-      res.status(500).json({ code: 500, message: 'Internal server error' });
+      sendManifestError(res, 500, ManifestErrorMessage.InternalServerError);
     }
   },
 };
@@ -170,7 +167,7 @@ const streamManifestByName = async (
     logApp.error('Manifest name failed validation before MinIO lookup', {
       name,
     });
-    res.status(404).json({ code: 404, message: 'Manifest not found' });
+    sendManifestError(res, 404, ManifestErrorMessage.ManifestNotFound);
     return;
   }
 
@@ -180,7 +177,7 @@ const streamManifestByName = async (
     logApp.error('Manifest row exists but object is missing in storage', {
       key,
     });
-    res.status(404).json({ code: 404, message: 'Manifest file not found' });
+    sendManifestError(res, 404, ManifestErrorMessage.ManifestFileNotFound);
     return;
   }
 
@@ -194,7 +191,7 @@ const streamManifestByName = async (
       res.destroy(error);
     } else {
       res.removeHeader('Cache-Control');
-      res.status(404).json({ code: 404, message: 'Manifest file not found' });
+      sendManifestError(res, 404, ManifestErrorMessage.ManifestFileNotFound);
     }
   });
 
