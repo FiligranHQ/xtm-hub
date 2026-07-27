@@ -349,7 +349,7 @@
       "LabelWithName": "Bienvenue {name}",
       "ConnectedProducts": "{count, plural, one {Produit connecté} other {Produits connectés}}",
       "Title": "Développez et faites évoluer votre plateforme XTM",
-      "Description": "Connectez votre produit OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience sur la plateforme XTM.",
+      "Description": "Connectez votre OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience de la plateforme XTM.",
       "Cta": "Connectez votre produit",
       "ImageAlt": "Illustration de la plateforme XTM"
     },

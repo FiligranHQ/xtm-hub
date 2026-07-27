@@ -349,7 +349,7 @@
       "LabelWithName": "Welcome {name}",
       "ConnectedProducts": "{count, plural, one {Connected product} other {Connected products}}",
       "Title": "Extend and scale your XTM Platform",
-      "Description": "Connect your OpenCTI or OpenAEV product to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM product experience.",
+      "Description": "Connect your OpenCTI or OpenAEV to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM Platform experience.",
       "Cta": "Connect your product",
       "ImageAlt": "XTM Platform illustration"
     },
