@@ -1,0 +1,17 @@
+mutation SolutionCategoryAdd($input: AddSolutionCategoryInput!) {
+  addSolutionCategory(input: $input) {
+    ...SolutionCategoryRow
+  }
+}
+
+mutation SolutionCategoryEdit($id: ID!, $input: EditSolutionCategoryInput!) {
+  editSolutionCategory(id: $id, input: $input) {
+    ...SolutionCategoryRow
+  }
+}
+
+mutation SolutionCategoryDelete($id: ID!) {
+  deleteSolutionCategory(id: $id) {
+    id
+  }
+}

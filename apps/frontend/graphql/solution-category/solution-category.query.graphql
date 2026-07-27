@@ -1,0 +1,30 @@
+fragment SolutionCategoryRow on SolutionCategory {
+  id
+  name
+  product
+}
+
+query SolutionCategoriesList(
+  $count: Int!
+  $cursor: ID
+  $orderBy: SolutionCategoryOrdering!
+  $orderMode: OrderingMode!
+  $product: FiligranProduct
+) {
+  solutionCategories(
+    first: $count
+    after: $cursor
+    orderBy: $orderBy
+    orderMode: $orderMode
+    product: $product
+  ) {
+    totalCount
+    edges {
+      node {
+        id
+        name
+        product
+      }
+    }
+  }
+}

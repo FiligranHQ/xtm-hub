@@ -411,6 +411,21 @@
     "Name": "Name",
     "Product": "Product"
   },
+  "SolutionCategoryActions": {
+    "Add": "Add solution category"
+  },
+  "SolutionCategoryForm": {
+    "Name": "Name",
+    "Product": "Product"
+  },
+  "SolutionCategoryListPage": {
+    "AllProducts": "All products",
+    "Name": "Name",
+    "Product": "Product"
+  },
+  "DeleteSolutionCategoryDialog": {
+    "Text": "Are you sure you want to delete {name}?"
+  },
   "LocaleSwitcher": {
     "Label": "Language",
     "en": "English",

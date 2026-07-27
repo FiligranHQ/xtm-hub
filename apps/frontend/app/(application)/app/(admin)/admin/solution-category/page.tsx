@@ -1,6 +1,8 @@
+'use client';
 import GuardCapacityComponent from '@/components/AdminGuard';
+import SolutionCategories from '@/components/admin/solution-category/SolutionCategories';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 
 const breadcrumbValue = [
   {
@@ -13,8 +15,8 @@ const breadcrumbValue = [
 
 export const dynamic = 'force-dynamic';
 
-const Page = async () => {
-  const t = await getTranslations();
+const Page = () => {
+  const t = useTranslations();
 
   return (
     <GuardCapacityComponent displayError>

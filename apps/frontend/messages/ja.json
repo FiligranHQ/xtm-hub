@@ -411,6 +411,21 @@
     "Name": "名前",
     "Product": "製品"
   },
+  "SolutionCategoryActions": {
+    "Add": "ソリューションカテゴリーを追加"
+  },
+  "SolutionCategoryForm": {
+    "Name": "名前",
+    "Product": "製品"
+  },
+  "SolutionCategoryListPage": {
+    "AllProducts": "すべての製品",
+    "Name": "名前",
+    "Product": "製品"
+  },
+  "DeleteSolutionCategoryDialog": {
+    "Text": "{name} を削除してもよろしいですか？"
+  },
   "LocaleSwitcher": {
     "Label": "言語",
     "en": "English",
