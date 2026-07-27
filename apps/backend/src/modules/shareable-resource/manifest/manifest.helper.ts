@@ -189,6 +189,14 @@ export const ManifestHelper = {
     return `${product}/${version}/connector/manifest/${buildManifestVersion(version, now)}.json`;
   },
 
+  buildManifestObjectKey: (
+    product: string,
+    version: string,
+    name: string
+  ): string => {
+    return `${product}/${version}/connector/manifest/${name}.json`;
+  },
+
   uploadManifest: async (
     manifest: ManifestOutput,
     fileName: string

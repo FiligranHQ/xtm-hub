@@ -1,0 +1,15 @@
+meta {
+  name: Get latest manifest
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/opencti/7.260604.0/connector/manifests/latest
+  body: none
+  auth: none
+}
+
+docs {
+  Downloads the latest manifest for the triplet. Returns 404 if none exists.
+}
