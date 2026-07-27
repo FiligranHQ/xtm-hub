@@ -4,14 +4,13 @@ import {
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
 import {
+  MANIFEST_VERSION_PATTERN,
   ManifestFragmentHelper,
-  manifestVersionRegex,
 } from '../../modules/shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { MANIFEST_LIST_DEFAULT_COUNT } from '../../modules/shareable-resource/manifest/manifest.consts';
 
-const versionPattern = manifestVersionRegex.source.replace(/^\^|\$$/g, '');
 const MANIFEST_NAME_PATTERN = new RegExp(
-  `^connector-manifest-(?:${versionPattern})-\\d{12}$`,
+  `^connector-manifest-(?:${MANIFEST_VERSION_PATTERN})-\\d{12}$`,
   'i'
 );
 
