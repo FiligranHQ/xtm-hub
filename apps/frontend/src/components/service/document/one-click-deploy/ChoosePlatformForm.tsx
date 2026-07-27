@@ -97,7 +97,9 @@ const ChoosePlatformForm = ({
                         />
                         <FormLabel
                           htmlFor={platform.id}
-                          className={cn(isDisabled && 'text-gray/60')}>
+                          className={cn(
+                            isDisabled && 'text-content-body-base'
+                          )}>
                           {platform.title}
                         </FormLabel>
                       </div>

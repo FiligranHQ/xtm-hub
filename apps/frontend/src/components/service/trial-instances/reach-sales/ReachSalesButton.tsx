@@ -53,7 +53,7 @@ export const ReachSalesButton = ({
     if ('gradient' === variant) {
       return (
         <GradientButton
-          className="bg-white dark:bg-none"
+          className="bg-background dark:bg-none"
           onClick={() => setIsConfirmationDialogOpen(true)}
           disabled={isInFlight}>
           {t('Service.Trials.ReachOutToSales')}
@@ -75,7 +75,7 @@ export const ReachSalesButton = ({
     return (
       <Button
         onClick={() => setIsConfirmationDialogOpen(true)}
-        className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
+        className="ml-xl bg-background hover:bg-background text-[12px] px-2 py-0.5 min-h-0 h-auto"
         disabled={isInFlight}>
         {t('Service.Trials.ReachOutToSales')}
         <ArrowRightAltIcon className="ml-s size-4" />

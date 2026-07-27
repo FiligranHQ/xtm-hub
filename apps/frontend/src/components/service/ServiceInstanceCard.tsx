@@ -76,10 +76,10 @@ const ServiceInstanceCard = ({
   return (
     <li className={cn('relative rounded flex', className)}>
       {serviceInstance.disableCard && (
-        <div className="absolute inset-0  bg-white/50 dark:bg-black/60 z-10 rounded pointer-events-none" />
+        <div className="absolute inset-0  bg-elevation-background-layer-0 dark:bg-black/60 z-10 rounded pointer-events-none" />
       )}
       {serviceInstance.hoverLinks && (
-        <div className="absolute inset-0 bg-white/70 dark:bg-black/80 z-10 opacity-0 hover:opacity-100 flex">
+        <div className="absolute inset-0 bg-elevation-background-layer-1 dark:bg-black/80 z-10 opacity-0 hover:opacity-100 flex">
           <div className="flex flex-col gap-s m-auto">
             {serviceInstance.hoverLinks?.map(renderHoverButton)}
           </div>
@@ -108,7 +108,7 @@ const ServiceInstanceCard = ({
               />
             )}
             {serviceInstance.displayedServiceStatus && (
-              <span className="px-2 py-1 ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-[11px] text-black">
+              <span className="px-2 py-1 ml-auto rounded from-blue to-turquoise-300 bg-gradient-to-r border-none uppercase text-[11px]">
                 {serviceInstance.displayedServiceStatus}
               </span>
             )}

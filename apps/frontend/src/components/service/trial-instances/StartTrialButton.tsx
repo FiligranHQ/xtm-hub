@@ -61,7 +61,8 @@ export const StartTrialButton = ({
   if (isBlacklisted) {
     return (
       <Button
-        className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
+        /* eslint-disable-next-line xtm-hub-theme-rules/no-fixed-tailwind-color */
+        className="ml-xl bg-white hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
         disabled>
         {t('Service.Trials.StartTrial')}
         <ArrowRightAltIcon className="ml-s size-4" />
@@ -142,7 +143,7 @@ export const StartTrialButton = ({
       open={openSheet}
       trigger={
         availableTrials.length > 0 && (
-          <GradientButton className="bg-white dark:bg-none flex items-center">
+          <GradientButton className="flex items-center">
             {t('Service.Trials.StartTrial')}
           </GradientButton>
         )
