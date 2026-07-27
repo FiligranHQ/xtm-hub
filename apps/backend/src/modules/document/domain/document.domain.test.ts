@@ -21,6 +21,7 @@ import {
 } from '../../../__generated__/resolvers-types';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
+import { OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-view/custom-view.model';
 import { IngestManifestDomain } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
 import { ManifestInformation } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.model';
 import sampleExtractedManifest from '../../shareable-resource/opencti/integration/ingest-manifest/test/sample-extracted-manifest.json';
@@ -411,6 +412,98 @@ describe('document domain', () => {
           );
 
         expect(allContractsConnection.edges).toHaveLength(3);
+      });
+    });
+
+    describe('entity type filtering', () => {
+      const CUSTOM_VIEW_SERVICE_INSTANCE_ID =
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID;
+
+      const createCustomViewWithEntityTypes = async (
+        name: string,
+        entityTypes: string[]
+      ): Promise<Document> => {
+        const document = await TestHelper.document.create({
+          name,
+          type: OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+          service_instance_id: CUSTOM_VIEW_SERVICE_INSTANCE_ID,
+          active: true,
+        });
+        await TestHelper.documentMetadata.create({
+          document_id: document.id,
+          key: DocumentMetadataKeyCode.EntityTypes as DocumentMetadataKey,
+          value: JSON.stringify(entityTypes),
+        });
+        return document;
+      };
+
+      const loadCustomViewsFilteredByEntityTypes = (entityTypes: string[]) =>
+        DocumentDomain.loadParentDocumentsByServiceInstance(
+          OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+          {
+            orderBy: DocumentOrdering.CreatedAt,
+            orderMode: OrderingMode.Desc,
+            first: 10,
+            serviceInstanceId: CUSTOM_VIEW_SERVICE_INSTANCE_ID,
+            logicalFilters: {
+              operator: LogicalOperator.And,
+              children: [
+                {
+                  leaf: {
+                    key: FilterKey.EntityType,
+                    value: entityTypes,
+                  },
+                },
+              ],
+            },
+          },
+          [DocumentMetadataKeyCode.EntityTypes]
+        );
+
+      beforeEach(async () => {
+        await TestHelper.document.delete({
+          type: OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        });
+      });
+
+      it('should filter custom views by a single entity type', async () => {
+        const malwareReport = await createCustomViewWithEntityTypes(
+          'malware-report',
+          ['Malware', 'Report']
+        );
+        await createCustomViewWithEntityTypes('report-only', ['Report']);
+
+        const connection = await loadCustomViewsFilteredByEntityTypes([
+          'Malware',
+        ]);
+
+        expect(connection.edges).toHaveLength(1);
+        expect(connection.edges[0]?.node.id).toBe(malwareReport.id);
+      });
+
+      it('should return every custom view sharing a selected entity type', async () => {
+        await createCustomViewWithEntityTypes('malware-report', [
+          'Malware',
+          'Report',
+        ]);
+        await createCustomViewWithEntityTypes('report-only', ['Report']);
+
+        const connection = await loadCustomViewsFilteredByEntityTypes([
+          'Report',
+        ]);
+
+        expect(connection.edges).toHaveLength(2);
+      });
+
+      it('should return no custom views when none match the selected entity type', async () => {
+        await createCustomViewWithEntityTypes('malware-report', [
+          'Malware',
+          'Report',
+        ]);
+
+        const connection = await loadCustomViewsFilteredByEntityTypes(['Tool']);
+
+        expect(connection.edges).toHaveLength(0);
       });
     });
   });
