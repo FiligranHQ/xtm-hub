@@ -50,32 +50,30 @@ const LastDeployedResourceRow = ({
     <Link
       href={url}
       className="group contents">
-      <div className="min-w-0">
-        <div className="min-w-0 max-w-full inline-flex items-center gap-m overflow-hidden rounded p-s bg-elevation-background-layer-1 group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
-          <div className="shrink-0">
-            <ResourceTypeIcon
-              resourceType={resourceType}
-              className="size-6"
-            />
-          </div>
-          <div className="min-w-0 flex-1 flex items-center gap-s">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="min-w-0 shrink content-body-base font-bold truncate">
-                    {document.name}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>{document.name}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+      <div className="min-w-0 max-w-full justify-self-start inline-flex items-center gap-m overflow-hidden rounded p-s bg-elevation-background-layer-1 group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
+        <ResourceTypeIcon
+          resourceType={resourceType}
+          className="size-6 shrink-0"
+        />
+        <div className="min-w-0 flex-1 flex items-center gap-s">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="min-w-0 shrink content-body-base font-bold truncate">
+                  {document.name}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>{document.name}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          {document.use_cases && document.use_cases.length > 0 && (
             <div className="min-w-16 shrink">
               <BadgeOverflowCounter
-                badges={document.use_cases ?? []}
+                badges={document.use_cases}
                 badgeClassName={BADGE_CLASS}
               />
             </div>
-          </div>
+          )}
         </div>
       </div>
       <div className="shrink-0 md:max-w-56 lg:max-w-72 xl:max-w-80 2xl:max-w-96 flex items-center gap-s overflow-hidden whitespace-nowrap text-text-default-secondary txt-small rounded group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
