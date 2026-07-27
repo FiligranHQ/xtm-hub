@@ -32,6 +32,7 @@ import {
   ManifestType,
   PlatformIdentifier,
 } from '../../__generated__/resolvers-types';
+import { StorageUnavailableError } from '../../thirdparty/minio/storage-error';
 import { ManifestEndpoint } from './manifest-endpoint';
 
 const buildResponse = () => ({
@@ -107,6 +108,60 @@ describe('downloadLatestManifest', () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(loadManifestsMock).not.toHaveBeenCalled();
   });
+  it('returns 503 when the storage is unavailable', async () => {
+    loadManifestsMock.mockResolvedValue([
+      { name: VALID_NAME, created_at: new Date() },
+    ]);
+    downloadFileMock.mockRejectedValue(
+      new StorageUnavailableError('Cannot retrieve key')
+    );
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadLatestManifest(
+      buildRequest(VALID),
+      res as unknown as Response
+    );
+
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.removeHeader).toHaveBeenCalledWith('Cache-Control');
+  });
+
+  it('returns 404 when the manifest object is missing from storage', async () => {
+    loadManifestsMock.mockResolvedValue([
+      { name: VALID_NAME, created_at: new Date() },
+    ]);
+    downloadFileMock.mockResolvedValue(null);
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadLatestManifest(
+      buildRequest(VALID),
+      res as unknown as Response
+    );
+
+    expect(res.status).toHaveBeenCalledWith(404);
+  });
+
+  it('returns 503 when the stream fails before headers are sent', async () => {
+    loadManifestsMock.mockResolvedValue([
+      { name: VALID_NAME, created_at: new Date() },
+    ]);
+    let onError: ((error: Error) => void) | undefined;
+    const on = vi.fn((event: string, listener: (error: Error) => void) => {
+      if (event === 'error') onError = listener;
+    });
+    downloadFileMock.mockResolvedValue({ on, pipe: vi.fn() });
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadLatestManifest(
+      buildRequest(VALID),
+      res as unknown as Response
+    );
+
+    onError?.(new Error('stream failure'));
+
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.destroy).not.toHaveBeenCalled();
+  });
 });
 
 describe('downloadManifestByName', () => {
@@ -145,6 +200,25 @@ describe('downloadManifestByName', () => {
       'public, max-age=31536000, immutable'
     );
     expect(pipe).toHaveBeenCalledWith(res);
+  });
+
+  it('returns 503 when the storage is unavailable', async () => {
+    getManifestByNameMock.mockResolvedValue({
+      name: VALID_NAME,
+      created_at: new Date(),
+    });
+    downloadFileMock.mockRejectedValue(
+      new StorageUnavailableError('Cannot retrieve key')
+    );
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadManifestByName(
+      buildRequest({ ...VALID, name: VALID_NAME }),
+      res as unknown as Response
+    );
+
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.removeHeader).toHaveBeenCalledWith('Cache-Control');
   });
 });
 

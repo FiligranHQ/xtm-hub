@@ -14,6 +14,10 @@ import { DocumentHelper } from '../../modules/document/document.helper';
 import { Upload } from '../../modules/document/document.uploads.helper';
 import { logApp } from '../../utils/app-logger.util';
 import { getErrorMessage, toError } from '../../utils/error/error-guard.util';
+import {
+  isObjectNotFoundError,
+  StorageUnavailableError,
+} from './storage-error';
 import { MinioFile, UploadedFile } from './types';
 
 const getEndpoint = () => {
@@ -168,10 +172,20 @@ export const MinIOClient = {
       );
       return object.Body;
     } catch (err) {
+      if (isObjectNotFoundError(err)) {
+        logApp.info('[FILE STORAGE] Object not found in S3', {
+          key: minioName,
+        });
+        return null;
+      }
       logApp.error('[FILE STORAGE] Cannot retrieve file from S3', {
-        error: err,
+        key: minioName,
+        error: getErrorMessage(err),
       });
-      return null;
+      throw new StorageUnavailableError(
+        `Cannot retrieve ${minioName} from storage`,
+        { cause: err }
+      );
     }
   },
 

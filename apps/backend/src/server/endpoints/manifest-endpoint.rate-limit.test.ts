@@ -18,7 +18,11 @@ const buildRequest = (ip: string, userAgent = 'agent-a') =>
 const buildResponse = () => {
   const json = vi.fn();
   const status = vi.fn().mockReturnValue({ json });
-  return { res: { status } as unknown as Response, status, json };
+  return {
+    res: { status, removeHeader: vi.fn() } as unknown as Response,
+    status,
+    json,
+  };
 };
 
 describe('buildManifestRateLimiterOptions', () => {

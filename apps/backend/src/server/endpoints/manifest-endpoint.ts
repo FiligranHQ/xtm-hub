@@ -6,7 +6,9 @@ import { PlatformIdentifier } from '../../__generated__/resolvers-types';
 import { ManifestDomain } from '../../modules/shareable-resource/manifest/manifest.domain';
 import { ManifestHelper } from '../../modules/shareable-resource/manifest/manifest.helper';
 import { MinIOClient } from '../../thirdparty/minio/client';
+import { StorageUnavailableError } from '../../thirdparty/minio/storage-error';
 import { logApp } from '../../utils/app-logger.util';
+import { getErrorMessage } from '../../utils/error/error-guard.util';
 import {
   ManifestErrorMessage,
   sendManifestError,
@@ -80,11 +82,21 @@ export const ManifestEndpoint = {
       res.setHeader('Cache-Control', 'no-cache');
       await streamManifestByName(res, product, version, latest.name);
     } catch (error) {
-      logApp.error('Error while retrieving latest manifest', { error });
       if (res.headersSent) {
+        logApp.error('Latest manifest request failed after headers were sent', {
+          error,
+        });
         res.destroy(error as Error);
         return;
       }
+      if (error instanceof StorageUnavailableError) {
+        logApp.error('Manifest storage unavailable', {
+          error: getErrorMessage(error),
+        });
+        sendManifestError(res, 503, ManifestErrorMessage.StorageUnavailable);
+        return;
+      }
+      logApp.error('Error while retrieving latest manifest', { error });
       sendManifestError(res, 500, ManifestErrorMessage.InternalServerError);
     }
   },
@@ -127,11 +139,21 @@ export const ManifestEndpoint = {
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       await streamManifestByName(res, product, version, manifest.name);
     } catch (error) {
-      logApp.error('Error while retrieving manifest by name', { error });
       if (res.headersSent) {
+        logApp.error('Manifest request failed after headers were sent', {
+          error,
+        });
         res.destroy(error as Error);
         return;
       }
+      if (error instanceof StorageUnavailableError) {
+        logApp.error('Manifest storage unavailable', {
+          error: getErrorMessage(error),
+        });
+        sendManifestError(res, 503, ManifestErrorMessage.StorageUnavailable);
+        return;
+      }
+      logApp.error('Error while retrieving manifest by name', { error });
       sendManifestError(res, 500, ManifestErrorMessage.InternalServerError);
     }
   },
@@ -190,8 +212,7 @@ const streamManifestByName = async (
     if (res.headersSent) {
       res.destroy(error);
     } else {
-      res.removeHeader('Cache-Control');
-      sendManifestError(res, 404, ManifestErrorMessage.ManifestFileNotFound);
+      sendManifestError(res, 503, ManifestErrorMessage.StorageUnavailable);
     }
   });
 

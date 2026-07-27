@@ -8,7 +8,13 @@ import {
 const buildResponse = () => {
   const json = vi.fn();
   const status = vi.fn().mockReturnValue({ json });
-  return { res: { status } as unknown as Response, status, json };
+  const removeHeader = vi.fn();
+  return {
+    res: { status, removeHeader } as unknown as Response,
+    status,
+    json,
+    removeHeader,
+  };
 };
 
 describe('sendManifestError', () => {
@@ -28,4 +34,11 @@ describe('sendManifestError', () => {
       expect(json).toHaveBeenCalledWith({ code: status, message });
     }
   );
+  it('clears the cache directive before sending an error', () => {
+    const { res, removeHeader } = buildResponse();
+
+    sendManifestError(res, 404, ManifestErrorMessage.ManifestFileNotFound);
+
+    expect(removeHeader).toHaveBeenCalledWith('Cache-Control');
+  });
 });
