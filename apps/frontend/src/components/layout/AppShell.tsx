@@ -28,10 +28,7 @@ export const AppShell = ({
           </header>
           <SharedContent className={contentClassName}>
             {children}
-            <AppFooter
-              isHomePageV2Enabled
-              className="mt-auto mx-0"
-            />
+            <AppFooter className="mt-auto mx-0" />
           </SharedContent>
         </div>
       </div>

@@ -1,11 +1,7 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-interface LoginMessageProps {
-  isHomePageV2Enabled: boolean;
-}
-
-const LoginMessage = ({ isHomePageV2Enabled }: LoginMessageProps) => {
+const LoginMessage = () => {
   const t = useTranslations();
 
   return (
@@ -13,11 +9,7 @@ const LoginMessage = ({ isHomePageV2Enabled }: LoginMessageProps) => {
       {t('LoginPage.DontHaveAccount')}{' '}
       <Link
         className="text-primary"
-        href={
-          isHomePageV2Enabled
-            ? '/sign-up'
-            : 'https://filigran.io/filigran-account-creation/?form_origin=xtmhub'
-        }>
+        href="/sign-up">
         {t('LoginPage.SignUp')}
       </Link>
     </div>

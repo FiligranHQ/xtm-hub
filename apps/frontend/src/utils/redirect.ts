@@ -19,7 +19,7 @@ export const buildLoginRedirect = (
 
 /**
  * Builds a safe signup redirect URL with the current pathname base64-encoded
- * as a query param. Used when HOME_PAGE_V2 feature flag is enabled.
+ * as a query param.
  * Returns '/sign-up' when no pathname is provided.
  */
 export const buildSignupRedirect = (

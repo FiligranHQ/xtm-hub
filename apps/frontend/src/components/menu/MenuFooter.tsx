@@ -17,7 +17,6 @@ export const MenuFooter = ({ open, handleOpenMenu }: PublicMenuFooterProps) => {
       <CollapseMenuButton
         open={open}
         handleOpenMenu={handleOpenMenu}
-        isHomepageV2={true}
       />
       {open ? (
         <div className="flex items-center px-m pb-s gap-1 text-text-default-secondary text-[10px] whitespace-nowrap">

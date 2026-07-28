@@ -5,11 +5,9 @@ import ConnectProductFromHubModal, {
 import ChoosePlatformForm from '@/components/service/document/one-click-deploy/ChoosePlatformForm';
 import EeBadge from '@/components/service/document/one-click-deploy/EeBadge';
 import EeLearnMoreSheet from '@/components/service/document/one-click-deploy/EeLearnMoreSheet';
-import NoPlatformDisplay from '@/components/service/document/one-click-deploy/NoPlatformDisplay';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/OnePlatformDisplay';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
 import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { isProduction } from '@/lib/utils';
 import { getPlatformIdentifier, isEeCapableContract } from '@/utils/platform';
@@ -18,7 +16,6 @@ import { AlertDialog, AlertDialogContent, SimpleTooltip } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { OneClickDeployMutation as OneClickDeployMutationType } from '@generated/OneClickDeployMutation.graphql';
-import { FeatureFlag } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
@@ -121,7 +118,6 @@ const OneClickDeploy = ({
     setIsEeSheetOpen(true);
   }, [documentData.id, documentData.name]);
 
-  const isFeatureEnabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const alertContent = useMemo(() => {
     if (platforms.length === 1) {
       return (
@@ -165,24 +161,13 @@ const OneClickDeploy = ({
 
   if (platforms.length === 0) {
     return (
-      <>
-        {isFeatureEnabled ? (
-          <ConnectProductFromHubModal
-            isOpen={isOpen}
-            onOpenChange={(isOpen) => {
-              setIsOpen(isOpen);
-            }}
-            origin={ConnectProductOrigin.library}
-          />
-        ) : (
-          <NoPlatformDisplay
-            setIsOpen={setIsOpen}
-            platformIdentifier={
-              PlatformMetadataMapping[platformIdentifier]?.name ?? 'OpenCTI'
-            }
-          />
-        )}
-      </>
+      <ConnectProductFromHubModal
+        isOpen={isOpen}
+        onOpenChange={(isOpen) => {
+          setIsOpen(isOpen);
+        }}
+        origin={ConnectProductOrigin.library}
+      />
     );
   }
   const button = (

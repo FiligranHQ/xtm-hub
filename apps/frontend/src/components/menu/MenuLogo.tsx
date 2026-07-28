@@ -1,28 +1,13 @@
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
-import { cn } from '@/lib/utils';
-import { FeatureFlag } from '@graphql/generated';
 import Link from 'next/link';
 
 interface MenuLogoProps {
-  withDarkBackground?: boolean;
   href: string;
 }
 
-export const MenuLogo = ({
-  withDarkBackground = true,
-  href,
-}: MenuLogoProps) => {
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
-
+export const MenuLogo = ({ href }: MenuLogoProps) => {
   return (
-    <div
-      className={cn(
-        'flex z-10 shrink-0 sticky top-0 h-16 items-center px-m',
-        withDarkBackground &&
-          !isHomePageV2Enabled &&
-          'bg-elevation-background-layer-1'
-      )}>
+    <div className="flex z-10 shrink-0 sticky top-0 h-16 items-center px-m">
       <Link
         href={href}
         aria-label="XTM Hub by Filigran"

@@ -18,10 +18,7 @@ const PublicMenu = () => {
         'max-md:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-gradient-layer-0-white duration-300 ease-in-out',
         open ? 'w-48' : 'w-14'
       )}>
-      <MenuLogo
-        href={`/${locale}`}
-        withDarkBackground={false}
-      />
+      <MenuLogo href={`/${locale}`} />
       <div className="flex flex-col flex-1 justify-between min-h-0">
         <PublicNavigation open={open} />
         <MenuFooter

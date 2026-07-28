@@ -5,12 +5,9 @@ import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import PrivateNavigation from '@/components/menu/navigation/private/PrivateNavigation';
 import HeaderOrganizationSwitcher from '@/components/menu/organization-switcher/HeaderOrganizationSwitcher';
-import { NavigationApp } from '@/components/Navigation';
 import { NotificationButton } from '@/components/notification/NotificationButton';
-import { DisplayTrialList } from '@/components/service/trial-instances/display-trial-header/DisplayTrialList';
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
@@ -27,7 +24,7 @@ import {
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-import { FeatureFlag, OrganizationCapability } from '@graphql/generated';
+import { OrganizationCapability } from '@graphql/generated';
 import Logo from '@public/logo.svg';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
@@ -45,7 +42,6 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
   const router = useRouter();
   const t = useTranslations();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
 
   // Legitimate effect: close the menu on route change.
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -66,24 +62,19 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
             displayLogo ? '' : 'hidden'
           )}
         />
-        {isHomePageV2Enabled && <HeaderOrganizationSwitcher />}
+        <HeaderOrganizationSwitcher />
       </div>
 
       <DisplayLogo className="text-primary mr-2 h-full py-l sm:hidden" />
 
       <div className="mobile:hidden flex items-center gap-s">
-        {isHomePageV2Enabled ? (
-          <ConnectedProductsDropdown />
-        ) : (
-          <DisplayTrialList />
-        )}
+        <ConnectedProductsDropdown />
         {canManageUser && <NotificationButton />}
         <IconActions
           className="rounded-full"
           icon={
             <>
-              <div
-                className={`my-auto [&_img]:object-cover ${isHomePageV2Enabled ? 'size-6 text-primary [&_span]:bg-transparent' : 'size-10'}`}>
+              <div className="my-auto [&_img]:object-cover size-6 text-primary [&_span]:bg-transparent">
                 <Avatar src={me?.picture || undefined} />
               </div>
               <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
@@ -139,20 +130,14 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
               </SheetClose>
             </SheetHeader>
             <div className="flex flex-1 flex-col h-full justify-between">
-              {isHomePageV2Enabled && (
-                <div className="pt-m flex flex-col gap-m px-m">
-                  <HeaderOrganizationSwitcher />
-                  <div className="flex items-center justify-between">
-                    <ConnectedProductsDropdown />
-                    {canManageUser && <NotificationButton />}
-                  </div>
+              <div className="pt-m flex flex-col gap-m px-m">
+                <HeaderOrganizationSwitcher />
+                <div className="flex items-center justify-between">
+                  <ConnectedProductsDropdown />
+                  {canManageUser && <NotificationButton />}
                 </div>
-              )}
-              {isHomePageV2Enabled ? (
-                <PrivateNavigation open={true} />
-              ) : (
-                <NavigationApp open={true} />
-              )}
+              </div>
+              <PrivateNavigation open={true} />
               <div className="pb-xl flex flex-col text-center">
                 <Link href={`/${APP_PATH}/profile`}>
                   <div className="w-full p-2 hover:bg-hover rounded">
@@ -182,21 +167,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
       </div>
     </>
   );
-
-  if (isHomePageV2Enabled) {
-    return headerContent;
-  }
-
-  return (
-    <header
-      id="app-header"
-      className={cn(
-        'sticky top-0 z-20 flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong px-4 justify-between bg-gradient-background',
-        !displayLogo && 'sm:justify-end'
-      )}>
-      {headerContent}
-    </header>
-  );
+  return headerContent;
 };
 
 // Component export
