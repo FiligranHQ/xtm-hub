@@ -40,12 +40,14 @@ const buildResponse = () => ({
   status: vi.fn().mockReturnThis(),
   json: vi.fn().mockReturnThis(),
   destroy: vi.fn(),
+  end: vi.fn(),
 });
 
 const buildRequest = (
   params: Record<string, string>,
-  query: Record<string, unknown> = {}
-) => ({ params, query }) as unknown as Request;
+  query: Record<string, unknown> = {},
+  fresh = false
+) => ({ params, query, fresh }) as unknown as Request;
 
 const VALID = {
   product: PlatformIdentifier.Opencti,
@@ -106,6 +108,7 @@ describe('downloadLatestManifest', () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(loadManifestsMock).not.toHaveBeenCalled();
   });
+
   it('returns 503 when the storage is unavailable', async () => {
     loadManifestsMock.mockResolvedValue([
       { name: VALID_NAME, created_at: new Date() },
@@ -159,6 +162,37 @@ describe('downloadLatestManifest', () => {
 
     expect(res.status).toHaveBeenCalledWith(503);
     expect(res.destroy).not.toHaveBeenCalled();
+  });
+
+  it('sets a strong ETag built from the manifest name', async () => {
+    loadManifestsMock.mockResolvedValue([
+      { name: VALID_NAME, created_at: new Date() },
+    ]);
+    downloadFileMock.mockResolvedValue({ on: vi.fn(), pipe: vi.fn() });
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadLatestManifest(
+      buildRequest(VALID),
+      res as unknown as Response
+    );
+
+    expect(res.setHeader).toHaveBeenCalledWith('ETag', `"${VALID_NAME}"`);
+  });
+
+  it('returns 304 without reading from storage when the client is up to date', async () => {
+    loadManifestsMock.mockResolvedValue([
+      { name: VALID_NAME, created_at: new Date() },
+    ]);
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadLatestManifest(
+      buildRequest(VALID, {}, true),
+      res as unknown as Response
+    );
+
+    expect(res.status).toHaveBeenCalledWith(304);
+    expect(res.end).toHaveBeenCalled();
+    expect(downloadFileMock).not.toHaveBeenCalled();
   });
 });
 
@@ -217,6 +251,43 @@ describe('downloadManifestByName', () => {
 
     expect(res.status).toHaveBeenCalledWith(503);
     expect(res.removeHeader).toHaveBeenCalledWith('Cache-Control');
+  });
+
+  it('sets a strong ETag built from the manifest name', async () => {
+    getManifestByNameMock.mockResolvedValue({
+      name: VALID_NAME,
+      created_at: new Date(),
+    });
+    downloadFileMock.mockResolvedValue({ on: vi.fn(), pipe: vi.fn() });
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadManifestByName(
+      buildRequest({ ...VALID, name: VALID_NAME }),
+      res as unknown as Response
+    );
+
+    expect(res.setHeader).toHaveBeenCalledWith('ETag', `"${VALID_NAME}"`);
+  });
+
+  it('returns 304 without reading from storage when the client is up to date', async () => {
+    getManifestByNameMock.mockResolvedValue({
+      name: VALID_NAME,
+      created_at: new Date(),
+    });
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadManifestByName(
+      buildRequest({ ...VALID, name: VALID_NAME }, {}, true),
+      res as unknown as Response
+    );
+
+    expect(res.status).toHaveBeenCalledWith(304);
+    expect(res.end).toHaveBeenCalled();
+    expect(downloadFileMock).not.toHaveBeenCalled();
+    expect(res.setHeader).toHaveBeenCalledWith(
+      'Cache-Control',
+      'public, max-age=31536000, immutable'
+    );
   });
 });
 
