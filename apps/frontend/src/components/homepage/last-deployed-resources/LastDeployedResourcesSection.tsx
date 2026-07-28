@@ -45,7 +45,7 @@ export const LastDeployedResourcesSection = async ({
 
   if (platforms.length === 0) {
     return (
-      <div className="flex-1 min-w-0 flex justify-center">
+      <div className="w-full flex-1 min-w-0 flex justify-center">
         <XtmPlatformImage />
       </div>
     );
