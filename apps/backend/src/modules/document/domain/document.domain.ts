@@ -520,6 +520,7 @@ export const DocumentDomain = {
             '"Document_Children"."child_document_id" = "Document"."id"'
           );
       })
+      .modify(excludeDecouplingTag)
       .modify((qb) => {
         if (documentTypes?.length) {
           qb.whereIn('Document.type', documentTypes);

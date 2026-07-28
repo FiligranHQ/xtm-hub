@@ -1220,6 +1220,37 @@ describe('document domain', () => {
       expect(result).toHaveLength(1);
       expect(result[0]?.id).toBe(integrationDoc.id);
     });
+
+    it('should exclude documents tagged with decoupling', async () => {
+      // Given
+      const normalDoc = await TestHelper.document.create({
+        name: 'Normal document',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'normal-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+        tags: [],
+      });
+      await TestHelper.document.create({
+        name: 'Decoupling document',
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        slug: 'decoupling-document',
+        uploader_id: ADMIN_UUID,
+        uploader_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        active: true,
+        tags: ['decoupling'],
+      });
+
+      // When
+      const result = await DocumentDomain.loadNewestDocuments(10);
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]?.id).toBe(normalDoc.id);
+    });
   });
 
   describe('search by use case name', () => {
