@@ -89,9 +89,7 @@ const ENTITY_TYPE_BY_ID: Record<string, EntityTypeOption> = Object.fromEntries(
 );
 
 /**
- * Map each entity type to the exact OpenCTI icon, using the same MUI / MDI
- * components as the platform's `ItemIcon` (`iconSelector`) so the icons match
- * OpenCTI
+ * Map each entity type to the exact OpenCTI icon
  */
 const ENTITY_TYPE_ICON: Record<string, IconComponent> = {
   'Administrative-Area': MapOutlinedIcon,

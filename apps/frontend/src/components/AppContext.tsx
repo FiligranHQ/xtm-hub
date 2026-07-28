@@ -4,7 +4,6 @@ import { ManagedScripts } from '@/components/cookie-consent/ManagedScripts';
 import { APP_PATH } from '@/utils/path/constant';
 import { geologica, ibmPlexSans } from '@app/font';
 import { Toaster } from '@filigran/ui';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { useLocale, useTranslations } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
@@ -49,19 +48,17 @@ const AppContext = ({ children }: AppProps) => {
       </Head>
 
       <body>
-        <AppRouterCacheProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            forcedTheme={forcedTheme}
-            enableSystem
-            disableTransitionOnChange>
-            {children}
-            <Toaster />
-            <ManagedScripts />
-            <CookieConsent />
-          </ThemeProvider>
-        </AppRouterCacheProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          forcedTheme={forcedTheme}
+          enableSystem
+          disableTransitionOnChange>
+          {children}
+          <Toaster />
+          <ManagedScripts />
+          <CookieConsent />
+        </ThemeProvider>
       </body>
     </html>
   );
