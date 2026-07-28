@@ -105,6 +105,9 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
           open={open}
           onOpenChange={setOpen}>
           <SheetTrigger>
+            <span className="sr-only">
+              {open ? t('Header.CloseMenu') : t('Header.OpenMenu')}
+            </span>
             <MenuIcon
               aria-hidden={true}
               focusable={false}
