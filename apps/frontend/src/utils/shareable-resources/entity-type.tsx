@@ -88,80 +88,50 @@ const ENTITY_TYPE_BY_ID: Record<string, EntityTypeOption> = Object.fromEntries(
   ENTITY_TYPES.map((entityType) => [entityType.id, entityType])
 );
 
-/**
- * Map each entity type to the exact OpenCTI icon
- */
-const ENTITY_TYPE_ICON: Record<string, IconComponent> = {
-  'Administrative-Area': MapOutlinedIcon,
-  Channel: SurroundSoundOutlinedIcon,
-  City: PlaceOutlinedIcon,
-  Country: FlagOutlinedIcon,
-  'Data-Source': StreamOutlinedIcon,
-  Event: EventOutlinedIcon,
-  Grouping: WorkspacesOutlinedIcon,
-  Individual: PersonOutlinedIcon,
-  Infrastructure: RouterOutlinedIcon,
-  'Intrusion-Set': DiamondOutlinedIcon,
-  'Malware-Analysis': BiotechOutlinedIcon,
-  Narrative: SpeakerNotesOutlinedIcon,
-  Organization: AccountBalanceOutlinedIcon,
-  Region: PublicOutlinedIcon,
-  Report: DescriptionOutlinedIcon,
-  Sector: DomainOutlinedIcon,
-  SecurityPlatform: SecurityOutlinedIcon,
-  System: StorageOutlinedIcon,
-  Tool: WebAssetOutlinedIcon,
-  Vulnerability: BugReportOutlinedIcon,
-  Artifact: ArchiveOutlineIcon,
-  'Attack-Pattern': LockPatternIcon,
-  Campaign: ChessKnightIcon,
-  'Case-Rfi': BriefcaseSearchOutlineIcon,
-  'Case-Rft': BriefcaseRemoveOutlineIcon,
-  Feedback: BriefcaseEditOutlineIcon,
-  Incident: FireIcon,
-  Malware: BiohazardIcon,
-  'Stix-Cyber-Observable': HexagonOutlineIcon,
-  'Threat-Actor-Group': AccountMultipleOutlineIcon,
-  'Threat-Actor-Individual': LaptopAccountIcon,
-};
+interface EntityTypeStyle {
+  /** OpenCTI icon rendered for this entity type. */
+  icon: IconComponent;
+  /**
+   * OpenCTI color for this entity type. Values mirror the OpenCTI color families
+   * (see `itemColor` / `COLOR_FAMILIES` in the platform) so icons look consistent
+   * with the platform.
+   */
+  color: string;
+}
 
-/**
- * Map each entity type to its OpenCTI color. Values mirror the OpenCTI color
- * families (see `itemColor` / `COLOR_FAMILIES` in the platform) so icons look
- * consistent with the platform.
- */
-const ENTITY_TYPE_COLOR: Record<string, string> = {
-  Report: '#70B23B',
-  Grouping: '#70B23B',
-  'Malware-Analysis': '#70B23B',
-  'Case-Rfi': '#EA80FC',
-  'Case-Rft': '#EA80FC',
-  Feedback: '#EA80FC',
-  Incident: '#F96C9B',
-  Artifact: '#FF6F42',
-  Infrastructure: '#FF6F42',
-  'Threat-Actor-Group': '#FF9800',
-  'Threat-Actor-Individual': '#FF9800',
-  'Intrusion-Set': '#FF9800',
-  Campaign: '#FF9800',
-  Malware: '#F0B60A',
-  Channel: '#F0B60A',
-  Tool: '#F0B60A',
-  Vulnerability: '#F0B60A',
-  SecurityPlatform: '#F0B60A',
-  'Attack-Pattern': '#D3E157',
-  Narrative: '#D3E157',
-  'Data-Source': '#D3E157',
-  Sector: '#BA88FF',
-  Event: '#BA88FF',
-  Organization: '#BA88FF',
-  System: '#BA88FF',
-  Individual: '#BA88FF',
-  Region: '#05ACC1',
-  Country: '#05ACC1',
-  'Administrative-Area': '#05ACC1',
-  City: '#05ACC1',
-  'Stix-Cyber-Observable': '#84ffff',
+/** Presentation (icon + color) for each entity type, keyed by canonical id. */
+const ENTITY_TYPE_STYLE: Record<string, EntityTypeStyle> = {
+  'Administrative-Area': { icon: MapOutlinedIcon, color: '#05ACC1' },
+  Artifact: { icon: ArchiveOutlineIcon, color: '#FF6F42' },
+  'Attack-Pattern': { icon: LockPatternIcon, color: '#D3E157' },
+  Campaign: { icon: ChessKnightIcon, color: '#FF9800' },
+  Channel: { icon: SurroundSoundOutlinedIcon, color: '#F0B60A' },
+  City: { icon: PlaceOutlinedIcon, color: '#05ACC1' },
+  Country: { icon: FlagOutlinedIcon, color: '#05ACC1' },
+  'Data-Source': { icon: StreamOutlinedIcon, color: '#D3E157' },
+  Event: { icon: EventOutlinedIcon, color: '#BA88FF' },
+  Feedback: { icon: BriefcaseEditOutlineIcon, color: '#EA80FC' },
+  Grouping: { icon: WorkspacesOutlinedIcon, color: '#70B23B' },
+  Incident: { icon: FireIcon, color: '#F96C9B' },
+  Individual: { icon: PersonOutlinedIcon, color: '#BA88FF' },
+  Infrastructure: { icon: RouterOutlinedIcon, color: '#FF6F42' },
+  'Intrusion-Set': { icon: DiamondOutlinedIcon, color: '#FF9800' },
+  Malware: { icon: BiohazardIcon, color: '#F0B60A' },
+  'Malware-Analysis': { icon: BiotechOutlinedIcon, color: '#70B23B' },
+  Narrative: { icon: SpeakerNotesOutlinedIcon, color: '#D3E157' },
+  'Stix-Cyber-Observable': { icon: HexagonOutlineIcon, color: '#84ffff' },
+  Organization: { icon: AccountBalanceOutlinedIcon, color: '#BA88FF' },
+  Region: { icon: PublicOutlinedIcon, color: '#05ACC1' },
+  Report: { icon: DescriptionOutlinedIcon, color: '#70B23B' },
+  'Case-Rfi': { icon: BriefcaseSearchOutlineIcon, color: '#EA80FC' },
+  'Case-Rft': { icon: BriefcaseRemoveOutlineIcon, color: '#EA80FC' },
+  Sector: { icon: DomainOutlinedIcon, color: '#BA88FF' },
+  SecurityPlatform: { icon: SecurityOutlinedIcon, color: '#F0B60A' },
+  System: { icon: StorageOutlinedIcon, color: '#BA88FF' },
+  'Threat-Actor-Group': { icon: AccountMultipleOutlineIcon, color: '#FF9800' },
+  'Threat-Actor-Individual': { icon: LaptopAccountIcon, color: '#FF9800' },
+  Tool: { icon: WebAssetOutlinedIcon, color: '#F0B60A' },
+  Vulnerability: { icon: BugReportOutlinedIcon, color: '#F0B60A' },
 };
 
 export const getEntityTypeLabel = (id: string): string =>
@@ -177,8 +147,9 @@ export const EntityTypeIcon = ({
   style,
   ...props
 }: EntityTypeIconProps) => {
-  const Icon: IconComponent = ENTITY_TYPE_ICON[entityType] ?? HelpOutlinedIcon;
-  const color = ENTITY_TYPE_COLOR[entityType];
+  const entityStyle = ENTITY_TYPE_STYLE[entityType];
+  const Icon: IconComponent = entityStyle?.icon ?? HelpOutlinedIcon;
+  const color = entityStyle?.color;
   return (
     <Icon
       style={{ color, ...style }}
