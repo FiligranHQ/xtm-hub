@@ -1,6 +1,11 @@
 'use client';
 
-import { CampaignIcon, MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
+import {
+  CampaignIcon,
+  MotionPlayIcon,
+  ThreatActorGroupIcon,
+  VerifiedIcon,
+} from '@filigran/icon';
 import {
   Tooltip,
   TooltipContent,
@@ -14,6 +19,7 @@ export interface ResourceStatusIconsProps {
   active?: boolean;
   verified?: boolean;
   deployable?: boolean;
+  isConnector?: boolean;
   iconClassName?: string;
 }
 
@@ -35,11 +41,12 @@ export const ResourceStatusIcons = ({
   active,
   verified,
   deployable,
+  isConnector = false,
   iconClassName = ICON_CLASS,
 }: ResourceStatusIconsProps) => {
   const t = useTranslations();
 
-  if (!active && !verified && !deployable) {
+  if (!active && !deployable && !isConnector) {
     return null;
   }
 
@@ -53,8 +60,14 @@ export const ResourceStatusIcons = ({
       )}
       {verified && (
         <StatusIcon
-          label={t('Utils.Verified')}
+          label={t('Service.ShareableResources.Details.SupportedByFiligran')}
           icon={<VerifiedIcon className={iconClassName} />}
+        />
+      )}
+      {!verified && isConnector && (
+        <StatusIcon
+          label={t('Service.ShareableResources.Details.SupportedByCommunity')}
+          icon={<ThreatActorGroupIcon className={iconClassName} />}
         />
       )}
       {active && (

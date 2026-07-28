@@ -15,25 +15,6 @@ vi.mock('@/components/ui/BadgeOverflowCounter', () => ({
   ),
 }));
 
-vi.mock('@/components/ui/ResourceStatusIcons', () => ({
-  ResourceStatusIcons: ({
-    active,
-    verified,
-    deployable,
-  }: {
-    active?: boolean;
-    verified?: boolean;
-    deployable?: boolean;
-  }) => (
-    <div
-      data-testid="resource-status-icons"
-      data-active={active}
-      data-verified={verified}
-      data-deployable={deployable}
-    />
-  ),
-}));
-
 const buildProps = (
   overrides: Partial<HomepageResourceCardProps> = {}
 ): HomepageResourceCardProps => ({
@@ -164,17 +145,17 @@ describe('HomepageResourceCard', () => {
   });
 
   describe('status icons', () => {
-    it('passes active, verified and deployable props to ResourceStatusIcons', () => {
-      testRender(
+    it('renders the matching number of status icons', () => {
+      const { container } = testRender(
         <HomepageResourceCard
           {...buildProps({ active: true, verified: true, deployable: false })}
         />
       );
 
-      const statusIcons = screen.getByTestId('resource-status-icons');
-      expect(statusIcons).toHaveAttribute('data-active', 'true');
-      expect(statusIcons).toHaveAttribute('data-verified', 'true');
-      expect(statusIcons).toHaveAttribute('data-deployable', 'false');
+      const statusIconsContainer = container.querySelector(
+        '.absolute.top-m.right-m.flex.gap-xs.z-10'
+      );
+      expect(statusIconsContainer?.querySelectorAll('svg')).toHaveLength(2);
     });
   });
 
