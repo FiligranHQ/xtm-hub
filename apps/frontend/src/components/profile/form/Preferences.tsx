@@ -39,7 +39,9 @@ export const ProfileFormPreferences = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('ProfilePage.Preferences.Title')}</CardTitle>
+        <CardTitle className="heading-lg">
+          {t('ProfilePage.Preferences.Title')}
+        </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-l">
         <div className="grid gap-s">

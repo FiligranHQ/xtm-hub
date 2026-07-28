@@ -52,7 +52,7 @@ export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('ProfilePage.Picture')}</CardTitle>
+        <CardTitle className="heading-lg">{t('ProfilePage.Picture')}</CardTitle>
       </CardHeader>
       <CardContent className="pb-0">
         <input

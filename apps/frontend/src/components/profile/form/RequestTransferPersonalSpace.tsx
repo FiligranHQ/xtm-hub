@@ -66,7 +66,7 @@ export const RequestTransferPersonalSpace = () => {
       <h2 className="text-destructive">{t('Utils.DangerZone')}</h2>
       <Card className="border-2 border-red">
         <CardHeader>
-          <CardTitle>
+          <CardTitle className="heading-lg">
             {t('ProfilePage.PersonalSpace.TitleDangerZone')}
           </CardTitle>
         </CardHeader>
