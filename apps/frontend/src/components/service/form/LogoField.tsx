@@ -1,6 +1,7 @@
 import { fileToBase64 } from '@/lib/utils';
 import { docIsExistingFile, ExistingFile, NewFile } from '@/utils/documents';
-import { DeleteIcon, LogoFiligranIcon } from '@filigran/icon';
+import { EntityTypeOrFiligranLogo } from '@/utils/shareable-resources/entity-type';
+import { DeleteIcon } from '@filigran/icon';
 import {
   FileInput,
   FormControl,
@@ -14,7 +15,7 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { DocumentSourceType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent } from 'react';
-import { ControllerRenderProps, FieldValues } from 'react-hook-form';
+import { ControllerRenderProps, FieldValues, useWatch } from 'react-hook-form';
 
 interface ServiceFormLogoFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
@@ -27,6 +28,9 @@ export const ServiceFormLogoField = ({
 }: ServiceFormLogoFieldProps) => {
   const t = useTranslations();
 
+  const entityTypes = useWatch<{ entity_types?: string[] }, 'entity_types'>({
+    name: 'entity_types',
+  });
   const logo = field.value?.length ? field.value[0] : undefined;
   return (
     <FormItem>
@@ -63,8 +67,8 @@ export const ServiceFormLogoField = ({
             </div>
           </TooltipProvider>
         ) : (
-          <div className="w-24 p-m border border-light">
-            <LogoFiligranIcon className="size-18" />
+          <div className="w-24 p-m border border-light flex items-center justify-center">
+            <EntityTypeOrFiligranLogo entityTypes={entityTypes} />
           </div>
         )}
       </div>
