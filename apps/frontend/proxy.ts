@@ -49,5 +49,7 @@ export const config = {
     '/user/picture/:userId*',
     '/app/:path*',
     '/api/chatbot/:path*',
+    '/:product/:version/:integrationType/manifests',
+    '/:product/:version/:integrationType/manifests/:path*',
   ],
 };
