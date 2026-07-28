@@ -1659,7 +1659,6 @@ export type Query = {
   registeredPlatform: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   seoServiceInstance: SeoServiceInstance;
-  seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById: Maybe<ServiceInstance>;
   serviceInstanceByIdAndGrantAccess: Maybe<ServiceInstance>;

@@ -5,14 +5,22 @@ import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation
 import { APP_PATH } from '@/utils/path/constant';
 import { ArrowDropDownIcon } from '@filigran/icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
-import organizationSwitcherMutation, {
-  OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
-} from '@generated/OrganizationSwitcherMutation.graphql';
+import { OrganizationSwitcherMutation as OrganizationSwitcherMutationType } from '@generated/OrganizationSwitcherMutation.graphql';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useContext, useId, useMemo, useState } from 'react';
-import { useMutation } from 'react-relay';
+import { graphql, useMutation } from 'react-relay';
+
+export const organizationSwitcherMutation = graphql`
+  mutation OrganizationSwitcherMutation($organization_id: OrganizationId!) {
+    changeSelectedOrganization(organization_id: $organization_id) {
+      id
+      selected_organization_id
+      selected_org_capabilities
+    }
+  }
+`;
 
 interface OrganizationOption {
   value: string;
