@@ -15,6 +15,7 @@ export const PublicHeaderContent = async ({
 }: PublicHeaderContentProps) => {
   const t = await getTranslations();
   const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
+  const isCustomViewsEnabled = await isFeatureEnabled(FeatureFlag.CustomViews);
 
   return (
     <>
@@ -35,7 +36,9 @@ export const PublicHeaderContent = async ({
             <Link href={`/sign-up`}>{t('PublicLayout.SignUp')}</Link>
           </Button>
           <div className="md:hidden flex items-center">
-            <PublicMobileMenuButton />
+            <PublicMobileMenuButton
+              isCustomViewsEnabled={isCustomViewsEnabled}
+            />
           </div>
         </div>
       ) : (

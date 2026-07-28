@@ -15,7 +15,9 @@ import {
 } from '@filigran/icon';
 import { useLocale, useTranslations } from 'next-intl';
 
-export const usePublicNavigation = (): NavigationConfig => {
+export const usePublicNavigation = (
+  isCustomViewsEnabled = false
+): NavigationConfig => {
   const t = useTranslations();
   const locale = useLocale();
 
@@ -43,10 +45,14 @@ export const usePublicNavigation = (): NavigationConfig => {
           href: `/${locale}/cybersecurity-solutions/opencti-custom-dashboards`,
           label: t('Menu.CustomDashboards'),
         },
-        {
-          href: `/${locale}/cybersecurity-solutions/opencti-custom-views`,
-          label: t('Menu.CustomViews'),
-        },
+        ...(isCustomViewsEnabled
+          ? [
+              {
+                href: `/${locale}/cybersecurity-solutions/opencti-custom-views`,
+                label: t('Menu.CustomViews'),
+              },
+            ]
+          : []),
         {
           href: `/${locale}/cybersecurity-solutions/opencti-integrations`,
           label: t('Menu.Integrations'),

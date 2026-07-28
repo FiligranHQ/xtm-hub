@@ -41,13 +41,14 @@ const RootLayout = async ({
   }
   setRequestLocale(locale);
   const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
+  const isCustomViewsEnabled = await isFeatureEnabled(FeatureFlag.CustomViews);
 
   if (isHomePageV2Enabled) {
     return (
       <ReactQueryProvider>
         <AppShell
           banners={<PublicTryFiligranProductsBanner />}
-          menu={<PublicMenu />}
+          menu={<PublicMenu isCustomViewsEnabled={isCustomViewsEnabled} />}
           headerContent={<PublicHeaderContent locale={locale} />}
           contentClassName="container pt-l">
           {children}

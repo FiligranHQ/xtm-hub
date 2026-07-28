@@ -3,7 +3,9 @@
 import LastDeployedResourceRow from '@/components/homepage/last-deployed-resources/LastDeployedResourceRow';
 import { LastDeployedPlatform } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
+import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   Select,
   SelectContent,
@@ -12,7 +14,10 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { Separator } from '@filigran/ui/clients';
-import { useLastDeployedOverviewQueryQuery } from '@graphql/generated';
+import {
+  FeatureFlag,
+  useLastDeployedOverviewQueryQuery,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { Fragment, useState } from 'react';
 
@@ -26,6 +31,7 @@ const LastDeployedResourcesClient = ({
   platforms,
 }: LastDeployedResourcesClientProps) => {
   const t = useTranslations('HomePage.LastDeployedResources');
+  const isCustomViewsEnabled = useIsFeatureEnabled(FeatureFlag.CustomViews);
 
   const [selectedServiceInstanceId, setSelectedServiceInstanceId] =
     useState<string>(platforms[0]?.serviceInstanceId ?? '');
@@ -35,7 +41,11 @@ const LastDeployedResourcesClient = ({
     serviceInstanceId: selectedServiceInstanceId,
   });
 
-  const resources = data?.lastDeployedOverview.resources ?? [];
+  const resources = (data?.lastDeployedOverview.resources ?? []).filter(
+    (resource) =>
+      isCustomViewsEnabled ||
+      resource.document.type !== ShareableResourceType.OPENCTI_CUSTOM_VIEW
+  );
   return (
     <section className="w-full flex-1 min-w-0 flex flex-col gap-l">
       <div className="flex items-center gap-m">

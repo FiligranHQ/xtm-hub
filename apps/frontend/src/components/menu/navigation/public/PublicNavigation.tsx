@@ -5,10 +5,15 @@ import { usePublicNavigation } from './use-public-navigation';
 
 interface PublicNavigationProps {
   open: boolean;
+  isCustomViewsEnabled?: boolean;
 }
 
-const PublicNavigation = ({ open }: PublicNavigationProps) => {
-  const { sections, bottomLinks, footerSections } = usePublicNavigation();
+const PublicNavigation = ({
+  open,
+  isCustomViewsEnabled = false,
+}: PublicNavigationProps) => {
+  const { sections, bottomLinks, footerSections } =
+    usePublicNavigation(isCustomViewsEnabled);
 
   return (
     <SharedNavigation
