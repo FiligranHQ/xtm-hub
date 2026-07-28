@@ -5,10 +5,7 @@ import {
   MANIFEST_RATE_WINDOW_MS,
 } from '../../modules/shareable-resource/manifest/manifest.consts';
 import { logApp } from '../../utils/app-logger.util';
-import {
-  ManifestErrorMessage,
-  sendManifestError,
-} from './manifest-endpoint.errors';
+import { MANIFEST_ERRORS, sendManifestError } from './manifest-endpoint.errors';
 
 const RATE_LIMIT_LOG_INTERVAL_MS = 60 * 1000;
 const MAX_LOG_RATE_ENTRIES = 100;
@@ -42,10 +39,7 @@ const logRateLimitThrottled = (ip: string, path: string): void => {
       }
     }
     const oldestKey = rateLimitLogThrottle.keys().next().value;
-    if (
-      rateLimitLogThrottle.size > MAX_LOG_RATE_ENTRIES &&
-      oldestKey !== undefined
-    ) {
+    if (oldestKey !== undefined) {
       rateLimitLogThrottle.delete(oldestKey);
     }
   }
@@ -61,6 +55,6 @@ export const buildManifestRateLimiterOptions = (): Partial<Options> => ({
   keyGenerator: (req: Request) => ipKeyGenerator(req.ip ?? 'unknown'),
   handler: (req: Request, res: Response) => {
     logRateLimitThrottled(req.ip ?? 'unknown', req.path);
-    sendManifestError(res, ManifestErrorMessage.TooManyRequests);
+    sendManifestError(res, MANIFEST_ERRORS.TooManyRequests);
   },
 });

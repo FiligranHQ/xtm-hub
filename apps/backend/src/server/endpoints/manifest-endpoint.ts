@@ -10,7 +10,7 @@ import { StorageUnavailableError } from '../../thirdparty/minio/storage-error';
 import { logApp } from '../../utils/app-logger.util';
 import { getErrorMessage } from '../../utils/error/error-guard.util';
 import {
-  ManifestErrorMessage,
+  MANIFEST_ERRORS,
   sendManifestError,
   sendManifestValidationError,
 } from './manifest-endpoint.errors';
@@ -35,7 +35,7 @@ export const ManifestEndpoint = {
 
       const count = parseCount(req.query.count);
       if (count === undefined) {
-        sendManifestError(res, ManifestErrorMessage.InvalidCount);
+        sendManifestError(res, MANIFEST_ERRORS.InvalidCount);
         return;
       }
 
@@ -53,7 +53,7 @@ export const ManifestEndpoint = {
       });
     } catch (error) {
       logApp.error('Error while listing manifests', { error });
-      sendManifestError(res, ManifestErrorMessage.InternalServerError);
+      sendManifestError(res, MANIFEST_ERRORS.InternalServerError);
     }
   },
 
@@ -81,7 +81,7 @@ export const ManifestEndpoint = {
           version,
           type: integrationType,
         });
-        sendManifestError(res, ManifestErrorMessage.ManifestNotFound);
+        sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
         return;
       }
 
@@ -99,11 +99,11 @@ export const ManifestEndpoint = {
         logApp.error('Manifest storage unavailable', {
           error: getErrorMessage(error),
         });
-        sendManifestError(res, ManifestErrorMessage.StorageUnavailable);
+        sendManifestError(res, MANIFEST_ERRORS.StorageUnavailable);
         return;
       }
       logApp.error('Error while retrieving latest manifest', { error });
-      sendManifestError(res, ManifestErrorMessage.InternalServerError);
+      sendManifestError(res, MANIFEST_ERRORS.InternalServerError);
     }
   },
 
@@ -121,7 +121,7 @@ export const ManifestEndpoint = {
 
       const { name } = req.params;
       if (typeof name !== 'string' || !isValidManifestName(name)) {
-        sendManifestError(res, ManifestErrorMessage.InvalidManifestName);
+        sendManifestError(res, MANIFEST_ERRORS.InvalidManifestName);
         return;
       }
 
@@ -138,7 +138,7 @@ export const ManifestEndpoint = {
           type: integrationType,
           name,
         });
-        sendManifestError(res, ManifestErrorMessage.ManifestNotFound);
+        sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
         return;
       }
 
@@ -156,11 +156,11 @@ export const ManifestEndpoint = {
         logApp.error('Manifest storage unavailable', {
           error: getErrorMessage(error),
         });
-        sendManifestError(res, ManifestErrorMessage.StorageUnavailable);
+        sendManifestError(res, MANIFEST_ERRORS.StorageUnavailable);
         return;
       }
       logApp.error('Error while retrieving manifest by name', { error });
-      sendManifestError(res, ManifestErrorMessage.InternalServerError);
+      sendManifestError(res, MANIFEST_ERRORS.InternalServerError);
     }
   },
 };
@@ -195,7 +195,7 @@ const streamManifestByName = async (
     logApp.error('Manifest name failed validation before MinIO lookup', {
       name,
     });
-    sendManifestError(res, ManifestErrorMessage.ManifestNotFound);
+    sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
     return;
   }
 
@@ -205,7 +205,7 @@ const streamManifestByName = async (
     logApp.error('Manifest row exists but object is missing in storage', {
       key,
     });
-    sendManifestError(res, ManifestErrorMessage.ManifestNotFound);
+    sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
     return;
   }
 
@@ -218,7 +218,7 @@ const streamManifestByName = async (
     if (res.headersSent) {
       res.destroy(error);
     } else {
-      sendManifestError(res, ManifestErrorMessage.StorageUnavailable);
+      sendManifestError(res, MANIFEST_ERRORS.StorageUnavailable);
     }
   });
 

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { logApp } from '../../utils/app-logger.util';
-import { ManifestErrorMessage } from './manifest-endpoint.errors';
+import { MANIFEST_ERRORS } from './manifest-endpoint.errors';
 import { buildManifestRateLimiterOptions } from './manifest-endpoint.rate-limit';
 
 const buildRequest = (ip: string, userAgent = 'agent-a') =>
@@ -47,7 +47,7 @@ describe('manifest rate limit handler', () => {
     expect(status).toHaveBeenCalledWith(429);
     expect(json).toHaveBeenCalledWith({
       code: 429,
-      message: ManifestErrorMessage.TooManyRequests,
+      message: MANIFEST_ERRORS.TooManyRequests.message,
     });
   });
 

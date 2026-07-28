@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import { describe, expect, it, vi } from 'vitest';
 import {
-  ManifestErrorMessage,
+  MANIFEST_ERRORS,
   sendManifestError,
   sendManifestValidationError,
 } from './manifest-endpoint.errors';
@@ -20,21 +20,21 @@ const buildResponse = () => {
 
 describe('sendManifestError', () => {
   it.each([
-    { message: ManifestErrorMessage.InvalidCount, status: 400 },
-    { message: ManifestErrorMessage.StorageUnavailable, status: 503 },
-  ])('derives $status from the message', ({ message, status }) => {
+    { error: MANIFEST_ERRORS.InvalidCount, status: 400 },
+    { error: MANIFEST_ERRORS.StorageUnavailable, status: 503 },
+  ])('derives $status from the error', ({ error, status }) => {
     const { res, status: statusMock, json } = buildResponse();
 
-    sendManifestError(res, message);
+    sendManifestError(res, error);
 
     expect(statusMock).toHaveBeenCalledWith(status);
-    expect(json).toHaveBeenCalledWith({ code: status, message });
+    expect(json).toHaveBeenCalledWith({ code: status, message: error.message });
   });
 
   it('clears the cache directive before sending an error', () => {
     const { res, removeHeader } = buildResponse();
 
-    sendManifestError(res, ManifestErrorMessage.ManifestNotFound);
+    sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
 
     expect(removeHeader).toHaveBeenCalledWith('Cache-Control');
   });
