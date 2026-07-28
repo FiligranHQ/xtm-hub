@@ -1584,7 +1584,7 @@ export const mockSettings = (overrides?: Partial<Settings>, _relationshipsToOmit
         __typename: 'Settings',
         base_url_front: overrides && overrides.hasOwnProperty('base_url_front') ? overrides.base_url_front! : 'sumo',
         environment: overrides && overrides.hasOwnProperty('environment') ? overrides.environment! : 'vicinus',
-        platform_feature_flags: overrides && overrides.hasOwnProperty('platform_feature_flags') ? overrides.platform_feature_flags! : [FeatureFlag.Dummy],
+        platform_feature_flags: overrides && overrides.hasOwnProperty('platform_feature_flags') ? overrides.platform_feature_flags! : [FeatureFlag.CustomViews],
         platform_providers: overrides && overrides.hasOwnProperty('platform_providers') ? overrides.platform_providers! : [relationshipsToOmit.has('PlatformProvider') ? {} as PlatformProvider : mockPlatformProvider({}, relationshipsToOmit)],
     };
 };

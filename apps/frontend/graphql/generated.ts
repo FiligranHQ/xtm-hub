@@ -726,6 +726,7 @@ export enum EpicType {
 }
 
 export enum FeatureFlag {
+  CustomViews = 'CUSTOM_VIEWS',
   Dummy = 'DUMMY',
   HomePageV2 = 'HOME_PAGE_V2'
 }

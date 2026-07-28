@@ -1262,6 +1262,7 @@ type ServiceInstanceSubscription {
 enum FeatureFlag {
   DUMMY
   HOME_PAGE_V2
+  CUSTOM_VIEWS
 }
 
 type PlatformProvider {

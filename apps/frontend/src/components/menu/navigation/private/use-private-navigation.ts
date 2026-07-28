@@ -9,6 +9,7 @@ import {
   SectionConfig,
   SectionLink,
 } from '@/components/menu/navigation/shared/navigation.type';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import {
@@ -24,6 +25,7 @@ import {
   SlackIcon,
 } from '@filigran/icon';
 import {
+  FeatureFlag,
   OrderingMode,
   OrganizationCapability,
   PlatformIdentifier,
@@ -91,6 +93,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
   const tMenu = useTranslations('Menu');
   const tMenuLinks = useTranslations('MenuLinks');
   const locale = useLocale();
+  const isCustomViewsEnabled = useIsFeatureEnabled(FeatureFlag.CustomViews);
   const selectedOrganizationId = me?.selected_organization_id;
   const currentOrganization = me?.organizations.find(
     (organization) => organization.id === selectedOrganizationId
@@ -338,7 +341,9 @@ export const usePrivateNavigation = (): NavigationConfig => {
         ),
         ...openctiMyProductLinks,
         buildServiceLink(ServiceDefinitionIdentifier.OpenctiCustomDashboards),
-        buildServiceLink(ServiceDefinitionIdentifier.OpenctiCustomViews),
+        ...(isCustomViewsEnabled
+          ? [buildServiceLink(ServiceDefinitionIdentifier.OpenctiCustomViews)]
+          : []),
         buildServiceLink(ServiceDefinitionIdentifier.OpenctiIntegrations),
         buildServiceLink(ServiceDefinitionIdentifier.OpenctiPlaybooks),
         {
