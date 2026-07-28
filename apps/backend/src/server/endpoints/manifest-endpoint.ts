@@ -44,7 +44,12 @@ export const ManifestEndpoint = {
         integrationType,
         count
       );
-      res.status(200).json({ manifests });
+      res.status(200).json({
+        manifests: manifests.map(({ created_at, name }) => ({
+          created_at,
+          name,
+        })),
+      });
     } catch (error) {
       logApp.error('Error while listing manifests', { error });
       sendManifestError(res, 500, ManifestErrorMessage.InternalServerError);

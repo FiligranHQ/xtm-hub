@@ -263,6 +263,28 @@ describe('listManifests', () => {
     );
   });
 
+  it('returns only the contract fields, without internal ones', async () => {
+    loadManifestsMock.mockResolvedValue([
+      {
+        name: VALID_NAME,
+        created_at: new Date('2026-07-21T09:27:01.593Z'),
+        __typename: 'Manifest',
+      },
+    ]);
+
+    const res = buildResponse();
+    await ManifestEndpoint.listManifests(
+      buildRequest(VALID),
+      res as unknown as Response
+    );
+
+    expect(res.json).toHaveBeenCalledWith({
+      manifests: [
+        { name: VALID_NAME, created_at: new Date('2026-07-21T09:27:01.593Z') },
+      ],
+    });
+  });
+
   it.each`
     params                                    | query             | description
     ${{ ...VALID, product: 'x' }}             | ${{}}             | ${'invalid product'}
