@@ -1,42 +1,41 @@
-import { LogoFiligranIcon } from '@filigran/icon';
 import {
-  AccountBalanceOutlined,
-  BiotechOutlined,
-  BugReportOutlined,
-  DescriptionOutlined,
-  DiamondOutlined,
-  DomainOutlined,
-  EventOutlined,
-  FlagOutlined,
-  HelpOutlined,
-  MapOutlined,
-  PersonOutlined,
-  PlaceOutlined,
-  PublicOutlined,
-  RouterOutlined,
-  SecurityOutlined,
-  SpeakerNotesOutlined,
-  StorageOutlined,
-  StreamOutlined,
-  SurroundSoundOutlined,
-  SvgIconComponent,
-  WebAssetOutlined,
-  WorkspacesOutlined,
-} from '@mui/icons-material';
-import { SvgIconProps } from '@mui/material';
-import {
-  AccountMultipleOutline,
-  ArchiveOutline,
-  Biohazard,
-  BriefcaseEditOutline,
-  BriefcaseRemoveOutline,
-  BriefcaseSearchOutline,
-  ChessKnight,
-  Fire,
-  HexagonOutline,
-  LaptopAccount,
-  LockPattern,
-} from 'mdi-material-ui';
+  AccountBalanceOutlinedIcon,
+  AccountMultipleOutlineIcon,
+  ArchiveOutlineIcon,
+  BiohazardIcon,
+  BiotechOutlinedIcon,
+  BriefcaseEditOutlineIcon,
+  BriefcaseRemoveOutlineIcon,
+  BriefcaseSearchOutlineIcon,
+  BugReportOutlinedIcon,
+  ChessKnightIcon,
+  DescriptionOutlinedIcon,
+  DiamondOutlinedIcon,
+  DomainOutlinedIcon,
+  EventOutlinedIcon,
+  FireIcon,
+  FlagOutlinedIcon,
+  HelpOutlinedIcon,
+  HexagonOutlineIcon,
+  LaptopAccountIcon,
+  LockPatternIcon,
+  LogoFiligranIcon,
+  MapOutlinedIcon,
+  PersonOutlinedIcon,
+  PlaceOutlinedIcon,
+  PublicOutlinedIcon,
+  RouterOutlinedIcon,
+  SecurityOutlinedIcon,
+  SpeakerNotesOutlinedIcon,
+  StorageOutlinedIcon,
+  StreamOutlinedIcon,
+  SurroundSoundOutlinedIcon,
+  WebAssetOutlinedIcon,
+  WorkspacesOutlinedIcon,
+} from '@filigran/icon';
+import { FunctionComponent, SVGProps } from 'react';
+
+type IconComponent = FunctionComponent<SVGProps<SVGSVGElement>>;
 
 interface EntityTypeOption {
   /** Canonical OpenCTI entity type value, stored in the database. */
@@ -94,38 +93,38 @@ const ENTITY_TYPE_BY_ID: Record<string, EntityTypeOption> = Object.fromEntries(
  * components as the platform's `ItemIcon` (`iconSelector`) so the icons match
  * OpenCTI
  */
-const ENTITY_TYPE_ICON: Record<string, SvgIconComponent> = {
-  'Administrative-Area': MapOutlined,
-  Channel: SurroundSoundOutlined,
-  City: PlaceOutlined,
-  Country: FlagOutlined,
-  'Data-Source': StreamOutlined,
-  Event: EventOutlined,
-  Grouping: WorkspacesOutlined,
-  Individual: PersonOutlined,
-  Infrastructure: RouterOutlined,
-  'Intrusion-Set': DiamondOutlined,
-  'Malware-Analysis': BiotechOutlined,
-  Narrative: SpeakerNotesOutlined,
-  Organization: AccountBalanceOutlined,
-  Region: PublicOutlined,
-  Report: DescriptionOutlined,
-  Sector: DomainOutlined,
-  SecurityPlatform: SecurityOutlined,
-  System: StorageOutlined,
-  Tool: WebAssetOutlined,
-  Vulnerability: BugReportOutlined,
-  Artifact: ArchiveOutline,
-  'Attack-Pattern': LockPattern,
-  Campaign: ChessKnight,
-  'Case-Rfi': BriefcaseSearchOutline,
-  'Case-Rft': BriefcaseRemoveOutline,
-  Feedback: BriefcaseEditOutline,
-  Incident: Fire,
-  Malware: Biohazard,
-  'Stix-Cyber-Observable': HexagonOutline,
-  'Threat-Actor-Group': AccountMultipleOutline,
-  'Threat-Actor-Individual': LaptopAccount,
+const ENTITY_TYPE_ICON: Record<string, IconComponent> = {
+  'Administrative-Area': MapOutlinedIcon,
+  Channel: SurroundSoundOutlinedIcon,
+  City: PlaceOutlinedIcon,
+  Country: FlagOutlinedIcon,
+  'Data-Source': StreamOutlinedIcon,
+  Event: EventOutlinedIcon,
+  Grouping: WorkspacesOutlinedIcon,
+  Individual: PersonOutlinedIcon,
+  Infrastructure: RouterOutlinedIcon,
+  'Intrusion-Set': DiamondOutlinedIcon,
+  'Malware-Analysis': BiotechOutlinedIcon,
+  Narrative: SpeakerNotesOutlinedIcon,
+  Organization: AccountBalanceOutlinedIcon,
+  Region: PublicOutlinedIcon,
+  Report: DescriptionOutlinedIcon,
+  Sector: DomainOutlinedIcon,
+  SecurityPlatform: SecurityOutlinedIcon,
+  System: StorageOutlinedIcon,
+  Tool: WebAssetOutlinedIcon,
+  Vulnerability: BugReportOutlinedIcon,
+  Artifact: ArchiveOutlineIcon,
+  'Attack-Pattern': LockPatternIcon,
+  Campaign: ChessKnightIcon,
+  'Case-Rfi': BriefcaseSearchOutlineIcon,
+  'Case-Rft': BriefcaseRemoveOutlineIcon,
+  Feedback: BriefcaseEditOutlineIcon,
+  Incident: FireIcon,
+  Malware: BiohazardIcon,
+  'Stix-Cyber-Observable': HexagonOutlineIcon,
+  'Threat-Actor-Group': AccountMultipleOutlineIcon,
+  'Threat-Actor-Individual': LaptopAccountIcon,
 };
 
 /**
@@ -170,21 +169,21 @@ const ENTITY_TYPE_COLOR: Record<string, string> = {
 export const getEntityTypeLabel = (id: string): string =>
   ENTITY_TYPE_BY_ID[id]?.name ?? id;
 
-interface EntityTypeIconProps extends SvgIconProps {
+interface EntityTypeIconProps extends SVGProps<SVGSVGElement> {
   entityType: string;
 }
 
 /** Renders the OpenCTI icon for an entity type, with a generic fallback. */
 export const EntityTypeIcon = ({
   entityType,
-  sx,
+  style,
   ...props
 }: EntityTypeIconProps) => {
-  const Icon: SvgIconComponent = ENTITY_TYPE_ICON[entityType] ?? HelpOutlined;
+  const Icon: IconComponent = ENTITY_TYPE_ICON[entityType] ?? HelpOutlinedIcon;
   const color = ENTITY_TYPE_COLOR[entityType];
   return (
     <Icon
-      sx={[{ color }, ...(Array.isArray(sx) ? sx : [sx])]}
+      style={{ color, ...style }}
       {...props}
     />
   );
@@ -205,7 +204,7 @@ export const EntityTypeOrFiligranLogo = ({
   return first ? (
     <EntityTypeIcon
       entityType={first}
-      sx={{ fontSize: '5.5rem' }}
+      className="size-22 shrink-0"
     />
   ) : (
     <LogoFiligranIcon className="size-22" />

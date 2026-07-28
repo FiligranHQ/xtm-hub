@@ -3073,10 +3073,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@filigran/icon@npm:0.24.1":
-  version: 0.24.1
-  resolution: "@filigran/icon@npm:0.24.1"
-  checksum: 10/64a1fab4891daf4590d1192c73dbc3113c50fb445e2a778633f7ad735f6dddcd2267eec8bf53e250e5593866574e1a409efaa8f3b05635c318ca36280a549363
+"@filigran/icon@npm:0.24.2":
+  version: 0.24.2
+  resolution: "@filigran/icon@npm:0.24.2"
+  checksum: 10/9d86032dbcb1bbc7f36bc99de91e0e97b72bcb7903b3c680398d67b1d8b512df5e71b4660d7a0150247f8f338e507a59bfc854e99623a40e708ee019bd2f2f78
   languageName: node
   linkType: hard
 
@@ -9251,7 +9251,7 @@ __metadata:
   dependencies:
     "@emotion/react": "npm:^11"
     "@emotion/styled": "npm:^11"
-    "@filigran/icon": "npm:0.24.1"
+    "@filigran/icon": "npm:0.24.2"
     "@filigran/ui": "npm:1.6.2"
     "@graphql-codegen/cli": "catalog:"
     "@graphql-codegen/typescript": "catalog:"
