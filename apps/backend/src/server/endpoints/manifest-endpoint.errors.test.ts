@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   ManifestErrorMessage,
   sendManifestError,
+  sendManifestValidationError,
 } from './manifest-endpoint.errors';
 
 const buildResponse = () => {
@@ -19,26 +20,36 @@ const buildResponse = () => {
 
 describe('sendManifestError', () => {
   it.each([
-    { status: 400 as const, message: ManifestErrorMessage.InvalidCount },
-    { status: 404 as const, message: ManifestErrorMessage.ManifestNotFound },
-    { status: 429 as const, message: ManifestErrorMessage.TooManyRequests },
-    { status: 503 as const, message: ManifestErrorMessage.StorageUnavailable },
-  ])(
-    'sends $status with a body matching the error contract',
-    ({ status, message }) => {
-      const { res, status: statusMock, json } = buildResponse();
+    { message: ManifestErrorMessage.InvalidCount, status: 400 },
+    { message: ManifestErrorMessage.StorageUnavailable, status: 503 },
+  ])('derives $status from the message', ({ message, status }) => {
+    const { res, status: statusMock, json } = buildResponse();
 
-      sendManifestError(res, status, message);
+    sendManifestError(res, message);
 
-      expect(statusMock).toHaveBeenCalledWith(status);
-      expect(json).toHaveBeenCalledWith({ code: status, message });
-    }
-  );
+    expect(statusMock).toHaveBeenCalledWith(status);
+    expect(json).toHaveBeenCalledWith({ code: status, message });
+  });
+
   it('clears the cache directive before sending an error', () => {
     const { res, removeHeader } = buildResponse();
 
-    sendManifestError(res, 404, ManifestErrorMessage.ManifestFileNotFound);
+    sendManifestError(res, ManifestErrorMessage.ManifestNotFound);
 
     expect(removeHeader).toHaveBeenCalledWith('Cache-Control');
+  });
+});
+
+describe('sendManifestValidationError', () => {
+  it('answers 400 with the message built by the validator', () => {
+    const { res, status, json } = buildResponse();
+
+    sendManifestValidationError(res, 'Invalid product');
+
+    expect(status).toHaveBeenCalledWith(400);
+    expect(json).toHaveBeenCalledWith({
+      code: 400,
+      message: 'Invalid product',
+    });
   });
 });

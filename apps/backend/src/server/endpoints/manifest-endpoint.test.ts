@@ -7,7 +7,6 @@ const { loadManifestsMock, getManifestByNameMock, downloadFileMock } =
     getManifestByNameMock: vi.fn(),
     downloadFileMock: vi.fn(),
   }));
-
 vi.mock('../../modules/shareable-resource/manifest/manifest.domain', () => ({
   ManifestDomain: {
     getManifestByName: getManifestByNameMock,
@@ -23,7 +22,6 @@ vi.mock('../../modules/shareable-resource/manifest/manifest.helper', () => ({
       `${p}/${v}/connector/manifest/${n}.json`,
   },
 }));
-
 vi.mock('../../utils/app-logger.util', () => ({
   logApp: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
 }));

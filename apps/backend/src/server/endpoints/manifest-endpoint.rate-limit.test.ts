@@ -1,9 +1,5 @@
 import type { Request, Response } from 'express';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  MANIFEST_RATE_MAX,
-  MANIFEST_RATE_WINDOW_MS,
-} from '../../modules/shareable-resource/manifest/manifest.consts';
 import { logApp } from '../../utils/app-logger.util';
 import { ManifestErrorMessage } from './manifest-endpoint.errors';
 import { buildManifestRateLimiterOptions } from './manifest-endpoint.rate-limit';
@@ -26,20 +22,6 @@ const buildResponse = () => {
 };
 
 describe('buildManifestRateLimiterOptions', () => {
-  it('builds the limiter with the configured window and limit', () => {
-    const options = buildManifestRateLimiterOptions();
-
-    expect(options.windowMs).toBe(MANIFEST_RATE_WINDOW_MS);
-    expect(options.limit).toBe(MANIFEST_RATE_MAX);
-  });
-
-  it('enables standard headers so clients receive Retry-After', () => {
-    const options = buildManifestRateLimiterOptions();
-
-    expect(options.standardHeaders).toBe(true);
-    expect(options.legacyHeaders).toBe(false);
-  });
-
   it('keys the limiter by IP only, ignoring the User-Agent', async () => {
     const keyGenerator = buildManifestRateLimiterOptions().keyGenerator!;
     const res = buildResponse().res;

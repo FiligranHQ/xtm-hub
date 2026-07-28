@@ -24,18 +24,29 @@ const logRateLimitThrottled = (ip: string, path: string): void => {
   ) {
     return;
   }
+
+  rateLimitLogThrottle.delete(key);
   rateLimitLogThrottle.set(key, now);
+
   logApp.warn('[RATE-LIMIT] Manifest request rate limited', {
     ip,
     path,
     limit: MANIFEST_RATE_MAX,
     windowMs: MANIFEST_RATE_WINDOW_MS,
   });
+
   if (rateLimitLogThrottle.size > MAX_LOG_RATE_ENTRIES) {
     for (const [entryKey, loggedAt] of rateLimitLogThrottle) {
       if (now - loggedAt >= RATE_LIMIT_LOG_INTERVAL_MS) {
         rateLimitLogThrottle.delete(entryKey);
       }
+    }
+    const oldestKey = rateLimitLogThrottle.keys().next().value;
+    if (
+      rateLimitLogThrottle.size > MAX_LOG_RATE_ENTRIES &&
+      oldestKey !== undefined
+    ) {
+      rateLimitLogThrottle.delete(oldestKey);
     }
   }
 };
@@ -50,6 +61,6 @@ export const buildManifestRateLimiterOptions = (): Partial<Options> => ({
   keyGenerator: (req: Request) => ipKeyGenerator(req.ip ?? 'unknown'),
   handler: (req: Request, res: Response) => {
     logRateLimitThrottled(req.ip ?? 'unknown', req.path);
-    sendManifestError(res, 429, ManifestErrorMessage.TooManyRequests);
+    sendManifestError(res, ManifestErrorMessage.TooManyRequests);
   },
 });
