@@ -1,12 +1,9 @@
 import { getErrorStringProperty } from '../../utils/error/error-guard.util';
 
 export class StorageUnavailableError extends Error {
-  override readonly cause?: unknown;
-
-  constructor(message: string, options?: { cause?: unknown }) {
-    super(message);
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
     this.name = 'StorageUnavailableError';
-    this.cause = options?.cause;
   }
 }
 
