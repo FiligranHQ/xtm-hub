@@ -123,4 +123,43 @@ describe('solution-category.domain', () => {
       expect(result).toEqual(expected);
     });
   });
+
+  describe('buildSolutionCategoriesByDocumentIdQuery', () => {
+    it('should build query joining Object_SolutionCategory and filtering on document ids', () => {
+      // Given
+      const documentIds = ['doc-1', 'doc-2'];
+      const selectResult = { query: 'solution-categories-by-document' };
+      const selectMock = vi.fn().mockReturnValue(selectResult);
+      const whereInMock = vi.fn().mockReturnValue({
+        select: selectMock,
+      });
+      const leftJoinMock = vi.fn().mockReturnValue({
+        whereIn: whereInMock,
+      });
+
+      vi.mocked(db).mockReturnValue({
+        leftJoin: leftJoinMock,
+      } as unknown as ReturnType<typeof db>);
+
+      // When
+      const result =
+        solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+          documentIds
+        );
+
+      // Then
+      expect(db).toHaveBeenCalledWith('SolutionCategory');
+      expect(leftJoinMock).toHaveBeenCalledWith(
+        'Object_SolutionCategory as osc',
+        'osc.solution_category_id',
+        'SolutionCategory.id'
+      );
+      expect(whereInMock).toHaveBeenCalledWith('osc.object_id', documentIds);
+      expect(selectMock).toHaveBeenCalledWith(
+        'SolutionCategory.*',
+        'osc.object_id as _document_id'
+      );
+      expect(result).toBe(selectResult);
+    });
+  });
 });

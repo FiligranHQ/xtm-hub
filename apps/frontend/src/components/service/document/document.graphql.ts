@@ -141,6 +141,10 @@ export const documentItem = graphql`
       datasheet_url
       blogpost_url
       demo_url
+      solution_category {
+        id
+        name
+      }
     }
 
     ... on CsvFeed {

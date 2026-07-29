@@ -3,10 +3,12 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
   IntegrationType,
   Organization,
+  SolutionCategory,
 } from '../../__generated__/resolvers-types';
 import UseCase from '../../model/kanel/public/UseCase';
 import User, { UserId } from '../../model/kanel/public/User';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import { solutionCategoryDomain } from '../solution-category/solution-category.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { Document, WithDocumentId, WithParentId } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
@@ -21,6 +23,10 @@ export interface DocumentDataLoaders {
   childrenDocumentsLoader: DataLoader<string, Document[]>;
   imagesByDocumentIdLoader: DataLoader<string, Document[]>;
   useCasesByDocumentIdLoader: DataLoader<string, UseCase[]>;
+  solutionCategoryByDocumentIdLoader: DataLoader<
+    string,
+    SolutionCategory | null
+  >;
   integrationTypeLoader: DataLoader<string, IntegrationType | null>;
 }
 
@@ -113,6 +119,20 @@ export const DocumentDataLoader = {
     return ids.map((id) => map.get(id) ?? []);
   },
 
+  batchLoadSolutionCategoryByDocumentId: async (
+    ids: readonly string[]
+  ): Promise<(SolutionCategory | null)[]> => {
+    const rows: WithDocumentId<SolutionCategory>[] =
+      await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+        ids
+      );
+
+    const map = new Map<string, SolutionCategory>(
+      rows.map((row) => [row._document_id, row])
+    );
+    return ids.map((id) => map.get(id) ?? null);
+  },
+
   batchLoadIntegrationTypes: async (
     ids: readonly string[]
   ): Promise<(IntegrationType | null)[]> => {
@@ -140,6 +160,9 @@ export const DocumentDataLoader = {
     ),
     useCasesByDocumentIdLoader: new DataLoader(
       DocumentDataLoader.batchLoadUseCasesByDocumentId
+    ),
+    solutionCategoryByDocumentIdLoader: new DataLoader(
+      DocumentDataLoader.batchLoadSolutionCategoryByDocumentId
     ),
     integrationTypeLoader: new DataLoader(
       DocumentDataLoader.batchLoadIntegrationTypes

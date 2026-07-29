@@ -14,6 +14,7 @@ import Document, {
   DocumentId,
   default as DocumentModel,
 } from '../../model/kanel/public/Document';
+import { ObjectSolutionCategoryObjectId } from '../../model/kanel/public/ObjectSolutionCategory';
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -23,6 +24,7 @@ import { ForbiddenAccess } from '../../utils/error/error.util';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { RegistrationApp } from '../registration/registration.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
+import { objectSolutionCategoryDomain } from '../solution-category/object-solution-category/object-solution-category.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
@@ -50,6 +52,9 @@ type DocumentWithDynamicMetadata = DocumentModel &
 
 const toObjectUseCaseObjectId = (id: string): ObjectUseCaseObjectId =>
   id as ObjectUseCaseObjectId;
+const toObjectSolutionCategoryObjectId = (
+  id: string
+): ObjectSolutionCategoryObjectId => id as ObjectSolutionCategoryObjectId;
 
 const setDocumentMetadataValue = (
   document: DocumentModel,
@@ -133,6 +138,7 @@ export const DocumentApp = {
     const documentData: DocumentData<Document> = {
       ...input,
       use_cases: input.use_cases ?? undefined,
+      solution_category: input.solution_category ?? undefined,
       service_instance_id: serviceInstanceId,
       type: documentType,
       ...(sourceDocumentFile && isDocumentFileRequired
@@ -187,6 +193,13 @@ export const DocumentApp = {
             use_case_id: id,
           }))
         );
+      }
+
+      if (documentData.solution_category) {
+        await objectSolutionCategoryDomain.insertObjectSolutionCategory({
+          object_id: toObjectSolutionCategoryObjectId(document.id),
+          solution_category_id: documentData.solution_category,
+        });
       }
 
       return document;
@@ -354,6 +367,17 @@ export const DocumentApp = {
             }))
           );
         }
+      }
+
+      if (input.solution_category) {
+        await objectSolutionCategoryDomain.deleteObjectSolutionCategoryBy({
+          object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
+        });
+
+        await objectSolutionCategoryDomain.insertObjectSolutionCategory({
+          object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
+          solution_category_id: input.solution_category,
+        });
       }
 
       if (documentMetadata.length) {

@@ -105,6 +105,16 @@ const ShareableResourceDetails = ({
               </span>
             </div>
           </ShareableResourceDetailItem>
+          {documentData.solution_category && (
+            <ShareableResourceDetailItem
+              label={t(
+                'Service.ShareableResources.Details.IntegrationSolutionCategory'
+              )}>
+              <div className="flex items-center gap-s">
+                <span>{documentData.solution_category.name}</span>
+              </div>
+            </ShareableResourceDetailItem>
+          )}
           {integrationSubTypeMetadata && (
             <ShareableResourceDetailItem
               label={t(

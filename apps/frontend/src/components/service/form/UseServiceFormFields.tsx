@@ -6,6 +6,7 @@ import {
   ServiceFormMultipleImagesField,
   ServiceFormMultipleImagesFieldImages,
 } from '@/components/service/form/MultipleImagesField';
+import { ServiceFormSolutionCategoryField } from '@/components/service/form/SolutionCategoryField';
 import { ServiceFormUploaderIdField } from '@/components/service/form/UploaderIdField';
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/UploaderOrganizationIdField';
 import { ServiceFormUseCasesField } from '@/components/service/form/UseCasesField';
@@ -62,6 +63,7 @@ type AvailableFields =
   | 'uploader_id'
   | 'uploader_organization_id'
   | 'use_cases'
+  | 'solution_category'
   | 'entity_types'
   | 'integration_subtype'
   | 'images'
@@ -167,6 +169,20 @@ export const useServiceFormFields = ({
             disabled={disabledFields.includes('use_cases')}
             product={productTagByPlatform[platform]}
             required={integrationType !== IntegrationType.Connector}
+          />
+        ),
+      },
+      solution_category: {
+        fieldType: ({
+          field,
+        }: {
+          field: ControllerRenderProps<FieldValues, string>;
+        }) => (
+          <ServiceFormSolutionCategoryField
+            field={field}
+            document={document}
+            disabled={disabledFields.includes('solution_category')}
+            product={productTagByPlatform[platform]}
           />
         ),
       },

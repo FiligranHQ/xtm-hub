@@ -38,6 +38,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
 } from '../shareable-resource/opencti/integration/integration.model';
+import { solutionCategoryDomain } from '../solution-category/solution-category.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
@@ -683,6 +684,120 @@ describe('documentApp', () => {
 
       // Then
       expect(updatedDocument.slug).toBe(originalSlug);
+    });
+
+    describe('solution_category linking', () => {
+      it('should link solution category when provided on update', async () => {
+        // Given
+        const category = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_category: category.id,
+          },
+          existingImageIds: [],
+        });
+
+        // Then
+        const links =
+          await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+            [createdDocument!.id]
+          );
+        expect(links).toHaveLength(1);
+        expect(links[0]).toMatchObject({
+          _document_id: createdDocument!.id,
+          id: category.id,
+        });
+      });
+
+      it('should replace previous solution category link on update', async () => {
+        // Given
+        const category1 = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+        const category2 = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_category: category1.id,
+          },
+          existingImageIds: [],
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_category: category2.id,
+          },
+          existingImageIds: [],
+        });
+
+        // Then
+        const links =
+          await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+            [createdDocument!.id]
+          );
+        expect(links).toHaveLength(1);
+        expect(links[0]).toMatchObject({
+          _document_id: createdDocument!.id,
+          id: category2.id,
+        });
+      });
+
+      it('should keep existing solution category link when update omits solution_category', async () => {
+        // Given
+        const category = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_category: category.id,
+          },
+          existingImageIds: [],
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: documentUpdateData,
+          existingImageIds: [],
+        });
+
+        // Then
+        const links =
+          await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+            [createdDocument!.id]
+          );
+        expect(links).toHaveLength(1);
+        expect(links[0]).toMatchObject({
+          _document_id: createdDocument!.id,
+          id: category.id,
+        });
+      });
     });
 
     it('should delegate news feed synchronization to NewsFeedApp.upsertResourceNewsFeed', async () => {

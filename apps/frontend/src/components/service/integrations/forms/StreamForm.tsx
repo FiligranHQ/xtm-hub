@@ -25,6 +25,7 @@ const streamFormSchema = z.object({
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).min(1, 'Required'),
+  solution_category: z.string().min(1, 'Required'),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
@@ -71,6 +72,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
         images: transformToFileList(DocumentImageType.Image, document),
         logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((label) => label.id),
+        solution_category: document?.solution_category?.id,
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
@@ -101,6 +103,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
     uploader_organization_id,
     uploader_id,
     use_cases,
+    solution_category,
     integration_subtype,
     integration_type,
     datasheet_url,
@@ -139,6 +142,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
         fieldConfig={{
           description,
           use_cases,
+          solution_category,
           uploader_id,
           uploader_organization_id,
           document: isCreation

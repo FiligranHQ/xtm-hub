@@ -41,6 +41,7 @@ import { useMutation } from 'react-relay';
 
 type DocumentFormValues = ServiceFormValues & {
   entity_types?: string[] | null;
+  solution_category?: string | null;
 };
 
 const documentBaseKeys: Array<keyof DocumentFormValues> = [
@@ -51,6 +52,7 @@ const documentBaseKeys: Array<keyof DocumentFormValues> = [
   'short_description',
   'description',
   'use_cases',
+  'solution_category',
   'entity_types',
   'active',
 ];

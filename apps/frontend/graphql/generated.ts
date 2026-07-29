@@ -191,6 +191,7 @@ export type Connector = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
+  solution_category: Maybe<SolutionCategory>;
   source_code: Maybe<Scalars['String']['output']>;
   subscription: Maybe<SubscriptionModel>;
   subscription_link: Maybe<Scalars['String']['output']>;
@@ -232,6 +233,7 @@ export type CreateDocumentInput = {
   name: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  solution_category: InputMaybe<Scalars['SolutionCategoryId']['input']>;
   uploader_id: Scalars['UserId']['input'];
   use_cases: Array<Scalars['UseCaseId']['input']>;
 };
@@ -277,6 +279,7 @@ export type CsvFeed = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
+  solution_category: Maybe<SolutionCategory>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -636,6 +639,7 @@ export enum DocumentMetadataKeyCode {
   MinimumDeployableVersionPadded = 'minimum_deployable_version_padded',
   PlaybookSupported = 'playbook_supported',
   ProductVersion = 'product_version',
+  SolutionCategory = 'solution_category',
   SourceCode = 'source_code',
   SubscriptionLink = 'subscription_link',
   VendorUrl = 'vendor_url',
@@ -793,6 +797,7 @@ export type Integration = {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
+  solution_category: Maybe<SolutionCategory>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -822,6 +827,7 @@ export type IntegrationHack = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
+  solution_category: Maybe<SolutionCategory>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -2103,6 +2109,7 @@ export type RssFeed = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
+  solution_category: Maybe<SolutionCategory>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -2330,6 +2337,7 @@ export type Stream = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
+  solution_category: Maybe<SolutionCategory>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -2448,6 +2456,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
+  solution_category: Maybe<SolutionCategory>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -2499,6 +2508,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
+  solution_category: Maybe<SolutionCategory>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -2563,6 +2573,7 @@ export type UpdateDocumentInput = {
   entity_types: InputMaybe<Array<Scalars['String']['input']>>;
   name: InputMaybe<Scalars['String']['input']>;
   short_description: InputMaybe<Scalars['String']['input']>;
+  solution_category: InputMaybe<Scalars['SolutionCategoryId']['input']>;
   uploader_id: InputMaybe<Scalars['UserId']['input']>;
   uploader_organization_id: InputMaybe<Scalars['OrganizationId']['input']>;
   use_cases: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
