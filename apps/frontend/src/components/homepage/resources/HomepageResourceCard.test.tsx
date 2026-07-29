@@ -7,30 +7,13 @@ import HomepageResourceCard, {
 
 vi.mock('@/components/ui/BadgeOverflowCounter', () => ({
   default: ({ badges }: { badges: { id: string; name: string }[] }) => (
-    <div data-testid="badge-overflow-counter">
+    <div
+      role="group"
+      aria-label="use cases">
       {badges.map((b) => (
         <span key={b.id}>{b.name}</span>
       ))}
     </div>
-  ),
-}));
-
-vi.mock('@/components/ui/ResourceStatusIcons', () => ({
-  ResourceStatusIcons: ({
-    active,
-    verified,
-    deployable,
-  }: {
-    active?: boolean;
-    verified?: boolean;
-    deployable?: boolean;
-  }) => (
-    <div
-      data-testid="resource-status-icons"
-      data-active={active}
-      data-verified={verified}
-      data-deployable={deployable}
-    />
   ),
 }));
 
@@ -125,7 +108,9 @@ describe('HomepageResourceCard', () => {
         />
       );
 
-      expect(screen.getByTestId('badge-overflow-counter')).toBeInTheDocument();
+      expect(
+        screen.getByRole('group', { name: 'use cases' })
+      ).toBeInTheDocument();
       expect(screen.getByText('Threat Hunting')).toBeInTheDocument();
       expect(screen.getByText('SOC')).toBeInTheDocument();
     });
@@ -134,7 +119,7 @@ describe('HomepageResourceCard', () => {
       testRender(<HomepageResourceCard {...buildProps({ useCases: [] })} />);
 
       expect(
-        screen.queryByTestId('badge-overflow-counter')
+        screen.queryByRole('group', { name: 'use cases' })
       ).not.toBeInTheDocument();
     });
   });
@@ -164,17 +149,18 @@ describe('HomepageResourceCard', () => {
   });
 
   describe('status icons', () => {
-    it('passes active, verified and deployable props to ResourceStatusIcons', () => {
+    it('renders the matching number of status icons', () => {
       testRender(
         <HomepageResourceCard
           {...buildProps({ active: true, verified: true, deployable: false })}
         />
       );
 
-      const statusIcons = screen.getByTestId('resource-status-icons');
-      expect(statusIcons).toHaveAttribute('data-active', 'true');
-      expect(statusIcons).toHaveAttribute('data-verified', 'true');
-      expect(statusIcons).toHaveAttribute('data-deployable', 'false');
+      const heading = screen.getByRole('heading', { name: 'OpenCTI' });
+      const link = heading.closest('a');
+      const cardContainer = link?.parentElement;
+      const statusIconsContainer = cardContainer?.firstElementChild;
+      expect(statusIconsContainer?.querySelectorAll('svg')).toHaveLength(2);
     });
   });
 
@@ -198,16 +184,15 @@ describe('HomepageResourceCard', () => {
         deployable: boolean;
         expectedPadding: number;
       }) => {
-        const { container } = testRender(
+        testRender(
           <HomepageResourceCard
             {...buildProps({ active, verified, deployable })}
           />
         );
 
-        // The title container is the first flex row inside the <Link>
-        const titleContainer = container.querySelector(
-          '.flex.items-start.gap-m.min-w-0'
-        ) as HTMLElement;
+        const heading = screen.getByRole('heading', { name: 'OpenCTI' });
+        const headingContainer = heading.closest('div');
+        const titleContainer = headingContainer?.parentElement;
 
         expect(titleContainer).toHaveStyle({
           paddingRight: `${expectedPadding}px`,
