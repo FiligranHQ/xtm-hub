@@ -1645,10 +1645,12 @@
   },
   "UserActions": {
     "AddUser": "Ajouter un utilisateur",
+    "AllOrganizations": "Toutes les organisations",
     "CreateUser": "Créer un nouvel utilisateur",
     "DetailsUser": "Détails de l'utilisateur",
     "Disable": "Désactiver",
     "Enable": "Activer",
+    "Organization": "Organisation",
     "RemoveUser": "Retirer l'utilisateur",
     "SearchUser": "Rechercher l'utilisateur...",
     "UpdateUser": "Mettre à jour l'utilisateur - {email}",

@@ -1645,10 +1645,12 @@
   },
   "UserActions": {
     "AddUser": "ユーザーを追加",
+    "AllOrganizations": "すべての組織",
     "CreateUser": "新規ユーザー作成",
     "DetailsUser": "詳細ユーザー",
     "Disable": "無効化",
     "Enable": "有効にする",
+    "Organization": "組織",
     "RemoveUser": "ユーザー削除",
     "SearchUser": "ユーザーを検索...",
     "UpdateUser": "ユーザーを更新する - {email}",

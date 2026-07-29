@@ -1,6 +1,7 @@
 import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { getUserListContext } from '@/components/admin/user/UserListPage';
+import { UserOrganizationFilter } from '@/components/admin/user/UserOrganizationFilter';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import BadgeOverflowCounter, {
   BadgeOverflow,
@@ -104,6 +105,8 @@ const UserList = ({ organization }: UserListProps) => {
     setColumnOrder,
     columnVisibility,
     setColumnVisibility,
+    organizationFilter,
+    setOrganizationFilter,
     resetAll,
     removeOrder,
   } = useUserListLocalstorage();
@@ -119,7 +122,7 @@ const UserList = ({ organization }: UserListProps) => {
     organization?: string;
   }>({
     search: undefined,
-    organization,
+    organization: isAdminPath ? organizationFilter : organization,
   });
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -344,6 +347,24 @@ const UserList = ({ organization }: UserListProps) => {
       refetch({ searchTerm: updatedFilter.search }); // Use the updated filter
       return updatedFilter;
     });
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
+
+  const handleOrganizationChange = (organizationId: string | undefined) => {
+    setOrganizationFilter(organizationId);
+    setFilter((prevFilter) => {
+      const updatedFilter = {
+        ...prevFilter,
+        organization: organizationId,
+      };
+      refetch({
+        filters: updatedFilter.organization
+          ? [{ key: 'organization_id', value: [updatedFilter.organization] }]
+          : undefined,
+      });
+      return updatedFilter;
+    });
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
   const debounceHandleInput = useDebounceCallback(
@@ -371,11 +392,19 @@ const UserList = ({ organization }: UserListProps) => {
         onClickRow={(row) => setUserEdit(row.original)}
         toolbar={
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
-            <SearchInput
-              containerClass="w-full sm:w-1/3"
-              placeholder={t('UserActions.SearchUser')}
-              onChange={debounceHandleInput}
-            />
+            <div className="flex w-full items-center gap-s sm:w-auto">
+              <SearchInput
+                containerClass="w-full sm:w-auto"
+                placeholder={t('UserActions.SearchUser')}
+                onChange={debounceHandleInput}
+              />
+              {isAdminPath && (
+                <UserOrganizationFilter
+                  value={filter.organization}
+                  onChange={handleOrganizationChange}
+                />
+              )}
+            </div>
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">
               <DataTableHeadBarOptions />
             </div>
