@@ -2,19 +2,15 @@ import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
 import LoginForm from '@/components/login/LoginForm';
 import LoginMessage from '@/components/login/LoginMessage';
 import LoginTitleForm from '@/components/login/LoginTitle';
-import { PlatformProviderButton } from '@/components/login/PlatformProviderButton';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import useDecodedQuery from '@/hooks/use-decoded-query';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useToast } from '@filigran/ui/clients';
-import { FeatureFlag } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
 export const LoginLayout = ({}) => {
   const { settings } = useContext(SettingsContext);
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const router = useRouter();
 
   const { error, redirect } = useDecodedQuery();
@@ -27,11 +23,11 @@ export const LoginLayout = ({}) => {
   );
 
   useEffect(() => {
-    if (isHomePageV2Enabled && !localProvider) {
+    if (!localProvider) {
       const target = redirect ? `/sign-up?redirect=${redirect}` : '/sign-up';
       router.replace(target);
     }
-  }, [isHomePageV2Enabled, localProvider, redirect, router]);
+  }, [localProvider, redirect, router]);
 
   useEffect(() => {
     if (error) {
@@ -43,7 +39,7 @@ export const LoginLayout = ({}) => {
     }
   }, [currentPath, error, t, toast]);
 
-  if (isHomePageV2Enabled && !localProvider) {
+  if (!localProvider) {
     return null;
   }
 
@@ -53,19 +49,8 @@ export const LoginLayout = ({}) => {
       <div className="flex flex-col items-center p-xl sm:p-0">
         <LoginTitleForm />
         <div className="space-y-l mt-l w-full flex flex-col items-center">
-          <LoginMessage isHomePageV2Enabled={isHomePageV2Enabled} />
-          {isHomePageV2Enabled
-            ? localProvider && <LoginForm />
-            : settings?.platform_providers?.map((platformProvider) =>
-                platformProvider.provider === 'local' ? (
-                  <LoginForm key={platformProvider.provider} />
-                ) : (
-                  <PlatformProviderButton
-                    key={platformProvider.provider}
-                    platformProvider={platformProvider}
-                  />
-                )
-              )}
+          <LoginMessage />
+          <LoginForm />
         </div>
       </div>
     </main>

@@ -3,12 +3,11 @@ import PublicServiceInstanceCard from '@/components/service/PublicServiceInstanc
 import { cn } from '@/lib/utils';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
-import { isFeatureEnabled } from '@/utils/settings.service';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import ServiceLinksByTagsQueryGraphql, {
   serviceLinksByTagsQuery,
 } from '@generated/serviceLinksByTagsQuery.graphql';
-import { FeatureFlag, ServiceInstanceTag } from '@graphql/generated';
+import { ServiceInstanceTag } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import React from 'react';
@@ -43,7 +42,6 @@ export const RegistrationLearnMore = async ({
   const services = response.data
     .serviceInstanceLinksByTags as unknown as seoServiceInstanceFragment$data[];
   const t = await getTranslations();
-  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
   const platformName =
     serviceInstanceTag === ServiceInstanceTag.OpenCti ? 'OpenCTI' : 'OpenAEV';
 
@@ -116,18 +114,11 @@ export const RegistrationLearnMore = async ({
       </Section>
       <Section>
         <div className="flex flex-col lg:flex-row items-center gap-xl">
-          <div
-            className={cn(
-              'basis-full flex justify-between gap-l',
-              isHomePageV2Enabled && 'max-sm:flex-col'
-            )}>
+          <div className="basis-full flex justify-between gap-l max-sm:flex-col">
             {services.map((service) => (
               <PublicServiceInstanceCard
                 key={service.id}
-                className={cn(
-                  'basis-full max-w-[50%]',
-                  isHomePageV2Enabled && 'max-sm:max-w-none'
-                )}
+                className="basis-full max-w-[50%] max-sm:max-w-none"
                 serviceInstance={seoServiceInstanceToInstanceCardData(
                   service,
                   t

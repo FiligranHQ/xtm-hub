@@ -1,27 +1,16 @@
 'use client';
 
 import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { cn } from '@/lib/utils';
-import { FeatureFlag } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface AppFooterProps {
   className?: string;
-  isHomePageV2Enabled?: boolean;
 }
 
-export const AppFooter = ({
-  className,
-  isHomePageV2Enabled: isHomePageV2EnabledProp,
-}: AppFooterProps) => {
+export const AppFooter = ({ className }: AppFooterProps) => {
   const t = useTranslations('AppFooter');
-  const isHomePageV2EnabledFromHook = useIsFeatureEnabled(
-    FeatureFlag.HomePageV2
-  );
-  const isHomePageV2Enabled =
-    isHomePageV2EnabledProp ?? isHomePageV2EnabledFromHook;
 
   return (
     <footer
@@ -91,17 +80,6 @@ export const AppFooter = ({
               {t('Licenses')}
             </Link>
           </li>
-          {!isHomePageV2Enabled && (
-            <li>
-              <Link
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://filigran.io/contact/"
-                className="transition-opacity hover:opacity-70">
-                {t('Contact')}
-              </Link>
-            </li>
-          )}
         </ul>
       </div>
     </footer>

@@ -3,9 +3,7 @@ import {
   networkFetch,
   UnauthenticatedError,
 } from '@/relay/environment/fetch-fn';
-import { buildLoginRedirect, buildSignupRedirect } from '@/utils/redirect';
-import { isFeatureEnabled } from '@/utils/settings.service';
-import { FeatureFlag } from '@graphql/generated';
+import { buildSignupRedirect } from '@/utils/redirect';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { GraphQLResponse, OperationType, VariablesOf } from 'relay-runtime';
@@ -36,12 +34,7 @@ export default async function serverPortalApiFetch<
     options,
   }).catch(async (e: unknown) => {
     if (e instanceof UnauthenticatedError) {
-      const homePageV2 = await isFeatureEnabled(FeatureFlag.HomePageV2);
-      redirect(
-        homePageV2
-          ? buildSignupRedirect(pathname)
-          : buildLoginRedirect(pathname)
-      );
+      redirect(buildSignupRedirect(pathname));
     }
     throw e;
   });

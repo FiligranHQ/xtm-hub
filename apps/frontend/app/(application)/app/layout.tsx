@@ -6,24 +6,20 @@ import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 
 import { AdminBanner } from '@/components/admin/AdminBanner';
 import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
-import { ContentLayout } from '@/components/ContentLayout';
 import HeaderComponent from '@/components/Header';
 import { AppShell } from '@/components/layout/AppShell';
-import Menu from '@/components/menu/Menu';
 import PrivateMenu from '@/components/menu/PrivateMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
-import { buildLoginRedirect, buildSignupRedirect } from '@/utils/redirect';
-import { isFeatureEnabled } from '@/utils/settings.service';
+import { buildSignupRedirect } from '@/utils/redirect';
 import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import meLoaderQueryNode, {
   meLoaderQuery,
   meLoaderQuery$data,
 } from '@generated/meLoaderQuery.graphql';
-import { FeatureFlag } from '@graphql/generated';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -56,15 +52,9 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       {}
     );
 
-  const isHomePageV2Enabled = await isFeatureEnabled(FeatureFlag.HomePageV2);
-
   const me = meData.me as unknown as meContext_fragment$data;
   if (!me) {
-    redirect(
-      isHomePageV2Enabled
-        ? buildSignupRedirect(pathname)
-        : buildLoginRedirect(pathname)
-    );
+    redirect(buildSignupRedirect(pathname));
   }
 
   const banners = (
@@ -80,28 +70,13 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       <ReactQueryProvider>
         <div className="flex min-h-screen">
           <PageLoader>
-            {isHomePageV2Enabled ? (
-              <AppShell
-                banners={banners}
-                menu={<PrivateMenu />}
-                headerContent={<HeaderComponent />}
-                contentClassName="p-3 sm:p-6">
-                {children}
-              </AppShell>
-            ) : (
-              <div
-                id="app-shell"
-                className="flex flex-col w-full h-screen min-h-0">
-                {banners}
-                <div className="flex flex-row grow min-h-0">
-                  <Menu />
-                  <div className="flex flex-col w-full h-full min-h-0 min-w-0">
-                    <HeaderComponent />
-                    <ContentLayout>{children}</ContentLayout>
-                  </div>
-                </div>
-              </div>
-            )}
+            <AppShell
+              banners={banners}
+              menu={<PrivateMenu />}
+              headerContent={<HeaderComponent />}
+              contentClassName="p-3 sm:p-6">
+              {children}
+            </AppShell>
           </PageLoader>
         </div>
       </ReactQueryProvider>

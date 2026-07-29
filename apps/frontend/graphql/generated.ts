@@ -726,8 +726,7 @@ export enum EpicType {
 }
 
 export enum FeatureFlag {
-  Dummy = 'DUMMY',
-  HomePageV2 = 'HOME_PAGE_V2'
+  Dummy = 'DUMMY'
 }
 
 export enum FiligranProduct {
@@ -1660,7 +1659,6 @@ export type Query = {
   registeredPlatform: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   seoServiceInstance: SeoServiceInstance;
-  seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById: Maybe<ServiceInstance>;
   serviceInstanceByIdAndGrantAccess: Maybe<ServiceInstance>;

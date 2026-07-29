@@ -8,11 +8,10 @@ import serverPortalApiFetch, {
   serverMutateGraphQL,
 } from '@/relay/server-portal-api-fetch';
 
-import { ContentLayout } from '@/components/ContentLayout';
+import { SharedContent } from '@/components/layout/SharedContent';
 import { ErrorPage } from '@/components/ui/ErrorPage';
 import { RelayProvider } from '@/relay/relay-provider';
 import { getMetadataBase } from '@/utils/metadata';
-import { Card } from '@filigran/ui/servers';
 import errorFrontendLogMutationNode, {
   errorFrontendLogMutation,
 } from '@generated/errorFrontendLogMutation.graphql';
@@ -91,13 +90,11 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       <PageLoader>
         <div className="flex flex-col items-center justify-center min-h-screen">
           <div className="w-1/3">
-            <ContentLayout>
-              <LogoXTMDark className="pb-6" />
+            <LogoXTMDark className="pb-6" />
 
-              <Card className="p-l bg-elevation-background-layer-1">
-                {children}
-              </Card>
-            </ContentLayout>
+            <SharedContent className="flex flex-col bg-gradient-background px-3 pt-3 sm:px-6 sm:p-6">
+              {children}
+            </SharedContent>
           </div>
         </div>
       </PageLoader>

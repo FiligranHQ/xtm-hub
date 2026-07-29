@@ -1,6 +1,5 @@
 {
   "environment": "staging",
-  "enabled_features": ["HOME_PAGE_V2"],
   "login_settings": [
     {
       "name": "Login with Filigran",
