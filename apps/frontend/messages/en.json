@@ -737,9 +737,10 @@
       "ConnectedProductSentence": "To deploy a resource you must have a connected product",
       "NotAllowedMessage": "You do not have permission to connect a product. \nPlease contact your product {count, plural, =1 {administrator} other {administrators}} to connect the product on your behalf.",
       "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
-      "ReachAdmin": "Reach your admin",
+      "ReachAdmin": "Reach out to your admin",
       "ConnectProduct": "Connect your product",
-      "RedirectionMessage": "You will be redirected to your product in a new tab to authorize the connection with XTM Hub."
+      "RedirectionMessage": "You will be redirected to your product in a new tab to authorize the connection with XTM Hub.",
+      "MinimumVersionRequired": "Minimum versions required: \nOpenCTI: {openctiVersion} \nOpenAEV: {openaevVersion}"
     },
     "Back": "Back to {platformIdentifier}",
     "Confirm": "Connect",
