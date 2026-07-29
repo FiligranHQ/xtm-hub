@@ -20,7 +20,7 @@ describe('ShareableResourceCardDescription', () => {
       <ShareableResourceCardDescription description="A description" />
     );
 
-    expect(container.firstChild).toHaveClass('[-webkit-line-clamp:5]');
-    expect(container.firstChild).not.toHaveClass('[-webkit-line-clamp:3]');
+    expect(container.firstChild).toHaveClass('[-webkit-line-clamp:3]');
+    expect(container.firstChild).toHaveClass('sm:[-webkit-line-clamp:5]');
   });
 });

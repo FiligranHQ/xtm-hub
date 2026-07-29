@@ -10,9 +10,13 @@ vi.mock('@/utils/documents', () => ({
   findDocumentLogo: (...args: unknown[]) => findDocumentLogoMock(...args),
 }));
 
-vi.mock('@filigran/icon', () => ({
-  LogoFiligranIcon: () => <svg data-testid="fallback-logo" />,
-}));
+vi.mock('@filigran/icon', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@filigran/icon')>();
+  return {
+    ...actual,
+    LogoFiligranIcon: () => <svg data-testid="fallback-logo" />,
+  };
+});
 
 describe('ShareableResourceCardImage', () => {
   it('renders image path when a logo exists', () => {

@@ -62,7 +62,8 @@ describe('ShareableResourceCard', () => {
 
     expect(screen.getByText('Third party')).toBeInTheDocument();
     expect(screen.getByText('A third-party description')).toBeInTheDocument();
-    expect(container.firstChild).toHaveClass('h-[348px]');
+    expect(container.firstChild).toHaveClass('h-[300px]');
+    expect(container.firstChild).toHaveClass('sm:h-[348px]');
 
     await user.click(screen.getByRole('link'));
     expect(saveMock).toHaveBeenCalledTimes(1);
