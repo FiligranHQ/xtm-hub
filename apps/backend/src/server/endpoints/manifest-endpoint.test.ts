@@ -194,6 +194,22 @@ describe('downloadLatestManifest', () => {
     expect(res.end).toHaveBeenCalled();
     expect(downloadFileMock).not.toHaveBeenCalled();
   });
+
+  it('returns 404 when the stored manifest name is malformed', async () => {
+    loadManifestsMock.mockResolvedValue([
+      { name: 'not-a-manifest-name', created_at: new Date() },
+    ]);
+
+    const res = buildResponse();
+    await ManifestEndpoint.downloadLatestManifest(
+      buildRequest(VALID),
+      res as unknown as Response
+    );
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.setHeader).not.toHaveBeenCalledWith('ETag', expect.anything());
+    expect(downloadFileMock).not.toHaveBeenCalled();
+  });
 });
 
 describe('downloadManifestByName', () => {

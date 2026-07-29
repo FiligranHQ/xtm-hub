@@ -86,6 +86,14 @@ export const ManifestEndpoint = {
         return;
       }
 
+      if (!isValidManifestName(latest.name)) {
+        logApp.error('Manifest name failed validation before MinIO lookup', {
+          name: latest.name,
+        });
+        sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
+        return;
+      }
+
       res.setHeader('ETag', buildManifestETag(latest.name));
       res.setHeader('Cache-Control', 'no-cache');
       if (req.fresh) {
@@ -205,14 +213,6 @@ const streamManifestByName = async (
   version: string,
   name: string
 ): Promise<void> => {
-  if (!isValidManifestName(name)) {
-    logApp.error('Manifest name failed validation before MinIO lookup', {
-      name,
-    });
-    sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
-    return;
-  }
-
   const key = ManifestHelper.buildManifestObjectKey(product, version, name);
   const body = await MinIOClient.downloadFile(key);
   if (!body) {
