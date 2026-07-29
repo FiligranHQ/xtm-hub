@@ -20,7 +20,7 @@ import {
 import { documentExistsQuery } from '@generated/documentExistsQuery.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useLazyLoadQuery } from 'react-relay';
 import { z } from 'zod';
 
@@ -56,8 +56,10 @@ export const VaultNewFileForm = ({
 
   const { slug } = useDecodedParams();
 
-  const { watch } = form;
-  const watchDocument = watch('document');
+  const watchDocument = useWatch({
+    control: form.control,
+    name: 'document',
+  });
 
   const documentName = watchDocument?.[0]?.name || null;
 

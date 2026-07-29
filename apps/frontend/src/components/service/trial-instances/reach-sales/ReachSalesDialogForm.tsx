@@ -11,7 +11,7 @@ import {
 import { PlatformIdentifier } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 interface ReachSalesDialogFormProps {
@@ -40,7 +40,10 @@ export const ReachSalesDialogForm = ({
     },
   });
 
-  const message = form.watch('message');
+  const message = useWatch({
+    control: form.control,
+    name: 'message',
+  });
 
   const handleSubmit = (values: z.infer<typeof reachSalesSchema>) => {
     onSubmit(values.message);
@@ -53,7 +56,7 @@ export const ReachSalesDialogForm = ({
       onClickContinue={form.handleSubmit(handleSubmit)}
       onOpenChange={setIsDialogOpen}
       isOpen={isDialogOpen}
-      continueButtonDisabled={!message.trim()}>
+      continueButtonDisabled={!message?.trim()}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <FormField
