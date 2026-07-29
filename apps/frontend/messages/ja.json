@@ -1316,7 +1316,9 @@
         "DatasheetURL": "データシートURL",
         "BlogpostURL": "ブログ記事URL",
         "DemoURL": "デモURL",
-        "EntityType": "エンティティタイプ"
+        "EntityType": "エンティティタイプ",
+        "SupportedByFiligran": "Filigranの提供による",
+        "SupportedByCommunity": "コミュニティの提供による"
       },
       "Download": "ダウンロード",
       "FromVersion": "バージョンから",

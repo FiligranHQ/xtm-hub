@@ -1316,7 +1316,9 @@
         "DatasheetURL": "Datasheet URL",
         "BlogpostURL": "Blogpost URL",
         "DemoURL": "Demo URL",
-        "EntityType": "Entity type"
+        "EntityType": "Entity type",
+        "SupportedByFiligran": "Supported by Filigran",
+        "SupportedByCommunity": "Supported by community"
       },
       "Download": "Download",
       "FromVersion": "From version",

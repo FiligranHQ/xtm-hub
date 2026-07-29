@@ -32,6 +32,13 @@ describe('ResourceStatusIcons', () => {
     });
   });
 
+  describe('when verified is true but displayUnverifiedIcon is false', () => {
+    it('renders nothing', () => {
+      const { container } = testRender(<ResourceStatusIcons verified />);
+      expect(container.firstChild).toBeNull();
+    });
+  });
+
   describe('when deployable is true', () => {
     it('renders one icon', () => {
       const { container } = testRender(<ResourceStatusIcons deployable />);
@@ -44,15 +51,47 @@ describe('ResourceStatusIcons', () => {
     });
   });
 
-  describe('when verified is true', () => {
+  describe('when verified is true for a connector', () => {
     it('renders one icon', () => {
-      const { container } = testRender(<ResourceStatusIcons verified />);
+      const { container } = testRender(
+        <ResourceStatusIcons
+          verified
+          displayUnverifiedIcon
+        />
+      );
       expect(container.querySelectorAll('svg')).toHaveLength(1);
     });
 
-    it('shows the "Verified" tooltip label', () => {
-      testRender(<ResourceStatusIcons verified />);
-      expect(screen.getByText('Utils.Verified')).toBeInTheDocument();
+    it('shows the "Supported by Filigran" tooltip label', () => {
+      testRender(
+        <ResourceStatusIcons
+          verified
+          displayUnverifiedIcon
+        />
+      );
+      expect(
+        screen.getByText(
+          'Service.ShareableResources.Details.SupportedByFiligran'
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('when connector is true and verified is false', () => {
+    it('renders one icon', () => {
+      const { container } = testRender(
+        <ResourceStatusIcons displayUnverifiedIcon />
+      );
+      expect(container.querySelectorAll('svg')).toHaveLength(1);
+    });
+
+    it('shows the "Supported by Community" tooltip label', () => {
+      testRender(<ResourceStatusIcons displayUnverifiedIcon />);
+      expect(
+        screen.getByText(
+          'Service.ShareableResources.Details.SupportedByCommunity'
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -70,19 +109,21 @@ describe('ResourceStatusIcons', () => {
 
   describe('when multiple props are true', () => {
     it.each`
-      active   | verified | deployable | expectedIconCount
-      ${true}  | ${true}  | ${false}   | ${2}
-      ${true}  | ${false} | ${true}    | ${2}
-      ${false} | ${true}  | ${true}    | ${2}
-      ${true}  | ${true}  | ${true}    | ${3}
+      active   | verified | deployable | isConnector | expectedIconCount
+      ${true}  | ${true}  | ${false}   | ${true}     | ${2}
+      ${true}  | ${false} | ${true}    | ${true}     | ${3}
+      ${false} | ${false} | ${true}    | ${true}     | ${2}
+      ${false} | ${false} | ${false}   | ${true}     | ${1}
+      ${true}  | ${true}  | ${true}    | ${true}     | ${3}
     `(
-      'renders $expectedIconCount icon(s) for active=$active verified=$verified deployable=$deployable',
-      ({ active, verified, deployable, expectedIconCount }) => {
+      'renders $expectedIconCount icon(s) for active=$active verified=$verified deployable=$deployable isConnector=$isConnector',
+      ({ active, verified, deployable, isConnector, expectedIconCount }) => {
         const { container } = testRender(
           <ResourceStatusIcons
             active={active}
             verified={verified}
             deployable={deployable}
+            displayUnverifiedIcon={isConnector}
           />
         );
         expect(container.querySelectorAll('svg')).toHaveLength(
