@@ -6,36 +6,36 @@ import { PlatformIdentifier } from '../../__generated__/resolvers-types';
 import { ManifestDomain } from '../../modules/shareable-resource/manifest/manifest.domain';
 import { ManifestHelper } from '../../modules/shareable-resource/manifest/manifest.helper';
 import { MinIOClient } from '../../thirdparty/minio/client';
+import { StorageUnavailableError } from '../../thirdparty/minio/storage-error';
 import { logApp } from '../../utils/app-logger.util';
+import { getErrorMessage } from '../../utils/error/error-guard.util';
+import {
+  MANIFEST_ERRORS,
+  sendManifestError,
+  sendManifestValidationError,
+} from './manifest-endpoint.errors';
+import { buildManifestRateLimiterOptions } from './manifest-endpoint.rate-limit';
 import {
   isValidManifestName,
   parseCount,
   validateManifestParams,
 } from './manifest-endpoint.utils';
 
-const MANIFEST_RATE_WINDOW_MS = 60 * 1000;
-const MANIFEST_RATE_MAX = 300;
-
-const manifestRateLimiter = rateLimit({
-  windowMs: MANIFEST_RATE_WINDOW_MS,
-  max: MANIFEST_RATE_MAX,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+const manifestRateLimiter = rateLimit(buildManifestRateLimiterOptions());
 
 export const ManifestEndpoint = {
   listManifests: async (req: Request, res: Response): Promise<void> => {
     try {
       const validation = validateManifestParams(req.params);
       if (!validation.ok) {
-        res.status(400).json({ code: 400, message: validation.message });
+        sendManifestValidationError(res, validation.message);
         return;
       }
       const { product, version, integrationType } = validation;
 
       const count = parseCount(req.query.count);
       if (count === undefined) {
-        res.status(400).json({ code: 400, message: 'Invalid count' });
+        sendManifestError(res, MANIFEST_ERRORS.InvalidCount);
         return;
       }
 
@@ -45,10 +45,15 @@ export const ManifestEndpoint = {
         integrationType,
         count
       );
-      res.status(200).json({ manifests });
+      res.status(200).json({
+        manifests: manifests.map(({ created_at, name }) => ({
+          created_at,
+          name,
+        })),
+      });
     } catch (error) {
       logApp.error('Error while listing manifests', { error });
-      res.status(500).json({ code: 500, message: 'Internal server error' });
+      sendManifestError(res, MANIFEST_ERRORS.InternalServerError);
     }
   },
 
@@ -59,7 +64,7 @@ export const ManifestEndpoint = {
     try {
       const validation = validateManifestParams(req.params);
       if (!validation.ok) {
-        res.status(400).json({ code: 400, message: validation.message });
+        sendManifestValidationError(res, validation.message);
         return;
       }
       const { product, version, integrationType } = validation;
@@ -76,19 +81,29 @@ export const ManifestEndpoint = {
           version,
           type: integrationType,
         });
-        res.status(404).json({ code: 404, message: 'Manifest not found' });
+        sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
         return;
       }
 
       res.setHeader('Cache-Control', 'no-cache');
       await streamManifestByName(res, product, version, latest.name);
     } catch (error) {
-      logApp.error('Error while retrieving latest manifest', { error });
       if (res.headersSent) {
+        logApp.error('Latest manifest request failed after headers were sent', {
+          error,
+        });
         res.destroy(error as Error);
         return;
       }
-      res.status(500).json({ code: 500, message: 'Internal server error' });
+      if (error instanceof StorageUnavailableError) {
+        logApp.error('Manifest storage unavailable', {
+          error: getErrorMessage(error),
+        });
+        sendManifestError(res, MANIFEST_ERRORS.StorageUnavailable);
+        return;
+      }
+      logApp.error('Error while retrieving latest manifest', { error });
+      sendManifestError(res, MANIFEST_ERRORS.InternalServerError);
     }
   },
 
@@ -99,14 +114,14 @@ export const ManifestEndpoint = {
     try {
       const validation = validateManifestParams(req.params);
       if (!validation.ok) {
-        res.status(400).json({ code: 400, message: validation.message });
+        sendManifestValidationError(res, validation.message);
         return;
       }
       const { product, version, integrationType } = validation;
 
       const { name } = req.params;
       if (typeof name !== 'string' || !isValidManifestName(name)) {
-        res.status(400).json({ code: 400, message: 'Invalid manifest name' });
+        sendManifestError(res, MANIFEST_ERRORS.InvalidManifestName);
         return;
       }
 
@@ -123,19 +138,29 @@ export const ManifestEndpoint = {
           type: integrationType,
           name,
         });
-        res.status(404).json({ code: 404, message: 'Manifest not found' });
+        sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
         return;
       }
 
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       await streamManifestByName(res, product, version, manifest.name);
     } catch (error) {
-      logApp.error('Error while retrieving manifest by name', { error });
       if (res.headersSent) {
+        logApp.error('Manifest request failed after headers were sent', {
+          error,
+        });
         res.destroy(error as Error);
         return;
       }
-      res.status(500).json({ code: 500, message: 'Internal server error' });
+      if (error instanceof StorageUnavailableError) {
+        logApp.error('Manifest storage unavailable', {
+          error: getErrorMessage(error),
+        });
+        sendManifestError(res, MANIFEST_ERRORS.StorageUnavailable);
+        return;
+      }
+      logApp.error('Error while retrieving manifest by name', { error });
+      sendManifestError(res, MANIFEST_ERRORS.InternalServerError);
     }
   },
 };
@@ -170,7 +195,7 @@ const streamManifestByName = async (
     logApp.error('Manifest name failed validation before MinIO lookup', {
       name,
     });
-    res.status(404).json({ code: 404, message: 'Manifest not found' });
+    sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
     return;
   }
 
@@ -180,7 +205,7 @@ const streamManifestByName = async (
     logApp.error('Manifest row exists but object is missing in storage', {
       key,
     });
-    res.status(404).json({ code: 404, message: 'Manifest file not found' });
+    sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
     return;
   }
 
@@ -193,8 +218,7 @@ const streamManifestByName = async (
     if (res.headersSent) {
       res.destroy(error);
     } else {
-      res.removeHeader('Cache-Control');
-      res.status(404).json({ code: 404, message: 'Manifest file not found' });
+      sendManifestError(res, MANIFEST_ERRORS.StorageUnavailable);
     }
   });
 

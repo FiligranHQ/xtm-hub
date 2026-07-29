@@ -1,3 +1,8 @@
+import { ServiceListFilterEntityType } from '@/components/service/components/header/filter/ServiceListFilterEntityType';
+import {
+  ServiceListFilterKey,
+  ServiceListFilterMap,
+} from '@/components/service/components/header/ServiceListHeader';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { AppServiceContext } from '@/components/service/components/ServiceContext';
 import ServiceList from '@/components/service/components/ServiceList';
@@ -9,7 +14,10 @@ import {
   DocumentsListQuery,
 } from '@/components/service/document/document.graphql';
 import { useDocumentContext } from '@/components/service/document/use-document-context';
-import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/hooks/use-service-list-local-storage';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   documentItem_fragment$data,
@@ -60,6 +68,17 @@ const CustomViewsList = ({
     type: ShareableResourceType.OPENCTI_CUSTOM_VIEW,
   });
 
+  const { removeEntityTypes } = useServiceListLocalStorage(
+    ServiceListLocalStorageKey.OpenCTICustomViews
+  );
+
+  const additionalFilters: ServiceListFilterMap = {
+    [ServiceListFilterKey.EntityType]: {
+      node: <ServiceListFilterEntityType />,
+      reset: removeEntityTypes,
+    },
+  };
+
   return (
     <AppServiceContext {...context}>
       <AppServiceListLocalStorageKeyContext
@@ -69,6 +88,7 @@ const CustomViewsList = ({
           draft={draft}
           search={search}
           onSearchChange={onSearchChange}
+          additionalFilters={additionalFilters}
         />
       </AppServiceListLocalStorageKeyContext>
     </AppServiceContext>

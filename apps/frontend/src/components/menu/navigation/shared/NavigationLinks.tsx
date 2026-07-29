@@ -63,25 +63,29 @@ export const PublicSubLink = ({
     </>
   );
 
-  const wrapWithTooltip = (node: ReactNode) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>{node}</TooltipTrigger>
-        <TooltipContent className="bg-ds-bg-4 dark:bg-ds-bg-4 rounded-lg">
-          <div className="flex flex-col gap-0.5">
-            <span className="content-body-base text-text-default-primary">
-              {label}
-            </span>
-            {tooltip && (
+  const wrapWithTooltip = (node: ReactNode) => {
+    if (!tooltip) {
+      return node;
+    }
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>{node}</TooltipTrigger>
+          <TooltipContent className="bg-ds-bg-4 dark:bg-ds-bg-4 rounded-lg">
+            <div className="flex flex-col gap-0.5">
+              <span className="content-body-base text-text-default-primary">
+                {label}
+              </span>
               <span className="content-body-base text-muted-foreground">
                 {tooltip}
               </span>
-            )}
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
 
   if (!href) {
     return wrapWithTooltip(<span className={sharedClassName}>{content}</span>);
