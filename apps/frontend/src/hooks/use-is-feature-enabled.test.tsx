@@ -9,6 +9,8 @@ import { FeatureFlag } from '@graphql/generated';
 import { renderHook } from '@testing-library/react';
 import { expect } from 'vitest';
 
+vi.unmock('@/hooks/use-is-feature-enabled');
+
 describe('useIsFeatureEnabled', () => {
   const createWrapper = (contextValue: Settings) => {
     // eslint-disable-next-line react/display-name

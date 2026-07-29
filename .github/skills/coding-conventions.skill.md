@@ -26,4 +26,5 @@ stack-specific rules on top.
   rerenders, overfetching, large lists) and avoid obvious bottlenecks.
 - Preserve existing naming conventions, folder structure, and import style.
 - Add concise comments only when the logic is non-obvious.
+- Never use `as never` — it disables all type-checking entirely and is always forbidden. Use the actual declared type, a proper generated type (e.g. from `@generated/`), or `Partial<T>` with explicit justification. Never use `as never` even in tests.
 - Never use as type casts unless strictly necessary and explicitly justified. Prefer proper typing over casting.
