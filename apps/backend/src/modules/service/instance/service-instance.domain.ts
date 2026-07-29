@@ -335,6 +335,19 @@ export const ServiceInstanceDomain = {
     return query.select('ServiceInstance.*').first();
   },
 
+  loadServiceInstancesByIds: async (
+    ids: ServiceInstanceId[]
+  ): Promise<ServiceInstance[]> => {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    return db<ServiceInstance>('ServiceInstance').whereIn(
+      'ServiceInstance.id',
+      ids
+    );
+  },
+
   grantServiceAccess: async (
     capabilitiesIds: string[],
     usersId: UserId[],

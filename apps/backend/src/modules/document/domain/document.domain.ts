@@ -16,7 +16,6 @@ import {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
-import { formatRawObject } from '../../../utils/query-raw.util';
 import { omit } from '../../../utils/utils';
 import { isLtsVersion } from '../../../utils/versioning';
 import {
@@ -269,40 +268,9 @@ export const DocumentDomain = {
       });
     }
 
-    loadDocumentQuery
-      .leftJoin(
-        'Document_Children',
-        'Document.id',
-        'Document_Children.parent_document_id'
-      )
-      .leftJoin(
-        'Document as children_documents',
-        'Document_Children.child_document_id',
-        'children_documents.id'
-      )
-      .leftJoin(
-        'ServiceInstance',
-        'Document.service_instance_id',
-        'ServiceInstance.id'
-      );
-
-    loadDocumentQuery.select(
-      dbRaw(
-        `CASE
-      WHEN COUNT("children_documents"."id") = 0 THEN NULL
-      ELSE (json_agg(json_build_object('id', "children_documents"."id", 'name', "children_documents"."name", 'active', "children_documents"."active", 'created_at', "children_documents"."created_at", 'file_name', "children_documents"."file_name", '__typename', 'Document'))::json)
-    END AS children_documents`
-      ),
-      dbRaw(
-        formatRawObject({
-          columnName: 'ServiceInstance',
-          typename: 'ServiceInstance',
-          as: 'service_instance',
-        })
-      )
-    );
-
-    loadDocumentQuery.groupBy(['Document.id', 'ServiceInstance.*']);
+    if (include_metadata?.length) {
+      loadDocumentQuery.groupBy(['Document.id']);
+    }
 
     DocumentMetadataDomain.addIncludeMetadataQuery(
       loadDocumentQuery,

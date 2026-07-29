@@ -29,8 +29,8 @@ import { ServiceInstanceDomain } from '../service/instance/service-instance.doma
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
-import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { DocumentApp } from './document.app';
+import { createSubscriptionByServiceInstanceLoaderKey } from './document.dataloader';
 import { DocumentHelper } from './document.helper';
 import documentResolver from './document.resolver';
 import { DocumentDomain } from './domain/document.domain';
@@ -393,9 +393,10 @@ describe('document field resolvers', () => {
     const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID;
     const expected = { id: serviceInstanceId } as unknown as
       ServiceInstance | undefined;
-    vi.spyOn(ServiceInstanceDomain, 'getServiceInstance').mockResolvedValue(
-      expected
-    );
+    vi.spyOn(
+      contextSimpleUserFiligran2.dataLoaders.serviceInstanceByIdLoader,
+      'load'
+    ).mockResolvedValue(expected as ServiceInstance | undefined);
 
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
@@ -406,20 +407,20 @@ describe('document field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(ServiceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
-      serviceInstanceId
-    );
+    expect(
+      contextSimpleUserFiligran2.dataLoaders.serviceInstanceByIdLoader.load
+    ).toHaveBeenCalledWith(serviceInstanceId);
     expect(result).toEqual(expected);
   });
 
   it('subscription should load subscription by service_instance_id and organization_id', async () => {
     const serviceInstanceId = SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID;
     const expected = { id: uuidv4() } as unknown as SubscriptionModel;
-    vi.spyOn(SubscriptionDomain, 'loadSubscriptionBy').mockResolvedValue(
-      expected as unknown as Awaited<
-        ReturnType<typeof SubscriptionDomain.loadSubscriptionBy>
-      >
-    );
+    vi.spyOn(
+      contextSimpleUserFiligran2.dataLoaders
+        .subscriptionByServiceInstanceLoader,
+      'load'
+    ).mockResolvedValue(expected);
 
     const result = await (
       documentResolver.Document as unknown as DocumentResolvers
@@ -430,10 +431,16 @@ describe('document field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(SubscriptionDomain.loadSubscriptionBy).toHaveBeenCalledWith({
-      service_instance_id: serviceInstanceId,
-      organization_id: contextSimpleUserFiligran2.user.selected_organization_id,
-    });
+    expect(
+      contextSimpleUserFiligran2.dataLoaders.subscriptionByServiceInstanceLoader
+        .load
+    ).toHaveBeenCalledWith(
+      createSubscriptionByServiceInstanceLoaderKey({
+        organizationId:
+          contextSimpleUserFiligran2.user.selected_organization_id,
+        serviceInstanceId,
+      })
+    );
     expect(result).toEqual(expected);
   });
 });

@@ -4,15 +4,52 @@ import {
   IntegrationType,
   Organization,
 } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
+import Subscription from '../../model/kanel/public/Subscription';
 import UseCase from '../../model/kanel/public/UseCase';
 import User, { UserId } from '../../model/kanel/public/User';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { Document, WithDocumentId, WithParentId } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
+
+const SUBSCRIPTION_KEY_SEPARATOR = ':';
+type SubscriptionByServiceInstanceLoaderKey =
+  `${OrganizationId}:${ServiceInstanceId}`;
+
+export const createSubscriptionByServiceInstanceLoaderKey = ({
+  organizationId,
+  serviceInstanceId,
+}: {
+  organizationId: OrganizationId;
+  serviceInstanceId: ServiceInstanceId;
+}): SubscriptionByServiceInstanceLoaderKey =>
+  `${organizationId}${SUBSCRIPTION_KEY_SEPARATOR}${serviceInstanceId}`;
+
+const parseSubscriptionByServiceInstanceLoaderKey = (
+  key: SubscriptionByServiceInstanceLoaderKey
+): {
+  organizationId: OrganizationId;
+  serviceInstanceId: ServiceInstanceId;
+} => {
+  const separatorIndex = key.indexOf(SUBSCRIPTION_KEY_SEPARATOR);
+  if (separatorIndex <= 0 || separatorIndex >= key.length - 1) {
+    throw new Error(`Invalid subscription loader key: ${key}`);
+  }
+
+  const organizationId = key.slice(0, separatorIndex) as OrganizationId;
+  const serviceInstanceId = key.slice(separatorIndex + 1) as ServiceInstanceId;
+
+  return { organizationId, serviceInstanceId };
+};
 
 export interface DocumentDataLoaders {
   userLoader: DataLoader<string, User | null>;
@@ -22,6 +59,11 @@ export interface DocumentDataLoaders {
   imagesByDocumentIdLoader: DataLoader<string, Document[]>;
   useCasesByDocumentIdLoader: DataLoader<string, UseCase[]>;
   integrationTypeLoader: DataLoader<string, IntegrationType | null>;
+  serviceInstanceByIdLoader: DataLoader<string, ServiceInstance | undefined>;
+  subscriptionByServiceInstanceLoader: DataLoader<
+    SubscriptionByServiceInstanceLoaderKey,
+    Subscription | null
+  >;
 }
 
 export const DocumentDataLoader = {
@@ -126,6 +168,62 @@ export const DocumentDataLoader = {
     return ids.map((id) => map.get(id) ?? null);
   },
 
+  batchLoadServiceInstances: async (
+    ids: readonly string[]
+  ): Promise<(ServiceInstance | undefined)[]> => {
+    const serviceInstances =
+      await ServiceInstanceDomain.loadServiceInstancesByIds(
+        ids as ServiceInstanceId[]
+      );
+
+    const map = new Map<string, ServiceInstance>(
+      serviceInstances.map((serviceInstance) => [
+        serviceInstance.id,
+        serviceInstance,
+      ])
+    );
+
+    return ids.map((id) => map.get(id));
+  },
+
+  batchLoadSubscriptionsByServiceInstance: async (
+    keys: readonly SubscriptionByServiceInstanceLoaderKey[]
+  ): Promise<(Subscription | null)[]> => {
+    const parsedKeys = keys.map(parseSubscriptionByServiceInstanceLoaderKey);
+    const organizationIds = [
+      ...new Set(parsedKeys.map(({ organizationId }) => organizationId)),
+    ];
+    const serviceInstanceIds = [
+      ...new Set(parsedKeys.map(({ serviceInstanceId }) => serviceInstanceId)),
+    ];
+
+    const subscriptions =
+      await SubscriptionDomain.loadSubscriptionsByOrganizationAndServiceInstanceIds(
+        {
+          organizationIds,
+          serviceInstanceIds,
+        }
+      );
+
+    const map = new Map<string, Subscription>(
+      subscriptions.map((subscription) => [
+        createSubscriptionByServiceInstanceLoaderKey({
+          organizationId: subscription.organization_id,
+          serviceInstanceId: subscription.service_instance_id,
+        }),
+        subscription,
+      ])
+    );
+
+    return parsedKeys.map(({ organizationId, serviceInstanceId }) => {
+      const key = createSubscriptionByServiceInstanceLoaderKey({
+        organizationId,
+        serviceInstanceId,
+      });
+      return map.get(key) ?? null;
+    });
+  },
+
   create: (): DocumentDataLoaders => ({
     userLoader: new DataLoader(DocumentDataLoader.batchLoadUsers),
     uploaderLoader: new DataLoader(DocumentDataLoader.batchLoadUploaders),
@@ -143,6 +241,12 @@ export const DocumentDataLoader = {
     ),
     integrationTypeLoader: new DataLoader(
       DocumentDataLoader.batchLoadIntegrationTypes
+    ),
+    serviceInstanceByIdLoader: new DataLoader(
+      DocumentDataLoader.batchLoadServiceInstances
+    ),
+    subscriptionByServiceInstanceLoader: new DataLoader(
+      DocumentDataLoader.batchLoadSubscriptionsByServiceInstance
     ),
   }),
 };
