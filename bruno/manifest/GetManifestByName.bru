@@ -11,6 +11,13 @@ get {
 }
 
 docs {
-  Downloads a specific manifest by name. Returns 400 if the name is malformed,
-  404 if unknown.
+ Downloads a specific manifest by name.
+
+   The name must match the format returned by the list endpoint:
+   {integrationType}-manifest-{x.y.z}-{YYMMDDhhmmss}. A malformed name is
+   rejected as 400 before any lookup, which also guards against path traversal.
+   A well-formed but unknown name returns 404.
+
+   See "List manifests - invalid product" for the 400 case and
+   "Get manifest by name - unknown name" for the 404 case.
 }
