@@ -109,6 +109,7 @@ export enum NotFoundErrorCode {
   CompetitorNotFound = 'COMPETITOR_NOT_FOUND',
   OrganizationNotFound = 'ORGANIZATION_NOT_FOUND',
   UseCaseNotFound = 'USE_CASE_NOT_FOUND',
+  SolutionCategoryNotFound = 'SOLUTION_CATEGORY_NOT_FOUND',
 }
 
 export const ErrorCode = {

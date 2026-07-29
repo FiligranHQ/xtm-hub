@@ -411,6 +411,26 @@
     "Name": "名前",
     "Product": "製品"
   },
+  "SolutionCategory": {
+    "Actions": {
+      "Add": "ソリューションカテゴリーを追加"
+    },
+    "Form": {
+      "Name": "名前",
+      "Product": "製品",
+      "Error": {
+        "Name": "名前は必須です"
+      }
+    },
+    "ListPage": {
+      "AllProducts": "すべての製品",
+      "Name": "名前",
+      "Product": "製品"
+    },
+    "Dialog": {
+      "Text": "{name} を削除してもよろしいですか？"
+    }
+  },
   "LocaleSwitcher": {
     "Label": "言語",
     "en": "English",
@@ -471,6 +491,7 @@
     "Connectors": "OpenCTI コネクタ",
     "Home": "ホーム",
     "UseCase": "使用例",
+    "SolutionCategory": "ソリューションカテゴリー",
     "Organization": "組織",
     "Parameter": "パラメーター",
     "Profile": "プロフィール",

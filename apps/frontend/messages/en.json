@@ -411,6 +411,26 @@
     "Name": "Name",
     "Product": "Product"
   },
+  "SolutionCategory": {
+    "Actions": {
+      "Add": "Add solution category"
+    },
+    "Form": {
+      "Name": "Name",
+      "Product": "Product",
+      "Error": {
+        "Name": "Name is required"
+      }
+    },
+    "ListPage": {
+      "AllProducts": "All products",
+      "Name": "Name",
+      "Product": "Product"
+    },
+    "Dialog": {
+      "Text": "Are you sure you want to delete {name}?"
+    }
+  },
   "LocaleSwitcher": {
     "Label": "Language",
     "en": "English",
@@ -471,6 +491,7 @@
     "Connectors": "OpenCTI Connectors",
     "Home": "Home",
     "UseCase": "Use Case",
+    "SolutionCategory": "Solution category",
     "Organization": "Organization",
     "Parameter": "Parameter",
     "Profile": "Profile",

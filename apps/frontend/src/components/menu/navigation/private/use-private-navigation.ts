@@ -42,6 +42,7 @@ import { serviceInstancesKeys } from '@graphql/service-instances/service-instanc
 import { trialKeys } from '@graphql/trial/trial.keys';
 import { useLocale, useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
+
 const PRIVATE_NAVIGATION_REGISTERED_PLATFORMS_VARIABLES = {
   input: {
     identifier: null,
@@ -115,6 +116,10 @@ export const usePrivateNavigation = (): NavigationConfig => {
     {
       href: `/${APP_PATH}/admin/use-case`,
       label: tMenuLinks('UseCase'),
+    },
+    {
+      href: `/${APP_PATH}/admin/solution-category`,
+      label: tMenuLinks('SolutionCategory'),
     },
     {
       href: `/${APP_PATH}/admin/organizations`,

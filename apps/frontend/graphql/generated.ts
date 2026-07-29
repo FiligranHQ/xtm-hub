@@ -41,6 +41,8 @@ export type Scalars = {
   ServiceInstanceId: { input: any; output: any; }
   /** A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string */
   Service_CapabilityId: { input: any; output: any; }
+  /** A Relay global ID for SolutionCategory, extracted to a branded SolutionCategoryId string */
+  SolutionCategoryId: { input: any; output: any; }
   /** A Relay global ID for Subscription, extracted to a branded SubscriptionId string */
   SubscriptionId: { input: any; output: any; }
   Upload: { input: any; output: any; }
@@ -59,6 +61,11 @@ export type AddServiceInput = {
   service_instance_description: InputMaybe<Scalars['String']['input']>;
   service_instance_name: InputMaybe<Scalars['String']['input']>;
   url: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddSolutionCategoryInput = {
+  name: Scalars['String']['input'];
+  product: InputMaybe<Array<FiligranProduct>>;
 };
 
 export type AddSubscriptionCapabilityInput = {
@@ -662,6 +669,11 @@ export type EditServiceCapabilityInput = {
   user_service_id: InputMaybe<Scalars['User_ServiceId']['input']>;
 };
 
+export type EditSolutionCategoryInput = {
+  name: InputMaybe<Scalars['String']['input']>;
+  product: InputMaybe<Array<FiligranProduct>>;
+};
+
 export type EditUseCaseInput = {
   color: InputMaybe<Scalars['String']['input']>;
   name: InputMaybe<Scalars['String']['input']>;
@@ -726,7 +738,8 @@ export enum EpicType {
 }
 
 export enum FeatureFlag {
-  Dummy = 'DUMMY'
+  Dummy = 'DUMMY',
+  SolutionCategories = 'SOLUTION_CATEGORIES'
 }
 
 export enum FiligranProduct {
@@ -928,6 +941,7 @@ export type Mutation = {
   addCapabilitiesToUserServices: Maybe<Array<Maybe<UserService>>>;
   addOrganization: Maybe<Organization>;
   addServicePicture: Maybe<ServiceInstance>;
+  addSolutionCategory: SolutionCategory;
   addSubscription: Maybe<ServiceInstance>;
   addSubscriptionCapability: Array<SubscriptionModel>;
   addUseCase: UseCase;
@@ -953,12 +967,14 @@ export type Mutation = {
   deleteEpic: Maybe<Epic>;
   deleteNewsFeedItem: Scalars['Boolean']['output'];
   deleteOrganization: Maybe<Organization>;
+  deleteSolutionCategory: SolutionCategory;
   deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
   deleteUserServices: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization: Maybe<Organization>;
   editServiceCapability: Maybe<SubscriptionModel>;
+  editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
   editUserCapabilities: User;
   editUserService: Maybe<UserService>;
@@ -1009,6 +1025,11 @@ export type MutationAddServicePictureArgs = {
   document: InputMaybe<Scalars['Upload']['input']>;
   isLogo: Scalars['Boolean']['input'];
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationAddSolutionCategoryArgs = {
+  input: AddSolutionCategoryInput;
 };
 
 
@@ -1146,6 +1167,11 @@ export type MutationDeleteOrganizationArgs = {
 };
 
 
+export type MutationDeleteSolutionCategoryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteSubscriptionsArgs = {
   subscription_ids: Array<Scalars['SubscriptionId']['input']>;
 };
@@ -1176,6 +1202,12 @@ export type MutationEditOrganizationArgs = {
 export type MutationEditServiceCapabilityArgs = {
   input: InputMaybe<EditServiceCapabilityInput>;
   serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
+export type MutationEditSolutionCategoryArgs = {
+  id: Scalars['ID']['input'];
+  input: EditSolutionCategoryInput;
 };
 
 
@@ -1665,6 +1697,7 @@ export type Query = {
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
+  solutionCategories: Maybe<SolutionCategoryConnection>;
   subscriptionById: Maybe<SubscriptionModel>;
   subscriptions: SubscriptionConnection;
   trialDeployments: TrialsDeployments;
@@ -1879,6 +1912,16 @@ export type QueryServiceInstancesArgs = {
   first: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySolutionCategoriesArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: SolutionCategoryOrdering;
+  orderMode: OrderingMode;
+  product: InputMaybe<FiligranProduct>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2239,6 +2282,30 @@ export type ShareableResource = {
   name: Maybe<Scalars['String']['output']>;
   source_type: DocumentSourceType;
 };
+
+export type SolutionCategory = Node & {
+  __typename?: 'SolutionCategory';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  product: Array<FiligranProduct>;
+};
+
+export type SolutionCategoryConnection = {
+  __typename?: 'SolutionCategoryConnection';
+  edges: Array<SolutionCategoryEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type SolutionCategoryEdge = {
+  __typename?: 'SolutionCategoryEdge';
+  cursor: Scalars['String']['output'];
+  node: SolutionCategory;
+};
+
+export enum SolutionCategoryOrdering {
+  Name = 'name'
+}
 
 export type Stream = Document & Integration & Node & {
   __typename?: 'Stream';
@@ -2803,6 +2870,41 @@ export type ServiceInstancesListQueryVariables = Exact<{
 
 export type ServiceInstancesListQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, name: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null } | null }> } };
 
+export type SolutionCategoryAddMutationVariables = Exact<{
+  input: AddSolutionCategoryInput;
+}>;
+
+
+export type SolutionCategoryAddMutation = { __typename?: 'Mutation', addSolutionCategory: { __typename?: 'SolutionCategory', id: string, name: string, product: Array<FiligranProduct> } };
+
+export type SolutionCategoryEditMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  input: EditSolutionCategoryInput;
+}>;
+
+
+export type SolutionCategoryEditMutation = { __typename?: 'Mutation', editSolutionCategory: { __typename?: 'SolutionCategory', id: string, name: string, product: Array<FiligranProduct> } };
+
+export type SolutionCategoryDeleteMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type SolutionCategoryDeleteMutation = { __typename?: 'Mutation', deleteSolutionCategory: { __typename?: 'SolutionCategory', id: string } };
+
+export type SolutionCategoryRowFragment = { __typename?: 'SolutionCategory', id: string, name: string, product: Array<FiligranProduct> };
+
+export type SolutionCategoriesListQueryVariables = Exact<{
+  count: Scalars['Int']['input'];
+  cursor: InputMaybe<Scalars['ID']['input']>;
+  orderBy: SolutionCategoryOrdering;
+  orderMode: OrderingMode;
+  product: InputMaybe<FiligranProduct>;
+}>;
+
+
+export type SolutionCategoriesListQuery = { __typename?: 'Query', solutionCategories: { __typename?: 'SolutionCategoryConnection', totalCount: number, edges: Array<{ __typename?: 'SolutionCategoryEdge', node: { __typename?: 'SolutionCategory', id: string, name: string, product: Array<FiligranProduct> } }> } | null };
+
 export type TrialDeploymentsEligibilityQueryVariables = Exact<{
   input: TrialDeploymentsInput;
 }>;
@@ -2889,6 +2991,13 @@ export const OrganizationSubscribedServiceRowFragmentDoc = `
       identifier
     }
   }
+}
+    `;
+export const SolutionCategoryRowFragmentDoc = `
+    fragment SolutionCategoryRow on SolutionCategory {
+  id
+  name
+  product
 }
     `;
 export const UseCaseRowFragmentDoc = `
@@ -3497,6 +3606,159 @@ export const useInfiniteServiceInstancesListQuery = <
 useInfiniteServiceInstancesListQuery.getKey = (variables: ServiceInstancesListQueryVariables) => ['ServiceInstancesList.infinite', variables];
 useInfiniteServiceInstancesListQuery.getRootKey = () => ['ServiceInstancesList.infinite'] as const;
 useServiceInstancesListQuery.fetcher = (client: GraphQLClient, variables: ServiceInstancesListQueryVariables, headers?: RequestInit['headers']) => fetcher<ServiceInstancesListQuery, ServiceInstancesListQueryVariables>(client, ServiceInstancesListDocument, variables, headers);
+
+export const SolutionCategoryAddDocument = `
+    mutation SolutionCategoryAdd($input: AddSolutionCategoryInput!) {
+  addSolutionCategory(input: $input) {
+    ...SolutionCategoryRow
+  }
+}
+    ${SolutionCategoryRowFragmentDoc}`;
+
+export const useSolutionCategoryAddMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<SolutionCategoryAddMutation, TError, SolutionCategoryAddMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<SolutionCategoryAddMutation, TError, SolutionCategoryAddMutationVariables, TContext>(
+      {
+    mutationKey: ['SolutionCategoryAdd'],
+    mutationFn: (variables?: SolutionCategoryAddMutationVariables) => fetcher<SolutionCategoryAddMutation, SolutionCategoryAddMutationVariables>(client, SolutionCategoryAddDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useSolutionCategoryAddMutation.getKey = () => ['SolutionCategoryAdd'];
+useSolutionCategoryAddMutation.getRootKey = () => ['SolutionCategoryAdd'] as const;
+useSolutionCategoryAddMutation.fetcher = (client: GraphQLClient, variables: SolutionCategoryAddMutationVariables, headers?: RequestInit['headers']) => fetcher<SolutionCategoryAddMutation, SolutionCategoryAddMutationVariables>(client, SolutionCategoryAddDocument, variables, headers);
+
+export const SolutionCategoryEditDocument = `
+    mutation SolutionCategoryEdit($id: ID!, $input: EditSolutionCategoryInput!) {
+  editSolutionCategory(id: $id, input: $input) {
+    ...SolutionCategoryRow
+  }
+}
+    ${SolutionCategoryRowFragmentDoc}`;
+
+export const useSolutionCategoryEditMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<SolutionCategoryEditMutation, TError, SolutionCategoryEditMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<SolutionCategoryEditMutation, TError, SolutionCategoryEditMutationVariables, TContext>(
+      {
+    mutationKey: ['SolutionCategoryEdit'],
+    mutationFn: (variables?: SolutionCategoryEditMutationVariables) => fetcher<SolutionCategoryEditMutation, SolutionCategoryEditMutationVariables>(client, SolutionCategoryEditDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useSolutionCategoryEditMutation.getKey = () => ['SolutionCategoryEdit'];
+useSolutionCategoryEditMutation.getRootKey = () => ['SolutionCategoryEdit'] as const;
+useSolutionCategoryEditMutation.fetcher = (client: GraphQLClient, variables: SolutionCategoryEditMutationVariables, headers?: RequestInit['headers']) => fetcher<SolutionCategoryEditMutation, SolutionCategoryEditMutationVariables>(client, SolutionCategoryEditDocument, variables, headers);
+
+export const SolutionCategoryDeleteDocument = `
+    mutation SolutionCategoryDelete($id: ID!) {
+  deleteSolutionCategory(id: $id) {
+    id
+  }
+}
+    `;
+
+export const useSolutionCategoryDeleteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<SolutionCategoryDeleteMutation, TError, SolutionCategoryDeleteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<SolutionCategoryDeleteMutation, TError, SolutionCategoryDeleteMutationVariables, TContext>(
+      {
+    mutationKey: ['SolutionCategoryDelete'],
+    mutationFn: (variables?: SolutionCategoryDeleteMutationVariables) => fetcher<SolutionCategoryDeleteMutation, SolutionCategoryDeleteMutationVariables>(client, SolutionCategoryDeleteDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useSolutionCategoryDeleteMutation.getKey = () => ['SolutionCategoryDelete'];
+useSolutionCategoryDeleteMutation.getRootKey = () => ['SolutionCategoryDelete'] as const;
+useSolutionCategoryDeleteMutation.fetcher = (client: GraphQLClient, variables: SolutionCategoryDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<SolutionCategoryDeleteMutation, SolutionCategoryDeleteMutationVariables>(client, SolutionCategoryDeleteDocument, variables, headers);
+
+export const SolutionCategoriesListDocument = `
+    query SolutionCategoriesList($count: Int!, $cursor: ID, $orderBy: SolutionCategoryOrdering!, $orderMode: OrderingMode!, $product: FiligranProduct) {
+  solutionCategories(
+    first: $count
+    after: $cursor
+    orderBy: $orderBy
+    orderMode: $orderMode
+    product: $product
+  ) {
+    totalCount
+    edges {
+      node {
+        id
+        name
+        product
+      }
+    }
+  }
+}
+    `;
+
+export const useSolutionCategoriesListQuery = <
+      TData = SolutionCategoriesListQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: SolutionCategoriesListQueryVariables,
+      options?: Omit<UseQueryOptions<SolutionCategoriesListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<SolutionCategoriesListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<SolutionCategoriesListQuery, TError, TData>(
+      {
+    queryKey: ['SolutionCategoriesList', variables],
+    queryFn: fetcher<SolutionCategoriesListQuery, SolutionCategoriesListQueryVariables>(client, SolutionCategoriesListDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useSolutionCategoriesListQuery.getKey = (variables: SolutionCategoriesListQueryVariables) => ['SolutionCategoriesList', variables];
+useSolutionCategoriesListQuery.getRootKey = () => ['SolutionCategoriesList'] as const;
+export const useInfiniteSolutionCategoriesListQuery = <
+      TData = InfiniteData<SolutionCategoriesListQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: SolutionCategoriesListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<SolutionCategoriesListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<SolutionCategoriesListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<SolutionCategoriesListQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['SolutionCategoriesList.infinite', variables],
+      queryFn: (metaData) => fetcher<SolutionCategoriesListQuery, SolutionCategoriesListQueryVariables>(client, SolutionCategoriesListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteSolutionCategoriesListQuery.getKey = (variables: SolutionCategoriesListQueryVariables) => ['SolutionCategoriesList.infinite', variables];
+useInfiniteSolutionCategoriesListQuery.getRootKey = () => ['SolutionCategoriesList.infinite'] as const;
+useSolutionCategoriesListQuery.fetcher = (client: GraphQLClient, variables: SolutionCategoriesListQueryVariables, headers?: RequestInit['headers']) => fetcher<SolutionCategoriesListQuery, SolutionCategoriesListQueryVariables>(client, SolutionCategoriesListDocument, variables, headers);
 
 export const TrialDeploymentsEligibilityDocument = `
     query TrialDeploymentsEligibility($input: TrialDeploymentsInput!) {

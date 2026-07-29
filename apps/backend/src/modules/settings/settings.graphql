@@ -1,5 +1,6 @@
 enum FeatureFlag {
   DUMMY
+  SOLUTION_CATEGORIES
 }
 
 type PlatformProvider {

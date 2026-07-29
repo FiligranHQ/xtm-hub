@@ -1,0 +1,37 @@
+meta {
+  name: DeleteSolutionCategory
+  type: graphql
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+headers {
+  cookie: {{cookie}}
+}
+
+body:graphql {
+  mutation DeleteSolutionCategory($id: ID!) {
+    deleteSolutionCategory(id: $id) {
+      id
+      name
+      product
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "id": "{{solutionCategoryId}}"
+  }
+}
+
+docs {
+  Ensure cookie is defined in environment.
+  This request deletes the given solution category.
+}
+
