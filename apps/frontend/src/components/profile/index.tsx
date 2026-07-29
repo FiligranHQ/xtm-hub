@@ -15,11 +15,8 @@ import { ProfileFormPreferences } from '@/components/profile/form/Preferences';
 import { RequestTransferPersonalSpace } from '@/components/profile/form/RequestTransferPersonalSpace';
 import { ProfileFormResetPassword } from '@/components/profile/form/ResetPassword';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
-import { cn } from '@/lib/utils';
 import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import { toast } from '@filigran/ui';
-import { FeatureFlag } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -27,7 +24,6 @@ import { useMutation } from 'react-relay';
 export const Profile = () => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
-  const isHomePageV2Enabled = useIsFeatureEnabled(FeatureFlag.HomePageV2);
   const [commitResetPasswordMutation] = useMutation(MeResetPasswordMutation);
   const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
   const [commitUploadPictureMutation] = useMutation(
@@ -116,11 +112,7 @@ export const Profile = () => {
 
   return (
     <>
-      <section
-        className={cn(
-          `flex flex-col gap-xl m-auto`,
-          isHomePageV2Enabled ? 'w-full sm:w-10/12 md:w-8/12' : 'w-8/12'
-        )}>
+      <section className="flex flex-col gap-xl m-auto w-full sm:w-10/12 md:w-8/12">
         <ProfileFormEdit onSubmit={handleSubmit} />
         <ProfileFormPreferences />
         <ProfileFormPicture onSubmit={handleUploadPicture} />
