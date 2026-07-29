@@ -35,7 +35,7 @@ export const ShareableResourceCardIcon = ({
         deployable={deployable}
         verified={verified}
         active={!shouldDisplayBothIcons ? document.active : undefined}
-        isConnector={isConnector}
+        displayUnverifiedIcon={isConnector}
       />
     </div>
   );

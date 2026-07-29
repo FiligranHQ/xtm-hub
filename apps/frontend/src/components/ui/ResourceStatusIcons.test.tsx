@@ -32,7 +32,7 @@ describe('ResourceStatusIcons', () => {
     });
   });
 
-  describe('when verified is true but integration is false', () => {
+  describe('when verified is true but displayUnverifiedIcon is false', () => {
     it('renders nothing', () => {
       const { container } = testRender(<ResourceStatusIcons verified />);
       expect(container.firstChild).toBeNull();
@@ -56,7 +56,7 @@ describe('ResourceStatusIcons', () => {
       const { container } = testRender(
         <ResourceStatusIcons
           verified
-          isConnector
+          displayUnverifiedIcon
         />
       );
       expect(container.querySelectorAll('svg')).toHaveLength(1);
@@ -66,7 +66,7 @@ describe('ResourceStatusIcons', () => {
       testRender(
         <ResourceStatusIcons
           verified
-          isConnector
+          displayUnverifiedIcon
         />
       );
       expect(
@@ -79,12 +79,14 @@ describe('ResourceStatusIcons', () => {
 
   describe('when connector is true and verified is false', () => {
     it('renders one icon', () => {
-      const { container } = testRender(<ResourceStatusIcons isConnector />);
+      const { container } = testRender(
+        <ResourceStatusIcons displayUnverifiedIcon />
+      );
       expect(container.querySelectorAll('svg')).toHaveLength(1);
     });
 
     it('shows the "Supported by Community" tooltip label', () => {
-      testRender(<ResourceStatusIcons isConnector />);
+      testRender(<ResourceStatusIcons displayUnverifiedIcon />);
       expect(
         screen.getByText(
           'Service.ShareableResources.Details.SupportedByCommunity'
@@ -121,7 +123,7 @@ describe('ResourceStatusIcons', () => {
             active={active}
             verified={verified}
             deployable={deployable}
-            isConnector={isConnector}
+            displayUnverifiedIcon={isConnector}
           />
         );
         expect(container.querySelectorAll('svg')).toHaveLength(

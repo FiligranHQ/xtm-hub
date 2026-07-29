@@ -19,7 +19,7 @@ export interface ResourceStatusIconsProps {
   active?: boolean;
   verified?: boolean;
   deployable?: boolean;
-  isConnector?: boolean;
+  displayUnverifiedIcon?: boolean;
   iconClassName?: string;
 }
 
@@ -41,12 +41,12 @@ export const ResourceStatusIcons = ({
   active,
   verified,
   deployable,
-  isConnector = false,
+  displayUnverifiedIcon = false,
   iconClassName = ICON_CLASS,
 }: ResourceStatusIconsProps) => {
   const t = useTranslations();
 
-  if (!active && !deployable && !isConnector) {
+  if (!active && !deployable && !displayUnverifiedIcon) {
     return null;
   }
 
@@ -64,7 +64,7 @@ export const ResourceStatusIcons = ({
           icon={<VerifiedIcon className={iconClassName} />}
         />
       )}
-      {!verified && isConnector && (
+      {!verified && displayUnverifiedIcon && (
         <StatusIcon
           label={t('Service.ShareableResources.Details.SupportedByCommunity')}
           icon={<ThreatActorGroupIcon className={iconClassName} />}
