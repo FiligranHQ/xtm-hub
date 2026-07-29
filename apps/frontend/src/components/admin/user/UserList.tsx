@@ -339,32 +339,24 @@ const UserList = ({ organization }: UserListProps) => {
   };
 
   const handleInputChange = (inputValue: string) => {
-    setFilter((prevFilter) => {
-      const updatedFilter = {
-        ...prevFilter,
-        search: inputValue,
-      };
-      refetch({ searchTerm: updatedFilter.search }); // Use the updated filter
-      return updatedFilter;
-    });
+    setFilter((prevFilter) => ({ ...prevFilter, search: inputValue }));
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    handleRefetchData({ searchTerm: inputValue, cursor: btoa(String(0)) });
   };
 
   const handleOrganizationChange = (organizationId: string | undefined) => {
     setOrganizationFilter(organizationId);
-    setFilter((prevFilter) => {
-      const updatedFilter = {
-        ...prevFilter,
-        organization: organizationId,
-      };
-      refetch({
-        filters: updatedFilter.organization
-          ? [{ key: 'organization_id', value: [updatedFilter.organization] }]
-          : undefined,
-      });
-      return updatedFilter;
-    });
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      organization: organizationId,
+    }));
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    handleRefetchData({
+      filters: organizationId
+        ? [{ key: 'organization_id', value: [organizationId] }]
+        : undefined,
+      cursor: btoa(String(0)),
+    });
   };
 
   const debounceHandleInput = useDebounceCallback(
