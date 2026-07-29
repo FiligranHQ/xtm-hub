@@ -26,11 +26,11 @@ const SolutionCategoryProductFilter = ({
         )
       }>
       <SelectTrigger className="w-full sm:w-45">
-        <SelectValue placeholder={t('SolutionCategoryListPage.Product')} />
+        <SelectValue placeholder={t('SolutionCategory.ListPage.Product')} />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="all">
-          {t('SolutionCategoryListPage.AllProducts')}
+          {t('SolutionCategory.ListPage.AllProducts')}
         </SelectItem>
         {Object.values(FiligranProduct).map((product) => (
           <SelectItem

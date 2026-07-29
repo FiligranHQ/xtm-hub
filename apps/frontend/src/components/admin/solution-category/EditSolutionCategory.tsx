@@ -104,7 +104,7 @@ const EditSolutionCategory = ({
 
   return (
     <SheetWithPreventingDialog
-      title={t('SolutionCategoryActions.Add')}
+      title={t('SolutionCategory.Actions.Add')}
       setOpen={handleOpenSheet}
       open={openSheet}>
       <SolutionCategoryForm

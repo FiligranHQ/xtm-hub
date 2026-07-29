@@ -35,7 +35,7 @@ export interface SolutionCategoryFormModel {
 
 export const solutionCategoryFormSchema = z.object({
   name: z.string().min(2, {
-    error: 'OrganizationForm.Error.Name',
+    error: 'SolutionCategory.Form.Error.Name',
   }),
   product: z.array(z.enum(productValues)),
 });
@@ -70,10 +70,10 @@ const SolutionCategoryForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('SolutionCategoryForm.Name')}</FormLabel>
+              <FormLabel>{t('SolutionCategory.Form.Name')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('SolutionCategoryForm.Name')}
+                  placeholder={t('SolutionCategory.Form.Name')}
                   {...field}
                 />
               </FormControl>
@@ -86,7 +86,7 @@ const SolutionCategoryForm = ({
           name="product"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('SolutionCategoryForm.Product')}</FormLabel>
+              <FormLabel>{t('SolutionCategory.Form.Product')}</FormLabel>
               <FormControl>
                 <MultiSelectFormField
                   options={productOptions}
@@ -97,7 +97,7 @@ const SolutionCategoryForm = ({
                   value={field.value}
                   onValueChange={field.onChange}
                   noResultString={t('Utils.NotFound')}
-                  placeholder={t('SolutionCategoryForm.Product')}
+                  placeholder={t('SolutionCategory.Form.Product')}
                   variant="inverted"
                 />
               </FormControl>
@@ -118,7 +118,7 @@ const SolutionCategoryForm = ({
                 </Button>
               }
               onClickContinue={() => handleDelete!()}>
-              {t('DeleteSolutionCategoryDialog.Text', {
+              {t('SolutionCategory.Dialog.Text', {
                 name: solutionCategory.name,
               })}
             </AlertDialogComponent>

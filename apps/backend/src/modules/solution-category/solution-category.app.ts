@@ -11,12 +11,6 @@ export const solutionCategoryApp = {
   deleteSolutionCategoryBy: async (
     field: SolutionCategoryMutator
   ): Promise<SolutionCategory> => {
-    const solutionCategory =
-      await solutionCategoryDomain.loadSolutionCategoryBy(field);
-    if (!solutionCategory) {
-      throw new Error(ErrorCode.SolutionCategoryNotFound);
-    }
-
     const deletedSolutionCategory =
       await solutionCategoryDomain.deleteSolutionCategory(field);
     if (!deletedSolutionCategory) {

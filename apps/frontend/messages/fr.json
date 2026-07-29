@@ -411,20 +411,25 @@
     "Name": "Nom",
     "Product": "Produit"
   },
-  "SolutionCategoryActions": {
-    "Add": "Ajouter une catégorie de solution"
-  },
-  "SolutionCategoryForm": {
-    "Name": "Nom",
-    "Product": "Produit"
-  },
-  "SolutionCategoryListPage": {
-    "AllProducts": "Tous les produits",
-    "Name": "Nom",
-    "Product": "Produit"
-  },
-  "DeleteSolutionCategoryDialog": {
-    "Text": "Voulez-vous vraiment supprimer {name} ?"
+  "SolutionCategory": {
+    "Actions": {
+      "Add": "Ajouter une catégorie de solution"
+    },
+    "Form": {
+      "Name": "Nom",
+      "Product": "Produit",
+      "Error": {
+        "Name": "Le nom est requis"
+      }
+    },
+    "ListPage": {
+      "AllProducts": "Tous les produits",
+      "Name": "Nom",
+      "Product": "Produit"
+    },
+    "Dialog": {
+      "Text": "Voulez-vous vraiment supprimer {name} ?"
+    }
   },
   "LocaleSwitcher": {
     "Label": "Langage",

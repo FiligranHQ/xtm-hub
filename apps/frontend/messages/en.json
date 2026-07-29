@@ -411,20 +411,25 @@
     "Name": "Name",
     "Product": "Product"
   },
-  "SolutionCategoryActions": {
-    "Add": "Add solution category"
-  },
-  "SolutionCategoryForm": {
-    "Name": "Name",
-    "Product": "Product"
-  },
-  "SolutionCategoryListPage": {
-    "AllProducts": "All products",
-    "Name": "Name",
-    "Product": "Product"
-  },
-  "DeleteSolutionCategoryDialog": {
-    "Text": "Are you sure you want to delete {name}?"
+  "SolutionCategory": {
+    "Actions": {
+      "Add": "Add solution category"
+    },
+    "Form": {
+      "Name": "Name",
+      "Product": "Product",
+      "Error": {
+        "Name": "Name is required"
+      }
+    },
+    "ListPage": {
+      "AllProducts": "All products",
+      "Name": "Name",
+      "Product": "Product"
+    },
+    "Dialog": {
+      "Text": "Are you sure you want to delete {name}?"
+    }
   },
   "LocaleSwitcher": {
     "Label": "Language",

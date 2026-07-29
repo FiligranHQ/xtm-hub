@@ -20,7 +20,10 @@ describe('SolutionCategoryForm', () => {
         />
       );
 
-      await user.type(screen.getByLabelText(/SolutionCategoryForm.Name/i), 'A');
+      await user.type(
+        screen.getByLabelText(/SolutionCategory.Form.Name/i),
+        'A'
+      );
       await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));
 
       expect(mockHandleSubmit).not.toHaveBeenCalled();
@@ -35,7 +38,7 @@ describe('SolutionCategoryForm', () => {
       );
 
       await user.type(
-        screen.getByLabelText(/SolutionCategoryForm.Name/i),
+        screen.getByLabelText(/SolutionCategory.Form.Name/i),
         'Threat hunting'
       );
       await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));

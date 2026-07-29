@@ -57,10 +57,10 @@ const AddSolutionCategory = () => {
 
   return (
     <SheetWithPreventingDialog
-      title={t('SolutionCategoryActions.Add')}
+      title={t('SolutionCategory.Actions.Add')}
       setOpen={setOpenSheet}
       open={openSheet}
-      trigger={<Button>{t('SolutionCategoryActions.Add')}</Button>}>
+      trigger={<Button>{t('SolutionCategory.Actions.Add')}</Button>}>
       <SolutionCategoryForm
         onClose={() => setOpenSheet(false)}
         handleSubmit={onSubmit}

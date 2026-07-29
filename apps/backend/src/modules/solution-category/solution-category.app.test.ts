@@ -57,10 +57,7 @@ describe('solution-category.app', () => {
       name: 'Category',
       product: [FiligranProduct.Opencti],
     } as SolutionCategory;
-    vi.spyOn(
-      solutionCategoryDomain,
-      'loadSolutionCategoryBy'
-    ).mockResolvedValue(expected);
+
     vi.spyOn(
       solutionCategoryDomain,
       'deleteSolutionCategory'
@@ -70,9 +67,6 @@ describe('solution-category.app', () => {
     const result = await solutionCategoryApp.deleteSolutionCategoryBy({ id });
 
     // Then
-    expect(solutionCategoryDomain.loadSolutionCategoryBy).toHaveBeenCalledWith({
-      id,
-    });
     expect(solutionCategoryDomain.deleteSolutionCategory).toHaveBeenCalledWith({
       id,
     });
@@ -84,8 +78,8 @@ describe('solution-category.app', () => {
     const id = uuidv4() as SolutionCategoryId;
     vi.spyOn(
       solutionCategoryDomain,
-      'loadSolutionCategoryBy'
-    ).mockResolvedValue(null);
+      'deleteSolutionCategory'
+    ).mockResolvedValue(undefined);
 
     // Then
     await expect(

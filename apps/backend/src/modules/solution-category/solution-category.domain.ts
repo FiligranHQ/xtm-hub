@@ -62,15 +62,6 @@ export const solutionCategoryDomain = {
     return db<SolutionCategory>('SolutionCategory').where(field).first();
   },
 
-  loadSolutionCategoryByLikeName: (
-    name: string
-  ): Promise<SolutionCategory | undefined> => {
-    return db<SolutionCategory>('SolutionCategory')
-      .where('name', 'ILIKE', name)
-      .select('*')
-      .first();
-  },
-
   deleteSolutionCategory: async (
     field: SolutionCategoryMutator
   ): Promise<SolutionCategory | undefined> => {

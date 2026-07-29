@@ -70,7 +70,7 @@ const SolutionCategories = () => {
     {
       accessorKey: 'name',
       id: 'name',
-      header: t('SolutionCategoryListPage.Name'),
+      header: t('SolutionCategory.ListPage.Name'),
       cell: ({ row }) => (
         <span className="truncate">{formatName(row.original.name)}</span>
       ),
@@ -78,7 +78,7 @@ const SolutionCategories = () => {
     {
       accessorKey: 'product',
       id: 'product',
-      header: t('SolutionCategoryListPage.Product'),
+      header: t('SolutionCategory.ListPage.Product'),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-xs">

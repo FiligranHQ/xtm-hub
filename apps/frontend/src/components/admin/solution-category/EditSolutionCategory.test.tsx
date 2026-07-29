@@ -33,7 +33,7 @@ describe('EditSolutionCategory', () => {
     );
 
     expect(
-      screen.getByLabelText('SolutionCategoryForm.Name')
+      screen.getByLabelText('SolutionCategory.Form.Name')
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue('threat hunting')).toBeInTheDocument();
   });
@@ -62,7 +62,7 @@ describe('EditSolutionCategory', () => {
       />
     );
 
-    const nameInput = screen.getByLabelText(/SolutionCategoryForm.Name/i);
+    const nameInput = screen.getByLabelText(/SolutionCategory.Form.Name/i);
     await user.clear(nameInput);
     await user.type(nameInput, 'updated solution category');
     await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));

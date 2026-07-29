@@ -411,20 +411,25 @@
     "Name": "名前",
     "Product": "製品"
   },
-  "SolutionCategoryActions": {
-    "Add": "ソリューションカテゴリーを追加"
-  },
-  "SolutionCategoryForm": {
-    "Name": "名前",
-    "Product": "製品"
-  },
-  "SolutionCategoryListPage": {
-    "AllProducts": "すべての製品",
-    "Name": "名前",
-    "Product": "製品"
-  },
-  "DeleteSolutionCategoryDialog": {
-    "Text": "{name} を削除してもよろしいですか？"
+  "SolutionCategory": {
+    "Actions": {
+      "Add": "ソリューションカテゴリーを追加"
+    },
+    "Form": {
+      "Name": "名前",
+      "Product": "製品",
+      "Error": {
+        "Name": "名前は必須です"
+      }
+    },
+    "ListPage": {
+      "AllProducts": "すべての製品",
+      "Name": "名前",
+      "Product": "製品"
+    },
+    "Dialog": {
+      "Text": "{name} を削除してもよろしいですか？"
+    }
   },
   "LocaleSwitcher": {
     "Label": "言語",

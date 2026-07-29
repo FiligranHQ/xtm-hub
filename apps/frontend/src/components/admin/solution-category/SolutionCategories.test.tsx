@@ -49,7 +49,7 @@ describe('SolutionCategories', () => {
     expect(await screen.findByText('Threat Hunting')).toBeInTheDocument();
     expect(await screen.findByText('Incident Response')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'SolutionCategoryActions.Add' })
+      screen.getByRole('button', { name: 'SolutionCategory.Actions.Add' })
     ).toBeInTheDocument();
   });
 
@@ -81,7 +81,7 @@ describe('SolutionCategories', () => {
     await user.click(await screen.findByText('Threat Hunting'));
 
     expect(
-      await screen.findByLabelText('SolutionCategoryForm.Name')
+      await screen.findByLabelText('SolutionCategory.Form.Name')
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue('threat hunting')).toBeInTheDocument();
   });
