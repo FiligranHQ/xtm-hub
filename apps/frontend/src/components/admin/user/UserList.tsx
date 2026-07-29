@@ -417,6 +417,11 @@ const UserList = ({ organization }: UserListProps) => {
           columnVisibility,
         }}
       />
+      {data.users.totalCount === 0 && (
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          {t('UserListPage.NoUsers')}
+        </p>
+      )}
       {userEdit && (
         <EditUser
           user={userEdit}
