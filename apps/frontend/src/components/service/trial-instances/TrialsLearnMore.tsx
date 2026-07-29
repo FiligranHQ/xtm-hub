@@ -73,7 +73,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
           </article>
         </div>
         <div className="flex flex-col md:flex-row justify-between gap-l">
-          <article className="rounded p-6 basis-full bg-page-background">
+          <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
             <h3 className="flex items-center gap-l text-primary mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <ArrowsInputIcon className="size-4" />
@@ -82,7 +82,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             </h3>
             <P>{t(`${baseTranslationKey}.Blocks.First.Description`)}</P>
           </article>
-          <article className="rounded p-6 basis-full bg-page-background">
+          <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
             <h3 className="flex items-center gap-l text-primary mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <AnalyticsIcon className="size-4" />
@@ -91,7 +91,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             </h3>
             <P>{t(`${baseTranslationKey}.Blocks.Second.Description`)}</P>
           </article>
-          <article className="rounded p-6 basis-full bg-page-background">
+          <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
             <h3 className="flex items-center gap-l text-primary mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <ArrowsOutputIcon className="size-4" />

@@ -125,9 +125,7 @@ export const EpicFormSheet = ({
           <></>
         ) : (
           triggerElement || (
-            <Button
-              variant="ghost-primary"
-              className="border cursor-pointer">
+            <Button variant="tertiary">
               <AddIcon className="size-4 mr-s" />
               {t('Utils.Create')}
             </Button>

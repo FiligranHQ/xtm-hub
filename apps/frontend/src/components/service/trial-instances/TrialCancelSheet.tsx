@@ -97,7 +97,7 @@ export const TrialCancelSheet = ({
       setOpen={setOpen}
       title={t('Service.Trials.Cancellation.ConfirmationForm.Title')}>
       {isCancellationDefinitive && (
-        <div className="border border-solid border-orange rounded text-orange flex items-center gap-xs p-s text-sm mt-4">
+        <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm mt-4">
           <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
           {t('Service.Trials.Cancellation.ConfirmationForm.NoNewTrialPossible')}
         </div>
@@ -142,7 +142,7 @@ export const TrialCancelSheet = ({
         }}>
         <div className="flex justify-end gap-s">
           <Button
-            variant="outline"
+            variant="secondary"
             type="button"
             onClick={() => setOpen(false)}>
             {t('Utils.Cancel')}

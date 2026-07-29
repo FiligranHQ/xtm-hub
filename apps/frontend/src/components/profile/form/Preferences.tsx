@@ -36,14 +36,12 @@ export const ProfileFormPreferences = () => {
 
   const currentTheme = theme ?? 'dark';
 
-  if (!isDevelopmentEnvSetting) {
-    return null;
-  }
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('ProfilePage.Preferences.Title')}</CardTitle>
+        <CardTitle className="heading-lg">
+          {t('ProfilePage.Preferences.Title')}
+        </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-l">
         <div className="grid gap-s">
@@ -66,27 +64,29 @@ export const ProfileFormPreferences = () => {
           </Select>
         </div>
 
-        <div className="grid gap-s">
-          <span className="txt-default">
-            {t('ProfilePage.Preferences.Language')}
-          </span>
-          <Select
-            value={locale}
-            onValueChange={onLocaleChange}>
-            <SelectTrigger aria-label={t('LocaleSwitcher.Label')}>
-              <SelectValue placeholder={t('LocaleSwitcher.Label')} />
-            </SelectTrigger>
-            <SelectContent>
-              {locales.map((loc) => (
-                <SelectItem
-                  key={loc}
-                  value={loc}>
-                  {t(`LocaleSwitcher.${loc}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {isDevelopmentEnvSetting && (
+          <div className="grid gap-s">
+            <span className="txt-default">
+              {t('ProfilePage.Preferences.Language')}
+            </span>
+            <Select
+              value={locale}
+              onValueChange={onLocaleChange}>
+              <SelectTrigger aria-label={t('LocaleSwitcher.Label')}>
+                <SelectValue placeholder={t('LocaleSwitcher.Label')} />
+              </SelectTrigger>
+              <SelectContent>
+                {locales.map((loc) => (
+                  <SelectItem
+                    key={loc}
+                    value={loc}>
+                    {t(`LocaleSwitcher.${loc}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

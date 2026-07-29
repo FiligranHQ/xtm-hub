@@ -41,7 +41,7 @@ export const EpicItemFooter = ({
               loading="lazy"
               className="h-8 w-auto rounded object-contain"
             />
-            <div className="bold h-8 flex items-center capitalize txt-sub-content rounded bg-gray-800 text-white p-s">
+            <div className="bold h-8 flex items-center capitalize txt-sub-content rounded bg-elevation-background-layer-0 text-negative-primary p-s">
               {epic.epic_type.toLowerCase()}
             </div>
           </div>

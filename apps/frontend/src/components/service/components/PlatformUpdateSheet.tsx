@@ -166,7 +166,7 @@ export const PlatformUpdateSheet = ({
           <SheetFooter>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={() => setOpen(false)}>
               {t('Utils.Cancel')}
             </Button>

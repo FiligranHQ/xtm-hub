@@ -1,10 +1,11 @@
 'use client';
 
 import { useConsent } from '@/components/cookie-consent/CookieConsentProvider';
+import { cn } from '@/lib/utils';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
-export const CookieSettingsLink = () => {
+export const CookieSettingsLink = ({ className }: { className?: string }) => {
   const t = useTranslations('CookieConsent');
   const { openPreferences } = useConsent();
 
@@ -12,7 +13,10 @@ export const CookieSettingsLink = () => {
     <Button
       variant="link"
       onClick={openPreferences}
-      className="h-auto p-0 text-xs font-normal text-muted-foreground no-underline hover:no-underline cursor-pointer">
+      className={cn(
+        'h-auto p-0 no-underline hover:no-underline cursor-pointer text-content-body-compact-link',
+        className
+      )}>
       {t('CookieSettingsLink')}
     </Button>
   );

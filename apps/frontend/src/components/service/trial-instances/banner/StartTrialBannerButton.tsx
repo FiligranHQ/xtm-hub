@@ -63,7 +63,8 @@ export const StartTrialBannerButton = () => {
   if (isBlacklisted) {
     return (
       <Button
-        className="ml-xl bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
+        /* eslint-disable-next-line xtm-hub-theme-rules/no-fixed-tailwind-color */
+        className="ml-xl bg-white text-black text-[12px] px-2 py-0.5 min-h-0 h-auto"
         disabled>
         {t('Service.Trials.StartTrial')}
         <KeyboardArrowRightIcon className="ml-s size-4" />
@@ -142,7 +143,7 @@ export const StartTrialBannerButton = () => {
   const getButton = (product: PlatformIdentifier) => {
     return (
       <Button
-        variant="ghost"
+        variant="tertiary"
         onClick={() => handleProductChosen(product)}>
         <Image
           width="25"
@@ -171,7 +172,8 @@ export const StartTrialBannerButton = () => {
               <div className="flex items-center gap-s cursor-pointer">
                 <Button
                   onClick={() => setOpenSheet(true)}
-                  className="bg-white text-black hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto">
+                  /* eslint-disable-next-line xtm-hub-theme-rules/no-fixed-tailwind-color */
+                  className="bg-white text-black text-[12px] px-2 py-0.5 min-h-0 h-auto">
                   {t('Service.Trials.StartTrial')}
                   <div
                     className={`ml-s inline-flex transition-transform ${
@@ -197,7 +199,8 @@ export const StartTrialBannerButton = () => {
               setOpenSheet(true);
               setPlatformIdentifier(availableTrials[0]! as PlatformIdentifier);
             }}
-            className="bg-white text-black hover:bg-white text-[12px] px-s py-0.5 min-h-0 h-auto">
+            /* eslint-disable-next-line xtm-hub-theme-rules/no-fixed-tailwind-color */
+            className="bg-white text-black text-[12px] px-s py-0.5 min-h-0 h-auto">
             {t('Service.Trials.StartTrial')}
             <ArrowRightAltIcon className="ml-s size-4" />
           </Button>

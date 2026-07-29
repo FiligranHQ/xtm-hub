@@ -205,7 +205,7 @@ export const TryFiligranProductForm = ({
           }}>
           <div className="flex justify-end gap-s">
             <Button
-              variant="outline"
+              variant="secondary"
               type="button"
               onClick={(values) => {
                 handleCloseSheet(values);
@@ -221,7 +221,6 @@ export const TryFiligranProductForm = ({
         isOpen={isDialogOpen}
         AlertTitle={t('Service.Trials.CapacityWarning.Title')}
         actionButtonText={t('Service.Trials.CapacityWarning.Continue')}
-        variantName={'destructive'}
         onOpenChange={setIsDialogOpen}
         onClickContinue={confirmSubmit}>
         {t('Service.Trials.CapacityWarning.Content')}

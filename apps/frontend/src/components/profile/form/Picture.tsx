@@ -52,7 +52,7 @@ export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('ProfilePage.Picture')}</CardTitle>
+        <CardTitle className="heading-lg">{t('ProfilePage.Picture')}</CardTitle>
       </CardHeader>
       <CardContent className="pb-0">
         <input
@@ -70,7 +70,7 @@ export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
-          variant="ghost-primary"
+          variant="tertiary"
           aria-label={t('Utils.Edit')}
           size="sm"
           className="ml-s gap-s"

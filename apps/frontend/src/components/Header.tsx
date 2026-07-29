@@ -57,16 +57,8 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
     ) ||
       hasOrganizationCapability(OrganizationCapability.ManageAccess));
 
-  return (
-    <header
-      id="app-header"
-      className={cn(
-        'sticky top-0 z-20 flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong px-4 justify-between',
-        !displayLogo && !isHomePageV2Enabled && 'sm:justify-end',
-        !isHomePageV2Enabled && 'bg-gradient-background',
-        isHomePageV2Enabled &&
-          "backdrop-blur-sm before:content-[''] before:absolute before:inset-0 before:bg-gradient-background before:opacity-50 before:-z-1"
-      )}>
+  const headerContent = (
+    <>
       <div className="mobile:hidden flex items-center gap-s">
         <DisplayLogo
           className={cn(
@@ -188,6 +180,21 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
           </SheetContent>
         </Sheet>
       </div>
+    </>
+  );
+
+  if (isHomePageV2Enabled) {
+    return headerContent;
+  }
+
+  return (
+    <header
+      id="app-header"
+      className={cn(
+        'sticky top-0 z-20 flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong px-4 justify-between bg-gradient-background',
+        !displayLogo && 'sm:justify-end'
+      )}>
+      {headerContent}
     </header>
   );
 };

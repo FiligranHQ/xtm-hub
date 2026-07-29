@@ -17,7 +17,7 @@ export interface ResourceStatusIconsProps {
   iconClassName?: string;
 }
 
-const ICON_CLASS = 'h-6 w-6 shrink-0 text-green-500';
+const ICON_CLASS = 'h-6 w-6 shrink-0 text-alert-success-primary';
 
 interface StatusIconProps {
   label: string;
@@ -27,7 +27,7 @@ interface StatusIconProps {
 const StatusIcon = ({ label, icon }: StatusIconProps) => (
   <Tooltip>
     <TooltipTrigger asChild>{icon}</TooltipTrigger>
-    <TooltipContent className="bg-gray-50">{label}</TooltipContent>
+    <TooltipContent>{label}</TooltipContent>
   </Tooltip>
 );
 

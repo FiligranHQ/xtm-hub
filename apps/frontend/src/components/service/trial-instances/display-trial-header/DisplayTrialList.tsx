@@ -34,7 +34,7 @@ export const DisplayTrialList = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
+          variant="tertiary"
           className="flex flex-row items-center text-primary">
           <div className={cn(`w-2 h-2 rounded-full mr-s`, headerDotColor)} />
           <span>

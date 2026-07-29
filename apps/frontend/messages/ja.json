@@ -349,7 +349,7 @@
       "LabelWithName": "ようこそ {name}",
       "ConnectedProducts": "{count, plural, one {コネクテッド製品} other {コネクテッド製品}}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
-      "Description": "OpenCTI または OpenAEV 製品を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM 製品をより一層ご活用いただけます。",
+      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM プラットフォームでの体験をさらに充実させることができます。",
       "Cta": "製品を連携する",
       "ImageAlt": "XTM Platformの図解"
     },
@@ -367,17 +367,19 @@
   "PublicPathError": {
     "NotFound": "404 | このページは見つかりませんでした"
   },
-  "PublicLayout": {
-    "Documentation": "XTM Hubのドキュメント",
-    "SignIn": "サインイン",
-    "Login": "ログイン",
-    "SignUp": "サインアップ",
+  "AppFooter": {
     "AllRightsReserved": "無断複写・転載を禁じます",
     "FiligranWebsite": "Filigranウェブサイト",
+    "Documentation": "XTM Hubのドキュメント",
     "PrivacyPolicy": "プライバシーポリシー",
     "TermsOfServices": "利用規約",
     "Licenses": "ライセンス",
     "Contact": "お問い合わせ"
+  },
+  "PublicLayout": {
+    "SignIn": "サインイン",
+    "Login": "ログイン",
+    "SignUp": "サインアップ"
   },
   "PublicResourcePage": {
     "Download": "ダウンロード",

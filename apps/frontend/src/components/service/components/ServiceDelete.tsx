@@ -55,7 +55,9 @@ export const ServiceDelete = ({
               {t('Utils.Delete')}
             </IconActionsItem>
           ) : (
-            <Button variant={'outline-destructive'}>{t('Utils.Delete')}</Button>
+            <Button variant={'secondary-destructive'}>
+              {t('Utils.Delete')}
+            </Button>
           )
         }
         onClickContinue={() => {

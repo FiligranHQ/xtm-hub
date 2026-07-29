@@ -253,13 +253,23 @@ const createLabelFilter = (): FilterHandler => ({
 
 const createEntityTypeFilter = (): FilterHandler => ({
   key: FilterKey.EntityType,
-  addWhere: (qb, type, values) => {
+  addWhere: (qb, _type, values) => {
     if (!values.length) return;
     const placeholders = values.map(() => '?').join(',');
-    qb.whereRaw(
-      `"${type}"."entity_types"::text[] && array[${placeholders}]`,
-      values
-    );
+    qb.whereExists(function () {
+      this.select(dbRaw('1'))
+        .from('Document_Metadata')
+        .whereRaw('"Document_Metadata"."document_id" = "Document"."id"')
+        .andWhere(
+          'Document_Metadata.key',
+          '=',
+          DocumentMetadataKeyCode.EntityTypes
+        )
+        .andWhereRaw(
+          `"Document_Metadata"."value"::jsonb \\?| array[${placeholders}]::text[]`,
+          values
+        );
+    });
   },
 });
 

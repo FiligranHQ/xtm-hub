@@ -78,7 +78,7 @@ const Page = async ({
         <TrialsHeader
           platformIdentifier={PlatformIdentifier.Openaev}
           actions={
-            <GradientButton className="bg-white dark:bg-none">
+            <GradientButton className="bg-background dark:bg-none">
               <Link href="/redirect/create-openaev-free-trial">
                 {t('Service.Trials.StartTrial')}
               </Link>

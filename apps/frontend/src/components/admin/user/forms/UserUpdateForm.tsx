@@ -115,7 +115,7 @@ export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
           <RemoveUserFromOrga user={user} />
           <div className="flex gap-s">
             <Button
-              variant="outline"
+              variant="secondary"
               type="button"
               onClick={(e) => handleCloseSheet(e)}>
               {t('Utils.Cancel')}

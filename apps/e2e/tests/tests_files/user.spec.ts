@@ -62,7 +62,7 @@ test.describe('User Management', () => {
     await loginPage.logout();
     await loginPage.navigateToAndLogin(TEST_USER.userEmail);
     await expect(
-      page.getByRole('button', { name: 'Settings' })
+      page.getByRole('button', { name: 'Settings', exact: true })
     ).not.toBeVisible();
   });
   test('Should not edit first and last name as MANAGE_ACCESS user', async ({

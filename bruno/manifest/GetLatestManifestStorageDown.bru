@@ -1,0 +1,26 @@
+meta {
+  name: Get latest manifest - storage down
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/opencti/7.260604.0/connector/manifests/latest
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 503
+  res.body.code: eq 503
+}
+
+docs {
+  Storage failure case. Requires a manifest row in database and MinIO stopped:
+
+    podman ps --format '{{Names}}'
+    podman stop <minio-container>
+
+  The endpoint answers 503 instead of 404: the manifest exists, the storage
+  cannot serve it. Note the response carries no Cache-Control header, so the
+  failure is never cached. Restart with podman start <minio-container>.

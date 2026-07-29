@@ -28,7 +28,7 @@ export const TrialsManageUsersDialog = ({
       open={openSheet}
       trigger={
         trigger ?? (
-          <Button variant="outline-primary">
+          <Button variant="secondary">
             {t('Service.Trials.ManageUsers.Title')}
           </Button>
         )

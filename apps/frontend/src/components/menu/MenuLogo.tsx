@@ -21,7 +21,7 @@ export const MenuLogo = ({
         'flex z-10 shrink-0 sticky top-0 h-16 items-center px-m',
         withDarkBackground &&
           !isHomePageV2Enabled &&
-          'bg-page-background dark:bg-background'
+          'bg-elevation-background-layer-1'
       )}>
       <Link
         href={href}

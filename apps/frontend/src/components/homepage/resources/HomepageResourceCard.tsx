@@ -53,7 +53,7 @@ const HomepageResourceCard = ({
             {shortDescription}
           </p>
         </TooltipTrigger>
-        <TooltipContent className="bg-gray-50 max-w-sm whitespace-normal">
+        <TooltipContent className="max-w-sm whitespace-normal">
           {shortDescription}
         </TooltipContent>
       </Tooltip>
@@ -61,7 +61,7 @@ const HomepageResourceCard = ({
   ) : null;
 
   return (
-    <div className="overflow-hidden flex flex-col relative rounded bg-page-background hover:bg-hover">
+    <div className="overflow-hidden flex flex-col relative rounded bg-elevation-background-layer-1 hover:bg-hover">
       <div className="absolute top-m right-m flex gap-xs z-10">
         <ResourceStatusIcons
           active={active}
@@ -98,7 +98,7 @@ const HomepageResourceCard = ({
                     {name}
                   </h3>
                 </TooltipTrigger>
-                <TooltipContent className="bg-gray-50 whitespace-nowrap">
+                <TooltipContent className="whitespace-nowrap">
                   {name}
                 </TooltipContent>
               </Tooltip>

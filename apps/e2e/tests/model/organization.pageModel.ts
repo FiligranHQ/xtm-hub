@@ -5,7 +5,9 @@ export default class OrganizationPage {
   constructor(private page: Page) {}
 
   async navigateToOrgaAdmin() {
-    await this.page.getByRole('button', { name: 'Settings' }).click();
+    await this.page
+      .getByRole('button', { name: 'Settings', exact: true })
+      .click();
     const organizationLink = this.page.getByRole('link', {
       name: 'Organization',
     });

@@ -1,8 +1,8 @@
 import GuardCapacityComponent from '@/components/AdminGuard';
 import {
-  DocumentsListQuery,
   documentItem,
   documentsFragment,
+  DocumentsListQuery,
 } from '@/components/service/document/document.graphql';
 import DeleteDocument from '@/components/service/vault/DeleteDocument';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
@@ -303,7 +303,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
               {canManageService && (
                 <Button
                   asChild
-                  variant="outline">
+                  variant="secondary">
                   <Link
                     href={`/${APP_PATH}/manage/service/${documentData[0]?.service_instance?.id}/subscription/${documentData[0]?.subscription?.id}`}>
                     {t('Service.Vault.ManageVault')}

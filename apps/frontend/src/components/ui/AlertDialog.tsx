@@ -30,7 +30,7 @@ interface AlertDialogProps {
     | 'destructive'
     | 'outline'
     | 'secondary'
-    | 'ghost'
+    | 'tertiary'
     | 'link'
     | null
     | undefined;
@@ -47,7 +47,7 @@ Example of use :
             displayCancelButton={false} /*optional, default true
             triggerElement={
               <Button
-                variant="ghost"
+                variant="tertiary"
                 size="icon"
                 aria-label="aria-description">
                 My button trigger text.

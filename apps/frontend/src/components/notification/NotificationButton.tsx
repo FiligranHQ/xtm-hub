@@ -116,7 +116,7 @@ export const NotificationButton = () => {
       onOpenChange={setOpenPopover}>
       <PopoverTrigger asChild>
         <Button
-          variant="ghost"
+          variant="tertiary"
           className="text-primary w-9 px-0 relative">
           <NotificationsIcon className="h-4 w-4" />
           {nbUsers > 0 && (

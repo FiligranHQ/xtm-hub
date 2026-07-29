@@ -59,7 +59,7 @@ const LoginForm = () => {
     });
   };
   return (
-    <div className="bg-page-background border border-border-light rounded w-full p-l mb-l">
+    <div className="bg-elevation-background-layer-1 border border-border-light rounded w-full p-l mb-l">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

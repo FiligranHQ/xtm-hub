@@ -67,18 +67,19 @@ export const PrivateHomepage = async () => {
         <BreadcrumbNav value={breadcrumbValue} />
       )}
       <div className="p-0 sm:p-xl flex flex-col gap-xl">
-        {platformIdentifiers.length === 0 && (
+        {platformIdentifiers.length === 0 ? (
           <XtmPlatform welcomeName={welcomeName} />
+        ) : (
+          <div className="flex flex-col xl:flex-row gap-xl items-start">
+            <RegisteredPlatformsSection
+              welcomeName={welcomeName}
+              registeredPlatformsData={registeredPlatformsData}
+            />
+            <LastDeployedResourcesSection
+              registeredPlatformsData={deployedPlatformsData}
+            />
+          </div>
         )}
-        <div className="flex flex-col lg:flex-row gap-xl items-start">
-          <RegisteredPlatformsSection
-            welcomeName={welcomeName}
-            registeredPlatformsData={registeredPlatformsData}
-          />
-          <LastDeployedResourcesSection
-            registeredPlatformsData={deployedPlatformsData}
-          />
-        </div>
         <PrivateHomepageRoadmapSection
           platformIdentifiers={platformIdentifiers}
         />

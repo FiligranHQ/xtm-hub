@@ -25,6 +25,7 @@ export const CapabilityMultiSelect = ({
   return (
     <MultiSelectFormField
       noResultString={t('Utils.NotFound')}
+      popoverContentClassName="bg-elevation-background-layer-3"
       options={options}
       defaultValue={value}
       onValueChange={onChange}

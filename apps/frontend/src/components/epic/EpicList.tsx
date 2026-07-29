@@ -153,7 +153,7 @@ export const EpicList = ({
           {(canManageService || isBypass) && currentSubscription?.id && (
             <Button
               asChild
-              variant="outline"
+              variant="secondary"
               className="">
               <Link
                 href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentSubscription.id}`}>

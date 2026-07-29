@@ -92,7 +92,7 @@ export const ServiceManageSheet = ({
             setOpen={setOpenSheet}
             trigger={
               variant === 'button' ? (
-                <Button variant="outline">{t('Utils.Update')}</Button>
+                <Button variant="secondary">{t('Utils.Update')}</Button>
               ) : undefined
             }
             title={t(`${translationKey}.UpdateService`, {

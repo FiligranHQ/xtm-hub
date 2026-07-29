@@ -25,7 +25,7 @@ export const LinkMenu = ({ href, icon, text, open }: LinkMenuProps) => {
       href={href}
       className={cn(
         buttonVariants({
-          variant: 'ghost',
+          variant: 'tertiary',
           className: 'h-9 w-full justify-start rounded-none normal-case px-m',
         }),
         currentPath === href &&
@@ -48,7 +48,7 @@ const Menu = () => {
   return (
     <aside
       className={cn(
-        'mobile:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-background duration-300 ease-in-out',
+        'mobile:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-elevation-background-layer-1 duration-300 ease-in-out',
         open ? 'w-48' : 'w-14'
       )}>
       <MenuLogo href={`/${APP_PATH}`} />

@@ -2,6 +2,7 @@
 
 import { LastDeployedOverview } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
+import { UserDisplay } from '@/components/ui/UserDisplay';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
 import { ResourceTypeIcon } from '@/utils/shareable-resources/resource-type-icon';
@@ -11,7 +12,12 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { CalendarMonthIcon } from '@filigran/icon';
-import { Avatar } from '@filigran/ui';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/ui';
 import { Badge } from '@filigran/ui/servers';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -22,18 +28,6 @@ type DeployedResource = LastDeployedOverview['resources'][number];
 
 type LastDeployedResourceRowProps = {
   resource: DeployedResource;
-};
-
-const resolveDeployedByName = (
-  deployedBy: DeployedResource['deployedBy']
-): string | undefined => {
-  if (!deployedBy) {
-    return undefined;
-  }
-  const fullName = `${deployedBy.first_name ?? ''} ${
-    deployedBy.last_name ?? ''
-  }`.trim();
-  return fullName || deployedBy.email;
 };
 
 const LastDeployedResourceRow = ({
@@ -52,46 +46,54 @@ const LastDeployedResourceRow = ({
 
   const url = `/app/service/${SHAREABLE_RESOURCE_SERVICE_DEFINITION_IDENTIFIER_MAPPING[resourceType]}/${document.service_instance_id}/${document.id}`;
 
-  const deployedByName = resolveDeployedByName(resource.deployedBy);
-
   return (
     <Link
       href={url}
-      className="flex items-center">
-      <div className="flex items-center gap-m rounded p-s bg-page-background">
-        <div className="shrink-0">
-          <ResourceTypeIcon
-            resourceType={resourceType}
-            className="size-6"
-          />
-        </div>
-        <div className="flex items-center gap-s">
-          <span className="content-body-base font-bold truncate">
-            {document.name}
-          </span>
-          <BadgeOverflowCounter
-            badges={document.use_cases ?? []}
-            badgeClassName={BADGE_CLASS}
-          />
+      className="group contents">
+      <div className="min-w-0 max-w-full justify-self-start inline-flex items-center gap-m overflow-hidden rounded p-s bg-elevation-background-layer-1 group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
+        <ResourceTypeIcon
+          resourceType={resourceType}
+          className="size-6 shrink-0"
+        />
+        <div className="min-w-0 flex-1 flex items-center gap-s">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="min-w-0 shrink content-body-base font-bold truncate">
+                  {document.name}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>{document.name}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          {document.use_cases && document.use_cases.length > 0 && (
+            <div className="min-w-16 shrink">
+              <BadgeOverflowCounter
+                badges={document.use_cases}
+                badgeClassName={BADGE_CLASS}
+              />
+            </div>
+          )}
         </div>
       </div>
-      <div className="ml-auto shrink-0 flex items-center gap-s text-text-default-secondary txt-small">
+      <div className="shrink-0 md:max-w-56 lg:max-w-72 xl:max-w-80 2xl:max-w-96 flex items-center gap-s overflow-hidden whitespace-nowrap text-text-default-secondary txt-small rounded group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
         <Badge className={cn('shrink-0', BADGE_CLASS)}>
           <CalendarMonthIcon className="size-4" />
         </Badge>
-        <span>{t('On')}</span>
-        <span className="content-body-base text-text-default-primary">
+        <span className="shrink-0">{t('On')}</span>
+        <span className="shrink-0 content-body-base text-text-default-primary">
           {deployedAt}
         </span>
-        {deployedByName && (
+        {resource.deployedBy && (
           <>
-            <span>{t('By')}</span>
-            <div className="size-8 shrink-0 [&_img]:object-cover">
-              <Avatar src={resource.deployedBy?.picture ?? undefined} />
+            <span className="shrink-0">{t('By')}</span>
+            <div className="min-w-0 shrink flex items-center gap-s">
+              <UserDisplay
+                uploader={resource.deployedBy}
+                className="min-w-0 max-w-none"
+                withTooltip
+              />
             </div>
-            <span className="content-body-base text-text-default-primary">
-              {deployedByName}
-            </span>
           </>
         )}
       </div>

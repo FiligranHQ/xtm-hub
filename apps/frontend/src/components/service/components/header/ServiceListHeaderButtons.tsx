@@ -43,9 +43,7 @@ const ServiceListHeaderButtons = ({}) => {
     <div className="flex gap-s">
       {(canManageService || isBypass) && currentUserSubscriptionId && (
         <>
-          <Button
-            asChild
-            variant="outline">
+          <Button variant="secondary">
             <Link
               href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentUserSubscriptionId}`}>
               {t('Service.Capabilities.ManageAccessName')}

@@ -140,7 +140,7 @@ export const ManifestHelper = {
         try {
           const body = await MinIOClient.downloadFile(logoDocument.minio_name);
           if (!body) {
-            // MinIOClient already logged the underlying S3 error
+            // The logo object is missing from storage; skip it and keep generating.
             return;
           }
           const base64 = await streamToBase64(body as Readable);
@@ -187,6 +187,14 @@ export const ManifestHelper = {
     now: Date = new Date()
   ): string => {
     return `${product}/${version}/connector/manifest/${buildManifestVersion(version, now)}.json`;
+  },
+
+  buildManifestObjectKey: (
+    product: string,
+    version: string,
+    name: string
+  ): string => {
+    return `${product}/${version}/connector/manifest/${name}.json`;
   },
 
   uploadManifest: async (

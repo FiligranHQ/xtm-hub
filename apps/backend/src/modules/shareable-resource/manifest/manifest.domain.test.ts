@@ -582,4 +582,154 @@ describe('manifestDomain', () => {
       expect(pendingRow).toBeDefined();
     });
   });
+  describe('loadManifests', () => {
+    afterEach(async () => {
+      await TestHelper.manifest.delete({});
+    });
+
+    it('should return an empty array when no manifest matches', async () => {
+      const result = await ManifestDomain.loadManifests(
+        PlatformIdentifier.Opencti,
+        '6.4.0',
+        ManifestType.Connector,
+        10
+      );
+
+      expect(result).toEqual([]);
+    });
+
+    it('should only return manifests matching the product, version and type', async () => {
+      await TestHelper.manifest.create({
+        version: '6.4.0',
+        version_padded: '006.000004.000',
+        name: 'expected',
+      });
+      await TestHelper.manifest.create({
+        product: PlatformIdentifier.Openaev,
+        version: '6.4.0',
+        version_padded: '006.000004.000',
+        name: 'other-product',
+      });
+      await TestHelper.manifest.create({
+        version: '7.0.0',
+        version_padded: '007.000000.000',
+        name: 'other-version',
+      });
+
+      const result = await ManifestDomain.loadManifests(
+        PlatformIdentifier.Opencti,
+        '6.4.0',
+        ManifestType.Connector,
+        10
+      );
+
+      expect(result).toEqual([expect.objectContaining({ name: 'expected' })]);
+    });
+
+    it('should return the most recently created manifest first', async () => {
+      await TestHelper.manifest.create({
+        version: '6.4.0',
+        version_padded: '006.000004.000',
+        name: 'older',
+        created_at: new Date(Date.now() - 60 * 1000),
+      });
+      await TestHelper.manifest.create({
+        version: '6.4.0',
+        version_padded: '006.000004.000',
+        name: 'newer',
+        created_at: new Date(),
+      });
+
+      const result = await ManifestDomain.loadManifests(
+        PlatformIdentifier.Opencti,
+        '6.4.0',
+        ManifestType.Connector,
+        10
+      );
+
+      expect(result.map((row) => row.name)).toEqual(['newer', 'older']);
+    });
+
+    it.each`
+      count | expectedLength | description
+      ${1}  | ${1}           | ${'limits the result to the requested count'}
+      ${0}  | ${1}           | ${'clamps a count below 1 up to 1'}
+      ${-5} | ${1}           | ${'clamps a negative count up to 1'}
+    `(
+      'should return $expectedLength row(s) when count is $count ($description)',
+      async ({ count, expectedLength }) => {
+        await TestHelper.manifest.create({
+          version: '6.4.0',
+          version_padded: '006.000004.000',
+          name: 'first',
+        });
+        await TestHelper.manifest.create({
+          version: '6.4.0',
+          version_padded: '006.000004.000',
+          name: 'second',
+        });
+
+        const result = await ManifestDomain.loadManifests(
+          PlatformIdentifier.Opencti,
+          '6.4.0',
+          ManifestType.Connector,
+          count
+        );
+
+        expect(result).toHaveLength(expectedLength);
+      }
+    );
+  });
+
+  describe('getManifestByName', () => {
+    afterEach(async () => {
+      await TestHelper.manifest.delete({});
+    });
+
+    it('should return the manifest matching the name', async () => {
+      await TestHelper.manifest.create({
+        version: '6.4.0',
+        version_padded: '006.000004.000',
+        name: 'manifest-1',
+      });
+
+      const result = await ManifestDomain.getManifestByName(
+        PlatformIdentifier.Opencti,
+        '6.4.0',
+        ManifestType.Connector,
+        'manifest-1'
+      );
+
+      expect(result).toEqual(expect.objectContaining({ name: 'manifest-1' }));
+    });
+
+    it('should return undefined when the name is unknown', async () => {
+      const result = await ManifestDomain.getManifestByName(
+        PlatformIdentifier.Opencti,
+        '6.4.0',
+        ManifestType.Connector,
+        'unknown-manifest'
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when the name exists under a different product', async () => {
+      await TestHelper.manifest.create({
+        product: PlatformIdentifier.Openaev,
+        version: '6.4.0',
+        version_padded: '006.000004.000',
+        name: 'manifest-1',
+      });
+
+      const result = await ManifestDomain.getManifestByName(
+        PlatformIdentifier.Opencti,
+        '6.4.0',
+        ManifestType.Connector,
+        'manifest-1'
+      );
+
+      expect(result).toBeUndefined();
+    });
+  });
 });

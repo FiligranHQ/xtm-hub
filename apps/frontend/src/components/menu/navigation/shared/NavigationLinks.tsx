@@ -34,7 +34,7 @@ export const PublicSubLink = ({
   const isActive = !!href && currentPath === href;
   const sharedClassName = cn(
     buttonVariants({
-      variant: 'ghost',
+      variant: 'tertiary',
       className: cn(
         'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case content-body-compact text-text-default-secondary text-xs',
         highlight &&
@@ -51,9 +51,7 @@ export const PublicSubLink = ({
     <>
       <span className="flex min-w-0 flex-1 items-center gap-xs">
         {external && <OpenInNewIcon className="h-3 w-3 shrink-0" />}
-        <span
-          className={cn('truncate', !href && 'text-text-default-disabled')}
-          title={label}>
+        <span className={cn('truncate', !href && 'text-text-default-disabled')}>
           {label}
         </span>
       </span>
@@ -74,10 +72,14 @@ export const PublicSubLink = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>{node}</TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent className="bg-ds-bg-4 dark:bg-ds-bg-4 rounded-lg">
             <div className="flex flex-col gap-0.5">
-              <span className="font-medium">{label}</span>
-              <span className="text-xs text-muted-foreground">{tooltip}</span>
+              <span className="content-body-base text-text-default-primary">
+                {label}
+              </span>
+              <span className="content-body-base text-muted-foreground">
+                {tooltip}
+              </span>
             </div>
           </TooltipContent>
         </Tooltip>

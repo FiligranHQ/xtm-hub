@@ -288,6 +288,7 @@ export const UserServiceForm = ({
                   <FormLabel>{t('InviteUserServiceForm.Email')}</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
+                      popoverContentClassName="bg-elevation-background-layer-3"
                       shouldFilter={false}
                       options={usersOptions}
                       defaultValue={field.value}
@@ -373,7 +374,7 @@ export const UserServiceForm = ({
 
         <SheetFooter className="pt-2">
           <Button
-            variant="outline"
+            variant="secondary"
             type="button"
             onClick={(e) => handleCloseSheet(e)}>
             {t('Utils.Cancel')}

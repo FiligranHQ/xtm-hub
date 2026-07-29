@@ -40,7 +40,7 @@ const OnePlatformDisplay = ({
       </div>
       <div className="flex justify-end gap-s">
         <Button
-          variant="outline"
+          variant="secondary"
           type="button"
           onClick={() => {
             setIsOpen(false);
