@@ -2,6 +2,7 @@
 
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation/private/private-navigation-query-invalidation';
+import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 import { ArrowDropDownIcon } from '@filigran/icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
@@ -27,7 +28,13 @@ interface OrganizationOption {
   label: string;
 }
 
-const HeaderOrganizationSwitcher = () => {
+interface HeaderOrganizationSwitcherProps {
+  fitContainer?: boolean;
+}
+
+const HeaderOrganizationSwitcher = ({
+  fitContainer = false,
+}: HeaderOrganizationSwitcherProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { me } = useContext(PortalContext);
@@ -87,8 +94,8 @@ const HeaderOrganizationSwitcher = () => {
   };
 
   return (
-    <div className="flex flex-col gap-xs sm:flex-row sm:items-center sm:gap-m text-text-default-primary">
-      <span className="content-body-base sm:whitespace-nowrap">
+    <div className="flex flex-row items-center gap-m text-text-default-primary">
+      <span className="content-body-base whitespace-nowrap">
         {t('OrganizationSwitcher.Workspace')}
       </span>
       <Popover
@@ -102,12 +109,15 @@ const HeaderOrganizationSwitcher = () => {
             aria-controls={listboxId}
             aria-expanded={openPopover}
             aria-haspopup="listbox"
-            className="w-full justify-between border-none bg-elevation-surface-highlight sm:w-55 text-text-default-primary">
+            className={cn(
+              'justify-between border-none bg-elevation-surface-highlight text-text-default-primary',
+              fitContainer ? 'flex-1 min-w-0 py-2 pl-4 pr-2' : 'w-full sm:w-55'
+            )}>
             <span className="truncate">{selectedOrganization?.label}</span>
             <ArrowDropDownIcon
               aria-hidden={true}
               focusable={false}
-              className="ml-s h-4 w-4 shrink-0 text-text-default-primary"
+              className="ml-s h-5 w-5 shrink-0 text-text-default-primary"
             />
           </Button>
         </PopoverTrigger>
