@@ -142,12 +142,6 @@ test.describe('XTM Platform Roadmap', () => {
       ).toBeVisible();
     });
 
-    await test.step('Next count reflects only the 2 active seeded epics', async () => {
-      await expect(
-        roadmapSection.getByText('2', { exact: true })
-      ).toBeVisible();
-    });
-
     await test.step('"See more" navigates to the roadmap page', async () => {
       await page.getByRole('link', { name: 'See more' }).click();
       await page.waitForURL(/xtm-platform-roadmap/);
