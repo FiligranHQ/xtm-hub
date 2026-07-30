@@ -69,6 +69,8 @@ const createConnectorDocument = async ({
   formattedVersion,
   tags,
   metadataFromExisting,
+  licenseType,
+  contact,
 }: {
   fragment: ManifestFragmentInput;
   formattedVersion: string;
@@ -77,6 +79,8 @@ const createConnectorDocument = async ({
     ConnectorWithMetadata,
     'datasheet_url' | 'blogpost_url' | 'demo_url'
   >;
+  licenseType?: string;
+  contact?: string;
 }) => {
   const createdConnector =
     await DocumentApp.createDocumentWithChildrenAndMetadata<ConnectorV2>(
@@ -106,6 +110,8 @@ const createConnectorDocument = async ({
           ManifestFragmentHelper.validateAndFormatManifestVersion(
             fragment.min_version
           ),
+        license_type: licenseType,
+        contact,
         datasheet_url: metadataFromExisting?.datasheet_url,
         blogpost_url: metadataFromExisting?.blogpost_url,
         demo_url: metadataFromExisting?.demo_url,
@@ -154,6 +160,12 @@ export const ManifestFragmentDomain = {
     );
     ManifestFragmentHelper.validateShortDescriptionLength(
       fragment.short_description
+    );
+    const licenseType = ManifestFragmentHelper.validateAndNormalizeLicenseType(
+      fragment.license_type
+    );
+    const contact = ManifestFragmentHelper.validateAndNormalizeContact(
+      fragment.contact
     );
     const formattedVersion =
       ManifestFragmentHelper.validateAndFormatManifestVersion(fragment.version);
@@ -221,6 +233,8 @@ export const ManifestFragmentDomain = {
           formattedVersion,
           tags: newDocumentTags,
           metadataFromExisting,
+          licenseType,
+          contact,
         });
       } catch (error) {
         // Backstop for brand-new connectors: no existing rows for the lock above.

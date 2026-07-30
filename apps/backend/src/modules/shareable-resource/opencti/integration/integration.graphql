@@ -179,6 +179,7 @@ type Connector implements Node & Document & Integration {
   demo_url: String
   minimum_deployable_version: String
   license_type: String
+  contact: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {

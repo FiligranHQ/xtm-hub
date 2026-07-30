@@ -19,6 +19,8 @@ input ManifestFragmentInput {
   integration_type: String!
   additional_properties: JSON!
   config_schema: JSON!
+  license_type: String
+  contact: String
 }
 
 type Mutation {

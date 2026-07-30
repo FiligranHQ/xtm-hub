@@ -572,6 +572,7 @@ enum DocumentMetadataKeyCode {
   entity_types
   solution_category
   license_type
+  contact
 }
 
 type ShareableResource {
@@ -1315,6 +1316,8 @@ input ManifestFragmentInput {
   integration_type: String!
   additional_properties: JSON!
   config_schema: JSON!
+  license_type: String
+  contact: String
 }
 
 enum ManifestType {
@@ -1554,6 +1557,7 @@ type Connector implements Node & Document & Integration {
   demo_url: String
   minimum_deployable_version: String
   license_type: String
+  contact: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {

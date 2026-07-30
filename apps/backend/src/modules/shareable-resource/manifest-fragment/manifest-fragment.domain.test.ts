@@ -90,6 +90,8 @@ describe('manifestFragmentDomain', () => {
       image_type: 'EXTERNAL_IMPORT',
       platform: 'OpenCTI',
       integration_type: integrationType,
+      license_type: 'commercial',
+      contact: 'https://github.com/some-contributor',
       additional_properties: {
         max_confidence_level: 50,
       },
@@ -190,6 +192,34 @@ describe('manifestFragmentDomain', () => {
       expect(metadataByKey.get(DocumentMetadataKeyCode.ConfigSchema)).toBe(
         JSON.stringify(fragment.config_schema)
       );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.LicenseType)).toBe(
+        fragment.license_type
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.Contact)).toBe(
+        fragment.contact
+      );
+    });
+
+    it('does not store a contact when the fragment leaves it empty', async () => {
+      // Given a Filigran-supported integration, which carries no contact
+      const slug = 'misp-without-contact';
+      const fragment = buildManifestFragment(ManifestType.Connector, { slug });
+      fragment.contact = undefined;
+
+      // When
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
+
+      // Then
+      const createdDocument = await TestHelper.document.load({ slug });
+      _createdDocumentIds.push(createdDocument!.id);
+
+      const metadataRows = await TestHelper.documentMetadata.loadAll({
+        document_id: createdDocument!.id,
+      });
+      const metadataByKey = new Map(
+        metadataRows.map((metadata) => [metadata.key as string, metadata.value])
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.Contact)).toBeNull();
     });
 
     it('throws when integration_type is not connector', async () => {
@@ -245,6 +275,26 @@ describe('manifestFragmentDomain', () => {
       // Then
       await expect(call).rejects.toThrow(
         BadRequestErrorCode.ShortDescriptionTooLong
+      );
+
+      const createdDocument = await TestHelper.document.load({ slug });
+      expect(createdDocument).toBeUndefined();
+    });
+
+    it('throws when license_type is not an allowed value', async () => {
+      // Given
+      const slug = 'misp-invalid-license-type';
+      const fragment = buildManifestFragment(ManifestType.Connector, {
+        slug,
+      });
+      fragment.license_type = 'freemium';
+
+      // When
+      const call = ManifestFragmentDomain.ingestManifestFragment(fragment);
+
+      // Then
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.InvalidLicenseType
       );
 
       const createdDocument = await TestHelper.document.load({ slug });

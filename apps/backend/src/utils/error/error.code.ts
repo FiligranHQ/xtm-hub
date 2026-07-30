@@ -45,6 +45,8 @@ export enum BadRequestErrorCode {
   InvalidManifestVersionFormat = 'INVALID_MANIFEST_VERSION_FORMAT',
   ConnectorVersionAlreadyExists = 'CONNECTOR_VERSION_ALREADY_EXISTS',
   ShortDescriptionTooLong = 'SHORT_DESCRIPTION_TOO_LONG',
+  InvalidLicenseType = 'INVALID_LICENSE_TYPE',
+  ContactTooLong = 'CONTACT_TOO_LONG',
   MixedLtsManifestFragments = 'MIXED_LTS_MANIFEST_FRAGMENTS',
 }
 

@@ -170,6 +170,7 @@ export type Connector = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   blogpost_url: Maybe<Scalars['String']['output']>;
   children_documents: Maybe<Array<ShareableResource>>;
+  contact: Maybe<Scalars['String']['output']>;
   container_image: Maybe<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url: Maybe<Scalars['String']['output']>;
@@ -625,6 +626,7 @@ export enum DocumentMetadataKeyCode {
   AdditionalProperties = 'additional_properties',
   BlogpostUrl = 'blogpost_url',
   ConfigSchema = 'config_schema',
+  Contact = 'contact',
   ContainerImage = 'container_image',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
@@ -918,12 +920,14 @@ export enum LogicalOperator {
 export type ManifestFragmentInput = {
   additional_properties: Scalars['JSON']['input'];
   config_schema: Scalars['JSON']['input'];
+  contact: InputMaybe<Scalars['String']['input']>;
   description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   image_name: Scalars['String']['input'];
   image_type: Scalars['String']['input'];
   integration_type: Scalars['String']['input'];
   last_verified_date: Scalars['String']['input'];
+  license_type: InputMaybe<Scalars['String']['input']>;
   logo: Scalars['String']['input'];
   manager_supported: Scalars['Boolean']['input'];
   min_version: Scalars['String']['input'];
