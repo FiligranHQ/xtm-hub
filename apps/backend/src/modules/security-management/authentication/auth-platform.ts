@@ -15,8 +15,8 @@ import { authenticateUser } from './auth-user';
 import { initProviders } from './provider/providers';
 
 const authProviderRateLimiter = rateLimit({
-  windowMs: 180 * 1000,
-  max: 10,
+  windowMs: 60 * 1000,
+  limit: 10,
   standardHeaders: true,
   legacyHeaders: false,
 });
