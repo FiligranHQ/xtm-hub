@@ -1,15 +1,12 @@
 'use client';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
-import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation/private/private-navigation-query-invalidation';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 import { ArrowDropDownIcon } from '@filigran/icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
 import { OrganizationSwitcherMutation as OrganizationSwitcherMutationType } from '@generated/OrganizationSwitcherMutation.graphql';
-import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useContext, useId, useMemo, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 
@@ -35,8 +32,6 @@ interface HeaderOrganizationSwitcherProps {
 const HeaderOrganizationSwitcher = ({
   fitContainer = false,
 }: HeaderOrganizationSwitcherProps) => {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const { me } = useContext(PortalContext);
   const t = useTranslations();
   const [openPopover, setOpenPopover] = useState(false);
@@ -81,12 +76,8 @@ const HeaderOrganizationSwitcher = ({
       variables: {
         organization_id: selectedValue.value,
       },
-      updater: (store) => {
-        store.invalidateStore();
-      },
       onCompleted: () => {
-        invalidatePrivateNavigationQueries(queryClient);
-        router.push(`/${APP_PATH}`);
+        window.location.href = `/${APP_PATH}`;
       },
     });
 
