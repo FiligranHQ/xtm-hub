@@ -29,9 +29,8 @@ const sendError = (
   status: ManifestErrorStatus,
   message: string
 ): void => {
-  // Error responses must never inherit the long-lived cache directive
-  // set by the download routes.
   res.removeHeader('Cache-Control');
+  res.removeHeader('ETag');
   res.status(status).json({ code: status, message });
 };
 
