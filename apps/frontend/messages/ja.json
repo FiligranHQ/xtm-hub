@@ -739,7 +739,8 @@
       "Administrators": "{count, plural, =1 {管理者} other {管理者}}",
       "ReachAdmin": "管理者にお問い合わせください",
       "ConnectProduct": "製品を接続する",
-      "RedirectionMessage": "XTM Hub との接続を承認するため、新しいタブで製品ページにリダイレクトされます。"
+      "RedirectionMessage": "XTM Hub との接続を承認するため、新しいタブで製品ページにリダイレクトされます。",
+      "MinimumVersionRequired": "必要な最低バージョン：\nOpenCTI：{openctiVersion} \nOpenAEV：{openaevVersion}"
     },
     "Back": "{platformIdentifier} に戻る",
     "Confirm": "接続する",
