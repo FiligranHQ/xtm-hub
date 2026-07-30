@@ -16,6 +16,7 @@ import {
 } from './manifest-endpoint.errors';
 import { buildManifestRateLimiterOptions } from './manifest-endpoint.rate-limit';
 import {
+  buildManifestETag,
   isValidManifestName,
   parseCount,
   validateManifestParams,
@@ -85,7 +86,21 @@ export const ManifestEndpoint = {
         return;
       }
 
+      if (!isValidManifestName(latest.name)) {
+        logApp.error('Manifest name failed validation before MinIO lookup', {
+          name: latest.name,
+        });
+        sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
+        return;
+      }
+
+      res.setHeader('ETag', buildManifestETag(latest.name));
       res.setHeader('Cache-Control', 'no-cache');
+      if (req.fresh) {
+        res.status(304).end();
+        return;
+      }
+
       await streamManifestByName(res, product, version, latest.name);
     } catch (error) {
       if (res.headersSent) {
@@ -142,7 +157,13 @@ export const ManifestEndpoint = {
         return;
       }
 
+      res.setHeader('ETag', buildManifestETag(manifest.name));
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      if (req.fresh) {
+        res.status(304).end();
+        return;
+      }
+
       await streamManifestByName(res, product, version, manifest.name);
     } catch (error) {
       if (res.headersSent) {
@@ -164,6 +185,7 @@ export const ManifestEndpoint = {
     }
   },
 };
+
 export const manifestEndpoint = (app: Express) => {
   app.get(
     '/:product/:version/:integrationType/manifests',
@@ -191,14 +213,6 @@ const streamManifestByName = async (
   version: string,
   name: string
 ): Promise<void> => {
-  if (!isValidManifestName(name)) {
-    logApp.error('Manifest name failed validation before MinIO lookup', {
-      name,
-    });
-    sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
-    return;
-  }
-
   const key = ManifestHelper.buildManifestObjectKey(product, version, name);
   const body = await MinIOClient.downloadFile(key);
   if (!body) {

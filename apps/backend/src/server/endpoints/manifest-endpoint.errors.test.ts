@@ -31,12 +31,13 @@ describe('sendManifestError', () => {
     expect(json).toHaveBeenCalledWith({ code: status, message: error.message });
   });
 
-  it('clears the cache directive before sending an error', () => {
+  it('clears representation headers before sending an error', () => {
     const { res, removeHeader } = buildResponse();
 
     sendManifestError(res, MANIFEST_ERRORS.ManifestNotFound);
 
     expect(removeHeader).toHaveBeenCalledWith('Cache-Control');
+    expect(removeHeader).toHaveBeenCalledWith('ETag');
   });
 });
 
