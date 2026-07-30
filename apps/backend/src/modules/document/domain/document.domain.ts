@@ -543,6 +543,16 @@ export const DocumentDomain = {
     const deployCounts = db('OneClickDeployment')
       .select('resource_id')
       .count('* as deploy_count')
+      .modify((qb) => {
+        if (documentTypes?.length) {
+          qb.whereIn(
+            'resource_id',
+            db('Document')
+              .select(dbRaw('"id"::text'))
+              .whereIn('type', documentTypes)
+          );
+        }
+      })
       .groupBy('resource_id')
       .as('deploy_counts');
 
