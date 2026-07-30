@@ -739,7 +739,8 @@
       "Administrators": "{count, plural, =1 {管理者} other {管理者}}",
       "ReachAdmin": "管理者にお問い合わせください",
       "ConnectProduct": "製品を接続する",
-      "RedirectionMessage": "XTM Hub との接続を承認するため、新しいタブで製品ページにリダイレクトされます。"
+      "RedirectionMessage": "XTM Hub との接続を承認するため、新しいタブで製品ページにリダイレクトされます。",
+      "MinimumVersionRequired": "必要な最低バージョン：\nOpenCTI：{openctiVersion} \nOpenAEV：{openaevVersion}"
     },
     "Back": "{platformIdentifier} に戻る",
     "Confirm": "接続する",
@@ -1647,10 +1648,12 @@
   },
   "UserActions": {
     "AddUser": "ユーザーを追加",
+    "AllOrganizations": "すべての組織",
     "CreateUser": "新規ユーザー作成",
     "DetailsUser": "詳細ユーザー",
     "Disable": "無効化",
     "Enable": "有効にする",
+    "Organization": "組織",
     "RemoveUser": "ユーザー削除",
     "SearchUser": "ユーザーを検索...",
     "UpdateUser": "ユーザーを更新する - {email}",
@@ -1690,6 +1693,7 @@
     "LastLogin": "姓",
     "LastName": "姓",
     "Never": "決して",
+    "NoUsers": "ユーザーが見つかりません",
     "Organizations": "団体名",
     "Roles": "役割",
     "Status": "地位",
