@@ -12,6 +12,8 @@ export interface ManifestContract {
   source_code: string | null;
   manager_supported: boolean;
   support_version: string | null;
+  license_type: string | null;
+  contact: string | null;
   version: string | null;
   image_name: string | null;
   image_type: string;

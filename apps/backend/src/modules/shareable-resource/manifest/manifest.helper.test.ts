@@ -64,6 +64,8 @@ const buildConnector = (overrides: Partial<ConnectorV2> = {}): ConnectorV2 =>
     last_verified_date: '2025-01-15',
     additional_properties: '{"key":"value"}',
     config_schema: '{"type":"object"}',
+    license_type: 'commercial',
+    contact: 'https://github.com/some-contributor',
     ...overrides,
   }) as unknown as ConnectorV2;
 
@@ -379,12 +381,51 @@ describe('manifestHelper', () => {
         );
         expect(contract.manager_supported).toBe(true);
         expect(contract.support_version).toBe('7.260507.0');
+        expect(contract.license_type).toBe('commercial');
+        expect(contract.contact).toBe('https://github.com/some-contributor');
         expect(contract.version).toBe('6.5.1');
         expect(contract.image_name).toBe('opencti/connector-misp');
         expect(contract.image_type).toBe('EXTERNAL_IMPORT');
         expect(contract.last_verified_date).toBe('2025-01-15');
         expect(contract.additional_properties).toEqual({ key: 'value' });
         expect(contract.config_schema).toEqual({ type: 'object' });
+      });
+
+      it('should expose exactly the agreed contract keys', () => {
+        // Given a connector mapped to a manifest contract
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [buildConnector()],
+          FIXED_DATE,
+          new Map()
+        ).contracts[0]!;
+
+        // When the contract keys are listed
+        const keys = Object.keys(contract).sort();
+
+        // Then they match the published contract, so a rename cannot slip through
+        expect(keys).toEqual([
+          'additional_properties',
+          'config_schema',
+          'contact',
+          'description',
+          'id',
+          'image_name',
+          'image_type',
+          'last_verified_date',
+          'license_type',
+          'logo',
+          'manager_supported',
+          'short_description',
+          'slug',
+          'source_code',
+          'subscription_link',
+          'support_version',
+          'title',
+          'use_cases',
+          'verified',
+          'version',
+        ]);
       });
 
       it('sets logo to null when logoByConnectorId has no entry for the connector (also covers the default parameter)', () => {
@@ -618,6 +659,11 @@ describe('manifestHelper', () => {
         },
         { field: 'version' as const, override: { version: undefined } },
         { field: 'image_name' as const, override: { image_name: undefined } },
+        {
+          field: 'license_type' as const,
+          override: { license_type: undefined },
+        },
+        { field: 'contact' as const, override: { contact: undefined } },
       ])(
         'maps $field to null when the connector field is absent/null',
         ({

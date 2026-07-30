@@ -233,6 +233,8 @@ export const ManifestHelper = {
       source_code: connector.source_code ?? null,
       manager_supported: connector.manager_supported,
       support_version: connector.minimum_deployable_version ?? null,
+      license_type: connector.license_type ?? null,
+      contact: connector.contact ?? null,
       version: connector.version ?? null,
       image_name: connector.image_name ?? null,
       image_type: connector.image_type,
