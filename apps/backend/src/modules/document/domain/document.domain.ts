@@ -535,6 +535,37 @@ export const DocumentDomain = {
     return query;
   },
 
+  loadMostDeployedDocuments: async (
+    limit: number,
+    include_metadata: DocumentMetadataKeyCode[] = [],
+    documentTypes?: DOCUMENT_TYPE[]
+  ): Promise<Document[]> => {
+    const deployCounts = db('OneClickDeployment')
+      .select('resource_id')
+      .count('* as deploy_count')
+      .groupBy('resource_id')
+      .as('deploy_counts');
+
+    const query = db<Document>('Document')
+      .select('Document.*')
+      .join(deployCounts, function () {
+        this.on(dbRaw('"deploy_counts"."resource_id" = "Document"."id"::text'));
+      })
+      .modify((qb) => {
+        if (documentTypes?.length) {
+          qb.whereIn('Document.type', documentTypes);
+        }
+      })
+      .groupBy(['Document.id'])
+      .orderByRaw('MAX("deploy_counts"."deploy_count") DESC')
+      .orderBy('Document.id', 'asc')
+      .limit(limit);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
+
+    return query;
+  },
+
   /**
    * For each manifest_fragment_id in the provided list, returns the connector
    * with the highest product_version that is still compatible with manifestVersion

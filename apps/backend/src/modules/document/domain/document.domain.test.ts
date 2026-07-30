@@ -37,6 +37,7 @@ import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import Document from '../../../model/kanel/public/Document';
 import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UseCaseId } from '../../../model/kanel/public/UseCase';
 import { ADMIN_UUID } from '../../../portal.const';
 import { DocumentUploadsHelper } from '../document.uploads.helper';
@@ -1608,6 +1609,134 @@ describe('document domain', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0]!.id).toBe(doc.id);
+    });
+  });
+
+  describe('loadMostDeployedDocuments', () => {
+    const PLATFORM_ID = 'a1b2c3d4-0000-4000-8000-000000000001';
+
+    const createDeployableDocument = (
+      name: string,
+      type: string,
+      service_instance_id: ServiceInstanceId
+    ): Promise<Document> =>
+      TestHelper.document.create({ name, type, service_instance_id });
+
+    const deployResource = async (resourceId: string, times: number) => {
+      for (let i = 0; i < times; i += 1) {
+        await TestHelper.oneClickDeployment.insert({
+          resource_id: resourceId,
+          platform_id: PLATFORM_ID,
+          tenant_id: null,
+          user_id: null,
+          deployed_at: new Date(),
+        });
+      }
+    };
+
+    beforeEach(async () => {
+      await TestHelper.oneClickDeployment.deleteAll();
+      await TestHelper.document.delete({});
+    });
+
+    it('returns documents ordered by deploy count desc and excludes non-deployed ones', async () => {
+      const mostDeployed = await createDeployableDocument(
+        'most-deployed',
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+      const middle = await createDeployableDocument(
+        'middle',
+        OPENAEV_SCENARIO_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
+      );
+      const leastDeployed = await createDeployableDocument(
+        'least-deployed',
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+      await createDeployableDocument(
+        'never-deployed',
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+
+      await deployResource(mostDeployed.id, 3);
+      await deployResource(middle.id, 2);
+      await deployResource(leastDeployed.id, 1);
+
+      const result = await DocumentDomain.loadMostDeployedDocuments(10);
+
+      expect(result.map((d) => d.id)).toEqual([
+        mostDeployed.id,
+        middle.id,
+        leastDeployed.id,
+      ]);
+    });
+
+    it('filters by documentTypes', async () => {
+      const customView = await createDeployableDocument(
+        'custom-view',
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+      const scenario = await createDeployableDocument(
+        'scenario',
+        OPENAEV_SCENARIO_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
+      );
+
+      await deployResource(customView.id, 1);
+      await deployResource(scenario.id, 5);
+
+      const result = await DocumentDomain.loadMostDeployedDocuments(
+        10,
+        [],
+        [OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE]
+      );
+
+      expect(result.map((d) => d.id)).toEqual([customView.id]);
+    });
+
+    it('respects the limit', async () => {
+      const first = await createDeployableDocument(
+        'first',
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+      const second = await createDeployableDocument(
+        'second',
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+
+      await deployResource(first.id, 3);
+      await deployResource(second.id, 2);
+
+      const result = await DocumentDomain.loadMostDeployedDocuments(1);
+
+      expect(result.map((d) => d.id)).toEqual([first.id]);
+    });
+
+    it('breaks ties on equal deploy counts deterministically by document id', async () => {
+      const docA = await createDeployableDocument(
+        'tie-a',
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+      const docB = await createDeployableDocument(
+        'tie-b',
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+
+      await deployResource(docA.id, 1);
+      await deployResource(docB.id, 1);
+
+      const result = await DocumentDomain.loadMostDeployedDocuments(10);
+
+      const expected = [docA.id, docB.id].sort();
+      expect(result.map((d) => d.id)).toEqual(expected);
     });
   });
 });
