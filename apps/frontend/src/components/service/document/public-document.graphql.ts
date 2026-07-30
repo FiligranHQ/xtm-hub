@@ -134,6 +134,7 @@ export const publicDocumentByServiceSlugItem = graphql`
       manager_supported
       playbook_supported
       minimum_deployable_version
+      contact
     }
 
     ... on OpenAEVScenario {
@@ -233,6 +234,7 @@ export const publicDocumentBySlugItem = graphql`
       manager_supported
       playbook_supported
       minimum_deployable_version
+      contact
     }
 
     ... on OpenAEVScenario {

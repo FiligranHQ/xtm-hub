@@ -184,6 +184,7 @@ export const documentItem = graphql`
       manager_supported
       playbook_supported
       minimum_deployable_version
+      contact
     }
 
     ... on OpenAEVScenario {
