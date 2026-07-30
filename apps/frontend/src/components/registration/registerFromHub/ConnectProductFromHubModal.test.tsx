@@ -55,6 +55,9 @@ describe('ConnectProductFromHubModal', () => {
     expect(
       screen.getByText(/Register\.ConnectFromHub\.NotAllowedMessage/)
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Register.ConnectFromHub.MinimumVersionRequired')
+    ).not.toBeInTheDocument();
     expect(screen.getByText('admin1@example.com')).toBeInTheDocument();
     expect(screen.getByText('admin2@example.com')).toBeInTheDocument();
     expect(mockUseConnectProductOrganizationAdminsQuery).toHaveBeenCalledWith(
@@ -92,6 +95,9 @@ describe('ConnectProductFromHubModal', () => {
         name: 'Register.ConnectFromHub.ReachAdmin',
       })
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Register.ConnectFromHub.MinimumVersionRequired')
+    ).toBeInTheDocument();
   });
 
   it('submits form and opens redirect URL when user can manage organization', async () => {
