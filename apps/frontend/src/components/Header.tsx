@@ -11,11 +11,11 @@ import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 
-import { CloseIcon, MenuIcon } from '@filigran/icon';
+import { MenuIcon } from '@filigran/icon';
 import {
   Avatar,
+  Separator,
   Sheet,
-  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -25,7 +25,6 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 import { OrganizationCapability } from '@graphql/generated';
-import Logo from '@public/logo.svg';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -101,44 +100,40 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
         </IconActions>
       </div>
       <div className="flex gap-xs items-center sm:hidden">
+        {canManageUser && <NotificationButton />}
         <Sheet
           open={open}
           onOpenChange={setOpen}>
           <SheetTrigger>
+            <span className="sr-only">
+              {open ? t('Header.CloseMenu') : t('Header.OpenMenu')}
+            </span>
             <MenuIcon
               aria-hidden={true}
               focusable={false}
               className="h-6 w-6"
             />
           </SheetTrigger>
-          <SheetContent side="left">
-            <SheetHeader className="flex flex-row justify-between pl-l">
+          <SheetContent
+            side="left"
+            className="bg-gradient-layer-0-white">
+            <SheetHeader className="flex flex-row justify-between pl-l bg-gradient-layer-0-white">
               <div className="flex items-center gap-s">
-                <Logo
-                  className="h-8 w-8"
-                  aria-hidden={true}
-                />
-                <SheetTitle>{t('Header.BrandName')}</SheetTitle>
+                <DisplayLogo className="text-primary h-8" />
+                <SheetTitle className="sr-only">
+                  {t('Header.BrandName')}
+                </SheetTitle>
               </div>
-              <SheetClose>
-                <CloseIcon
-                  aria-hidden={true}
-                  focusable={false}
-                  className="h-4 w-4 mr-xl"
-                />
-                <span className="sr-only">{t('Header.CloseMenu')}</span>
-              </SheetClose>
             </SheetHeader>
-            <div className="flex flex-1 flex-col h-full justify-between">
-              <div className="pt-m flex flex-col gap-m px-m">
-                <HeaderOrganizationSwitcher />
-                <div className="flex items-center justify-between">
-                  <ConnectedProductsDropdown />
-                  {canManageUser && <NotificationButton />}
+            <div className="flex flex-col h-full">
+              <div>
+                <PrivateNavigation open={true} />
+                <Separator className="my-s" />
+                <div className="flex flex-col gap-m pl-5">
+                  <HeaderOrganizationSwitcher fitContainer />
                 </div>
               </div>
-              <PrivateNavigation open={true} />
-              <div className="pb-xl flex flex-col text-center">
+              <div className="mt-auto pt-l pb-xl flex flex-col text-center">
                 <Link href={`/${APP_PATH}/profile`}>
                   <div className="w-full p-2 hover:bg-hover rounded">
                     {t('MenuUser.Profile')}

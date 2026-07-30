@@ -739,7 +739,8 @@
       "Administrators": "{count, plural, =1 {Administrator} other {Administrators}}",
       "ReachAdmin": "Contactez votre administrateur",
       "ConnectProduct": "Connectez votre produit",
-      "RedirectionMessage": "Vous serez redirigé vers votre produit dans un nouvel onglet afin d'autoriser la connexion avec XTM Hub."
+      "RedirectionMessage": "Vous serez redirigé vers votre produit dans un nouvel onglet afin d'autoriser la connexion avec XTM Hub.",
+      "MinimumVersionRequired": "Versions minimales requises : \nOpenCTI : {openctiVersion} \nOpenAEV : {openaevVersion}"
     },
     "Back": "Retour à {platformIdentifier}",
     "Confirm": "Connecter",
@@ -1316,7 +1317,9 @@
         "DatasheetURL": "URL de la fiche technique",
         "BlogpostURL": "URL de l'article de blog",
         "DemoURL": "URL de la démo",
-        "EntityType": "Type d'entité"
+        "EntityType": "Type d'entité",
+        "SupportedByFiligran": "Supporté par Filigran",
+        "SupportedByCommunity": "Supporté par la communauté"
       },
       "Download": "Télécharger",
       "FromVersion": "Depuis la version",
