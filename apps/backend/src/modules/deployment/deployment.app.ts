@@ -38,6 +38,7 @@ import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
+import { getErrorNumberProperty } from '../../utils/error/error-guard.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
@@ -565,10 +566,7 @@ export const DeploymentApp = {
         });
       }
     } catch (error) {
-      logApp.error('Unable to delete audience', {
-        error,
-        deploymentRequestId: deploymentRequest.id,
-      });
+      logDeleteAudienceError(error, deploymentRequest);
     }
 
     return updatedDeploymentRequest;
@@ -653,10 +651,7 @@ export const DeploymentApp = {
             });
           }
         } catch (error) {
-          logApp.error('Unable to delete audience', {
-            error,
-            deploymentRequestId: trial.id,
-          });
+          logDeleteAudienceError(error, trial);
         }
       } catch (error) {
         logApp.error('Error during trial expiration', {
@@ -760,6 +755,27 @@ const loadDeploymentRequestForUpdate = async (
   }
 
   return deploymentRequest;
+};
+
+const logDeleteAudienceError = (
+  error: unknown,
+  deploymentRequest: Pick<DeploymentRequestModel, 'id' | 'platform_identifier'>
+) => {
+  const isExpectedOpenaevAudienceMiss =
+    getErrorNumberProperty(error, 'statusCode') === 404 &&
+    deploymentRequest.platform_identifier === PlatformIdentifier.Openaev;
+
+  if (isExpectedOpenaevAudienceMiss) {
+    logApp.warn('No Auth0 audience to delete for OpenAEV trial', {
+      deploymentRequestId: deploymentRequest.id,
+    });
+    return;
+  }
+
+  logApp.error('Unable to delete audience', {
+    error,
+    deploymentRequestId: deploymentRequest.id,
+  });
 };
 
 const checkStatusAndDataValidity = async (

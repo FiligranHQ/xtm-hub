@@ -260,10 +260,15 @@ export const DeploymentRequestDomain = {
       throw new Error(ErrorCode.InvalidPlatformId);
     }
 
-    try {
-      await auth0Client.createAudienceAPI(organization_name, platform_id);
-    } catch (error) {
-      logApp.warn(`Auth0 Create Audience: ${error}`);
+    if (platformIdentifier !== PlatformIdentifier.Openaev) {
+      try {
+        await auth0Client.createAudienceAPI(organization_name, platform_id);
+      } catch (error) {
+        logApp.warn('Unable to create audience', {
+          error,
+          deploymentRequestId: id,
+        });
+      }
     }
 
     const serviceGroup = await ServiceGroupDomain.loadServiceGroups({
