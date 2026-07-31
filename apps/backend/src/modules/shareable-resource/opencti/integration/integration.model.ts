@@ -23,6 +23,7 @@ export type Integration = Document & {
   datasheet_url?: string;
   blogpost_url?: string;
   demo_url?: string;
+  license_type?: string;
 };
 export type CsvFeed = Integration & {
   feed_url: string;
@@ -102,6 +103,7 @@ export const INTEGRATION_CSV_FEED_METADATA: CsvFeedMetadata = [
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
+  { key: DocumentMetadataKeyCode.LicenseType, optional: true },
 ];
 export const INTEGRATION_CSV_FEED_METADATA_KEYS =
   INTEGRATION_CSV_FEED_METADATA.map(({ key }) => key);
@@ -113,6 +115,7 @@ export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
+  { key: DocumentMetadataKeyCode.LicenseType, optional: true },
 ];
 export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
   INTEGRATION_TAXII_FEED_METADATA.map(({ key }) => key);
@@ -124,6 +127,7 @@ export const INTEGRATION_RSS_FEED_METADATA: RssFeedMetadata = [
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
+  { key: DocumentMetadataKeyCode.LicenseType, optional: true },
 ];
 
 export const INTEGRATION_RSS_FEED_METADATA_KEYS =
@@ -136,6 +140,7 @@ export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
+  { key: DocumentMetadataKeyCode.LicenseType, optional: true },
 ];
 export const INTEGRATION_STREAM_METADATA_KEYS = INTEGRATION_STREAM_METADATA.map(
   ({ key }) => key
@@ -150,6 +155,7 @@ export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA: ThirdPartyIntegration
     { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
     { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
     { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
+    { key: DocumentMetadataKeyCode.LicenseType, optional: true },
   ];
 export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA_KEYS =
   INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA.map(({ key }) => key);
@@ -168,6 +174,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
+  { key: DocumentMetadataKeyCode.LicenseType, optional: true },
 ];
 
 export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
@@ -191,6 +198,7 @@ export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
   { key: DocumentMetadataKeyCode.ConfigSchema },
   { key: DocumentMetadataKeyCode.ManifestFragmentId },
   { key: DocumentMetadataKeyCode.VersionPadded },
+  { key: DocumentMetadataKeyCode.LicenseType, optional: true },
 ];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
   INTEGRATION_CONNECTOR_METADATA.map(({ key }) => key);

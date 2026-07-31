@@ -145,6 +145,7 @@ export const documentItem = graphql`
         id
         name
       }
+      license_type
     }
 
     ... on CsvFeed {

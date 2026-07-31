@@ -26,6 +26,7 @@ const streamFormSchema = z.object({
   integration_type: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).min(1, 'Required'),
   solution_category: z.string().min(1, 'Required'),
+  license_type: z.enum(['Free', 'Commercial']),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
@@ -73,6 +74,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
         logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((label) => label.id),
         solution_category: document?.solution_category?.id,
+        license_type: document?.license_type ?? undefined,
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
@@ -104,6 +106,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
     uploader_id,
     use_cases,
     solution_category,
+    license_type,
     integration_subtype,
     integration_type,
     datasheet_url,
@@ -143,6 +146,10 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
           description,
           use_cases,
           solution_category,
+          license_type: {
+            ...license_type,
+            fieldType: 'radio',
+          },
           uploader_id,
           uploader_organization_id,
           document: isCreation

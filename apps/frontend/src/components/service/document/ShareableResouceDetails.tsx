@@ -115,6 +115,16 @@ const ShareableResourceDetails = ({
               </div>
             </ShareableResourceDetailItem>
           )}
+          {documentData.license_type && (
+            <ShareableResourceDetailItem
+              label={t(
+                'Service.ShareableResources.Details.IntegrationLicenseType'
+              )}>
+              <div className="flex items-center gap-s">
+                <span>{documentData.license_type}</span>
+              </div>
+            </ShareableResourceDetailItem>
+          )}
           {integrationSubTypeMetadata && (
             <ShareableResourceDetailItem
               label={t(

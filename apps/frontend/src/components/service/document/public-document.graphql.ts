@@ -93,6 +93,7 @@ export const publicDocumentByServiceSlugItem = graphql`
         id
         name
       }
+      license_type
     }
 
     ... on CustomDashboard {
@@ -191,6 +192,7 @@ export const publicDocumentBySlugItem = graphql`
         id
         name
       }
+      license_type
     }
 
     ... on CustomDashboard {

@@ -181,6 +181,34 @@ describe('documentApp', () => {
       });
     });
 
+    it('should persist license_type input in document metadata', async () => {
+      // Given
+      const licenseType = 'Commercial';
+
+      // When
+      const result = await DocumentApp.createDocument({
+        input: {
+          ...documentData,
+          license_type: licenseType,
+        },
+        metadata: integrationMetadata,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        sourceDocument: mockUpload,
+      });
+
+      const licenseTypeFromDb =
+        await DocumentMetadataDomain.loadMetadataValueByKey(
+          result.id,
+          DocumentMetadataKeyCode.LicenseType
+        );
+
+      // Then
+      expect(result).toMatchObject({
+        license_type: licenseType,
+      });
+      expect(licenseTypeFromDb).toBe(licenseType);
+    });
+
     it('should not use document file when document is a third party integration', async () => {
       // When
       const createdDocument = await DocumentApp.createDocument({
@@ -399,6 +427,48 @@ describe('documentApp', () => {
         short_description: 'short_description',
         vendor_url: 'https://changed.com',
       });
+    });
+
+    it('should persist license_type input in document metadata on update', async () => {
+      // Given
+      const licenseType = 'Commercial';
+      const customDashboardDocument = await DocumentApp.createDocument({
+        input: {
+          ...documentData,
+          slug: `license-update-${uuidv4()}`,
+        },
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
+        ],
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        sourceDocument: mockUpload,
+      });
+
+      // When
+      const result = await DocumentApp.updateDocument({
+        parentDocumentId: customDashboardDocument.id,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.1.0' },
+        ],
+        input: {
+          ...documentUpdateData,
+          license_type: licenseType,
+        },
+        existingImageIds: [],
+      });
+
+      const licenseTypeFromDb =
+        await DocumentMetadataDomain.loadMetadataValueByKey(
+          result.id,
+          DocumentMetadataKeyCode.LicenseType
+        );
+
+      // Then
+      expect(result).toMatchObject({
+        license_type: licenseType,
+      });
+      expect(licenseTypeFromDb).toBe(licenseType);
     });
 
     it('should use first file for document when document is not a third party integration', async () => {

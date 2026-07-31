@@ -184,4 +184,42 @@ describe('useServiceFormFields', () => {
       }
     );
   });
+
+  describe('license_type field', () => {
+    it('should expose license type label key', () => {
+      const { result } = renderHook(() =>
+        useServiceFormFields({
+          documentType: 'CSV Feed',
+          platform: 'OpenCTI',
+          document: existingDocument,
+        })
+      );
+
+      expect(result.current.license_type.label).toBe(
+        'Service.Form.LicenseTypeLabel'
+      );
+    });
+
+    it.each`
+      scenario                   | disabledFields      | expectedDisabled
+      ${'not in disabledFields'} | ${[]}               | ${false}
+      ${'in disabledFields'}     | ${['license_type']} | ${true}
+    `(
+      'should be disabled=$expectedDisabled when $scenario',
+      ({ disabledFields, expectedDisabled }) => {
+        const { result } = renderHook(() =>
+          useServiceFormFields({
+            documentType: 'CSV Feed',
+            platform: 'OpenCTI',
+            document: existingDocument,
+            disabledFields,
+          })
+        );
+
+        expect(result.current.license_type.inputProps.disabled).toBe(
+          expectedDisabled
+        );
+      }
+    );
+  });
 });

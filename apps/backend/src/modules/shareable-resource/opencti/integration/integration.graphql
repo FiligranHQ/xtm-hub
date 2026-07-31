@@ -62,6 +62,7 @@ interface Integration implements Node & Document {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: String
 }
 
 # Strictly equal to Integration. Otherwise we have typing issues because no type overlaps
@@ -97,6 +98,7 @@ type IntegrationHack implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: String
 }
 
 type CsvFeed implements Node & Document & Integration {
@@ -132,6 +134,7 @@ type CsvFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: String
 }
 
 type Connector implements Node & Document & Integration {
@@ -175,6 +178,7 @@ type Connector implements Node & Document & Integration {
   blogpost_url: String
   demo_url: String
   minimum_deployable_version: String
+  license_type: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {
@@ -211,6 +215,7 @@ type TaxiiFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: String
 }
 type RssFeed implements Node & Document & Integration {
   # Node
@@ -246,6 +251,7 @@ type RssFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: String
 }
 
 type Stream implements Node & Document & Integration {
@@ -282,6 +288,7 @@ type Stream implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: String
 }
 
 type ThirdPartyIntegration implements Node & Document & Integration {
@@ -320,4 +327,5 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: String
 }

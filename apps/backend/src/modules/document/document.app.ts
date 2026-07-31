@@ -113,6 +113,12 @@ export const DocumentApp = {
         value: JSON.stringify(input.entity_types),
       });
     }
+    if (input.license_type != null) {
+      documentMetadata.push({
+        key: DocumentMetadataKeyCode.LicenseType,
+        value: input.license_type,
+      });
+    }
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
@@ -135,8 +141,13 @@ export const DocumentApp = {
       documentMetadata,
     });
 
+    const {
+      entity_types: _entityTypes,
+      license_type: _licenseType,
+      ...documentColumnInput
+    } = input;
     const documentData: DocumentData<Document> = {
-      ...input,
+      ...documentColumnInput,
       use_cases: input.use_cases ?? undefined,
       solution_category: input.solution_category ?? undefined,
       service_instance_id: serviceInstanceId,
@@ -318,6 +329,15 @@ export const DocumentApp = {
         },
       ];
     }
+    if (input.license_type != null) {
+      documentMetadata = [
+        ...documentMetadata,
+        {
+          key: DocumentMetadataKeyCode.LicenseType,
+          value: input.license_type,
+        },
+      ];
+    }
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
@@ -336,8 +356,12 @@ export const DocumentApp = {
         ? sourceDocumentFile
         : undefined;
 
-      // entity_types is persisted as metadata (see above), not as a Document column.
-      const { entity_types: _entityTypes, ...documentColumnData } = input;
+      // entity_types and license_type are persisted as metadata (see above), not as Document columns.
+      const {
+        entity_types: _entityTypes,
+        license_type: _licenseType,
+        ...documentColumnData
+      } = input;
       const doc = await DocumentDomain.updateDocument({
         parentDocumentId,
         document: {

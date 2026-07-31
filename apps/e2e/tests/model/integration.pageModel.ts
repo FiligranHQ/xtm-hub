@@ -63,6 +63,7 @@ export default class IntegrationPage {
       .getByRole('combobox', { name: 'Solution categories' })
       .click();
     await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
   async fillRssFeed({
@@ -95,6 +96,7 @@ export default class IntegrationPage {
       .getByRole('combobox', { name: 'Solution categories' })
       .click();
     await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
@@ -130,6 +132,7 @@ export default class IntegrationPage {
       .getByRole('combobox', { name: 'Solution categories' })
       .click();
     await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
   async fillCsvFeed({
@@ -162,7 +165,7 @@ export default class IntegrationPage {
       .getByRole('combobox', { name: 'Solution categories' })
       .click();
     await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
-
+    await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 
@@ -210,6 +213,7 @@ export default class IntegrationPage {
       .getByRole('combobox', { name: 'Solution categories' })
       .click();
     await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
 

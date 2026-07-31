@@ -75,6 +75,39 @@ describe('ShareableResourceDetails', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('should render integration license type when provided', () => {
+    testRender(
+      <ShareableResourceDetails
+        documentData={buildDocumentData({
+          license_type: 'Commercial',
+        })}
+      />
+    );
+
+    expect(
+      screen.getByText(
+        'Service.ShareableResources.Details.IntegrationLicenseType'
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText('Commercial')).toBeInTheDocument();
+  });
+
+  it('should not render integration license type when absent', () => {
+    testRender(
+      <ShareableResourceDetails
+        documentData={buildDocumentData({
+          license_type: undefined,
+        })}
+      />
+    );
+
+    expect(
+      screen.queryByText(
+        'Service.ShareableResources.Details.IntegrationLicenseType'
+      )
+    ).not.toBeInTheDocument();
+  });
+
   it('should fallback to Filigran when organization is undefined', () => {
     testRender(
       <ShareableResourceDetails

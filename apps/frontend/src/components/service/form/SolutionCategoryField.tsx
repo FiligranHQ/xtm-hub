@@ -44,7 +44,7 @@ export const ServiceFormSolutionCategoryField = ({
         onValueChange={field.onChange}
         value={selectedCategoryId ?? undefined}>
         <FormControl>
-          <SelectTrigger>
+          <SelectTrigger className="font-semibold">
             <SelectValue
               placeholder={t('Service.Form.SolutionCategoriesPlaceholder')}
             />

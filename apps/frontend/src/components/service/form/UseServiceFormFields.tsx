@@ -64,6 +64,7 @@ type AvailableFields =
   | 'uploader_organization_id'
   | 'use_cases'
   | 'solution_category'
+  | 'license_type'
   | 'entity_types'
   | 'integration_subtype'
   | 'images'
@@ -248,6 +249,12 @@ export const useServiceFormFields = ({
         ),
       },
       integration_type: { fieldType: () => <FormItem hidden={true} /> },
+      license_type: {
+        label: t('Service.Form.LicenseTypeLabel'),
+        inputProps: {
+          disabled: disabledFields.includes('license_type'),
+        },
+      },
       active: {
         label: t('Service.Form.PublishedPlaceholder', {
           documentType,

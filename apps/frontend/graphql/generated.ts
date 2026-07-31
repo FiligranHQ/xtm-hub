@@ -180,6 +180,7 @@ export type Connector = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
+  license_type: Maybe<Scalars['String']['output']>;
   manager_supported: Scalars['Boolean']['output'];
   minimum_deployable_version: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -230,6 +231,7 @@ export type CreateDocumentInput = {
   active: Scalars['Boolean']['input'];
   description: Scalars['String']['input'];
   entity_types: InputMaybe<Array<Scalars['String']['input']>>;
+  license_type: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
@@ -272,6 +274,7 @@ export type CsvFeed = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
+  license_type: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -633,6 +636,7 @@ export enum DocumentMetadataKeyCode {
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   LastVerifiedDate = 'last_verified_date',
+  LicenseType = 'license_type',
   ManagerSupported = 'manager_supported',
   ManifestFragmentId = 'manifest_fragment_id',
   MinimumDeployableVersion = 'minimum_deployable_version',
@@ -790,6 +794,7 @@ export type Integration = {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
+  license_type: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -820,6 +825,7 @@ export type IntegrationHack = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
+  license_type: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2102,6 +2108,7 @@ export type RssFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
+  license_type: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2330,6 +2337,7 @@ export type Stream = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
+  license_type: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2449,6 +2457,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
+  license_type: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2500,6 +2509,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
+  license_type: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   remover_id: Maybe<Scalars['ID']['output']>;
@@ -2571,6 +2581,7 @@ export type UpdateDocumentInput = {
   active: InputMaybe<Scalars['Boolean']['input']>;
   description: InputMaybe<Scalars['String']['input']>;
   entity_types: InputMaybe<Array<Scalars['String']['input']>>;
+  license_type: InputMaybe<Scalars['String']['input']>;
   name: InputMaybe<Scalars['String']['input']>;
   short_description: InputMaybe<Scalars['String']['input']>;
   solution_category: InputMaybe<Scalars['SolutionCategoryId']['input']>;
