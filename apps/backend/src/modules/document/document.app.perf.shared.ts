@@ -41,9 +41,9 @@ export function createPerfSuiteHelpers() {
   const createTestServiceInstance = async (
     opts: CreateTestServiceInstanceOpts
   ): Promise<ServiceInstance> => {
-    const slug = `${runPrefix}-${opts.slugSuffix}`;
+    const slug = `${runPrefix}-${opts.serviceDefinitionIdentifier}-${opts.slugSuffix}`;
     const instance = await TestHelper.serviceInstance.create({
-      name: `perf-${opts.slugSuffix}-${runPrefix}`,
+      name: `${runPrefix}-${opts.serviceDefinitionIdentifier}-${opts.slugSuffix}`,
       slug,
       service_definition_id: opts.serviceDefinitionId,
       creation_status: ServiceInstanceCreationStatus.Ready,
