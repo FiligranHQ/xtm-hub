@@ -26,6 +26,12 @@ export const useUserListLocalstorage = () => {
   const [columnVisibility, setColumnVisibility, removeColumnVisibility] =
     useLocalStorage('columnVisibilityUserList', {});
 
+  const [organizationFilter, setOrganizationFilter, removeOrganizationFilter] =
+    useLocalStorage<string | undefined>(
+      'organizationFilterUserList',
+      undefined
+    );
+
   const resetAll = () => {
     removeCount();
     removeOrderMode();
@@ -33,6 +39,7 @@ export const useUserListLocalstorage = () => {
     removePageSize();
     removeColumnOrder();
     removeColumnVisibility();
+    removeOrganizationFilter();
   };
 
   const removeOrder = () => {
@@ -54,6 +61,8 @@ export const useUserListLocalstorage = () => {
     setColumnOrder,
     columnVisibility,
     setColumnVisibility,
+    organizationFilter,
+    setOrganizationFilter,
     resetAll,
     removeOrder,
   };

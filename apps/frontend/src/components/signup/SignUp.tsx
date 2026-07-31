@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
 const HUBSPOT_PORTAL_ID = '26791207';
-const HUBSPOT_FORM_ID = '25cf9561-13c0-4eda-bde2-be099e38438b';
+const HUBSPOT_FORM_ID = '10b2ca41-4734-46d8-96dd-ac410a10a937';
 const HUBSPOT_REGION = 'eu1';
 
 const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {

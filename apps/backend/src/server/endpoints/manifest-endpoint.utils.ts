@@ -14,6 +14,8 @@ const MANIFEST_NAME_PATTERN = new RegExp(
   'i'
 );
 
+export const buildManifestETag = (name: string): string => `"${name}"`;
+
 export const isProduct = (value: unknown): value is PlatformIdentifier =>
   typeof value === 'string' &&
   (Object.values(PlatformIdentifier) as string[]).includes(value);

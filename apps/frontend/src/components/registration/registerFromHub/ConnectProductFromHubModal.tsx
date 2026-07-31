@@ -133,7 +133,15 @@ const ConnectProductFromHubModal = ({
       }
       showFooter={!canManageOrganization}>
       {canManageOrganization ? (
-        <ConnectFromHubForm onSubmit={handleConnectFromHub} />
+        <>
+          <div className="text-content-body-compact whitespace-pre-line">
+            {t('Register.ConnectFromHub.MinimumVersionRequired', {
+              openctiVersion: '7.260728.0',
+              openaevVersion: '3.260729.0',
+            })}
+          </div>
+          <ConnectFromHubForm onSubmit={handleConnectFromHub} />
+        </>
       ) : (
         <Administratorslist admins={data} />
       )}

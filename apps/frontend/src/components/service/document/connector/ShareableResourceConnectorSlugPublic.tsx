@@ -6,7 +6,11 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { PublicDocumentDetailsData } from '@/utils/shareable-resources/shareable-resources.types';
-import { MotionPlayIcon, VerifiedIcon } from '@filigran/icon';
+import {
+  MotionPlayIcon,
+  ThreatActorGroupIcon,
+  VerifiedIcon,
+} from '@filigran/icon';
 import { MarkdownRenderer } from '@filigran/ui/clients';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -54,12 +58,20 @@ const ShareableResourceConnectorSlugPublic = ({
                 {t('Utils.AutomaticDeploy')}
               </div>
             )}
-            {documentData.verified && (
-              <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100 text-alert-success-primary dark:bg-turquoise-900 rounded-lg">
-                <VerifiedIcon className="h-5 w-5 shrink-0 mr-xs" />
-                {t('Utils.Verified')}
-              </div>
-            )}
+            <div className="flex items-center gap-s py-xs px-l font-semibold bg-alert-success-primary text-alert-success-primary dark:bg-turquoise-900 rounded-lg">
+              {documentData.verified ? (
+                <>
+                  <VerifiedIcon className="h-5 w-5 shrink-0 mr-xs" />
+                  {t('Service.ShareableResources.Details.SupportedByFiligran')}
+                </>
+              ) : (
+                <>
+                  <ThreatActorGroupIcon className="h-5 w-5 shrink-0 mr-xs" />
+                  {t('Service.ShareableResources.Details.SupportedByCommunity')}
+                </>
+              )}
+            </div>
+
             <div className="ml-auto">
               <ShareLinkButton
                 documentId={documentData.id}
