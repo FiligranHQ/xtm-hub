@@ -620,22 +620,25 @@ export const DocumentApp = {
     limit: number,
     platformIdentifiers?: PlatformIdentifier[]
   ) => {
-    const resourceIds = await TelemetryApp.getMostDeployedResourceIds(
+    const allShareableIdentifiers = [
+      ...ServiceDefinitionIdentifiersByPlatformIdentifier.values(),
+    ].flat();
+
+    const serviceDefinitionIdentifiers = platformIdentifiers?.length
+      ? platformIdentifiers.flatMap(
+          (p) => ServiceDefinitionIdentifiersByPlatformIdentifier.get(p) ?? []
+        )
+      : allShareableIdentifiers;
+
+    const documentTypes = serviceDefinitionIdentifiers.map(
+      (identifier) => DocumentTypeMappedByServiceDefinition[identifier]
+    );
+
+    return DocumentDomain.loadMostDeployedDocuments(
       limit,
-      platformIdentifiers
+      ALL_METADATA_KEYS,
+      documentTypes
     );
-    if (resourceIds.length === 0) return [];
-
-    const documents = await DocumentDomain.loadDocumentsWithMetadataByIds(
-      resourceIds,
-      ALL_METADATA_KEYS
-    );
-
-    const documentById = new Map(documents.map((d) => [d.id as string, d]));
-    return resourceIds.flatMap((id) => {
-      const doc = documentById.get(id);
-      return doc ? [doc] : [];
-    });
   },
 
   loadNewestDocuments: async (

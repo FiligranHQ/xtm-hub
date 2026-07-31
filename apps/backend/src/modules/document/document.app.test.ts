@@ -47,7 +47,12 @@ import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { useCaseApp } from '../use-case/use-case.app';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { DocumentApp } from './document.app';
-import { VAULT_DOCUMENT_TYPE } from './document.helper';
+import {
+  ALL_METADATA_KEYS,
+  DocumentTypeMappedByServiceDefinition,
+  ServiceDefinitionIdentifiersByPlatformIdentifier,
+  VAULT_DOCUMENT_TYPE,
+} from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS, DocumentImage } from './document.model';
 import { DocumentUploadsHelper } from './document.uploads.helper';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
@@ -1326,67 +1331,40 @@ describe('documentApp', () => {
 });
 
 describe('loadMostDeployedDocuments', () => {
-  it('should return documents sorted to match ES deploy-count order', async () => {
-    const id1 = uuidv4();
-    const id2 = uuidv4();
-    const id3 = uuidv4();
+  const allShareableDocumentTypes = [
+    ...ServiceDefinitionIdentifiersByPlatformIdentifier.values(),
+  ]
+    .flat()
+    .map((identifier) => DocumentTypeMappedByServiceDefinition[identifier]);
 
-    vi.spyOn(TelemetryApp, 'getMostDeployedResourceIds').mockResolvedValue([
-      id1,
-      id2,
-      id3,
-    ]);
-    vi.spyOn(
-      DocumentDomain,
-      'loadDocumentsWithMetadataByIds'
-    ).mockResolvedValue([{ id: id3 }, { id: id1 }, { id: id2 }] as never);
+  it('delegates to DocumentDomain with all shareable document types when no platform filter', async () => {
+    const documents = [{ id: uuidv4() }] as never;
+    const domainSpy = vi
+      .spyOn(DocumentDomain, 'loadMostDeployedDocuments')
+      .mockResolvedValue(documents);
 
-    const result = await DocumentApp.loadMostDeployedDocuments(3);
+    const result = await DocumentApp.loadMostDeployedDocuments(7);
 
-    expect(result.map((d) => d.id)).toEqual([id1, id2, id3]);
-  });
-
-  it('should return an empty array and skip DB call when ES has no results', async () => {
-    vi.spyOn(TelemetryApp, 'getMostDeployedResourceIds').mockResolvedValue([]);
-    const domainSpy = vi.spyOn(
-      DocumentDomain,
-      'loadDocumentsWithMetadataByIds'
+    expect(result).toBe(documents);
+    expect(domainSpy).toHaveBeenCalledWith(
+      7,
+      ALL_METADATA_KEYS,
+      allShareableDocumentTypes
     );
-
-    const result = await DocumentApp.loadMostDeployedDocuments(10);
-
-    expect(result).toEqual([]);
-    expect(domainSpy).not.toHaveBeenCalled();
   });
 
-  it('should forward limit to getMostDeployedResourceIds', async () => {
-    const esSpy = vi
-      .spyOn(TelemetryApp, 'getMostDeployedResourceIds')
-      .mockResolvedValue([]);
+  it('maps platformIdentifiers to their document types', async () => {
+    const domainSpy = vi
+      .spyOn(DocumentDomain, 'loadMostDeployedDocuments')
+      .mockResolvedValue([] as never);
 
-    await DocumentApp.loadMostDeployedDocuments(7);
-
-    expect(esSpy).toHaveBeenCalledWith(7, undefined);
-  });
-
-  it('should handle documents missing from the DB gracefully', async () => {
-    const id1 = uuidv4();
-    const id2 = uuidv4();
-    const id3 = uuidv4();
-
-    vi.spyOn(TelemetryApp, 'getMostDeployedResourceIds').mockResolvedValue([
-      id1,
-      id2,
-      id3,
+    await DocumentApp.loadMostDeployedDocuments(5, [
+      PlatformIdentifier.Openaev,
     ]);
-    vi.spyOn(
-      DocumentDomain,
-      'loadDocumentsWithMetadataByIds'
-    ).mockResolvedValue([{ id: id1 }, { id: id3 }] as never);
 
-    const result = await DocumentApp.loadMostDeployedDocuments(3);
-
-    expect(result.map((d) => d.id)).toEqual([id1, id3]);
+    expect(domainSpy).toHaveBeenCalledWith(5, ALL_METADATA_KEYS, [
+      OPENAEV_SCENARIO_DOCUMENT_TYPE,
+    ]);
   });
 
   describe('loadLastDeployedOverview', () => {
