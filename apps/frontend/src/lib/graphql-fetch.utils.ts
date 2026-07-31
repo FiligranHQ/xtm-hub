@@ -18,7 +18,17 @@ export function scrubSensitiveVariables(variables: Variables): Variables {
   return Object.fromEntries(
     Object.entries(variables).map(([key, value]) => {
       if (SENSITIVE_FIELD_KEYS.has(key)) return [key, '[HIDDEN]'];
-      if (value !== null && typeof value === 'object' && !Array.isArray(value))
+      if (Array.isArray(value)) {
+        return [
+          key,
+          value.map((item) =>
+            item !== null && typeof item === 'object'
+              ? scrubSensitiveVariables(item as Variables)
+              : item
+          ),
+        ];
+      }
+      if (value !== null && typeof value === 'object')
         return [key, scrubSensitiveVariables(value as Variables)];
       return [key, value];
     })

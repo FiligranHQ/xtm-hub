@@ -90,13 +90,24 @@ describe('scrubSensitiveVariables', () => {
       });
     });
 
-    it('does not recurse into arrays', () => {
-      const input = {
-        tags: ['a', 'b'],
-        items: [{ password: 'should-not-be-scrubbed' }],
-      };
-      const result = scrubSensitiveVariables(input);
-      expect(result).toEqual(input);
+    it('passes through arrays of primitives unchanged', () => {
+      const input = { tags: ['a', 'b'] };
+      expect(scrubSensitiveVariables(input)).toEqual(input);
+    });
+
+    it('recurses into arrays of objects', () => {
+      const result = scrubSensitiveVariables({
+        items: [
+          { email: 'user@example.com', password: 'hunter2' },
+          { email: 'other@example.com', token: 'nested-tok' },
+        ],
+      });
+      expect(result).toEqual({
+        items: [
+          { email: 'user@example.com', password: '[HIDDEN]' },
+          { email: 'other@example.com', token: '[HIDDEN]' },
+        ],
+      });
     });
   });
 
