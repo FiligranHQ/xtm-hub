@@ -547,9 +547,7 @@ export const DocumentDomain = {
         if (documentTypes?.length) {
           qb.whereIn(
             'resource_id',
-            db('Document')
-              .select(dbRaw('"id"::text'))
-              .whereIn('type', documentTypes)
+            db('Document').select('id').whereIn('type', documentTypes)
           );
         }
       })
@@ -558,14 +556,7 @@ export const DocumentDomain = {
 
     const query = db<Document>('Document')
       .select('Document.*')
-      .join(deployCounts, function () {
-        this.on(dbRaw('"deploy_counts"."resource_id" = "Document"."id"::text'));
-      })
-      .modify((qb) => {
-        if (documentTypes?.length) {
-          qb.whereIn('Document.type', documentTypes);
-        }
-      })
+      .join(deployCounts, 'deploy_counts.resource_id', 'Document.id')
       .groupBy(['Document.id'])
       .orderByRaw('MAX("deploy_counts"."deploy_count") DESC')
       .orderBy('Document.id', 'asc')

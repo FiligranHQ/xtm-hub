@@ -1613,8 +1613,6 @@ describe('document domain', () => {
   });
 
   describe('loadMostDeployedDocuments', () => {
-    const PLATFORM_ID = 'a1b2c3d4-0000-4000-8000-000000000001';
-
     const createDeployableDocument = (
       name: string,
       type: string,
@@ -1626,10 +1624,6 @@ describe('document domain', () => {
       for (let i = 0; i < times; i += 1) {
         await TestHelper.oneClickDeployment.insert({
           resource_id: resourceId,
-          platform_id: PLATFORM_ID,
-          tenant_id: null,
-          user_id: null,
-          deployed_at: new Date(),
         });
       }
     };
