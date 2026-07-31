@@ -2,6 +2,7 @@
 import { EpicFilter, EpicFilterType } from '@/components/epic/EpicFilter';
 import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
 import { EpicItem } from '@/components/epic/epic-item/EpicItem';
+import { TimelineCountBadge } from '@/components/epic/epic-item/TimelineCountBadge';
 import { FiligranTimelineMapping } from '@/components/epic/epic-item/TimelineMapping';
 import {
   useCountEpicsByProduct,
@@ -153,8 +154,7 @@ export const EpicList = ({
           {(canManageService || isBypass) && currentSubscription?.id && (
             <Button
               asChild
-              variant="secondary"
-              className="">
+              variant="secondary">
               <Link
                 href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentSubscription.id}`}>
                 {t('Service.Capabilities.ManageAccessName')}
@@ -178,41 +178,24 @@ export const EpicList = ({
         ) {
           return null;
         }
-        const timelineColor =
-          FiligranTimelineMapping[timeline.title as Timeline]?.color;
+        const timelineMetadata =
+          FiligranTimelineMapping[
+            timeline.title as keyof typeof FiligranTimelineMapping
+          ];
 
         return (
           <div
             key={timeline.title}
             className="flex items-stretch gap-m">
             <div className="flex flex-col items-center self-stretch mt-xl">
-              <div className="rounded-full w-6 h-6 flex items-center justify-center relative">
-                <div
-                  className={cn(
-                    `absolute inset-0 rounded-full`,
-                    timelineColor
-                      ? `bg-${timelineColor}/30`
-                      : 'bg-text-default-disabled/30'
-                  )}
-                />
-                <span
-                  className={cn(
-                    `relative z-10 font-semibold txt-mini`,
-                    timelineColor
-                      ? `text-${timelineColor}`
-                      : 'text-text-default-disabled'
-                  )}>
-                  {timeline.epics.length}
-                </span>
-              </div>
+              <TimelineCountBadge
+                count={timeline.epics.length}
+                bgFadedClass={timelineMetadata.bgFadedClass}
+                textClass={timelineMetadata.textClass}
+              />
               <Separator
                 orientation="vertical"
-                className={cn(
-                  `mt-s flex-1 w-px`,
-                  timelineColor
-                    ? `bg-${timelineColor}`
-                    : 'bg-text-default-disabled'
-                )}
+                className={cn(`mt-s flex-1 w-px`, timelineMetadata.barClass)}
               />
             </div>
             <div className="flex-1 mt-l">
@@ -222,9 +205,7 @@ export const EpicList = ({
                     <p
                       className={cn(
                         `m-s inline-block font-semibold`,
-                        timelineColor
-                          ? `text-${timelineColor}`
-                          : 'text-text-default-disabled'
+                        timelineMetadata.textClass
                       )}>
                       {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
                     </p>
