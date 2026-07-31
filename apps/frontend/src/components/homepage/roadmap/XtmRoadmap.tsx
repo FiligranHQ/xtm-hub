@@ -1,3 +1,8 @@
+import { TimelineCountBadge } from '@/components/epic/epic-item/TimelineCountBadge';
+import {
+  FiligranTimelineMapping,
+  type FiligranTimelineMetadata,
+} from '@/components/epic/epic-item/TimelineMapping';
 import type { HomepageRoadmapTitleProduct } from '@/components/homepage/Homepage.utils';
 import { PublicLocale } from '@/i18n/config';
 import { portalGraphqlClientCached } from '@/lib/graphql-client';
@@ -11,25 +16,10 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const TIMELINE_CONFIG = [
-  {
-    timeline: Timeline.Now,
-    labelKey: 'Now' as const,
-    bg: 'bg-feedback-warning-primary',
-    text: 'text-feedback-warning-primary',
-  },
-  {
-    timeline: Timeline.Next,
-    labelKey: 'Next' as const,
-    bg: 'bg-primary',
-    text: 'text-primary',
-  },
-  {
-    timeline: Timeline.UnderConsideration,
-    labelKey: 'UnderConsideration' as const,
-    bg: 'bg-green',
-    text: 'text-alert-success-primary',
-  },
+const HOMEPAGE_TIMELINES = [
+  Timeline.Now,
+  Timeline.Next,
+  Timeline.UnderConsideration,
 ];
 
 export type XtmRoadmapProps = {
@@ -63,10 +53,11 @@ const XtmRoadmap = async ({
 
   const epicCounts = data.countEpicsPerTimeline;
 
-  const roadmapStats = TIMELINE_CONFIG.map(({ timeline, ...config }) => ({
-    count: epicCounts.find((e) => e.timeline === timeline)?.count ?? 0,
-    ...config,
-  }));
+  const roadmapStats: (FiligranTimelineMetadata & { count: number })[] =
+    HOMEPAGE_TIMELINES.map((timeline) => ({
+      count: epicCounts.find((e) => e.timeline === timeline)?.count ?? 0,
+      ...FiligranTimelineMapping[timeline],
+    }));
 
   const defaultSeeMoreHref = `/${usedLocale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/xtm-platform-roadmap`;
 
@@ -98,30 +89,29 @@ const XtmRoadmap = async ({
       </div>
 
       <div className="flex gap-l max-md:gap-m max-sm:gap-xs justify-center lg:justify-end">
-        {roadmapStats.map(({ count, labelKey, bg, text }) => (
-          <div
-            key={labelKey}
-            className="flex flex-col gap-xs max-sm:gap-[2px]">
-            <div className="flex items-center gap-s max-md:gap-xs max-sm:gap-[4px] pr-8 max-md:pr-5 max-sm:pr-1">
-              <div className="relative w-6 h-6 max-md:w-5 max-md:h-5 max-sm:w-4 max-sm:h-4 flex items-center justify-center shrink-0">
-                <div
-                  className={`absolute inset-0 ${bg} opacity-20 rounded-full`}
+        {roadmapStats.map(
+          ({ count, labelKey, bgFadedClass, textClass, barClass }) => (
+            <div
+              key={labelKey}
+              className="flex flex-col gap-xs max-sm:gap-[2px]">
+              <div className="flex items-center gap-s max-md:gap-xs max-sm:gap-[4px] pr-8 max-md:pr-5 max-sm:pr-1">
+                <TimelineCountBadge
+                  count={count}
+                  bgFadedClass={bgFadedClass}
+                  textClass={textClass}
+                  className="max-md:w-5 max-md:h-5 max-sm:w-4 max-sm:h-4"
                 />
                 <span
-                  className={`relative z-10 text-sm max-md:text-xs max-sm:text-[10px] ${text}`}>
-                  {count}
+                  className={`text-m max-md:text-sm max-sm:text-xs whitespace-nowrap ${textClass}`}>
+                  {t(labelKey)}
                 </span>
               </div>
-              <span
-                className={`text-m max-md:text-sm max-sm:text-xs whitespace-nowrap ${text}`}>
-                {t(labelKey)}
-              </span>
+              <div
+                className={`h-0.5 mt-xs max-sm:mt-px w-full ${barClass} rounded-full`}
+              />
             </div>
-            <div
-              className={`h-0.5 mt-xs max-sm:mt-px w-full ${bg} opacity-70 rounded-full`}
-            />
-          </div>
-        ))}
+          )
+        )}
       </div>
     </section>
   );
