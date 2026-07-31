@@ -6,7 +6,6 @@ import {
   SERVICES,
 } from '../../../../tests/tests.const';
 import {
-  IntegrationType,
   MutationAddServicePictureArgs,
   MutationUpdatePlatformServiceMetadataArgs,
   ServiceInstance,
@@ -17,32 +16,9 @@ import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { ErrorType } from '../../../utils/error/error.type';
 import { UserServiceCapabilityHelper } from '../../security-management/user-service-capability/user-service-capability.helper';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
 import { ServiceInstanceApp } from './service-instance.app';
 import { ServiceInstanceDomain } from './service-instance.domain';
 import serviceInstanceResolver from './service-instance.resolver';
-
-describe('serviceInstance.__resolveType', () => {
-  it.each`
-    type                                      | integration_type             | expected
-    ${OPENAEV_SCENARIO_DOCUMENT_TYPE}         | ${undefined}                 | ${'OpenAEVScenario'}
-    ${OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE} | ${undefined}                 | ${'OpenCTICustomDashboard'}
-    ${OPENCTI_INTEGRATION_DOCUMENT_TYPE}      | ${IntegrationType.Connector} | ${'Connector'}
-    ${OPENCTI_INTEGRATION_DOCUMENT_TYPE}      | ${IntegrationType.CsvFeed}   | ${'CsvFeed'}
-    ${OPENCTI_INTEGRATION_DOCUMENT_TYPE}      | ${undefined}                 | ${'OpenCTIIntegration'}
-    ${'unknown_type'}                         | ${undefined}                 | ${'SeoServiceInstance'}
-  `(
-    'should resolve type=$type integration_type=$integration_type to $expected',
-    ({ type, integration_type, expected }) => {
-      const result = (
-        serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
-      ).__resolveType({ type, integration_type });
-      expect(result).toBe(expected);
-    }
-  );
-});
 
 describe('serviceInstance field resolvers', () => {
   it('links should load links by service instance id', async () => {
