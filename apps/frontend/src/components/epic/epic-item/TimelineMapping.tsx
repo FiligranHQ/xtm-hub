@@ -1,23 +1,44 @@
 import { Timeline } from '@graphql/generated';
 
 export interface FiligranTimelineMetadata {
-  color: string;
+  labelKey: string;
+  bgFadedClass: string;
+  textClass: string;
+  barClass: string;
 }
 
 export const FiligranTimelineMapping: Record<
-  Timeline,
+  Timeline | 'draft',
   FiligranTimelineMetadata
 > = {
+  draft: {
+    labelKey: 'Draft',
+    bgFadedClass: 'bg-feedback-alert-secondary-transparency',
+    textClass: 'text-feedback-alert-primary',
+    barClass: 'bg-feedback-alert-primary',
+  },
   [Timeline.Now]: {
-    color: 'orange',
+    labelKey: 'Now',
+    bgFadedClass: 'bg-feedback-warning-secondary-transparency',
+    textClass: 'text-feedback-warning-primary',
+    barClass: 'bg-feedback-warning-primary',
   },
   [Timeline.Next]: {
-    color: 'primary',
+    labelKey: 'Next',
+    bgFadedClass: 'bg-filigran-brand-primary-transparency',
+    textClass: 'text-feedback-info-primary',
+    barClass: 'bg-feedback-info-primary',
   },
   [Timeline.UnderConsideration]: {
-    color: 'green',
+    labelKey: 'UnderConsideration',
+    bgFadedClass: 'bg-feedback-success-secondary-transparency',
+    textClass: 'text-feedback-success-primary',
+    barClass: 'bg-feedback-success-primary',
   },
   [Timeline.Finished]: {
-    color: 'white',
+    labelKey: 'Finished',
+    bgFadedClass: 'bg-feedback-neutral-secondary-transparency',
+    textClass: 'text-feedback-neutral-primary',
+    barClass: 'bg-feedback-neutral-primary',
   },
 };

@@ -3,30 +3,24 @@ import { Timeline } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 
 describe('FiligranTimelineMapping', () => {
-  it('contains all Timeline items from enum', () => {
-    expect(Object.keys(FiligranTimelineMapping).sort()).toEqual(
-      Object.values(Timeline).sort()
-    );
-  });
-
   it.each`
-    timeline                       | expectedColor
-    ${Timeline.Now}                | ${'orange'}
-    ${Timeline.Next}               | ${'primary'}
-    ${Timeline.UnderConsideration} | ${'green'}
-    ${Timeline.Finished}           | ${'white'}
+    timelineKey                    | expectedTextClass
+    ${'draft'}                     | ${'text-feedback-alert-primary'}
+    ${Timeline.Now}                | ${'text-feedback-warning-primary'}
+    ${Timeline.Next}               | ${'text-feedback-info-primary'}
+    ${Timeline.UnderConsideration} | ${'text-feedback-success-primary'}
+    ${Timeline.Finished}           | ${'text-feedback-neutral-primary'}
   `(
-    'maps $timeline with expected color',
+    'maps $timelineKey with expected textClass $expectedTextClass',
     ({
-      timeline,
-      expectedColor,
+      timelineKey,
+      expectedTextClass,
     }: {
-      timeline: Timeline;
-      expectedColor: string;
+      timelineKey: keyof typeof FiligranTimelineMapping;
+      expectedTextClass: string;
     }) => {
-      const metadata = FiligranTimelineMapping[timeline];
-
-      expect(metadata.color).toBe(expectedColor);
+      const metadata = FiligranTimelineMapping[timelineKey];
+      expect(metadata.textClass).toBe(expectedTextClass);
     }
   );
 });
