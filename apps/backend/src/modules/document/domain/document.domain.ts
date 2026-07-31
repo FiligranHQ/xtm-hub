@@ -268,9 +268,7 @@ export const DocumentDomain = {
       });
     }
 
-    if (include_metadata?.length) {
-      loadDocumentQuery.groupBy(['Document.id']);
-    }
+    loadDocumentQuery.groupBy(['Document.id']);
 
     DocumentMetadataDomain.addIncludeMetadataQuery(
       loadDocumentQuery,

@@ -18,6 +18,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import DocumentModel, { DocumentId } from '../../model/kanel/public/Document';
 import ServiceInstance from '../../model/kanel/public/ServiceInstance';
+import UseCase from '../../model/kanel/public/UseCase';
 import User from '../../model/kanel/public/User';
 import {
   BadRequestErrorCode,
@@ -339,6 +340,29 @@ describe('document field resolvers', () => {
 
     expect(
       contextSimpleUserFiligran2.dataLoaders.childrenDocumentsLoader.load
+    ).toHaveBeenCalledWith(id);
+    expect(result).toEqual(expected);
+  });
+
+  it('use_cases should load use cases by document id', async () => {
+    const id = uuidv4() as DocumentId;
+    const expected = [{ id: uuidv4(), name: 'Use Case A' }];
+    vi.spyOn(
+      contextSimpleUserFiligran2.dataLoaders.useCasesByDocumentIdLoader,
+      'load'
+    ).mockResolvedValue(expected as unknown as UseCase[]);
+
+    const result = await (
+      documentResolver.Document as unknown as DocumentResolvers
+    ).use_cases!(
+      { id } as DocumentModel,
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    expect(
+      contextSimpleUserFiligran2.dataLoaders.useCasesByDocumentIdLoader.load
     ).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });

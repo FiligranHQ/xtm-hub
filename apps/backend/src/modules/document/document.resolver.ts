@@ -176,6 +176,8 @@ const resolvers: Resolvers = {
       (await context.dataLoaders.childrenDocumentsLoader.load(
         id
       )) as ShareableResource[],
+    use_cases: ({ id }, _, context) =>
+      context.dataLoaders.useCasesByDocumentIdLoader.load(id),
     uploader: ({ id }, _, context) =>
       context.dataLoaders.uploaderLoader.load(id),
     uploader_organization: ({ id }, _, context) =>
