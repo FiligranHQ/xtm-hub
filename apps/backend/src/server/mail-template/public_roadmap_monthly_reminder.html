@@ -43,6 +43,21 @@
     <![endif]-->
     <title>XTM Hub - Public Roadmap monthly reminder</title>
     <style>
+      [data-layout-table='true'] {
+        display: table;
+        margin-left: auto;
+        margin-right: auto;
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+      [data-layout-row='true'] {
+        display: table-row;
+      }
+      [data-layout-cell='true'] {
+        display: table-cell;
+        padding: 0;
+        vertical-align: top;
+      }
       @media (max-width: 600px) {
         .sm-my-8 {
           margin-top: 32px !important;
@@ -100,13 +115,11 @@
             'Segoe UI',
             sans-serif;
         ">
-        <table
-          align="center"
-          cellpadding="0"
-          cellspacing="0"
-          role="none">
-          <tr>
-            <td style="width: 552px; max-width: 100%">
+        <div data-layout-table="true">
+          <div data-layout-row="true">
+            <div
+              data-layout-cell="true"
+              style="width: 552px; max-width: 100%">
               <div
                 class="sm-my-8"
                 style="
@@ -133,13 +146,12 @@
                     width="320" />
                 </a>
               </div>
-              <table
-                cellpadding="0"
-                cellspacing="0"
-                role="none"
+              <div
+                data-layout-table="true"
                 style="width: 100%">
-                <tr>
-                  <td
+                <div data-layout-row="true">
+                  <div
+                    data-layout-cell="true"
                     class="sm-px-6"
                     style="
                       border-radius: 4px;
@@ -165,14 +177,12 @@
                       <br />
                       <br />
                     </p>
-                    <table
-                      align="center"
-                      cellpadding="0"
-                      cellspacing="0"
-                      role="none"
+                    <div
+                      data-layout-table="true"
                       style="margin: 8px auto 16px">
-                      <tr>
-                        <td
+                      <div data-layout-row="true">
+                        <div
+                          data-layout-cell="true"
                           style="border-radius: 4px; background-color: #001bdb">
                           <a
                             href="{{ roadmapLink }}"
@@ -188,20 +198,27 @@
                             ">
                             Open the roadmap
                           </a>
-                        </td>
-                      </tr>
-                    </table>
+                        </div>
+                      </div>
+                    </div>
                     <p style="margin: 0; padding-top: 16px">
                       Kind regards, <br />
                       <strong>The XTM Hub team</strong>
                     </p>
-                  </td>
-                </tr>
-                <tr></tr>
-                <tr role="separator">
-                  <td style="line-height: 16px">&zwj;</td>
-                </tr>
-                <td
+                  </div>
+                </div>
+                <div data-layout-row="true"></div>
+                <div
+                  data-layout-row="true"
+                  role="separator">
+                  <div
+                    data-layout-cell="true"
+                    style="line-height: 16px">
+                    &zwj;
+                  </div>
+                </div>
+                <div
+                  data-layout-cell="true"
                   style="
                     padding-left: 24px;
                     padding-right: 24px;
@@ -209,24 +226,20 @@
                     font-size: 12px;
                     color: #00020c;
                   ">
-                  <table
-                    align="center"
-                    cellpadding="0"
-                    cellspacing="0"
-                    role="none">
-                    <tr>
-                      <td>
-                        <table
-                          cellpadding="0"
-                          cellspacing="0"
-                          role="none"
+                  <div data-layout-table="true">
+                    <div data-layout-row="true">
+                      <div data-layout-cell="true">
+                        <div
+                          data-layout-table="true"
                           style="
                             margin: 16px;
                             border-spacing: 4px;
                             border-collapse: separate;
                           ">
-                          <tr>
-                            <td style="padding: 4px">
+                          <div data-layout-row="true">
+                            <div
+                              data-layout-cell="true"
+                              style="padding: 4px">
                               <a href="https://filigran.io/">
                                 <img
                                   alt="Filigran website"
@@ -238,8 +251,10 @@
                                   "
                                   width="24" />
                               </a>
-                            </td>
-                            <td style="padding: 4px">
+                            </div>
+                            <div
+                              data-layout-cell="true"
+                              style="padding: 4px">
                               <a
                                 href="https://filigran-community.slack.com/join/shared_invite/zt-2pp43qkqc-EY7qC7Sk30zZfsNjgXwF5w">
                                 <img
@@ -252,8 +267,10 @@
                                   "
                                   width="24" />
                               </a>
-                            </td>
-                            <td style="padding: 4px">
+                            </div>
+                            <div
+                              data-layout-cell="true"
+                              style="padding: 4px">
                               <a
                                 href="https://www.linkedin.com/company/filigran">
                                 <img
@@ -266,8 +283,10 @@
                                   "
                                   width="24" />
                               </a>
-                            </td>
-                            <td style="padding: 4px">
+                            </div>
+                            <div
+                              data-layout-cell="true"
+                              style="padding: 4px">
                               <a href="https://www.youtube.com/@Filigran">
                                 <img
                                   alt="Youtube channel"
@@ -279,8 +298,10 @@
                                   "
                                   width="24" />
                               </a>
-                            </td>
-                            <td style="padding: 4px">
+                            </div>
+                            <div
+                              data-layout-cell="true"
+                              style="padding: 4px">
                               <a href="https://x.com/FiligranHQ">
                                 <img
                                   alt="X link"
@@ -292,12 +313,12 @@
                                   "
                                   width="24" />
                               </a>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div style="margin-bottom: 8px">
                     <a href="https://filigran.io">
                       <img
@@ -310,11 +331,11 @@
                   <p style="margin: 0 0 40px">
                     New York, Paris, London, Sydney
                   </p>
-                </td>
-              </table>
-            </td>
-          </tr>
-        </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>

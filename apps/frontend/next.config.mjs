@@ -158,9 +158,12 @@ const nextConfig = {
     const manifestSrc = !isProductionOrStaging
       ? apolloCdnHosts.join(' ')
       : "'self'";
+    const defaultSrcSuffix = isProductionOrStaging
+      ? ''
+      : ` ${apolloCdnHosts.join(' ')}`;
 
     const cspDirectives = [
-      `default-src 'self'${!isProductionOrStaging ? ` ${apolloCdnHosts.join(' ')}` : ''}`,
+      `default-src 'self'${defaultSrcSuffix}`,
       `script-src ${scriptSrc}`,
       `style-src ${styleSrc}`,
       `img-src ${imgSrc}`,
