@@ -25,6 +25,8 @@ const taxiiFeedFormSchema = z.object({
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).min(1, 'Required'),
+  solution_category: z.string().min(1, 'Required'),
+  license_type: z.enum(['Free', 'Commercial']),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
@@ -74,6 +76,8 @@ export const TaxiiFeedForm = ({
         images: transformToFileList(DocumentImageType.Image, document),
         logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((useCase) => useCase.id),
+        solution_category: document?.solution_category?.id,
+        license_type: document?.license_type ?? undefined,
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
           (isCreation
@@ -102,6 +106,8 @@ export const TaxiiFeedForm = ({
     short_description,
     description,
     use_cases,
+    solution_category,
+    license_type,
     uploader_organization_id,
     uploader_id,
     integration_type,
@@ -142,6 +148,11 @@ export const TaxiiFeedForm = ({
         fieldConfig={{
           description,
           use_cases,
+          solution_category,
+          license_type: {
+            ...license_type,
+            fieldType: 'radio',
+          },
           uploader_id,
           uploader_organization_id,
           document: isCreation

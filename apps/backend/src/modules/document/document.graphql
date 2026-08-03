@@ -10,6 +10,11 @@ enum DocumentImageType {
   image
 }
 
+enum LicenseType {
+  Commercial
+  Free
+}
+
 enum DocumentMetadataKeyCode {
   feed_url
   integration_type
@@ -36,6 +41,8 @@ enum DocumentMetadataKeyCode {
   config_schema
   manifest_fragment_id
   entity_types
+  solution_category
+  license_type
 }
 
 type ShareableResource {
@@ -121,6 +128,8 @@ input CreateDocumentInput {
   description: String!
   active: Boolean!
   use_cases: [UseCaseId!]!
+  solution_category: SolutionCategoryId
+  license_type: LicenseType
   entity_types: [String!]
   uploader_id: UserId!
 }
@@ -131,6 +140,8 @@ input UpdateDocumentInput {
   description: String
   active: Boolean
   use_cases: [UseCaseId!]
+  solution_category: SolutionCategoryId
+  license_type: LicenseType
   entity_types: [String!]
   uploader_organization_id: OrganizationId
   uploader_id: UserId

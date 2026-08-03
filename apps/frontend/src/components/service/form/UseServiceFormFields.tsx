@@ -6,6 +6,7 @@ import {
   ServiceFormMultipleImagesField,
   ServiceFormMultipleImagesFieldImages,
 } from '@/components/service/form/MultipleImagesField';
+import { ServiceFormSolutionCategoryField } from '@/components/service/form/SolutionCategoryField';
 import { ServiceFormUploaderIdField } from '@/components/service/form/UploaderIdField';
 import { ServiceFormUploaderOrganizationIdField } from '@/components/service/form/UploaderOrganizationIdField';
 import { ServiceFormUseCasesField } from '@/components/service/form/UseCasesField';
@@ -62,6 +63,8 @@ type AvailableFields =
   | 'uploader_id'
   | 'uploader_organization_id'
   | 'use_cases'
+  | 'solution_category'
+  | 'license_type'
   | 'entity_types'
   | 'integration_subtype'
   | 'images'
@@ -170,6 +173,20 @@ export const useServiceFormFields = ({
           />
         ),
       },
+      solution_category: {
+        fieldType: ({
+          field,
+        }: {
+          field: ControllerRenderProps<FieldValues, string>;
+        }) => (
+          <ServiceFormSolutionCategoryField
+            field={field}
+            document={document}
+            disabled={disabledFields.includes('solution_category')}
+            product={productTagByPlatform[platform]}
+          />
+        ),
+      },
       entity_types: {
         fieldType: ({
           field,
@@ -232,6 +249,12 @@ export const useServiceFormFields = ({
         ),
       },
       integration_type: { fieldType: () => <FormItem hidden={true} /> },
+      license_type: {
+        label: t('Service.Form.LicenseTypeLabel'),
+        inputProps: {
+          disabled: disabledFields.includes('license_type'),
+        },
+      },
       active: {
         label: t('Service.Form.PublishedPlaceholder', {
           documentType,

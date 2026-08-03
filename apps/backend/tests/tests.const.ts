@@ -370,6 +370,7 @@ export const contextSimpleUserFiligran2: PortalContext = {
     childrenDocumentsLoader: { load: () => Promise.resolve([]) },
     imagesByDocumentIdLoader: { load: () => Promise.resolve([]) },
     useCasesByDocumentIdLoader: { load: () => Promise.resolve([]) },
+    solutionCategoryByDocumentIdLoader: { load: () => Promise.resolve(null) },
     integrationTypeLoader: { load: () => Promise.resolve(null) },
   } as unknown as DocumentDataLoaders,
 } as unknown as PortalContext;
