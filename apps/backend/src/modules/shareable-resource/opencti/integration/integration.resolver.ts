@@ -30,7 +30,7 @@ const resolvers: Resolvers = {
     solution_category: ({ id }, _, context) =>
       context.dataLoaders.solutionCategoryByDocumentIdLoader.load(id),
     children_documents: async ({ id }, _, context) =>
-      (await context.dataLoaders.imagesByDocumentIdLoader.load(
+      (await context.dataLoaders.document.imagesByDocumentIdLoader.load(
         id
       )) as unknown as ShareableResource[],
   },

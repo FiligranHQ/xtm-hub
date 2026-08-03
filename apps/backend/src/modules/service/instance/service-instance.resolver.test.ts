@@ -12,21 +12,30 @@ import {
   ServiceInstanceResolvers,
   ServiceInstanceTag,
 } from '../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { ErrorType } from '../../../utils/error/error.type';
-import { UserServiceCapabilityHelper } from '../../security-management/user-service-capability/user-service-capability.helper';
 import { ServiceInstanceApp } from './service-instance.app';
-import { ServiceInstanceDomain } from './service-instance.domain';
+import {
+  createOrganizationServiceInstanceKey,
+  createServiceInstanceUserOrganizationKey,
+} from './service-instance.dataloader';
 import serviceInstanceResolver from './service-instance.resolver';
 
 describe('serviceInstance field resolvers', () => {
-  it('links should load links by service instance id', async () => {
+  it('links should load links via linksByServiceInstanceLoader', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = [] as unknown as Awaited<
-      ReturnType<typeof ServiceInstanceDomain.loadLinks>
+      ReturnType<
+        (typeof contextSimpleUserFiligran2.dataLoaders.serviceInstance.linksByServiceInstanceLoader)['load']
+      >
     >;
-    vi.spyOn(ServiceInstanceDomain, 'loadLinks').mockResolvedValue(expected);
+    const load = vi
+      .spyOn(
+        contextSimpleUserFiligran2.dataLoaders.serviceInstance
+          .linksByServiceInstanceLoader,
+        'load'
+      )
+      .mockResolvedValue(expected);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
@@ -37,21 +46,24 @@ describe('serviceInstance field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(ServiceInstanceDomain.loadLinks).toHaveBeenCalledWith(id);
+    expect(load).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
 
-  it('service_definition should load service definition by service instance id', async () => {
+  it('service_definition should load via serviceDefinitionByServiceInstanceLoader', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
     const expected = { id: uuidv4() } as unknown as Awaited<
       ReturnType<
-        typeof ServiceInstanceDomain.loadServiceDefinitionByServiceInstance
+        (typeof contextSimpleUserFiligran2.dataLoaders.serviceInstance.serviceDefinitionByServiceInstanceLoader)['load']
       >
     >;
-    vi.spyOn(
-      ServiceInstanceDomain,
-      'loadServiceDefinitionByServiceInstance'
-    ).mockResolvedValue(expected);
+    const load = vi
+      .spyOn(
+        contextSimpleUserFiligran2.dataLoaders.serviceInstance
+          .serviceDefinitionByServiceInstanceLoader,
+        'load'
+      )
+      .mockResolvedValue(expected);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
@@ -62,12 +74,19 @@ describe('serviceInstance field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
+    expect(load).toHaveBeenCalledWith(id);
     expect(result).toEqual(expected);
   });
 
-  it('organization_subscribed should call loadIsSubscribed with org id and instance id', async () => {
-    const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
-    vi.spyOn(ServiceInstanceDomain, 'loadIsSubscribed').mockResolvedValue(true);
+  it('organization_subscribed should load via organizationSubscribedLoader with composite key', async () => {
+    const id = SERVICES.INSTANCES.EPIC.ID;
+    const load = vi
+      .spyOn(
+        contextSimpleUserFiligran2.dataLoaders.serviceInstance
+          .organizationSubscribedLoader,
+        'load'
+      )
+      .mockResolvedValue(true);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
@@ -78,21 +97,26 @@ describe('serviceInstance field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(ServiceInstanceDomain.loadIsSubscribed).toHaveBeenCalledWith(
-      contextSimpleUserFiligran2.user.selected_organization_id,
-      id
+    expect(load).toHaveBeenCalledWith(
+      createOrganizationServiceInstanceKey({
+        organizationId:
+          contextSimpleUserFiligran2.user.selected_organization_id,
+        serviceInstanceId: id,
+      })
     );
     expect(result).toBe(true);
   });
 
-  it('capabilities should load capabilities for user and instance', async () => {
+  it('capabilities should load via capabilitiesLoader with composite key', async () => {
     const id = SERVICES.INSTANCES.EPIC.ID;
-    const expected = [] as unknown as Awaited<
-      ReturnType<typeof UserServiceCapabilityHelper.loadCapabilities>
-    >;
-    vi.spyOn(UserServiceCapabilityHelper, 'loadCapabilities').mockResolvedValue(
-      expected
-    );
+    const expected: string[] = [];
+    const load = vi
+      .spyOn(
+        contextSimpleUserFiligran2.dataLoaders.serviceInstance
+          .capabilitiesLoader,
+        'load'
+      )
+      .mockResolvedValue(expected);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
@@ -103,17 +127,25 @@ describe('serviceInstance field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(UserServiceCapabilityHelper.loadCapabilities).toHaveBeenCalledWith(
-      id,
-      contextSimpleUserFiligran2.user.id,
-      contextSimpleUserFiligran2.user.selected_organization_id
+    expect(load).toHaveBeenCalledWith(
+      createServiceInstanceUserOrganizationKey({
+        serviceInstanceId: id,
+        userId: contextSimpleUserFiligran2.user.id,
+        organizationId:
+          contextSimpleUserFiligran2.user.selected_organization_id,
+      })
     );
     expect(result).toEqual(expected);
   });
 
-  it('user_joined should call getUserJoined with user, org, and instance id', async () => {
-    const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
-    vi.spyOn(ServiceInstanceDomain, 'getUserJoined').mockResolvedValue(false);
+  it('user_joined should load via userJoinedLoader with composite key', async () => {
+    const id = SERVICES.INSTANCES.EPIC.ID;
+    const load = vi
+      .spyOn(
+        contextSimpleUserFiligran2.dataLoaders.serviceInstance.userJoinedLoader,
+        'load'
+      )
+      .mockResolvedValue(false);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
@@ -124,23 +156,27 @@ describe('serviceInstance field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(ServiceInstanceDomain.getUserJoined).toHaveBeenCalledWith(
-      contextSimpleUserFiligran2.user.id,
-      contextSimpleUserFiligran2.user.selected_organization_id,
-      id
+    expect(load).toHaveBeenCalledWith(
+      createServiceInstanceUserOrganizationKey({
+        serviceInstanceId: id,
+        userId: contextSimpleUserFiligran2.user.id,
+        organizationId:
+          contextSimpleUserFiligran2.user.selected_organization_id,
+      })
     );
     expect(result).toBe(false);
   });
 
-  it('subscriptions should load subscriptions by service instance id', async () => {
-    const id = SERVICES.INSTANCES.EPIC.ID as ServiceInstanceId;
-    const expected = [] as unknown as Awaited<
-      ReturnType<typeof ServiceInstanceDomain.loadServiceInstanceSubscriptions>
-    >;
-    vi.spyOn(
-      ServiceInstanceDomain,
-      'loadServiceInstanceSubscriptions'
-    ).mockResolvedValue(expected);
+  it('subscriptions should load via subscriptionsByServiceInstanceLoader with composite key', async () => {
+    const id = SERVICES.INSTANCES.EPIC.ID;
+    const expected: [] = [];
+    const load = vi
+      .spyOn(
+        contextSimpleUserFiligran2.dataLoaders.serviceInstance
+          .subscriptionsByServiceInstanceLoader,
+        'load'
+      )
+      .mockResolvedValue(expected);
 
     const result = await (
       serviceInstanceResolver.ServiceInstance as unknown as ServiceInstanceResolvers
@@ -151,9 +187,13 @@ describe('serviceInstance field resolvers', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    expect(
-      ServiceInstanceDomain.loadServiceInstanceSubscriptions
-    ).toHaveBeenCalledWith(id);
+    expect(load).toHaveBeenCalledWith(
+      createOrganizationServiceInstanceKey({
+        organizationId:
+          contextSimpleUserFiligran2.user.selected_organization_id,
+        serviceInstanceId: id,
+      })
+    );
     expect(result).toEqual(expected);
   });
 });

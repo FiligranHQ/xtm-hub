@@ -201,31 +201,32 @@ export const ServiceInstanceDomain = {
     }));
   },
 
-  loadIsSubscribed: async (
-    organizationId: OrganizationId,
-    id: ServiceInstanceId
-  ) => {
-    const serviceInstance = await db<{
-      organization_subscribed: boolean;
-    }>('ServiceInstance')
-      .where('ServiceInstance.id', '=', id)
-      .leftJoin('Subscription as subscription', function () {
-        this.on(
-          'subscription.service_instance_id',
-          '=',
-          'ServiceInstance.id'
-        ).andOnVal('subscription.organization_id', '=', organizationId);
-      })
+  loadIsSubscribedByKeys: async (
+    keys: readonly {
+      organizationId: OrganizationId;
+      serviceInstanceId: ServiceInstanceId;
+    }[]
+  ): Promise<
+    Pick<Subscription, 'organization_id' | 'service_instance_id'>[]
+  > => {
+    const organizationIds = [
+      ...new Set(keys.map(({ organizationId }) => organizationId)),
+    ];
+    const serviceInstanceIds = [
+      ...new Set(keys.map(({ serviceInstanceId }) => serviceInstanceId)),
+    ];
+
+    if (organizationIds.length === 0 || serviceInstanceIds.length === 0) {
+      return [];
+    }
+
+    return db<Subscription>('Subscription')
+      .whereIn('Subscription.organization_id', organizationIds)
+      .whereIn('Subscription.service_instance_id', serviceInstanceIds)
       .select(
-        dbRaw(`
-          CASE
-            WHEN "subscription"."id" IS NOT NULL THEN true
-            ELSE false
-          END AS organization_subscribed
-          `)
-      )
-      .first();
-    return serviceInstance?.organization_subscribed ?? false;
+        'Subscription.organization_id',
+        'Subscription.service_instance_id'
+      );
   },
 
   loadServiceInstances: async (opts: QueryOpts) => {
@@ -238,11 +239,17 @@ export const ServiceInstanceDomain = {
     });
   },
 
-  loadServiceInstanceSubscriptions: async (id: ServiceInstanceId) => {
+  loadServiceInstanceSubscriptionsByIds: async (
+    ids: readonly ServiceInstanceId[]
+  ) => {
+    if (ids.length === 0) {
+      return [];
+    }
+
     const user = requestContext.requireUser();
 
     const queryBuilder = db<Subscription>('Subscription')
-      .where('Subscription.service_instance_id', '=', id)
+      .whereIn('Subscription.service_instance_id', ids)
       .leftJoin(
         'Organization',
         'Organization.id',
@@ -267,6 +274,10 @@ export const ServiceInstanceDomain = {
         })
       ),
     ]);
+  },
+
+  loadServiceInstanceSubscriptions: async (id: ServiceInstanceId) => {
+    return ServiceInstanceDomain.loadServiceInstanceSubscriptionsByIds([id]);
   },
 
   loadSubscriptionByServiceInstanceAndOrganization: async (
@@ -294,30 +305,61 @@ export const ServiceInstanceDomain = {
       .first();
   },
 
+  loadJoinedUserServiceKeys: async (
+    keys: readonly {
+      userId: UserId;
+      organizationId: OrganizationId;
+      serviceInstanceId: ServiceInstanceId;
+    }[]
+  ): Promise<
+    {
+      service_instance_id: ServiceInstanceId;
+      organization_id: OrganizationId;
+      user_id: UserId;
+    }[]
+  > => {
+    const userIds = [...new Set(keys.map(({ userId }) => userId))];
+    const organizationIds = [
+      ...new Set(keys.map(({ organizationId }) => organizationId)),
+    ];
+    const serviceInstanceIds = [
+      ...new Set(keys.map(({ serviceInstanceId }) => serviceInstanceId)),
+    ];
+
+    if (
+      userIds.length === 0 ||
+      organizationIds.length === 0 ||
+      serviceInstanceIds.length === 0
+    ) {
+      return [];
+    }
+
+    return db<Subscription>('Subscription')
+      .whereIn('Subscription.service_instance_id', serviceInstanceIds)
+      .whereIn('Subscription.organization_id', organizationIds)
+      .join(
+        'User_Service',
+        'User_Service.subscription_id',
+        '=',
+        'Subscription.id'
+      )
+      .whereIn('User_Service.user_id', userIds)
+      .select(
+        'Subscription.service_instance_id',
+        'Subscription.organization_id',
+        'User_Service.user_id'
+      );
+  },
+
   getUserJoined: async (
     userId: UserId,
     organizationId: OrganizationId,
     id: ServiceInstanceId
   ) => {
-    const result = await db<{ user_joined: boolean }>('ServiceInstance')
-      .where('ServiceInstance.id', '=', id)
-      .leftJoin(
-        'Subscription',
-        'ServiceInstance.id',
-        'Subscription.service_instance_id'
-      )
-      .leftJoin('User_Service', function () {
-        this.on('Subscription.id', 'User_Service.subscription_id').andOnVal(
-          'User_Service.user_id',
-          '=',
-          userId
-        );
-      })
-      .select(dbRaw(`"User_Service".id IS NOT NULL AS user_joined`))
-      .where('Subscription.organization_id', '=', organizationId)
-      .first();
-
-    return result?.user_joined === true;
+    const joined = await ServiceInstanceDomain.loadJoinedUserServiceKeys([
+      { userId, organizationId, serviceInstanceId: id },
+    ]);
+    return joined.length > 0;
   },
 
   loadServiceInstanceBy: async (
@@ -427,25 +469,50 @@ export const ServiceInstanceDomain = {
     return insertedUserServices;
   },
 
-  loadLinks: (id: ServiceInstanceId) => {
-    return db<ServiceLink[]>('Service_Link')
-      .where('Service_Link.service_instance_id', '=', id)
-      .select('*');
+  loadLinksByServiceInstanceIds: async (
+    ids: readonly ServiceInstanceId[]
+  ): Promise<ServiceLink[]> => {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    return db<ServiceLink>('Service_Link')
+      .whereIn('Service_Link.service_instance_id', ids)
+      .select(['*']);
   },
 
-  loadServiceDefinitionByServiceInstance: async (
-    service_instance_id: ServiceInstanceId
-  ): Promise<ServiceDefinition | undefined> => {
+  loadLinks: async (id: ServiceInstanceId) => {
+    return ServiceInstanceDomain.loadLinksByServiceInstanceIds([id]);
+  },
+
+  loadServiceDefinitionsByServiceInstanceIds: async (
+    ids: readonly ServiceInstanceId[]
+  ): Promise<
+    (ServiceDefinition & { service_instance_id: ServiceInstanceId })[]
+  > => {
+    if (ids.length === 0) {
+      return [];
+    }
+
     return db<ServiceDefinition>('ServiceInstance')
-      .where('ServiceInstance.id', '=', service_instance_id)
+      .whereIn('ServiceInstance.id', ids)
       .leftJoin(
         'ServiceDefinition as service_def',
         'service_def.id',
         '=',
         'ServiceInstance.service_definition_id'
       )
-      .select('service_def.*')
-      .first();
+      .select('service_def.*', 'ServiceInstance.id as service_instance_id');
+  },
+
+  loadServiceDefinitionByServiceInstance: async (
+    service_instance_id: ServiceInstanceId
+  ): Promise<ServiceDefinition | undefined> => {
+    const [serviceDefinition] =
+      await ServiceInstanceDomain.loadServiceDefinitionsByServiceInstanceIds([
+        service_instance_id,
+      ]);
+    return serviceDefinition;
   },
 
   loadSeoServiceInstances: async (): Promise<SeoServiceInstance[]> => {
@@ -525,12 +592,6 @@ export const ServiceInstanceDomain = {
       )
       .where('ServiceInstance.slug', '=', slug)
       .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
-      .first();
-  },
-
-  getServiceInstance: async (id: ServiceInstanceId) => {
-    return db<ServiceInstance>('ServiceInstance')
-      .where('ServiceInstance.id', '=', id)
       .first();
   },
 

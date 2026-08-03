@@ -69,12 +69,13 @@ describe('integration field resolvers', () => {
       const documentId = uuidv4();
       const expected = [{ id: uuidv4() }];
       vi.spyOn(
-        contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader,
+        contextSimpleUserFiligran2.dataLoaders.document
+          .imagesByDocumentIdLoader,
         'load'
       ).mockResolvedValue(
         expected as unknown as Awaited<
           ReturnType<
-            typeof contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader.load
+            typeof contextSimpleUserFiligran2.dataLoaders.document.imagesByDocumentIdLoader.load
           >
         >
       );
@@ -87,7 +88,8 @@ describe('integration field resolvers', () => {
       );
 
       expect(
-        contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader.load
+        contextSimpleUserFiligran2.dataLoaders.document.imagesByDocumentIdLoader
+          .load
       ).toHaveBeenCalledWith(documentId);
       expect(result).toEqual(expected);
     });

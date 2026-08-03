@@ -118,21 +118,36 @@ export const UserServiceCapabilityHelper = {
       .returning('*');
   },
 
-  loadCapabilities: async (
-    serviceInstanceId: ServiceInstanceId,
-    userId: UserId,
-    orgaId: OrganizationId
-  ) => {
-    const [subscriptionWithCapabilities] = await db<Subscription>(
-      'Subscription'
-    )
-      .where('Subscription.service_instance_id', '=', serviceInstanceId)
-      .where('Subscription.organization_id', '=', orgaId)
-      .leftJoin('User_Service', function () {
-        this.on('User_Service.subscription_id', '=', 'Subscription.id')
+  loadCapabilitiesByKeys: async (
+    keys: readonly {
+      serviceInstanceId: ServiceInstanceId;
+      userId: UserId;
+      organizationId: OrganizationId;
+    }[]
+  ): Promise<string[][]> => {
+    const serviceInstanceIds = [
+      ...new Set(keys.map(({ serviceInstanceId }) => serviceInstanceId)),
+    ];
+    const organizationIds = [
+      ...new Set(keys.map(({ organizationId }) => organizationId)),
+    ];
+    const userIds = [...new Set(keys.map(({ userId }) => userId))];
 
-          .andOnVal('User_Service.user_id', '=', userId);
-      })
+    const rows: {
+      service_instance_id: ServiceInstanceId;
+      organization_id: OrganizationId;
+      user_id: UserId;
+      capability: string | null;
+    }[] = await db<Subscription>('Subscription')
+      .whereIn('Subscription.service_instance_id', serviceInstanceIds)
+      .whereIn('Subscription.organization_id', organizationIds)
+      .join(
+        'User_Service',
+        'User_Service.subscription_id',
+        '=',
+        'Subscription.id'
+      )
+      .whereIn('User_Service.user_id', userIds)
       .leftJoin(
         'UserService_Capability',
         'UserService_Capability.user_service_id',
@@ -158,14 +173,40 @@ export const UserServiceCapabilityHelper = {
         'Generic_Service_Capability.id'
       )
       .select(
+        'Subscription.service_instance_id',
+        'Subscription.organization_id',
+        'User_Service.user_id',
         dbRaw(
-          `COALESCE(
-          json_agg(
-            COALESCE("Generic_Service_Capability".name, "Service_Capability".name)
-          ), '[]'::json
-        ) AS capabilities`
+          `COALESCE("Generic_Service_Capability".name, "Service_Capability".name) AS capability`
         )
       );
-    return subscriptionWithCapabilities.capabilities;
+
+    const map = new Map<string, string[]>();
+    for (const row of rows) {
+      if (!row.capability) {
+        continue;
+      }
+      const key = `${row.service_instance_id}:${row.user_id}:${row.organization_id}`;
+      const capabilities = map.get(key) ?? [];
+      capabilities.push(row.capability);
+      map.set(key, capabilities);
+    }
+
+    return keys.map(
+      ({ serviceInstanceId, userId, organizationId }) =>
+        map.get(`${serviceInstanceId}:${userId}:${organizationId}`) ?? []
+    );
+  },
+
+  loadCapabilities: async (
+    serviceInstanceId: ServiceInstanceId,
+    userId: UserId,
+    orgaId: OrganizationId
+  ) => {
+    const [capabilities] =
+      await UserServiceCapabilityHelper.loadCapabilitiesByKeys([
+        { serviceInstanceId, userId, organizationId: orgaId },
+      ]);
+    return capabilities;
   },
 };
