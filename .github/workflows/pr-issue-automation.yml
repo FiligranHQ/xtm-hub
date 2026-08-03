@@ -12,8 +12,8 @@ on:
     workflows: ["Run XTM Hub CI/CD"]
     types: [completed]
 env:
-  ORGANIZATION: "FiligranHQ"
-  PROJECT_NUMBER: 17
+  ORGANIZATION: "XTM-Hub"
+  PROJECT_NUMBER: 1
 jobs:
   manage-pr-and-issues:
     runs-on: ubuntu-latest
@@ -73,7 +73,7 @@ jobs:
               console.error(`Failed to assign PR to ${prCreator}:`, error);
             }
 
-      - name: Check if creator is in FiligranHQ organization
+      - name: Check if creator is in the organization
         if: github.event_name == 'pull_request' && github.event.action == 'opened'
         id: check_org_membership
         uses: actions/github-script@v9
@@ -81,8 +81,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             try {
-              const { data: membership } = await github.rest.orgs.checkMembershipForUser({
-                org: 'FiligranHQ',
+              await github.rest.orgs.checkMembershipForUser({
+                org: process.env.ORGANIZATION,
                 username: context.payload.pull_request.user.login
               });
               return true;
