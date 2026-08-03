@@ -9,7 +9,11 @@ import { useLocalStorage } from 'usehooks-ts';
 
 const PublicMenu = () => {
   const locale = useLocale();
-  const [open, setOpen] = useLocalStorage<boolean>('is-public-menu-open', true);
+  const [open, setOpen] = useLocalStorage<boolean>(
+    'is-public-menu-open',
+    true,
+    { initializeWithValue: false }
+  );
   const handleOpenMenu = useCallback(() => setOpen((prev) => !prev), [setOpen]);
 
   return (
