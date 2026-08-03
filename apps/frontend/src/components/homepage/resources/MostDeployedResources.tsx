@@ -1,9 +1,11 @@
 import HomepageResourceList from '@/components/homepage/resources/HomepageResourceList';
 import { PublicLocale } from '@/i18n/config';
-import { portalGraphqlClientCached } from '@/lib/graphql-client';
+import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import {
+  MostDeployedDocumentsQueryDocument,
+  MostDeployedDocumentsQueryQuery,
+  MostDeployedDocumentsQueryQueryVariables,
   PlatformIdentifier,
-  useMostDeployedDocumentsQueryQuery,
 } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 
@@ -22,13 +24,17 @@ const MostDeployedResources = async ({
 }: MostDeployedResourcesProps) => {
   const t = await getTranslations('HomePage.XtmMostDeployedResources');
 
-  const data = await useMostDeployedDocumentsQueryQuery.fetcher(
-    portalGraphqlClientCached,
+  const data = await serverGraphqlFetch<
+    MostDeployedDocumentsQueryQuery,
+    MostDeployedDocumentsQueryQueryVariables
+  >(
+    MostDeployedDocumentsQueryDocument,
     {
       limit: MOST_DEPLOYED_LIMIT,
       platformIdentifiers: platformIdentifiers ?? [],
-    }
-  )();
+    },
+    { next: { revalidate: 3600 } }
+  );
 
   return (
     <HomepageResourceList

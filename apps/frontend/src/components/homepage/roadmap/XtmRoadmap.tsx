@@ -5,12 +5,13 @@ import {
 } from '@/components/epic/epic-item/TimelineMapping';
 import type { HomepageRoadmapTitleProduct } from '@/components/homepage/Homepage.utils';
 import { PublicLocale } from '@/i18n/config';
-import { portalGraphqlClientCached } from '@/lib/graphql-client';
+import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { Button } from '@filigran/ui/servers';
 import {
+  EpicCountPerTimelineQueryDocument,
+  EpicCountPerTimelineQueryQuery,
   Timeline,
-  useEpicCountPerTimelineQueryQuery,
 } from '@graphql/generated';
 import { getLocale, getTranslations } from 'next-intl/server';
 import Image from 'next/image';
@@ -47,9 +48,11 @@ const XtmRoadmap = async ({
               : tPlatformIdentifier('openaev'),
         });
 
-  const data = await useEpicCountPerTimelineQueryQuery.fetcher(
-    portalGraphqlClientCached
-  )();
+  const data = await serverGraphqlFetch<EpicCountPerTimelineQueryQuery>(
+    EpicCountPerTimelineQueryDocument,
+    {},
+    { next: { revalidate: 3600 } }
+  );
 
   const epicCounts = data.countEpicsPerTimeline;
 

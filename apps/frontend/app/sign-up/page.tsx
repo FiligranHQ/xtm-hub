@@ -3,10 +3,8 @@ import '@filigran/ui/theme.css';
 import '@styles/globals.css';
 
 import SignUp from '@/components/signup/SignUp';
-import {
-  getAuthenticatedGraphqlClient,
-  UnauthenticatedError,
-} from '@/lib/graphql-client';
+import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
+import { UnauthenticatedError } from '@/lib/graphql-fetch.utils';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { hasLocalProvider } from '@/utils/settings.service';

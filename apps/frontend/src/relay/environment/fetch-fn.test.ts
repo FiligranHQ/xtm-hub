@@ -1,6 +1,7 @@
+import { UnauthenticatedError } from '@/lib/graphql-fetch.utils';
 import { RequestParameters } from 'relay-runtime';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { networkFetch, UnauthenticatedError } from './fetch-fn';
+import { networkFetch } from './fetch-fn';
 
 const mockRequest: RequestParameters = {
   id: null,
