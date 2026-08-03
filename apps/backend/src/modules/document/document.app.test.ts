@@ -181,21 +181,29 @@ describe('documentApp', () => {
       });
     });
 
-    it('should persist license_type input in document metadata', async () => {
+    it('should persist provided data and validate each field in it', async () => {
       // Given
-      const licenseType = 'Commercial';
+      const input = {
+        short_description: 'created short description',
+        slug: `persisted-data-create-${uuidv4()}`,
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        name: 'created name',
+        description: 'created description',
+        active: false,
+        license_type: 'Commercial',
+      };
 
       // When
       const result = await DocumentApp.createDocument({
-        input: {
-          ...documentData,
-          license_type: licenseType,
-        },
+        input,
         metadata: integrationMetadata,
         serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
         sourceDocument: mockUpload,
       });
 
+      const persistedDocument = await DocumentDomain.loadDocumentBy({
+        id: result.id,
+      });
       const licenseTypeFromDb =
         await DocumentMetadataDomain.loadMetadataValueByKey(
           result.id,
@@ -203,10 +211,28 @@ describe('documentApp', () => {
         );
 
       // Then
-      expect(result).toMatchObject({
-        license_type: licenseType,
+      expect(result.short_description).toBe(input.short_description);
+      expect(result.slug).toBe(input.slug);
+      expect(result.uploader_id).toBe(input.uploader_id);
+      expect(result.name).toBe(input.name);
+      expect(result.description).toBe(input.description);
+      expect(result.active).toBe(input.active);
+      expect(result.license_type).toBe(input.license_type);
+      expect(result.integration_type).toBe(
+        IntegrationType.ThirdPartyIntegration
+      );
+      expect(result.integration_subtype).toBe(IntegrationSubType.Orchestration);
+      expect(result.vendor_url).toBe('https://example.com');
+
+      expect(persistedDocument).toMatchObject({
+        short_description: input.short_description,
+        slug: input.slug,
+        uploader_id: input.uploader_id,
+        name: input.name,
+        description: input.description,
+        active: input.active,
       });
-      expect(licenseTypeFromDb).toBe(licenseType);
+      expect(licenseTypeFromDb).toBe(input.license_type);
     });
 
     it('should not use document file when document is a third party integration', async () => {
@@ -429,13 +455,12 @@ describe('documentApp', () => {
       });
     });
 
-    it('should persist license_type input in document metadata on update', async () => {
+    it('should persist provided data and validate each field in it', async () => {
       // Given
-      const licenseType = 'Commercial';
       const customDashboardDocument = await DocumentApp.createDocument({
         input: {
           ...documentData,
-          slug: `license-update-${uuidv4()}`,
+          slug: `persisted-data-update-${uuidv4()}`,
         },
         metadata: [
           { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
@@ -444,6 +469,15 @@ describe('documentApp', () => {
         sourceDocument: mockUpload,
       });
 
+      const input = {
+        short_description: 'updated short description',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        name: 'updated name',
+        description: 'updated description',
+        active: false,
+        license_type: 'Commercial',
+      };
+
       // When
       const result = await DocumentApp.updateDocument({
         parentDocumentId: customDashboardDocument.id,
@@ -451,24 +485,43 @@ describe('documentApp', () => {
         metadata: [
           { key: DocumentMetadataKeyCode.ProductVersion, value: '1.1.0' },
         ],
-        input: {
-          ...documentUpdateData,
-          license_type: licenseType,
-        },
+        input,
         existingImageIds: [],
       });
 
-      const licenseTypeFromDb =
-        await DocumentMetadataDomain.loadMetadataValueByKey(
+      const persistedDocument = await DocumentDomain.loadDocumentBy({
+        id: result.id,
+      });
+      const [licenseTypeFromDb, productVersionFromDb] = await Promise.all([
+        DocumentMetadataDomain.loadMetadataValueByKey(
           result.id,
           DocumentMetadataKeyCode.LicenseType
-        );
+        ),
+        DocumentMetadataDomain.loadMetadataValueByKey(
+          result.id,
+          DocumentMetadataKeyCode.ProductVersion
+        ),
+      ]);
 
       // Then
-      expect(result).toMatchObject({
-        license_type: licenseType,
+      expect(result.short_description).toBe(input.short_description);
+      expect(result.uploader_id).toBe(input.uploader_id);
+      expect(result.name).toBe(input.name);
+      expect(result.description).toBe(input.description);
+      expect(result.active).toBe(input.active);
+      expect(result.license_type).toBe(input.license_type);
+      expect(result.product_version).toBe('1.1.0');
+
+      expect(persistedDocument).toMatchObject({
+        short_description: input.short_description,
+        uploader_id: input.uploader_id,
+        name: input.name,
+        description: input.description,
+        active: input.active,
       });
-      expect(licenseTypeFromDb).toBe(licenseType);
+
+      expect(licenseTypeFromDb).toBe(input.license_type);
+      expect(productVersionFromDb).toBe('1.1.0');
     });
 
     it('should use first file for document when document is not a third party integration', async () => {

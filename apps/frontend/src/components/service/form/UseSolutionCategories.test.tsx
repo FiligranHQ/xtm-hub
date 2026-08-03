@@ -5,15 +5,16 @@ import {
   SolutionCategoryOrdering,
   useSolutionCategoriesListQuery,
 } from '@graphql/generated';
+import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { getSolutionCategories } from './solution-category.utils';
+import { useSolutionCategories } from './UseSolutionCategories';
 
 vi.mock('@graphql/generated', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@graphql/generated')>()),
   useSolutionCategoriesListQuery: vi.fn(),
 }));
 
-describe('getSolutionCategories', () => {
+describe('useSolutionCategories', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -23,7 +24,7 @@ describe('getSolutionCategories', () => {
       data: undefined,
     } as never);
 
-    getSolutionCategories();
+    renderHook(() => useSolutionCategories());
 
     expect(useSolutionCategoriesListQuery).toHaveBeenCalledWith(
       portalGraphqlClient,
@@ -42,7 +43,7 @@ describe('getSolutionCategories', () => {
       data: undefined,
     } as never);
 
-    getSolutionCategories(FiligranProduct.Opencti);
+    renderHook(() => useSolutionCategories(FiligranProduct.Opencti));
 
     expect(useSolutionCategoriesListQuery).toHaveBeenCalledWith(
       portalGraphqlClient,
@@ -74,7 +75,9 @@ describe('getSolutionCategories', () => {
       },
     } as never);
 
-    expect(getSolutionCategories()).toEqual([
+    const { result } = renderHook(() => useSolutionCategories());
+
+    expect(result.current).toEqual([
       { id: 'cat-1', name: 'Threat Intelligence' },
       { id: 'cat-2', name: 'Endpoint-Security' },
     ]);
@@ -87,6 +90,8 @@ describe('getSolutionCategories', () => {
       },
     } as never);
 
-    expect(getSolutionCategories()).toEqual([]);
+    const { result } = renderHook(() => useSolutionCategories());
+
+    expect(result.current).toEqual([]);
   });
 });

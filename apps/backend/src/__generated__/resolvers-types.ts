@@ -223,7 +223,7 @@ export type CreateDocumentInput = {
   active: Scalars['Boolean']['input'];
   description: Scalars['String']['input'];
   entity_types?: InputMaybe<Array<Scalars['String']['input']>>;
-  license_type?: InputMaybe<Scalars['String']['input']>;
+  license_type?: InputMaybe<LicenseType>;
   name: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
@@ -888,6 +888,11 @@ export type LastDeployedOverview = {
   __typename?: 'LastDeployedOverview';
   resources: Array<DeployedResource>;
 };
+
+export enum LicenseType {
+  Commercial = 'Commercial',
+  Free = 'Free'
+}
 
 export type LogicalFilterInput = {
   children?: InputMaybe<Array<LogicalFilterInput>>;
@@ -2573,7 +2578,7 @@ export type UpdateDocumentInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   entity_types?: InputMaybe<Array<Scalars['String']['input']>>;
-  license_type?: InputMaybe<Scalars['String']['input']>;
+  license_type?: InputMaybe<LicenseType>;
   name?: InputMaybe<Scalars['String']['input']>;
   short_description?: InputMaybe<Scalars['String']['input']>;
   solution_category?: InputMaybe<Scalars['SolutionCategoryId']['input']>;
@@ -2937,6 +2942,7 @@ export type ResolversTypes = ResolversObject<{
   IsPlatformRegisteredResponse: ResolverTypeWrapper<IsPlatformRegisteredResponse>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LastDeployedOverview: ResolverTypeWrapper<Omit<LastDeployedOverview, 'resources'> & { resources: Array<ResolversTypes['DeployedResource']> }>;
+  LicenseType: LicenseType;
   LogicalFilterInput: LogicalFilterInput;
   LogicalOperator: LogicalOperator;
   ManifestFragmentInput: ManifestFragmentInput;

@@ -1,4 +1,4 @@
-import { getSolutionCategories } from '@/components/service/form/solution-category.utils';
+import { useSolutionCategories } from '@/components/service/form/UseSolutionCategories';
 import {
   FormControl,
   FormItem,
@@ -29,7 +29,7 @@ export const ServiceFormSolutionCategoryField = ({
   product,
 }: ServiceFormSolutionCategoryFieldProps) => {
   const t = useTranslations();
-  const categories = getSolutionCategories(product);
+  const categories = useSolutionCategories(product);
   const selectedCategoryId = field.value ?? document?.solution_category?.id;
   const hasSelectedCategoryInOptions = categories.some(
     (category) => category.id === selectedCategoryId

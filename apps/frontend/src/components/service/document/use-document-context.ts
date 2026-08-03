@@ -34,14 +34,18 @@ import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphq
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
+import {
+  DocumentMetadataKeyCode,
+  IntegrationType,
+  LicenseType,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 type DocumentFormValues = ServiceFormValues & {
   entity_types?: string[] | null;
-  license_type?: string | null;
+  license_type?: LicenseType | null;
   solution_category?: string | null;
 };
 

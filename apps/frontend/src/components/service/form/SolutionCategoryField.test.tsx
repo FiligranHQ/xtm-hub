@@ -1,5 +1,5 @@
-import { getSolutionCategories } from '@/components/service/form/solution-category.utils';
 import { ServiceFormSolutionCategoryField } from '@/components/service/form/SolutionCategoryField';
+import { useSolutionCategories } from '@/components/service/form/UseSolutionCategories';
 import testRender from '@/utils/test/test-render';
 import { Form, FormField } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -7,8 +7,8 @@ import { screen } from '@testing-library/react';
 import { useForm } from 'react-hook-form';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/components/service/form/solution-category.utils', () => ({
-  getSolutionCategories: vi.fn(),
+vi.mock('@/components/service/form/UseSolutionCategories', () => ({
+  useSolutionCategories: vi.fn(),
 }));
 
 type FormValues = {
@@ -49,7 +49,7 @@ const TestForm = ({
 
 describe('ServiceFormSolutionCategoryField', () => {
   it('should display document category when missing from fetched options', () => {
-    vi.mocked(getSolutionCategories).mockReturnValue([
+    vi.mocked(useSolutionCategories).mockReturnValue([
       { id: 'cat-1', name: 'Endpoint Security' },
     ]);
 
@@ -71,7 +71,7 @@ describe('ServiceFormSolutionCategoryField', () => {
   });
 
   it('should display document category from fetched options when present', () => {
-    vi.mocked(getSolutionCategories).mockReturnValue([
+    vi.mocked(useSolutionCategories).mockReturnValue([
       { id: 'cat-1', name: 'Endpoint Security' },
       { id: 'cat-2', name: 'Threat Intelligence' },
     ]);
@@ -91,7 +91,7 @@ describe('ServiceFormSolutionCategoryField', () => {
   });
 
   it('should prioritize field value over document category', () => {
-    vi.mocked(getSolutionCategories).mockReturnValue([
+    vi.mocked(useSolutionCategories).mockReturnValue([
       { id: 'cat-1', name: 'Endpoint Security' },
       { id: 'cat-2', name: 'Threat Intelligence' },
     ]);

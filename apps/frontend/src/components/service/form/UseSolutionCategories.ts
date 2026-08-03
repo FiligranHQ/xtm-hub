@@ -6,8 +6,9 @@ import {
   SolutionCategoryOrdering,
   useSolutionCategoriesListQuery,
 } from '@graphql/generated';
+import { useMemo } from 'react';
 
-export const getSolutionCategories = (product?: FiligranProduct) => {
+export const useSolutionCategories = (product?: FiligranProduct) => {
   const variables = {
     count: 100,
     cursor: null,
@@ -21,10 +22,14 @@ export const getSolutionCategories = (product?: FiligranProduct) => {
     variables
   );
 
-  return (data?.solutionCategories?.edges ?? [])
-    .map(({ node }) => node)
-    .map(({ id, name }) => ({
-      id,
-      name: formatName(name),
-    }));
+  return useMemo(
+    () =>
+      (data?.solutionCategories?.edges ?? [])
+        .map(({ node }) => node)
+        .map(({ id, name }) => ({
+          id,
+          name: formatName(name),
+        })),
+    [data]
+  );
 };
