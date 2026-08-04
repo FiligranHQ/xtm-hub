@@ -1,8 +1,10 @@
 import HomepageResourceList from '@/components/homepage/resources/HomepageResourceList';
-import { portalGraphqlClientCached } from '@/lib/graphql-client';
+import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import {
+  NewestDocumentsQueryDocument,
+  NewestDocumentsQueryQuery,
+  NewestDocumentsQueryQueryVariables,
   PlatformIdentifier,
-  useNewestDocumentsQueryQuery,
 } from '@graphql/generated';
 import { getTranslations } from 'next-intl/server';
 
@@ -19,13 +21,17 @@ const NewestResources = async ({
 }: NewestResourcesProps) => {
   const t = await getTranslations('HomePage.XtmNewestResources');
 
-  const data = await useNewestDocumentsQueryQuery.fetcher(
-    portalGraphqlClientCached,
+  const data = await serverGraphqlFetch<
+    NewestDocumentsQueryQuery,
+    NewestDocumentsQueryQueryVariables
+  >(
+    NewestDocumentsQueryDocument,
     {
       limit: NEWEST_LIMIT,
       platformIdentifiers: platformIdentifiers ?? [],
-    }
-  )();
+    },
+    { next: { revalidate: 3600 } }
+  );
 
   return (
     <HomepageResourceList

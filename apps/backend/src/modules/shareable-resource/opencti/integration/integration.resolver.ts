@@ -31,6 +31,8 @@ const resolvers: Resolvers = {
     },
     use_cases: ({ id }, _, context) =>
       context.dataLoaders.useCasesByDocumentIdLoader.load(id),
+    solution_category: ({ id }, _, context) =>
+      context.dataLoaders.solutionCategoryByDocumentIdLoader.load(id),
     children_documents: async ({ id }, _, context) =>
       (await context.dataLoaders.imagesByDocumentIdLoader.load(
         id

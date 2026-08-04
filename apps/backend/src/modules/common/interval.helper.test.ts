@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { subtractInterval } from './interval.helper';
+import { IntervalHelper } from './interval.helper';
 
 describe('subtractInterval', () => {
   const reference = new Date('2026-05-13T12:00:00.000Z');
@@ -13,14 +13,14 @@ describe('subtractInterval', () => {
   `(
     'should subtract $value $unit and produce a date $expectedDeltaMs ms earlier',
     ({ unit, value, expectedDeltaMs }) => {
-      const result = subtractInterval(reference, value, unit);
+      const result = IntervalHelper.subtractInterval(reference, value, unit);
       expect(reference.getTime() - result.getTime()).toBe(expectedDeltaMs);
     }
   );
 
   it('should throw for unsupported unit', () => {
-    expect(() => subtractInterval(reference, 1, 'years' as never)).toThrow(
-      'Unsupported interval unit'
-    );
+    expect(() =>
+      IntervalHelper.subtractInterval(reference, 1, 'years' as never)
+    ).toThrow('Unsupported interval unit');
   });
 });

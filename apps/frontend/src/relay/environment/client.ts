@@ -1,9 +1,6 @@
+import { UnauthenticatedError } from '@/lib/graphql-fetch.utils';
 import { isEmpty, isNil } from '@/lib/utils';
-import {
-  fetchOrSubscribe,
-  networkFetch,
-  UnauthenticatedError,
-} from '@/relay/environment/fetch-fn';
+import { fetchOrSubscribe, networkFetch } from '@/relay/environment/fetch-fn';
 import { fetchFormData } from '@/relay/environment/fetch-form-data';
 import {
   buildQueryId,

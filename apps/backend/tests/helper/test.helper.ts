@@ -25,6 +25,9 @@ import ManifestRebuildQueue, {
   ManifestRebuildQueueInitializer,
   ManifestRebuildQueueMutator,
 } from '../../src/model/kanel/public/ManifestRebuildQueue';
+import ObjectSolutionCategory, {
+  ObjectSolutionCategoryMutator,
+} from '../../src/model/kanel/public/ObjectSolutionCategory';
 import ObjectUseCase, {
   ObjectUseCaseInitializer,
   ObjectUseCaseMutator,
@@ -207,6 +210,20 @@ export const TestHelper = {
     },
     load: async (field: ObjectUseCaseMutator): Promise<ObjectUseCase[]> => {
       return db<ObjectUseCase[]>('Object_UseCase').where(field).select('*');
+    },
+  },
+  objectSolutionCategory: {
+    delete: async (field: ObjectSolutionCategoryMutator): Promise<void> => {
+      await db<ObjectSolutionCategory>('Object_SolutionCategory')
+        .where(field)
+        .del();
+    },
+    load: async (
+      field: ObjectSolutionCategoryMutator
+    ): Promise<ObjectSolutionCategory[]> => {
+      return db<ObjectSolutionCategory[]>('Object_SolutionCategory')
+        .where(field)
+        .select('*');
     },
   },
   manifestRebuildQueue: {

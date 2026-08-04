@@ -1,4 +1,4 @@
-import { getUseCases } from '@/components/admin/use-case/use-case.utils';
+import { useUseCases } from '@/components/admin/use-case/use-use-cases';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
@@ -23,7 +23,7 @@ export const ServiceListFilterLabel = ({
     removeFilter(ServiceListFilterKey.Label);
   };
 
-  const labelOptions = getUseCases({ documentType: type }).map(
+  const labelOptions = useUseCases({ documentType: type }).map(
     ({ name, id }) => ({
       label: name,
       value: id,

@@ -1,21 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockEpicCountFetcher, mockGetTranslations } = vi.hoisted(() => ({
-  mockEpicCountFetcher: vi.fn(),
+const { mockServerGraphqlFetch, mockGetTranslations } = vi.hoisted(() => ({
+  mockServerGraphqlFetch: vi.fn(),
   mockGetTranslations: vi.fn(),
 }));
 
-vi.mock('@graphql/generated', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@graphql/generated')>();
-
-  return {
-    ...actual,
-    useEpicCountPerTimelineQueryQuery: {
-      fetcher: mockEpicCountFetcher,
-    },
-  };
-});
+vi.mock('@/lib/server-graphql-fetch', () => ({
+  serverGraphqlFetch: mockServerGraphqlFetch,
+}));
 
 vi.mock('next-intl/server', () => ({
   getTranslations: mockGetTranslations,
@@ -26,7 +19,7 @@ import XtmRoadmap from './XtmRoadmap';
 
 describe('XtmRoadmap', () => {
   beforeEach(() => {
-    mockEpicCountFetcher.mockReset();
+    mockServerGraphqlFetch.mockReset();
     mockGetTranslations.mockReset();
 
     mockGetTranslations.mockImplementation(async (namespace: string) => {
@@ -61,11 +54,9 @@ describe('XtmRoadmap', () => {
       return (key: string) => key;
     });
 
-    mockEpicCountFetcher.mockReturnValue(() =>
-      Promise.resolve({
-        countEpicsPerTimeline: [],
-      })
-    );
+    mockServerGraphqlFetch.mockResolvedValue({
+      countEpicsPerTimeline: [],
+    });
   });
 
   it('uses public roadmap url by default', async () => {

@@ -1,4 +1,4 @@
-import { getUseCases } from '@/components/admin/use-case/use-case.utils';
+import { useUseCases } from '@/components/admin/use-case/use-use-cases';
 import {
   FormControl,
   FormItem,
@@ -33,7 +33,7 @@ export const ServiceFormUseCasesField = ({
         <MultiSelectFormField
           disabled={disabled}
           noResultString={t('Utils.NotFound')}
-          options={getUseCases({ product })}
+          options={useUseCases({ product })}
           keyValue="id"
           keyLabel="name"
           defaultValue={field.value}

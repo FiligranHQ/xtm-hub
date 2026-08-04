@@ -9,6 +9,7 @@ import SolutionCategory, {
   SolutionCategoryMutator,
 } from '../../model/kanel/public/SolutionCategory';
 import { UnknownErrorCode } from '../../utils/error/error.code';
+import { WithDocumentId } from '../document/document.helper';
 
 export const solutionCategoryDomain = {
   insertSolutionCategory: async (
@@ -56,10 +57,17 @@ export const solutionCategoryDomain = {
     );
   },
 
-  loadSolutionCategoryBy: (
-    field: SolutionCategoryMutator
-  ): Promise<SolutionCategory | null> => {
-    return db<SolutionCategory>('SolutionCategory').where(field).first();
+  buildSolutionCategoriesByDocumentIdQuery: (
+    documentIds: readonly string[]
+  ) => {
+    return db<WithDocumentId<SolutionCategory>>('SolutionCategory')
+      .leftJoin(
+        'Object_SolutionCategory as osc',
+        'osc.solution_category_id',
+        'SolutionCategory.id'
+      )
+      .whereIn('osc.object_id', documentIds)
+      .select('SolutionCategory.*', 'osc.object_id as _document_id');
   },
 
   deleteSolutionCategory: async (

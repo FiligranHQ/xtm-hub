@@ -38,6 +38,7 @@ import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
 } from '../shareable-resource/opencti/integration/integration.model';
+import { solutionCategoryDomain } from '../solution-category/solution-category.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryEventService,
@@ -178,6 +179,60 @@ describe('documentApp', () => {
         vendor_url: 'https://example.com',
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       });
+    });
+
+    it('should persist provided data and validate each field in it', async () => {
+      // Given
+      const input = {
+        short_description: 'created short description',
+        slug: `persisted-data-create-${uuidv4()}`,
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        name: 'created name',
+        description: 'created description',
+        active: false,
+        license_type: 'Commercial',
+      };
+
+      // When
+      const result = await DocumentApp.createDocument({
+        input,
+        metadata: integrationMetadata,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        sourceDocument: mockUpload,
+      });
+
+      const persistedDocument = await DocumentDomain.loadDocumentBy({
+        id: result.id,
+      });
+      const licenseTypeFromDb =
+        await DocumentMetadataDomain.loadMetadataValueByKey(
+          result.id,
+          DocumentMetadataKeyCode.LicenseType
+        );
+
+      // Then
+      expect(result.short_description).toBe(input.short_description);
+      expect(result.slug).toBe(input.slug);
+      expect(result.uploader_id).toBe(input.uploader_id);
+      expect(result.name).toBe(input.name);
+      expect(result.description).toBe(input.description);
+      expect(result.active).toBe(input.active);
+      expect(result.license_type).toBe(input.license_type);
+      expect(result.integration_type).toBe(
+        IntegrationType.ThirdPartyIntegration
+      );
+      expect(result.integration_subtype).toBe(IntegrationSubType.Orchestration);
+      expect(result.vendor_url).toBe('https://example.com');
+
+      expect(persistedDocument).toMatchObject({
+        short_description: input.short_description,
+        slug: input.slug,
+        uploader_id: input.uploader_id,
+        name: input.name,
+        description: input.description,
+        active: input.active,
+      });
+      expect(licenseTypeFromDb).toBe(input.license_type);
     });
 
     it('should not use document file when document is a third party integration', async () => {
@@ -398,6 +453,75 @@ describe('documentApp', () => {
         short_description: 'short_description',
         vendor_url: 'https://changed.com',
       });
+    });
+
+    it('should persist provided data and validate each field in it', async () => {
+      // Given
+      const customDashboardDocument = await DocumentApp.createDocument({
+        input: {
+          ...documentData,
+          slug: `persisted-data-update-${uuidv4()}`,
+        },
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
+        ],
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        sourceDocument: mockUpload,
+      });
+
+      const input = {
+        short_description: 'updated short description',
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        name: 'updated name',
+        description: 'updated description',
+        active: false,
+        license_type: 'Commercial',
+      };
+
+      // When
+      const result = await DocumentApp.updateDocument({
+        parentDocumentId: customDashboardDocument.id,
+        serviceInstanceId: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.1.0' },
+        ],
+        input,
+        existingImageIds: [],
+      });
+
+      const persistedDocument = await DocumentDomain.loadDocumentBy({
+        id: result.id,
+      });
+      const [licenseTypeFromDb, productVersionFromDb] = await Promise.all([
+        DocumentMetadataDomain.loadMetadataValueByKey(
+          result.id,
+          DocumentMetadataKeyCode.LicenseType
+        ),
+        DocumentMetadataDomain.loadMetadataValueByKey(
+          result.id,
+          DocumentMetadataKeyCode.ProductVersion
+        ),
+      ]);
+
+      // Then
+      expect(result.short_description).toBe(input.short_description);
+      expect(result.uploader_id).toBe(input.uploader_id);
+      expect(result.name).toBe(input.name);
+      expect(result.description).toBe(input.description);
+      expect(result.active).toBe(input.active);
+      expect(result.license_type).toBe(input.license_type);
+      expect(result.product_version).toBe('1.1.0');
+
+      expect(persistedDocument).toMatchObject({
+        short_description: input.short_description,
+        uploader_id: input.uploader_id,
+        name: input.name,
+        description: input.description,
+        active: input.active,
+      });
+
+      expect(licenseTypeFromDb).toBe(input.license_type);
+      expect(productVersionFromDb).toBe('1.1.0');
     });
 
     it('should use first file for document when document is not a third party integration', async () => {
@@ -683,6 +807,120 @@ describe('documentApp', () => {
 
       // Then
       expect(updatedDocument.slug).toBe(originalSlug);
+    });
+
+    describe('solution_category linking', () => {
+      it('should link solution category when provided on update', async () => {
+        // Given
+        const category = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_category: category.id,
+          },
+          existingImageIds: [],
+        });
+
+        // Then
+        const links =
+          await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+            [createdDocument!.id]
+          );
+        expect(links).toHaveLength(1);
+        expect(links[0]).toMatchObject({
+          _document_id: createdDocument!.id,
+          id: category.id,
+        });
+      });
+
+      it('should replace previous solution category link on update', async () => {
+        // Given
+        const category1 = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+        const category2 = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_category: category1.id,
+          },
+          existingImageIds: [],
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_category: category2.id,
+          },
+          existingImageIds: [],
+        });
+
+        // Then
+        const links =
+          await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+            [createdDocument!.id]
+          );
+        expect(links).toHaveLength(1);
+        expect(links[0]).toMatchObject({
+          _document_id: createdDocument!.id,
+          id: category2.id,
+        });
+      });
+
+      it('should keep existing solution category link when update omits solution_category', async () => {
+        // Given
+        const category = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_category: category.id,
+          },
+          existingImageIds: [],
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: documentUpdateData,
+          existingImageIds: [],
+        });
+
+        // Then
+        const links =
+          await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+            [createdDocument!.id]
+          );
+        expect(links).toHaveLength(1);
+        expect(links[0]).toMatchObject({
+          _document_id: createdDocument!.id,
+          id: category.id,
+        });
+      });
     });
 
     it('should delegate news feed synchronization to NewsFeedApp.upsertResourceNewsFeed', async () => {
