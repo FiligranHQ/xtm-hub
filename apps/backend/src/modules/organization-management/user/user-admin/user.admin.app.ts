@@ -24,14 +24,7 @@ import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
-import {
-  acceptPendingUserWithCapabilities,
-  createUserWithPersonalSpace,
-  mapUserToGraphqlUser,
-  preventAdministratorRemovalOfAllOrganizations,
-  preventAdministratorRemovalOfOneOrganization,
-  updateUserOrgCapabilitiesAndDispatch,
-} from '../user.helper';
+import { UserHelper } from '../user.helper';
 
 export const UserAdminApp = {
   addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {
@@ -61,7 +54,7 @@ export const UserAdminApp = {
     const finalUser = await withTransaction(async () => {
       const user = existingUser
         ? existingUser
-        : await createUserWithPersonalSpace({
+        : await UserHelper.createUserWithPersonalSpace({
             email: input.email,
             password: input.password,
             first_name: input.first_name,
@@ -128,7 +121,7 @@ export const UserAdminApp = {
       })
     );
     if (!input.disabled) {
-      await preventAdministratorRemovalOfAllOrganizations(
+      await UserHelper.preventAdministratorRemovalOfAllOrganizations(
         userId,
         mappedCapabilities
       );
@@ -156,7 +149,7 @@ export const UserAdminApp = {
     });
     updateUserSession(user);
 
-    const userMapped = mapUserToGraphqlUser(user);
+    const userMapped = UserHelper.mapUserToGraphqlUser(user);
 
     await dispatch('User', 'edit', user);
     await dispatch('MeUser', 'edit', userMapped, 'User');
@@ -178,7 +171,7 @@ export const UserAdminApp = {
   }) => {
     const user = requestContext.requireUser();
     const organizationId = user.selected_organization_id;
-    await preventAdministratorRemovalOfOneOrganization(
+    await UserHelper.preventAdministratorRemovalOfOneOrganization(
       userId,
       organizationId,
       input.capabilities
@@ -191,12 +184,12 @@ export const UserAdminApp = {
       });
 
     return userOrganization
-      ? await updateUserOrgCapabilitiesAndDispatch({
+      ? await UserHelper.updateUserOrgCapabilitiesAndDispatch({
           user_id: userId,
           organization_id: organizationId,
           orgCapabilities: input.capabilities,
         })
-      : await acceptPendingUserWithCapabilities({
+      : await UserHelper.acceptPendingUserWithCapabilities({
           user_id: userId,
           organization_id: organizationId,
           orgCapabilities: input.capabilities,
@@ -230,7 +223,7 @@ export const UserAdminApp = {
     await Promise.all(
       userIds.map(async (userId: UserId) => {
         try {
-          await acceptPendingUserWithCapabilities({
+          await UserHelper.acceptPendingUserWithCapabilities({
             user_id: userId,
             organization_id: organizationId,
             orgCapabilities: [],

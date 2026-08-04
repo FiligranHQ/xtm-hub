@@ -46,7 +46,7 @@ import { UserAdminApp } from './user-admin/user.admin.app';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
-import { removeUser } from './user.helper';
+import { UserHelper } from './user.helper';
 import usersResolver from './user.resolver';
 
 const SUBSCRIPTION_ID =
@@ -138,7 +138,7 @@ describe('user query resolver', () => {
       expect(response.edges[0]!.node.id).toBe(pendingUser.id);
 
       requestContext.set(requestContextAdminUser);
-      await removeUser({ email: pendingUser.email });
+      await UserHelper.removeUser({ email: pendingUser.email });
     });
     it('should list pending users from the orga if orga filter exists', async () => {
       const testContext = {
@@ -191,8 +191,8 @@ describe('user query resolver', () => {
       expect(response.edges[0]!.node.id).toBe(pendingUserSecondOrga.id);
 
       requestContext.set(requestContextAdminUser);
-      await removeUser({ email: pendingUserSecondOrga.email });
-      await removeUser({ email: pendingUserFiligran.email });
+      await UserHelper.removeUser({ email: pendingUserSecondOrga.email });
+      await UserHelper.removeUser({ email: pendingUserFiligran.email });
     });
     it('should list pending users in the user orga even if no filter is specified', async () => {
       const testContext = {
@@ -236,8 +236,8 @@ describe('user query resolver', () => {
       expect(response.edges[0]!.node.id).toBe(pendingUserSecondOrga.id);
 
       requestContext.set(requestContextAdminUser);
-      await removeUser({ email: pendingUserSecondOrga.email });
-      await removeUser({ email: pendingUserFiligran.email });
+      await UserHelper.removeUser({ email: pendingUserSecondOrga.email });
+      await UserHelper.removeUser({ email: pendingUserFiligran.email });
     });
   });
 });
@@ -735,7 +735,7 @@ describe('user mutation resolver', () => {
         });
       expect(usersPendingOrg).toHaveLength(0);
 
-      await removeUser({ email: pendingUser.email });
+      await UserHelper.removeUser({ email: pendingUser.email });
     });
   });
   describe('editMeUser', () => {
@@ -887,7 +887,7 @@ describe('user mutation resolver', () => {
 
       // Then
       expect(usersPendingOrg).toHaveLength(0);
-      await removeUser({ email: pendingUser.email });
+      await UserHelper.removeUser({ email: pendingUser.email });
     });
 
     it('should dispatch event when pending user is removed from organization', async () => {
@@ -933,7 +933,7 @@ describe('user mutation resolver', () => {
       expect(events).toHaveLength(1);
       expect(events[0].UserPending.delete.email).toBe(email);
 
-      await removeUser({ email: pendingUser.email });
+      await UserHelper.removeUser({ email: pendingUser.email });
       await subscriptionSpy.cleanup();
     });
   });
@@ -978,7 +978,7 @@ describe('user mutation resolver', () => {
         });
 
       expect(usersPendingOrg).toHaveLength(0);
-      await removeUser({ email: pendingUser.email });
+      await UserHelper.removeUser({ email: pendingUser.email });
     });
 
     it('should dispatch event when pending users are removed from organization', async () => {
@@ -1035,7 +1035,7 @@ describe('user mutation resolver', () => {
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
-      await removeUser({ email: pendingUser.email });
+      await UserHelper.removeUser({ email: pendingUser.email });
       await subscriptionSpy.cleanup();
     });
   });
