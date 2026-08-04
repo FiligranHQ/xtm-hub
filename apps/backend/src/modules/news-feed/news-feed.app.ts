@@ -12,8 +12,8 @@ import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
 import {
   INTERVAL_UNITS,
+  IntervalHelper,
   IntervalUnit,
-  subtractInterval,
 } from '../common/interval.helper';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
@@ -284,7 +284,7 @@ export const NewsFeedApp = {
       );
     }
 
-    const cutoffDate = subtractInterval(
+    const cutoffDate = IntervalHelper.subtractInterval(
       new Date(),
       rawValue,
       rawUnit as IntervalUnit
